@@ -262,13 +262,9 @@ cleanup:
 }
 
 
-static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
-                                         virNetSocketPtr clientsock,
-                                         void *opaque)
+static int virNetServerAddClient(virNetServerPtr srv,
+                                 virNetServerClientPtr client)
 {
-    virNetServerPtr srv = opaque;
-    virNetServerClientPtr client = NULL;
-
     virNetServerLock(srv);
 
     if (srv->nclients >= srv->nclients_max) {
@@ -277,16 +273,6 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                        srv->nclients_max, virNetServerClientRemoteAddrString(client));
         goto error;
     }
-
-    if (!(client = virNetServerClientNew(clientsock,
-                                         virNetServerServiceGetAuth(svc),
-                                         virNetServerServiceIsReadonly(svc),
-                                         virNetServerServiceGetMaxRequests(svc),
-                                         virNetServerServiceGetTLSContext(svc),
-                                         srv->clientPrivNew,
-                                         srv->clientPrivFree,
-                                         srv->clientPrivOpaque)))
-        goto error;
 
     if (virNetServerClientInit(client) < 0)
         goto error;
@@ -309,10 +295,34 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
     return 0;
 
 error:
-    virNetServerClientClose(client);
-    virObjectUnref(client);
     virNetServerUnlock(srv);
     return -1;
+}
+
+static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
+                                         virNetSocketPtr clientsock,
+                                         void *opaque)
+{
+    virNetServerPtr srv = opaque;
+    virNetServerClientPtr client;
+
+    if (!(client = virNetServerClientNew(clientsock,
+                                         virNetServerServiceGetAuth(svc),
+                                         virNetServerServiceIsReadonly(svc),
+                                         virNetServerServiceGetMaxRequests(svc),
+                                         virNetServerServiceGetTLSContext(svc),
+                                         srv->clientPrivNew,
+                                         srv->clientPrivFree,
+                                         srv->clientPrivOpaque)))
+        return -1;
+
+    if (virNetServerAddClient(srv, client) < 0) {
+        virNetServerClientClose(client);
+        virObjectUnref(client);
+        return -1;
+    }
+    virObjectUnref(client);
+    return 0;
 }
 
 
