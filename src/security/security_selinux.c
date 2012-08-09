@@ -98,6 +98,48 @@ virSecuritySELinuxMCSRemove(virSecurityManagerPtr mgr,
     virHashRemoveEntry(data->mcs, mcs);
 }
 
+
+static char *
+virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
+{
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+    int c1 = 0;
+    int c2 = 0;
+    char *mcs = NULL;
+
+    for (;;) {
+        c1 = virRandomBits(10);
+        c2 = virRandomBits(10);
+
+        if (c1 == c2) {
+            if (virAsprintf(&mcs, "s0:c%d", c1) < 0) {
+                virReportOOMError();
+                return NULL;
+            }
+        } else {
+            if (c1 > c2) {
+                int t = c1;
+                c1 = c2;
+                c2 = t;
+            }
+            if (virAsprintf(&mcs, "s0:c%d,c%d", c1, c2) < 0) {
+                virReportOOMError();
+                return NULL;
+            }
+        }
+
+        if (virHashLookup(data->mcs, mcs) == NULL)
+            goto cleanup;
+
+        VIR_FREE(mcs);
+    }
+
+cleanup:
+    VIR_DEBUG("Found context '%s'", NULLSTR(mcs));
+    return mcs;
+}
+
+
 static char *
 virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
 {
@@ -316,8 +358,6 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     int rc = -1;
     char *mcs = NULL;
     char *scontext = NULL;
-    int c1 = 0;
-    int c2 = 0;
     context_t ctx = NULL;
     const char *range;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
@@ -372,32 +412,11 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        for (;;) {
-            int rv;
-            c1 = virRandomBits(10);
-            c2 = virRandomBits(10);
+        if (!(mcs = virSecuritySELinuxMCSFind(mgr)))
+            goto cleanup;
 
-            if ( c1 == c2 ) {
-                if (virAsprintf(&mcs, "s0:c%d", c1) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            } else {
-                if (c1 > c2) {
-                    c1 ^= c2;
-                    c2 ^= c1;
-                    c1 ^= c2;
-                }
-                if (virAsprintf(&mcs, "s0:c%d,c%d", c1, c2) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            }
-            if ((rv = virSecuritySELinuxMCSAdd(mgr, mcs)) < 0)
-                goto cleanup;
-            if (rv == 0)
-                break;
-        }
+        if (virSecuritySELinuxMCSAdd(mgr, mcs) < 0)
+            goto cleanup;
 
         if (!(def->seclabel.label =
               virSecuritySELinuxGenNewContext(def->seclabel.baselabel ?
