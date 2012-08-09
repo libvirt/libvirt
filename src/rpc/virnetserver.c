@@ -104,8 +104,9 @@ struct _virNetServer {
     virNetServerAutoShutdownFunc autoShutdownFunc;
     void *autoShutdownOpaque;
 
-    virNetServerClientInitHook clientInitHook;
-    void *clientInitOpaque;
+    virNetServerClientPrivNew clientPrivNew;
+    virFreeCallback clientPrivFree;
+    void *clientPrivOpaque;
 };
 
 
@@ -281,14 +282,13 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetAuth(svc),
                                          virNetServerServiceIsReadonly(svc),
                                          virNetServerServiceGetMaxRequests(svc),
-                                         virNetServerServiceGetTLSContext(svc))))
+                                         virNetServerServiceGetTLSContext(svc),
+                                         srv->clientPrivNew,
+                                         srv->clientPrivFree,
+                                         srv->clientPrivOpaque)))
         goto error;
 
     if (virNetServerClientInit(client) < 0)
-        goto error;
-
-    if (srv->clientInitHook &&
-        srv->clientInitHook(srv, client, srv->clientInitOpaque) < 0)
         goto error;
 
     if (VIR_EXPAND_N(srv->clients, srv->nclients, 1) < 0) {
@@ -352,8 +352,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 unsigned int keepaliveCount,
                                 bool keepaliveRequired,
                                 const char *mdnsGroupName,
-                                virNetServerClientInitHook clientInitHook,
-                                void *opaque)
+                                virNetServerClientPrivNew clientPrivNew,
+                                virFreeCallback clientPrivFree,
+                                void *clientPrivOpaque)
 {
     virNetServerPtr srv;
     struct sigaction sig_action;
@@ -376,8 +377,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->keepaliveCount = keepaliveCount;
     srv->keepaliveRequired = keepaliveRequired;
     srv->sigwrite = srv->sigread = -1;
-    srv->clientInitHook = clientInitHook;
-    srv->clientInitOpaque = opaque;
+    srv->clientPrivNew = clientPrivNew;
+    srv->clientPrivFree = clientPrivFree;
+    srv->clientPrivOpaque = clientPrivOpaque;
     srv->privileged = geteuid() == 0 ? true : false;
 
     if (mdnsGroupName &&

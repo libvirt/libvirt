@@ -578,16 +578,26 @@ static void virLXCControllerClientCloseHook(virNetServerClientPtr client)
     }
 }
 
-static int virLXCControllerClientHook(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                      virNetServerClientPtr client,
-                                      void *opaque)
+static void virLXCControllerClientPrivateFree(void *data)
+{
+    VIR_FREE(data);
+}
+
+static void *virLXCControllerClientPrivateNew(virNetServerClientPtr client,
+                                              void *opaque)
 {
     virLXCControllerPtr ctrl = opaque;
-    virNetServerClientSetPrivateData(client, ctrl, NULL);
+    int *dummy;
+
+    if (VIR_ALLOC(dummy) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
     virNetServerClientSetCloseHook(client, virLXCControllerClientCloseHook);
     VIR_DEBUG("Got new client %p", client);
     ctrl->client = client;
-    return 0;
+    return dummy;
 }
 
 
@@ -605,7 +615,8 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     if (!(ctrl->server = virNetServerNew(0, 0, 0, 1,
                                          -1, 0, false,
                                          NULL,
-                                         virLXCControllerClientHook,
+                                         virLXCControllerClientPrivateNew,
+                                         virLXCControllerClientPrivateFree,
                                          ctrl)))
         goto error;
 

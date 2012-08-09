@@ -39,11 +39,17 @@ typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,
                                             void *opaque);
 
+typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
+                                           void *opaque);
+
 virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-                                            virNetTLSContextPtr tls);
+                                            virNetTLSContextPtr tls,
+                                            virNetServerClientPrivNew privNew,
+                                            virFreeCallback privFree,
+                                            void *privOpaque);
 
 int virNetServerClientAddFilter(virNetServerClientPtr client,
                                 virNetServerClientFilterFunc func,
@@ -74,11 +80,6 @@ const char *virNetServerClientGetIdentity(virNetServerClientPtr client);
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
                                       uid_t *uid, gid_t *gid, pid_t *pid);
 
-typedef void (*virNetServerClientFreeFunc)(void *data);
-
-void virNetServerClientSetPrivateData(virNetServerClientPtr client,
-                                      void *opaque,
-                                      virNetServerClientFreeFunc ff);
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
 
 typedef void (*virNetServerClientCloseFunc)(virNetServerClientPtr client);

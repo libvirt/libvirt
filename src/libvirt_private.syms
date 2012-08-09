@@ -1524,7 +1524,6 @@ virNetServerClientSendMessage;
 virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
 virNetServerClientSetIdentity;
-virNetServerClientSetPrivateData;
 virNetServerClientStartKeepAlive;
 virNetServerClientWantClose;
 

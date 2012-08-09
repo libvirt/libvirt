@@ -97,7 +97,7 @@ struct _virNetServerClient
     void *dispatchOpaque;
 
     void *privateData;
-    virNetServerClientFreeFunc privateDataFreeFunc;
+    virFreeCallback privateDataFreeFunc;
     virNetServerClientCloseFunc privateDataCloseFunc;
 
     virKeepAlivePtr keepalive;
@@ -340,7 +340,10 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-                                            virNetTLSContextPtr tls)
+                                            virNetTLSContextPtr tls,
+                                            virNetServerClientPrivNew privNew,
+                                            virFreeCallback privFree,
+                                            void *privOpaque)
 {
     virNetServerClientPtr client;
 
@@ -377,6 +380,14 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
         goto error;
     }
     client->nrequests = 1;
+
+    if (privNew) {
+        if (!(client->privateData = privNew(client, privOpaque))) {
+            virObjectUnref(client);
+            goto error;
+        }
+        client->privateDataFreeFunc = privFree;
+    }
 
     PROBE(RPC_SERVER_CLIENT_NEW,
           "client=%p sock=%p",
@@ -505,22 +516,6 @@ const char *virNetServerClientGetIdentity(virNetServerClientPtr client)
     identity = client->identity;
     virNetServerClientLock(client);
     return identity;
-}
-
-void virNetServerClientSetPrivateData(virNetServerClientPtr client,
-                                      void *opaque,
-                                      virNetServerClientFreeFunc ff)
-{
-    virNetServerClientLock(client);
-
-    if (client->privateData &&
-        client->privateDataFreeFunc)
-        client->privateDataFreeFunc(client->privateData);
-
-    client->privateData = opaque;
-    client->privateDataFreeFunc = ff;
-
-    virNetServerClientUnlock(client);
 }
 
 

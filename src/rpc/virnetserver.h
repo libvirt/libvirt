@@ -32,10 +32,6 @@
 # include "virnetserverservice.h"
 # include "virobject.h"
 
-typedef int (*virNetServerClientInitHook)(virNetServerPtr srv,
-                                          virNetServerClientPtr client,
-                                          void *opaque);
-
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
@@ -44,8 +40,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 unsigned int keepaliveCount,
                                 bool keepaliveRequired,
                                 const char *mdnsGroupName,
-                                virNetServerClientInitHook clientInitHook,
-                                void *opaque);
+                                virNetServerClientPrivNew clientPrivNew,
+                                virFreeCallback clientPrivFree,
+                                void *clientPrivOpaque);
 
 typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
 

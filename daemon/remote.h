@@ -35,8 +35,8 @@ extern size_t remoteNProcs;
 extern virNetServerProgramProc qemuProcs[];
 extern size_t qemuNProcs;
 
-int remoteClientInitHook(virNetServerPtr srv,
-                         virNetServerClientPtr client,
-                         void *opaque);
+void remoteClientFreeFunc(void *data);
+void *remoteClientInitHook(virNetServerClientPtr client,
+                           void *opaque);
 
 #endif /* __LIBVIRTD_REMOTE_H__ */

@@ -631,7 +631,7 @@ verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
  * We keep the libvirt connection open until any async
  * jobs have finished, then clean it up elsewhere
  */
-static void remoteClientFreeFunc(void *data)
+void remoteClientFreeFunc(void *data)
 {
     struct daemonClientPrivate *priv = data;
 
@@ -663,31 +663,28 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 }
 
 
-int remoteClientInitHook(virNetServerPtr srv ATTRIBUTE_UNUSED,
-                         virNetServerClientPtr client,
-                         void *opaque ATTRIBUTE_UNUSED)
+void *remoteClientInitHook(virNetServerClientPtr client,
+                           void *opaque ATTRIBUTE_UNUSED)
 {
     struct daemonClientPrivate *priv;
     int i;
 
     if (VIR_ALLOC(priv) < 0) {
         virReportOOMError();
-        return -1;
+        return NULL;
     }
 
     if (virMutexInit(&priv->lock) < 0) {
         VIR_FREE(priv);
         virReportOOMError();
-        return -1;
+        return NULL;
     }
 
     for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++)
         priv->domainEventCallbackID[i] = -1;
 
-    virNetServerClientSetPrivateData(client, priv,
-                                     remoteClientFreeFunc);
     virNetServerClientSetCloseHook(client, remoteClientCloseFunc);
-    return 0;
+    return priv;
 }
 
 /*----- Functions. -----*/
