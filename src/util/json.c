@@ -1054,14 +1054,15 @@ static int virJSONValueToStringOne(virJSONValuePtr object,
     return 0;
 }
 
-char *virJSONValueToString(virJSONValuePtr object)
+char *virJSONValueToString(virJSONValuePtr object,
+                           bool pretty)
 {
     yajl_gen g;
     const unsigned char *str;
     char *ret = NULL;
     yajl_size_t len;
 # ifndef HAVE_YAJL2
-    yajl_gen_config conf = { 0, " " }; /* Turns off pretty printing since QEMU can't cope */
+    yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "    " : " "};
 # endif
 
     VIR_DEBUG("object=%p", object);
@@ -1069,8 +1070,8 @@ char *virJSONValueToString(virJSONValuePtr object)
 # ifdef HAVE_YAJL2
     g = yajl_gen_alloc(NULL);
     if (g) {
-        yajl_gen_config(g, yajl_gen_beautify, 0);
-        yajl_gen_config(g, yajl_gen_indent_string, " ");
+        yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
+        yajl_gen_config(g, yajl_gen_indent_string, pretty ? "    " : " ");
         yajl_gen_config(g, yajl_gen_validate_utf8, 1);
     }
 # else

@@ -243,7 +243,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
         }
     }
 
-    if (!(cmdstr = virJSONValueToString(cmd))) {
+    if (!(cmdstr = virJSONValueToString(cmd, false))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -328,8 +328,8 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
 {
     if (virJSONValueObjectHasKey(reply, "error")) {
         virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
-        char *cmdstr = virJSONValueToString(cmd);
-        char *replystr = virJSONValueToString(reply);
+        char *cmdstr = virJSONValueToString(cmd, false);
+        char *replystr = virJSONValueToString(reply, false);
 
         /* Log the full JSON formatted command & error */
         VIR_DEBUG("unable to execute QEMU command %s: %s",
@@ -350,8 +350,8 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
         VIR_FREE(replystr);
         return -1;
     } else if (!virJSONValueObjectHasKey(reply, "return")) {
-        char *cmdstr = virJSONValueToString(cmd);
-        char *replystr = virJSONValueToString(reply);
+        char *cmdstr = virJSONValueToString(cmd, false);
+        char *replystr = virJSONValueToString(reply, false);
 
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   cmdstr, replystr);
@@ -3354,7 +3354,7 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
         if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
             goto cleanup;
 
-        if (!(*reply_str = virJSONValueToString(reply)))
+        if (!(*reply_str = virJSONValueToString(reply, false)))
             goto cleanup;
     }
 

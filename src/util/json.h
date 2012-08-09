@@ -132,6 +132,7 @@ int virJSONValueObjectAppendBoolean(virJSONValuePtr object, const char *key, int
 int virJSONValueObjectAppendNull(virJSONValuePtr object, const char *key);
 
 virJSONValuePtr virJSONValueFromString(const char *jsonstring);
-char *virJSONValueToString(virJSONValuePtr object);
+char *virJSONValueToString(virJSONValuePtr object,
+                           bool pretty);
 
 #endif /* __VIR_JSON_H_ */

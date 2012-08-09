@@ -993,7 +993,7 @@ qemuAgentCommand(qemuAgentPtr mon,
 
     memset(&msg, 0, sizeof(msg));
 
-    if (!(cmdstr = virJSONValueToString(cmd))) {
+    if (!(cmdstr = virJSONValueToString(cmd, false))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1107,8 +1107,8 @@ qemuAgentCheckError(virJSONValuePtr cmd,
 {
     if (virJSONValueObjectHasKey(reply, "error")) {
         virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
-        char *cmdstr = virJSONValueToString(cmd);
-        char *replystr = virJSONValueToString(reply);
+        char *cmdstr = virJSONValueToString(cmd, false);
+        char *replystr = virJSONValueToString(reply, false);
 
         /* Log the full JSON formatted command & error */
         VIR_DEBUG("unable to execute QEMU command %s: %s",
@@ -1129,8 +1129,8 @@ qemuAgentCheckError(virJSONValuePtr cmd,
         VIR_FREE(replystr);
         return -1;
     } else if (!virJSONValueObjectHasKey(reply, "return")) {
-        char *cmdstr = virJSONValueToString(cmd);
-        char *replystr = virJSONValueToString(reply);
+        char *cmdstr = virJSONValueToString(cmd, false);
+        char *replystr = virJSONValueToString(reply, false);
 
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   cmdstr, replystr);
