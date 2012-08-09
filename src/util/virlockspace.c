@@ -297,6 +297,243 @@ error:
 }
 
 
+
+virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
+{
+    virLockSpacePtr lockspace;
+    virJSONValuePtr resources;
+    int n;
+    size_t i;
+
+    VIR_DEBUG("object=%p", object);
+
+    if (VIR_ALLOC(lockspace) < 0)
+        return NULL;
+
+    if (virMutexInit(&lockspace->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize lockspace mutex"));
+        VIR_FREE(lockspace);
+        return NULL;
+    }
+
+    if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
+                                               virLockSpaceResourceDataFree)))
+        goto error;
+
+    if (virJSONValueObjectHasKey(object, "directory")) {
+        const char *dir = virJSONValueObjectGetString(object, "directory");
+        if (!(lockspace->dir = strdup(dir))) {
+            virReportOOMError();
+            goto error;
+        }
+    }
+
+    if (!(resources = virJSONValueObjectGet(object, "resources"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing resources value in JSON document"));
+        goto error;
+    }
+
+    if ((n = virJSONValueArraySize(resources)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed resources value in JSON document"));
+        goto error;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(resources, i);
+        virLockSpaceResourcePtr res;
+        const char *tmp;
+        virJSONValuePtr owners;
+        size_t j;
+        int m;
+
+        if (VIR_ALLOC(res) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+        res->fd = -1;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource name in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+        if (!(res->name = strdup(tmp))) {
+            virReportOOMError();
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        if (!(tmp = virJSONValueObjectGetString(child, "path"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource path in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+        if (!(res->path = strdup(tmp))) {
+            virReportOOMError();
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+        if (virJSONValueObjectGetNumberInt(child, "fd", &res->fd) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource fd in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+        if (virSetInherit(res->fd, false) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot enable close-on-exec flag"));
+            goto error;
+        }
+        if (virJSONValueObjectGetBoolean(child, "lockHeld", &res->lockHeld) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource lockHeld in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        if (virJSONValueObjectGetNumberUint(child, "flags", &res->flags) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource flags in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        if (!(owners = virJSONValueObjectGet(child, "owners"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing resource owners in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        if ((m = virJSONValueArraySize(owners)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed owners value in JSON document"));
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        res->nOwners = m;
+        if (VIR_ALLOC_N(res->owners, res->nOwners) < 0) {
+            virReportOOMError();
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+
+        for (j = 0 ; j < res->nOwners ; j++) {
+            unsigned long long int owner;
+            virJSONValuePtr ownerval = virJSONValueArrayGet(owners, j);
+
+            if (virJSONValueGetNumberUlong(ownerval, &owner) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Malformed owner value in JSON document"));
+                virLockSpaceResourceFree(res);
+                goto error;
+            }
+
+            res->owners[res->nOwners-1] = (pid_t)owner;
+        }
+
+        if (virHashAddEntry(lockspace->resources, res->name, res) < 0) {
+            virLockSpaceResourceFree(res);
+            goto error;
+        }
+    }
+
+    return lockspace;
+
+error:
+    virLockSpaceFree(lockspace);
+    return NULL;
+}
+
+
+virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
+{
+    virJSONValuePtr object = virJSONValueNewObject();
+    virJSONValuePtr resources;
+    virHashKeyValuePairPtr pairs = NULL, tmp;
+
+    if (!object)
+        return NULL;
+
+    virMutexLock(&lockspace->lock);
+
+    if (lockspace->dir &&
+        virJSONValueObjectAppendString(object, "directory", lockspace->dir) < 0)
+        goto error;
+
+    if (!(resources = virJSONValueNewArray()))
+        goto error;
+
+    if (virJSONValueObjectAppend(object, "resources", resources) < 0) {
+        virJSONValueFree(resources);
+        goto error;
+    }
+
+    tmp = pairs = virHashGetItems(lockspace->resources, NULL);
+    while (tmp && tmp->value) {
+        virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)tmp->value;
+        virJSONValuePtr child = virJSONValueNewObject();
+        virJSONValuePtr owners = NULL;
+        size_t i;
+
+        if (virJSONValueArrayAppend(resources, child) < 0) {
+            virJSONValueFree(child);
+            goto error;
+        }
+
+        if (virJSONValueObjectAppendString(child, "name", res->name) < 0 ||
+            virJSONValueObjectAppendString(child, "path", res->path) < 0 ||
+            virJSONValueObjectAppendNumberInt(child, "fd", res->fd) < 0 ||
+            virJSONValueObjectAppendBoolean(child, "lockHeld", res->lockHeld) < 0 ||
+            virJSONValueObjectAppendNumberUint(child, "flags", res->flags) < 0)
+            goto error;
+
+        if (virSetInherit(res->fd, true) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Cannot disable close-on-exec flag"));
+            goto error;
+        }
+
+        if (!(owners = virJSONValueNewArray()))
+            goto error;
+
+        if (virJSONValueObjectAppend(child, "owners", owners) < 0) {
+            virJSONValueFree(owners);
+            goto error;
+        }
+
+        for (i = 0 ; i < res->nOwners ; i++) {
+            virJSONValuePtr owner = virJSONValueNewNumberUlong(res->owners[i]);
+            if (!owner)
+                goto error;
+
+            if (virJSONValueArrayAppend(owners, owner) < 0) {
+                virJSONValueFree(owner);
+                goto error;
+            }
+        }
+
+        tmp++;
+    }
+    VIR_FREE(pairs);
+
+    virMutexUnlock(&lockspace->lock);
+    return object;
+
+  error:
+    VIR_FREE(pairs);
+    virJSONValueFree(object);
+    virMutexUnlock(&lockspace->lock);
+    return NULL;
+}
+
+
 void virLockSpaceFree(virLockSpacePtr lockspace)
 {
     if (!lockspace)

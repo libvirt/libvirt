@@ -1362,6 +1362,8 @@ virLockSpaceDeleteResource;
 virLockSpaceFree;
 virLockSpaceGetDirectory;
 virLockSpaceNew;
+virLockSpaceNewPostExecRestart;
+virLockSpacePreExecRestart;
 virLockSpaceReleaseResource;
 virLockSpaceReleaseResourcesForOwner;
 

@@ -23,11 +23,15 @@
 # define __VIR_LOCK_SPACE_H__
 
 # include "internal.h"
+# include "json.h"
 
 typedef struct _virLockSpace virLockSpace;
 typedef virLockSpace *virLockSpacePtr;
 
 virLockSpacePtr virLockSpaceNew(const char *directory);
+virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object);
+
+virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace);
 
 void virLockSpaceFree(virLockSpacePtr lockspace);
 
