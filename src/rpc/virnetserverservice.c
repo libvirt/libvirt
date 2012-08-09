@@ -200,6 +200,55 @@ error:
     return NULL;
 }
 
+virNetServerServicePtr virNetServerServiceNewFD(int fd,
+                                                int auth,
+                                                bool readonly,
+                                                size_t nrequests_client_max,
+                                                virNetTLSContextPtr tls)
+{
+    virNetServerServicePtr svc;
+    int i;
+
+    if (virNetServerServiceInitialize() < 0)
+        return NULL;
+
+    if (!(svc = virObjectNew(virNetServerServiceClass)))
+        return NULL;
+
+    svc->auth = auth;
+    svc->readonly = readonly;
+    svc->nrequests_client_max = nrequests_client_max;
+    svc->tls = virObjectRef(tls);
+
+    svc->nsocks = 1;
+    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
+        goto no_memory;
+
+    if (virNetSocketNewListenFD(fd,
+                                &svc->socks[0]) < 0)
+        goto error;
+
+    for (i = 0 ; i < svc->nsocks ; i++) {
+        /* IO callback is initially disabled, until we're ready
+         * to deal with incoming clients */
+        if (virNetSocketAddIOCallback(svc->socks[i],
+                                      0,
+                                      virNetServerServiceAccept,
+                                      svc,
+                                      virObjectFreeCallback) < 0)
+            goto error;
+    }
+
+
+    return svc;
+
+no_memory:
+    virReportOOMError();
+error:
+    virObjectUnref(svc);
+    return NULL;
+}
+
 
 int virNetServerServiceGetPort(virNetServerServicePtr svc)
 {

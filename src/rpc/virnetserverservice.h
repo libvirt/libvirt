@@ -50,6 +50,11 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   bool readonly,
                                                   size_t nrequests_client_max,
                                                   virNetTLSContextPtr tls);
+virNetServerServicePtr virNetServerServiceNewFD(int fd,
+                                                int auth,
+                                                bool readonly,
+                                                size_t nrequests_client_max,
+                                                virNetTLSContextPtr tls);
 
 int virNetServerServiceGetPort(virNetServerServicePtr svc);
 

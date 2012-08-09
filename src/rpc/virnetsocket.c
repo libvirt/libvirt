@@ -399,6 +399,26 @@ int virNetSocketNewListenUNIX(const char *path ATTRIBUTE_UNUSED,
 }
 #endif
 
+int virNetSocketNewListenFD(int fd,
+                            virNetSocketPtr *retsock)
+{
+    virSocketAddr addr;
+    *retsock = NULL;
+
+    memset(&addr, 0, sizeof(addr));
+
+    addr.len = sizeof(addr.data);
+    if (getsockname(fd, &addr.data.sa, &addr.len) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to get local socket name"));
+        return -1;
+    }
+
+    if (!(*retsock = virNetSocketNew(&addr, NULL, false, fd, -1, 0)))
+        return -1;
+
+    return 0;
+}
+
 
 int virNetSocketNewConnectTCP(const char *nodename,
                               const char *service,
