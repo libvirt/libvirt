@@ -99,20 +99,37 @@ virSecuritySELinuxMCSRemove(virSecurityManagerPtr mgr,
 }
 
 static char *
-virSecuritySELinuxGenNewContext(const char *oldcontext, const char *mcs)
+virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
 {
-    char *newcontext = NULL;
-    char *scontext = strdup(oldcontext);
-    context_t con;
-    if (!scontext) goto err;
-    con = context_new(scontext);
-    if (!con) goto err;
-    context_range_set(con, mcs);
-    newcontext = strdup(context_str(con));
-    context_free(con);
-err:
-    freecon(scontext);
-    return newcontext;
+    context_t context;
+    char *ret = NULL;
+    char *str;
+
+    if (!(context = context_new(basecontext))) {
+        virReportSystemError(errno,
+                             _("Unable to parse base SELinux context '%s'"),
+                             basecontext);
+        goto cleanup;
+    }
+
+    if (context_range_set(context, mcs) != 0) {
+        virReportSystemError(errno,
+                             _("Unable to set SELinux context MCS '%s'"),
+                             mcs);
+        goto cleanup;
+    }
+    if (!(str = context_str(context))) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to format SELinux context"));
+        goto cleanup;
+    }
+    if (!(ret = strdup(str))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+cleanup:
+    context_free(context);
+    return ret;
 }
 
 
@@ -348,15 +365,11 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
                 break;
         }
 
-        def->seclabel.label =
-            virSecuritySELinuxGenNewContext(def->seclabel.baselabel ?
-                                            def->seclabel.baselabel :
-                                            data->domain_context, mcs);
-        if (! def->seclabel.label)  {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot generate selinux context for %s"), mcs);
+        if (!(def->seclabel.label =
+              virSecuritySELinuxGenNewContext(def->seclabel.baselabel ?
+                                              def->seclabel.baselabel :
+                                              data->domain_context, mcs)))
             goto cleanup;
-        }
         break;
 
     case VIR_DOMAIN_SECLABEL_NONE:
@@ -371,12 +384,9 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     }
 
     if (!def->seclabel.norelabel) {
-        def->seclabel.imagelabel = virSecuritySELinuxGenNewContext(data->file_context, mcs);
-        if (!def->seclabel.imagelabel)  {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot generate selinux context for %s"), mcs);
+        if (!(def->seclabel.imagelabel =
+              virSecuritySELinuxGenNewContext(data->file_context, mcs)))
             goto cleanup;
-        }
     }
 
     if (!def->seclabel.model &&
@@ -1576,11 +1586,8 @@ virSecuritySELinuxGenImageLabel(virSecurityManagerPtr mgr,
                 virReportOOMError();
                 goto cleanup;
             }
-            label = virSecuritySELinuxGenNewContext(data->file_context, mcs);
-            if (!label) {
-                virReportOOMError();
+            if (!(label = virSecuritySELinuxGenNewContext(data->file_context, mcs)))
                 goto cleanup;
-            }
         }
     }
 
