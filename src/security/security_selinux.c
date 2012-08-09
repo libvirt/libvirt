@@ -101,14 +101,44 @@ virSecuritySELinuxMCSRemove(virSecurityManagerPtr mgr,
 static char *
 virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
 {
-    context_t context;
+    context_t context = NULL;
     char *ret = NULL;
     char *str;
+    security_context_t ourSecContext = NULL;
+    context_t ourContext = NULL;
+
+    if (getcon(&ourSecContext) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get current process SELinux context"));
+        goto cleanup;
+    }
+    if (!(ourContext = context_new(ourSecContext))) {
+        virReportSystemError(errno,
+                             _("Unable to parse current SELinux context '%s'"),
+                             ourSecContext);
+        goto cleanup;
+    }
 
     if (!(context = context_new(basecontext))) {
         virReportSystemError(errno,
                              _("Unable to parse base SELinux context '%s'"),
                              basecontext);
+        goto cleanup;
+    }
+
+    if (context_user_set(context,
+                         context_user_get(ourContext)) != 0) {
+        virReportSystemError(errno,
+                             _("Unable to set SELinux context user '%s'"),
+                             context_user_get(ourContext));
+        goto cleanup;
+    }
+
+    if (context_role_set(context,
+                         context_role_get(ourContext)) != 0) {
+        virReportSystemError(errno,
+                             _("Unable to set SELinux context user '%s'"),
+                             context_role_get(ourContext));
         goto cleanup;
     }
 
@@ -127,7 +157,11 @@ virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
         virReportOOMError();
         goto cleanup;
     }
+    VIR_DEBUG("Generated context '%s' from '%s' and '%s'",
+              ret, basecontext, ourSecContext);
 cleanup:
+    freecon(ourSecContext);
+    context_free(ourContext);
     context_free(context);
     return ret;
 }
