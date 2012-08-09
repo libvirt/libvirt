@@ -24,7 +24,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>
 #include <xen/api/xen_all.h>
 #include "internal.h"
 #include "domain_conf.h"

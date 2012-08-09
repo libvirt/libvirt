@@ -1,8 +1,8 @@
 /*
  * xenxs_private.h: Private definitions for Xen parsing
  *
+ * Copyright (C) 2007, 2010, 2012 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
- * Copyright (C) 2007, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,6 @@
 
 # include "internal.h"
 
-# include <stdint.h>
 # include <xen/xen.h>
 # include "xen_sxpr.h"
 

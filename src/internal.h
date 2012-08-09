@@ -9,6 +9,7 @@
 # include <limits.h>
 # include <verify.h>
 # include <stdbool.h>
+# include <stdint.h>
 
 # if STATIC_ANALYSIS
 #  undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */

@@ -1,5 +1,6 @@
 /*
  * xenapi_utils.h: Xen API driver -- utils header
+ * Copyright (C) 2012, Red Hat, Inc.
  * Copyright (C) 2009, 2010 Citrix Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +23,6 @@
 #ifndef __VIR_XENAPI_UTILS__
 # define __VIR_XENAPI_UTILS__
 
-# include <stdint.h>
 # include <xen/api/xen_all.h>
 # include "internal.h"
 # include "viruri.h"

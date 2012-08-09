@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -29,9 +29,7 @@
 
 #include <config.h>
 
-#include <stdint.h>
 #include <unistd.h>
-#include <sys/types.h>
 
 #include "internal.h"
 

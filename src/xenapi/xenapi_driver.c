@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <limits.h>
-#include <stdint.h>
 #include <string.h>
 #include <curl/curl.h>
 #include <xen/api/xen_all.h>

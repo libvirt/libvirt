@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,6 @@
 
 #ifndef __VIR_NETDEV_VPORT_PROFILE_H__
 # define __VIR_NETDEV_VPORT_PROFILE_H__
-
-# include <stdint.h>
 
 # include "internal.h"
 # include "uuid.h"

@@ -24,8 +24,6 @@
 # include "internal.h"
 # include "virmacaddr.h"
 
-# include <stdint.h>
-
 # if defined(__linux__) && defined(HAVE_LIBNL)
 
 #  include <netlink/msg.h>

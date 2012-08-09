@@ -29,7 +29,6 @@
 # define __VIR_HASH_CODE_H__
 
 # include "internal.h"
-# include <stdint.h>
 
 extern uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed);
 

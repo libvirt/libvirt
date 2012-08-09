@@ -23,7 +23,6 @@
 # define __VIR_RANDOM_H__
 
 # include "internal.h"
-# include <stdint.h>
 
 uint64_t virRandomBits(int nbits);
 int virRandomGenerateWWN(char **wwn, const char *virt_type);

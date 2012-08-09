@@ -1,9 +1,8 @@
 /*
  * sexpr.h : S-Expression interfaces needed to communicate with the Xen Daemon
  *
- * Copyright (C) 2005
- *
- *      Anthony Liguori <aliguori@us.ibm.com>
+ * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING.LIB in the main directory of this
@@ -15,9 +14,6 @@
 
 # include "internal.h"
 # include "buf.h"
-
-# include <sys/types.h>
-# include <stdint.h>
 
 enum sexpr_type {
     SEXPR_NIL,

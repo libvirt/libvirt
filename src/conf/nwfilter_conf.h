@@ -2,7 +2,7 @@
  * nwfilter_conf.h: network filter XML processing
  *                  (derived from storage_conf.h)
  *
- * Copyright (C) 2006-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2010, 2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010 IBM Corporation
@@ -25,9 +25,6 @@
  */
 #ifndef NWFILTER_CONF_H
 # define NWFILTER_CONF_H
-
-# include <stdint.h>
-# include <stddef.h>
 
 # include "internal.h"
 
