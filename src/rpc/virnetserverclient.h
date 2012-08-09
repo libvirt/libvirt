@@ -27,6 +27,7 @@
 # include "virnetsocket.h"
 # include "virnetmessage.h"
 # include "virobject.h"
+# include "json.h"
 
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;
@@ -39,6 +40,11 @@ typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,
                                             void *opaque);
 
+typedef virJSONValuePtr (*virNetServerClientPrivPreExecRestart)(virNetServerClientPtr client,
+                                                                void *data);
+typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClientPtr client,
+                                                          virJSONValuePtr object,
+                                                          void *opaque);
 typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
                                            void *opaque);
 
@@ -48,8 +54,17 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             size_t nrequests_max,
                                             virNetTLSContextPtr tls,
                                             virNetServerClientPrivNew privNew,
+                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
                                             void *privOpaque);
+
+virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr object,
+                                                           virNetServerClientPrivNewPostExecRestart privNew,
+                                                           virNetServerClientPrivPreExecRestart privPreExecRestart,
+                                                           virFreeCallback privFree,
+                                                           void *privOpaque);
+
+virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
 
 int virNetServerClientAddFilter(virNetServerClientPtr client,
                                 virNetServerClientFilterFunc func,

@@ -609,6 +609,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
                                          -1, 0, false,
                                          NULL,
                                          virLXCControllerClientPrivateNew,
+                                         NULL,
                                          virLXCControllerClientPrivateFree,
                                          ctrl)))
         goto error;

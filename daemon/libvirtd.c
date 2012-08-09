@@ -1216,6 +1216,7 @@ int main(int argc, char **argv) {
                                 !!config->keepalive_required,
                                 config->mdns_adv ? config->mdns_name : NULL,
                                 remoteClientInitHook,
+                                NULL,
                                 remoteClientFreeFunc,
                                 NULL))) {
         ret = VIR_DAEMON_ERR_INIT;

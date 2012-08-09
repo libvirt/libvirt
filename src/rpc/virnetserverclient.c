@@ -98,6 +98,7 @@ struct _virNetServerClient
 
     void *privateData;
     virFreeCallback privateDataFreeFunc;
+    virNetServerClientPrivPreExecRestart privateDataPreExecRestart;
     virNetServerClientCloseFunc privateDataCloseFunc;
 
     virKeepAlivePtr keepalive;
@@ -395,6 +396,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             size_t nrequests_max,
                                             virNetTLSContextPtr tls,
                                             virNetServerClientPrivNew privNew,
+                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
                                             void *privOpaque)
 {
@@ -411,9 +413,142 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
             return NULL;
         }
         client->privateDataFreeFunc = privFree;
+        client->privateDataPreExecRestart = privPreExecRestart;
     }
 
     return client;
+}
+
+
+virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr object,
+                                                           virNetServerClientPrivNewPostExecRestart privNew,
+                                                           virNetServerClientPrivPreExecRestart privPreExecRestart,
+                                                           virFreeCallback privFree,
+                                                           void *privOpaque)
+{
+    virJSONValuePtr child;
+    virNetServerClientPtr client = NULL;
+    virNetSocketPtr sock;
+    const char *identity = NULL;
+    int auth;
+    bool readonly;
+    unsigned int nrequests_max;
+
+    if (virJSONValueObjectGetNumberInt(object, "auth", &auth) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing auth field in JSON state document"));
+        return NULL;
+    }
+    if (virJSONValueObjectGetBoolean(object, "readonly", &readonly) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing readonly field in JSON state document"));
+        return NULL;
+    }
+    if (virJSONValueObjectGetNumberUint(object, "nrequests_max",
+                                        (unsigned int *)&nrequests_max) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing nrequests_client_max field in JSON state document"));
+        return NULL;
+    }
+    if (virJSONValueObjectHasKey(object, "identity") &&
+        (!(identity = virJSONValueObjectGetString(object, "identity")))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing identity field in JSON state document"));
+        return NULL;
+    }
+
+    if (!(child = virJSONValueObjectGet(object, "sock"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing sock field in JSON state document"));
+        return NULL;
+    }
+
+    if (!(sock = virNetSocketNewPostExecRestart(child))) {
+        virObjectUnref(sock);
+        return NULL;
+    }
+
+    if (!(client = virNetServerClientNewInternal(sock,
+                                                 auth,
+                                                 readonly,
+                                                 nrequests_max,
+                                                 NULL))) {
+        virObjectUnref(sock);
+        return NULL;
+    }
+    virObjectUnref(sock);
+
+    if (identity &&
+        virNetServerClientSetIdentity(client, identity) < 0)
+        goto error;
+
+    if (privNew) {
+        if (!(child = virJSONValueObjectGet(object, "privateData"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing privateData field in JSON state document"));
+            goto error;
+        }
+        if (!(client->privateData = privNew(client, child, privOpaque))) {
+            goto error;
+        }
+        client->privateDataFreeFunc = privFree;
+        client->privateDataPreExecRestart = privPreExecRestart;
+    }
+
+
+    return client;
+
+error:
+    virObjectUnref(client);
+    return NULL;
+}
+
+
+virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
+{
+    virJSONValuePtr object = virJSONValueNewObject();
+    virJSONValuePtr child;
+
+    if (!object)
+        return NULL;
+
+    virNetServerClientLock(client);
+
+    if (virJSONValueObjectAppendNumberInt(object, "auth", client->auth) < 0)
+        goto error;
+    if (virJSONValueObjectAppendBoolean(object, "readonly", client->readonly) < 0)
+        goto error;
+    if (virJSONValueObjectAppendNumberUint(object, "nrequests_max", client->nrequests_max) < 0)
+        goto error;
+
+    if (client->identity &&
+        virJSONValueObjectAppendString(object, "identity", client->identity) < 0)
+        goto error;
+
+    if (!(child = virNetSocketPreExecRestart(client->sock)))
+        goto error;
+
+    if (virJSONValueObjectAppend(object, "sock", child) < 0) {
+        virJSONValueFree(child);
+        goto error;
+    }
+
+    if (client->privateData && client->privateDataPreExecRestart &&
+        !(child = client->privateDataPreExecRestart(client, client->privateData)))
+        goto error;
+
+    if (virJSONValueObjectAppend(object, "privateData", child) < 0) {
+        virJSONValueFree(child);
+        goto error;
+    }
+
+    virNetServerClientUnlock(client);
+    return object;
+
+error:
+    virNetServerClientUnlock(client);
+    virJSONValueFree(object);
+    return NULL;
 }
 
 

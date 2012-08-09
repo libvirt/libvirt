@@ -41,6 +41,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 bool keepaliveRequired,
                                 const char *mdnsGroupName,
                                 virNetServerClientPrivNew clientPrivNew,
+                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
                                 void *clientPrivOpaque);
 

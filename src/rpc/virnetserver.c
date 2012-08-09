@@ -105,6 +105,7 @@ struct _virNetServer {
     void *autoShutdownOpaque;
 
     virNetServerClientPrivNew clientPrivNew;
+    virNetServerClientPrivPreExecRestart clientPrivPreExecRestart;
     virFreeCallback clientPrivFree;
     void *clientPrivOpaque;
 };
@@ -309,6 +310,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetMaxRequests(svc),
                                          virNetServerServiceGetTLSContext(svc),
                                          srv->clientPrivNew,
+                                         srv->clientPrivPreExecRestart,
                                          srv->clientPrivFree,
                                          srv->clientPrivOpaque)))
         return -1;
@@ -360,6 +362,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 bool keepaliveRequired,
                                 const char *mdnsGroupName,
                                 virNetServerClientPrivNew clientPrivNew,
+                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
                                 void *clientPrivOpaque)
 {
@@ -385,6 +388,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->keepaliveRequired = keepaliveRequired;
     srv->sigwrite = srv->sigread = -1;
     srv->clientPrivNew = clientPrivNew;
+    srv->clientPrivPreExecRestart = clientPrivPreExecRestart;
     srv->clientPrivFree = clientPrivFree;
     srv->clientPrivOpaque = clientPrivOpaque;
     srv->privileged = geteuid() == 0 ? true : false;
