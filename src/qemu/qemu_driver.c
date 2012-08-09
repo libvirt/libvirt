@@ -148,6 +148,35 @@ static void qemuDomainManagedSaveLoad(void *payload,
 struct qemud_driver *qemu_driver = NULL;
 
 
+static void
+qemuVMDriverLock(void) {
+    qemuDriverLock(qemu_driver);
+};
+
+
+static void
+qemuVMDriverUnlock(void) {
+    qemuDriverUnlock(qemu_driver);
+};
+
+
+static int
+qemuVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    virHashIterator iter, void *data)
+{
+    virHashForEach(qemu_driver->domains.objs, iter, data);
+
+    return 0;
+}
+
+static virNWFilterCallbackDriver qemuCallbackDriver = {
+    .name = QEMU_DRIVER_NAME,
+    .vmFilterRebuild = qemuVMFilterRebuild,
+    .vmDriverLock = qemuVMDriverLock,
+    .vmDriverUnlock = qemuVMDriverUnlock,
+};
+
+
 struct qemuAutostartData {
     struct qemud_driver *driver;
     virConnectPtr conn;
@@ -754,6 +783,7 @@ qemudStartup(int privileged) {
     if (conn)
         virConnectClose(conn);
 
+    virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 
 out_of_memory:
@@ -843,6 +873,7 @@ qemudShutdown(void) {
         return -1;
 
     qemuDriverLock(qemu_driver);
+    virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
     pciDeviceListFree(qemu_driver->activePciHostdevs);
     pciDeviceListFree(qemu_driver->inactivePciHostdevs);
     usbDeviceListFree(qemu_driver->activeUsbHostdevs);
@@ -13380,37 +13411,8 @@ static virStateDriver qemuStateDriver = {
     .active = qemudActive,
 };
 
-static void
-qemuVMDriverLock(void) {
-    qemuDriverLock(qemu_driver);
-};
-
-
-static void
-qemuVMDriverUnlock(void) {
-    qemuDriverUnlock(qemu_driver);
-};
-
-
-static int
-qemuVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    virHashIterator iter, void *data)
-{
-    virHashForEach(qemu_driver->domains.objs, iter, data);
-
-    return 0;
-}
-
-static virNWFilterCallbackDriver qemuCallbackDriver = {
-    .name = QEMU_DRIVER_NAME,
-    .vmFilterRebuild = qemuVMFilterRebuild,
-    .vmDriverLock = qemuVMDriverLock,
-    .vmDriverUnlock = qemuVMDriverUnlock,
-};
-
 int qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterStateDriver(&qemuStateDriver);
-    virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 }

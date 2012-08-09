@@ -74,6 +74,35 @@ static int lxcStartup(int privileged);
 static int lxcShutdown(void);
 virLXCDriverPtr lxc_driver = NULL;
 
+/* callbacks for nwfilter */
+static int
+lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   virHashIterator iter, void *data)
+{
+    virHashForEach(lxc_driver->domains.objs, iter, data);
+
+    return 0;
+}
+
+static void
+lxcVMDriverLock(void)
+{
+    lxcDriverLock(lxc_driver);
+}
+
+static void
+lxcVMDriverUnlock(void)
+{
+    lxcDriverUnlock(lxc_driver);
+}
+
+static virNWFilterCallbackDriver lxcCallbackDriver = {
+    .name = "LXC",
+    .vmFilterRebuild = lxcVMFilterRebuild,
+    .vmDriverLock = lxcVMDriverLock,
+    .vmDriverUnlock = lxcVMDriverUnlock,
+};
+
 /* Functions */
 
 static virDrvOpenStatus lxcOpen(virConnectPtr conn,
@@ -1465,6 +1494,7 @@ static int lxcStartup(int privileged)
 
     virLXCProcessAutostartAll(lxc_driver);
 
+    virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
     return 0;
 
 cleanup:
@@ -1516,6 +1546,7 @@ static int lxcShutdown(void)
         return -1;
 
     lxcDriverLock(lxc_driver);
+    virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
     virDomainObjListDeinit(&lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
 
@@ -2654,34 +2685,6 @@ lxcListAllDomains(virConnectPtr conn,
     return ret;
 }
 
-static int
-lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virHashIterator iter, void *data)
-{
-    virHashForEach(lxc_driver->domains.objs, iter, data);
-
-    return 0;
-}
-
-static void
-lxcVMDriverLock(void)
-{
-    lxcDriverLock(lxc_driver);
-}
-
-static void
-lxcVMDriverUnlock(void)
-{
-    lxcDriverUnlock(lxc_driver);
-}
-
-static virNWFilterCallbackDriver lxcCallbackDriver = {
-    .name = "LXC",
-    .vmFilterRebuild = lxcVMFilterRebuild,
-    .vmDriverLock = lxcVMDriverLock,
-    .vmDriverUnlock = lxcVMDriverUnlock,
-};
-
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -2761,6 +2764,5 @@ int lxcRegister(void)
 {
     virRegisterDriver(&lxcDriver);
     virRegisterStateDriver(&lxcStateDriver);
-    virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
     return 0;
 }

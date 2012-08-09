@@ -880,6 +880,7 @@ virNWFilterRuleActionTypeToString;
 virNWFilterRuleDirectionTypeToString;
 virNWFilterRuleProtocolTypeToString;
 virNWFilterTestUnassignDef;
+virNWFilterUnRegisterCallbackDriver;
 virNWFilterUnlockFilterUpdates;
 
 

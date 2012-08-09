@@ -2829,6 +2829,22 @@ virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 }
 
 void
+virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
+{
+    int i = 0;
+
+    while (i < nCallbackDriver && callbackDrvArray[i] != cbd)
+        i++;
+
+    if (i < nCallbackDriver) {
+        memmove(&callbackDrvArray[i], &callbackDrvArray[i+1],
+                (nCallbackDriver - i - 1) * sizeof(callbackDrvArray[i]));
+        callbackDrvArray[i] = 0;
+        nCallbackDriver--;
+    }
+}
+
+void
 virNWFilterCallbackDriversLock(void)
 {
     int i;

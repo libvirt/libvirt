@@ -745,6 +745,7 @@ struct _virNWFilterCallbackDriver {
 };
 
 void virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
+void virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
 void virNWFilterCallbackDriversLock(void);
 void virNWFilterCallbackDriversUnlock(void);
 

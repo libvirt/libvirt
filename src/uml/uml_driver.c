@@ -146,6 +146,34 @@ static int umlMonitorCommand(const struct uml_driver *driver,
 
 static struct uml_driver *uml_driver = NULL;
 
+static int
+umlVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   virHashIterator iter, void *data)
+{
+    virHashForEach(uml_driver->domains.objs, iter, data);
+
+    return 0;
+}
+
+static void
+umlVMDriverLock(void)
+{
+    umlDriverLock(uml_driver);
+}
+
+static void
+umlVMDriverUnlock(void)
+{
+    umlDriverUnlock(uml_driver);
+}
+
+static virNWFilterCallbackDriver umlCallbackDriver = {
+    .name = "UML",
+    .vmFilterRebuild = umlVMFilterRebuild,
+    .vmDriverLock = umlVMDriverLock,
+    .vmDriverUnlock = umlVMDriverUnlock,
+};
+
 struct umlAutostartData {
     struct uml_driver *driver;
     virConnectPtr conn;
@@ -505,6 +533,7 @@ umlStartup(int privileged)
 
     VIR_FREE(userdir);
 
+    virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     return 0;
 
 out_of_memory:
@@ -603,6 +632,7 @@ umlShutdown(void) {
         return -1;
 
     umlDriverLock(uml_driver);
+    virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     if (uml_driver->inotifyWatch != -1)
         virEventRemoveHandle(uml_driver->inotifyWatch);
     VIR_FORCE_CLOSE(uml_driver->inotifyFD);
@@ -2596,15 +2626,6 @@ static virDriver umlDriver = {
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
 };
 
-static int
-umlVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virHashIterator iter, void *data)
-{
-    virHashForEach(uml_driver->domains.objs, iter, data);
-
-    return 0;
-}
-
 static virStateDriver umlStateDriver = {
     .name = "UML",
     .initialize = umlStartup,
@@ -2613,28 +2634,8 @@ static virStateDriver umlStateDriver = {
     .active = umlActive,
 };
 
-static void
-umlVMDriverLock(void)
-{
-    umlDriverLock(uml_driver);
-}
-
-static void
-umlVMDriverUnlock(void)
-{
-    umlDriverUnlock(uml_driver);
-}
-
-static virNWFilterCallbackDriver umlCallbackDriver = {
-    .name = "UML",
-    .vmFilterRebuild = umlVMFilterRebuild,
-    .vmDriverLock = umlVMDriverLock,
-    .vmDriverUnlock = umlVMDriverUnlock,
-};
-
 int umlRegister(void) {
     virRegisterDriver(&umlDriver);
     virRegisterStateDriver(&umlStateDriver);
-    virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     return 0;
 }
