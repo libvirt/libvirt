@@ -72,6 +72,12 @@ virSecurityDriverPtr virSecurityDriverLookup(const char *name,
 
         case SECURITY_DRIVER_DISABLE:
             VIR_DEBUG("Not enabled name=%s", tmp->name);
+            if (name && STREQ(tmp->name, name)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Security driver %s not enabled"),
+                               name);
+                return NULL;
+            }
             break;
 
         default:
