@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include "virrandom.h"
 #include "threads.h"
@@ -107,6 +108,37 @@ uint64_t virRandomBits(int nbits)
     virMutexUnlock(&randomLock);
     return ret;
 }
+
+
+/**
+ * virRandom:
+ *
+ * Generate an evenly distributed random number between [0.0,1.0)
+ *
+ * Return: a random number with 48 bits of entropy
+ */
+double virRandom(void)
+{
+    uint64_t val = virRandomBits(48);
+
+    return ldexp(val, -48);
+}
+
+
+/**
+ * virRandomInt:
+ * @max: upper limit
+ *
+ * Generate an evenly distributed random integer between [0, @max)
+ *
+ * Return: a random number between [0,@max)
+ */
+uint32_t virRandomInt(uint32_t max)
+{
+    double val = virRandom();
+    return val * max;
+}
+
 
 #define QUMRANET_OUI "001a4a"
 #define VMWARE_OUI "000569"

@@ -1641,8 +1641,10 @@ virPidFileDeletePath;
 
 
 # virrandom.h
+virRandom;
 virRandomBits;
 virRandomGenerateWWN;
+virRandomInt;
 
 
 # virsocketaddr.h

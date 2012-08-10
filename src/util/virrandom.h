@@ -25,6 +25,8 @@
 # include "internal.h"
 
 uint64_t virRandomBits(int nbits);
+double virRandom(void);
+uint32_t virRandomInt(uint32_t max);
 int virRandomGenerateWWN(char **wwn, const char *virt_type);
 
 #endif /* __VIR_RANDOM_H__ */
