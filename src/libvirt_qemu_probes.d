@@ -2,6 +2,7 @@ provider libvirt {
         # file: src/qemu/qemu_monitor.c
         # prefix: qemu
         # binary: libvirtd
+        # module: libvirt/connection-driver/libvirt_driver_qemu.so
         # Monitor lifecycle
         probe qemu_monitor_new(void *mon, int refs, int fd);
         probe qemu_monitor_ref(void *mon, int refs);

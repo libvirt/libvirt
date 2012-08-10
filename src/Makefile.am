@@ -1393,6 +1393,9 @@ nodist_libvirt_la_SOURCES = libvirt_probes.h
 if WITH_REMOTE
 nodist_libvirt_driver_remote_la_SOURCES = libvirt_probes.h
 endif WITH_REMOTE
+if WITH_DRIVER_MODULES
+DTRACE2SYSTEMTAP_FLAGS = --with-modules
+endif
 
 BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
 
@@ -1429,9 +1432,9 @@ RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
 
-%_probes.stp: %_probes.d $(srcdir)/dtrace2systemtap.pl
+%_probes.stp: %_probes.d $(srcdir)/dtrace2systemtap.pl $(top_builddir)/config.status
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/dtrace2systemtap.pl \
-	  $(bindir) $(sbindir) $(libdir) $< > $@
+	  $(DTRACE2SYSTEMTAP_FLAGS) $(bindir) $(sbindir) $(libdir) $< > $@
 
 CLEANFILES += libvirt_probes.h libvirt_probes.o libvirt_probes.lo \
               libvirt_qemu_probes.h libvirt_qemu_probes.o \

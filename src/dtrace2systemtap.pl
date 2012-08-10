@@ -31,6 +31,13 @@ my $file;
 my @files;
 my %files;
 
+my $with_modules = 0;
+if ($ARGV[0] eq "--with-modules") {
+    # set if we want to honor the "module" setting in the .d file
+    $with_modules = 1;
+    shift @ARGV;
+}
+
 my $bindir = shift @ARGV;
 my $sbindir = shift @ARGV;
 my $libdir = shift @ARGV;
@@ -54,6 +61,8 @@ while (<>) {
             $files{$file}->{prefix} = $1;
         } elsif (m,^\s*\#\s*binary:\s*(\S+)\s*$,) {
             $files{$file}->{binary} = $1;
+        } elsif (m,^\s*\#\s*module:\s*(\S+)\s*$,) {
+            $files{$file}->{module} = $1;
         } else {
             # ignore unknown comments
         }
@@ -97,6 +106,9 @@ foreach my $file (@files) {
         my $binary = "$libdir/libvirt.so";
         if (exists $files{$file}->{binary}) {
             $binary = $sbindir . "/" . $files{$file}->{binary};
+        }
+        if ($with_modules && exists $files{$file}->{module}) {
+            $binary = $libdir . "/" . $files{$file}->{module};
         }
 
         print "probe $pname = process(\"$binary\").mark(\"$name\") {\n";
