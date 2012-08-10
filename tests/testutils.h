@@ -70,4 +70,20 @@ int virtTestMain(int argc,
         return virtTestMain(argc, argv, func);  \
     }
 
+# define VIRT_TEST_MAIN_PRELOAD(func, lib)                              \
+    int main(int argc, char **argv) {                                   \
+        const char *preload = getenv("LD_PRELOAD");                     \
+        if (preload == NULL || strstr(preload, lib) == NULL) {          \
+            char *newenv;                                               \
+            if (virAsprintf(&newenv, "%s%s%s", preload ? preload : "",  \
+                            preload ? ":" : "", lib) < 0) {             \
+                perror("virAsprintf");                                  \
+                exit(EXIT_FAILURE);                                     \
+            }                                                           \
+            setenv("LD_PRELOAD", newenv, 1);                            \
+            execv(argv[0], argv);                                       \
+        }                                                               \
+        return virtTestMain(argc, argv, func);                          \
+    }
+
 #endif /* __VIT_TEST_UTILS_H__ */

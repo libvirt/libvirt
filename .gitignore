@@ -146,6 +146,7 @@
 /tests/reconnect
 /tests/secaatest
 /tests/seclabeltest
+/tests/securityselinuxtest
 /tests/sexpr2xmltest
 /tests/shunloadtest
 /tests/sockettest

@@ -94,6 +94,10 @@ test_programs = virshtest sockettest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest
 
+if WITH_SECDRIVER_SELINUX
+test_programs += securityselinuxtest
+endif
+
 if WITH_DRIVER_MODULES
 test_programs += virdrivermoduletest
 endif
@@ -522,6 +526,28 @@ virauthconfigtest_LDADD = $(LDADDS)
 seclabeltest_SOURCES = \
 	seclabeltest.c
 seclabeltest_LDADD = $(LDADDS)
+
+if WITH_SECDRIVER_SELINUX
+if WITH_TESTS
+noinst_LTLIBRARIES += libsecurityselinuxhelper.la
+else
+check_LTLIBRARIES += libsecurityselinuxhelper.la
+endif
+
+libsecurityselinuxhelper_la_SOURCES = \
+	securityselinuxhelper.c
+libsecurityselinuxhelper_la_CFLAGS = $(AM_CFLAGS)
+libsecurityselinuxhelper_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+securityselinuxtest_SOURCES = \
+	securityselinuxtest.c testutils.h testutils.c
+securityselinuxtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+securityselinuxtest_LDADD = $(LDADDS)
+securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la
+else
+EXTRA_DIST += securityselinuxtest.c securityselinuxhelper.c
+endif
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c
