@@ -23,16 +23,55 @@ AM_SILENT_RULES([yes])
 
 AC_CANONICAL_HOST
 
+# First extract pieces from the version number string
 LIBVIRT_MAJOR_VERSION=`echo $VERSION | awk -F. '{print $1}'`
 LIBVIRT_MINOR_VERSION=`echo $VERSION | awk -F. '{print $2}'`
 LIBVIRT_MICRO_VERSION=`echo $VERSION | awk -F. '{print $3}'`
 LIBVIRT_VERSION=$LIBVIRT_MAJOR_VERSION.$LIBVIRT_MINOR_VERSION.$LIBVIRT_MICRO_VERSION$LIBVIRT_MICRO_VERSION_SUFFIX
-LIBVIRT_VERSION_INFO=`expr $LIBVIRT_MAJOR_VERSION + $LIBVIRT_MINOR_VERSION`:$LIBVIRT_MICRO_VERSION:$LIBVIRT_MINOR_VERSION
 LIBVIRT_VERSION_NUMBER=`expr $LIBVIRT_MAJOR_VERSION \* 1000000 + $LIBVIRT_MINOR_VERSION \* 1000 + $LIBVIRT_MICRO_VERSION`
+
+# In libtool terminology we need to figure out:
+#
+# CURRENT
+#     The most recent interface number that this library implements.
+#
+# REVISION
+#     The implementation number of the CURRENT interface.
+#
+# AGE
+#     The difference between the newest and oldest interfaces that this
+#     library implements.
+#
+# In other words, the library implements all the interface numbers
+# in the range from number `CURRENT - AGE' to `CURRENT'.
+#
+# Libtool assigns the soname version from `CURRENT - AGE', and we
+# don't want that to ever change in libvirt. ie it must always be
+# zero, to produce libvirt.so.0.
+#
+# We would, however, like the libvirt version number reflected
+# in the so version'd symlinks, and this is based on AGE.REVISION
+# eg  libvirt.so.0.AGE.REVISION
+#
+# Assuming we do ever want to break soname version, this can
+# toggled. But seriously, don't ever touch this.
+LIBVIRT_SONUM=0
+
+# The following examples show what libtool will do
+#
+# Input: 0.9.14 ->   libvirt.so.0.9.14
+# Input: 1.0.0  ->   libvirt.so.0.1000.0
+# Input: 2.5.8  ->   libvirt.so.0.2005.8
+#
+AGE=`expr $LIBVIRT_MAJOR_VERSION '*' 1000 + $LIBVIRT_MINOR_VERSION`
+REVISION=$LIBVIRT_MICRO_VERSION
+CURRENT=`expr $LIBVIRT_SONUM + $AGE`
+LIBVIRT_VERSION_INFO=$CURRENT:$REVISION:$AGE
 
 AC_SUBST([LIBVIRT_MAJOR_VERSION])
 AC_SUBST([LIBVIRT_MINOR_VERSION])
 AC_SUBST([LIBVIRT_MICRO_VERSION])
+AC_SUBST([LIBVIRT_SONUM])
 AC_SUBST([LIBVIRT_VERSION])
 AC_SUBST([LIBVIRT_VERSION_INFO])
 AC_SUBST([LIBVIRT_VERSION_NUMBER])
