@@ -106,13 +106,108 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
     int c1 = 0;
     int c2 = 0;
     char *mcs = NULL;
+    security_context_t ourSecContext = NULL;
+    context_t ourContext = NULL;
+    char *sens, *cat, *tmp;
+    int catMin, catMax, catRange;
+
+    if (getcon(&ourSecContext) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get current process SELinux context"));
+        goto cleanup;
+    }
+    if (!(ourContext = context_new(ourSecContext))) {
+        virReportSystemError(errno,
+                             _("Unable to parse current SELinux context '%s'"),
+                             ourSecContext);
+        goto cleanup;
+    }
+
+    if (!(sens = strdup(context_range_get(ourContext)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Find and blank out the category part */
+    if (!(tmp = strchr(sens, ':'))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse sensitivity level in %s"),
+                       sens);
+        goto cleanup;
+    }
+    *tmp = '\0';
+    cat = tmp + 1;
+    /* Find and blank out the sensitivity upper bound */
+    if ((tmp = strchr(sens, '-')))
+        *tmp = '\0';
+    /* sens now just contains the sensitivity lower bound */
+
+    /* Find & extract category min */
+    tmp = cat;
+    if (tmp[0] != 'c') {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse category in %s"),
+                       cat);
+        goto cleanup;
+    }
+    tmp++;
+    if (virStrToLong_i(tmp, &tmp, 10, &catMin) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse category in %s"),
+                       cat);
+        goto cleanup;
+    }
+
+    /* We *must* have a pair of categories otherwise
+     * there's no range to allocate VM categories from */
+    if (!tmp[0]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No category range available"));
+        goto cleanup;
+    }
+
+    /* Find & extract category max (if any) */
+    if (tmp[0] != '.') {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse category in %s"),
+                       cat);
+        goto cleanup;
+    }
+    tmp++;
+    if (tmp[0] != 'c') {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse category in %s"),
+                       cat);
+        goto cleanup;
+    }
+    tmp++;
+    if (virStrToLong_i(tmp, &tmp, 10, &catMax) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse category in %s"),
+                       cat);
+        goto cleanup;
+    }
+
+    /* +1 since virRandomInt range is exclusive of the upper bound */
+    catRange = (catMax - catMin) + 1;
+
+    if (catRange < 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Category range c%d-c%d too small"),
+                       catMin, catMax);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Using sensitivity level '%s' cat min %d max %d range %d",
+              sens, catMin, catMax, catRange);
 
     for (;;) {
-        c1 = virRandomBits(10);
-        c2 = virRandomBits(10);
+        c1 = virRandomInt(catRange);
+        c2 = virRandomInt(catRange);
+        VIR_DEBUG("Try cat %s:c%d,c%d", sens, c1+catMin, c2+catMin);
 
         if (c1 == c2) {
-            if (virAsprintf(&mcs, "s0:c%d", c1) < 0) {
+            if (virAsprintf(&mcs, "%s:c%d", sens, catMin + c1) < 0) {
                 virReportOOMError();
                 return NULL;
             }
@@ -122,7 +217,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
                 c1 = c2;
                 c2 = t;
             }
-            if (virAsprintf(&mcs, "s0:c%d,c%d", c1, c2) < 0) {
+            if (virAsprintf(&mcs, "%s:c%d,c%d", sens, catMin + c1, catMin + c2) < 0) {
                 virReportOOMError();
                 return NULL;
             }
@@ -136,6 +231,9 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
 
 cleanup:
     VIR_DEBUG("Found context '%s'", NULLSTR(mcs));
+    VIR_FREE(sens);
+    freecon(ourSecContext);
+    context_free(ourContext);
     return mcs;
 }
 
@@ -151,6 +249,9 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
     security_context_t ourSecContext = NULL;
     context_t ourContext = NULL;
 
+    VIR_DEBUG("basecontext=%s mcs=%s isObjectContext=%d",
+              basecontext, mcs, isObjectContext);
+
     if (getcon(&ourSecContext) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to get current process SELinux context"));
@@ -162,6 +263,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
                              ourSecContext);
         goto cleanup;
     }
+    VIR_DEBUG("process=%s", ourSecContext);
 
     if (!(context = context_new(basecontext))) {
         virReportSystemError(errno,
@@ -202,8 +304,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
         virReportOOMError();
         goto cleanup;
     }
-    VIR_DEBUG("Generated context '%s' from '%s' and '%s'",
-              ret, basecontext, ourSecContext);
+    VIR_DEBUG("Generated context '%s'",  ret);
 cleanup:
     freecon(ourSecContext);
     context_free(ourContext);
