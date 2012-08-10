@@ -23,6 +23,8 @@
 #ifndef VIR_SECURITY_MANAGER_H__
 # define VIR_SECURITY_MANAGER_H__
 
+# include "domain_conf.h"
+
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
 
