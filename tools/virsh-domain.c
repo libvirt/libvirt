@@ -2973,7 +2973,7 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
                     "not changed.\n"), file);           \
     ret = true; goto edit_cleanup;
 #define EDIT_DEFINE \
-    virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, define_flags)
+    (virDomainSaveImageDefineXML(ctl->conn, file, doc_edited, define_flags) == 0)
 #define EDIT_FREE /* */
 #include "virsh-edit.c"
 
