@@ -1189,11 +1189,17 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
     return 0;
 }
 
+static vshCmdOptDef helpopt = {"help", VSH_OT_BOOL, 0,
+                               N_("print help for this function")};
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                    uint32_t *opts_seen, int *opt_index)
 {
     int i;
+
+    if (STREQ(name, helpopt.name)) {
+        return &helpopt;
+    }
 
     for (i = 0; cmd->opts && cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
@@ -2053,6 +2059,25 @@ get_data:
         /* command parsed -- allocate new struct for the command */
         if (cmd) {
             vshCmd *c = vshMalloc(ctl, sizeof(vshCmd));
+            vshCmdOpt *tmpopt = first;
+
+            /* if we encountered --help, replace parsed command with
+             * 'help <cmdname>' */
+            for (tmpopt = first; tmpopt; tmpopt = tmpopt->next) {
+                if (STRNEQ(tmpopt->def->name, "help"))
+                    continue;
+
+                vshCommandOptFree(first);
+                first = vshMalloc(ctl, sizeof(vshCmdOpt));
+                first->def = &(opts_help[0]);
+                first->data = vshStrdup(ctl, cmd->name);
+                first->next = NULL;
+
+                cmd = vshCmddefSearch("help");
+                opts_required = 0;
+                opts_seen = 0;
+                break;
+            }
 
             c->opts = first;
             c->def = cmd;
