@@ -44,6 +44,7 @@
 #include <signal.h>
 #include <termios.h>
 #include <pty.h>
+#include <locale.h>
 
 #if HAVE_LIBDEVMAPPER_H
 # include <libdevmapper.h>
@@ -2058,6 +2059,68 @@ int virEnumFromString(const char *const*types,
             return i;
 
     return -1;
+}
+
+/* In case thread-safe locales are available */
+#if HAVE_NEWLOCALE
+
+static locale_t virLocale;
+
+static int
+virLocaleOnceInit(void)
+{
+    virLocale = newlocale(LC_ALL_MASK, "C", (locale_t)0);
+    if (!virLocale)
+        return -1;
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virLocale)
+#endif
+
+/**
+ * virDoubleToStr
+ *
+ * converts double to string with C locale (thread-safe).
+ *
+ * Returns -1 on error, size of the string otherwise.
+ */
+int
+virDoubleToStr(char **strp, double number)
+{
+    int ret = -1;
+
+#if HAVE_NEWLOCALE
+
+    locale_t old_loc;
+
+    if (virLocaleInitialize() < 0)
+        goto error;
+
+    old_loc = uselocale(virLocale);
+    ret = virAsprintf(strp, "%lf", number);
+    uselocale(old_loc);
+
+#else
+
+    char *radix, *tmp;
+    struct lconv *lc;
+
+    if ((ret = virVasprintf(strp, "%lf", number) < 0)
+        goto error;
+
+    lc = localeconv();
+    radix = lc->decimal_point;
+    tmp = strstr(*strp, radix);
+    if (tmp) {
+        *tmp = '.';
+        if (strlen(radix) > 1)
+            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - str));
+    }
+
+#endif /* HAVE_NEWLOCALE */
+ error:
+    return ret;
 }
 
 const char *virEnumToString(const char *const*types,

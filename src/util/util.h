@@ -209,6 +209,9 @@ char *virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 # define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
+int virDoubleToStr(char **strp, double number)
+ ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 int virDiskNameToIndex(const char* str);
 char *virIndexToDiskName(int idx, const char *prefix);
 

@@ -201,7 +201,7 @@ virJSONValuePtr virJSONValueNewNumberDouble(double data)
 {
     virJSONValuePtr val = NULL;
     char *str;
-    if (virAsprintf(&str, "%lf", data) < 0)
+    if (virDoubleToStr(&str, data) < 0)
         return NULL;
     val = virJSONValueNewNumber(str);
     VIR_FREE(str);
