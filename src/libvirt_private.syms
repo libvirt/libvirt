@@ -1431,6 +1431,12 @@ virNetDevVethCreate;
 virNetDevVethDelete;
 
 
+# virnetdevvlan.h
+virNetDevVlanClear;
+virNetDevVlanCopy;
+virNetDevVlanEqual;
+virNetDevVlanFree;
+
 # virnetdevvportprofile.h
 virNetDevVPortProfileAssociate;
 virNetDevVPortProfileCheckComplete;
