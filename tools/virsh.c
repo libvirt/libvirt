@@ -1975,7 +1975,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
                        c_isalnum(tkdata[2])) {
                 char *optstr = strchr(tkdata + 2, '=');
-                int opt_index;
+                int opt_index = 0;
 
                 if (optstr) {
                     *optstr = '\0'; /* convert the '=' to '\0' */
