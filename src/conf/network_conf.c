@@ -36,6 +36,7 @@
 #include "network_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
+#include "netdev_vlan_conf.h"
 #include "memory.h"
 #include "xml.h"
 #include "uuid.h"
@@ -88,6 +89,7 @@ virPortGroupDefClear(virPortGroupDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->virtPortProfile);
     virNetDevBandwidthFree(def->bandwidth);
+    virNetDevVlanClear(&def->vlan);
     def->bandwidth = NULL;
 }
 
@@ -187,7 +189,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->virtPortProfile);
 
     virNetDevBandwidthFree(def->bandwidth);
-
+    virNetDevVlanClear(&def->vlan);
     VIR_FREE(def);
 }
 
@@ -890,6 +892,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     xmlNodePtr save;
     xmlNodePtr virtPortNode;
+    xmlNodePtr vlanNode;
     xmlNodePtr bandwidth_node;
     char *isDefault = NULL;
 
@@ -914,6 +917,10 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
         !(def->bandwidth = virNetDevBandwidthParse(bandwidth_node))) {
         goto error;
     }
+
+    vlanNode = virXPathNode("./vlan", ctxt);
+    if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &def->vlan) < 0)
+        goto error;
 
     result = 0;
 error:
@@ -943,6 +950,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     char *forwardDev = NULL;
     xmlNodePtr save = ctxt->node;
     xmlNodePtr bandwidthNode = NULL;
+    xmlNodePtr vlanNode;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -980,6 +988,10 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) != NULL &&
         (def->bandwidth = virNetDevBandwidthParse(bandwidthNode)) == NULL)
+        goto error;
+
+    vlanNode = virXPathNode("./vlan", ctxt);
+    if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &def->vlan) < 0)
         goto error;
 
     /* Parse bridge information */
@@ -1448,6 +1460,8 @@ virPortGroupDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 4);
+    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
+        return -1;
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
         return -1;
     virNetDevBandwidthFormat(def->bandwidth, buf);
@@ -1542,6 +1556,8 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
         goto error;
 
     virBufferAdjustIndent(&buf, 2);
+    if (virNetDevVlanFormat(&def->vlan, &buf) < 0)
+        goto error;
     if (virNetDevBandwidthFormat(def->bandwidth, &buf) < 0)
         goto error;
     virBufferAdjustIndent(&buf, -2);

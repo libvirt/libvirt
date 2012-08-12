@@ -406,6 +406,7 @@ virDomainNetGetActualDirectMode;
 virDomainNetGetActualHostdev;
 virDomainNetGetActualType;
 virDomainNetGetActualVirtPortProfile;
+virDomainNetGetActualVlan;
 virDomainNetIndexByMac;
 virDomainNetInsert;
 virDomainNetRemove;
@@ -785,6 +786,11 @@ virShrinkN;
 # netdev_bandwidth_conf.h
 virNetDevBandwidthFormat;
 virNetDevBandwidthParse;
+
+
+#netdev_vlan_conf.h
+virNetDevVlanFormat;
+virNetDevVlanParse;
 
 
 # netdev_vportprofile_conf.h

@@ -2857,6 +2857,46 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.4</span>
     </p>
 
+    <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='bridge'&gt;
+      <b>&lt;vlan&gt;</b>
+        <b>&lt;tag id='42'/&gt;</b>
+      <b>&lt;/vlan&gt;</b>
+      &lt;source bridge='ovsbr0'/&gt;
+      &lt;virtualport type='openvswitch'&gt;
+        &lt;parameters interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
+      &lt;/virtualport&gt;
+    &lt;/interface&gt;
+  &lt;devices&gt;
+  ...</pre>
+
+    <p>
+      If (and only if) the network connection used by the guest
+      supports vlan tagging transparent to the guest, an
+      optional <code>&lt;vlan&gt;</code> element can specify one or
+      more vlan tags to apply to the guest's network
+      traffic <span class="since">Since 0.10.0</span>. (openvswitch
+      and type='hostdev' SR-IOV interfaces do support transparent vlan
+      tagging of guest traffic; everything else, including standard
+      linux bridges and libvirt's own virtual networks, <b>do not</b>
+      support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
+      provide their own way (outside of libvirt) to tag guest traffic
+      onto specific vlans.) To allow for specification of multiple
+      tags (in the case of vlan trunking), a
+      subelement, <code>&lt;tag%gt;</code>, specifies which vlan tag
+      to use (for example: <code>&lt;tag id='42'/&gt;</code>. If an
+      interface has more than one <code>&lt;vlan&gt;</code> element
+      defined, it is assumed that the user wants to do VLAN trunking
+      using all the specified tags. In the case that vlan trunking
+      with a single tag is desired, the optional
+      attribute <code>trunk='yes'</code> can be added to the toplevel
+      vlan element.
+    </p>
+
     <h5><a name="elementLink">Modifying virtual link state</a></h5>
 <pre>
   ...

@@ -35,6 +35,7 @@
 # include "virsocketaddr.h"
 # include "virnetdevbandwidth.h"
 # include "virnetdevvportprofile.h"
+# include "virnetdevvlan.h"
 # include "virmacaddr.h"
 
 enum virNetworkForwardType {
@@ -148,6 +149,7 @@ struct _virPortGroupDef {
     bool isDefault;
     virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
+    virNetDevVlan vlan;
 };
 
 typedef struct _virNetworkDef virNetworkDef;
@@ -185,6 +187,7 @@ struct _virNetworkDef {
     size_t nPortGroups;
     virPortGroupDefPtr portGroups;
     virNetDevBandwidthPtr bandwidth;
+    virNetDevVlan vlan;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

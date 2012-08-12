@@ -144,7 +144,8 @@ LOCK_DRIVER_SANLOCK_SOURCES = \
 
 NETDEV_CONF_SOURCES =						\
 		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
-		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c
+		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c \
+		conf/netdev_vlan_conf.h conf/netdev_vlan_conf.c
 
 # XML configuration format handling sources
 # Domain driver generic impl APIs

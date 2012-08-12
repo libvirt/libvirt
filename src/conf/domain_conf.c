@@ -51,6 +51,7 @@
 #include "secret_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
+#include "netdev_vlan_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -1030,7 +1031,7 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
 
     VIR_FREE(def->virtPortProfile);
     virNetDevBandwidthFree(def->bandwidth);
-
+    virNetDevVlanClear(&def->vlan);
     VIR_FREE(def);
 }
 
@@ -1091,6 +1092,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     virNWFilterHashTableFree(def->filterparams);
 
     virNetDevBandwidthFree(def->bandwidth);
+    virNetDevVlanClear(&def->vlan);
 
     VIR_FREE(def);
 }
@@ -4365,6 +4367,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     int ret = -1;
     xmlNodePtr save_ctxt = ctxt->node;
     xmlNodePtr bandwidth_node = NULL;
+    xmlNodePtr vlanNode;
     xmlNodePtr virtPortNode;
     char *type = NULL;
     char *mode = NULL;
@@ -4461,6 +4464,10 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     if (bandwidth_node &&
         !(actual->bandwidth = virNetDevBandwidthParse(bandwidth_node)))
         goto error;
+
+    vlanNode = virXPathNode("./vlan", ctxt);
+    if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &actual->vlan) < 0)
+       goto error;
 
     *def = actual;
     actual = NULL;
@@ -4644,6 +4651,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "bandwidth")) {
                 if (!(def->bandwidth = virNetDevBandwidthParse(cur)))
+                    goto error;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "vlan")) {
+                if (virNetDevVlanParse(cur, ctxt, &def->vlan) < 0)
                     goto error;
             }
         }
@@ -11623,8 +11633,10 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         return -1;
     }
 
+    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
+        return -1;
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-       return -1;
+        return -1;
     if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         return -1;
 
@@ -11725,8 +11737,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
     }
 
+    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
+        return -1;
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-       return -1;
+        return -1;
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
     if (def->ifname &&
@@ -15083,6 +15097,17 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
     return iface->bandwidth;
 }
 
+virNetDevVlanPtr
+virDomainNetGetActualVlan(virDomainNetDefPtr iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
+        iface->data.network.actual->vlan.nTags > 0)
+        return &iface->data.network.actual->vlan;
+    if (iface->vlan.nTags > 0)
+        return &iface->vlan;
+    return 0;
+}
 
 /* Return listens[ii] from the appropriate union for the graphics
  * type, or NULL if this is an unsuitable type, or the index is out of

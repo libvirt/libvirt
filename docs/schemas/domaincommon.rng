@@ -1713,6 +1713,9 @@
       <optional>
         <ref name="bandwidth"/>
       </optional>
+      <optional>
+        <ref name="vlan"/>
+      </optional>
     </interleave>
   </define>
   <!--

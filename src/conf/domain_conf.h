@@ -43,6 +43,7 @@
 # include "virnetdevvportprofile.h"
 # include "virnetdevopenvswitch.h"
 # include "virnetdevbandwidth.h"
+# include "virnetdevvlan.h"
 # include "virobject.h"
 
 /* forward declarations of all device types, required by
@@ -781,6 +782,7 @@ struct _virDomainActualNetDef {
     } data;
     virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
+    virNetDevVlan vlan;
 };
 
 /* Stores the virtual network interface configuration */
@@ -845,6 +847,7 @@ struct _virDomainNetDef {
     char *filter;
     virNWFilterHashTablePtr filterparams;
     virNetDevBandwidthPtr bandwidth;
+    virNetDevVlan vlan;
     int linkstate;
 };
 
@@ -2039,6 +2042,7 @@ virNetDevVPortProfilePtr
 virDomainNetGetActualVirtPortProfile(virDomainNetDefPtr iface);
 virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
+virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);

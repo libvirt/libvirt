@@ -184,4 +184,24 @@
       <param name="pattern">(ipv4)|(ipv6)</param>
     </data>
   </define>
+
+  <define name="vlan">
+    <element name="vlan">
+      <optional>
+        <attribute name="trunk">
+          <value>yes</value>
+        </attribute>
+      </optional>
+      <oneOrMore>
+        <element name="tag">
+          <attribute name="id">
+            <data type="unsignedInt">
+              <param name="maxInclusive">4095</param>
+            </data>
+          </attribute>
+          <empty/>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
 </grammar>

@@ -8,6 +8,9 @@
     <interface dev='eth4'/>
     <interface dev='eth5'/>
   </forward>
+  <vlan>
+    <tag id='549'/>
+  </vlan>
   <virtualport type='802.1Qbh'>
     <parameters profileid='spongebob24'/>
   </virtualport>
