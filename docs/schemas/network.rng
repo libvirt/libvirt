@@ -133,9 +133,14 @@
                 </choice>
               </attribute>
             </optional>
-            <optional>
-              <ref name="virtualPortProfile"/>
-            </optional>
+            <interleave>
+              <optional>
+                <ref name="virtualPortProfile"/>
+              </optional>
+              <optional>
+                <ref name="bandwidth"/>
+              </optional>
+            </interleave>
           </element>
         </zeroOrMore>
 

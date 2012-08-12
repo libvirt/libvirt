@@ -1410,6 +1410,9 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <ref name="virtualPortProfile"/>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>
