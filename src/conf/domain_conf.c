@@ -3768,7 +3768,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     }
 
     if (snapshot) {
-        def->snapshot = virDomainDiskSnapshotTypeFromString(snapshot);
+        def->snapshot = virDomainSnapshotLocationTypeFromString(snapshot);
         if (def->snapshot <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown disk snapshot setting '%s'"),
@@ -3776,7 +3776,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             goto error;
         }
     } else if (def->readonly) {
-        def->snapshot = VIR_DOMAIN_DISK_SNAPSHOT_NO;
+        def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
     }
 
     if (rawio) {
@@ -11369,9 +11369,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         }
     }
     if (def->snapshot &&
-        !(def->snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO && def->readonly))
+        !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE && def->readonly))
         virBufferAsprintf(buf, " snapshot='%s'",
-                          virDomainDiskSnapshotTypeToString(def->snapshot));
+                          virDomainSnapshotLocationTypeToString(def->snapshot));
     virBufferAddLit(buf, ">\n");
 
     if (def->driverName || def->driverType || def->cachemode ||

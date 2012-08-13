@@ -578,7 +578,7 @@ struct _virDomainDiskDef {
     int ioeventfd;
     int event_idx;
     int copy_on_read;
-    int snapshot; /* enum virDomainDiskSnapshot, snapshot_conf.h */
+    int snapshot; /* enum virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
     unsigned int shared : 1;

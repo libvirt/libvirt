@@ -29,13 +29,13 @@
 
 /* Items related to snapshot state */
 
-enum virDomainDiskSnapshot {
-    VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT = 0,
-    VIR_DOMAIN_DISK_SNAPSHOT_NO,
-    VIR_DOMAIN_DISK_SNAPSHOT_INTERNAL,
-    VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+enum virDomainSnapshotLocation {
+    VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT = 0,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_NONE,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
 
-    VIR_DOMAIN_DISK_SNAPSHOT_LAST
+    VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
 };
 
 enum virDomainSnapshotState {
@@ -50,7 +50,7 @@ typedef virDomainSnapshotDiskDef *virDomainSnapshotDiskDefPtr;
 struct _virDomainSnapshotDiskDef {
     char *name; /* name matching the <target dev='...' of the domain */
     int index; /* index within snapshot->dom->disks that matches name */
-    int snapshot; /* enum virDomainDiskSnapshot */
+    int snapshot; /* enum virDomainSnapshotLocation */
     char *file; /* new source file when snapshot is external */
     char *driverType; /* file format type of new file */
 };
@@ -151,7 +151,7 @@ int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotPtr **snaps,
                            unsigned int flags);
 
-VIR_ENUM_DECL(virDomainDiskSnapshot)
+VIR_ENUM_DECL(virDomainSnapshotLocation)
 VIR_ENUM_DECL(virDomainSnapshotState)
 
 #endif /* __SNAPSHOT_CONF_H */

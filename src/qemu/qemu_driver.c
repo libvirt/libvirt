@@ -10558,7 +10558,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
 
         switch (disk->snapshot) {
-        case VIR_DOMAIN_DISK_SNAPSHOT_INTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
             if (active) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("active qemu domains require external disk "
@@ -10578,7 +10578,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
             found = true;
             break;
 
-        case VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
             if (!disk->driverType) {
                 if (!(disk->driverType = strdup("qcow2"))) {
                     virReportOOMError();
@@ -10610,10 +10610,10 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
             external++;
             break;
 
-        case VIR_DOMAIN_DISK_SNAPSHOT_NO:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_NONE:
             break;
 
-        case VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected code path"));
@@ -10668,7 +10668,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     char *origdriver = NULL;
     bool need_unlink = false;
 
-    if (snap->snapshot != VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL) {
+    if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected code path"));
         return -1;
@@ -10919,7 +10919,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
     for (i = 0; i < snap->def->ndisks; i++) {
         virDomainDiskDefPtr persistDisk = NULL;
 
-        if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
+        if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
         if (vm->newDef) {
             int indx = virDomainDiskIndexByName(vm->newDef,
@@ -10949,7 +10949,8 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
             while (--i >= 0) {
                 virDomainDiskDefPtr persistDisk = NULL;
 
-                if (snap->def->disks[i].snapshot == VIR_DOMAIN_DISK_SNAPSHOT_NO)
+                if (snap->def->disks[i].snapshot ==
+                    VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
                     continue;
                 if (vm->newDef) {
                     int indx = virDomainDiskIndexByName(vm->newDef,
@@ -11178,7 +11179,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
         if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && def->dom) {
             if (virDomainSnapshotAlignDisks(def,
-                                            VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+                                            VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
                                             false) < 0)
                 goto cleanup;
         }
@@ -11199,7 +11200,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 goto cleanup;
             }
             if (virDomainSnapshotAlignDisks(def,
-                                            VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
+                                            VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
                                             false) < 0)
                 goto cleanup;
             if (qemuDomainSnapshotDiskPrepare(vm, def, &flags) < 0)

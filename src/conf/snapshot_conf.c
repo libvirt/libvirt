@@ -50,7 +50,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT
 
-VIR_ENUM_IMPL(virDomainDiskSnapshot, VIR_DOMAIN_DISK_SNAPSHOT_LAST,
+VIR_ENUM_IMPL(virDomainSnapshotLocation, VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
               "default",
               "no",
               "internal",
@@ -119,7 +119,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
 
     snapshot = virXMLPropString(node, "snapshot");
     if (snapshot) {
-        def->snapshot = virDomainDiskSnapshotTypeFromString(snapshot);
+        def->snapshot = virDomainSnapshotLocationTypeFromString(snapshot);
         if (def->snapshot <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown disk snapshot setting '%s'"),
@@ -143,7 +143,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     if (!def->snapshot && (def->file || def->driverType))
-        def->snapshot = VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL;
+        def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
     ret = 0;
 cleanup:
@@ -389,14 +389,16 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             disk->snapshot = disk_snapshot;
         } else if (disk_snapshot && require_match &&
                    disk->snapshot != disk_snapshot) {
-            const char *tmp = virDomainDiskSnapshotTypeToString(disk_snapshot);
+            const char *tmp;
+
+            tmp = virDomainSnapshotLocationTypeToString(disk_snapshot);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
                            disk->name, tmp);
             goto cleanup;
         }
         if (disk->file &&
-            disk->snapshot != VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL) {
+            disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("file '%s' for disk '%s' requires "
                              "use of external snapshot mode"),
@@ -444,7 +446,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
 
-        if (disk->snapshot == VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL &&
+        if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
             !disk->file) {
             const char *original = def->dom->disks[i]->src;
             const char *tmp;
@@ -533,7 +535,7 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
             virBufferEscapeString(&buf, "    <disk name='%s'", disk->name);
             if (disk->snapshot)
                 virBufferAsprintf(&buf, " snapshot='%s'",
-                                  virDomainDiskSnapshotTypeToString(disk->snapshot));
+                                  virDomainSnapshotLocationTypeToString(disk->snapshot));
             if (disk->file || disk->driverType) {
                 virBufferAddLit(&buf, ">\n");
                 if (disk->driverType)
