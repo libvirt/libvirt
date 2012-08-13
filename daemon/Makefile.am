@@ -87,7 +87,6 @@ libvirtd.8: $(srcdir)/libvirtd.8.in
 	sed \
 	    -e 's!SYSCONFDIR!$(sysconfdir)!g' \
 	    -e 's!LOCALSTATEDIR!$(localstatedir)!g' \
-	    -e 's!REMOTE_PID_FILE!$(REMOTE_PID_FILE)!g' \
 	    < $< > $@-t
 	mv $@-t $@
 
@@ -99,8 +98,7 @@ libvirtd_CFLAGS = \
 	$(XDR_CFLAGS) $(POLKIT_CFLAGS) $(DBUS_CFLAGS) $(LIBNL_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
-	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
-	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\""
+	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\""
 
 libvirtd_LDFLAGS =					\
 	$(WARN_CFLAGS)					\
