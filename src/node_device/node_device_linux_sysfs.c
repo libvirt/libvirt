@@ -32,7 +32,6 @@
 #include "memory.h"
 #include "logging.h"
 #include "virfile.h"
-#include <dirent.h>
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

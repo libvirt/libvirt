@@ -35,7 +35,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <mntent.h>
-#include <dirent.h>
 
 /* Yes, we want linux private one, for _syscall2() macro */
 #include <linux/unistd.h>
