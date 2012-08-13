@@ -75,6 +75,8 @@ On receipt of B<SIGHUP> libvirtd will reload its configuration.
 
 =head1 FILES
 
+=head2 When run as B<root>.
+
 =over
 
 =item F<SYSCONFDIR/libvirtd.conf>
@@ -86,11 +88,7 @@ command line using the B<-f>|B<--config> option.
 
 =item F<LOCALSTATEDIR/run/libvirt/libvirt-sock-ro>
 
-The sockets libvirtd will use when B<run as root>.
-
-=item F<$XDG_RUNTIME_DIR/libvirt/libvirt-sock>
-
-The socket libvirtd will use when run as a B<non-root> user.
+The sockets libvirtd will use.
 
 =item F<SYSCONFDIR/pki/CA/cacert.pem>
 
@@ -107,6 +105,41 @@ The TLS B<Server> private key libvirtd will use.
 =item F<LOCALSTATEDIR/run/libvirtd.pid>
 
 The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=back
+
+=head2 When run as B<non-root>.
+
+=over
+
+=item F<$XDG_CONFIG_HOME/libvirtd.conf>
+
+The default configuration file used by libvirtd, unless overridden on the
+command line using the B<-f>|B<--config> option.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/libvirt-sock>
+
+The socket libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/cacert.pem>
+
+The TLS B<Certificate Authority> certificate libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/servercert.pem>
+
+The TLS B<Server> certificate libvirtd will use.
+
+=item F<$HOME/.pki/libvirt/serverkey.pem>
+
+The TLS B<Server> private key libvirtd will use.
+
+=item F<$XDG_RUNTIME_DIR/libvirt/libvirtd.pid>
+
+The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
+
+=item If $XDG_CONFIG_HOME is not set in your environment, libvirtd will use F<$HOME/.config>
+
+=item If $XDG_RUNTIME_DIR is not set in your environment, libvirtd will use F<$HOME/.cache>
 
 =back
 
