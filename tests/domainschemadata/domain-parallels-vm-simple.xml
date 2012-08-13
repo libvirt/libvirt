@@ -1,0 +1,26 @@
+<domain type='parallels'>
+  <name>demo</name>
+  <uuid>54cdecad-4492-4e31-a209-33cc21d64057</uuid>
+  <description>some description</description>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='/storage/vol1'/>
+      <target dev='hda'/>
+    </disk>
+    <video>
+      <model type='vga' vram='33554432' heads='1'>
+        <acceleration accel3d='no' accel2d='no'/>
+      </model>
+    </video>
+  </devices>
+</domain>

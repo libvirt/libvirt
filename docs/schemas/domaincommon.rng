@@ -179,6 +179,7 @@
         <value>hyperv</value>
         <value>vbox</value>
         <value>phyp</value>
+        <value>parallels</value>
       </choice>
     </attribute>
   </define>
