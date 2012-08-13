@@ -242,7 +242,7 @@ static int virLockManagerSanlockSetupLockspace(void)
                 virReportSystemError(-rv,
                                      _("Unable to add lockspace %s"),
                                      path);
-            goto error_unlink;
+            goto error;
         } else {
             VIR_DEBUG("Lockspace %s is already registered", path);
         }
