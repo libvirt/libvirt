@@ -2246,6 +2246,42 @@ cleanup:
 }
 
 
+static int
+networkValidate(virNetworkDefPtr def)
+{
+    int ii;
+    bool vlanUsed, vlanAllowed;
+
+    /* The only type of networks that currently support transparent
+     * vlan configuration are those using hostdev sr-iov devices from
+     * a pool, and those using an Open vSwitch bridge.
+     */
+
+    vlanAllowed = (def->forwardType == VIR_NETWORK_FORWARD_BRIDGE &&
+                   def->virtPortProfile &&
+                   def->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH);
+
+    vlanUsed = def->vlan.nTags > 0;
+    for (ii = 0; ii < def->nPortGroups && !(vlanUsed && vlanAllowed); ii++) {
+        if (def->portGroups[ii].vlan.nTags > 0)
+            vlanUsed = true;
+        if (def->forwardType == VIR_NETWORK_FORWARD_BRIDGE &&
+            def->portGroups[ii].virtPortProfile &&
+            (def->portGroups[ii].virtPortProfile->virtPortType
+             == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)) {
+            vlanAllowed = true;
+        }
+    }
+    if (vlanUsed && !vlanAllowed) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("<vlan> element specified for network %s, "
+                         "whose type doesn't support vlan configuration"),
+                       def->name);
+        return -1;
+    }
+    return 0;
+}
+
 static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
     virNetworkDefPtr def;
@@ -2272,6 +2308,9 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
 
         virNetworkSetBridgeMacAddr(def);
     }
+
+    if (networkValidate(def) < 0)
+       goto cleanup;
 
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
@@ -2345,6 +2384,9 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
             }
         }
     }
+
+    if (networkValidate(def) < 0)
+       goto cleanup;
 
     if (!(network = virNetworkAssignDef(&driver->networks,
                                         def)))
@@ -2744,18 +2786,24 @@ int
 networkAllocateActualDevice(virDomainNetDefPtr iface)
 {
     struct network_driver *driver = driverState;
-    virNetworkObjPtr network;
-    virNetworkDefPtr netdef;
-    virPortGroupDefPtr portgroup;
-    virNetDevVPortProfilePtr virtport = NULL;
+    enum virDomainNetType actualType = iface->type;
+    virNetworkObjPtr network = NULL;
+    virNetworkDefPtr netdef = NULL;
+    virPortGroupDefPtr portgroup = NULL;
+    virNetDevVPortProfilePtr virtport = iface->virtPortProfile;
+    virNetDevVlanPtr vlan = NULL;
     virNetworkForwardIfDefPtr dev = NULL;
     unsigned int num_virt_fns = 0;
     char **vfname = NULL;
     int ii;
     int ret = -1;
 
+    /* it's handy to have this initialized if we skip directly to validate */
+    if (iface->vlan.nTags > 0)
+        vlan = &iface->vlan;
+
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return 0;
+        goto validate;
 
     virDomainActualNetDefFree(iface->data.network.actual);
     iface->data.network.actual = NULL;
@@ -2815,7 +2863,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             goto error;
         }
 
-        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+        iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_BRIDGE;
         iface->data.network.actual->data.bridge.brname = strdup(netdef->bridge);
         if (!iface->data.network.actual->data.bridge.brname) {
             virReportOOMError();
@@ -2861,7 +2909,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
-        iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_DIRECT;
+        iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_DIRECT;
         switch (netdef->forwardType) {
         case VIR_NETWORK_FORWARD_BRIDGE:
             iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_BRIDGE;
@@ -2999,6 +3047,49 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
         goto error;
 
+    /* copy appropriate vlan info to actualNet */
+    if (iface->vlan.nTags > 0)
+        vlan = &iface->vlan;
+    else if (portgroup && portgroup->vlan.nTags > 0)
+        vlan = &portgroup->vlan;
+    else if (netdef && netdef->vlan.nTags > 0)
+        vlan = &netdef->vlan;
+
+    if (virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
+        goto error;
+
+validate:
+    /* make sure that everything now specified for the device is
+     * actually supported on this type of network. NB: network,
+     * netdev, and iface->data.network.actual may all be NULL.
+     */
+
+    if (vlan) {
+        /* vlan configuration via libvirt is only supported for
+         * PCI Passthrough SR-IOV devices and openvswitch bridges.
+         * otherwise log an error and fail
+         */
+        if (!(actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
+              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+               virtport && virtport->virtPortType
+               == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
+            if (netdef) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("an interface connecting to network '%s' "
+                                 "is requesting a vlan tag, but that is not "
+                                 "supported for this type of network"),
+                               netdef->name);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("an interface of type '%s' "
+                                 "is requesting a vlan tag, but that is not "
+                                 "supported for this type of connection"),
+                               virDomainNetTypeToString(iface->type));
+            }
+            goto error;
+        }
+    }
+
     if (dev) {
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
@@ -3006,10 +3097,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                   dev->dev, dev->connections);
     }
 
-    netdef->connections++;
-    VIR_DEBUG("Using network %s, %d connections",
-              netdef->name, netdef->connections);
+    if (netdef) {
+        netdef->connections++;
+        VIR_DEBUG("Using network %s, %d connections",
+                  netdef->name, netdef->connections);
+    }
     ret = 0;
+
 cleanup:
     for (ii = 0; ii < num_virt_fns; ii++)
         VIR_FREE(vfname[ii]);
