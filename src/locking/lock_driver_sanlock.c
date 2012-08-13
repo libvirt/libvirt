@@ -814,7 +814,7 @@ static int virLockManagerSanlockRelease(virLockManagerPtr lock,
                                         unsigned int flags)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
-    int res_count;
+    int res_count = priv->res_count;
     int rv;
 
     virCheckFlags(0, -1);
@@ -834,7 +834,8 @@ static int virLockManagerSanlockRelease(virLockManagerPtr lock,
             VIR_FREE(*state);
     }
 
-    if ((rv = sanlock_release(-1, priv->vm_pid, SANLK_REL_ALL, 0, NULL)) < 0) {
+    if ((rv = sanlock_release(-1, priv->vm_pid, 0, res_count,
+                              priv->res_args)) < 0) {
         if (rv <= -200)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to release lock: error %d"), rv);
