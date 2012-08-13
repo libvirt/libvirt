@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-06-15 14:59-0400\n"
+"POT-Creation-Date: 2012-08-12 21:18-0400\n"
 "PO-Revision-Date: 2011-09-14 15:15+0000\n"
 "Last-Translator: veillard <veillard@redhat.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.net/projects/p/libvirt/"
@@ -534,159 +534,159 @@ msgstr ""
 msgid "stream aborted with unexpected status %d"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:60
+#: gnulib/lib/gai_strerror.c:57
 msgid "Address family for hostname not supported"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:61
+#: gnulib/lib/gai_strerror.c:58
 msgid "Temporary failure in name resolution"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:62
+#: gnulib/lib/gai_strerror.c:59
 msgid "Bad value for ai_flags"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:63
+#: gnulib/lib/gai_strerror.c:60
 msgid "Non-recoverable failure in name resolution"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:64
+#: gnulib/lib/gai_strerror.c:61
 msgid "ai_family not supported"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:65
+#: gnulib/lib/gai_strerror.c:62
 msgid "Memory allocation failure"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:66
+#: gnulib/lib/gai_strerror.c:63
 msgid "No address associated with hostname"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:67
+#: gnulib/lib/gai_strerror.c:64
 msgid "Name or service not known"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:68
+#: gnulib/lib/gai_strerror.c:65
 msgid "Servname not supported for ai_socktype"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:69
+#: gnulib/lib/gai_strerror.c:66
 msgid "ai_socktype not supported"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:70
+#: gnulib/lib/gai_strerror.c:67
 msgid "System error"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:71
+#: gnulib/lib/gai_strerror.c:68
 msgid "Argument buffer too small"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:73
+#: gnulib/lib/gai_strerror.c:70
 msgid "Processing request in progress"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:74
+#: gnulib/lib/gai_strerror.c:71
 msgid "Request canceled"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:75
+#: gnulib/lib/gai_strerror.c:72
 msgid "Request not canceled"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:76
+#: gnulib/lib/gai_strerror.c:73
 msgid "All requests done"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:77
+#: gnulib/lib/gai_strerror.c:74
 msgid "Interrupted by a signal"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:78
+#: gnulib/lib/gai_strerror.c:75
 msgid "Parameter string not correctly encoded"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:90 src/esx/esx_vi.c:3791
+#: gnulib/lib/gai_strerror.c:87 src/esx/esx_vi.c:3791
 #: src/hyperv/hyperv_wmi.c:325 src/rpc/virnetclientprogram.c:179
 #: src/rpc/virnetclientstream.c:218
 msgid "Unknown error"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:133
+#: gnulib/lib/regcomp.c:130
 msgid "Success"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:136
+#: gnulib/lib/regcomp.c:133
 msgid "No match"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:139
+#: gnulib/lib/regcomp.c:136
 msgid "Invalid regular expression"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:142
+#: gnulib/lib/regcomp.c:139
 #, fuzzy
 msgid "Invalid collation character"
 msgstr "无效证书"
 
-#: gnulib/lib/regcomp.c:145
+#: gnulib/lib/regcomp.c:142
 #, fuzzy
 msgid "Invalid character class name"
 msgstr "无效参数计数"
 
-#: gnulib/lib/regcomp.c:148
+#: gnulib/lib/regcomp.c:145
 msgid "Trailing backslash"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:151
+#: gnulib/lib/regcomp.c:148
 #, fuzzy
 msgid "Invalid back reference"
 msgstr "无效证书"
 
-#: gnulib/lib/regcomp.c:154
+#: gnulib/lib/regcomp.c:151
 msgid "Unmatched [ or [^"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:157
+#: gnulib/lib/regcomp.c:154
 msgid "Unmatched ( or \\("
 msgstr ""
 
-#: gnulib/lib/regcomp.c:160
+#: gnulib/lib/regcomp.c:157
 msgid "Unmatched \\{"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:163
+#: gnulib/lib/regcomp.c:160
 #, fuzzy
 msgid "Invalid content of \\{\\}"
 msgstr "无效的连接"
 
-#: gnulib/lib/regcomp.c:166
+#: gnulib/lib/regcomp.c:163
 #, fuzzy
 msgid "Invalid range end"
 msgstr "无效参数计数"
 
-#: gnulib/lib/regcomp.c:169
+#: gnulib/lib/regcomp.c:166
 #, fuzzy
 msgid "Memory exhausted"
 msgstr "内存大小："
 
-#: gnulib/lib/regcomp.c:172
+#: gnulib/lib/regcomp.c:169
 msgid "Invalid preceding regular expression"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:175
+#: gnulib/lib/regcomp.c:172
 msgid "Premature end of regular expression"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:178
+#: gnulib/lib/regcomp.c:175
 msgid "Regular expression too big"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:181
+#: gnulib/lib/regcomp.c:178
 msgid "Unmatched ) or \\)"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:702
+#: gnulib/lib/regcomp.c:703
 msgid "No previous regular expression"
 msgstr ""
 
@@ -5631,179 +5631,179 @@ msgstr ""
 msgid "this platform is missing dlopen"
 msgstr ""
 
-#: src/lxc/lxc_container.c:140
+#: src/lxc/lxc_container.c:139
 msgid "setsid failed"
 msgstr "setsid 失败"
 
-#: src/lxc/lxc_container.c:146
+#: src/lxc/lxc_container.c:145
 msgid "ioctl(TIOCSTTY) failed"
 msgstr "ioctl(TIOCSTTY) 失败"
 
-#: src/lxc/lxc_container.c:161
+#: src/lxc/lxc_container.c:160
 msgid "dup2(stdin) failed"
 msgstr "dup2(stdin) 失败"
 
-#: src/lxc/lxc_container.c:167
+#: src/lxc/lxc_container.c:166
 msgid "dup2(stdout) failed"
 msgstr "dup2(stdout) 失败"
 
-#: src/lxc/lxc_container.c:173
+#: src/lxc/lxc_container.c:172
 msgid "dup2(stderr) failed"
 msgstr "dup2(stderr) 失败"
 
-#: src/lxc/lxc_container.c:321
+#: src/lxc/lxc_container.c:320
 msgid "Failed to make root private"
 msgstr "使 root 成为专用失败"
 
-#: src/lxc/lxc_container.c:332 src/lxc/lxc_container.c:354
-#: src/lxc/lxc_container.c:594 src/lxc/lxc_container.c:766
+#: src/lxc/lxc_container.c:331 src/lxc/lxc_container.c:353
+#: src/lxc/lxc_container.c:593 src/lxc/lxc_container.c:765
 #, c-format
 msgid "Failed to create %s"
 msgstr "创建 %s 失败"
 
-#: src/lxc/lxc_container.c:341
+#: src/lxc/lxc_container.c:340
 #, c-format
 msgid "Failed to mount empty tmpfs at %s"
 msgstr "在 %s 挂载空 tmpfs 失败"
 
-#: src/lxc/lxc_container.c:362
+#: src/lxc/lxc_container.c:361
 #, c-format
 msgid "Failed to bind new root %s into tmpfs"
 msgstr "将新 root %s 绑定到 tmpfs 失败"
 
-#: src/lxc/lxc_container.c:370
+#: src/lxc/lxc_container.c:369
 #, c-format
 msgid "Failed to make new root %s readonly"
 msgstr ""
 
-#: src/lxc/lxc_container.c:380
+#: src/lxc/lxc_container.c:379
 #, c-format
 msgid "Failed to chroot into %s"
 msgstr "chroot 到 %s 失败"
 
-#: src/lxc/lxc_container.c:388
+#: src/lxc/lxc_container.c:387
 msgid "Failed to pivot root"
 msgstr "pivot root 失败"
 
-#: src/lxc/lxc_container.c:447
+#: src/lxc/lxc_container.c:446
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "新建文件夹 %s 失败"
 
-#: src/lxc/lxc_container.c:472
+#: src/lxc/lxc_container.c:471
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:499
+#: src/lxc/lxc_container.c:498
 msgid "Cannot create /dev/pts"
 msgstr "无法创建 /dev/pts"
 
-#: src/lxc/lxc_container.c:506
+#: src/lxc/lxc_container.c:505
 msgid "Failed to mount /dev/pts in container"
 msgstr "将 /dev/pts 挂载到容器失败"
 
-#: src/lxc/lxc_container.c:540
+#: src/lxc/lxc_container.c:539
 #, c-format
 msgid "Failed to make device %s"
 msgstr "生成设备 %s 失败"
 
-#: src/lxc/lxc_container.c:550
+#: src/lxc/lxc_container.c:549
 msgid "Failed to make device /dev/ptmx"
 msgstr "生成设备 /dev/ptmx 失败"
 
-#: src/lxc/lxc_container.c:557
+#: src/lxc/lxc_container.c:556
 msgid "Failed to bind-mount /dev/ptmx to /dev/pts/ptmx"
 msgstr ""
 
-#: src/lxc/lxc_container.c:568
+#: src/lxc/lxc_container.c:567
 msgid "Failed to symlink /dev/pts/0 to /dev/tty1"
 msgstr ""
 
-#: src/lxc/lxc_container.c:573
+#: src/lxc/lxc_container.c:572
 msgid "Failed to symlink /dev/pts/0 to /dev/console"
 msgstr ""
 
-#: src/lxc/lxc_container.c:601 src/lxc/lxc_container.c:721
+#: src/lxc/lxc_container.c:600 src/lxc/lxc_container.c:720
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:610
+#: src/lxc/lxc_container.c:609
 #, c-format
 msgid "Failed to make directory %s readonly"
 msgstr ""
 
-#: src/lxc/lxc_container.c:668 src/util/iohelper.c:151
+#: src/lxc/lxc_container.c:667 src/util/iohelper.c:151
 #, c-format
 msgid "Unable to read %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:698
+#: src/lxc/lxc_container.c:697
 #, c-format
 msgid "%s has unexpected '*' before last line"
 msgstr ""
 
-#: src/lxc/lxc_container.c:813
+#: src/lxc/lxc_container.c:812
 #, c-format
 msgid "Unexpected filesystem type %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:818
+#: src/lxc/lxc_container.c:817
 #, c-format
 msgid "Cannot mount filesystem type %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:859
+#: src/lxc/lxc_container.c:858
 msgid "Failed to read /proc/mounts"
 msgstr "读取 /proc/mounts 失败"
 
-#: src/lxc/lxc_container.c:888
+#: src/lxc/lxc_container.c:887
 #, c-format
 msgid "Failed to unmount '%s'"
 msgstr "挂载 '%s' 失败"
 
-#: src/lxc/lxc_container.c:947
+#: src/lxc/lxc_container.c:946
 msgid "Failed to make / slave"
 msgstr "生成 / 从设备失败"
 
-#: src/lxc/lxc_container.c:995
+#: src/lxc/lxc_container.c:994
 #, c-format
 msgid "Failed to remove capabilities: %d"
 msgstr "删除容量失败：%d"
 
-#: src/lxc/lxc_container.c:1001
+#: src/lxc/lxc_container.c:1000
 #, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "应用容量失败：%d"
 
-#: src/lxc/lxc_container.c:1042
+#: src/lxc/lxc_container.c:1041
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() 传递无效 vm 定义"
 
-#: src/lxc/lxc_container.c:1067
+#: src/lxc/lxc_container.c:1066
 #, c-format
 msgid "Failed to open tty %s"
 msgstr "打开 tty %s 失败"
 
-#: src/lxc/lxc_container.c:1077
+#: src/lxc/lxc_container.c:1076
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1085
+#: src/lxc/lxc_container.c:1084
 msgid "Failed to read the container continue message"
 msgstr "读取容器继续信息失败"
 
-#: src/lxc/lxc_container.c:1102
+#: src/lxc/lxc_container.c:1101
 msgid "failed to send continue signal to controller"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1210
+#: src/lxc/lxc_container.c:1209
 msgid "Failed to run clone container"
 msgstr "运行克隆容器失败"
 
-#: src/lxc/lxc_conf.c:68 src/qemu/qemu_driver.c:261 src/uml/uml_conf.c:80
+#: src/lxc/lxc_conf.c:68 src/qemu/qemu_driver.c:261 src/uml/uml_conf.c:79
 msgid "cannot get the host uuid"
 msgstr ""
 
@@ -6117,8 +6117,8 @@ msgstr "无法将内存设置为高于最大内存"
 #: src/libxl/libxl_driver.c:2132 src/libxl/libxl_driver.c:2404
 #: src/libxl/libxl_driver.c:2501 src/libxl/libxl_driver.c:3253
 #: src/libxl/libxl_driver.c:3548 src/libxl/libxl_driver.c:3615
-#: src/libxl/libxl_driver.c:3704 src/openvz/openvz_driver.c:525
-#: src/openvz/openvz_driver.c:563
+#: src/libxl/libxl_driver.c:3704 src/openvz/openvz_driver.c:524
+#: src/openvz/openvz_driver.c:562
 msgid "Domain is not running"
 msgstr "域没有在运行"
 
@@ -6317,7 +6317,7 @@ msgid "Domain is already running"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2041 src/libxl/libxl_driver.c:171
-#: src/qemu/qemu_driver.c:164 src/uml/uml_driver.c:157
+#: src/qemu/qemu_driver.c:164 src/uml/uml_driver.c:156
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr ""
@@ -6360,14 +6360,14 @@ msgid "Cannot create autostart directory %s"
 msgstr "无法生成自动启动目录 %s"
 
 #: src/lxc/lxc_driver.c:2605 src/libxl/libxl_driver.c:3503
-#: src/qemu/qemu_driver.c:5722 src/uml/uml_driver.c:2142
+#: src/qemu/qemu_driver.c:5722 src/uml/uml_driver.c:2141
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "为 '%s' 创建符号链接 '%s' 失败"
 
 #: src/lxc/lxc_driver.c:2612 src/libxl/libxl_driver.c:3510
-#: src/network/bridge_driver.c:2680 src/qemu/qemu_driver.c:5729
-#: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2149
+#: src/network/bridge_driver.c:2679 src/qemu/qemu_driver.c:5729
+#: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2148
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "删除符号链接 '%s' 失败"
@@ -6412,10 +6412,10 @@ msgstr "恢复操作失败"
 #: src/qemu/qemu_driver.c:9551 src/qemu/qemu_driver.c:9619
 #: src/qemu/qemu_driver.c:9945 src/qemu/qemu_driver.c:10048
 #: src/qemu/qemu_driver.c:10196 src/qemu/qemu_driver.c:10299
-#: src/test/test_driver.c:2107 src/uml/uml_driver.c:1505
-#: src/uml/uml_driver.c:1530 src/uml/uml_driver.c:1563
-#: src/uml/uml_driver.c:1905 src/uml/uml_driver.c:2023
-#: src/uml/uml_driver.c:2255 src/vmware/vmware_driver.c:638
+#: src/test/test_driver.c:2107 src/uml/uml_driver.c:1504
+#: src/uml/uml_driver.c:1529 src/uml/uml_driver.c:1562
+#: src/uml/uml_driver.c:1904 src/uml/uml_driver.c:2022
+#: src/uml/uml_driver.c:2254 src/vmware/vmware_driver.c:638
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "没有匹配 uuid '%s' 的域"
@@ -6443,13 +6443,13 @@ msgstr "没有匹配 uuid '%s' 的域"
 #: src/qemu/qemu_driver.c:10054 src/qemu/qemu_driver.c:10063
 #: src/qemu/qemu_driver.c:10202 src/qemu/qemu_driver.c:10305
 #: src/qemu/qemu_driver.c:10319 src/qemu/qemu_migration.c:2217
-#: src/uml/uml_driver.c:2261 src/xen/xen_driver.c:2134
+#: src/uml/uml_driver.c:2260 src/xen/xen_driver.c:2134
 #: src/xen/xen_hypervisor.c:1155 src/xen/xen_hypervisor.c:1239
 #: src/xen/xen_hypervisor.c:1356 src/xen/xm_internal.c:715
 msgid "domain is not running"
 msgstr "域没有在运行"
 
-#: src/lxc/lxc_driver.c:2871 src/uml/uml_driver.c:2268
+#: src/lxc/lxc_driver.c:2871 src/uml/uml_driver.c:2267
 #: src/xen/xen_driver.c:2141
 msgid "Named device aliases are not supported"
 msgstr ""
@@ -6459,7 +6459,7 @@ msgid "cannot find default console device"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2888 src/qemu/qemu_driver.c:10234
-#: src/uml/uml_driver.c:2285 src/xen/xen_driver.c:2162
+#: src/uml/uml_driver.c:2284 src/xen/xen_driver.c:2162
 #, c-format
 msgid "character device %s is not using a PTY"
 msgstr ""
@@ -6472,7 +6472,7 @@ msgstr ""
 #: src/libxl/libxl_driver.c:173 src/qemu/qemu_driver.c:158
 #: src/qemu/qemu_driver.c:166 src/qemu/qemu_hostdev.c:253
 #: src/qemu/qemu_hostdev.c:270 src/qemu/qemu_hostdev.c:288
-#: src/secret/secret_driver.c:500 src/uml/uml_driver.c:158
+#: src/secret/secret_driver.c:500 src/uml/uml_driver.c:157
 #: src/xenapi/xenapi_driver.c:199 tools/virsh.c:531
 msgid "unknown error"
 msgstr "未知错误"
@@ -6574,7 +6574,7 @@ msgid "Failed to create save dir '%s': %s"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:949 src/qemu/qemu_domain.c:1195
-#: src/uml/uml_driver.c:921
+#: src/uml/uml_driver.c:920
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "生成日志文件 %s 失败"
@@ -6624,17 +6624,17 @@ msgstr ""
 #: src/libxl/libxl_driver.c:2440 src/libxl/libxl_driver.c:2496
 #: src/libxl/libxl_driver.c:2560 src/libxl/libxl_driver.c:3240
 #: src/libxl/libxl_driver.c:3543 src/libxl/libxl_driver.c:3610
-#: src/libxl/libxl_driver.c:3699 src/openvz/openvz_driver.c:353
-#: src/openvz/openvz_driver.c:401 src/openvz/openvz_driver.c:475
-#: src/openvz/openvz_driver.c:519 src/openvz/openvz_driver.c:557
-#: src/openvz/openvz_driver.c:600 src/openvz/openvz_driver.c:651
-#: src/openvz/openvz_driver.c:1128 src/openvz/openvz_driver.c:1177
-#: src/openvz/openvz_driver.c:1207 src/openvz/openvz_driver.c:1300
-#: src/uml/uml_driver.c:1477 src/uml/uml_driver.c:1600
-#: src/uml/uml_driver.c:1646 src/uml/uml_driver.c:1675
-#: src/uml/uml_driver.c:1727 src/uml/uml_driver.c:1805
-#: src/uml/uml_driver.c:2088 src/uml/uml_driver.c:2114
-#: src/uml/uml_driver.c:2189 src/vbox/vbox_tmpl.c:2014
+#: src/libxl/libxl_driver.c:3699 src/openvz/openvz_driver.c:352
+#: src/openvz/openvz_driver.c:400 src/openvz/openvz_driver.c:474
+#: src/openvz/openvz_driver.c:518 src/openvz/openvz_driver.c:556
+#: src/openvz/openvz_driver.c:599 src/openvz/openvz_driver.c:650
+#: src/openvz/openvz_driver.c:1127 src/openvz/openvz_driver.c:1176
+#: src/openvz/openvz_driver.c:1206 src/openvz/openvz_driver.c:1299
+#: src/uml/uml_driver.c:1476 src/uml/uml_driver.c:1599
+#: src/uml/uml_driver.c:1645 src/uml/uml_driver.c:1674
+#: src/uml/uml_driver.c:1726 src/uml/uml_driver.c:1804
+#: src/uml/uml_driver.c:2087 src/uml/uml_driver.c:2113
+#: src/uml/uml_driver.c:2188 src/vbox/vbox_tmpl.c:2014
 #: src/vbox/vbox_tmpl.c:2074 src/vbox/vbox_tmpl.c:5084
 #: src/vbox/vbox_tmpl.c:5178 src/vbox/vbox_tmpl.c:5387
 #: src/vbox/vbox_tmpl.c:8334 src/vbox/vbox_tmpl.c:8699
@@ -6663,7 +6663,7 @@ msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:1719 src/qemu/qemu_driver.c:1820
-#: src/uml/uml_driver.c:1575
+#: src/uml/uml_driver.c:1574
 msgid "cannot set memory higher than max memory"
 msgstr "无法将内存设置为高于最大内存"
 
@@ -6794,7 +6794,7 @@ msgid "parsing xm config failed"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2807 src/qemu/qemu_driver.c:4899
-#: src/uml/uml_driver.c:1811 src/vmware/vmware_driver.c:644
+#: src/uml/uml_driver.c:1810 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "无法取消定义瞬时域"
 
@@ -6824,13 +6824,13 @@ msgstr ""
 
 #: src/libxl/libxl_driver.c:2934 src/qemu/qemu_hotplug.c:168
 #: src/qemu/qemu_hotplug.c:397 src/qemu/qemu_hotplug.c:518
-#: src/uml/uml_driver.c:1851
+#: src/uml/uml_driver.c:1850
 #, c-format
 msgid "target %s already exists"
 msgstr "目标 %s 已存在"
 
 #: src/libxl/libxl_driver.c:2940 src/qemu/qemu_hotplug.c:536
-#: src/uml/uml_driver.c:1858
+#: src/uml/uml_driver.c:1857
 msgid "disk source path is missing"
 msgstr ""
 
@@ -6840,7 +6840,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2964 src/qemu/qemu_driver.c:5015
-#: src/uml/uml_driver.c:1928
+#: src/uml/uml_driver.c:1927
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "无法热插拔磁盘总线 '%s'。"
@@ -6851,7 +6851,7 @@ msgid "disk device type '%s' cannot be hotplugged"
 msgstr "无法热插拔磁盘设备类型 '%s'。"
 
 #: src/libxl/libxl_driver.c:2997 src/qemu/qemu_hotplug.c:1466
-#: src/qemu/qemu_hotplug.c:1569 src/uml/uml_driver.c:1982
+#: src/qemu/qemu_hotplug.c:1569 src/uml/uml_driver.c:1981
 #, c-format
 msgid "disk %s not found"
 msgstr "未找到磁盘 %s"
@@ -6872,7 +6872,7 @@ msgid "device type '%s' cannot hot unplugged"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3049 src/qemu/qemu_driver.c:5110
-#: src/uml/uml_driver.c:1933
+#: src/uml/uml_driver.c:1932
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "无法附加设备类型 '%s'"
@@ -6935,12 +6935,12 @@ msgid "unknown domain modify action %d"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3481 src/qemu/qemu_driver.c:5700
-#: src/uml/uml_driver.c:2120
+#: src/uml/uml_driver.c:2119
 msgid "cannot set autostart for transient domain"
 msgstr "无法为瞬时域设定自动启动"
 
 #: src/libxl/libxl_driver.c:3496 src/qemu/qemu_driver.c:5715
-#: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2135
+#: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2134
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "无法生成自动启动目录 %s"
@@ -7020,293 +7020,293 @@ msgstr ""
 msgid "Failed to get version info from libxenlight"
 msgstr ""
 
-#: src/network/bridge_driver.c:317 src/qemu/qemu_command.c:258
-#: src/uml/uml_conf.c:124
+#: src/network/bridge_driver.c:316 src/qemu/qemu_command.c:258
+#: src/uml/uml_conf.c:123
 msgid "cannot initialize bridge support"
 msgstr "无法初始化桥接支持"
 
-#: src/network/bridge_driver.c:698 src/network/bridge_driver.c:704
-#: src/network/bridge_driver.c:716 src/network/bridge_driver.c:783
-#: src/network/bridge_driver.c:789
+#: src/network/bridge_driver.c:697 src/network/bridge_driver.c:703
+#: src/network/bridge_driver.c:715 src/network/bridge_driver.c:782
+#: src/network/bridge_driver.c:788
 #, c-format
 msgid "cannot create directory %s"
 msgstr "无法生成日志目录 %s"
 
-#: src/network/bridge_driver.c:775
+#: src/network/bridge_driver.c:774
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr ""
 
-#: src/network/bridge_driver.c:821
+#: src/network/bridge_driver.c:820
 #, c-format
 msgid "bridge  '%s' has an invalid prefix"
 msgstr ""
 
-#: src/network/bridge_driver.c:857
+#: src/network/bridge_driver.c:856
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:907 src/network/bridge_driver.c:1081
+#: src/network/bridge_driver.c:906 src/network/bridge_driver.c:1080
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:919
+#: src/network/bridge_driver.c:918
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr "添加路由表规则允许从 '%s' 转发失败"
 
-#: src/network/bridge_driver.c:933
+#: src/network/bridge_driver.c:932
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr "添加路由表规则允许转发至 '%s' 失败"
 
-#: src/network/bridge_driver.c:969
+#: src/network/bridge_driver.c:968
 #, c-format
 msgid "failed to add iptables rule to enable masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:970
+#: src/network/bridge_driver.c:969
 msgid "failed to add iptables rule to enable masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:983
+#: src/network/bridge_driver.c:982
 #, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:984
+#: src/network/bridge_driver.c:983
 msgid "failed to add iptables rule to enable UDP masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:997
+#: src/network/bridge_driver.c:996
 #, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:998
+#: src/network/bridge_driver.c:997
 msgid "failed to add iptables rule to enable TCP masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:1093
+#: src/network/bridge_driver.c:1092
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr "添加路由表规则允许从 '%s' 路由失败"
 
-#: src/network/bridge_driver.c:1105
+#: src/network/bridge_driver.c:1104
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr "添加路由表规则允许路由至 '%s' 失败"
 
-#: src/network/bridge_driver.c:1159
+#: src/network/bridge_driver.c:1158
 #, c-format
 msgid "failed to add ip6tables rule to block outbound traffic from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1167
+#: src/network/bridge_driver.c:1166
 #, c-format
 msgid "failed to add ip6tables rule to block inbound traffic to '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1176
+#: src/network/bridge_driver.c:1175
 #, c-format
 msgid "failed to add ip6tables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1185 src/network/bridge_driver.c:1193
+#: src/network/bridge_driver.c:1184 src/network/bridge_driver.c:1192
 #, c-format
 msgid "failed to add ip6tables rule to allow DNS requests from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1246 src/network/bridge_driver.c:1254
+#: src/network/bridge_driver.c:1245 src/network/bridge_driver.c:1253
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr "添加路由表规则允许从 '%s' 请求 DHCP 失败"
 
-#: src/network/bridge_driver.c:1277 src/network/bridge_driver.c:1285
+#: src/network/bridge_driver.c:1276 src/network/bridge_driver.c:1284
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr "添加路由表规则允许从 '%s' 请求 DNS 失败"
 
-#: src/network/bridge_driver.c:1295
+#: src/network/bridge_driver.c:1294
 #, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1305
+#: src/network/bridge_driver.c:1304
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr "添加路由表规则允许阻断从 '%s' 外出流量失败"
 
-#: src/network/bridge_driver.c:1313
+#: src/network/bridge_driver.c:1312
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr "添加路由表规则允许进入 '%s' 的流量失败"
 
-#: src/network/bridge_driver.c:1322
+#: src/network/bridge_driver.c:1321
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr "添加路由表规则允许从 '%s' 中的跨桥接流量失败"
 
-#: src/network/bridge_driver.c:1541
+#: src/network/bridge_driver.c:1540
 #, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1563
+#: src/network/bridge_driver.c:1562
 #, c-format
 msgid "cannot disable %s"
 msgstr "无法禁用 %s"
 
-#: src/network/bridge_driver.c:1579
+#: src/network/bridge_driver.c:1578
 #, c-format
 msgid "cannot enable %s"
 msgstr "无法启用 %s"
 
-#: src/network/bridge_driver.c:1672
+#: src/network/bridge_driver.c:1671
 #, c-format
 msgid "Network is already in use by interface %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1694
+#: src/network/bridge_driver.c:1693
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:1702
+#: src/network/bridge_driver.c:1701
 #, c-format
 msgid "cannot set IP address on bridge '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1727
+#: src/network/bridge_driver.c:1726
 #, c-format
 msgid "cannot create bridge '%s'"
 msgstr "无法创建桥接 '%s'"
 
-#: src/network/bridge_driver.c:1747
+#: src/network/bridge_driver.c:1746
 #, c-format
 msgid "cannot create dummy tap device '%s' to set mac address on bridge '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1759
+#: src/network/bridge_driver.c:1758
 #, c-format
 msgid "cannot set forward delay on bridge '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1767
+#: src/network/bridge_driver.c:1766
 #, c-format
 msgid "cannot set STP '%s' on bridge '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1799
+#: src/network/bridge_driver.c:1798
 #, c-format
 msgid "failed to bring the bridge '%s' up"
 msgstr "停止桥接 '%s' 失败"
 
-#: src/network/bridge_driver.c:1808
+#: src/network/bridge_driver.c:1807
 msgid "failed to enable IP forwarding"
 msgstr "启动 IP 转发失败"
 
-#: src/network/bridge_driver.c:1823 src/qemu/qemu_command.c:322
+#: src/network/bridge_driver.c:1822 src/qemu/qemu_command.c:322
 #: src/util/macvtap.c:367
 #, c-format
 msgid "cannot set bandwidth limits on %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1987
+#: src/network/bridge_driver.c:1986
 msgid "network is already active"
 msgstr "网络已经激活"
 
-#: src/network/bridge_driver.c:2089 src/network/bridge_driver.c:2416
-#: src/network/bridge_driver.c:2503 src/network/bridge_driver.c:2526
-#: src/network/bridge_driver.c:2565 src/network/bridge_driver.c:2620
-#: src/network/bridge_driver.c:2645
+#: src/network/bridge_driver.c:2088 src/network/bridge_driver.c:2415
+#: src/network/bridge_driver.c:2502 src/network/bridge_driver.c:2525
+#: src/network/bridge_driver.c:2564 src/network/bridge_driver.c:2619
+#: src/network/bridge_driver.c:2644
 msgid "no network with matching uuid"
 msgstr "没有带匹配 uuid 的网络"
 
-#: src/network/bridge_driver.c:2112 src/network/bridge_driver.c:2777
-#: src/network/bridge_driver.c:2973 src/network/bridge_driver.c:3074
-#: src/network/bridge_driver.c:3161
+#: src/network/bridge_driver.c:2111 src/network/bridge_driver.c:2776
+#: src/network/bridge_driver.c:2972 src/network/bridge_driver.c:3073
+#: src/network/bridge_driver.c:3160
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "没有匹配名称 '%s' 的网络"
 
-#: src/network/bridge_driver.c:2375
+#: src/network/bridge_driver.c:2374
 msgid ""
 "Multiple dhcp sections found. dhcp is supported only for a single IPv4 "
 "address on each network"
 msgstr ""
 
-#: src/network/bridge_driver.c:2422
+#: src/network/bridge_driver.c:2421
 msgid "network is still active"
 msgstr "网络仍活跃"
 
-#: src/network/bridge_driver.c:2532
+#: src/network/bridge_driver.c:2531
 msgid "network is not active"
 msgstr "网络接口 %s 未激活"
 
-#: src/network/bridge_driver.c:2588
+#: src/network/bridge_driver.c:2587
 msgid "no network with matching id"
 msgstr "没有带匹配 id 的网络"
 
-#: src/network/bridge_driver.c:2594 src/test/test_driver.c:3285
+#: src/network/bridge_driver.c:2593 src/test/test_driver.c:3285
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "网络 '%s' 没有桥接名称。"
 
-#: src/network/bridge_driver.c:2651
+#: src/network/bridge_driver.c:2650
 msgid "cannot set autostart for transient network"
 msgstr "无法为瞬时域设定自动启动"
 
-#: src/network/bridge_driver.c:2666
+#: src/network/bridge_driver.c:2665
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "无法生成自动启动目录 '%s'"
 
-#: src/network/bridge_driver.c:2673 src/storage/storage_driver.c:1055
+#: src/network/bridge_driver.c:2672 src/storage/storage_driver.c:1055
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "为 '%s' 创建符号链接 '%s' 失败"
 
-#: src/network/bridge_driver.c:2875 src/network/bridge_driver.c:2988
-#: src/network/bridge_driver.c:3089
+#: src/network/bridge_driver.c:2874 src/network/bridge_driver.c:2987
+#: src/network/bridge_driver.c:3088
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 
-#: src/network/bridge_driver.c:2913
+#: src/network/bridge_driver.c:2912
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr ""
 
-#: src/network/bridge_driver.c:2981 src/network/bridge_driver.c:3082
+#: src/network/bridge_driver.c:2980 src/network/bridge_driver.c:3081
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr ""
 
-#: src/network/bridge_driver.c:3006 src/network/bridge_driver.c:3105
+#: src/network/bridge_driver.c:3005 src/network/bridge_driver.c:3104
 #, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr ""
 
-#: src/network/bridge_driver.c:3022
+#: src/network/bridge_driver.c:3021
 #, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr ""
 
-#: src/network/bridge_driver.c:3175
+#: src/network/bridge_driver.c:3174
 #, c-format
 msgid "network '%s' doesn't have an IPv4 address"
 msgstr ""
 
-#: src/network/bridge_driver.c:3197
+#: src/network/bridge_driver.c:3196
 #, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr ""
 
-#: src/network/bridge_driver.c:3206
+#: src/network/bridge_driver.c:3205
 #, c-format
 msgid "Failed to get IP address for '%s' (network '%s')"
 msgstr ""
@@ -7387,17 +7387,17 @@ msgstr ""
 msgid "%s: %s"
 msgstr ""
 
-#: src/node_device/node_device_linux_sysfs.c:60
+#: src/node_device/node_device_linux_sysfs.c:59
 #, c-format
 msgid "Failed to open WWN path '%s' for reading"
 msgstr "打开用来读取的 WWN 路径 '%s' 失败"
 
-#: src/node_device/node_device_linux_sysfs.c:139
+#: src/node_device/node_device_linux_sysfs.c:138
 #, c-format
 msgid "Failed to read WWPN for host%d"
 msgstr "为主机 %d 读取 WWPN 失败"
 
-#: src/node_device/node_device_linux_sysfs.c:148
+#: src/node_device/node_device_linux_sysfs.c:147
 #, c-format
 msgid "Failed to read WWNN for host%d"
 msgstr "为主机 %d 读取 WWNN 失败"
@@ -7497,7 +7497,7 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
 #: src/nodeinfo.c:106 src/nodeinfo.c:152 src/nodeinfo.c:617 src/nodeinfo.c:652
-#: src/nodeinfo.c:716 src/uml/uml_driver.c:2211 src/util/command.c:264
+#: src/nodeinfo.c:716 src/uml/uml_driver.c:2210 src/util/command.c:264
 #: src/util/pci.c:1539
 #, c-format
 msgid "cannot open %s"
@@ -7856,7 +7856,7 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "无法为容器 %d 在 config 中读取 'VE_PRIVATE'"
 
 #: src/openvz/openvz_conf.c:458 src/openvz/openvz_conf.c:1048
-#: src/openvz/openvz_driver.c:1647
+#: src/openvz/openvz_driver.c:1646
 msgid "Failed to parse vzlist output"
 msgstr "解析 vzlist 输入失败"
 
@@ -7878,145 +7878,145 @@ msgstr ""
 msgid "Failed to scan configuration directory"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:112
+#: src/openvz/openvz_driver.c:111
 msgid "Container is not defined"
 msgstr "没有定义容器"
 
-#: src/openvz/openvz_driver.c:157 src/openvz/openvz_driver.c:851
+#: src/openvz/openvz_driver.c:156 src/openvz/openvz_driver.c:850
 #, c-format
 msgid "Could not put argument to %s"
 msgstr "无法将参数设为 %s"
 
-#: src/openvz/openvz_driver.c:175
+#: src/openvz/openvz_driver.c:174
 msgid "only one filesystem supported"
 msgstr "只支持一个文件系统"
 
-#: src/openvz/openvz_driver.c:184
+#: src/openvz/openvz_driver.c:183
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "filesyste 不是 'template' 或者 'mount' 类型"
 
-#: src/openvz/openvz_driver.c:195
+#: src/openvz/openvz_driver.c:194
 msgid "Could not convert domain name to VEID"
 msgstr "无法将域名转换为域 VEID"
 
-#: src/openvz/openvz_driver.c:201
+#: src/openvz/openvz_driver.c:200
 msgid "Could not copy default config"
 msgstr "无法复制默认 config"
 
-#: src/openvz/openvz_driver.c:207
+#: src/openvz/openvz_driver.c:206
 msgid "Could not set the source dir for the filesystem"
 msgstr "无法为文件系统设置源目录"
 
-#: src/openvz/openvz_driver.c:214
+#: src/openvz/openvz_driver.c:213
 msgid "Error creating command for container"
 msgstr "为容器生成命令出错"
 
-#: src/openvz/openvz_driver.c:366
+#: src/openvz/openvz_driver.c:365
 #, c-format
 msgid "cannot read cputime for domain %d"
 msgstr "无法为域 %d 读取 cputime"
 
-#: src/openvz/openvz_driver.c:610 src/openvz/openvz_driver.c:661
+#: src/openvz/openvz_driver.c:609 src/openvz/openvz_driver.c:660
 #: src/vmware/vmware_driver.c:336 src/vmware/vmware_driver.c:395
 #: src/vmware/vmware_driver.c:491
 msgid "domain is not in running state"
 msgstr "域没有处于运行状态"
 
-#: src/openvz/openvz_driver.c:751
+#: src/openvz/openvz_driver.c:750
 msgid "Container ID is not specified"
 msgstr "没有指定容器 ID"
 
-#: src/openvz/openvz_driver.c:787
+#: src/openvz/openvz_driver.c:786
 msgid "Could not generate eth name for container"
 msgstr "无法为容器生成 eth 名称"
 
-#: src/openvz/openvz_driver.c:799
+#: src/openvz/openvz_driver.c:798
 msgid "Could not generate veth name"
 msgstr "无法生成 veth 名称"
 
-#: src/openvz/openvz_driver.c:880
+#: src/openvz/openvz_driver.c:879
 msgid "Could not configure network"
 msgstr "无法配置网络"
 
-#: src/openvz/openvz_driver.c:891
+#: src/openvz/openvz_driver.c:890
 msgid "cannot replace NETIF config"
 msgstr "无法替换 NETIF 配置"
 
-#: src/openvz/openvz_driver.c:923
+#: src/openvz/openvz_driver.c:922
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr "已经用 id '%s' 激活了 OPENVZ VM"
 
-#: src/openvz/openvz_driver.c:934 src/openvz/openvz_driver.c:1016
+#: src/openvz/openvz_driver.c:933 src/openvz/openvz_driver.c:1015
 msgid "Error creating initial configuration"
 msgstr "生成初始配置时出错"
 
-#: src/openvz/openvz_driver.c:942 src/openvz/openvz_driver.c:1022
+#: src/openvz/openvz_driver.c:941 src/openvz/openvz_driver.c:1021
 msgid "Could not set UUID"
 msgstr "无法设置 UUID"
 
-#: src/openvz/openvz_driver.c:951 src/vbox/vbox_tmpl.c:4878
+#: src/openvz/openvz_driver.c:950 src/vbox/vbox_tmpl.c:4878
 msgid "current vcpu count must equal maximum"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:957 src/openvz/openvz_driver.c:1042
+#: src/openvz/openvz_driver.c:956 src/openvz/openvz_driver.c:1041
 msgid "Could not set number of virtual cpu"
 msgstr "无法设置虚拟 CPU 数"
 
-#: src/openvz/openvz_driver.c:965
+#: src/openvz/openvz_driver.c:964
 msgid "Could not set memory size"
 msgstr "无法设定内存大小"
 
-#: src/openvz/openvz_driver.c:1003
+#: src/openvz/openvz_driver.c:1002
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr "已经位于 id 为 '%s' 的 OPENVZ VM 中"
 
-#: src/openvz/openvz_driver.c:1076
+#: src/openvz/openvz_driver.c:1075
 msgid "no domain with matching id"
 msgstr "没有匹配 id 的域"
 
-#: src/openvz/openvz_driver.c:1085 src/vmware/vmware_driver.c:217
+#: src/openvz/openvz_driver.c:1084 src/vmware/vmware_driver.c:217
 msgid "domain is not in shutoff state"
 msgstr "域没有处于关闭状态"
 
-#: src/openvz/openvz_driver.c:1213
+#: src/openvz/openvz_driver.c:1212
 msgid "Could not read container config"
 msgstr "无法读取容器配置"
 
-#: src/openvz/openvz_driver.c:1237 src/qemu/qemu_driver.c:993
+#: src/openvz/openvz_driver.c:1236 src/qemu/qemu_driver.c:993
 #, c-format
 msgid "unknown type '%s'"
 msgstr "未知类型 '%s'"
 
-#: src/openvz/openvz_driver.c:1246 src/openvz/openvz_driver.c:1290
+#: src/openvz/openvz_driver.c:1245 src/openvz/openvz_driver.c:1289
 #, c-format
 msgid "unsupported flags (0x%x)"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:1306
+#: src/openvz/openvz_driver.c:1305
 msgid "VCPUs should be >= 1"
 msgstr "VCPUs 应该 >= 1"
 
-#: src/openvz/openvz_driver.c:1359
+#: src/openvz/openvz_driver.c:1358
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "意外 OpenVZ URI 路径 '%s'，尝试 openvz:///system"
 
-#: src/openvz/openvz_driver.c:1366
+#: src/openvz/openvz_driver.c:1365
 msgid "OpenVZ control file /proc/vz does not exist"
 msgstr "OpenVZ 控制的文件 /proc/vz 不存在"
 
-#: src/openvz/openvz_driver.c:1372
+#: src/openvz/openvz_driver.c:1371
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "OpenVZ 控制的文件 /proc/vz 无法访问"
 
-#: src/openvz/openvz_driver.c:1461 src/openvz/openvz_driver.c:1516
+#: src/openvz/openvz_driver.c:1460 src/openvz/openvz_driver.c:1515
 #, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "无法解析 VPS ID %s"
 
-#: src/openvz/openvz_driver.c:1472 src/openvz/openvz_driver.c:1531
+#: src/openvz/openvz_driver.c:1471 src/openvz/openvz_driver.c:1530
 msgid "failed to close file"
 msgstr ""
 
@@ -8382,23 +8382,23 @@ msgstr ""
 msgid "Network type %d is not supported"
 msgstr "不支持网络类型 %d"
 
-#: src/qemu/qemu_command.c:287 src/uml/uml_conf.c:150
+#: src/qemu/qemu_command.c:287 src/uml/uml_conf.c:149
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "在桥接中添加 tap 接口失败。%s 不是桥接设备"
 
-#: src/qemu/qemu_command.c:292 src/uml/uml_conf.c:154
+#: src/qemu/qemu_command.c:292 src/uml/uml_conf.c:153
 msgid ""
 "Failed to add tap interface to bridge. Your kernel is missing the 'tun' "
 "module or CONFIG_TUN, or you need to add the /dev/net/tun device node."
 msgstr ""
 
-#: src/qemu/qemu_command.c:298 src/uml/uml_conf.c:159
+#: src/qemu/qemu_command.c:298 src/uml/uml_conf.c:158
 #, c-format
 msgid "Failed to add tap interface to bridge '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:302 src/uml/uml_conf.c:163
+#: src/qemu/qemu_command.c:302 src/uml/uml_conf.c:162
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s'"
 msgstr ""
@@ -8514,7 +8514,7 @@ msgid "driver serial '%s' contains unsafe characters"
 msgstr ""
 
 #: src/qemu/qemu_command.c:1568 src/qemu/qemu_command.c:1801
-#: src/qemu/qemu_command.c:4002 src/uml/uml_conf.c:453
+#: src/qemu/qemu_command.c:4002 src/uml/uml_conf.c:452
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "不支持的磁盘类型 '%s'"
@@ -9131,34 +9131,34 @@ msgstr ""
 msgid "Unable to resolve %s for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:111
+#: src/qemu/qemu_conf.c:110
 msgid "unable to find hugetlbfs mountpoint"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:292
+#: src/qemu/qemu_conf.c:291
 msgid "cgroup_controllers must be a list of strings"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:298
+#: src/qemu/qemu_conf.c:297
 #, c-format
 msgid "Unknown cgroup controller '%s'"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:332
+#: src/qemu/qemu_conf.c:331
 msgid "cgroup_device_acl must be a list of strings"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:406
+#: src/qemu/qemu_conf.c:405
 #, c-format
 msgid "failed to enable mac filter in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:414
+#: src/qemu/qemu_conf.c:413
 #, c-format
 msgid "failed to add rule to drop all frames in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:457
+#: src/qemu/qemu_conf.c:456
 #, c-format
 msgid "Failed to load lock manager %s"
 msgstr ""
@@ -9386,8 +9386,8 @@ msgstr ""
 msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1100 src/uml/uml_driver.c:1399
-#: src/uml/uml_driver.c:1435 src/vbox/vbox_tmpl.c:1216
+#: src/qemu/qemu_driver.c:1100 src/uml/uml_driver.c:1398
+#: src/uml/uml_driver.c:1434 src/vbox/vbox_tmpl.c:1216
 #: src/vbox/vbox_tmpl.c:1503 src/vbox/vbox_tmpl.c:1555
 #: src/vbox/vbox_tmpl.c:1606 src/vbox/vbox_tmpl.c:1659
 #: src/vbox/vbox_tmpl.c:1710 src/vbox/vbox_tmpl.c:1786
@@ -9421,7 +9421,7 @@ msgstr ""
 msgid "cannot resize the maximum memory on an active domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1837 src/uml/uml_driver.c:1569
+#: src/qemu/qemu_driver.c:1837 src/uml/uml_driver.c:1568
 msgid "cannot set memory of an active domain"
 msgstr "无法在活跃域中设定内存"
 
@@ -9430,7 +9430,7 @@ msgstr "无法在活跃域中设定内存"
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2020 src/uml/uml_driver.c:1611
+#: src/qemu/qemu_driver.c:2020 src/uml/uml_driver.c:1610
 msgid "cannot read cputime for domain"
 msgstr "无法为域读取 cputime"
 
@@ -9706,7 +9706,7 @@ msgstr ""
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5136 src/uml/uml_driver.c:2044
+#: src/qemu/qemu_driver.c:5136 src/uml/uml_driver.c:2043
 msgid "This type of disk cannot be hot unplugged"
 msgstr ""
 
@@ -9715,7 +9715,7 @@ msgstr ""
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5193 src/uml/uml_driver.c:2048
+#: src/qemu/qemu_driver.c:5193 src/uml/uml_driver.c:2047
 msgid "This type of device cannot be hot unplugged"
 msgstr ""
 
@@ -9904,11 +9904,11 @@ msgid "interface stats not implemented on this platform"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:7385 src/qemu/qemu_driver.c:7550
-#: src/uml/uml_driver.c:2195
+#: src/uml/uml_driver.c:2194
 msgid "NULL or empty path"
 msgstr "NULL 或者空路径"
 
-#: src/qemu/qemu_driver.c:7392 src/uml/uml_driver.c:2202
+#: src/qemu/qemu_driver.c:7392 src/uml/uml_driver.c:2201
 #, c-format
 msgid "invalid path '%s'"
 msgstr ""
@@ -10137,7 +10137,7 @@ msgstr ""
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10227 src/uml/uml_driver.c:2279
+#: src/qemu/qemu_driver.c:10227 src/uml/uml_driver.c:2278
 #, c-format
 msgid "cannot find character device %s"
 msgstr ""
@@ -11693,7 +11693,7 @@ msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
 #: src/qemu/qemu_process.c:2815 src/qemu/qemu_process.c:3480
-#: src/uml/uml_driver.c:885
+#: src/uml/uml_driver.c:884
 msgid "VM is already active"
 msgstr "VM 已经激活"
 
@@ -11706,7 +11706,7 @@ msgid "Unable to find an unused SPICE TLS port"
 msgstr ""
 
 #: src/qemu/qemu_process.c:2911 src/qemu/qemu_process.c:3496
-#: src/uml/uml_driver.c:907
+#: src/uml/uml_driver.c:906
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "无法生成日志目录 %s"
@@ -13502,8 +13502,8 @@ msgid "cannot read mount list '%s'"
 msgstr "无法读取挂载列表 '%s'"
 
 #: src/storage/storage_backend_fs.c:395 src/storage/storage_backend_fs.c:460
-#: src/storage/storage_backend_iscsi.c:629
-#: src/storage/storage_backend_iscsi.c:661
+#: src/storage/storage_backend_iscsi.c:628
+#: src/storage/storage_backend_iscsi.c:660
 msgid "missing source host"
 msgstr "源主机缺失"
 
@@ -13512,8 +13512,8 @@ msgid "missing source path"
 msgstr "缺少源路径"
 
 #: src/storage/storage_backend_fs.c:406 src/storage/storage_backend_fs.c:471
-#: src/storage/storage_backend_iscsi.c:636
-#: src/storage/storage_backend_iscsi.c:668
+#: src/storage/storage_backend_iscsi.c:635
+#: src/storage/storage_backend_iscsi.c:667
 msgid "missing source device"
 msgstr "缺少源设备"
 
@@ -13613,66 +13613,66 @@ msgstr "没有 qemu-img 则不支持生成非原始映像"
 msgid "cannot unlink file '%s'"
 msgstr "无法取消链接文件 '%s'"
 
-#: src/storage/storage_backend_iscsi.c:67
+#: src/storage/storage_backend_iscsi.c:66
 #, c-format
 msgid "host lookup failed %s"
 msgstr "查找主机失败 %s"
 
-#: src/storage/storage_backend_iscsi.c:74
+#: src/storage/storage_backend_iscsi.c:73
 #, c-format
 msgid "no IP address for target %s"
 msgstr "没有适合目标 %s 的 IP 地址"
 
-#: src/storage/storage_backend_iscsi.c:83
+#: src/storage/storage_backend_iscsi.c:82
 #, c-format
 msgid "cannot format ip addr for %s"
 msgstr "无法为 %s 格式化 ip 地址"
 
-#: src/storage/storage_backend_iscsi.c:169
+#: src/storage/storage_backend_iscsi.c:168
 msgid "cannot find session"
 msgstr "无法找到会话"
 
-#: src/storage/storage_backend_iscsi.c:193
+#: src/storage/storage_backend_iscsi.c:192
 #, c-format
 msgid "Could not allocate memory for output of '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:208
+#: src/storage/storage_backend_iscsi.c:207
 #, c-format
 msgid ""
 "Failed to open stream for file descriptor when reading output from '%s': '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:220
+#: src/storage/storage_backend_iscsi.c:219
 #, c-format
 msgid "Unexpected line > %d characters when parsing output of '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:238
+#: src/storage/storage_backend_iscsi.c:237
 #, c-format
 msgid "Missing space when parsing output of '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:289
+#: src/storage/storage_backend_iscsi.c:288
 msgid "Failed to initialize random generator when creating iscsi interface"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:306
+#: src/storage/storage_backend_iscsi.c:305
 #, c-format
 msgid "Failed to run command '%s' to create new iscsi interface"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:316
+#: src/storage/storage_backend_iscsi.c:315
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:409
+#: src/storage/storage_backend_iscsi.c:408
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
 msgstr "为路径为 '%s' 的 iSCSI 会话获取主机名失败"
 
-#: src/storage/storage_backend_iscsi.c:417
+#: src/storage/storage_backend_iscsi.c:416
 #, c-format
 msgid "Failed to find LUs on host %u"
 msgstr "在直接 %u 中查找 LUs 失败"
@@ -13728,7 +13728,7 @@ msgstr "无法设定文件模式 '%s'"
 msgid "cannot find newly created volume '%s'"
 msgstr "无法找到新生成的卷 '%s'"
 
-#: src/storage/storage_backend_mpath.c:233
+#: src/storage/storage_backend_mpath.c:232
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr ""
@@ -14190,178 +14190,178 @@ msgstr "没有带匹配路径 '%s' 的存储卷"
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "在池中没有用于卷 '%s' 的足够可用空间"
 
-#: src/uml/uml_conf.c:215
+#: src/uml/uml_conf.c:214
 msgid "IP address not supported for ethernet inteface"
 msgstr ""
 
-#: src/uml/uml_conf.c:220
+#: src/uml/uml_conf.c:219
 msgid "script execution not supported for ethernet inteface"
 msgstr ""
 
-#: src/uml/uml_conf.c:227
+#: src/uml/uml_conf.c:226
 msgid "TCP server networking type not supported"
 msgstr ""
 
-#: src/uml/uml_conf.c:232
+#: src/uml/uml_conf.c:231
 msgid "TCP client networking type not supported"
 msgstr ""
 
-#: src/uml/uml_conf.c:247
+#: src/uml/uml_conf.c:246
 #, c-format
 msgid "Network '%s' not found"
 msgstr "未找到网络 '%s'"
 
-#: src/uml/uml_conf.c:277
+#: src/uml/uml_conf.c:276
 msgid "internal networking type not supported"
 msgstr ""
 
-#: src/uml/uml_conf.c:282
+#: src/uml/uml_conf.c:281
 msgid "direct networking type not supported"
 msgstr ""
 
-#: src/uml/uml_conf.c:351
+#: src/uml/uml_conf.c:350
 msgid "only TCP listen is supported for chr device"
 msgstr "只支持字符设备的 TCP 侦听"
 
-#: src/uml/uml_conf.c:369
+#: src/uml/uml_conf.c:368
 #, c-format
 msgid "failed to open chardev file: %s"
 msgstr ""
 
-#: src/uml/uml_conf.c:390
+#: src/uml/uml_conf.c:389
 #, c-format
 msgid "unsupported chr device type %d"
 msgstr "不支持字符设备类型 %d"
 
-#: src/uml/uml_driver.c:460
+#: src/uml/uml_driver.c:459
 msgid "cannot initialize inotify"
 msgstr "无法初始化 inotify"
 
-#: src/uml/uml_driver.c:466
+#: src/uml/uml_driver.c:465
 #, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "创建监视器目录 %s 失败：%s"
 
-#: src/uml/uml_driver.c:500
+#: src/uml/uml_driver.c:499
 msgid "umlStartup: out of memory"
 msgstr ""
 
-#: src/uml/uml_driver.c:665
+#: src/uml/uml_driver.c:664
 #, c-format
 msgid "failed to read pid: %s"
 msgstr "读取 pid 失败：%s"
 
-#: src/uml/uml_driver.c:687
+#: src/uml/uml_driver.c:686
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:717
+#: src/uml/uml_driver.c:716
 msgid "cannot open socket"
 msgstr "无法打开套接字"
 
-#: src/uml/uml_driver.c:727
+#: src/uml/uml_driver.c:726
 msgid "cannot bind socket"
 msgstr "无法绑定套接字"
 
-#: src/uml/uml_driver.c:781
+#: src/uml/uml_driver.c:780
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr "无法发送过长的命令 %s（%d 字节）"
 
-#: src/uml/uml_driver.c:787
+#: src/uml/uml_driver.c:786
 #, c-format
 msgid "Command %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:794
+#: src/uml/uml_driver.c:793
 #, c-format
 msgid "cannot send command %s"
 msgstr "无法发送命令 %s "
 
-#: src/uml/uml_driver.c:807
+#: src/uml/uml_driver.c:806
 #, c-format
 msgid "cannot read reply %s"
 msgstr "无法读取回复 %s"
 
-#: src/uml/uml_driver.c:813
+#: src/uml/uml_driver.c:812
 #, c-format
 msgid "incomplete reply %s"
 msgstr ""
 
-#: src/uml/uml_driver.c:851
+#: src/uml/uml_driver.c:850
 msgid "Cleanup tap"
 msgstr ""
 
-#: src/uml/uml_driver.c:862
+#: src/uml/uml_driver.c:861
 #, c-format
 msgid "Cleanup '%s'"
 msgstr ""
 
-#: src/uml/uml_driver.c:865
+#: src/uml/uml_driver.c:864
 #, c-format
 msgid "Cleanup failed %d"
 msgstr ""
 
-#: src/uml/uml_driver.c:869
+#: src/uml/uml_driver.c:868
 msgid "Cleanup tap done"
 msgstr ""
 
-#: src/uml/uml_driver.c:891
+#: src/uml/uml_driver.c:890
 msgid "no kernel specified"
 msgstr "没有指定内核"
 
-#: src/uml/uml_driver.c:900
+#: src/uml/uml_driver.c:899
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "无法找到 UML 内核 %s"
 
-#: src/uml/uml_driver.c:930
+#: src/uml/uml_driver.c:929
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "无法为 VM 日志文件设定 close-on-exec 标签"
 
-#: src/uml/uml_driver.c:1043
+#: src/uml/uml_driver.c:1042
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr ""
 
-#: src/uml/uml_driver.c:1050
+#: src/uml/uml_driver.c:1049
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr ""
 
-#: src/uml/uml_driver.c:1059
+#: src/uml/uml_driver.c:1058
 msgid "uml state driver is not active"
 msgstr ""
 
-#: src/uml/uml_driver.c:1304
+#: src/uml/uml_driver.c:1303
 #, c-format
 msgid "cannot parse version %s"
 msgstr "无法解析版本 %s"
 
-#: src/uml/uml_driver.c:1406
+#: src/uml/uml_driver.c:1405
 msgid "shutdown operation failed"
 msgstr "关闭操作失败"
 
-#: src/uml/uml_driver.c:1536
+#: src/uml/uml_driver.c:1535
 msgid "cannot set max memory lower than current memory"
 msgstr "无法将最大内存设置为低于当前内存"
 
-#: src/uml/uml_driver.c:1911
+#: src/uml/uml_driver.c:1910
 msgid "cannot attach device on inactive domain"
 msgstr "无法在非活跃的域中附加设备"
 
-#: src/uml/uml_driver.c:1957 src/uml/uml_driver.c:2069
+#: src/uml/uml_driver.c:1956 src/uml/uml_driver.c:2068
 #: src/vbox/vbox_tmpl.c:5333 src/vbox/vbox_tmpl.c:5348
 #: src/vbox/vbox_tmpl.c:5487
 msgid "cannot modify the persistent configuration of a domain"
 msgstr ""
 
-#: src/uml/uml_driver.c:2029
+#: src/uml/uml_driver.c:2028
 msgid "cannot detach device on inactive domain"
 msgstr "无法在非活跃的域中分离设备"
 
-#: src/uml/uml_driver.c:2222 tools/virsh.c:9260
+#: src/uml/uml_driver.c:2221 tools/virsh.c:9260
 #, c-format
 msgid "cannot read %s"
 msgstr "无法读取 %s"

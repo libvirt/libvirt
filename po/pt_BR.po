@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-06-15 14:59-0400\n"
+"POT-Creation-Date: 2012-08-12 21:18-0400\n"
 "PO-Revision-Date: 2009-07-10 21:10-0300\n"
 "Last-Translator: Mario Italo Filizzola Junior <marioitalo@yahoo.com.br>\n"
 "Language-Team: Brazilian Portuguese <trans-pt_br@lists.fedoraproject.org>\n"
@@ -550,170 +550,170 @@ msgstr ""
 msgid "stream aborted with unexpected status %d"
 msgstr "falha no comando lvs com status de saída %d"
 
-#: gnulib/lib/gai_strerror.c:60
+#: gnulib/lib/gai_strerror.c:57
 #, fuzzy
 msgid "Address family for hostname not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: gnulib/lib/gai_strerror.c:61
+#: gnulib/lib/gai_strerror.c:58
 msgid "Temporary failure in name resolution"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:62
+#: gnulib/lib/gai_strerror.c:59
 msgid "Bad value for ai_flags"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:63
+#: gnulib/lib/gai_strerror.c:60
 msgid "Non-recoverable failure in name resolution"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:64
+#: gnulib/lib/gai_strerror.c:61
 #, fuzzy
 msgid "ai_family not supported"
 msgstr "não há suporte para afinidade de cpu"
 
-#: gnulib/lib/gai_strerror.c:65
+#: gnulib/lib/gai_strerror.c:62
 #, fuzzy
 msgid "Memory allocation failure"
 msgstr "altera a alocação de memória"
 
-#: gnulib/lib/gai_strerror.c:66
+#: gnulib/lib/gai_strerror.c:63
 msgid "No address associated with hostname"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:67
+#: gnulib/lib/gai_strerror.c:64
 #, fuzzy
 msgid "Name or service not known"
 msgstr "Dispositivo do nó não localizado"
 
-#: gnulib/lib/gai_strerror.c:68
+#: gnulib/lib/gai_strerror.c:65
 #, fuzzy
 msgid "Servname not supported for ai_socktype"
 msgstr "nenhum tamanho de mídia removível fornecido para \"%s\""
 
-#: gnulib/lib/gai_strerror.c:69
+#: gnulib/lib/gai_strerror.c:66
 #, fuzzy
 msgid "ai_socktype not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: gnulib/lib/gai_strerror.c:70
+#: gnulib/lib/gai_strerror.c:67
 #, fuzzy
 msgid "System error"
 msgstr "erro de chamada do sistema"
 
-#: gnulib/lib/gai_strerror.c:71
+#: gnulib/lib/gai_strerror.c:68
 #, fuzzy
 msgid "Argument buffer too small"
 msgstr "erro interno: o buffer é pequeno demais"
 
-#: gnulib/lib/gai_strerror.c:73
+#: gnulib/lib/gai_strerror.c:70
 msgid "Processing request in progress"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:74
+#: gnulib/lib/gai_strerror.c:71
 msgid "Request canceled"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:75
+#: gnulib/lib/gai_strerror.c:72
 msgid "Request not canceled"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:76
+#: gnulib/lib/gai_strerror.c:73
 msgid "All requests done"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:77
+#: gnulib/lib/gai_strerror.c:74
 msgid "Interrupted by a signal"
 msgstr ""
 
-#: gnulib/lib/gai_strerror.c:78
+#: gnulib/lib/gai_strerror.c:75
 #, fuzzy
 msgid "Parameter string not correctly encoded"
 msgstr "não há suporte para a ai_family"
 
-#: gnulib/lib/gai_strerror.c:90 src/esx/esx_vi.c:3791
+#: gnulib/lib/gai_strerror.c:87 src/esx/esx_vi.c:3791
 #: src/hyperv/hyperv_wmi.c:325 src/rpc/virnetclientprogram.c:179
 #: src/rpc/virnetclientstream.c:218
 #, fuzzy
 msgid "Unknown error"
 msgstr "erro desconhecido"
 
-#: gnulib/lib/regcomp.c:133
+#: gnulib/lib/regcomp.c:130
 msgid "Success"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:136
+#: gnulib/lib/regcomp.c:133
 msgid "No match"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:139
+#: gnulib/lib/regcomp.c:136
 #, fuzzy
 msgid "Invalid regular expression"
 msgstr "Cliente inválido"
 
-#: gnulib/lib/regcomp.c:142
+#: gnulib/lib/regcomp.c:139
 #, fuzzy
 msgid "Invalid collation character"
 msgstr "Certificado inválido"
 
-#: gnulib/lib/regcomp.c:145
+#: gnulib/lib/regcomp.c:142
 #, fuzzy
 msgid "Invalid character class name"
 msgstr "Contagem inválida de parâmetros"
 
-#: gnulib/lib/regcomp.c:148
+#: gnulib/lib/regcomp.c:145
 msgid "Trailing backslash"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:151
+#: gnulib/lib/regcomp.c:148
 #, fuzzy
 msgid "Invalid back reference"
 msgstr "Parâmetro inválido \"%s\""
 
-#: gnulib/lib/regcomp.c:154
+#: gnulib/lib/regcomp.c:151
 msgid "Unmatched [ or [^"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:157
+#: gnulib/lib/regcomp.c:154
 msgid "Unmatched ( or \\("
 msgstr ""
 
-#: gnulib/lib/regcomp.c:160
+#: gnulib/lib/regcomp.c:157
 msgid "Unmatched \\{"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:163
+#: gnulib/lib/regcomp.c:160
 #, fuzzy
 msgid "Invalid content of \\{\\}"
 msgstr "Cliente inválido"
 
-#: gnulib/lib/regcomp.c:166
+#: gnulib/lib/regcomp.c:163
 #, fuzzy
 msgid "Invalid range end"
 msgstr "argumento inválido em"
 
-#: gnulib/lib/regcomp.c:169
+#: gnulib/lib/regcomp.c:166
 #, fuzzy
 msgid "Memory exhausted"
 msgstr "Tamanho de memória:"
 
-#: gnulib/lib/regcomp.c:172
+#: gnulib/lib/regcomp.c:169
 msgid "Invalid preceding regular expression"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:175
+#: gnulib/lib/regcomp.c:172
 msgid "Premature end of regular expression"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:178
+#: gnulib/lib/regcomp.c:175
 msgid "Regular expression too big"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:181
+#: gnulib/lib/regcomp.c:178
 msgid "Unmatched ) or \\)"
 msgstr ""
 
-#: gnulib/lib/regcomp.c:702
+#: gnulib/lib/regcomp.c:703
 msgid "No previous regular expression"
 msgstr ""
 
@@ -5903,191 +5903,191 @@ msgstr ""
 msgid "this platform is missing dlopen"
 msgstr ""
 
-#: src/lxc/lxc_container.c:140
+#: src/lxc/lxc_container.c:139
 msgid "setsid failed"
 msgstr "falha no setsid"
 
-#: src/lxc/lxc_container.c:146
+#: src/lxc/lxc_container.c:145
 msgid "ioctl(TIOCSTTY) failed"
 msgstr "falha no ioctl(TIOCSTTY)"
 
-#: src/lxc/lxc_container.c:161
+#: src/lxc/lxc_container.c:160
 msgid "dup2(stdin) failed"
 msgstr "falha no dup2(stdin)"
 
-#: src/lxc/lxc_container.c:167
+#: src/lxc/lxc_container.c:166
 msgid "dup2(stdout) failed"
 msgstr "falha no dup2(stdout)"
 
-#: src/lxc/lxc_container.c:173
+#: src/lxc/lxc_container.c:172
 msgid "dup2(stderr) failed"
 msgstr "falha no dup2(stderr)"
 
-#: src/lxc/lxc_container.c:321
+#: src/lxc/lxc_container.c:320
 #, fuzzy
 msgid "Failed to make root private"
 msgstr "falha ao tornar a raiz particular"
 
-#: src/lxc/lxc_container.c:332 src/lxc/lxc_container.c:354
-#: src/lxc/lxc_container.c:594 src/lxc/lxc_container.c:766
+#: src/lxc/lxc_container.c:331 src/lxc/lxc_container.c:353
+#: src/lxc/lxc_container.c:593 src/lxc/lxc_container.c:765
 #, fuzzy, c-format
 msgid "Failed to create %s"
 msgstr "falha ao criar %s"
 
-#: src/lxc/lxc_container.c:341
+#: src/lxc/lxc_container.c:340
 #, fuzzy, c-format
 msgid "Failed to mount empty tmpfs at %s"
 msgstr "falha ao montar tmpfs vazio em %s"
 
-#: src/lxc/lxc_container.c:362
+#: src/lxc/lxc_container.c:361
 #, fuzzy, c-format
 msgid "Failed to bind new root %s into tmpfs"
 msgstr "falha ao associar nova raiz %s em tmpfs"
 
-#: src/lxc/lxc_container.c:370
+#: src/lxc/lxc_container.c:369
 #, fuzzy, c-format
 msgid "Failed to make new root %s readonly"
 msgstr "falha ao tornar a raiz particular"
 
-#: src/lxc/lxc_container.c:380
+#: src/lxc/lxc_container.c:379
 #, fuzzy, c-format
 msgid "Failed to chroot into %s"
 msgstr "falha no chroot em %s"
 
-#: src/lxc/lxc_container.c:388
+#: src/lxc/lxc_container.c:387
 #, fuzzy
 msgid "Failed to pivot root"
 msgstr "Falha ao encaixar raiz"
 
-#: src/lxc/lxc_container.c:447
+#: src/lxc/lxc_container.c:446
 #, fuzzy, c-format
 msgid "Failed to mkdir %s"
 msgstr "falha no mkdir %s"
 
-#: src/lxc/lxc_container.c:472
+#: src/lxc/lxc_container.c:471
 #, fuzzy, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "falha ao montar %s em %s"
 
-#: src/lxc/lxc_container.c:499
+#: src/lxc/lxc_container.c:498
 #, fuzzy
 msgid "Cannot create /dev/pts"
 msgstr "não foi possível criar /dev/pts"
 
-#: src/lxc/lxc_container.c:506
+#: src/lxc/lxc_container.c:505
 #, fuzzy
 msgid "Failed to mount /dev/pts in container"
 msgstr "falha ao montar /dev/pts no contêiner"
 
-#: src/lxc/lxc_container.c:540
+#: src/lxc/lxc_container.c:539
 #, fuzzy, c-format
 msgid "Failed to make device %s"
 msgstr "falha na criação do dispositivo %s"
 
-#: src/lxc/lxc_container.c:550
+#: src/lxc/lxc_container.c:549
 #, fuzzy
 msgid "Failed to make device /dev/ptmx"
 msgstr "falha na criação do dispositivo /dev/ptmx"
 
-#: src/lxc/lxc_container.c:557
+#: src/lxc/lxc_container.c:556
 #, fuzzy
 msgid "Failed to bind-mount /dev/ptmx to /dev/pts/ptmx"
 msgstr "falha ao criar link simbólico /dev/ptmx para /dev/pts/ptmx"
 
-#: src/lxc/lxc_container.c:568
+#: src/lxc/lxc_container.c:567
 #, fuzzy
 msgid "Failed to symlink /dev/pts/0 to /dev/tty1"
 msgstr "falha ao criar link simbólico /dev/ptmx para /dev/pts/ptmx"
 
-#: src/lxc/lxc_container.c:573
+#: src/lxc/lxc_container.c:572
 #, fuzzy
 msgid "Failed to symlink /dev/pts/0 to /dev/console"
 msgstr "falha ao criar link simbólico /dev/ptmx para /dev/pts/ptmx"
 
-#: src/lxc/lxc_container.c:601 src/lxc/lxc_container.c:721
+#: src/lxc/lxc_container.c:600 src/lxc/lxc_container.c:720
 #, fuzzy, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Falha ao criar o diretório de monitoramento %s: %s"
 
-#: src/lxc/lxc_container.c:610
+#: src/lxc/lxc_container.c:609
 #, fuzzy, c-format
 msgid "Failed to make directory %s readonly"
 msgstr "Falha ao criar o diretório %s : %s"
 
-#: src/lxc/lxc_container.c:668 src/util/iohelper.c:151
+#: src/lxc/lxc_container.c:667 src/util/iohelper.c:151
 #, fuzzy, c-format
 msgid "Unable to read %s"
 msgstr "Não foi possível abrir %s"
 
-#: src/lxc/lxc_container.c:698
+#: src/lxc/lxc_container.c:697
 #, c-format
 msgid "%s has unexpected '*' before last line"
 msgstr ""
 
-#: src/lxc/lxc_container.c:813
+#: src/lxc/lxc_container.c:812
 #, fuzzy, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "tipo de sistema de arquivos %d inesperado"
 
-#: src/lxc/lxc_container.c:818
+#: src/lxc/lxc_container.c:817
 #, fuzzy, c-format
 msgid "Cannot mount filesystem type %s"
 msgstr "tipo de sistema de arquivos desconhecido \"%s\""
 
-#: src/lxc/lxc_container.c:859
+#: src/lxc/lxc_container.c:858
 #, fuzzy
 msgid "Failed to read /proc/mounts"
 msgstr "falha ao ler /proc/mounts"
 
-#: src/lxc/lxc_container.c:888
+#: src/lxc/lxc_container.c:887
 #, fuzzy, c-format
 msgid "Failed to unmount '%s'"
 msgstr "falha ao desmontar \"%s\""
 
-#: src/lxc/lxc_container.c:947
+#: src/lxc/lxc_container.c:946
 #, fuzzy
 msgid "Failed to make / slave"
 msgstr "falha ao tornar / escravo"
 
-#: src/lxc/lxc_container.c:995
+#: src/lxc/lxc_container.c:994
 #, fuzzy, c-format
 msgid "Failed to remove capabilities: %d"
 msgstr "falha ao remover as capacidades %d"
 
-#: src/lxc/lxc_container.c:1001
+#: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "falha ao aplicar as capacidades: %d"
 
-#: src/lxc/lxc_container.c:1042
+#: src/lxc/lxc_container.c:1041
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() passou uma definição da mv inválida"
 
-#: src/lxc/lxc_container.c:1067
+#: src/lxc/lxc_container.c:1066
 #, fuzzy, c-format
 msgid "Failed to open tty %s"
 msgstr "falha ao abrir tty %s"
 
-#: src/lxc/lxc_container.c:1077
+#: src/lxc/lxc_container.c:1076
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1085
+#: src/lxc/lxc_container.c:1084
 msgid "Failed to read the container continue message"
 msgstr "Falha ao ler a mensagem de continuidade do contêiner"
 
-#: src/lxc/lxc_container.c:1102
+#: src/lxc/lxc_container.c:1101
 #, fuzzy
 msgid "failed to send continue signal to controller"
 msgstr "falha ao conectar com o socket cliente"
 
-#: src/lxc/lxc_container.c:1210
+#: src/lxc/lxc_container.c:1209
 #, fuzzy
 msgid "Failed to run clone container"
 msgstr "falha ao executar o contêiner clone"
 
-#: src/lxc/lxc_conf.c:68 src/qemu/qemu_driver.c:261 src/uml/uml_conf.c:80
+#: src/lxc/lxc_conf.c:68 src/qemu/qemu_driver.c:261 src/uml/uml_conf.c:79
 #, fuzzy
 msgid "cannot get the host uuid"
 msgstr "não foi possível obter a hora do dia"
@@ -6424,8 +6424,8 @@ msgstr ""
 #: src/libxl/libxl_driver.c:2132 src/libxl/libxl_driver.c:2404
 #: src/libxl/libxl_driver.c:2501 src/libxl/libxl_driver.c:3253
 #: src/libxl/libxl_driver.c:3548 src/libxl/libxl_driver.c:3615
-#: src/libxl/libxl_driver.c:3704 src/openvz/openvz_driver.c:525
-#: src/openvz/openvz_driver.c:563
+#: src/libxl/libxl_driver.c:3704 src/openvz/openvz_driver.c:524
+#: src/openvz/openvz_driver.c:562
 #, fuzzy
 msgid "Domain is not running"
 msgstr "o domínio não está executando"
@@ -6644,7 +6644,7 @@ msgid "Domain is already running"
 msgstr "O domínio \"%s\" já está em execução"
 
 #: src/lxc/lxc_driver.c:2041 src/libxl/libxl_driver.c:171
-#: src/qemu/qemu_driver.c:164 src/uml/uml_driver.c:157
+#: src/qemu/qemu_driver.c:164 src/uml/uml_driver.c:156
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "Falha ao auto inicializar a MV \"%s\": %s\n"
@@ -6688,14 +6688,14 @@ msgid "Cannot create autostart directory %s"
 msgstr "não foi possível criar o diretório de início automático %s"
 
 #: src/lxc/lxc_driver.c:2605 src/libxl/libxl_driver.c:3503
-#: src/qemu/qemu_driver.c:5722 src/uml/uml_driver.c:2142
+#: src/qemu/qemu_driver.c:5722 src/uml/uml_driver.c:2141
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Falha ao criar link simbólico \"%s\" para \"%s\""
 
 #: src/lxc/lxc_driver.c:2612 src/libxl/libxl_driver.c:3510
-#: src/network/bridge_driver.c:2680 src/qemu/qemu_driver.c:5729
-#: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2149
+#: src/network/bridge_driver.c:2679 src/qemu/qemu_driver.c:5729
+#: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2148
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "Falha ao excluir o link simbólico \"%s\""
@@ -6742,10 +6742,10 @@ msgstr "falha ao retomar a operação"
 #: src/qemu/qemu_driver.c:9551 src/qemu/qemu_driver.c:9619
 #: src/qemu/qemu_driver.c:9945 src/qemu/qemu_driver.c:10048
 #: src/qemu/qemu_driver.c:10196 src/qemu/qemu_driver.c:10299
-#: src/test/test_driver.c:2107 src/uml/uml_driver.c:1505
-#: src/uml/uml_driver.c:1530 src/uml/uml_driver.c:1563
-#: src/uml/uml_driver.c:1905 src/uml/uml_driver.c:2023
-#: src/uml/uml_driver.c:2255 src/vmware/vmware_driver.c:638
+#: src/test/test_driver.c:2107 src/uml/uml_driver.c:1504
+#: src/uml/uml_driver.c:1529 src/uml/uml_driver.c:1562
+#: src/uml/uml_driver.c:1904 src/uml/uml_driver.c:2022
+#: src/uml/uml_driver.c:2254 src/vmware/vmware_driver.c:638
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "não existe domínio que corresponda ao uuid \"%s\""
@@ -6773,13 +6773,13 @@ msgstr "não existe domínio que corresponda ao uuid \"%s\""
 #: src/qemu/qemu_driver.c:10054 src/qemu/qemu_driver.c:10063
 #: src/qemu/qemu_driver.c:10202 src/qemu/qemu_driver.c:10305
 #: src/qemu/qemu_driver.c:10319 src/qemu/qemu_migration.c:2217
-#: src/uml/uml_driver.c:2261 src/xen/xen_driver.c:2134
+#: src/uml/uml_driver.c:2260 src/xen/xen_driver.c:2134
 #: src/xen/xen_hypervisor.c:1155 src/xen/xen_hypervisor.c:1239
 #: src/xen/xen_hypervisor.c:1356 src/xen/xm_internal.c:715
 msgid "domain is not running"
 msgstr "o domínio não está executando"
 
-#: src/lxc/lxc_driver.c:2871 src/uml/uml_driver.c:2268
+#: src/lxc/lxc_driver.c:2871 src/uml/uml_driver.c:2267
 #: src/xen/xen_driver.c:2141
 #, fuzzy
 msgid "Named device aliases are not supported"
@@ -6791,7 +6791,7 @@ msgid "cannot find default console device"
 msgstr "não foi possível extrair os dispositivos de rede"
 
 #: src/lxc/lxc_driver.c:2888 src/qemu/qemu_driver.c:10234
-#: src/uml/uml_driver.c:2285 src/xen/xen_driver.c:2162
+#: src/uml/uml_driver.c:2284 src/xen/xen_driver.c:2162
 #, fuzzy, c-format
 msgid "character device %s is not using a PTY"
 msgstr "informação do domínio incompleta, falta o nome"
@@ -6804,7 +6804,7 @@ msgstr "Falha ao abrir o diretório \"%s\""
 #: src/libxl/libxl_driver.c:173 src/qemu/qemu_driver.c:158
 #: src/qemu/qemu_driver.c:166 src/qemu/qemu_hostdev.c:253
 #: src/qemu/qemu_hostdev.c:270 src/qemu/qemu_hostdev.c:288
-#: src/secret/secret_driver.c:500 src/uml/uml_driver.c:158
+#: src/secret/secret_driver.c:500 src/uml/uml_driver.c:157
 #: src/xenapi/xenapi_driver.c:199 tools/virsh.c:531
 msgid "unknown error"
 msgstr "erro desconhecido"
@@ -6907,7 +6907,7 @@ msgid "Failed to create save dir '%s': %s"
 msgstr "Falha ao criar o diretório de status \"%s\":%s\n"
 
 #: src/libxl/libxl_driver.c:949 src/qemu/qemu_domain.c:1195
-#: src/uml/uml_driver.c:921
+#: src/uml/uml_driver.c:920
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "falha na criação do arquivo de log %s"
@@ -6959,17 +6959,17 @@ msgstr "Falha ao destruir o domínio %s"
 #: src/libxl/libxl_driver.c:2440 src/libxl/libxl_driver.c:2496
 #: src/libxl/libxl_driver.c:2560 src/libxl/libxl_driver.c:3240
 #: src/libxl/libxl_driver.c:3543 src/libxl/libxl_driver.c:3610
-#: src/libxl/libxl_driver.c:3699 src/openvz/openvz_driver.c:353
-#: src/openvz/openvz_driver.c:401 src/openvz/openvz_driver.c:475
-#: src/openvz/openvz_driver.c:519 src/openvz/openvz_driver.c:557
-#: src/openvz/openvz_driver.c:600 src/openvz/openvz_driver.c:651
-#: src/openvz/openvz_driver.c:1128 src/openvz/openvz_driver.c:1177
-#: src/openvz/openvz_driver.c:1207 src/openvz/openvz_driver.c:1300
-#: src/uml/uml_driver.c:1477 src/uml/uml_driver.c:1600
-#: src/uml/uml_driver.c:1646 src/uml/uml_driver.c:1675
-#: src/uml/uml_driver.c:1727 src/uml/uml_driver.c:1805
-#: src/uml/uml_driver.c:2088 src/uml/uml_driver.c:2114
-#: src/uml/uml_driver.c:2189 src/vbox/vbox_tmpl.c:2014
+#: src/libxl/libxl_driver.c:3699 src/openvz/openvz_driver.c:352
+#: src/openvz/openvz_driver.c:400 src/openvz/openvz_driver.c:474
+#: src/openvz/openvz_driver.c:518 src/openvz/openvz_driver.c:556
+#: src/openvz/openvz_driver.c:599 src/openvz/openvz_driver.c:650
+#: src/openvz/openvz_driver.c:1127 src/openvz/openvz_driver.c:1176
+#: src/openvz/openvz_driver.c:1206 src/openvz/openvz_driver.c:1299
+#: src/uml/uml_driver.c:1476 src/uml/uml_driver.c:1599
+#: src/uml/uml_driver.c:1645 src/uml/uml_driver.c:1674
+#: src/uml/uml_driver.c:1726 src/uml/uml_driver.c:1804
+#: src/uml/uml_driver.c:2087 src/uml/uml_driver.c:2113
+#: src/uml/uml_driver.c:2188 src/vbox/vbox_tmpl.c:2014
 #: src/vbox/vbox_tmpl.c:2074 src/vbox/vbox_tmpl.c:5084
 #: src/vbox/vbox_tmpl.c:5178 src/vbox/vbox_tmpl.c:5387
 #: src/vbox/vbox_tmpl.c:8334 src/vbox/vbox_tmpl.c:8699
@@ -7000,7 +7000,7 @@ msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr "Falha ao reinicializar o domínio %s"
 
 #: src/libxl/libxl_driver.c:1719 src/qemu/qemu_driver.c:1820
-#: src/uml/uml_driver.c:1575
+#: src/uml/uml_driver.c:1574
 msgid "cannot set memory higher than max memory"
 msgstr ""
 "não foi possível ajustar a memória para um valor maior do que a memória "
@@ -7144,7 +7144,7 @@ msgid "parsing xm config failed"
 msgstr "o pool não tem arquivo de configuração"
 
 #: src/libxl/libxl_driver.c:2807 src/qemu/qemu_driver.c:4899
-#: src/uml/uml_driver.c:1811 src/vmware/vmware_driver.c:644
+#: src/uml/uml_driver.c:1810 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "não foi possível tornar domínio transitório indefinido"
 
@@ -7176,13 +7176,13 @@ msgstr "Falha ao criar domínio inativo %s\n"
 
 #: src/libxl/libxl_driver.c:2934 src/qemu/qemu_hotplug.c:168
 #: src/qemu/qemu_hotplug.c:397 src/qemu/qemu_hotplug.c:518
-#: src/uml/uml_driver.c:1851
+#: src/uml/uml_driver.c:1850
 #, c-format
 msgid "target %s already exists"
 msgstr "o alvo %s já existe"
 
 #: src/libxl/libxl_driver.c:2940 src/qemu/qemu_hotplug.c:536
-#: src/uml/uml_driver.c:1858
+#: src/uml/uml_driver.c:1857
 #, fuzzy
 msgid "disk source path is missing"
 msgstr "falta o rótulo de segurança"
@@ -7193,7 +7193,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr "Falha ao criar domínio inativo %s\n"
 
 #: src/libxl/libxl_driver.c:2964 src/qemu/qemu_driver.c:5015
-#: src/uml/uml_driver.c:1928
+#: src/uml/uml_driver.c:1927
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "barramento de disco \"%s\" não pode ser conectado ligado"
@@ -7204,7 +7204,7 @@ msgid "disk device type '%s' cannot be hotplugged"
 msgstr "esse tipo de dispositivo de disco não pode ser conectado"
 
 #: src/libxl/libxl_driver.c:2997 src/qemu/qemu_hotplug.c:1466
-#: src/qemu/qemu_hotplug.c:1569 src/uml/uml_driver.c:1982
+#: src/qemu/qemu_hotplug.c:1569 src/uml/uml_driver.c:1981
 #, c-format
 msgid "disk %s not found"
 msgstr "disco %s não localizado"
@@ -7225,7 +7225,7 @@ msgid "device type '%s' cannot hot unplugged"
 msgstr "esse tipo de dispositivo de disco não pode ser conectado"
 
 #: src/libxl/libxl_driver.c:3049 src/qemu/qemu_driver.c:5110
-#: src/uml/uml_driver.c:1933
+#: src/uml/uml_driver.c:1932
 #, fuzzy, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "esse tipo de dispositivo não pode ser conectado"
@@ -7293,12 +7293,12 @@ msgid "unknown domain modify action %d"
 msgstr "ação de ciclo de vida %s desconhecida"
 
 #: src/libxl/libxl_driver.c:3481 src/qemu/qemu_driver.c:5700
-#: src/uml/uml_driver.c:2120
+#: src/uml/uml_driver.c:2119
 msgid "cannot set autostart for transient domain"
 msgstr "não foi possível definir auto início para domínio transitório"
 
 #: src/libxl/libxl_driver.c:3496 src/qemu/qemu_driver.c:5715
-#: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2135
+#: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2134
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "não foi possível criar o diretório de início automático %s"
@@ -7386,334 +7386,334 @@ msgstr "falha ao obter informações do nó"
 msgid "Failed to get version info from libxenlight"
 msgstr "Falha ao obter informações do disco"
 
-#: src/network/bridge_driver.c:317 src/qemu/qemu_command.c:258
-#: src/uml/uml_conf.c:124
+#: src/network/bridge_driver.c:316 src/qemu/qemu_command.c:258
+#: src/uml/uml_conf.c:123
 msgid "cannot initialize bridge support"
 msgstr "não foi possível inicializar o suporte à ponte"
 
-#: src/network/bridge_driver.c:698 src/network/bridge_driver.c:704
-#: src/network/bridge_driver.c:716 src/network/bridge_driver.c:783
-#: src/network/bridge_driver.c:789
+#: src/network/bridge_driver.c:697 src/network/bridge_driver.c:703
+#: src/network/bridge_driver.c:715 src/network/bridge_driver.c:782
+#: src/network/bridge_driver.c:788
 #, c-format
 msgid "cannot create directory %s"
 msgstr "não foi possível criar o diretório %s"
 
-#: src/network/bridge_driver.c:775
+#: src/network/bridge_driver.c:774
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr ""
 
-#: src/network/bridge_driver.c:821
+#: src/network/bridge_driver.c:820
 #, fuzzy, c-format
 msgid "bridge  '%s' has an invalid prefix"
 msgstr "o nome de ponte \"%s\" já está sendo utilizado."
 
-#: src/network/bridge_driver.c:857
+#: src/network/bridge_driver.c:856
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "não foi possível gravar o arquivo de configuração \"%s\""
 
-#: src/network/bridge_driver.c:907 src/network/bridge_driver.c:1081
+#: src/network/bridge_driver.c:906 src/network/bridge_driver.c:1080
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Tipo de barramento inválido \"%s\" para disco"
 
-#: src/network/bridge_driver.c:919
+#: src/network/bridge_driver.c:918
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o encaminhamento de \"%s"
 "\""
 
-#: src/network/bridge_driver.c:933
+#: src/network/bridge_driver.c:932
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o encaminhamento para "
 "\"%s\""
 
-#: src/network/bridge_driver.c:969
+#: src/network/bridge_driver.c:968
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable masquerading to %s"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:970
+#: src/network/bridge_driver.c:969
 #, fuzzy
 msgid "failed to add iptables rule to enable masquerading"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:983
+#: src/network/bridge_driver.c:982
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to %s"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:984
+#: src/network/bridge_driver.c:983
 #, fuzzy
 msgid "failed to add iptables rule to enable UDP masquerading"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:997
+#: src/network/bridge_driver.c:996
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to %s"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:998
+#: src/network/bridge_driver.c:997
 #, fuzzy
 msgid "failed to add iptables rule to enable TCP masquerading"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o mascaramento para \"%s"
 "\"\n"
 
-#: src/network/bridge_driver.c:1093
+#: src/network/bridge_driver.c:1092
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o roteamento de \"%s\""
 
-#: src/network/bridge_driver.c:1105
+#: src/network/bridge_driver.c:1104
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o roteamento para \"%s\""
 
-#: src/network/bridge_driver.c:1159
+#: src/network/bridge_driver.c:1158
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block outbound traffic from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para bloquear o tráfego para o "
 "exterior de \"%s\""
 
-#: src/network/bridge_driver.c:1167
+#: src/network/bridge_driver.c:1166
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block inbound traffic to '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para bloquear o tráfego para o "
 "interior de \"%s\""
 
-#: src/network/bridge_driver.c:1176
+#: src/network/bridge_driver.c:1175
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o tráfego através da "
 "ponte em \"%s\""
 
-#: src/network/bridge_driver.c:1185 src/network/bridge_driver.c:1193
+#: src/network/bridge_driver.c:1184 src/network/bridge_driver.c:1192
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow DNS requests from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir requisições de DNS de "
 "\"%s\""
 
-#: src/network/bridge_driver.c:1246 src/network/bridge_driver.c:1254
+#: src/network/bridge_driver.c:1245 src/network/bridge_driver.c:1253
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir requisições DHCP de \"%s"
 "\""
 
-#: src/network/bridge_driver.c:1277 src/network/bridge_driver.c:1285
+#: src/network/bridge_driver.c:1276 src/network/bridge_driver.c:1284
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir requisições de DNS de "
 "\"%s\""
 
-#: src/network/bridge_driver.c:1295
+#: src/network/bridge_driver.c:1294
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir requisições DHCP de \"%s"
 "\""
 
-#: src/network/bridge_driver.c:1305
+#: src/network/bridge_driver.c:1304
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para bloquear o tráfego para o "
 "exterior de \"%s\""
 
-#: src/network/bridge_driver.c:1313
+#: src/network/bridge_driver.c:1312
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para bloquear o tráfego para o "
 "interior de \"%s\""
 
-#: src/network/bridge_driver.c:1322
+#: src/network/bridge_driver.c:1321
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o tráfego através da "
 "ponte em \"%s\""
 
-#: src/network/bridge_driver.c:1541
+#: src/network/bridge_driver.c:1540
 #, fuzzy, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
 msgstr "não foi possível definir o endereço IP na ponte \"%s\" a \"%s\""
 
-#: src/network/bridge_driver.c:1563
+#: src/network/bridge_driver.c:1562
 #, fuzzy, c-format
 msgid "cannot disable %s"
 msgstr "não foi possível ler o arquivo %s"
 
-#: src/network/bridge_driver.c:1579
+#: src/network/bridge_driver.c:1578
 #, fuzzy, c-format
 msgid "cannot enable %s"
 msgstr "não foi possível ler o arquivo %s"
 
-#: src/network/bridge_driver.c:1672
+#: src/network/bridge_driver.c:1671
 #, fuzzy, c-format
 msgid "Network is already in use by interface %s"
 msgstr "a rede já está ativa"
 
-#: src/network/bridge_driver.c:1694
+#: src/network/bridge_driver.c:1693
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:1702
+#: src/network/bridge_driver.c:1701
 #, fuzzy, c-format
 msgid "cannot set IP address on bridge '%s'"
 msgstr "não foi possível definir o endereço IP na ponte \"%s\" a \"%s\""
 
-#: src/network/bridge_driver.c:1727
+#: src/network/bridge_driver.c:1726
 #, c-format
 msgid "cannot create bridge '%s'"
 msgstr "não foi possível criar a ponte \"%s\""
 
-#: src/network/bridge_driver.c:1747
+#: src/network/bridge_driver.c:1746
 #, fuzzy, c-format
 msgid "cannot create dummy tap device '%s' to set mac address on bridge '%s'"
 msgstr "não foi possível definir o endereço IP na ponte \"%s\" a \"%s\""
 
-#: src/network/bridge_driver.c:1759
+#: src/network/bridge_driver.c:1758
 #, fuzzy, c-format
 msgid "cannot set forward delay on bridge '%s'"
 msgstr "não foi possível definir o endereço IP na ponte \"%s\" a \"%s\""
 
-#: src/network/bridge_driver.c:1767
+#: src/network/bridge_driver.c:1766
 #, fuzzy, c-format
 msgid "cannot set STP '%s' on bridge '%s'"
 msgstr "não foi possível definir o endereço IP na ponte \"%s\" a \"%s\""
 
-#: src/network/bridge_driver.c:1799
+#: src/network/bridge_driver.c:1798
 #, c-format
 msgid "failed to bring the bridge '%s' up"
 msgstr "falha ao iniciar a ponte \"%s\""
 
-#: src/network/bridge_driver.c:1808
+#: src/network/bridge_driver.c:1807
 msgid "failed to enable IP forwarding"
 msgstr "falha ao habilitar o encaminhamento de IP"
 
-#: src/network/bridge_driver.c:1823 src/qemu/qemu_command.c:322
+#: src/network/bridge_driver.c:1822 src/qemu/qemu_command.c:322
 #: src/util/macvtap.c:367
 #, fuzzy, c-format
 msgid "cannot set bandwidth limits on %s"
 msgstr "não foi possível enviar o comando %s"
 
-#: src/network/bridge_driver.c:1987
+#: src/network/bridge_driver.c:1986
 msgid "network is already active"
 msgstr "a rede já está ativa"
 
-#: src/network/bridge_driver.c:2089 src/network/bridge_driver.c:2416
-#: src/network/bridge_driver.c:2503 src/network/bridge_driver.c:2526
-#: src/network/bridge_driver.c:2565 src/network/bridge_driver.c:2620
-#: src/network/bridge_driver.c:2645
+#: src/network/bridge_driver.c:2088 src/network/bridge_driver.c:2415
+#: src/network/bridge_driver.c:2502 src/network/bridge_driver.c:2525
+#: src/network/bridge_driver.c:2564 src/network/bridge_driver.c:2619
+#: src/network/bridge_driver.c:2644
 msgid "no network with matching uuid"
 msgstr "não existe rede que corresponda com o uuid"
 
-#: src/network/bridge_driver.c:2112 src/network/bridge_driver.c:2777
-#: src/network/bridge_driver.c:2973 src/network/bridge_driver.c:3074
-#: src/network/bridge_driver.c:3161
+#: src/network/bridge_driver.c:2111 src/network/bridge_driver.c:2776
+#: src/network/bridge_driver.c:2972 src/network/bridge_driver.c:3073
+#: src/network/bridge_driver.c:3160
 #, fuzzy, c-format
 msgid "no network with matching name '%s'"
 msgstr "não existe rede que corresponda com o nome"
 
-#: src/network/bridge_driver.c:2375
+#: src/network/bridge_driver.c:2374
 msgid ""
 "Multiple dhcp sections found. dhcp is supported only for a single IPv4 "
 "address on each network"
 msgstr ""
 
-#: src/network/bridge_driver.c:2422
+#: src/network/bridge_driver.c:2421
 msgid "network is still active"
 msgstr "a rede ainda está ativa"
 
-#: src/network/bridge_driver.c:2532
+#: src/network/bridge_driver.c:2531
 msgid "network is not active"
 msgstr "a rede não está ativa"
 
-#: src/network/bridge_driver.c:2588
+#: src/network/bridge_driver.c:2587
 msgid "no network with matching id"
 msgstr "não existe rede que corresponda com o id"
 
-#: src/network/bridge_driver.c:2594 src/test/test_driver.c:3285
+#: src/network/bridge_driver.c:2593 src/test/test_driver.c:3285
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "A rede \"%s\" não tem um nome de ponte."
 
-#: src/network/bridge_driver.c:2651
+#: src/network/bridge_driver.c:2650
 msgid "cannot set autostart for transient network"
 msgstr "não foi possível definir auto início para rede transitória"
 
-#: src/network/bridge_driver.c:2666
+#: src/network/bridge_driver.c:2665
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "não foi possível criar o diretório de início automático \"%s\""
 
-#: src/network/bridge_driver.c:2673 src/storage/storage_driver.c:1055
+#: src/network/bridge_driver.c:2672 src/storage/storage_driver.c:1055
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "Falha ao criar o link simbólico \"%s\" para \"%s\""
 
-#: src/network/bridge_driver.c:2875 src/network/bridge_driver.c:2988
-#: src/network/bridge_driver.c:3089
+#: src/network/bridge_driver.c:2874 src/network/bridge_driver.c:2987
+#: src/network/bridge_driver.c:3088
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 
-#: src/network/bridge_driver.c:2913
+#: src/network/bridge_driver.c:2912
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr ""
 
-#: src/network/bridge_driver.c:2981 src/network/bridge_driver.c:3082
+#: src/network/bridge_driver.c:2980 src/network/bridge_driver.c:3081
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr ""
 
-#: src/network/bridge_driver.c:3006 src/network/bridge_driver.c:3105
+#: src/network/bridge_driver.c:3005 src/network/bridge_driver.c:3104
 #, fuzzy, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr "A rede \"%s\" não tem um nome de ponte."
 
-#: src/network/bridge_driver.c:3022
+#: src/network/bridge_driver.c:3021
 #, fuzzy, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr "a rede já está ativa"
 
-#: src/network/bridge_driver.c:3175
+#: src/network/bridge_driver.c:3174
 #, fuzzy, c-format
 msgid "network '%s' doesn't have an IPv4 address"
 msgstr "A rede \"%s\" não tem um nome de ponte."
 
-#: src/network/bridge_driver.c:3197
+#: src/network/bridge_driver.c:3196
 #, fuzzy, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr "A rede \"%s\" não tem um nome de ponte."
 
-#: src/network/bridge_driver.c:3206
+#: src/network/bridge_driver.c:3205
 #, fuzzy, c-format
 msgid "Failed to get IP address for '%s' (network '%s')"
 msgstr "Falha ao criar um volume a partir de %s"
@@ -7796,17 +7796,17 @@ msgstr ""
 msgid "%s: %s"
 msgstr "socket: %s"
 
-#: src/node_device/node_device_linux_sysfs.c:60
+#: src/node_device/node_device_linux_sysfs.c:59
 #, fuzzy, c-format
 msgid "Failed to open WWN path '%s' for reading"
 msgstr "falha ao abrir %s para leitura"
 
-#: src/node_device/node_device_linux_sysfs.c:139
+#: src/node_device/node_device_linux_sysfs.c:138
 #, fuzzy, c-format
 msgid "Failed to read WWPN for host%d"
 msgstr "Falha ao ler de \"%s\" : %s"
 
-#: src/node_device/node_device_linux_sysfs.c:148
+#: src/node_device/node_device_linux_sysfs.c:147
 #, fuzzy, c-format
 msgid "Failed to read WWNN for host%d"
 msgstr "Falha ao ler de \"%s\" : %s"
@@ -7907,7 +7907,7 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
 #: src/nodeinfo.c:106 src/nodeinfo.c:152 src/nodeinfo.c:617 src/nodeinfo.c:652
-#: src/nodeinfo.c:716 src/uml/uml_driver.c:2211 src/util/command.c:264
+#: src/nodeinfo.c:716 src/uml/uml_driver.c:2210 src/util/command.c:264
 #: src/util/pci.c:1539
 #, c-format
 msgid "cannot open %s"
@@ -8290,7 +8290,7 @@ msgstr ""
 "Não foi possível ler \"OSTEMPLATE\" da configuração para o contêiner %d"
 
 #: src/openvz/openvz_conf.c:458 src/openvz/openvz_conf.c:1048
-#: src/openvz/openvz_driver.c:1647
+#: src/openvz/openvz_driver.c:1646
 msgid "Failed to parse vzlist output"
 msgstr "Falha na análise da saída do vzlis"
 
@@ -8313,149 +8313,149 @@ msgstr "pid inválido"
 msgid "Failed to scan configuration directory"
 msgstr "falha ao ler o arquivo de configuração "
 
-#: src/openvz/openvz_driver.c:112
+#: src/openvz/openvz_driver.c:111
 msgid "Container is not defined"
 msgstr "O contêiner não está definido"
 
-#: src/openvz/openvz_driver.c:157 src/openvz/openvz_driver.c:851
+#: src/openvz/openvz_driver.c:156 src/openvz/openvz_driver.c:850
 #, c-format
 msgid "Could not put argument to %s"
 msgstr "Não foi possível colocar argumento para %s"
 
-#: src/openvz/openvz_driver.c:175
+#: src/openvz/openvz_driver.c:174
 msgid "only one filesystem supported"
 msgstr "somente há suporte a um sistema de arquivos"
 
-#: src/openvz/openvz_driver.c:184
+#: src/openvz/openvz_driver.c:183
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:195
+#: src/openvz/openvz_driver.c:194
 #, fuzzy
 msgid "Could not convert domain name to VEID"
 msgstr "converte um nome ou id do domínio para o UUID do domínio"
 
-#: src/openvz/openvz_driver.c:201
+#: src/openvz/openvz_driver.c:200
 #, fuzzy
 msgid "Could not copy default config"
 msgstr "Não foi possível ler a configuração do contêiner"
 
-#: src/openvz/openvz_driver.c:207
+#: src/openvz/openvz_driver.c:206
 msgid "Could not set the source dir for the filesystem"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:214
+#: src/openvz/openvz_driver.c:213
 msgid "Error creating command for container"
 msgstr "Erro ao criar comando para o contêiner"
 
-#: src/openvz/openvz_driver.c:366
+#: src/openvz/openvz_driver.c:365
 #, c-format
 msgid "cannot read cputime for domain %d"
 msgstr "não foi possível ler o cputime para o domínio %d"
 
-#: src/openvz/openvz_driver.c:610 src/openvz/openvz_driver.c:661
+#: src/openvz/openvz_driver.c:609 src/openvz/openvz_driver.c:660
 #: src/vmware/vmware_driver.c:336 src/vmware/vmware_driver.c:395
 #: src/vmware/vmware_driver.c:491
 msgid "domain is not in running state"
 msgstr "o domínio não está no estado de execução"
 
-#: src/openvz/openvz_driver.c:751
+#: src/openvz/openvz_driver.c:750
 msgid "Container ID is not specified"
 msgstr "ID do contêiner não está especificado"
 
-#: src/openvz/openvz_driver.c:787
+#: src/openvz/openvz_driver.c:786
 msgid "Could not generate eth name for container"
 msgstr "Não foi possível gerar o nome do eth para o contêiner"
 
-#: src/openvz/openvz_driver.c:799
+#: src/openvz/openvz_driver.c:798
 msgid "Could not generate veth name"
 msgstr "Não foi possível gerar o nome do veth"
 
-#: src/openvz/openvz_driver.c:880
+#: src/openvz/openvz_driver.c:879
 msgid "Could not configure network"
 msgstr "Não foi possível configurar a rede"
 
-#: src/openvz/openvz_driver.c:891
+#: src/openvz/openvz_driver.c:890
 msgid "cannot replace NETIF config"
 msgstr "não foi possível substituir a configuração NETIF"
 
-#: src/openvz/openvz_driver.c:923
+#: src/openvz/openvz_driver.c:922
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
 msgstr "Já existe uma MV OPENVZ ativa com a id \"%s\""
 
-#: src/openvz/openvz_driver.c:934 src/openvz/openvz_driver.c:1016
+#: src/openvz/openvz_driver.c:933 src/openvz/openvz_driver.c:1015
 #, fuzzy
 msgid "Error creating initial configuration"
 msgstr "alocando a configuração"
 
-#: src/openvz/openvz_driver.c:942 src/openvz/openvz_driver.c:1022
+#: src/openvz/openvz_driver.c:941 src/openvz/openvz_driver.c:1021
 msgid "Could not set UUID"
 msgstr "Não foi possível ajustar o UUID"
 
-#: src/openvz/openvz_driver.c:951 src/vbox/vbox_tmpl.c:4878
+#: src/openvz/openvz_driver.c:950 src/vbox/vbox_tmpl.c:4878
 msgid "current vcpu count must equal maximum"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:957 src/openvz/openvz_driver.c:1042
+#: src/openvz/openvz_driver.c:956 src/openvz/openvz_driver.c:1041
 msgid "Could not set number of virtual cpu"
 msgstr "Não foi possível definir o número de cpus virtuais"
 
-#: src/openvz/openvz_driver.c:965
+#: src/openvz/openvz_driver.c:964
 #, fuzzy
 msgid "Could not set memory size"
 msgstr "Não foi possível obter o horário atual"
 
-#: src/openvz/openvz_driver.c:1003
+#: src/openvz/openvz_driver.c:1002
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%s'"
 msgstr "Já existe uma MV OPENVZ definida com o id \"%s\""
 
-#: src/openvz/openvz_driver.c:1076
+#: src/openvz/openvz_driver.c:1075
 msgid "no domain with matching id"
 msgstr "nenhum domínio com id compatível"
 
-#: src/openvz/openvz_driver.c:1085 src/vmware/vmware_driver.c:217
+#: src/openvz/openvz_driver.c:1084 src/vmware/vmware_driver.c:217
 msgid "domain is not in shutoff state"
 msgstr "o domínio não está no estado desligado"
 
-#: src/openvz/openvz_driver.c:1213
+#: src/openvz/openvz_driver.c:1212
 msgid "Could not read container config"
 msgstr "Não foi possível ler a configuração do contêiner"
 
-#: src/openvz/openvz_driver.c:1237 src/qemu/qemu_driver.c:993
+#: src/openvz/openvz_driver.c:1236 src/qemu/qemu_driver.c:993
 #, c-format
 msgid "unknown type '%s'"
 msgstr "tipo desconhecido \"%s\""
 
-#: src/openvz/openvz_driver.c:1246 src/openvz/openvz_driver.c:1290
+#: src/openvz/openvz_driver.c:1245 src/openvz/openvz_driver.c:1289
 #, fuzzy, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "não há suporte para o tipo de convidado"
 
-#: src/openvz/openvz_driver.c:1306
+#: src/openvz/openvz_driver.c:1305
 msgid "VCPUs should be >= 1"
 msgstr "VCPUs deveriam ser >= 1"
 
-#: src/openvz/openvz_driver.c:1359
+#: src/openvz/openvz_driver.c:1358
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:1366
+#: src/openvz/openvz_driver.c:1365
 msgid "OpenVZ control file /proc/vz does not exist"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:1372
+#: src/openvz/openvz_driver.c:1371
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:1461 src/openvz/openvz_driver.c:1516
+#: src/openvz/openvz_driver.c:1460 src/openvz/openvz_driver.c:1515
 #, c-format
 msgid "Could not parse VPS ID %s"
 msgstr "Não foi possível analisar o ID %s do VPS"
 
-#: src/openvz/openvz_driver.c:1472 src/openvz/openvz_driver.c:1531
+#: src/openvz/openvz_driver.c:1471 src/openvz/openvz_driver.c:1530
 #, fuzzy
 msgid "failed to close file"
 msgstr "falha ao abrir o arquivo"
@@ -8857,24 +8857,24 @@ msgstr "a rede ainda está ativa"
 msgid "Network type %d is not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: src/qemu/qemu_command.c:287 src/uml/uml_conf.c:150
+#: src/qemu/qemu_command.c:287 src/uml/uml_conf.c:149
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr ""
 "Falha ao adicionar a interface tap à ponte. %s não é um dispositivo de ponte"
 
-#: src/qemu/qemu_command.c:292 src/uml/uml_conf.c:154
+#: src/qemu/qemu_command.c:292 src/uml/uml_conf.c:153
 msgid ""
 "Failed to add tap interface to bridge. Your kernel is missing the 'tun' "
 "module or CONFIG_TUN, or you need to add the /dev/net/tun device node."
 msgstr ""
 
-#: src/qemu/qemu_command.c:298 src/uml/uml_conf.c:159
+#: src/qemu/qemu_command.c:298 src/uml/uml_conf.c:158
 #, fuzzy, c-format
 msgid "Failed to add tap interface to bridge '%s'"
 msgstr "Falha ao adicionar a interface tap \"%s\" à ponte \"%s\" : %s"
 
-#: src/qemu/qemu_command.c:302 src/uml/uml_conf.c:163
+#: src/qemu/qemu_command.c:302 src/uml/uml_conf.c:162
 #, fuzzy, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s'"
 msgstr "Falha ao adicionar a interface tap \"%s\" à ponte \"%s\" : %s"
@@ -8996,7 +8996,7 @@ msgid "driver serial '%s' contains unsafe characters"
 msgstr "O nome do modelo contém caracteres inválidos"
 
 #: src/qemu/qemu_command.c:1568 src/qemu/qemu_command.c:1801
-#: src/qemu/qemu_command.c:4002 src/uml/uml_conf.c:453
+#: src/qemu/qemu_command.c:4002 src/uml/uml_conf.c:452
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "não há suporte para o tipo de disco \"%s\""
@@ -9653,39 +9653,39 @@ msgstr ""
 msgid "Unable to resolve %s for pid %u"
 msgstr "Não foi possível abrir %s"
 
-#: src/qemu/qemu_conf.c:111
+#: src/qemu/qemu_conf.c:110
 #, fuzzy
 msgid "unable to find hugetlbfs mountpoint"
 msgstr "Não foi possível daemonisar o processo QRMU"
 
-#: src/qemu/qemu_conf.c:292
+#: src/qemu/qemu_conf.c:291
 #, fuzzy
 msgid "cgroup_controllers must be a list of strings"
 msgstr ""
 "remoteReadConfigFile: %s: %s: deve ser uma string ou uma lista de strings\n"
 
-#: src/qemu/qemu_conf.c:298
+#: src/qemu/qemu_conf.c:297
 #, fuzzy, c-format
 msgid "Unknown cgroup controller '%s'"
 msgstr "tipo de vídeo \"%s\" desconhecido"
 
-#: src/qemu/qemu_conf.c:332
+#: src/qemu/qemu_conf.c:331
 msgid "cgroup_device_acl must be a list of strings"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:406
+#: src/qemu/qemu_conf.c:405
 #, fuzzy, c-format
 msgid "failed to enable mac filter in '%s'"
 msgstr "falha ao ler comprimento dos meta dados em \"%s\""
 
-#: src/qemu/qemu_conf.c:414
+#: src/qemu/qemu_conf.c:413
 #, fuzzy, c-format
 msgid "failed to add rule to drop all frames in '%s'"
 msgstr ""
 "falha ao adicionar a regra do iptables para permitir o encaminhamento para "
 "\"%s\""
 
-#: src/qemu/qemu_conf.c:457
+#: src/qemu/qemu_conf.c:456
 #, fuzzy, c-format
 msgid "Failed to load lock manager %s"
 msgstr "Falha ao analisar o caminho do bloco %s"
@@ -9926,8 +9926,8 @@ msgstr ""
 msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1100 src/uml/uml_driver.c:1399
-#: src/uml/uml_driver.c:1435 src/vbox/vbox_tmpl.c:1216
+#: src/qemu/qemu_driver.c:1100 src/uml/uml_driver.c:1398
+#: src/uml/uml_driver.c:1434 src/vbox/vbox_tmpl.c:1216
 #: src/vbox/vbox_tmpl.c:1503 src/vbox/vbox_tmpl.c:1555
 #: src/vbox/vbox_tmpl.c:1606 src/vbox/vbox_tmpl.c:1659
 #: src/vbox/vbox_tmpl.c:1710 src/vbox/vbox_tmpl.c:1786
@@ -9963,7 +9963,7 @@ msgstr "não há suporte à migração de STDIO com este binário do QEMU"
 msgid "cannot resize the maximum memory on an active domain"
 msgstr "não foi possível ajustar a memória de um domínio ativo"
 
-#: src/qemu/qemu_driver.c:1837 src/uml/uml_driver.c:1569
+#: src/qemu/qemu_driver.c:1837 src/uml/uml_driver.c:1568
 msgid "cannot set memory of an active domain"
 msgstr "não foi possível ajustar a memória de um domínio ativo"
 
@@ -9972,7 +9972,7 @@ msgstr "não foi possível ajustar a memória de um domínio ativo"
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2020 src/uml/uml_driver.c:1611
+#: src/qemu/qemu_driver.c:2020 src/uml/uml_driver.c:1610
 msgid "cannot read cputime for domain"
 msgstr "não foi possível ler o cputime para o domínio"
 
@@ -10271,7 +10271,7 @@ msgstr "não foi possível excluir o domínio ativo"
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "barramento de disco \"%s\" não pode ser conectado ligado"
 
-#: src/qemu/qemu_driver.c:5136 src/uml/uml_driver.c:2044
+#: src/qemu/qemu_driver.c:5136 src/uml/uml_driver.c:2043
 #, fuzzy
 msgid "This type of disk cannot be hot unplugged"
 msgstr "esse tipo de dispositivo de disco não pode ser conectado"
@@ -10281,7 +10281,7 @@ msgstr "esse tipo de dispositivo de disco não pode ser conectado"
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "barramento de disco \"%s\" não pode ser conectado ligado"
 
-#: src/qemu/qemu_driver.c:5193 src/uml/uml_driver.c:2048
+#: src/qemu/qemu_driver.c:5193 src/uml/uml_driver.c:2047
 #, fuzzy
 msgid "This type of device cannot be hot unplugged"
 msgstr "esse tipo de dispositivo de disco não pode ser conectado"
@@ -10498,11 +10498,11 @@ msgid "interface stats not implemented on this platform"
 msgstr "o console não foi implementado nesta plataforma"
 
 #: src/qemu/qemu_driver.c:7385 src/qemu/qemu_driver.c:7550
-#: src/uml/uml_driver.c:2195
+#: src/uml/uml_driver.c:2194
 msgid "NULL or empty path"
 msgstr "caminho NULL (nulo) ou vazio "
 
-#: src/qemu/qemu_driver.c:7392 src/uml/uml_driver.c:2202
+#: src/qemu/qemu_driver.c:7392 src/uml/uml_driver.c:2201
 #, fuzzy, c-format
 msgid "invalid path '%s'"
 msgstr "Caminho inválido: %s"
@@ -10740,7 +10740,7 @@ msgstr "URI da conexão com o hypervisor"
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10227 src/uml/uml_driver.c:2279
+#: src/qemu/qemu_driver.c:10227 src/uml/uml_driver.c:2278
 #, fuzzy, c-format
 msgid "cannot find character device %s"
 msgstr "há excesso de dispositivos de caracteres"
@@ -12406,7 +12406,7 @@ msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
 #: src/qemu/qemu_process.c:2815 src/qemu/qemu_process.c:3480
-#: src/uml/uml_driver.c:885
+#: src/uml/uml_driver.c:884
 msgid "VM is already active"
 msgstr "A MV já está ativa"
 
@@ -12421,7 +12421,7 @@ msgid "Unable to find an unused SPICE TLS port"
 msgstr "Não foi possível localizar uma porta VNC disponível"
 
 #: src/qemu/qemu_process.c:2911 src/qemu/qemu_process.c:3496
-#: src/uml/uml_driver.c:907
+#: src/uml/uml_driver.c:906
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "não foi possível criar o diretório de log %s"
@@ -14356,8 +14356,8 @@ msgid "cannot read mount list '%s'"
 msgstr "não foi possível ler a lista de montagem \"%s\""
 
 #: src/storage/storage_backend_fs.c:395 src/storage/storage_backend_fs.c:460
-#: src/storage/storage_backend_iscsi.c:629
-#: src/storage/storage_backend_iscsi.c:661
+#: src/storage/storage_backend_iscsi.c:628
+#: src/storage/storage_backend_iscsi.c:660
 msgid "missing source host"
 msgstr "falta o hospedeiro fonte"
 
@@ -14366,8 +14366,8 @@ msgid "missing source path"
 msgstr "falta o caminho da origem"
 
 #: src/storage/storage_backend_fs.c:406 src/storage/storage_backend_fs.c:471
-#: src/storage/storage_backend_iscsi.c:636
-#: src/storage/storage_backend_iscsi.c:668
+#: src/storage/storage_backend_iscsi.c:635
+#: src/storage/storage_backend_iscsi.c:667
 msgid "missing source device"
 msgstr "falta o dispositivo de origem"
 
@@ -14470,67 +14470,67 @@ msgstr "a criação de imagens não-brutas não é suportada sem o qemu-img"
 msgid "cannot unlink file '%s'"
 msgstr "não foi possível desvincular o arquivo \"%s\""
 
-#: src/storage/storage_backend_iscsi.c:67
+#: src/storage/storage_backend_iscsi.c:66
 #, c-format
 msgid "host lookup failed %s"
 msgstr "busca pelo hospedeiro falhou %s"
 
-#: src/storage/storage_backend_iscsi.c:74
+#: src/storage/storage_backend_iscsi.c:73
 #, c-format
 msgid "no IP address for target %s"
 msgstr "não há endereço IP para o alvo %s"
 
-#: src/storage/storage_backend_iscsi.c:83
+#: src/storage/storage_backend_iscsi.c:82
 #, c-format
 msgid "cannot format ip addr for %s"
 msgstr "não foi possível formatar o endereço ip para %s"
 
-#: src/storage/storage_backend_iscsi.c:169
+#: src/storage/storage_backend_iscsi.c:168
 msgid "cannot find session"
 msgstr "não foi possível localizar a sessão"
 
-#: src/storage/storage_backend_iscsi.c:193
+#: src/storage/storage_backend_iscsi.c:192
 #, fuzzy, c-format
 msgid "Could not allocate memory for output of '%s'"
 msgstr "falha ao alocar memória para lista de configuração %s"
 
-#: src/storage/storage_backend_iscsi.c:208
+#: src/storage/storage_backend_iscsi.c:207
 #, c-format
 msgid ""
 "Failed to open stream for file descriptor when reading output from '%s': '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:220
+#: src/storage/storage_backend_iscsi.c:219
 #, c-format
 msgid "Unexpected line > %d characters when parsing output of '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:238
+#: src/storage/storage_backend_iscsi.c:237
 #, c-format
 msgid "Missing space when parsing output of '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:289
+#: src/storage/storage_backend_iscsi.c:288
 #, fuzzy
 msgid "Failed to initialize random generator when creating iscsi interface"
 msgstr "Falha ao inicializar a autenticação SASL %s"
 
-#: src/storage/storage_backend_iscsi.c:306
+#: src/storage/storage_backend_iscsi.c:305
 #, c-format
 msgid "Failed to run command '%s' to create new iscsi interface"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:316
+#: src/storage/storage_backend_iscsi.c:315
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:409
+#: src/storage/storage_backend_iscsi.c:408
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:417
+#: src/storage/storage_backend_iscsi.c:416
 #, fuzzy, c-format
 msgid "Failed to find LUs on host %u"
 msgstr "Falha ao localizar algum LUN para a sessão \"%s\""
@@ -14586,7 +14586,7 @@ msgstr "não foi possível definir o modo do arquivo \"%s\""
 msgid "cannot find newly created volume '%s'"
 msgstr "não foi possível localizar o volume recém criado \"%s\""
 
-#: src/storage/storage_backend_mpath.c:233
+#: src/storage/storage_backend_mpath.c:232
 #, fuzzy, c-format
 msgid "Failed to get %s minor number"
 msgstr "Falha ao obter informações do disco"
@@ -15067,187 +15067,187 @@ msgstr "não há volume de armazenamento que coincida com o caminho \"%s\""
 msgid "Not enough free space in pool for volume '%s'"
 msgstr "Não há espaço livre no pool para o volume \"%s\""
 
-#: src/uml/uml_conf.c:215
+#: src/uml/uml_conf.c:214
 msgid "IP address not supported for ethernet inteface"
 msgstr ""
 
-#: src/uml/uml_conf.c:220
+#: src/uml/uml_conf.c:219
 msgid "script execution not supported for ethernet inteface"
 msgstr ""
 
-#: src/uml/uml_conf.c:227
+#: src/uml/uml_conf.c:226
 #, fuzzy
 msgid "TCP server networking type not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: src/uml/uml_conf.c:232
+#: src/uml/uml_conf.c:231
 #, fuzzy
 msgid "TCP client networking type not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: src/uml/uml_conf.c:247
+#: src/uml/uml_conf.c:246
 #, c-format
 msgid "Network '%s' not found"
 msgstr "Rede \"%s\" não encontrada"
 
-#: src/uml/uml_conf.c:277
+#: src/uml/uml_conf.c:276
 #, fuzzy
 msgid "internal networking type not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: src/uml/uml_conf.c:282
+#: src/uml/uml_conf.c:281
 #, fuzzy
 msgid "direct networking type not supported"
 msgstr "Não há suporte para o tipo %d de rede"
 
-#: src/uml/uml_conf.c:351
+#: src/uml/uml_conf.c:350
 msgid "only TCP listen is supported for chr device"
 msgstr "para dispositivo chr, somente há suporte à escuta TCP "
 
-#: src/uml/uml_conf.c:369
+#: src/uml/uml_conf.c:368
 #, fuzzy, c-format
 msgid "failed to open chardev file: %s"
 msgstr "Falha ao abrir o diretório \"%s\""
 
-#: src/uml/uml_conf.c:390
+#: src/uml/uml_conf.c:389
 #, c-format
 msgid "unsupported chr device type %d"
 msgstr "não há suporte para o tipo %d de dispositivo chr"
 
-#: src/uml/uml_driver.c:460
+#: src/uml/uml_driver.c:459
 msgid "cannot initialize inotify"
 msgstr "não foi possível inicializar o inotify"
 
-#: src/uml/uml_driver.c:466
+#: src/uml/uml_driver.c:465
 #, c-format
 msgid "Failed to create monitor directory %s: %s"
 msgstr "Falha ao criar o diretório de monitoramento %s: %s"
 
-#: src/uml/uml_driver.c:500
+#: src/uml/uml_driver.c:499
 #, fuzzy
 msgid "umlStartup: out of memory"
 msgstr "umlStartup: excedido o limite da memória\n"
 
-#: src/uml/uml_driver.c:665
+#: src/uml/uml_driver.c:664
 #, c-format
 msgid "failed to read pid: %s"
 msgstr "falha ao ler o pid: %s"
 
-#: src/uml/uml_driver.c:687
+#: src/uml/uml_driver.c:686
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:717
+#: src/uml/uml_driver.c:716
 msgid "cannot open socket"
 msgstr "não foi possível abrir o socket"
 
-#: src/uml/uml_driver.c:727
+#: src/uml/uml_driver.c:726
 msgid "cannot bind socket"
 msgstr "não foi possível associar o socket"
 
-#: src/uml/uml_driver.c:781
+#: src/uml/uml_driver.c:780
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr "não foi possível enviar comando muito longo %s (%d bytes)"
 
-#: src/uml/uml_driver.c:787
+#: src/uml/uml_driver.c:786
 #, c-format
 msgid "Command %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:794
+#: src/uml/uml_driver.c:793
 #, c-format
 msgid "cannot send command %s"
 msgstr "não foi possível enviar o comando %s"
 
-#: src/uml/uml_driver.c:807
+#: src/uml/uml_driver.c:806
 #, c-format
 msgid "cannot read reply %s"
 msgstr "não foi possível ler a resposta %s"
 
-#: src/uml/uml_driver.c:813
+#: src/uml/uml_driver.c:812
 #, fuzzy, c-format
 msgid "incomplete reply %s"
 msgstr "meta dados incompletos em \"%s\""
 
-#: src/uml/uml_driver.c:851
+#: src/uml/uml_driver.c:850
 msgid "Cleanup tap"
 msgstr ""
 
-#: src/uml/uml_driver.c:862
+#: src/uml/uml_driver.c:861
 #, c-format
 msgid "Cleanup '%s'"
 msgstr ""
 
-#: src/uml/uml_driver.c:865
+#: src/uml/uml_driver.c:864
 #, fuzzy, c-format
 msgid "Cleanup failed %d"
 msgstr "falha na operação: %s"
 
-#: src/uml/uml_driver.c:869
+#: src/uml/uml_driver.c:868
 msgid "Cleanup tap done"
 msgstr ""
 
-#: src/uml/uml_driver.c:891
+#: src/uml/uml_driver.c:890
 msgid "no kernel specified"
 msgstr "nenhum kernel especificado"
 
-#: src/uml/uml_driver.c:900
+#: src/uml/uml_driver.c:899
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "Não foi possível localizar o kernel UML %s"
 
-#: src/uml/uml_driver.c:930
+#: src/uml/uml_driver.c:929
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "Não foi possível definir a flag close-on-exec do arquivo de log da MV "
 
-#: src/uml/uml_driver.c:1043
+#: src/uml/uml_driver.c:1042
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr ""
 
-#: src/uml/uml_driver.c:1050
+#: src/uml/uml_driver.c:1049
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr ""
 
-#: src/uml/uml_driver.c:1059
+#: src/uml/uml_driver.c:1058
 #, fuzzy
 msgid "uml state driver is not active"
 msgstr "o pool de armazenamento não está ativo"
 
-#: src/uml/uml_driver.c:1304
+#: src/uml/uml_driver.c:1303
 #, c-format
 msgid "cannot parse version %s"
 msgstr "não foi possível analisar a versão %s"
 
-#: src/uml/uml_driver.c:1406
+#: src/uml/uml_driver.c:1405
 msgid "shutdown operation failed"
 msgstr "falha na operação de desligamento"
 
-#: src/uml/uml_driver.c:1536
+#: src/uml/uml_driver.c:1535
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "não foi possível ajustar o valor máximo da memória para que seja menor do "
 "que a memória atual"
 
-#: src/uml/uml_driver.c:1911
+#: src/uml/uml_driver.c:1910
 msgid "cannot attach device on inactive domain"
 msgstr "não foi possível conectar o dispositivo a um domínio inativo"
 
-#: src/uml/uml_driver.c:1957 src/uml/uml_driver.c:2069
+#: src/uml/uml_driver.c:1956 src/uml/uml_driver.c:2068
 #: src/vbox/vbox_tmpl.c:5333 src/vbox/vbox_tmpl.c:5348
 #: src/vbox/vbox_tmpl.c:5487
 #, fuzzy
 msgid "cannot modify the persistent configuration of a domain"
 msgstr "Edita a configuração XML para um domínio."
 
-#: src/uml/uml_driver.c:2029
+#: src/uml/uml_driver.c:2028
 msgid "cannot detach device on inactive domain"
 msgstr "não foi possível desconectar o dispositivo do domínio inativo"
 
-#: src/uml/uml_driver.c:2222 tools/virsh.c:9260
+#: src/uml/uml_driver.c:2221 tools/virsh.c:9260
 #, c-format
 msgid "cannot read %s"
 msgstr "não foi possível ler %s"
