@@ -85,9 +85,9 @@ CLEANFILES += test_libvirtd.aug
 
 libvirtd.8: $(srcdir)/libvirtd.8.in
 	sed \
-	    -e 's![@]sysconfdir[@]!$(sysconfdir)!g' \
-	    -e 's![@]localstatedir[@]!$(localstatedir)!g' \
-	    -e 's![@]remote_pid_file[@]!$(REMOTE_PID_FILE)!g' \
+	    -e 's!SYSCONFDIR!$(sysconfdir)!g' \
+	    -e 's!LOCALSTATEDIR!$(localstatedir)!g' \
+	    -e 's!REMOTE_PID_FILE!$(REMOTE_PID_FILE)!g' \
 	    < $< > $@-t
 	mv $@-t $@
 

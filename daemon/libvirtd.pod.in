@@ -77,14 +77,14 @@ On receipt of B<SIGHUP> libvirtd will reload its configuration.
 
 =over
 
-=item F<@sysconfdir@/libvirtd.conf>
+=item F<SYSCONFDIR/libvirtd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.
 
-=item F<@localstatedir@/run/libvirt/libvirt-sock>
+=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock>
 
-=item F<@localstatedir@/run/libvirt/libvirt-sock-ro>
+=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock-ro>
 
 The sockets libvirtd will use when B<run as root>.
 
@@ -92,19 +92,19 @@ The sockets libvirtd will use when B<run as root>.
 
 The socket libvirtd will use when run as a B<non-root> user.
 
-=item F<@sysconfdir@/pki/CA/cacert.pem>
+=item F<SYSCONFDIR/pki/CA/cacert.pem>
 
 The TLS B<Certificate Authority> certificate libvirtd will use.
 
-=item F<@sysconfdir@/pki/libvirt/servercert.pem>
+=item F<SYSCONFDIR/pki/libvirt/servercert.pem>
 
 The TLS B<Server> certificate libvirtd will use.
 
-=item F<@sysconfdir@/pki/libvirt/private/serverkey.pem>
+=item F<SYSCONFDIR/pki/libvirt/private/serverkey.pem>
 
 The TLS B<Server> private key libvirtd will use.
 
-=item F<@remote_pid_file@>
+=item F<REMOTE_PID_FILE>
 
 The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
@@ -121,8 +121,8 @@ To retrieve the version of libvirtd:
 To start libvirtd, instructing it to daemonize and create a PID file:
 
  # libvirtd -d
- # ls -la @remote_pid_file@
- -rw-r--r-- 1 root root 6 Jul  9 02:40 @remote_pid_file@
+ # ls -la REMOTE_PID_FILE
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 REMOTE_PID_FILE
  #
 
 =head1 BUGS
