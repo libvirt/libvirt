@@ -331,7 +331,7 @@ else !WITH_REMOTE
 # re-generated when configured --without-remote.
 check-protocol:
 endif
-EXTRA_DIST += $(PROTOCOL_STRUCTS)
+EXTRA_DIST += $(PROTOCOL_STRUCTS) check-symfile.pl
 check-local: check-protocol check-symfile
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
