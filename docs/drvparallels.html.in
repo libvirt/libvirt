@@ -19,10 +19,10 @@
         The libvirt Parallels driver is a single-instance privileged driver, with a driver name of 'parallels'. Some example connection URIs for the libvirt driver are:
     </p>
 <pre>
-parallels:///default                     (local access)
-parallels+unix:///default                (local access)
-parallels://example.com/default          (remote access, TLS/x509)
-parallels+tcp://example.com/default      (remote access, SASl/Kerberos)
-parallels+ssh://root@example.com/default (remote access, SSH tunnelled)
+parallels:///system                     (local access)
+parallels+unix:///system                (local access)
+parallels://example.com/system          (remote access, TLS/x509)
+parallels+tcp://example.com/system      (remote access, SASl/Kerberos)
+parallels+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 </body></html>
