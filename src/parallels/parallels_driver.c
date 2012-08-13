@@ -664,21 +664,14 @@ parallelsOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     /* From this point on, the connection is for us. */
-    if (
-        conn->uri->path[0] == '\0' ||
-        (conn->uri->path[0] == '/' && conn->uri->path[1] == '\0')) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("parallelsOpen: supply a path or use "
-                         "parallels:///system"));
+    if (!STREQ_NULLABLE(conn->uri->path, "/system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected Parallels URI path '%s', try parallels:///system"),
+                       conn->uri->path);
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (STREQ(conn->uri->path, "/system"))
-        ret = parallelsOpenDefault(conn);
-    else
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (ret != VIR_DRV_OPEN_SUCCESS)
+    if ((ret = parallelsOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS)
         return ret;
 
     return VIR_DRV_OPEN_SUCCESS;
