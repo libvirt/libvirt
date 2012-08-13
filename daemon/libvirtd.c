@@ -911,7 +911,7 @@ libvirt management daemon:\n"), argv0);
       $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n\
 \n\
     Sockets:\n\
-      $XDG_RUNTIME_HOME/libvirt/libvirt-sock (in UNIX abstract namespace)\n\
+      $XDG_RUNTIME_DIR/libvirt/libvirt-sock (in UNIX abstract namespace)\n\
 \n\
     TLS:\n\
       CA certificate:     $HOME/.pki/libvirt/cacert.pem\n\
@@ -919,7 +919,7 @@ libvirt management daemon:\n"), argv0);
       Server private key: $HOME/.pki/libvirt/serverkey.pem\n\
 \n\
     PID file:\n\
-      $XDG_RUNTIME_HOME/libvirt/libvirtd.pid\n\
+      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n\
 \n"));
     }
 }
