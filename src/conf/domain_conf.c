@@ -4619,6 +4619,12 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
             } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
+                if (filter) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("Invalid specification of multiple <filterref>s "
+                                     "in a single <interface>"));
+                    goto error;
+                }
                 filter = virXMLPropString(cur, "filter");
                 virNWFilterHashTableFree(filterparams);
                 filterparams = virNWFilterParseParamAttributes(cur);
