@@ -2747,6 +2747,7 @@ lxcListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+
 static int
 lxcDomainShutdownFlags(virDomainPtr dom,
                        unsigned int flags)
@@ -2920,6 +2921,292 @@ cleanup:
 }
 
 
+static int
+lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+                            virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    default:
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("persistent attach of device is not supported"));
+         break;
+    }
+
+    return ret;
+}
+
+
+static int
+lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+                            virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("persistent update of device is not supported"));
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
+lxcDomainDetachDeviceConfig(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
+                            virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("persistent detach of device is not supported"));
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
+lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                          virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot be attached"),
+                       virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
+lxcDomainDetachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                          virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    switch (dev->type) {
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("device type '%s' cannot be detached"),
+                       virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
+    return ret;
+}
+
+
+/* Actions for lxcDomainModifyDeviceFlags */
+enum {
+    LXC_DEVICE_ATTACH,
+    LXC_DEVICE_UPDATE,
+    LXC_DEVICE_DETACH,
+};
+
+
+static int
+lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
+                           unsigned int flags, int action)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
+    int ret = -1;
+    unsigned int affect;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  (action == LXC_DEVICE_UPDATE ?
+                   VIR_DOMAIN_DEVICE_MODIFY_FORCE : 0), -1);
+
+    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    } else {
+        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        /* check consistency between flags and the vm state */
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot do live update a device on "
+                             "inactive domain"));
+            goto cleanup;
+        }
+    }
+
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
+         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                        _("cannot modify device on transient domain"));
+         goto cleanup;
+    }
+
+    dev = dev_copy = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                             VIR_DOMAIN_XML_INACTIVE);
+    if (dev == NULL)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
+        flags & VIR_DOMAIN_AFFECT_LIVE) {
+        /* If we are affecting both CONFIG and LIVE
+         * create a deep copy of device as adding
+         * to CONFIG takes one instance.
+         */
+        dev_copy = virDomainDeviceDefCopy(driver->caps, vm->def, dev);
+        if (!dev_copy)
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (virDomainDefCompatibleDevice(vm->def, dev) < 0)
+            goto cleanup;
+
+        /* Make a copy for updated domain. */
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, vm);
+        if (!vmdef)
+            goto cleanup;
+        switch (action) {
+        case LXC_DEVICE_ATTACH:
+            ret = lxcDomainAttachDeviceConfig(vmdef, dev);
+            break;
+        case LXC_DEVICE_DETACH:
+            ret = lxcDomainDetachDeviceConfig(vmdef, dev);
+            break;
+        case LXC_DEVICE_UPDATE:
+            ret = lxcDomainUpdateDeviceConfig(vmdef, dev);
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown domain modify action %d"), action);
+            break;
+        }
+
+        if (ret == -1)
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
+            goto cleanup;
+
+        switch (action) {
+        case LXC_DEVICE_ATTACH:
+            ret = lxcDomainAttachDeviceLive(driver, vm, dev_copy);
+            break;
+        case LXC_DEVICE_DETACH:
+            ret = lxcDomainDetachDeviceLive(driver, vm, dev_copy);
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown domain modify action %d"), action);
+            ret = -1;
+            break;
+        }
+
+        if (ret == -1)
+            goto cleanup;
+        /*
+         * update domain status forcibly because the domain status may be
+         * changed even if we failed to attach the device. For example,
+         * a new controller may be created.
+         */
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            ret = -1;
+            goto cleanup;
+        }
+    }
+
+    /* Finally, if no error until here, we can save config. */
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        if (!ret) {
+            virDomainObjAssignDef(vm, vmdef, false);
+            vmdef = NULL;
+        }
+    }
+
+cleanup:
+    virDomainDefFree(vmdef);
+    if (dev != dev_copy)
+        virDomainDeviceDefFree(dev_copy);
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+
+static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
+                                      const char *xml,
+                                      unsigned int flags)
+{
+    return lxcDomainModifyDeviceFlags(dom, xml, flags,
+                                       LXC_DEVICE_ATTACH);
+}
+
+
+static int lxcDomainAttachDevice(virDomainPtr dom,
+                                 const char *xml)
+{
+    return lxcDomainAttachDeviceFlags(dom, xml,
+                                       VIR_DOMAIN_AFFECT_LIVE);
+}
+
+
+static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
+                                      const char *xml,
+                                      unsigned int flags)
+{
+    return lxcDomainModifyDeviceFlags(dom, xml, flags,
+                                       LXC_DEVICE_UPDATE);
+}
+
+
+static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
+                                      const char *xml,
+                                      unsigned int flags)
+{
+    return lxcDomainModifyDeviceFlags(dom, xml, flags,
+                                      LXC_DEVICE_DETACH);
+}
+
+
+static int lxcDomainDetachDevice(virDomainPtr dom,
+                                 const char *xml)
+{
+    return lxcDomainDetachDeviceFlags(dom, xml,
+                                      VIR_DOMAIN_AFFECT_LIVE);
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -2961,6 +3248,11 @@ static virDriver lxcDriver = {
     .domainDefineXML = lxcDomainDefine, /* 0.4.2 */
     .domainUndefine = lxcDomainUndefine, /* 0.4.2 */
     .domainUndefineFlags = lxcDomainUndefineFlags, /* 0.9.4 */
+    .domainAttachDevice = lxcDomainAttachDevice, /* 1.0.1 */
+    .domainAttachDeviceFlags = lxcDomainAttachDeviceFlags, /* 1.0.1 */
+    .domainDetachDevice = lxcDomainDetachDevice, /* 1.0.1 */
+    .domainDetachDeviceFlags = lxcDomainDetachDeviceFlags, /* 1.0.1 */
+    .domainUpdateDeviceFlags = lxcDomainUpdateDeviceFlags, /* 1.0.1 */
     .domainGetAutostart = lxcDomainGetAutostart, /* 0.7.0 */
     .domainSetAutostart = lxcDomainSetAutostart, /* 0.7.0 */
     .domainGetSchedulerType = lxcGetSchedulerType, /* 0.5.0 */
