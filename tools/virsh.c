@@ -357,6 +357,9 @@ static void vshDebug(vshControl *ctl, int level, const char *format, ...)
 /* XXX: add batch support */
 #define vshPrint(_ctl, ...)   vshPrintExtra(NULL, __VA_ARGS__)
 
+/* User visible sort, so we want locale-specific case comparison.  */
+#define vshStrcasecmp(S1, S2) strcasecmp(S1, S2)
+
 static int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
 static const char *vshDomainStateToString(int state);
 static const char *vshDomainStateReasonToString(int state, int reason);
@@ -462,8 +465,7 @@ vshNameSorter(const void *a, const void *b)
     const char **sa = (const char**)a;
     const char **sb = (const char**)b;
 
-    /* User visible sort, so we want locale-specific case comparison. */
-    return strcasecmp(*sa, *sb);
+    return vshStrcasecmp(*sa, *sb);
 }
 
 static double

@@ -1273,7 +1273,7 @@ vshDomainSorter(const void *a, const void *b)
     idb = virDomainGetID(*db);
 
     if (ida == inactive && idb == inactive)
-        return strcasecmp(virDomainGetName(*da), virDomainGetName(*db));
+        return vshStrcasecmp(virDomainGetName(*da), virDomainGetName(*db));
 
     if (ida != inactive && idb != inactive) {
         if (ida > idb)

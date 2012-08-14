@@ -816,9 +816,8 @@ vshSnapSorter(const void *a, const void *b)
     if (!sa->snap)
         return sb->snap != NULL;
 
-    /* User visible sort, so we want locale-specific case comparison.  */
-    return strcasecmp(virDomainSnapshotGetName(sa->snap),
-                      virDomainSnapshotGetName(sb->snap));
+    return vshStrcasecmp(virDomainSnapshotGetName(sa->snap),
+                         virDomainSnapshotGetName(sb->snap));
 }
 
 /* Compute a list of snapshots from DOM.  If FROM is provided, the
