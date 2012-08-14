@@ -2106,7 +2106,7 @@ virDoubleToStr(char **strp, double number)
     char *radix, *tmp;
     struct lconv *lc;
 
-    if ((ret = virVasprintf(strp, "%lf", number) < 0)
+    if ((ret = virAsprintf(strp, "%lf", number) < 0))
         goto error;
 
     lc = localeconv();
@@ -2115,7 +2115,7 @@ virDoubleToStr(char **strp, double number)
     if (tmp) {
         *tmp = '.';
         if (strlen(radix) > 1)
-            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - str));
+            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - *strp));
     }
 
 #endif /* HAVE_NEWLOCALE */
