@@ -64,6 +64,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
+#include "virdbus.h"
 
 #define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
@@ -251,6 +252,25 @@ networkAutostartConfigs(struct network_driver *driver) {
     }
 }
 
+#if HAVE_FIREWALLD
+static DBusHandlerResult
+firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
+                             DBusMessage *message, void *user_data) {
+    struct network_driver *_driverState = user_data;
+
+    if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
+                               "NameOwnerChanged") ||
+        dbus_message_is_signal(message, "org.fedoraproject.FirewallD1",
+                               "Reloaded"))
+    {
+        VIR_DEBUG("Reload in bridge_driver because of firewalld.");
+        networkReloadIptablesRules(_driverState);
+    }
+
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+#endif
+
 /**
  * networkStartup:
  *
@@ -259,6 +279,9 @@ networkAutostartConfigs(struct network_driver *driver) {
 static int
 networkStartup(int privileged) {
     char *base = NULL;
+#ifdef HAVE_FIREWALLD
+    DBusConnection *sysbus = NULL;
+#endif
 
     if (VIR_ALLOC(driverState) < 0)
         goto error;
@@ -324,6 +347,32 @@ networkStartup(int privileged) {
     networkAutostartConfigs(driverState);
 
     networkDriverUnlock(driverState);
+
+#ifdef HAVE_FIREWALLD
+    if (!(sysbus = virDBusGetSystemBus())) {
+        virErrorPtr err = virGetLastError();
+        VIR_WARN("DBus not available, disabling firewalld support "
+                 "in bridge_driver: %s", err->message);
+    } else {
+        /* add matches for
+         * NameOwnerChanged on org.freedesktop.DBus for firewalld start/stop
+         * Reloaded on org.fedoraproject.FirewallD1 for firewalld reload
+         */
+        dbus_bus_add_match(sysbus,
+                           "type='signal'"
+                           ",interface='"DBUS_INTERFACE_DBUS"'"
+                           ",member='NameOwnerChanged'"
+                           ",arg0='org.fedoraproject.FirewallD1'",
+                           NULL);
+        dbus_bus_add_match(sysbus,
+                           "type='signal'"
+                           ",interface='org.fedoraproject.FirewallD1'"
+                           ",member='Reloaded'",
+                           NULL);
+        dbus_connection_add_filter(sysbus, firewalld_dbus_filter_bridge,
+                                   driverState, NULL);
+    }
+#endif
 
     return 0;
 

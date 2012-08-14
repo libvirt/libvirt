@@ -106,6 +106,7 @@
 %define with_sanlock       0%{!?_without_sanlock:0}
 %define with_systemd       0%{!?_without_systemd:0}
 %define with_numad         0%{!?_without_numad:0}
+%define with_firewalld     0%{!?_without_firewalld:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -144,6 +145,11 @@
 # Fedora has systemd, libvirt still used sysvinit there.
 %if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
 %define with_systemd 1
+%endif
+
+# Fedora 18 / RHEL-7 are first where firewalld support is enabled
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
+%define with_firewalld 1
 %endif
 
 # RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
@@ -1182,6 +1188,10 @@ of recent versions of Linux (and other OSes).
 %define _without_driver_modules --without-driver-modules
 %endif
 
+%if %{with_firewalld}
+%define _with_firewalld --with-firewalld
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1240,6 +1250,7 @@ autoreconf -if
            %{?_without_audit} \
            %{?_without_dtrace} \
            %{?_without_driver_modules} \
+           %{?_with_firewalld} \
            %{with_packager} \
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \

@@ -1327,6 +1327,22 @@ AM_CONDITIONAL([HAVE_POLKIT1], [test "x$with_polkit1" = "xyes"])
 AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
 
+dnl firewalld
+AC_ARG_WITH([firewalld],
+  AC_HELP_STRING([--with-firewalld], [enable firewalld support @<:@default=check@:>@]),
+  [],
+  [with_firewalld=check])
+if test "x$with_firewalld" = "xcheck" ; then
+   with_firewalld=$with_dbus
+fi
+if test "x$with_firewalld" == "xyes" ; then
+  if test "x$with_dbus" != "xyes" ; then
+     AC_MSG_ERROR([You must have dbus enabled for firewalld support])
+  fi
+  AC_DEFINE_UNQUOTED([HAVE_FIREWALLD], [1], [whether firewalld support is enabled])
+fi
+AM_CONDITIONAL([HAVE_FIREWALLD], [test "x$with_firewalld" != "xno"])
+
 dnl Avahi library
 AC_ARG_WITH([avahi],
   AC_HELP_STRING([--with-avahi], [use avahi to advertise remote daemon @<:@default=check@:>@]),
@@ -3063,6 +3079,7 @@ AC_MSG_NOTICE([ sanlock: $SANLOCK_CFLAGS $SANLOCK_LIBS])
 else
 AC_MSG_NOTICE([ sanlock: no])
 fi
+AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_avahi" = "yes" ; then
 AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])
 else

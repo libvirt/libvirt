@@ -997,7 +997,7 @@ libvirt_driver_network_la_SOURCES =
 libvirt_driver_network_la_LIBADD = libvirt_driver_network_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_network.la
-libvirt_driver_network_la_LIBADD += ../gnulib/lib/libgnu.la $(LIBNL_LIBS)
+libvirt_driver_network_la_LIBADD += ../gnulib/lib/libgnu.la $(LIBNL_LIBS) $(DBUS_LIBS)
 libvirt_driver_network_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 else
 noinst_LTLIBRARIES += libvirt_driver_network.la
@@ -1007,7 +1007,7 @@ endif
 
 libvirt_driver_network_impl_la_CFLAGS = \
 		$(LIBNL_CFLAGS) \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+		-I$(top_srcdir)/src/conf $(AM_CFLAGS) $(DBUS_CFLAGS)
 libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 EXTRA_DIST += network/default.xml

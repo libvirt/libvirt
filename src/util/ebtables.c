@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
  *
  * This library is free software; you can redistribute it and/or
@@ -45,6 +45,38 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "threads.h"
+
+#if HAVE_FIREWALLD
+static char *firewall_cmd_path = NULL;
+
+static int
+virEbTablesOnceInit(void)
+{
+    firewall_cmd_path = virFindFileInPath("firewall-cmd");
+    if (!firewall_cmd_path) {
+        VIR_WARN("firewall-cmd not found on system. "
+                 "firewalld support disabled for ebtables.");
+    } else {
+        virCommandPtr cmd = virCommandNew(firewall_cmd_path);
+        int status;
+
+        virCommandAddArgList(cmd, "--state", NULL);
+        if (virCommandRun(cmd, &status) < 0 || status != 0) {
+            VIR_WARN("firewall-cmd found but disabled for ebtables");
+            VIR_FREE(firewall_cmd_path);
+            firewall_cmd_path = NULL;
+        } else {
+            VIR_WARN("using firewalld for ebtables commands");
+        }
+        virCommandFree(cmd);
+    }
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virEbTables)
+
+#endif
 
 struct _ebtablesContext
 {
@@ -181,6 +213,12 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
         2 + /*   --insert bar  */
         1;  /*   arg           */
 
+#if HAVE_FIREWALLD
+    virEbTablesInitialize();
+    if (firewall_cmd_path)
+        n += 3; /* --direct --passthrough eb */
+#endif
+
     va_start(args, arg);
     while (va_arg(args, const char *))
         n++;
@@ -192,6 +230,18 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 
     n = 0;
 
+#if HAVE_FIREWALLD
+    if (firewall_cmd_path) {
+        if (!(argv[n++] = strdup(firewall_cmd_path)))
+            goto error;
+        if (!(argv[n++] = strdup("--direct")))
+            goto error;
+        if (!(argv[n++] = strdup("--passthrough")))
+            goto error;
+        if (!(argv[n++] = strdup("eb")))
+            goto error;
+    } else
+#endif
     if (!(argv[n++] = strdup(EBTABLES_PATH)))
         goto error;
 

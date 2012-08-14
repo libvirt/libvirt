@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,38 @@
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "threads.h"
+
+#if HAVE_FIREWALLD
+static char *firewall_cmd_path = NULL;
+
+static int
+virIpTablesOnceInit(void)
+{
+    firewall_cmd_path = virFindFileInPath("firewall-cmd");
+    if (!firewall_cmd_path) {
+        VIR_WARN("firewall-cmd not found on system. "
+                 "firewalld support disabled for iptables.");
+    } else {
+        virCommandPtr cmd = virCommandNew(firewall_cmd_path);
+        int status;
+
+        virCommandAddArgList(cmd, "--state", NULL);
+        if (virCommandRun(cmd, &status) < 0 || status != 0) {
+            VIR_WARN("firewall-cmd found but disabled for iptables");
+            VIR_FREE(firewall_cmd_path);
+            firewall_cmd_path = NULL;
+        } else {
+            VIR_WARN("using firewalld for iptables commands");
+        }
+        virCommandFree(cmd);
+    }
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virIpTables)
+
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -101,11 +133,22 @@ iptablesAddRemoveRule(iptRules *rules, int family, int action,
 {
     va_list args;
     int ret;
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     const char *s;
 
-    cmd = virCommandNew((family == AF_INET6)
+#if HAVE_FIREWALLD
+    virIpTablesInitialize();
+    if (firewall_cmd_path) {
+        cmd = virCommandNew(firewall_cmd_path);
+        virCommandAddArgList(cmd, "--direct", "--passthrough",
+                             (family == AF_INET6) ? "ipv6" : "ipv4", NULL);
+    }
+#endif
+
+    if (cmd == NULL) {
+        cmd = virCommandNew((family == AF_INET6)
                         ? IP6TABLES_PATH : IPTABLES_PATH);
+    }
 
     virCommandAddArgList(cmd, "--table", rules->table,
                          action == ADD ? "--insert" : "--delete",
