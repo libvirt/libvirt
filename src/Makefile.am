@@ -153,7 +153,8 @@ DOMAIN_CONF_SOURCES =						\
 		conf/capabilities.c conf/capabilities.h		\
 		conf/domain_conf.c conf/domain_conf.h		\
 		conf/domain_audit.c conf/domain_audit.h		\
-		conf/domain_nwfilter.c conf/domain_nwfilter.h
+		conf/domain_nwfilter.c conf/domain_nwfilter.h	\
+		conf/snapshot_conf.c conf/snapshot_conf.h
 
 DOMAIN_EVENT_SOURCES =						\
 		conf/domain_event.c conf/domain_event.h

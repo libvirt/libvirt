@@ -38,6 +38,7 @@
 #include "domain_nwfilter.h"
 #include "domain_audit.h"
 #include "domain_conf.h"
+#include "snapshot_conf.h"
 #include "network/bridge_driver.h"
 #include "virnetdevtap.h"
 #include "base64.h"

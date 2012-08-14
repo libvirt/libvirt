@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@
 
 # include "threads.h"
 # include "domain_conf.h"
+# include "snapshot_conf.h"
 # include "qemu_monitor.h"
 # include "qemu_agent.h"
 # include "qemu_conf.h"

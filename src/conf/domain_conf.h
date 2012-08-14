@@ -101,6 +101,12 @@ typedef virDomainChrDef *virDomainChrDefPtr;
 typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
 typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
 
+typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
+typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
+
+typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
+typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -501,21 +507,6 @@ enum virDomainDiskCopyOnRead {
     VIR_DOMAIN_DISK_COPY_ON_READ_LAST
 };
 
-enum virDomainDiskSnapshot {
-    VIR_DOMAIN_DISK_SNAPSHOT_DEFAULT = 0,
-    VIR_DOMAIN_DISK_SNAPSHOT_NO,
-    VIR_DOMAIN_DISK_SNAPSHOT_INTERNAL,
-    VIR_DOMAIN_DISK_SNAPSHOT_EXTERNAL,
-
-    VIR_DOMAIN_DISK_SNAPSHOT_LAST
-};
-
-enum virDomainSnapshotState {
-    /* Inherit the VIR_DOMAIN_* states from virDomainState.  */
-    VIR_DOMAIN_DISK_SNAPSHOT = VIR_DOMAIN_LAST,
-    VIR_DOMAIN_SNAPSHOT_STATE_LAST
-};
-
 enum virDomainStartupPolicy {
     VIR_DOMAIN_STARTUP_POLICY_DEFAULT = 0,
     VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
@@ -587,7 +578,7 @@ struct _virDomainDiskDef {
     int ioeventfd;
     int event_idx;
     int copy_on_read;
-    int snapshot; /* enum virDomainDiskSnapshot */
+    int snapshot; /* enum virDomainDiskSnapshot, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
     unsigned int shared : 1;
@@ -1713,102 +1704,6 @@ enum virDomainTaintFlags {
     VIR_DOMAIN_TAINT_LAST
 };
 
-/* Items related to snapshot state */
-
-/* Stores disk-snapshot information */
-typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
-typedef virDomainSnapshotDiskDef *virDomainSnapshotDiskDefPtr;
-struct _virDomainSnapshotDiskDef {
-    char *name; /* name matching the <target dev='...' of the domain */
-    int index; /* index within snapshot->dom->disks that matches name */
-    int snapshot; /* enum virDomainDiskSnapshot */
-    char *file; /* new source file when snapshot is external */
-    char *driverType; /* file format type of new file */
-};
-
-/* Stores the complete snapshot metadata */
-typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
-typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
-struct _virDomainSnapshotDef {
-    /* Public XML.  */
-    char *name;
-    char *description;
-    char *parent;
-    long long creationTime; /* in seconds */
-    int state; /* enum virDomainSnapshotState */
-
-    size_t ndisks; /* should not exceed dom->ndisks */
-    virDomainSnapshotDiskDef *disks;
-
-    virDomainDefPtr dom;
-
-    /* Internal use.  */
-    bool current; /* At most one snapshot in the list should have this set */
-};
-
-typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
-typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
-struct _virDomainSnapshotObj {
-    virDomainSnapshotDefPtr def; /* non-NULL except for metaroot */
-
-    virDomainSnapshotObjPtr parent; /* non-NULL except for metaroot, before
-                                       virDomainSnapshotUpdateRelations, or
-                                       after virDomainSnapshotDropParent */
-    virDomainSnapshotObjPtr sibling; /* NULL if last child of parent */
-    size_t nchildren;
-    virDomainSnapshotObjPtr first_child; /* NULL if no children */
-};
-
-typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
-typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
-
-virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
-void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
-
-typedef enum {
-    VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
-    VIR_DOMAIN_SNAPSHOT_PARSE_DISKS    = 1 << 1,
-    VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL = 1 << 2,
-} virDomainSnapshotParseFlags;
-
-virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
-                                                        virCapsPtr caps,
-                                                        unsigned int expectedVirtTypes,
-                                                        unsigned int flags);
-void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
-char *virDomainSnapshotDefFormat(const char *domain_uuid,
-                                 virDomainSnapshotDefPtr def,
-                                 unsigned int flags,
-                                 int internal);
-int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
-                                int default_snapshot,
-                                bool require_match);
-virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                   const virDomainSnapshotDefPtr def);
-
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     virDomainSnapshotObjPtr from,
-                                     char **const names, int maxnames,
-                                     unsigned int flags);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                                virDomainSnapshotObjPtr from,
-                                unsigned int flags);
-virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
-                                                    const char *name);
-void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainSnapshotObjPtr snapshot);
-int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
-                             virHashIterator iter,
-                             void *data);
-int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
-                                  virHashIterator iter,
-                                  void *data);
-int virDomainSnapshotForEachDescendant(virDomainSnapshotObjPtr snapshot,
-                                       virHashIterator iter,
-                                       void *data);
-int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
-void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
-
 /* Guest VM runtime state */
 typedef struct _virDomainStateReason virDomainStateReason;
 struct _virDomainStateReason {
@@ -2202,7 +2097,6 @@ VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
-VIR_ENUM_DECL(virDomainDiskSnapshot)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainIoEventFd)
 VIR_ENUM_DECL(virDomainVirtioEventIdx)
@@ -2253,7 +2147,6 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 VIR_ENUM_DECL(virDomainNumatuneMemPlacementMode)
-VIR_ENUM_DECL(virDomainSnapshotState)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)
@@ -2316,25 +2209,7 @@ virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def,
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA           \
-               (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
-                VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES             \
-               (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
-                VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
-
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
-               (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
-                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
-
 int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
                   virDomainPtr **domains, unsigned int flags);
-
-int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
-                           virDomainSnapshotObjPtr from,
-                           virDomainPtr dom,
-                           virDomainSnapshotPtr **snaps,
-                           unsigned int flags);
 
 #endif /* __DOMAIN_CONF_H */

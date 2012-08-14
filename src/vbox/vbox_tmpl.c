@@ -43,6 +43,7 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "domain_conf.h"
+#include "snapshot_conf.h"
 #include "network_conf.h"
 #include "virterror_internal.h"
 #include "domain_event.h"
