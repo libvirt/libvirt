@@ -1942,6 +1942,7 @@ EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 install-data-local: install-init install-systemd
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
 endif
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
@@ -1994,6 +1995,7 @@ endif
 
 uninstall-local:: uninstall-init uninstall-systemd
 if WITH_LIBVIRTD
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:
 endif

@@ -32,6 +32,7 @@
 #include "rpc/virnetclient.h"
 #include "lock_protocol.h"
 #include "configmake.h"
+#include "sha256.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
@@ -70,6 +71,8 @@ struct _virLockManagerLockDaemonPrivate {
 struct _virLockManagerLockDaemonDriver {
     bool autoDiskLease;
     bool requireLeaseForDisks;
+
+    char *fileLockSpaceDir;
 };
 
 static virLockManagerLockDaemonDriverPtr driver = NULL;
@@ -119,6 +122,17 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     p = virConfGetValue(conf, "auto_disk_leases");
     CHECK_TYPE("auto_disk_leases", VIR_CONF_LONG);
     if (p) driver->autoDiskLease = p->l;
+
+    p = virConfGetValue(conf, "file_lockspace_dir");
+    CHECK_TYPE("file_lockspace_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->fileLockSpaceDir);
+        if (!(driver->fileLockSpaceDir = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
 
     p = virConfGetValue(conf, "require_lease_for_disks");
     CHECK_TYPE("require_lease_for_disks", VIR_CONF_LONG);
@@ -288,6 +302,47 @@ error:
 }
 
 
+static int virLockManagerLockDaemonSetupLockspace(const char *path)
+{
+    virNetClientPtr client;
+    virNetClientProgramPtr program = NULL;
+    virLockSpaceProtocolCreateLockSpaceArgs args;
+    int rv = -1;
+    int counter = 0;
+
+    memset(&args, 0, sizeof(args));
+    args.path = (char*)path;
+
+    if (!(client = virLockManagerLockDaemonConnectionNew(getuid() == 0, &program)))
+        return -1;
+
+    if (virNetClientProgramCall(program,
+                                client,
+                                counter++,
+                                VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_LOCKSPACE,
+                                0, NULL, NULL, NULL,
+                                (xdrproc_t)xdr_virLockSpaceProtocolCreateLockSpaceArgs, (char*)&args,
+                                (xdrproc_t)xdr_void, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        if (err && err->code == VIR_ERR_OPERATION_INVALID) {
+            /* The lockspace already exists */
+            virResetLastError();
+            rv = 0;
+        } else {
+            goto cleanup;
+        }
+    }
+
+    rv = 0;
+
+cleanup:
+    virObjectUnref(program);
+    virNetClientClose(client);
+    virObjectUnref(client);
+    return rv;
+}
+
+
 static int virLockManagerLockDaemonDeinit(void);
 
 static int virLockManagerLockDaemonInit(unsigned int version,
@@ -312,6 +367,13 @@ static int virLockManagerLockDaemonInit(unsigned int version,
     if (virLockManagerLockDaemonLoadConfig(configFile) < 0)
         goto error;
 
+    if (driver->autoDiskLease) {
+        if (driver->fileLockSpaceDir &&
+            virLockManagerLockDaemonSetupLockspace(driver->fileLockSpaceDir) < 0)
+            goto error;
+    }
+
+
     return 0;
 
 error:
@@ -324,6 +386,7 @@ static int virLockManagerLockDaemonDeinit(void)
     if (!driver)
         return 0;
 
+    VIR_FREE(driver->fileLockSpaceDir);
     VIR_FREE(driver);
 
     return 0;
@@ -421,6 +484,36 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
 }
 
 
+static const char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7',
+                            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
+static char *virLockManagerLockDaemonDiskLeaseName(const char *path)
+{
+    unsigned char buf[SHA256_DIGEST_SIZE];
+    char *ret;
+    int i;
+
+    if (!(sha256_buffer(path, strlen(path), buf))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to compute sha256 checksum"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(ret, (SHA256_DIGEST_SIZE * 2) + 1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    for (i = 0 ; i < SHA256_DIGEST_SIZE ; i++) {
+        ret[i*2] = hex[(buf[i] >> 4) & 0xf];
+        ret[(i*2)+1] = hex[buf[i] & 0xf];
+    }
+    ret[(SHA256_DIGEST_SIZE * 2) + 1] = '\0';
+
+    return ret;
+}
+
+
 static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                                                unsigned int type,
                                                const char *name,
@@ -429,8 +522,9 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                                                unsigned int flags)
 {
     virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
-    char *newName;
+    char *newName = NULL;
     char *newLockspace = NULL;
+    bool autoCreate = false;
 
     virCheckFlags(VIR_LOCK_MANAGER_RESOURCE_READONLY |
                   VIR_LOCK_MANAGER_RESOURCE_SHARED, -1);
@@ -451,10 +545,22 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                 priv->hasRWDisks = true;
             return 0;
         }
-        if (!(newLockspace = strdup(""))) {
-            virReportOOMError();
-            return -1;
+
+        if (driver->fileLockSpaceDir) {
+            if (!(newLockspace = strdup(driver->fileLockSpaceDir)))
+                goto no_memory;
+            if (!(newName = virLockManagerLockDaemonDiskLeaseName(name)))
+                goto no_memory;
+            autoCreate = true;
+            VIR_DEBUG("Using indirect lease %s for %s", newName, name);
+        } else {
+            if (!(newLockspace = strdup("")))
+                goto no_memory;
+            if (!(newName = strdup(name)))
+                goto no_memory;
+            VIR_DEBUG("Using direct lease for %s", name);
         }
+
         break;
     case VIR_LOCK_MANAGER_RESOURCE_TYPE_LEASE: {
         size_t i;
@@ -488,6 +594,9 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             virReportOOMError();
             return -1;
         }
+        if (!(newName = strdup(name)))
+            goto no_memory;
+
     }   break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -495,9 +604,6 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
                        type);
         return -1;
     }
-
-    if (!(newName = strdup(name)))
-        goto no_memory;
 
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
         goto no_memory;
@@ -509,10 +615,15 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         priv->resources[priv->nresources-1].flags |=
             VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED;
 
+    if (autoCreate)
+        priv->resources[priv->nresources-1].flags |=
+            VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE;
+
     return 0;
 
 no_memory:
     virReportOOMError();
+    VIR_FREE(newLockspace);
     VIR_FREE(newName);
     return -1;
 }
@@ -556,7 +667,7 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
             memset(&args, 0, sizeof(args));
 
             if (priv->resources[i].lockspace)
-            args.path = priv->resources[i].lockspace;
+                args.path = priv->resources[i].lockspace;
             args.name = priv->resources[i].name;
             args.flags = priv->resources[i].flags;
 
