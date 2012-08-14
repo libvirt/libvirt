@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <math.h>
+#include <strings.h>
 
 #include "virrandom.h"
 #include "threads.h"
@@ -135,6 +136,9 @@ double virRandom(void)
  */
 uint32_t virRandomInt(uint32_t max)
 {
+    if ((max & (max - 1)) == 0)
+        return virRandomBits(ffs(max) - 1);
+
     double val = virRandom();
     return val * max;
 }
