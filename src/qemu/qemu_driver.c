@@ -483,7 +483,7 @@ static void qemuDomainSnapshotLoad(void *payload,
             continue;
         }
 
-        snap = virDomainSnapshotAssignDef(&vm->snapshots, def);
+        snap = virDomainSnapshotAssignDef(vm->snapshots, def);
         if (snap == NULL) {
             virDomainSnapshotDefFree(def);
         } else if (snap->def->current) {
@@ -502,7 +502,7 @@ static void qemuDomainSnapshotLoad(void *payload,
         vm->current_snapshot = NULL;
     }
 
-    if (virDomainSnapshotUpdateRelations(&vm->snapshots) < 0)
+    if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0)
         VIR_ERROR(_("Snapshots have inconsistent relations for domain %s"),
                   vm->def->name);
 
@@ -5629,7 +5629,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     }
 
     if (!virDomainObjIsActive(vm) &&
-        (nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, NULL, 0))) {
+        (nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0))) {
         if (!(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("cannot delete inactive domain with %d "
@@ -11102,7 +11102,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                def->name);
                 goto cleanup;
             }
-            other = virDomainSnapshotFindByName(&vm->snapshots, def->parent);
+            other = virDomainSnapshotFindByName(vm->snapshots, def->parent);
             if (!other) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parent %s for snapshot %s not found"),
@@ -11116,7 +11116,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                    other->def->name, def->name);
                     goto cleanup;
                 }
-                other = virDomainSnapshotFindByName(&vm->snapshots,
+                other = virDomainSnapshotFindByName(vm->snapshots,
                                                     other->def->parent);
                 if (!other) {
                     VIR_WARN("snapshots are inconsistent for %s",
@@ -11134,7 +11134,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                            def->name, uuidstr);
             goto cleanup;
         }
-        other = virDomainSnapshotFindByName(&vm->snapshots, def->name);
+        other = virDomainSnapshotFindByName(vm->snapshots, def->name);
         if (other) {
             if ((other->def->state == VIR_DOMAIN_RUNNING ||
                  other->def->state == VIR_DOMAIN_PAUSED) !=
@@ -11223,7 +11223,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     if (snap)
         snap->def = def;
-    else if (!(snap = virDomainSnapshotAssignDef(&vm->snapshots, def)))
+    else if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
         goto cleanup;
     def = NULL;
 
@@ -11280,7 +11280,7 @@ cleanup:
             } else {
                 if (update_current)
                     vm->current_snapshot = snap;
-                other = virDomainSnapshotFindByName(&vm->snapshots,
+                other = virDomainSnapshotFindByName(vm->snapshots,
                                                     snap->def->parent);
                 snap->parent = other;
                 other->nchildren++;
@@ -11288,7 +11288,7 @@ cleanup:
                 other->first_child = snap;
             }
         } else if (snap) {
-            virDomainSnapshotObjListRemove(&vm->snapshots, snap);
+            virDomainSnapshotObjListRemove(vm->snapshots, snap);
         }
         virDomainObjUnlock(vm);
     }
@@ -11319,7 +11319,7 @@ static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNames(&vm->snapshots, NULL, names, nameslen,
+    n = virDomainSnapshotObjListGetNames(vm->snapshots, NULL, names, nameslen,
                                          flags);
 
 cleanup:
@@ -11349,7 +11349,7 @@ static int qemuDomainSnapshotNum(virDomainPtr domain,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListNum(&vm->snapshots, NULL, flags);
+    n = virDomainSnapshotObjListNum(vm->snapshots, NULL, flags);
 
 cleanup:
     if (vm)
@@ -11379,7 +11379,7 @@ qemuDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
         goto cleanup;
     }
 
-    n = virDomainListSnapshots(&vm->snapshots, NULL, domain, snaps, flags);
+    n = virDomainListSnapshots(vm->snapshots, NULL, domain, snaps, flags);
 
 cleanup:
     if (vm)
@@ -11412,7 +11412,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11420,7 +11420,7 @@ qemuDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListGetNames(&vm->snapshots, snap, names, nameslen,
+    n = virDomainSnapshotObjListGetNames(vm->snapshots, snap, names, nameslen,
                                          flags);
 
 cleanup:
@@ -11452,7 +11452,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11460,7 +11460,7 @@ qemuDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    n = virDomainSnapshotObjListNum(&vm->snapshots, snap, flags);
+    n = virDomainSnapshotObjListNum(vm->snapshots, snap, flags);
 
 cleanup:
     if (vm)
@@ -11492,7 +11492,7 @@ qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11500,7 +11500,7 @@ qemuDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    n = virDomainListSnapshots(&vm->snapshots, snap, snapshot->domain, snaps,
+    n = virDomainListSnapshots(vm->snapshots, snap, snapshot->domain, snaps,
                                flags);
 
 cleanup:
@@ -11531,7 +11531,7 @@ static virDomainSnapshotPtr qemuDomainSnapshotLookupByName(virDomainPtr domain,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no snapshot with matching name '%s'"), name);
@@ -11596,7 +11596,7 @@ qemuDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11674,7 +11674,7 @@ static char *qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11712,7 +11712,7 @@ qemuDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11752,7 +11752,7 @@ qemuDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -11825,7 +11825,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),
@@ -12193,7 +12193,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    snap = virDomainSnapshotFindByName(&vm->snapshots, snapshot->name);
+    snap = virDomainSnapshotFindByName(vm->snapshots, snapshot->name);
     if (!snap) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("no domain snapshot with matching name '%s'"),

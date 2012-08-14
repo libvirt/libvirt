@@ -661,6 +661,15 @@ VIR_ENUM_IMPL(virDomainNumatuneMemPlacementMode,
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
+struct _virDomainSnapshotObjList {
+    /* name string -> virDomainSnapshotObj  mapping
+     * for O(1), lockless lookup-by-name */
+    virHashTable *objs;
+
+    virDomainSnapshotObj metaroot; /* Special parent of all root snapshots */
+};
+
+
 static virClassPtr virDomainObjClass;
 static void virDomainObjDispose(void *obj);
 
@@ -1692,8 +1701,6 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def);
 }
 
-static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots);
-
 static void virDomainObjDispose(void *obj)
 {
     virDomainObjPtr dom = obj;
@@ -1707,7 +1714,7 @@ static void virDomainObjDispose(void *obj)
 
     virMutexDestroy(&dom->lock);
 
-    virDomainSnapshotObjListDeinit(&dom->snapshots);
+    virDomainSnapshotObjListFree(dom->snapshots);
 }
 
 
@@ -1721,31 +1728,33 @@ virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     if (!(domain = virObjectNew(virDomainObjClass)))
         return NULL;
 
-    if (caps->privateDataAllocFunc &&
-        !(domain->privateData = (caps->privateDataAllocFunc)())) {
-        virReportOOMError();
-        VIR_FREE(domain);
-        return NULL;
-    }
-    domain->privateDataFreeFunc = caps->privateDataFreeFunc;
-
     if (virMutexInit(&domain->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
-        if (domain->privateDataFreeFunc)
-            (domain->privateDataFreeFunc)(domain->privateData);
         VIR_FREE(domain);
         return NULL;
     }
+
+    if (caps->privateDataAllocFunc &&
+        !(domain->privateData = (caps->privateDataAllocFunc)())) {
+        virReportOOMError();
+        goto error;
+    }
+    domain->privateDataFreeFunc = caps->privateDataFreeFunc;
+
+    if (!(domain->snapshots = virDomainSnapshotObjListNew()))
+        goto error;
 
     virDomainObjLock(domain);
     virDomainObjSetState(domain, VIR_DOMAIN_SHUTOFF,
                                  VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
-    virDomainSnapshotObjListInit(&domain->snapshots);
-
     VIR_DEBUG("obj=%p", domain);
     return domain;
+
+error:
+    virObjectUnref(domain);
+    return NULL;
 }
 
 void virDomainObjAssignDef(virDomainObjPtr domain,
@@ -14694,18 +14703,29 @@ virDomainSnapshotObjListDataFree(void *payload,
     virDomainSnapshotObjFree(obj);
 }
 
-int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
+virDomainSnapshotObjListPtr
+virDomainSnapshotObjListNew(void)
 {
+    virDomainSnapshotObjListPtr snapshots;
+    if (VIR_ALLOC(snapshots) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
     snapshots->objs = virHashCreate(50, virDomainSnapshotObjListDataFree);
-    if (!snapshots->objs)
-        return -1;
-    return 0;
+    if (!snapshots->objs) {
+        VIR_FREE(snapshots);
+        return NULL;
+    }
+    return snapshots;
 }
 
-static void
-virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
+void
+virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots)
 {
+    if (!snapshots)
+        return;
     virHashFree(snapshots->objs);
+    VIR_FREE(snapshots);
 }
 
 struct virDomainSnapshotNameData {
@@ -14824,6 +14844,14 @@ void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot)
 {
     virHashRemoveEntry(snapshots->objs, snapshot->def->name);
+}
+
+int
+virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
+                         virHashIterator iter,
+                         void *data)
+{
+    return virHashForEach(snapshots->objs, iter, data);
 }
 
 /* Run iter(data) on all direct children of snapshot, while ignoring all
@@ -15747,7 +15775,7 @@ virDomainListPopulate(void *payload,
 
     /* filter by snapshot existence */
     if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
-        int nsnap = virDomainSnapshotObjListNum(&vm->snapshots, NULL, 0);
+        int nsnap = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
         if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
               (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap <= 0)))
             goto cleanup;

@@ -1761,13 +1761,9 @@ struct _virDomainSnapshotObj {
 
 typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
 typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
-struct _virDomainSnapshotObjList {
-    /* name string -> virDomainSnapshotObj  mapping
-     * for O(1), lockless lookup-by-name */
-    virHashTable *objs;
 
-    virDomainSnapshotObj metaroot; /* Special parent of all root snapshots */
-};
+virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
+void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
 
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
@@ -1790,7 +1786,6 @@ int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
 virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
                                                    const virDomainSnapshotDefPtr def);
 
-int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      virDomainSnapshotObjPtr from,
                                      char **const names, int maxnames,
@@ -1802,6 +1797,9 @@ virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjLi
                                                     const char *name);
 void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
                                     virDomainSnapshotObjPtr snapshot);
+int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
+                             virHashIterator iter,
+                             void *data);
 int virDomainSnapshotForEachChild(virDomainSnapshotObjPtr snapshot,
                                   virHashIterator iter,
                                   void *data);
@@ -1835,7 +1833,7 @@ struct _virDomainObj {
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
 
-    virDomainSnapshotObjList snapshots;
+    virDomainSnapshotObjListPtr snapshots;
     virDomainSnapshotObjPtr current_snapshot;
 
     bool hasManagedSave;

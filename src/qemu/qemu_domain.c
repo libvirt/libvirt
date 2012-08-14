@@ -1750,7 +1750,7 @@ qemuDomainSnapshotDiscard(struct qemud_driver *driver,
 
     if (snap == vm->current_snapshot) {
         if (update_current && snap->def->parent) {
-            parentsnap = virDomainSnapshotFindByName(&vm->snapshots,
+            parentsnap = virDomainSnapshotFindByName(vm->snapshots,
                                                      snap->def->parent);
             if (!parentsnap) {
                 VIR_WARN("missing parent snapshot matching name '%s'",
@@ -1771,7 +1771,7 @@ qemuDomainSnapshotDiscard(struct qemud_driver *driver,
 
     if (unlink(snapFile) < 0)
         VIR_WARN("Failed to unlink %s", snapFile);
-    virDomainSnapshotObjListRemove(&vm->snapshots, snap);
+    virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
     ret = 0;
 
@@ -1808,7 +1808,8 @@ qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
     rem.vm = vm;
     rem.metadata_only = true;
     rem.err = 0;
-    virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardAll, &rem);
+    virDomainSnapshotForEach(vm->snapshots, qemuDomainSnapshotDiscardAll,
+                             &rem);
 
     return rem.err;
 }

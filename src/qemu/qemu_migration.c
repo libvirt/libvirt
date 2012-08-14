@@ -807,7 +807,7 @@ qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
                            "%s", _("domain is marked for auto destroy"));
             return false;
         }
-        if ((nsnapshots = virDomainSnapshotObjListNum(&vm->snapshots, NULL,
+        if ((nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL,
                                                       0))) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("cannot migrate domain with %d snapshots"),
