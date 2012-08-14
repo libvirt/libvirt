@@ -405,6 +405,7 @@ LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_controller.c
 
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES =			\
+		$(DATATYPES_SOURCES)				\
 		security/virt-aa-helper.c
 
 PHYP_DRIVER_SOURCES =						\
