@@ -169,6 +169,11 @@ const REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX = 1048576;
 const REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX = 1048576;
 
 /*
+ * Maximum length of a security label list.
+ */
+const REMOTE_SECURITY_LABEL_LIST_MAX=64;
+
+/*
  * Maximum length of a security model field.
  */
 const REMOTE_SECURITY_MODEL_MAX = VIR_SECURITY_MODEL_BUFLEN;
@@ -1080,6 +1085,15 @@ struct remote_domain_get_security_label_args {
 struct remote_domain_get_security_label_ret {
     char label<REMOTE_SECURITY_LABEL_MAX>;
     int enforcing;
+};
+
+struct remote_domain_get_security_label_list_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_security_label_list_ret {
+    remote_domain_get_security_label_ret labels<REMOTE_SECURITY_LABEL_LIST_MAX>;
+    int ret;
 };
 
 struct remote_node_get_security_model_ret {
@@ -2854,7 +2868,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

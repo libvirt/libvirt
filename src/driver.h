@@ -320,6 +320,9 @@ typedef int
         (*virDrvDomainGetSecurityLabel) (virDomainPtr domain,
                                          virSecurityLabelPtr seclabel);
 typedef int
+        (*virDrvDomainGetSecurityLabelList) (virDomainPtr domain,
+                                         virSecurityLabelPtr* seclabels);
+typedef int
         (*virDrvNodeGetSecurityModel)   (virConnectPtr conn,
                                          virSecurityModelPtr secmodel);
 typedef int
@@ -941,6 +944,7 @@ struct _virDriver {
     virDrvDomainGetVcpus                domainGetVcpus;
     virDrvDomainGetMaxVcpus             domainGetMaxVcpus;
     virDrvDomainGetSecurityLabel        domainGetSecurityLabel;
+    virDrvDomainGetSecurityLabelList     domainGetSecurityLabelList;
     virDrvNodeGetSecurityModel          nodeGetSecurityModel;
     virDrvDomainGetXMLDesc              domainGetXMLDesc;
     virDrvConnectDomainXMLFromNative    domainXMLFromNative;

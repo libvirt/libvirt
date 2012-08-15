@@ -549,6 +549,7 @@ LIBVIRT_0.10.0 {
         virDomainGetHostname;
         virConnectRegisterCloseCallback;
         virConnectUnregisterCloseCallback;
+        virDomainGetSecurityLabelList;
 } LIBVIRT_0.9.13;
 
 # .... define new API here using predicted next version number ....

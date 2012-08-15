@@ -1958,6 +1958,51 @@ done:
 }
 
 static int
+remoteDomainGetSecurityLabelList (virDomainPtr domain, virSecurityLabelPtr* seclabels)
+{
+    remote_domain_get_security_label_list_args args;
+    remote_domain_get_security_label_list_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+    int i, rv = -1;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    memset(&ret, 0, sizeof(ret));
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST,
+              (xdrproc_t) xdr_remote_domain_get_security_label_list_args, (char *)&args,
+              (xdrproc_t) xdr_remote_domain_get_security_label_list_ret, (char *)&ret) == -1) {
+        goto done;
+    }
+
+    if (VIR_ALLOC_N(*seclabels, ret.labels.labels_len) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ret.labels.labels_len; i++) {
+        remote_domain_get_security_label_ret *cur = &ret.labels.labels_val[i];
+        if (cur->label.label_val != NULL) {
+            if (strlen(cur->label.label_val) >= sizeof((*seclabels)->label)) {
+                virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
+                               sizeof((*seclabels)->label) - 1);
+                VIR_FREE(*seclabels);
+                goto cleanup;
+            }
+            strcpy((*seclabels)[i].label, cur->label.label_val);
+            (*seclabels)[i].enforcing = cur->enforcing;
+        }
+    }
+    rv = ret.ret;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_domain_get_security_label_list_ret, (char *)&ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetState(virDomainPtr domain,
                      int *state,
                      int *reason,
@@ -5260,6 +5305,7 @@ static virDriver remote_driver = {
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
+    .domainGetSecurityLabelList = remoteDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = remoteNodeGetSecurityModel, /* 0.6.1 */
     .domainGetXMLDesc = remoteDomainGetXMLDesc, /* 0.3.0 */
     .domainXMLFromNative = remoteDomainXMLFromNative, /* 0.6.4 */

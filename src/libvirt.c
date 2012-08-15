@@ -9021,6 +9021,53 @@ error:
 }
 
 /**
+ * virDomainGetSecurityLabelList:
+ * @domain: a domain object
+ * @seclabels: will be auto-allocated and filled with domains' security labels.
+ * Caller must free memory on return.
+ *
+ * Extract the security labels of an active domain. The 'label' field
+ * in the @seclabels argument will be initialized to the empty
+ * string if the domain is not running under a security model.
+ *
+ * Returns number of elemnets in @seclabels on success, -1 in case of failure.
+ */
+int
+virDomainGetSecurityLabelList(virDomainPtr domain,
+                              virSecurityLabelPtr* seclabels)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "seclabels=%p", seclabels);
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (seclabels == NULL) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetSecurityLabelList) {
+        int ret;
+        ret = conn->driver->domainGetSecurityLabelList(domain, seclabels);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+/**
  * virDomainSetMetadata:
  * @domain: a domain object
  * @type: type of description, from virDomainMetadataType

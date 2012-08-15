@@ -1593,6 +1593,8 @@ int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);
 char *                  virDomainGetHostname    (virDomainPtr domain,
                                                  unsigned int flags);
+int                     virDomainGetSecurityLabelList (virDomainPtr domain,
+                                                       virSecurityLabelPtr* seclabels);
 
 typedef enum {
     VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> */

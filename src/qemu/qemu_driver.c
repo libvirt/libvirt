@@ -4119,6 +4119,78 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
+                                          virSecurityLabelPtr* seclabels)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int i, ret = -1;
+
+    /* Protect domain data with qemu lock */
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainVirtTypeToString(vm->def->virtType)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown virt type in domain definition '%d'"),
+                       vm->def->virtType);
+        goto cleanup;
+    }
+
+    /*
+     * Check the comment in qemudDomainGetSecurityLabel function.
+     */
+    if (!virDomainObjIsActive(vm)) {
+        /* No seclabels */
+        *seclabels = NULL;
+        ret = 0;
+    } else {
+        int len = 0;
+        virSecurityManagerPtr* mgrs = virSecurityManagerGetNested(
+                                            driver->securityManager);
+        if (!mgrs)
+            goto cleanup;
+
+        /* Allocate seclabels array */
+        for (i = 0; mgrs[i]; i++)
+            len++;
+
+        if (VIR_ALLOC_N((*seclabels), len) < 0) {
+            virReportOOMError();
+            VIR_FREE(mgrs);
+            goto cleanup;
+        }
+        memset(*seclabels, 0, sizeof(**seclabels) * len);
+
+        /* Fill the array */
+        for (i = 0; i < len; i++) {
+            if (virSecurityManagerGetProcessLabel(mgrs[i], vm->def, vm->pid,
+                                                  &(*seclabels)[i]) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to get security label"));
+                VIR_FREE(mgrs);
+                VIR_FREE(*seclabels);
+                goto cleanup;
+            }
+        }
+        ret = len;
+        VIR_FREE(mgrs);
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
 static int qemudNodeGetSecurityModel(virConnectPtr conn,
                                      virSecurityModelPtr secmodel)
 {
@@ -13422,6 +13494,7 @@ static virDriver qemuDriver = {
     .domainGetVcpus = qemudDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemudDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetSecurityLabel = qemudDomainGetSecurityLabel, /* 0.6.1 */
+    .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemudNodeGetSecurityModel, /* 0.6.1 */
     .domainGetXMLDesc = qemuDomainGetXMLDesc, /* 0.2.0 */
     .domainXMLFromNative = qemuDomainXMLFromNative, /* 0.6.4 */

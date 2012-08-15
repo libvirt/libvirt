@@ -1417,6 +1417,69 @@ cleanup:
 }
 
 static int
+remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                         virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_domain_get_security_label_list_args *args,
+                                         remote_domain_get_security_label_list_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    virSecurityLabelPtr seclabels = NULL;
+    int i, len, rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if ((len = virDomainGetSecurityLabelList(dom, &seclabels)) < 0) {
+        ret->ret = len;
+        ret->labels.labels_len = 0;
+        ret->labels.labels_val = NULL;
+        goto done;
+    }
+
+    if (VIR_ALLOC_N(ret->labels.labels_val, len) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < len; i++) {
+        size_t label_len = strlen(seclabels[i].label) + 1;
+        remote_domain_get_security_label_ret *cur = &ret->labels.labels_val[i];
+        if (VIR_ALLOC_N(cur->label.label_val, label_len) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (virStrcpy(cur->label.label_val, seclabels[i].label, label_len) == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to copy security label"));
+            goto cleanup;
+        }
+        cur->label.label_len = label_len;
+        cur->enforcing = seclabels[i].enforcing;
+    }
+    ret->labels.labels_len = ret->ret = len;
+
+done:
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    VIR_FREE(seclabels);
+    return rv;
+}
+
+static int
 remoteDispatchNodeGetSecurityModel(virNetServerPtr server ATTRIBUTE_UNUSED,
                                    virNetServerClientPtr client ATTRIBUTE_UNUSED,
                                    virNetMessagePtr msg ATTRIBUTE_UNUSED,

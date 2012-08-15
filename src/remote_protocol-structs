@@ -749,6 +749,16 @@ struct remote_domain_get_security_label_ret {
         } label;
         int                        enforcing;
 };
+struct remote_domain_get_security_label_list_args {
+        remote_nonnull_domain      dom;
+};
+struct remote_domain_get_security_label_list_ret {
+        struct {
+                u_int              labels_len;
+                remote_domain_get_security_label_ret * labels_val;
+        } labels;
+        int                        ret;
+};
 struct remote_node_get_security_model_ret {
         struct {
                 u_int              model_len;
@@ -2259,4 +2269,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275,
         REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276,
         REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277,
+        REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278,
 };
