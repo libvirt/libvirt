@@ -347,6 +347,9 @@ mymain(void)
     DO_TEST("minimal-s390", QEMU_CAPS_NAME);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
+    DO_TEST("machine-core-on", QEMU_CAPS_DUMP_GUEST_CORE);
+    DO_TEST("machine-core-off", QEMU_CAPS_DUMP_GUEST_CORE);
+    DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);

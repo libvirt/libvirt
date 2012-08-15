@@ -126,6 +126,8 @@ mymain(void)
     setenv("PATH", "/bin", 1);
 
     DO_TEST("minimal");
+    DO_TEST("machine-core-on");
+    DO_TEST("machine-core-off");
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");

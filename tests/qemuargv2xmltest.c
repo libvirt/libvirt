@@ -142,6 +142,8 @@ mymain(void)
 
     /* Can't roundtrip vcpu  cpuset attribute */
     /*DO_TEST("minimal", QEMU_CAPS_NAME);*/
+    DO_TEST("machine-core-on");
+    DO_TEST("machine-core-off");
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
