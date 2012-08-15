@@ -2143,6 +2143,15 @@ virDomainState
 virDomainObjGetState(virDomainObjPtr obj, int *reason)
         ATTRIBUTE_NONNULL(1);
 
+virSecurityLabelDefPtr
+virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model);
+
+virSecurityDeviceLabelDefPtr
+virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model);
+
+virSecurityLabelDefPtr
+virDomainDefAddSecurityLabelDef(virDomainDefPtr def, const char *model);
+
 typedef const char* (*virLifecycleToStringFunc)(int type);
 typedef int (*virLifecycleFromStringFunc)(const char *type);
 

@@ -44,20 +44,22 @@
       <optional>
         <ref name='topology'/>
       </optional>
-      <optional>
+      <zeroOrMore>
         <ref name='secmodel'/>
-      </optional>
+      </zeroOrMore>
     </element>
   </define>
 
   <define name='secmodel'>
     <element name='secmodel'>
-      <element name='model'>
-        <text/>
-      </element>
-      <element name='doi'>
-        <text/>
-      </element>
+      <interleave>
+          <element name='model'>
+            <text/>
+          </element>
+          <element name='doi'>
+            <text/>
+          </element>
+       </interleave>
     </element>
   </define>
 

@@ -22,5 +22,5 @@
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
   </devices>
-  <seclabel type='dynamic' relabel='yes'/>
+  <seclabel model='selinux' type='dynamic' relabel='yes'/>
 </domain>

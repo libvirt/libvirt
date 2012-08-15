@@ -55,9 +55,9 @@
         <optional>
           <ref name="devices"/>
         </optional>
-        <optional>
+        <zeroOrMore>
           <ref name="seclabel"/>
-        </optional>
+        </zeroOrMore>
         <optional>
           <ref name='qemucmdline'/>
         </optional>
@@ -148,18 +148,32 @@
       <!-- A per-device seclabel override is more limited, either
            relabel=no or a <label> must be present.  -->
       <choice>
-        <attribute name='relabel'>
-          <value>no</value>
-        </attribute>
         <group>
+          <optional>
+            <attribute name='model'>
+              <text/>
+            </attribute>
+          </optional>
+          <attribute name='relabel'>
+            <value>no</value>
+          </attribute>
+        </group>
+        <group>
+          <optional>
+            <attribute name='model'>
+              <text/>
+            </attribute>
+          </optional>
           <optional>
             <attribute name='relabel'>
               <value>yes</value>
             </attribute>
           </optional>
-          <element name='label'>
-            <text/>
-          </element>
+          <zeroOrMore>
+            <element name='label'>
+              <text/>
+            </element>
+          </zeroOrMore>
         </group>
       </choice>
     </element>

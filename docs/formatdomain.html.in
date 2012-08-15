@@ -1275,8 +1275,8 @@
         path to the file holding the disk. If the disk
         <code>type</code> is "block", then the <code>dev</code>
         attribute specifies the path to the host device to serve as
-        the disk. With both "file" and "block", an optional
-        sub-element <code>seclabel</code>, <a href="#seclabel">described
+        the disk. With both "file" and "block", one or more optional
+        sub-elements <code>seclabel</code>, <a href="#seclabel">described
         below</a> (and <span class="since">since 0.9.9</span>), can be
         used to override the domain security labeling policy for just
         that source file.  If the disk <code>type</code> is "dir", then the
@@ -3917,6 +3917,13 @@ qemu-kvm -net nic,model=? /dev/null
       resources, however, automatic relabeling can be enabled
       if desired.  <span class="since">'dynamic' since 0.6.1, 'static'
       since 0.6.2, and 'none' since 0.9.10.</span>
+    </p>
+
+    <p>
+      If more than one security driver is used by libvirt, multiple
+      <code>seclabel</code> tags can be used, one for each driver and
+      the security driver referenced by each tag can be defined using
+      the attribute <code>model</code>
     </p>
 
     <p>

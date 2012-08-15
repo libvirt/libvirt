@@ -772,12 +772,12 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "    </topology>\n");
     }
 
-    if (caps->host.nsecModels) {
+    for (i = 0; i < caps->host.nsecModels; i++) {
         virBufferAddLit(&xml, "    <secmodel>\n");
         virBufferAsprintf(&xml, "      <model>%s</model>\n",
-                          caps->host.secModels[0].model);
+                          caps->host.secModels[i].model);
         virBufferAsprintf(&xml, "      <doi>%s</doi>\n",
-                          caps->host.secModels[0].doi);
+                          caps->host.secModels[i].doi);
         virBufferAddLit(&xml, "    </secmodel>\n");
     }
 
