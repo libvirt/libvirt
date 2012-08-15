@@ -4306,6 +4306,44 @@ no_memory:
     goto cleanup;
 }
 
+static int
+qemuBuildMachineArgStr(virCommandPtr cmd,
+                       const virDomainDefPtr def,
+                       qemuCapsPtr caps)
+{
+    /* This should *never* be NULL, since we always provide
+     * a machine in the capabilities data for QEMU. So this
+     * check is just here as a safety in case the unexpected
+     * happens */
+    if (!def->os.machine)
+        return 0;
+
+    if (!def->mem.dump_core) {
+        /* if no parameter to the machine type is needed, we still use
+         * '-M' to keep the most of the compatibility with older versions.
+         */
+        virCommandAddArgList(cmd, "-M", def->os.machine, NULL);
+    } else {
+        if (!qemuCapsGet(caps, QEMU_CAPS_DUMP_GUEST_CORE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("dump-guest-core is not available "
+                                   " with this QEMU binary"));
+            return -1;
+        }
+
+        /* However, in case there is a parameter to be added, we need to
+         * use the "-machine" parameter because qemu is not parsing the
+         * "-M" correctly */
+        virCommandAddArg(cmd, "-machine");
+        virCommandAddArgFormat(cmd,
+                               "%s,dump-guest-core=%s",
+                               def->os.machine,
+                               virDomainMemDumpTypeToString(def->mem.dump_core));
+    }
+
+    return 0;
+}
+
 static char *
 qemuBuildSmpArgStr(const virDomainDefPtr def,
                    qemuCapsPtr caps)
@@ -4498,12 +4536,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
     virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
-    /* This should *never* be NULL, since we always provide
-     * a machine in the capabilities data for QEMU. So this
-     * check is just here as a safety in case the unexpected
-     * happens */
-    if (def->os.machine)
-        virCommandAddArgList(cmd, "-M", def->os.machine, NULL);
+    if (qemuBuildMachineArgStr(cmd, def, caps) < 0)
+        goto error;
 
     if (qemuBuildCpuArgStr(driver, def, emulator, caps,
                            &ut, &cpu, &hasHwVirt, !!migrateFrom) < 0)
@@ -8323,10 +8357,38 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             }
             if (STREQ(def->name, ""))
                 VIR_FREE(def->name);
-        } else if (STREQ(arg, "-M")) {
+        } else if (STREQ(arg, "-M") ||
+                   STREQ(arg, "-machine")) {
+            char *params;
             WANT_VALUE();
-            if (!(def->os.machine = strdup(val)))
-                goto no_memory;
+            params = strchr(val, ',');
+            if (params == NULL) {
+                if (!(def->os.machine = strdup(val)))
+                    goto no_memory;
+            } else {
+                if (!(def->os.machine = strndup(val, params - val)))
+                    goto no_memory;
+
+                while(params++) {
+                    /* prepared for more "-machine" parameters */
+                    char *tmp = params;
+                    params = strchr(params, ',');
+
+                    if (STRPREFIX(tmp, "dump-guest-core=")) {
+                        tmp += strlen("dump-guest-core=");
+                        if (params) {
+                            tmp = strndup(tmp, params - tmp);
+                            if (tmp == NULL)
+                                goto no_memory;
+                        }
+                        def->mem.dump_core = virDomainMemDumpTypeFromString(tmp);
+                        if (def->mem.dump_core <= 0)
+                            def->mem.dump_core = VIR_DOMAIN_MEM_DUMP_DEFAULT;
+                        if (params)
+                            VIR_FREE(tmp);
+                    }
+                }
+            }
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
             if (STRNEQ(val, "none")) {

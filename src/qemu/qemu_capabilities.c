@@ -182,6 +182,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "seccomp-sandbox",
 
               "reboot-timeout", /* 110 */
+              "dump-guest-core",
     );
 
 struct _qemuCaps {
@@ -1242,6 +1243,9 @@ qemuCapsComputeCmdFlags(const char *help,
      */
     if (strstr(help, "-no-shutdown") && (version < 14000 || version > 15000))
         qemuCapsSet(caps, QEMU_CAPS_NO_SHUTDOWN);
+
+    if (strstr(help, "dump-guest-core=on|off"))
+        qemuCapsSet(caps, QEMU_CAPS_DUMP_GUEST_CORE);
 
     /*
      * Handling of -incoming arg with varying features

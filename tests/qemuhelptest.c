@@ -846,7 +846,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI_PCI,
             QEMU_CAPS_BLOCKIO,
             QEMU_CAPS_SCSI_DISK_WWN,
-            QEMU_CAPS_SECCOMP_SANDBOX);
+            QEMU_CAPS_SECCOMP_SANDBOX,
+            QEMU_CAPS_DUMP_GUEST_CORE);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
