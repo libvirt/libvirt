@@ -272,9 +272,13 @@ reload_profile(virSecurityManagerPtr mgr,
                const char *fn,
                bool append)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
     int rc = -1;
     char *profile_name = NULL;
+    const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
+                                                def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return rc;
 
     if (secdef->norelabel)
         return 0;
@@ -308,10 +312,14 @@ AppArmorSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
     virDomainDefPtr def = ptr->def;
 
     if (reload_profile(ptr->mgr, def, file, true) < 0) {
-        const virSecurityLabelDefPtr secdef = &def->seclabel;
+        const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
+                                                def, SECURITY_APPARMOR_NAME);
+        if (!secdef) {
+            virReportOOMError();
+            return -1;
+        }
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot update AppArmor profile "
-                         "\'%s\'"),
+                       _("cannot update AppArmor profile \'%s\'"),
                        secdef->imagelabel);
         return -1;
     }
@@ -326,10 +334,14 @@ AppArmorSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
     virDomainDefPtr def = ptr->def;
 
     if (reload_profile(ptr->mgr, def, file, true) < 0) {
-        const virSecurityLabelDefPtr secdef = &def->seclabel;
+        const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
+                                                def, SECURITY_APPARMOR_NAME);
+        if (!secdef) {
+            virReportOOMError();
+            return -1;
+        }
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot update AppArmor profile "
-                         "\'%s\'"),
+                       _("cannot update AppArmor profile \'%s\'"),
                        secdef->imagelabel);
         return -1;
     }
@@ -408,18 +420,23 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     int rc = -1;
     char *profile_name = NULL;
+    virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
+                                                SECURITY_APPARMOR_NAME);
 
-    if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
+    if (!secdef)
+        return -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    if (def->seclabel.baselabel) {
+    if (secdef->baselabel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("Cannot set a base label with AppArmour"));
         return rc;
     }
 
-    if ((def->seclabel.label) ||
-        (def->seclabel.model) || (def->seclabel.imagelabel)) {
+    if ((secdef->label) ||
+        (secdef->model) || (secdef->imagelabel)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("security label already defined for VM"));
@@ -429,31 +446,31 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
 
-    def->seclabel.label = strndup(profile_name, strlen(profile_name));
-    if (!def->seclabel.label) {
+    secdef->label = strndup(profile_name, strlen(profile_name));
+    if (!secdef->label) {
         virReportOOMError();
         goto clean;
     }
 
     /* set imagelabel the same as label (but we won't use it) */
-    def->seclabel.imagelabel = strndup(profile_name,
-                                           strlen(profile_name));
-    if (!def->seclabel.imagelabel) {
+    secdef->imagelabel = strndup(profile_name,
+                                 strlen(profile_name));
+    if (!secdef->imagelabel) {
         virReportOOMError();
         goto err;
     }
 
-    def->seclabel.model = strdup(SECURITY_APPARMOR_NAME);
-    if (!def->seclabel.model) {
+    secdef->model = strdup(SECURITY_APPARMOR_NAME);
+    if (!secdef->model) {
         virReportOOMError();
         goto err;
     }
 
     /* Now that we have a label, load the profile into the kernel. */
-    if (load_profile(mgr, def->seclabel.label, def, NULL, false) < 0) {
+    if (load_profile(mgr, secdef->label, def, NULL, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot load AppArmor profile "
-                         "\'%s\'"), def->seclabel.label);
+                       "\'%s\'"), secdef->label);
         goto err;
     }
 
@@ -461,9 +478,9 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     goto clean;
 
   err:
-    VIR_FREE(def->seclabel.label);
-    VIR_FREE(def->seclabel.imagelabel);
-    VIR_FREE(def->seclabel.model);
+    VIR_FREE(secdef->label);
+    VIR_FREE(secdef->imagelabel);
+    VIR_FREE(secdef->model);
 
   clean:
     VIR_FREE(profile_name);
@@ -475,7 +492,12 @@ static int
 AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr def, const char *stdin_path)
 {
-    if (def->seclabel.norelabel)
+    virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
+                                                    SECURITY_APPARMOR_NAME);
+    if (!secdef)
+        return -1;
+
+    if (secdef->norelabel)
         return 0;
 
     /* Reload the profile if stdin_path is specified. Note that
@@ -528,7 +550,10 @@ static int
 AppArmorReleaseSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                              virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    const virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
+                                                        SECURITY_APPARMOR_NAME);
+    if (!secdef)
+        return -1;
 
     VIR_FREE(secdef->model);
     VIR_FREE(secdef->label);
@@ -543,8 +568,12 @@ AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virDomainDefPtr def,
                                 int migrated ATTRIBUTE_UNUSED)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
     int rc = 0;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if (secdef->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         if ((rc = remove_profile(secdef->label)) != 0) {
@@ -562,9 +591,13 @@ AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr, virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
     int rc = -1;
     char *profile_name = NULL;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
@@ -631,9 +664,13 @@ static int
 AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def, virDomainDiskDefPtr disk)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
     int rc = -1;
     char *profile_name;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if (secdef->norelabel)
         return 0;
@@ -676,7 +713,11 @@ static int
 AppArmorSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                        virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC) {
         if (use_apparmor() < 0 || profile_status(secdef->label, 0) < 0) {
@@ -704,9 +745,13 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                 virDomainHostdevDefPtr dev)
 
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
     struct SDPDOP *ptr;
     int ret = -1;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if (secdef->norelabel)
         return 0;
@@ -766,7 +811,12 @@ AppArmorRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                     virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
 
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
+
     if (secdef->norelabel)
         return 0;
 
@@ -799,7 +849,11 @@ AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
     char *proc = NULL;
     char *fd_path = NULL;
 
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        return -1;
 
     if (secdef->imagelabel == NULL)
         return 0;

@@ -68,8 +68,7 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
     return mgr;
 }
 
-virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
-                                                 virSecurityManagerPtr secondary)
+virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverStack,
@@ -81,10 +80,17 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
     if (!mgr)
         return NULL;
 
-    virSecurityStackSetPrimary(mgr, primary);
-    virSecurityStackSetSecondary(mgr, secondary);
+    virSecurityStackAddPrimary(mgr, primary);
 
     return mgr;
+}
+
+int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
+                                     virSecurityManagerPtr nested)
+{
+    if (!STREQ("stack", stack->drv->name))
+        return -1;
+    return virSecurityStackAddNested(stack, nested);
 }
 
 virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
@@ -308,27 +314,52 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
-    if (vm->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
-        if (mgr->defaultConfined) {
-            vm->seclabels[0]->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+    int rc = 0;
+    size_t i;
+    virSecurityManagerPtr* sec_managers = NULL;
+    virSecurityLabelDefPtr seclabel;
+
+    if (mgr == NULL || mgr->drv == NULL)
+        return -1;
+
+    if ((sec_managers = virSecurityManagerGetNested(mgr)) == NULL)
+        return -1;
+
+    for (i = 0; sec_managers[i]; i++) {
+        seclabel = virDomainDefGetSecurityLabelDef(vm,
+                                                   sec_managers[i]->drv->name);
+        if (seclabel == NULL) {
+            rc = -1;
+            goto cleanup;
+        }
+
+        if (seclabel->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
+            if (sec_managers[i]->defaultConfined)
+                seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+            else
+                seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
+        }
+
+        if ((seclabel->type == VIR_DOMAIN_SECLABEL_NONE) &&
+            sec_managers[i]->requireConfined) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Unconfined guests are not allowed on this host"));
+            rc = -1;
+            goto cleanup;
+        }
+
+        if (!sec_managers[i]->drv->domainGenSecurityLabel) {
+            virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
         } else {
-            vm->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
-            vm->seclabels[0]->norelabel = true;
+            rc += sec_managers[i]->drv->domainGenSecurityLabel(sec_managers[i], vm);
+            if (rc)
+                goto cleanup;
         }
     }
 
-    if ((vm->seclabels[0]->type == VIR_DOMAIN_SECLABEL_NONE) &&
-        mgr->requireConfined) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Unconfined guests are not allowed on this host"));
-        return -1;
-    }
-
-    if (mgr->drv->domainGenSecurityLabel)
-        return mgr->drv->domainGenSecurityLabel(mgr, vm);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+cleanup:
+    VIR_FREE(sec_managers);
+    return rc;
 }
 
 int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
@@ -399,12 +430,17 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = def->seclabels[0];
+    virSecurityLabelDefPtr secdef;
+
+    if (mgr == NULL || mgr->drv == NULL)
+        return 0;
+
     /* NULL model == dynamic labelling, with whatever driver
      * is active, so we can short circuit verify check to
      * avoid drivers de-referencing NULLs by accident
      */
-    if (!secdef->model)
+    secdef = virDomainDefGetSecurityLabelDef(def, mgr->drv->name);
+    if (secdef == NULL || secdef->model == NULL)
         return 0;
 
     if (mgr->drv->domainSecurityVerify)
@@ -436,4 +472,23 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
       virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     */
     return NULL;
+}
+
+virSecurityManagerPtr*
+virSecurityManagerGetNested(virSecurityManagerPtr mgr)
+{
+    virSecurityManagerPtr* list = NULL;
+
+    if (STREQ("stack", mgr->drv->name)) {
+        return virSecurityStackGetNested(mgr);
+    }
+
+    if (VIR_ALLOC_N(list, 2) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    list[0] = mgr;
+    list[1] = NULL;
+    return list;
 }

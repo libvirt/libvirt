@@ -34,8 +34,9 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                             bool defaultConfined,
                                             bool requireConfined);
 
-virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary,
-                                                 virSecurityManagerPtr secondary);
+virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
+int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
+                                     virSecurityManagerPtr nested);
 
 virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                uid_t user,
@@ -106,4 +107,7 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
                                       int fd);
 char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                               virDomainDefPtr vm);
+virSecurityManagerPtr*
+virSecurityManagerGetNested(virSecurityManagerPtr mgr);
+
 #endif /* VIR_SECURITY_MANAGER_H__ */

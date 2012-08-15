@@ -268,8 +268,8 @@ qemuSecurityInit(struct qemud_driver *driver)
         if (!dac)
             goto error;
 
-        if (!(driver->securityManager = virSecurityManagerNewStack(mgr,
-                                                                   dac))) {
+        if (!(driver->securityManager = virSecurityManagerNewStack(mgr)) ||
+            !(virSecurityManagerStackAddNested(mgr, dac))) {
 
             virSecurityManagerFree(dac);
             goto error;
@@ -291,7 +291,11 @@ static virCapsPtr
 qemuCreateCapabilities(virCapsPtr oldcaps,
                        struct qemud_driver *driver)
 {
+    size_t i;
     virCapsPtr caps;
+    virSecurityManagerPtr *sec_managers = NULL;
+    /* Security driver data */
+    const char *doi, *model;
 
     /* Basic host arch / guest machine capabilities */
     if (!(caps = qemuCapsInit(oldcaps))) {
@@ -316,31 +320,38 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
         goto err_exit;
     }
 
-    /* Security driver data */
-    const char *doi, *model;
+    /* access sec drivers and create a sec model for each one */
+    sec_managers = virSecurityManagerGetNested(driver->securityManager);
+    if (sec_managers == NULL) {
+        goto err_exit;
+    }
 
-    doi = virSecurityManagerGetDOI(driver->securityManager);
-    model = virSecurityManagerGetModel(driver->securityManager);
+    /* calculate length */
+    for (i = 0; sec_managers[i]; i++)
+        ;
+    caps->host.nsecModels = i;
 
-    if (VIR_ALLOC(caps->host.secModels) < 0) {
+    if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
         goto no_memory;
-    }
 
-    if (STRNEQ(model, "none")) {
-        if (!(caps->host.secModels[0].model = strdup(model)))
+    for (i = 0; sec_managers[i]; i++) {
+        doi = virSecurityManagerGetDOI(sec_managers[i]);
+        model = virSecurityManagerGetModel(sec_managers[i]);
+        if (!(caps->host.secModels[i].model = strdup(model)))
             goto no_memory;
-        if (!(caps->host.secModels[0].doi = strdup(doi)))
+        if (!(caps->host.secModels[i].doi = strdup(doi)))
             goto no_memory;
+        VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+                  "DOI \"%s\"", model, doi);
     }
-
-    VIR_DEBUG("Initialized caps for security driver \"%s\" with "
-              "DOI \"%s\"", model, doi);
+    VIR_FREE(sec_managers);
 
     return caps;
 
 no_memory:
     virReportOOMError();
 err_exit:
+    VIR_FREE(sec_managers);
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -4063,9 +4074,9 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
     qemuDriverLock(driver);
     memset(secmodel, 0, sizeof(*secmodel));
 
-    /* NULL indicates no driver, which we treat as
-     * success, but simply return no data in *secmodel */
-    if (driver->caps->host.secModels[0].model == NULL)
+    /* We treat no driver as success, but simply return no data in *secmodel */
+    if (driver->caps->host.nsecModels == 0 ||
+        driver->caps->host.secModels[0].model == NULL)
         goto cleanup;
 
     p = driver->caps->host.secModels[0].model;

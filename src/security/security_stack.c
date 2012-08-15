@@ -23,29 +23,70 @@
 #include "security_stack.h"
 
 #include "virterror_internal.h"
+#include "memory.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 typedef struct _virSecurityStackData virSecurityStackData;
 typedef virSecurityStackData *virSecurityStackDataPtr;
+typedef struct _virSecurityStackItem virSecurityStackItem;
+typedef virSecurityStackItem* virSecurityStackItemPtr;
+
+struct _virSecurityStackItem {
+    virSecurityManagerPtr securityManager;
+    virSecurityStackItemPtr next;
+};
 
 struct _virSecurityStackData {
     virSecurityManagerPtr primary;
-    virSecurityManagerPtr secondary;
+    virSecurityStackItemPtr itemsHead;
 };
+
+int
+virSecurityStackAddPrimary(virSecurityManagerPtr mgr,
+                           virSecurityManagerPtr primary)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    if (virSecurityStackAddNested(mgr, primary) < 0)
+        return -1;
+    priv->primary = primary;
+    return 0;
+}
+
+int
+virSecurityStackAddNested(virSecurityManagerPtr mgr,
+                          virSecurityManagerPtr nested)
+{
+    virSecurityStackItemPtr item = NULL;
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+
+    if (VIR_ALLOC(item) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    item->securityManager = nested;
+    item->next = priv->itemsHead;
+    priv->itemsHead = item;
+    return 0;
+}
+
+virSecurityManagerPtr
+virSecurityStackGetPrimary(virSecurityManagerPtr mgr)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return (priv->primary) ? priv->primary : priv->itemsHead->securityManager;
+}
 
 void virSecurityStackSetPrimary(virSecurityManagerPtr mgr,
                                 virSecurityManagerPtr primary)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    priv->primary = primary;
+    virSecurityStackAddPrimary(mgr, primary);
 }
 
 void virSecurityStackSetSecondary(virSecurityManagerPtr mgr,
                                   virSecurityManagerPtr secondary)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    priv->secondary = secondary;
+    virSecurityStackAddNested(mgr, secondary);
 }
 
 static virSecurityDriverStatus
@@ -64,9 +105,14 @@ static int
 virSecurityStackClose(virSecurityManagerPtr mgr)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr next, item = priv->itemsHead;
 
-    virSecurityManagerFree(priv->primary);
-    virSecurityManagerFree(priv->secondary);
+    while (item) {
+        next = item->next;
+        virSecurityManagerFree(item->securityManager);
+        VIR_FREE(item);
+        item = next;
+    }
 
     return 0;
 }
@@ -74,17 +120,13 @@ virSecurityStackClose(virSecurityManagerPtr mgr)
 static const char *
 virSecurityStackGetModel(virSecurityManagerPtr mgr)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-
-    return virSecurityManagerGetModel(priv->primary);
+    return virSecurityManagerGetModel(virSecurityStackGetPrimary(mgr));
 }
 
 static const char *
 virSecurityStackGetDOI(virSecurityManagerPtr mgr)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-
-    return virSecurityManagerGetDOI(priv->primary);
+    return virSecurityManagerGetDOI(virSecurityStackGetPrimary(mgr));
 }
 
 static int
@@ -92,13 +134,15 @@ virSecurityStackVerify(virSecurityManagerPtr mgr,
                        virDomainDefPtr def)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerVerify(priv->primary, def) < 0)
-        rc = -1;
-
-    if (virSecurityManagerVerify(priv->secondary, def) < 0)
-        rc = -1;
+    for(; item; item = item->next) {
+        if (virSecurityManagerVerify(item->securityManager, def) < 0) {
+            rc = -1;
+            break;
+        }
+    }
 
     return rc;
 }
@@ -108,12 +152,12 @@ static int
 virSecurityStackGenLabel(virSecurityManagerPtr mgr,
                          virDomainDefPtr vm)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
-    if (virSecurityManagerGenLabel(priv->primary, vm) < 0)
+    if (virSecurityManagerGenLabel(virSecurityStackGetPrimary(mgr), vm) < 0)
         rc = -1;
 
+// TODO
 #if 0
     /* We don't allow secondary drivers to generate labels.
      * This may have to change in the future, but requires
@@ -133,11 +177,12 @@ static int
 virSecurityStackReleaseLabel(virSecurityManagerPtr mgr,
                              virDomainDefPtr vm)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
-    if (virSecurityManagerReleaseLabel(priv->primary, vm) < 0)
+    if (virSecurityManagerReleaseLabel(virSecurityStackGetPrimary(mgr), vm) < 0)
         rc = -1;
+
+// TODO
 #if 0
     /* XXX See note in GenLabel */
     if (virSecurityManagerReleaseLabel(priv->secondary, vm) < 0)
@@ -153,11 +198,11 @@ virSecurityStackReserveLabel(virSecurityManagerPtr mgr,
                              virDomainDefPtr vm,
                              pid_t pid)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
-    if (virSecurityManagerReserveLabel(priv->primary, vm, pid) < 0)
+    if (virSecurityManagerReserveLabel(virSecurityStackGetPrimary(mgr), vm, pid) < 0)
         rc = -1;
+// TODO
 #if 0
     /* XXX See note in GenLabel */
     if (virSecurityManagerReserveLabel(priv->secondary, vm, pid) < 0)
@@ -174,12 +219,13 @@ virSecurityStackSetSecurityImageLabel(virSecurityManagerPtr mgr,
                                       virDomainDiskDefPtr disk)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetImageLabel(priv->secondary, vm, disk) < 0)
-        rc = -1;
-    if (virSecurityManagerSetImageLabel(priv->primary, vm, disk) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetImageLabel(item->securityManager, vm, disk) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -191,12 +237,13 @@ virSecurityStackRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
                                           virDomainDiskDefPtr disk)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerRestoreImageLabel(priv->secondary, vm, disk) < 0)
-        rc = -1;
-    if (virSecurityManagerRestoreImageLabel(priv->primary, vm, disk) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreImageLabel(item->securityManager, vm, disk) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -209,12 +256,13 @@ virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetHostdevLabel(priv->secondary, vm, dev) < 0)
-        rc = -1;
-    if (virSecurityManagerSetHostdevLabel(priv->primary, vm, dev) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetHostdevLabel(item->securityManager, vm, dev) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -226,12 +274,13 @@ virSecurityStackRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                             virDomainHostdevDefPtr dev)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerRestoreHostdevLabel(priv->secondary, vm, dev) < 0)
-        rc = -1;
-    if (virSecurityManagerRestoreHostdevLabel(priv->primary, vm, dev) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreHostdevLabel(item->securityManager, vm, dev) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -243,12 +292,13 @@ virSecurityStackSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                     const char *stdin_path)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetAllLabel(priv->secondary, vm, stdin_path) < 0)
-        rc = -1;
-    if (virSecurityManagerSetAllLabel(priv->primary, vm, stdin_path) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetAllLabel(item->securityManager, vm, stdin_path) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -260,12 +310,13 @@ virSecurityStackRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                         int migrated)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerRestoreAllLabel(priv->secondary, vm, migrated) < 0)
-        rc = -1;
-    if (virSecurityManagerRestoreAllLabel(priv->primary, vm, migrated) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreAllLabel(item->securityManager, vm, migrated) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -277,12 +328,13 @@ virSecurityStackSetSavedStateLabel(virSecurityManagerPtr mgr,
                                    const char *savefile)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetSavedStateLabel(priv->secondary, vm, savefile) < 0)
-        rc = -1;
-    if (virSecurityManagerSetSavedStateLabel(priv->primary, vm, savefile) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetSavedStateLabel(item->securityManager, vm, savefile) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -294,12 +346,13 @@ virSecurityStackRestoreSavedStateLabel(virSecurityManagerPtr mgr,
                                        const char *savefile)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerRestoreSavedStateLabel(priv->secondary, vm, savefile) < 0)
-        rc = -1;
-    if (virSecurityManagerRestoreSavedStateLabel(priv->primary, vm, savefile) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreSavedStateLabel(item->securityManager, vm, savefile) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -310,12 +363,13 @@ virSecurityStackSetProcessLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetProcessLabel(priv->secondary, vm) < 0)
-        rc = -1;
-    if (virSecurityManagerSetProcessLabel(priv->primary, vm) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetProcessLabel(item->securityManager, vm) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -326,14 +380,14 @@ virSecurityStackGetProcessLabel(virSecurityManagerPtr mgr,
                                 pid_t pid,
                                 virSecurityLabelPtr seclabel)
 {
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int rc = 0;
 
+// TODO
 #if 0
     if (virSecurityManagerGetProcessLabel(priv->secondary, vm, pid, seclabel) < 0)
         rc = -1;
 #endif
-    if (virSecurityManagerGetProcessLabel(priv->primary, vm, pid, seclabel) < 0)
+    if (virSecurityManagerGetProcessLabel(virSecurityStackGetPrimary(mgr), vm, pid, seclabel) < 0)
         rc = -1;
 
     return rc;
@@ -345,12 +399,13 @@ virSecurityStackSetDaemonSocketLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr vm)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetDaemonSocketLabel(priv->secondary, vm) < 0)
-        rc = -1;
-    if (virSecurityManagerSetDaemonSocketLabel(priv->primary, vm) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetDaemonSocketLabel(item->securityManager, vm) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -361,12 +416,13 @@ virSecurityStackSetSocketLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetSocketLabel(priv->secondary, vm) < 0)
-        rc = -1;
-    if (virSecurityManagerSetSocketLabel(priv->primary, vm) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetSocketLabel(item->securityManager, vm) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -377,12 +433,13 @@ virSecurityStackClearSocketLabel(virSecurityManagerPtr mgr,
                                  virDomainDefPtr vm)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerClearSocketLabel(priv->secondary, vm) < 0)
-        rc = -1;
-    if (virSecurityManagerClearSocketLabel(priv->primary, vm) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerClearSocketLabel(item->securityManager, vm) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -393,12 +450,13 @@ virSecurityStackSetImageFDLabel(virSecurityManagerPtr mgr,
                                 int fd)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    if (virSecurityManagerSetImageFDLabel(priv->secondary, vm, fd) < 0)
-        rc = -1;
-    if (virSecurityManagerSetImageFDLabel(priv->primary, vm, fd) < 0)
-        rc = -1;
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetImageFDLabel(item->securityManager, vm, fd) < 0)
+            rc = -1;
+    }
 
     return rc;
 }
@@ -406,6 +464,29 @@ virSecurityStackSetImageFDLabel(virSecurityManagerPtr mgr,
 static char *virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                              virDomainDefPtr vm ATTRIBUTE_UNUSED) {
     return NULL;
+}
+
+virSecurityManagerPtr*
+virSecurityStackGetNested(virSecurityManagerPtr mgr)
+{
+    virSecurityManagerPtr *list = NULL;
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item;
+    int len = 0, i = 0;
+
+    for (item = priv->itemsHead; item; item = item->next)
+        len++;
+
+    if (VIR_ALLOC_N(list, len + 1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    for (item = priv->itemsHead; item; item = item->next, i++)
+        list[i] = item->securityManager;
+    list[len] = NULL;
+
+    return list;
 }
 
 virSecurityDriver virSecurityDriverStack = {

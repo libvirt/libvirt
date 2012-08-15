@@ -992,6 +992,7 @@ virSecurityManagerFree;
 virSecurityManagerGenLabel;
 virSecurityManagerGetDOI;
 virSecurityManagerGetModel;
+virSecurityManagerGetNested;
 virSecurityManagerGetProcessLabel;
 virSecurityManagerNew;
 virSecurityManagerNewStack;
@@ -1010,6 +1011,7 @@ virSecurityManagerSetHostdevLabel;
 virSecurityManagerSetProcessLabel;
 virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
+virSecurityManagerStackAddNested;
 virSecurityManagerVerify;
 virSecurityManagerGetMountOptions;
 
