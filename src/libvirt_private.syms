@@ -1337,7 +1337,6 @@ virNetClientSendNonBlock;
 virNetClientSendWithReply;
 virNetClientSendWithReplyStream;
 virNetClientSetCloseCallback;
-virNetClientSetSASLSession;
 virNetClientSetTLSSession;
 
 
@@ -1485,16 +1484,6 @@ virNetMessageSaveError;
 xdr_virNetMessageError;
 
 
-# virnetsaslcontext.h
-virNetSASLContextNewClient;
-virNetSASLSessionClientStart;
-virNetSASLSessionClientStep;
-virNetSASLSessionDecode;
-virNetSASLSessionEncode;
-virNetSASLSessionGetMaxBufSize;
-virNetSASLSessionNewClient;
-
-
 # virnetserver.h
 virNetServerAddProgram;
 virNetServerAddService;
@@ -1606,7 +1595,6 @@ virNetSocketRemoteAddrString;
 virNetSocketRemoveIOCallback;
 virNetSocketSendFD;
 virNetSocketSetBlocking;
-virNetSocketSetSASLSession;
 virNetSocketSetTLSSession;
 virNetSocketUpdateIOCallback;
 virNetSocketWrite;
