@@ -426,8 +426,9 @@
         interval(unit: microseconds). Within <code>period</code>, each vcpu of
         the domain will not be allowed to consume more than <code>quota</code>
         worth of runtime. The value should be in range [1000, 1000000]. A period
-        with value 0 means no value. (NB: Only qemu driver support)
-        <span class="since">Since 0.9.4</span>
+        with value 0 means no value.
+        <span class="since">Only QEMU driver support since 0.9.4, LXC since
+        0.9.10</span>
       </dd>
       <dt><code>quota</code></dt>
       <dd>
@@ -437,8 +438,9 @@
         means that it is not bandwidth controlled. The value should be in range
         [1000, 18446744073709551] or less than 0. A quota with value 0 means no
         value. You can use this feature to ensure that all vcpus run at the same
-        speed. (NB: Only qemu driver support)
-        <span class="since">Since 0.9.4</span>
+        speed.
+        <span class="since">Only QEMU driver support since 0.9.4, LXC since
+        0.9.10</span>
       </dd>
     </dl>
 
