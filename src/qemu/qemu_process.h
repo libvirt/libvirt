@@ -88,8 +88,6 @@ int qemuProcessKill(struct qemud_driver *driver,
                     virDomainObjPtr vm, unsigned int flags);
 
 int qemuProcessAutoDestroyInit(struct qemud_driver *driver);
-void qemuProcessAutoDestroyRun(struct qemud_driver *driver,
-                               virConnectPtr conn);
 void qemuProcessAutoDestroyShutdown(struct qemud_driver *driver);
 int qemuProcessAutoDestroyAdd(struct qemud_driver *driver,
                               virDomainObjPtr vm,
