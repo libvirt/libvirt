@@ -290,4 +290,8 @@ int qemuMonitorJSONGetVersion(qemuMonitorPtr mon,
                               char **package)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
+int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
+                               qemuMonitorMachineInfoPtr **machines)
+    ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */

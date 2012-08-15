@@ -3046,3 +3046,33 @@ int qemuMonitorGetVersion(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetVersion(mon, major, minor, micro, package);
 }
+
+int qemuMonitorGetMachines(qemuMonitorPtr mon,
+                           qemuMonitorMachineInfoPtr **machines)
+{
+    VIR_DEBUG("mon=%p machines=%p",
+              mon, machines);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetMachines(mon, machines);
+}
+
+void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
+{
+    if (!machine)
+        return;
+    VIR_FREE(machine->name);
+    VIR_FREE(machine->alias);
+    VIR_FREE(machine);
+}

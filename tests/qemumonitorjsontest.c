@@ -224,6 +224,83 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONGetMachines(const void *data)
+{
+    virCapsPtr caps = (virCapsPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    int ret = -1;
+    qemuMonitorMachineInfoPtr *info;
+    int ninfo;
+    const char *null = NULL;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-machines",
+                               "{ "
+                               "  \"return\": [ "
+                               "   { "
+                               "     \"name\": \"pc-1.0\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"pc-1.1\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"pc-1.2\", "
+                               "     \"is-default\": true, "
+                               "     \"alias\": \"pc\" "
+                               "   } "
+                               "  ]"
+                               "}") < 0)
+        goto cleanup;
+
+    if ((ninfo = qemuMonitorGetMachines(qemuMonitorTestGetMonitor(test),
+                                        &info)) < 0)
+        goto cleanup;
+
+    if (ninfo != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "ninfo %d is not 3", ninfo);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname, wantisDefault, wantalias)                    \
+    do {                                                                \
+        if (STRNEQ(info[i]->name, (wantname))) {                        \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name %s is not %s",                         \
+                           info[i]->name, (wantname));                  \
+            goto cleanup;                                               \
+        }                                                               \
+        if (info[i]->isDefault != (wantisDefault)) {                    \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "isDefault %d is not %d",                    \
+                           info[i]->isDefault, (wantisDefault));        \
+            goto cleanup;                                               \
+        }                                                               \
+        if (STRNEQ_NULLABLE(info[i]->alias, (wantalias))) {             \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "alias %s is not %s",                        \
+                           info[i]->alias, NULLSTR(wantalias));         \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "pc-1.0", false, null);
+    CHECK(1, "pc-1.1", false, null);
+    CHECK(2, "pc-1.2", true, "pc");
+
+#undef CHECK
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -243,6 +320,7 @@ mymain(void)
 
     DO_TEST(GetStatus);
     DO_TEST(GetVersion);
+    DO_TEST(GetMachines);
 
     virCapabilitiesFree(caps);
 

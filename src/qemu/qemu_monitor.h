@@ -578,6 +578,21 @@ int qemuMonitorGetVersion(qemuMonitorPtr mon,
                           char **package)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
+
+typedef struct _qemuMonitorMachineInfo qemuMonitorMachineInfo;
+typedef qemuMonitorMachineInfo *qemuMonitorMachineInfoPtr;
+
+struct _qemuMonitorMachineInfo {
+    char *name;
+    bool isDefault;
+    char *alias;
+};
+
+int qemuMonitorGetMachines(qemuMonitorPtr mon,
+                           qemuMonitorMachineInfoPtr **machines);
+
+void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

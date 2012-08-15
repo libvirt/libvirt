@@ -3941,3 +3941,104 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
+                               qemuMonitorMachineInfoPtr **machines)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    qemuMonitorMachineInfoPtr *infolist = NULL;
+    int n = 0;
+    size_t i;
+
+    *machines = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-machines", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-machines reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-machines reply data was not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(infolist, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+        qemuMonitorMachineInfoPtr info;
+
+        if (VIR_ALLOC(info) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        infolist[i] = info;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-machines reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (!(info->name = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectHasKey(child, "is-default") &&
+            virJSONValueObjectGetBoolean(child, "is-default", &info->isDefault) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-machines reply has malformed 'is-default' data"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectHasKey(child, "alias")) {
+            if (!(tmp = virJSONValueObjectGetString(child, "alias"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-machines reply has malformed 'alias' data"));
+                goto cleanup;
+            }
+            if (!(info->alias = strdup(tmp))) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = n;
+    *machines = infolist;
+
+cleanup:
+    if (ret < 0 && infolist) {
+        for (i = 0 ; i < n ; i++)
+            qemuMonitorMachineInfoFree(infolist[i]);
+        VIR_FREE(infolist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
