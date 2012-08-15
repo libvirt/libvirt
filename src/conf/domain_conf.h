@@ -1320,6 +1320,14 @@ struct _virDomainRedirFilterDef {
     virDomainRedirFilterUsbDevDefPtr *usbdevs;
 };
 
+enum virDomainMemDump {
+    VIR_DOMAIN_MEM_DUMP_DEFAULT = 0,
+    VIR_DOMAIN_MEM_DUMP_ON,
+    VIR_DOMAIN_MEM_DUMP_OFF,
+
+    VIR_DOMAIN_MEM_DUMP_LAST,
+};
+
 enum {
     VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO,
     VIR_DOMAIN_MEMBALLOON_MODEL_XEN,
@@ -1641,6 +1649,7 @@ struct _virDomainDef {
         unsigned long long max_balloon; /* in kibibytes */
         unsigned long long cur_balloon; /* in kibibytes */
         bool hugepage_backed;
+        int dump_core; /* enum virDomainMemDump */
         unsigned long long hard_limit; /* in kibibytes */
         unsigned long long soft_limit; /* in kibibytes */
         unsigned long long min_guarantee; /* in kibibytes */
@@ -2177,6 +2186,7 @@ VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainChrSpicevmc)
 VIR_ENUM_DECL(virDomainSoundCodec)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainMemDump)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSmbiosMode)
 VIR_ENUM_DECL(virDomainWatchdogModel)

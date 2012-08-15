@@ -381,6 +381,11 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "ac97",
               "ich6")
 
+VIR_ENUM_IMPL(virDomainMemDump, VIR_DOMAIN_MEM_DUMP_LAST,
+              "default",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
@@ -8524,6 +8529,18 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                              &def->mem.cur_balloon, false) < 0)
         goto error;
 
+    /* and info about it */
+    tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt);
+    if (tmp) {
+        def->mem.dump_core = virDomainMemDumpTypeFromString(tmp);
+
+        if (def->mem.dump_core <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, _("Bad value '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
     if (def->mem.cur_balloon > def->mem.max_balloon) {
         /* Older libvirt could get into this situation due to
          * rounding; if the discrepancy is less than 1MiB, we silently
@@ -13266,8 +13283,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
-    virBufferAsprintf(buf, "  <memory unit='KiB'>%llu</memory>\n",
+    virBufferAddLit(buf, "  <memory");
+    if (def->mem.dump_core)
+        virBufferAsprintf(buf, " dumpCore='%s'",
+                          virDomainMemDumpTypeToString(def->mem.dump_core));
+    virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
                       def->mem.max_balloon);
+
     virBufferAsprintf(buf, "  <currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 

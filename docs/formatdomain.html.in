@@ -515,9 +515,15 @@
         However, the value will be rounded up to the nearest kibibyte
         by libvirt, and may be further rounded to the granularity
         supported by the hypervisor.  Some hypervisors also enforce a
-        minimum, such as
-        4000KiB. <span class='since'><code>unit</code> since
-        0.9.11</span></dd>
+        minimum, such as 4000KiB.
+
+        In the case of crash, optional attribute <code>dumpCore</code>
+        can be used to control whether the guest memory should be
+        included in the generated coredump or not (values "on", "off").
+
+        <span class='since'><code>unit</code> since 0.9.11</span>,
+        <span class='since'><code>dumpCore</code> since 0.10.2
+        (QEMU only)</span></dd>
       <dt><code>currentMemory</code></dt>
       <dd>The actual allocation of memory for the guest. This value can
         be less than the maximum allocation, to allow for ballooning

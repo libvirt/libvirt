@@ -470,6 +470,14 @@
     <interleave>
       <element name="memory">
         <ref name='scaledInteger'/>
+        <optional>
+          <attribute name="dumpCore">
+            <choice>
+              <value>on</value>
+              <value>off</value>
+            </choice>
+          </attribute>
+        </optional>
       </element>
       <optional>
         <element name="currentMemory">
