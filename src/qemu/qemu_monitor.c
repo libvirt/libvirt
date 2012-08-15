@@ -3022,3 +3022,27 @@ int qemuMonitorSystemWakeup(qemuMonitorPtr mon)
 
     return qemuMonitorJSONSystemWakeup(mon);
 }
+
+int qemuMonitorGetVersion(qemuMonitorPtr mon,
+                          int *major,
+                          int *minor,
+                          int *micro,
+                          char **package)
+{
+    VIR_DEBUG("mon=%p major=%p minor=%p micro=%p package=%p",
+              mon, major, minor, micro, package);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetVersion(mon, major, minor, micro, package);
+}

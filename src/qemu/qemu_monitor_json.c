@@ -3863,3 +3863,81 @@ int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon)
     virJSONValueFree(reply);
     return ret;
 }
+
+int qemuMonitorJSONGetVersion(qemuMonitorPtr mon,
+                              int *major,
+                              int *minor,
+                              int *micro,
+                              char **package)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    virJSONValuePtr qemu;
+
+    *major = *minor = *micro = 0;
+    if (package)
+        *package = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-version", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-version reply was missing 'return' data"));
+        goto cleanup;
+    }
+
+    if (!(qemu = virJSONValueObjectGet(data, "qemu"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-version reply was missing 'qemu' data"));
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetNumberInt(qemu, "major", major) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-version reply was missing 'major' version"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetNumberInt(qemu, "minor", minor) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-version reply was missing 'minor' version"));
+        goto cleanup;
+    }
+    if (virJSONValueObjectGetNumberInt(qemu, "micro", micro) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-version reply was missing 'micro' version"));
+        goto cleanup;
+    }
+
+    if (package) {
+        const char *tmp;
+        if (!(tmp = virJSONValueObjectGetString(data, "package"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-version reply was missing 'package' version"));
+            goto cleanup;
+        }
+        if (!(*package = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

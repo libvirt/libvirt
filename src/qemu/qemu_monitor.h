@@ -571,6 +571,13 @@ int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorSystemWakeup(qemuMonitorPtr mon);
 
+int qemuMonitorGetVersion(qemuMonitorPtr mon,
+                          int *major,
+                          int *minor,
+                          int *micro,
+                          char **package)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

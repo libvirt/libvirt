@@ -283,4 +283,11 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon);
 
+int qemuMonitorJSONGetVersion(qemuMonitorPtr mon,
+                              int *major,
+                              int *minor,
+                              int *micro,
+                              char **package)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
 #endif /* QEMU_MONITOR_JSON_H */
