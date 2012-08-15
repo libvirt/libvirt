@@ -181,8 +181,13 @@ virCapabilitiesFree(virCapsPtr caps) {
     VIR_FREE(caps->host.migrateTrans);
 
     VIR_FREE(caps->host.arch);
-    VIR_FREE(caps->host.secModel.model);
-    VIR_FREE(caps->host.secModel.doi);
+
+    for (i = 0; i < caps->host.nsecModels; i++) {
+        VIR_FREE(caps->host.secModels[i].model);
+        VIR_FREE(caps->host.secModels[i].doi);
+    }
+    VIR_FREE(caps->host.secModels);
+
     virCPUDefFree(caps->host.cpu);
 
     VIR_FREE(caps);
@@ -767,10 +772,12 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "    </topology>\n");
     }
 
-    if (caps->host.secModel.model) {
+    if (caps->host.nsecModels) {
         virBufferAddLit(&xml, "    <secmodel>\n");
-        virBufferAsprintf(&xml, "      <model>%s</model>\n", caps->host.secModel.model);
-        virBufferAsprintf(&xml, "      <doi>%s</doi>\n", caps->host.secModel.doi);
+        virBufferAsprintf(&xml, "      <model>%s</model>\n",
+                          caps->host.secModels[0].model);
+        virBufferAsprintf(&xml, "      <doi>%s</doi>\n",
+                          caps->host.secModels[0].doi);
         virBufferAddLit(&xml, "    </secmodel>\n");
     }
 

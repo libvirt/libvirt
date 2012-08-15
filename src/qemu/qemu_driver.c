@@ -321,10 +321,15 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
 
     doi = virSecurityManagerGetDOI(driver->securityManager);
     model = virSecurityManagerGetModel(driver->securityManager);
+
+    if (VIR_ALLOC(caps->host.secModels) < 0) {
+        goto no_memory;
+    }
+
     if (STRNEQ(model, "none")) {
-        if (!(caps->host.secModel.model = strdup(model)))
+        if (!(caps->host.secModels[0].model = strdup(model)))
             goto no_memory;
-        if (!(caps->host.secModel.doi = strdup(doi)))
+        if (!(caps->host.secModels[0].doi = strdup(doi)))
             goto no_memory;
     }
 
@@ -4060,10 +4065,10 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
 
     /* NULL indicates no driver, which we treat as
      * success, but simply return no data in *secmodel */
-    if (driver->caps->host.secModel.model == NULL)
+    if (driver->caps->host.secModels[0].model == NULL)
         goto cleanup;
 
-    p = driver->caps->host.secModel.model;
+    p = driver->caps->host.secModels[0].model;
     if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
@@ -4073,7 +4078,7 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
     }
     strcpy(secmodel->model, p);
 
-    p = driver->caps->host.secModel.doi;
+    p = driver->caps->host.secModels[0].doi;
     if (strlen(p) >= VIR_SECURITY_DOI_BUFLEN-1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),

@@ -296,6 +296,7 @@ struct _virSecurityLabelDef {
 typedef struct _virSecurityDeviceLabelDef virSecurityDeviceLabelDef;
 typedef virSecurityDeviceLabelDef *virSecurityDeviceLabelDefPtr;
 struct _virSecurityDeviceLabelDef {
+    char *model;
     char *label;        /* image label string */
     bool norelabel;
 };
@@ -540,7 +541,6 @@ struct _virDomainDiskDef {
     int device;
     int bus;
     char *src;
-    virSecurityDeviceLabelDefPtr seclabel;
     char *dst;
     int tray_status;
     int protocol;
@@ -580,6 +580,9 @@ struct _virDomainDiskDef {
     virStorageEncryptionPtr encryption;
     bool rawio_specified;
     int rawio; /* no = 0, yes = 1 */
+
+    size_t nseclabels;
+    virSecurityDeviceLabelDefPtr *seclabels;
 };
 
 
@@ -1658,8 +1661,10 @@ struct _virDomainDef {
     int nhubs;
     virDomainHubDefPtr *hubs;
 
+    size_t nseclabels;
+    virSecurityLabelDefPtr *seclabels;
+
     /* Only 1 */
-    virSecurityLabelDef seclabel;
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
     virCPUDefPtr cpu;
@@ -1925,7 +1930,7 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
-                                              const virDomainDefPtr def,
+                                              virDomainDefPtr def,
                                               const char *xmlStr,
                                               unsigned int flags);
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,

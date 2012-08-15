@@ -618,6 +618,7 @@ virDomainAuditSecurityLabel(virDomainObjPtr vm, bool success)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
     const char *virt;
+    int i;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -630,11 +631,14 @@ virDomainAuditSecurityLabel(virDomainObjPtr vm, bool success)
         virt = "?";
     }
 
-    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_ID, success,
-              "virt=%s %s uuid=%s vm-ctx=%s img-ctx=%s",
-              virt, vmname, uuidstr,
-              VIR_AUDIT_STR(vm->def->seclabel.label),
-              VIR_AUDIT_STR(vm->def->seclabel.imagelabel));
+    for (i = 0; i < vm->def->nseclabels; i++) {
+        VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_ID, success,
+                  "virt=%s %s uuid=%s vm-ctx=%s img-ctx=%s model=%s",
+                  virt, vmname, uuidstr,
+                  VIR_AUDIT_STR(vm->def->seclabels[i]->label),
+                  VIR_AUDIT_STR(vm->def->seclabels[i]->imagelabel),
+                  VIR_AUDIT_STR(vm->def->seclabels[i]->model));
+    }
 
     VIR_FREE(vmname);
 }

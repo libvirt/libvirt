@@ -308,16 +308,16 @@ int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
-    if (vm->seclabel.type == VIR_DOMAIN_SECLABEL_DEFAULT) {
+    if (vm->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
         if (mgr->defaultConfined) {
-            vm->seclabel.type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+            vm->seclabels[0]->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
         } else {
-            vm->seclabel.type = VIR_DOMAIN_SECLABEL_NONE;
-            vm->seclabel.norelabel = true;
+            vm->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
+            vm->seclabels[0]->norelabel = true;
         }
     }
 
-    if ((vm->seclabel.type == VIR_DOMAIN_SECLABEL_NONE) &&
+    if ((vm->seclabels[0]->type == VIR_DOMAIN_SECLABEL_NONE) &&
         mgr->requireConfined) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unconfined guests are not allowed on this host"));
@@ -399,7 +399,7 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def)
 {
-    const virSecurityLabelDefPtr secdef = &def->seclabel;
+    const virSecurityLabelDefPtr secdef = def->seclabels[0];
     /* NULL model == dynamic labelling, with whatever driver
      * is active, so we can short circuit verify check to
      * avoid drivers de-referencing NULLs by accident

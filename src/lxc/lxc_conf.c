@@ -134,9 +134,13 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
         doi = virSecurityManagerGetDOI(driver->securityManager);
         model = virSecurityManagerGetModel(driver->securityManager);
         if (STRNEQ(model, "none")) {
-            if (!(caps->host.secModel.model = strdup(model)))
+            /* Allocate just the primary security driver for LXC. */
+            if (VIR_ALLOC(caps->host.secModels) < 0)
                 goto no_memory;
-            if (!(caps->host.secModel.doi = strdup(doi)))
+            caps->host.nsecModels = 1;
+            if (!(caps->host.secModels[0].model = strdup(model)))
+                goto no_memory;
+            if (!(caps->host.secModels[0].doi = strdup(doi)))
                 goto no_memory;
         }
 

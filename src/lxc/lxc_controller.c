@@ -1602,10 +1602,10 @@ int main(int argc, char *argv[])
         goto cleanup;
 
     VIR_DEBUG("Security model %s type %s label %s imagelabel %s",
-              NULLSTR(ctrl->def->seclabel.model),
-              virDomainSeclabelTypeToString(ctrl->def->seclabel.type),
-              NULLSTR(ctrl->def->seclabel.label),
-              NULLSTR(ctrl->def->seclabel.imagelabel));
+              NULLSTR(ctrl->def->seclabels[0]->model),
+              virDomainSeclabelTypeToString(ctrl->def->seclabels[0]->type),
+              NULLSTR(ctrl->def->seclabels[0]->label),
+              NULLSTR(ctrl->def->seclabels[0]->imagelabel));
 
     ctrl->veths = veths;
     ctrl->nveths = nveths;

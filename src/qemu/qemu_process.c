@@ -4079,12 +4079,12 @@ void qemuProcessStop(struct qemud_driver *driver,
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     /* Clear out dynamically assigned labels */
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        if (!vm->def->seclabel.baselabel)
-            VIR_FREE(vm->def->seclabel.model);
-        VIR_FREE(vm->def->seclabel.label);
+    if (vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        if (!vm->def->seclabels[0]->baselabel)
+            VIR_FREE(vm->def->seclabels[0]->model);
+        VIR_FREE(vm->def->seclabels[0]->label);
     }
-    VIR_FREE(vm->def->seclabel.imagelabel);
+    VIR_FREE(vm->def->seclabels[0]->imagelabel);
 
     virDomainDefClearDeviceAliases(vm->def);
     if (!priv->persistentAddrs) {
@@ -4227,16 +4227,16 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto no_memory;
 
     VIR_DEBUG("Detect security driver config");
-    vm->def->seclabel.type = VIR_DOMAIN_SECLABEL_STATIC;
+    vm->def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_STATIC;
     if (VIR_ALLOC(seclabel) < 0)
         goto no_memory;
     if (virSecurityManagerGetProcessLabel(driver->securityManager,
                                           vm->def, vm->pid, seclabel) < 0)
         goto cleanup;
-    if (driver->caps->host.secModel.model &&
-        !(vm->def->seclabel.model = strdup(driver->caps->host.secModel.model)))
+    if (driver->caps->host.secModels[0].model &&
+        !(vm->def->seclabels[0]->model = strdup(driver->caps->host.secModels[0].model)))
         goto no_memory;
-    if (!(vm->def->seclabel.label = strdup(seclabel->label)))
+    if (!(vm->def->seclabels[0]->label = strdup(seclabel->label)))
         goto no_memory;
 
     VIR_DEBUG("Creating domain log file");

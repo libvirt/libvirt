@@ -93,6 +93,7 @@ struct _virCapsHostNUMACell {
 };
 
 typedef struct _virCapsHostSecModel virCapsHostSecModel;
+typedef virCapsHostSecModel *virCapsHostSecModelPtr;
 struct _virCapsHostSecModel {
     char *model;
     char *doi;
@@ -116,7 +117,10 @@ struct _virCapsHost {
     size_t nnumaCell;
     size_t nnumaCell_max;
     virCapsHostNUMACellPtr *numaCell;
-    virCapsHostSecModel secModel;
+
+    size_t nsecModels;
+    virCapsHostSecModelPtr secModels;
+
     virCPUDefPtr cpu;
     unsigned char host_uuid[VIR_UUID_BUFLEN];
 };

@@ -865,12 +865,15 @@ virDomainGraphicsListenDefClear(virDomainGraphicsListenDefPtr def)
 }
 
 static void
-virSecurityLabelDefClear(virSecurityLabelDefPtr def)
+virSecurityLabelDefFree(virSecurityLabelDefPtr def)
 {
+    if (!def)
+        return;
     VIR_FREE(def->model);
     VIR_FREE(def->label);
     VIR_FREE(def->imagelabel);
     VIR_FREE(def->baselabel);
+    VIR_FREE(def);
 }
 
 
@@ -879,6 +882,7 @@ virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def)
 {
     if (!def)
         return;
+    VIR_FREE(def->model);
     VIR_FREE(def->label);
     VIR_FREE(def);
 }
@@ -964,7 +968,11 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     virStorageEncryptionFree(def->encryption);
     virDomainDeviceInfoClear(&def->info);
 
-    virSecurityDeviceLabelDefFree(def->seclabel);
+    if (def->seclabels) {
+        for (i = 0; i < def->nseclabels; i++)
+            virSecurityDeviceLabelDefFree(def->seclabels[i]);
+        VIR_FREE(def->seclabels);
+    }
 
     for (i = 0 ; i < def->nhosts ; i++)
         virDomainDiskHostDefFree(&def->hosts[i]);
@@ -1626,7 +1634,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainMemballoonDefFree(def->memballoon);
 
-    virSecurityLabelDefClear(&def->seclabel);
+    for (i = 0; i < def->nseclabels; i++)
+        virSecurityLabelDefFree(def->seclabels[i]);
+    VIR_FREE(def->seclabels);
 
     virCPUDefFree(def->cpu);
 
@@ -2982,10 +2992,10 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
 {
     char *p;
 
-    if (virXPathNode("./seclabel", ctxt) == NULL)
+    if (virXPathNode("./seclabel[1]", ctxt) == NULL)
         return 0;
 
-    p = virXPathStringLimit("string(./seclabel/@type)",
+    p = virXPathStringLimit("string(./seclabel[1]/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p == NULL) {
         def->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
@@ -2999,7 +3009,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
         }
     }
 
-    p = virXPathStringLimit("string(./seclabel/@relabel)",
+    p = virXPathStringLimit("string(./seclabel[1]/@relabel)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p != NULL) {
         if (STREQ(p, "yes")) {
@@ -3039,7 +3049,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
     if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
          def->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        p = virXPathStringLimit("string(./seclabel/label[1])",
+        p = virXPathStringLimit("string(./seclabel[1]/label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -3054,7 +3064,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
     if (!def->norelabel &&
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
          def->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        p = virXPathStringLimit("string(./seclabel/imagelabel[1])",
+        p = virXPathStringLimit("string(./seclabel[1]/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -3066,7 +3076,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
 
     /* Only parse baselabel for dynamic label type */
     if (def->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        p = virXPathStringLimit("string(./seclabel/baselabel[1])",
+        p = virXPathStringLimit("string(./seclabel[1]/baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         def->baselabel = p;
     }
@@ -3078,7 +3088,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
         def->baselabel ||
         (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
          def->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        p = virXPathStringLimit("string(./seclabel/@model)",
+        p = virXPathStringLimit("string(./seclabel[1]/@model)",
                                 VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -3091,7 +3101,7 @@ virSecurityLabelDefParseXML(virSecurityLabelDefPtr def,
     return 0;
 
 error:
-    virSecurityLabelDefClear(def);
+    virSecurityLabelDefFree(def);
     return -1;
 }
 
@@ -3105,7 +3115,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr *def,
 
     *def = NULL;
 
-    if (virXPathNode("./seclabel", ctxt) == NULL)
+    if (virXPathNode("./seclabel[1]", ctxt) == NULL)
         return 0;
 
     /* Can't use overrides if top-level doesn't allow relabeling.  */
@@ -3121,7 +3131,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr *def,
         return -1;
     }
 
-    p = virXPathStringLimit("string(./seclabel/@relabel)",
+    p = virXPathStringLimit("string(./seclabel[1]/@relabel)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p != NULL) {
         if (STREQ(p, "yes")) {
@@ -3140,7 +3150,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr *def,
         (*def)->norelabel = false;
     }
 
-    p = virXPathStringLimit("string(./seclabel/label[1])",
+    p = virXPathStringLimit("string(./seclabel[1]/label[1])",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     (*def)->label = p;
 
@@ -3574,10 +3584,15 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     if (sourceNode) {
         xmlNodePtr saved_node = ctxt->node;
         ctxt->node = sourceNode;
-        if (virSecurityDeviceLabelDefParseXML(&def->seclabel,
+        if ((VIR_ALLOC(def->seclabels) < 0)) {
+            virReportOOMError();
+            goto error;
+        }
+        if (virSecurityDeviceLabelDefParseXML(&def->seclabels[0],
                                               vmSeclabel,
                                               ctxt) < 0)
             goto error;
+        def->nseclabels = 1;
         ctxt->node = saved_node;
     }
 
@@ -7030,7 +7045,7 @@ static int virDomainLifecycleParseXML(xmlXPathContextPtr ctxt,
 }
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
-                                              const virDomainDefPtr def,
+                                              virDomainDefPtr def,
                                               const char *xmlStr,
                                               unsigned int flags)
 {
@@ -7049,10 +7064,19 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
         goto error;
     }
 
+    if (!def->seclabels) {
+        if ((VIR_ALLOC(def->seclabels) < 0) ||
+            (VIR_ALLOC(def->seclabels[0])) < 0 ) {
+            virReportOOMError();
+            goto error;
+        }
+    }
+
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
         if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node, ctxt,
-                                                        NULL, &def->seclabel, flags)))
+                                                        NULL, def->seclabels[0],
+                                                        flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "lease")) {
         dev->type = VIR_DOMAIN_DEVICE_LEASE;
@@ -7990,7 +8014,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of security label, done early even though we format it
      * late, so devices can refer to this for defaults */
-    if (virSecurityLabelDefParseXML(&def->seclabel, ctxt, flags) == -1)
+    if ((VIR_ALLOC(def->seclabels) < 0) ||
+        (VIR_ALLOC(def->seclabels[0]) < 0)) {
+        virReportOOMError();
+        goto error;
+    }
+    def->nseclabels = 1;
+    if (virSecurityLabelDefParseXML(def->seclabels[0], ctxt, flags) == -1)
         goto error;
 
     /* Extract domain memory */
@@ -8590,7 +8620,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                                             nodes[i],
                                                             ctxt,
                                                             bootMap,
-                                                            &def->seclabel,
+                                                            def->seclabels[0],
                                                             flags);
         if (!disk)
             goto error;
@@ -11118,10 +11148,10 @@ virDomainDiskDefFormat(virBufferPtr buf,
             if (def->startupPolicy)
                 virBufferEscapeString(buf, " startupPolicy='%s'",
                                       startupPolicy);
-            if (def->seclabel) {
+            if (def->seclabels && def->seclabels[0]) {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
-                virSecurityDeviceLabelDefFormat(buf, def->seclabel);
+                virSecurityDeviceLabelDefFormat(buf, def->seclabels[0]);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
@@ -11131,10 +11161,10 @@ virDomainDiskDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferEscapeString(buf, "      <source dev='%s'",
                                   def->src);
-            if (def->seclabel) {
+            if (def->seclabels && def->seclabels[0]) {
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 8);
-                virSecurityDeviceLabelDefFormat(buf, def->seclabel);
+                virSecurityDeviceLabelDefFormat(buf, def->seclabels[0]);
                 virBufferAdjustIndent(buf, -8);
                 virBufferAddLit(buf, "      </source>\n");
             } else {
@@ -13128,9 +13158,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAddLit(buf, "  </devices>\n");
 
-    virBufferAdjustIndent(buf, 2);
-    virSecurityLabelDefFormat(buf, &def->seclabel);
-    virBufferAdjustIndent(buf, -2);
+    if (def->nseclabels && def->seclabels) {
+        virBufferAdjustIndent(buf, 2);
+        virSecurityLabelDefFormat(buf, def->seclabels[0]);
+        virBufferAdjustIndent(buf, -2);
+    }
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)

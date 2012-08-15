@@ -964,7 +964,6 @@ cleanup:
     return ret;
 }
 
-
 /**
  * lxcDomainStartWithFlags:
  * @dom: domain to start
@@ -1182,12 +1181,12 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
     lxcDriverLock(driver);
     memset(secmodel, 0, sizeof(*secmodel));
 
-    /* NULL indicates no driver, which we treat as
-     * success, but simply return no data in *secmodel */
-    if (driver->caps->host.secModel.model == NULL)
+    /* we treat no driver as success, but simply return no data in *secmodel */
+    if (driver->caps->host.nsecModels == 0
+        || driver->caps->host.secModels[0].model == NULL)
         goto cleanup;
 
-    if (!virStrcpy(secmodel->model, driver->caps->host.secModel.model,
+    if (!virStrcpy(secmodel->model, driver->caps->host.secModels[0].model,
                    VIR_SECURITY_MODEL_BUFLEN)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
@@ -1196,7 +1195,7 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!virStrcpy(secmodel->doi, driver->caps->host.secModel.doi,
+    if (!virStrcpy(secmodel->doi, driver->caps->host.secModels[0].doi,
                    VIR_SECURITY_DOI_BUFLEN)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),

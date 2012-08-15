@@ -706,10 +706,11 @@ int virLXCProcessStop(virLXCDriverPtr driver,
                                       vm->def, false);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
     /* Clear out dynamically assigned labels */
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        VIR_FREE(vm->def->seclabel.model);
-        VIR_FREE(vm->def->seclabel.label);
-        VIR_FREE(vm->def->seclabel.imagelabel);
+    if (vm->def->nseclabels &&
+        vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+        VIR_FREE(vm->def->seclabels[0]->model);
+        VIR_FREE(vm->def->seclabels[0]->label);
+        VIR_FREE(vm->def->seclabels[0]->imagelabel);
     }
 
     if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) == 0) {
@@ -1001,8 +1002,9 @@ int virLXCProcessStart(virConnectPtr conn,
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DEFAULT)
-        vm->def->seclabel.type = VIR_DOMAIN_SECLABEL_NONE;
+    if (vm->def->nseclabels &&
+        vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT)
+        vm->def->seclabels[0]->type = VIR_DOMAIN_SECLABEL_NONE;
 
     if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
         virDomainAuditSecurityLabel(vm, false);
@@ -1207,10 +1209,11 @@ cleanup:
                                           vm->def, false);
         virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
         /* Clear out dynamically assigned labels */
-        if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-            VIR_FREE(vm->def->seclabel.model);
-            VIR_FREE(vm->def->seclabel.label);
-            VIR_FREE(vm->def->seclabel.imagelabel);
+        if (vm->def->nseclabels &&
+            vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
+            VIR_FREE(vm->def->seclabels[0]->model);
+            VIR_FREE(vm->def->seclabels[0]->label);
+            VIR_FREE(vm->def->seclabels[0]->imagelabel);
         }
     }
     for (i = 0 ; i < nttyFDs ; i++)
