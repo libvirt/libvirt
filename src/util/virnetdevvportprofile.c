@@ -24,6 +24,7 @@
 
 #include "virnetdevvportprofile.h"
 #include "virterror_internal.h"
+#include "memory.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
@@ -52,7 +53,6 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 
 # include "virnetlink.h"
 # include "virfile.h"
-# include "memory.h"
 # include "logging.h"
 # include "virnetdev.h"
 
