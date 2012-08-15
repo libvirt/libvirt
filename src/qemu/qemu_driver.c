@@ -248,36 +248,91 @@ qemuAutostartDomains(struct qemud_driver *driver)
 static int
 qemuSecurityInit(struct qemud_driver *driver)
 {
-    virSecurityManagerPtr mgr = virSecurityManagerNew(driver->securityDriverName,
-                                                      QEMU_DRIVER_NAME,
-                                                      driver->allowDiskFormatProbing,
-                                                      driver->securityDefaultConfined,
-                                                      driver->securityRequireConfined);
+    char **names;
+    char *primary;
+    virSecurityManagerPtr mgr, nested, stack = NULL;
 
+    if (driver->securityDriverNames == NULL)
+        primary = NULL;
+    else
+        primary = driver->securityDriverNames[0];
+
+    /* Create primary driver */
+    mgr = virSecurityManagerNew(primary,
+                                QEMU_DRIVER_NAME,
+                                driver->allowDiskFormatProbing,
+                                driver->securityDefaultConfined,
+                                driver->securityRequireConfined);
     if (!mgr)
         goto error;
 
-    if (driver->privileged) {
-        virSecurityManagerPtr dac = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
-                                                             driver->user,
-                                                             driver->group,
-                                                             driver->allowDiskFormatProbing,
-                                                             driver->securityDefaultConfined,
-                                                             driver->securityRequireConfined,
-                                                             driver->dynamicOwnership);
-        if (!dac)
+    /* If a DAC driver is required or additional drivers are provived, a stack
+     * driver should be create to group them all */
+    if (driver->privileged ||
+        (driver->securityDriverNames && driver->securityDriverNames[1])) {
+        stack = virSecurityManagerNewStack(mgr);
+        if (!stack)
             goto error;
-
-        if (!(driver->securityManager = virSecurityManagerNewStack(mgr)) ||
-            !(virSecurityManagerStackAddNested(mgr, dac))) {
-
-            virSecurityManagerFree(dac);
-            goto error;
-        }
-    } else {
-        driver->securityManager = mgr;
+        mgr = stack;
     }
 
+    /* Loop through additional driver names and add a secudary driver to each
+     * one */
+    if (driver->securityDriverNames) {
+        names = driver->securityDriverNames + 1;
+        while (names && *names) {
+            if (STREQ("dac", *names)) {
+                /* A DAC driver has specific parameters */
+                nested = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
+                                                  driver->user,
+                                                  driver->group,
+                                                  driver->allowDiskFormatProbing,
+                                                  driver->securityDefaultConfined,
+                                                  driver->securityRequireConfined,
+                                                  driver->dynamicOwnership);
+            } else {
+                nested = virSecurityManagerNew(*names,
+                                               QEMU_DRIVER_NAME,
+                                               driver->allowDiskFormatProbing,
+                                               driver->securityDefaultConfined,
+                                               driver->securityRequireConfined);
+            }
+            if (nested == NULL)
+                goto error;
+            if (virSecurityManagerStackAddNested(stack, nested))
+                goto error;
+            names++;
+        }
+    }
+
+    if (driver->privileged) {
+        /* When a DAC driver is required, check if there is already one in the
+         * additional drivers */
+        names = driver->securityDriverNames;
+        while (names && *names) {
+            if (STREQ("dac", *names)) {
+               break;
+            }
+            names++;
+        }
+        /* If there is no DAC driver, create a new one and add it to the stack
+         * manager */
+        if (names == NULL || *names == NULL) {
+            nested = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
+                                              driver->user,
+                                              driver->group,
+                                              driver->allowDiskFormatProbing,
+                                              driver->securityDefaultConfined,
+                                              driver->securityRequireConfined,
+                                              driver->dynamicOwnership);
+            if (nested == NULL)
+                goto error;
+            if (virSecurityManagerStackAddNested(stack, nested))
+                goto error;
+        }
+    }
+
+    driver->securityManager = mgr;
     return 0;
 
 error:

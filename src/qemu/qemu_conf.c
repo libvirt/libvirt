@@ -193,12 +193,44 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     }
 
     p = virConfGetValue (conf, "security_driver");
-    CHECK_TYPE ("security_driver", VIR_CONF_STRING);
-    if (p && p->str) {
-        if (!(driver->securityDriverName = strdup(p->str))) {
+    if (p && p->type == VIR_CONF_LIST) {
+        size_t len;
+        virConfValuePtr pp;
+
+        /* Calc lenght and check items */
+        for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
+            if (pp->type != VIR_CONF_STRING) {
+                VIR_ERROR(_("security_driver be a list of strings"));
+                virConfFree(conf);
+                return -1;
+            }
+        }
+
+        if (VIR_ALLOC_N(driver->securityDriverNames, len + 1) < 0) {
             virReportOOMError();
             virConfFree(conf);
             return -1;
+        }
+
+        for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
+            driver->securityDriverNames[i] = strdup(pp->str);
+            if (driver->securityDriverNames == NULL) {
+                virReportOOMError();
+                virConfFree(conf);
+                return -1;
+            }
+        }
+        driver->securityDriverNames[len] = NULL;
+    } else {
+        CHECK_TYPE ("security_driver", VIR_CONF_STRING);
+        if (p && p->str) {
+            if (VIR_ALLOC_N(driver->securityDriverNames, 2) < 0 ||
+                !(driver->securityDriverNames[0] = strdup(p->str))) {
+                virReportOOMError();
+                virConfFree(conf);
+                return -1;
+            }
+            driver->securityDriverNames[1] = NULL;
         }
     }
 

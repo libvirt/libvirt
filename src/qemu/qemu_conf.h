@@ -116,7 +116,7 @@ struct qemud_driver {
 
     virDomainEventStatePtr domainEventState;
 
-    char *securityDriverName;
+    char **securityDriverNames;
     bool securityDefaultConfined;
     bool securityRequireConfined;
     virSecurityManagerPtr securityManager;
