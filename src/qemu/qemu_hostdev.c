@@ -301,6 +301,7 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                                   char *stateDir)
 {
     char *linkdev = NULL;
+    virNetDevVlanPtr vlan;
     virNetDevVPortProfilePtr virtPort;
     int ret = -1;
     int vf = -1;
@@ -319,19 +320,46 @@ qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     if (qemuDomainHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
         return ret;
 
+    vlan = virDomainNetGetActualVlan(hostdev->parent.data.net);
     virtPort = virDomainNetGetActualVirtPortProfile(
                                  hostdev->parent.data.net);
-    if (virtPort)
+    if (virtPort) {
+        if (vlan) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("direct setting of the vlan tag is not allowed "
+                             "for hostdev devices using %s mode"),
+                           virNetDevVPortTypeToString(virtPort->virtPortType));
+            goto cleanup;
+        }
         ret = qemuDomainHostdevNetConfigVirtPortProfile(linkdev, vf,
                             virtPort, &hostdev->parent.data.net->mac, uuid,
                             port_profile_associate);
-    else
-        /* Set only mac */
-        ret = virNetDevReplaceNetConfig(linkdev, vf,
-                                        &hostdev->parent.data.net->mac, vlanid,
-                                        stateDir);
-    VIR_FREE(linkdev);
+    } else {
+        /* Set only mac and vlan */
+        if (vlan) {
+            if (vlan->nTags != 1 || vlan->trunk) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vlan trunking is not supported "
+                                 "by SR-IOV network devices"));
+                goto cleanup;
+            }
+            if (vf == -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("vlan can only be set for SR-IOV VFs, but "
+                                 "%s is not a VF"), linkdev);
+                goto cleanup;
+            }
+            vlanid = vlan->tag[0];
+        } else  if (vf >= 0) {
+            vlanid = 0; /* assure any current vlan tag is reset */
+        }
 
+        ret = virNetDevReplaceNetConfig(linkdev, vf,
+                                        &hostdev->parent.data.net->mac,
+                                        vlanid, stateDir);
+    }
+cleanup:
+    VIR_FREE(linkdev);
     return ret;
 }
 
