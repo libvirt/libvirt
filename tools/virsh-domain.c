@@ -1662,7 +1662,6 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
 
     return ret;
 }
-#endif /* WIN32 */
 
 static bool
 cmdConsole(vshControl *ctl, const vshCmd *cmd)
@@ -1696,6 +1695,7 @@ cleanup:
     virDomainFree(dom);
     return ret;
 }
+#endif /* WIN32 */
 
 /* "domif-setlink" command
  */
