@@ -2771,6 +2771,55 @@ int networkRegister(void) {
  * "backend" function table.
  */
 
+/* networkCreateInterfacePool:
+ * @netdef: the original NetDef from the network
+ *
+ * Creates an implicit interface pool of VF's when a PF dev is given
+ */
+static int
+networkCreateInterfacePool(virNetworkDefPtr netdef) {
+    unsigned int num_virt_fns = 0;
+    char **vfname = NULL;
+    int ret = -1, ii = 0;
+
+    if ((virNetDevGetVirtualFunctions(netdef->forwardPfs->dev,
+                                      &vfname, &num_virt_fns)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get Virtual functions on %s"),
+                       netdef->forwardPfs->dev);
+        goto finish;
+    }
+
+    if (num_virt_fns == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No Vf's present on SRIOV PF %s"),
+                       netdef->forwardPfs->dev);
+       goto finish;
+    }
+
+    if ((VIR_ALLOC_N(netdef->forwardIfs, num_virt_fns)) < 0) {
+        virReportOOMError();
+        goto finish;
+    }
+
+    netdef->nForwardIfs = num_virt_fns;
+
+    for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+        netdef->forwardIfs[ii].dev = strdup(vfname[ii]);
+        if (!netdef->forwardIfs[ii].dev) {
+            virReportOOMError();
+            goto finish;
+        }
+    }
+
+    ret = 0;
+finish:
+    for (ii = 0; ii < num_virt_fns; ii++)
+        VIR_FREE(vfname[ii]);
+    VIR_FREE(vfname);
+    return ret;
+}
+
 /* networkAllocateActualDevice:
  * @iface: the original NetDef from the domain
  *
@@ -2793,8 +2842,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     virNetDevVPortProfilePtr virtport = iface->virtPortProfile;
     virNetDevVlanPtr vlan = NULL;
     virNetworkForwardIfDefPtr dev = NULL;
-    unsigned int num_virt_fns = 0;
-    char **vfname = NULL;
     int ii;
     int ret = -1;
 
@@ -2969,34 +3016,8 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
              */
             if (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) {
                 if ((netdef->nForwardPfs > 0) && (netdef->nForwardIfs <= 0)) {
-                    if ((virNetDevGetVirtualFunctions(netdef->forwardPfs->dev,
-                                                      &vfname, &num_virt_fns)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Could not get Virtual functions on %s"),
-                                       netdef->forwardPfs->dev);
+                    if ((networkCreateInterfacePool(netdef)) < 0) {
                         goto error;
-                    }
-
-                    if (num_virt_fns == 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("No Vf's present on SRIOV PF %s"),
-                                       netdef->forwardPfs->dev);
-                        goto error;
-                    }
-
-                    if ((VIR_ALLOC_N(netdef->forwardIfs, num_virt_fns)) < 0) {
-                        virReportOOMError();
-                        goto error;
-                    }
-
-                    netdef->nForwardIfs = num_virt_fns;
-
-                    for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-                        netdef->forwardIfs[ii].dev = strdup(vfname[ii]);
-                        if (!netdef->forwardIfs[ii].dev) {
-                            virReportOOMError();
-                            goto error;
-                        }
                     }
                 }
 
@@ -3105,9 +3126,6 @@ validate:
     ret = 0;
 
 cleanup:
-    for (ii = 0; ii < num_virt_fns; ii++)
-        VIR_FREE(vfname[ii]);
-    VIR_FREE(vfname);
     if (network)
         virNetworkObjUnlock(network);
     return ret;
