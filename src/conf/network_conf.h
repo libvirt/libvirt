@@ -37,6 +37,7 @@
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
 # include "virmacaddr.h"
+# include "device_conf.h"
 
 enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -46,8 +47,18 @@ enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_PRIVATE,
     VIR_NETWORK_FORWARD_VEPA,
     VIR_NETWORK_FORWARD_PASSTHROUGH,
+    VIR_NETWORK_FORWARD_HOSTDEV,
 
     VIR_NETWORK_FORWARD_LAST,
+};
+
+enum virNetworkForwardHostdevDeviceType {
+    VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE = 0,
+    VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI,
+    VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV,
+    /* USB Device to be added here when supported */
+
+    VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
 };
 
 typedef struct _virNetworkDHCPRangeDef virNetworkDHCPRangeDef;
@@ -132,14 +143,20 @@ struct _virNetworkIpDef {
 typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;
 typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
 struct _virNetworkForwardIfDef {
-    char *dev;      /* name of device */
-    int   connections; /* how many guest interfaces are connected to this device? */
+    int type;
+    union {
+        virDevicePCIAddress pci; /*PCI Address of device */
+        /* when USB devices are supported a new variable to be added here */
+        char *dev;      /* name of device */
+    }device;
+    int connections; /* how many guest interfaces are connected to this device? */
 };
 
 typedef struct _virNetworkForwardPfDef virNetworkForwardPfDef;
 typedef virNetworkForwardPfDef *virNetworkForwardPfDefPtr;
 struct _virNetworkForwardPfDef {
     char *dev;      /* name of device */
+    int connections; /* how many guest interfaces are connected to this device? */
 };
 
 typedef struct _virPortGroupDef virPortGroupDef;
@@ -168,6 +185,7 @@ struct _virNetworkDef {
     bool mac_specified;
 
     int forwardType;    /* One of virNetworkForwardType constants */
+    int managed;        /* managed attribute for hostdev mode */
 
     /* If there are multiple forward devices (i.e. a pool of
      * interfaces), they will be listed here.
@@ -243,8 +261,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags);
 static inline const char *
 virNetworkDefForwardIf(const virNetworkDefPtr def, size_t n)
 {
-    return ((def->forwardIfs && (def->nForwardIfs > n))
-            ? def->forwardIfs[n].dev : NULL);
+    return ((def->forwardIfs && (def->nForwardIfs > n) &&
+             def->forwardIfs[n].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
+            ? def->forwardIfs[n].device.dev : NULL);
 }
 
 virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,

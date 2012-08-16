@@ -87,22 +87,51 @@
                   <value>passthrough</value>
                   <value>private</value>
                   <value>vepa</value>
+                  <value>hostdev</value>
+                </choice>
+              </attribute>
+            </optional>
+
+            <optional>
+              <attribute name="managed">
+                <choice>
+                  <value>yes</value>
+                  <value>no</value>
                 </choice>
               </attribute>
             </optional>
             <interleave>
-              <zeroOrMore>
-                <element name='interface'>
-                  <attribute name='dev'>
-                    <ref name='deviceName'/>
-                  </attribute>
-                  <optional>
-                    <attribute name="connections">
-                      <data type="unsignedInt"/>
-                    </attribute>
-                  </optional>
-                </element>
-              </zeroOrMore>
+              <choice>
+                <group>
+                  <zeroOrMore>
+                    <element name='interface'>
+                      <attribute name='dev'>
+                        <ref name='deviceName'/>
+                      </attribute>
+                      <optional>
+                        <attribute name="connections">
+                          <data type="unsignedInt"/>
+                        </attribute>
+                      </optional>
+                    </element>
+                  </zeroOrMore>
+                </group>
+                <group>
+                  <zeroOrMore>
+                    <element name='address'>
+                      <attribute name='type'>
+                        <value>pci</value>
+                      </attribute>
+                      <ref name="pciaddress"/>
+                      <optional>
+                        <attribute name="connections">
+                          <data type="unsignedInt"/>
+                        </attribute>
+                      </optional>
+                    </element>
+                  </zeroOrMore>
+                </group>
+              </choice>
               <optional>
                 <element name='pf'>
                   <attribute name='dev'>

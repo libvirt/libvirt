@@ -3,7 +3,7 @@
  * esx_network_driver.c: network driver functions for managing VMware ESX
  *                       host networks
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -422,9 +422,18 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         for (i = 0; i < def->nForwardIfs; ++i) {
             bool found = false;
 
+            if (def->forwardIfs[i].type !=
+                VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unsupported device type in network %s "
+                                 "interface pool"),
+                               def->name);
+                goto cleanup;
+            }
+
             for (physicalNic = physicalNicList; physicalNic != NULL;
                  physicalNic = physicalNic->_next) {
-                if (STREQ(def->forwardIfs[i].dev, physicalNic->device)) {
+                if (STREQ(def->forwardIfs[i].device.dev, physicalNic->device)) {
                     if (esxVI_String_AppendValueToList
                           (&hostVirtualSwitchBondBridge->nicDevice,
                            physicalNic->key) < 0) {
@@ -439,7 +448,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
             if (! found) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not find PhysicalNic with name '%s'"),
-                               def->forwardIfs[i].dev);
+                               def->forwardIfs[i].device.dev);
                 goto cleanup;
             }
         }
@@ -742,9 +751,12 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
             for (physicalNic = physicalNicList; physicalNic != NULL;
                  physicalNic = physicalNic->_next) {
                 if (STREQ(physicalNicKey->value, physicalNic->key)) {
-                    def->forwardIfs[def->nForwardIfs].dev = strdup(physicalNic->device);
+                    def->forwardIfs[def->nForwardIfs].type
+                        = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+                    def->forwardIfs[def->nForwardIfs].device.dev
+                        = strdup(physicalNic->device);
 
-                    if (def->forwardIfs[def->nForwardIfs].dev == NULL) {
+                    if (def->forwardIfs[def->nForwardIfs].device.dev == NULL) {
                         virReportOOMError();
                         goto cleanup;
                     }

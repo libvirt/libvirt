@@ -2805,8 +2805,8 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
     netdef->nForwardIfs = num_virt_fns;
 
     for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-        netdef->forwardIfs[ii].dev = strdup(vfname[ii]);
-        if (!netdef->forwardIfs[ii].dev) {
+        netdef->forwardIfs[ii].device.dev = strdup(vfname[ii]);
+        if (!netdef->forwardIfs[ii].device.dev) {
             virReportOOMError();
             goto finish;
         }
@@ -3057,7 +3057,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                                netdef->name);
                 goto error;
             }
-            iface->data.network.actual->data.direct.linkdev = strdup(dev->dev);
+            iface->data.network.actual->data.direct.linkdev = strdup(dev->device.dev);
             if (!iface->data.network.actual->data.direct.linkdev) {
                 virReportOOMError();
                 goto error;
@@ -3115,7 +3115,7 @@ validate:
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
         VIR_DEBUG("Using physical device %s, %d connections",
-                  dev->dev, dev->connections);
+                  dev->device.dev, dev->connections);
     }
 
     if (netdef) {
@@ -3198,7 +3198,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         /* find the matching interface and increment its connections */
 
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (STREQ(actualDev, netdef->forwardIfs[ii].dev)) {
+            if (STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }
@@ -3229,7 +3229,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
         VIR_DEBUG("Using physical device %s, %d connections",
-                  dev->dev, dev->connections);
+                  dev->device.dev, dev->connections);
     }
 
 success:
@@ -3305,7 +3305,7 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         virNetworkForwardIfDefPtr dev = NULL;
 
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (STREQ(actualDev, netdef->forwardIfs[ii].dev)) {
+            if (STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }
@@ -3320,7 +3320,7 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
 
         dev->connections--;
         VIR_DEBUG("Releasing physical device %s, %d connections",
-                  dev->dev, dev->connections);
+                  dev->device.dev, dev->connections);
     }
 
 success:
@@ -3410,7 +3410,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
         if ((netdef->nForwardIfs > 0) && netdef->forwardIfs)
-            dev_name = netdef->forwardIfs[0].dev;
+            dev_name = netdef->forwardIfs[0].device.dev;
 
         if (!dev_name) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

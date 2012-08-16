@@ -1,0 +1,10 @@
+<network>
+  <name>hostdev</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward mode='hostdev' managed='yes'>
+    <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x1'/>
+    <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x2'/>
+    <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x3'/>
+    <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x4'/>
+  </forward>
+</network>

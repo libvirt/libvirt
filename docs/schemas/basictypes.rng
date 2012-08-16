@@ -54,6 +54,31 @@
     </choice>
   </define>
 
+  <define name="pciaddress">
+    <optional>
+      <attribute name="domain">
+        <ref name="pciDomain"/>
+      </attribute>
+    </optional>
+    <attribute name="bus">
+      <ref name="pciBus"/>
+    </attribute>
+    <attribute name="slot">
+      <ref name="pciSlot"/>
+    </attribute>
+    <attribute name="function">
+      <ref name="pciFunc"/>
+    </attribute>
+    <optional>
+      <attribute name="multifunction">
+        <choice>
+          <value>on</value>
+          <value>off</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
   <!-- a 6 byte MAC address in ASCII-hex format, eg "12:34:56:78:9A:BC" -->
   <!-- The lowest bit of the 1st byte is the "multicast" bit. a         -->
   <!-- uniMacAddr requires that bit to be 0, and a multiMacAddr         -->
@@ -165,6 +190,27 @@
       </attribute>
     </optional>
     <ref name='unsignedLong'/>
+  </define>
+
+  <define name="pciDomain">
+    <data type="string">
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
+    </data>
+  </define>
+  <define name="pciBus">
+    <data type="string">
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,2}</param>
+    </data>
+  </define>
+  <define name="pciSlot">
+    <data type="string">
+      <param name="pattern">(0x)?[0-1]?[0-9a-fA-F]</param>
+    </data>
+  </define>
+  <define name="pciFunc">
+    <data type="string">
+      <param name="pattern">(0x)?[0-7]</param>
+    </data>
   </define>
 
 </grammar>
