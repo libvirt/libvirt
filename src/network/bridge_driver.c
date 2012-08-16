@@ -47,6 +47,7 @@
 #include "datatypes.h"
 #include "bridge_driver.h"
 #include "network_conf.h"
+#include "device_conf.h"
 #include "driver.h"
 #include "buf.h"
 #include "virpidfile.h"
@@ -1935,7 +1936,7 @@ networkStartNetworkExternal(struct network_driver *driver ATTRIBUTE_UNUSED,
                             virNetworkObjPtr network ATTRIBUTE_UNUSED)
 {
     /* put anything here that needs to be done each time a network of
-     * type BRIDGE, PRIVATE, VEPA, or PASSTHROUGH is started. On
+     * type BRIDGE, PRIVATE, VEPA, HOSTDEV or PASSTHROUGH is started. On
      * failure, undo anything you've done, and return -1. On success
      * return 0.
      */
@@ -1946,7 +1947,7 @@ static int networkShutdownNetworkExternal(struct network_driver *driver ATTRIBUT
                                         virNetworkObjPtr network ATTRIBUTE_UNUSED)
 {
     /* put anything here that needs to be done each time a network of
-     * type BRIDGE, PRIVATE, VEPA, or PASSTHROUGH is shutdown. On
+     * type BRIDGE, PRIVATE, VEPA, HOSTDEV or PASSTHROUGH is shutdown. On
      * failure, undo anything you've done, and return -1. On success
      * return 0.
      */
@@ -1977,6 +1978,7 @@ networkStartNetwork(struct network_driver *driver,
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
+    case VIR_NETWORK_FORWARD_HOSTDEV:
         ret = networkStartNetworkExternal(driver, network);
         break;
     }
@@ -2036,6 +2038,7 @@ static int networkShutdownNetwork(struct network_driver *driver,
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
+    case VIR_NETWORK_FORWARD_HOSTDEV:
         ret = networkShutdownNetworkExternal(driver, network);
         break;
     }
@@ -2825,6 +2828,14 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
                 goto finish;
             }
         }
+        else if (netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+            /* VF's are always PCI devices */
+            netdef->forwardIfs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
+            netdef->forwardIfs[ii].device.pci.domain = virt_fns[ii]->domain;
+            netdef->forwardIfs[ii].device.pci.bus = virt_fns[ii]->bus;
+            netdef->forwardIfs[ii].device.pci.slot = virt_fns[ii]->slot;
+            netdef->forwardIfs[ii].device.pci.function = virt_fns[ii]->function;
+        }
     }
 
     ret = 0;
@@ -2952,6 +2963,67 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("<virtualport type='%s'> not supported for network "
                                  "'%s' which uses a bridge device"),
+                               virNetDevVPortTypeToString(virtport->virtPortType),
+                               netdef->name);
+                goto error;
+            }
+        }
+
+    } else if (netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+
+        if (!iface->data.network.actual
+            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
+            virReportOOMError();
+            goto error;
+        }
+
+        iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
+        if (netdef->nForwardPfs > 0 && netdef->nForwardIfs <= 0 &&
+            networkCreateInterfacePool(netdef) < 0) {
+            goto error;
+        }
+
+        /* pick first dev with 0 connections */
+        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+            if (netdef->forwardIfs[ii].connections == 0) {
+                dev = &netdef->forwardIfs[ii];
+                break;
+            }
+        }
+        if (!dev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' requires exclusive access "
+                             "to interfaces, but none are available"),
+                           netdef->name);
+            goto error;
+        }
+        iface->data.network.actual->data.hostdev.def.parent.type = VIR_DOMAIN_DEVICE_NET;
+        iface->data.network.actual->data.hostdev.def.parent.data.net = iface;
+        iface->data.network.actual->data.hostdev.def.info = &iface->info;
+        iface->data.network.actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        iface->data.network.actual->data.hostdev.def.managed = netdef->managed;
+        iface->data.network.actual->data.hostdev.def.source.subsys.type = dev->type;
+        iface->data.network.actual->data.hostdev.def.source.subsys.u.pci = dev->device.pci;
+
+        /* merge virtualports from interface, network, and portgroup to
+         * arrive at actual virtualport to use
+         */
+        if (virNetDevVPortProfileMerge3(&iface->data.network.actual->virtPortProfile,
+                                        iface->virtPortProfile,
+                                        netdef->virtPortProfile,
+                                        portgroup
+                                        ? portgroup->virtPortProfile : NULL) < 0) {
+            goto error;
+        }
+        virtport = iface->data.network.actual->virtPortProfile;
+        if (virtport) {
+            /* make sure type is supported for hostdev connections */
+            if (virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBG &&
+                virtport->virtPortType != VIR_NETDEV_VPORT_PROFILE_8021QBH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("<virtualport type='%s'> not supported for network "
+                                 "'%s' which uses an SR-IOV Virtual Function "
+                                 "via PCI passthrough"),
                                virNetDevVPortTypeToString(virtport->virtPortType),
                                netdef->name);
                 goto error;
@@ -3123,8 +3195,15 @@ validate:
     if (dev) {
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
-        VIR_DEBUG("Using physical device %s, %d connections",
-                  dev->device.dev, dev->connections);
+        if (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            VIR_DEBUG("Using physical device %s, %d connections",
+                      dev->device.dev, dev->connections);
+        } else {
+            VIR_DEBUG("Using physical device %04x:%02x:%02x.%x, connections %d",
+                      dev->device.pci.domain, dev->device.pci.bus,
+                      dev->device.pci.slot, dev->device.pci.function,
+                      dev->connections);
+        }
     }
 
     if (netdef) {
@@ -3161,10 +3240,11 @@ int
 networkNotifyActualDevice(virDomainNetDefPtr iface)
 {
     struct network_driver *driver = driverState;
+    enum virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
-    const char *actualDev;
-    int ret = -1;
+    virNetworkForwardIfDefPtr dev = NULL;
+    int ii, ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
@@ -3181,33 +3261,40 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
     netdef = network->def;
 
     if (!iface->data.network.actual ||
-        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+        (actualType != VIR_DOMAIN_NET_TYPE_DIRECT &&
+         actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV)) {
         VIR_DEBUG("Nothing to claim from network %s", iface->data.network.name);
         goto success;
     }
 
-    actualDev = virDomainNetGetActualDirectDev(iface);
-    if (!actualDev) {
+    if (netdef->nForwardPfs > 0 && netdef->nForwardIfs == 0 &&
+        networkCreateInterfacePool(netdef) < 0) {
+        goto error;
+    }
+    if (netdef->nForwardIfs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("the interface uses a direct "
-                               "mode, but has no source dev"));
+                       _("network '%s' uses a direct or hostdev mode, "
+                         "but has no forward dev and no interface pool"),
+                       netdef->name);
         goto error;
     }
 
-    if (netdef->nForwardIfs == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("network '%s' uses a direct mode, but "
-                         "has no forward dev and no interface pool"),
-                       netdef->name);
-        goto error;
-    } else {
-        int ii;
-        virNetworkForwardIfDefPtr dev = NULL;
+    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        const char *actualDev;
+
+        actualDev = virDomainNetGetActualDirectDev(iface);
+        if (!actualDev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("the interface uses a direct mode, "
+                             "but has no source dev"));
+            goto error;
+        }
 
         /* find the matching interface and increment its connections */
-
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
+            if (netdef->forwardIfs[ii].type
+                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
+                STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }
@@ -3215,12 +3302,13 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         /* dev points at the physical device we want to use */
         if (!dev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network '%s' doesn't have dev='%s' in use by domain"),
+                           _("network '%s' doesn't have dev='%s' "
+                             "in use by domain"),
                            netdef->name, actualDev);
             goto error;
         }
 
-        /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both require
+        /* PASSTHROUGH mode and PRIVATE Mode + 802.1Qbh both require
          * exclusive access to a device, so current connections count
          * must be 0 in those cases.
          */
@@ -3231,14 +3319,73 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
               (iface->data.network.actual->virtPortProfile->virtPortType
                == VIR_NETDEV_VPORT_PROFILE_8021QBH)))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network '%s' claims dev='%s' is already in use by a different domain"),
+                           _("network '%s' claims dev='%s' is already in "
+                             "use by a different domain"),
                            netdef->name, actualDev);
             goto error;
         }
+
         /* we are now assured of success, so mark the allocation */
         dev->connections++;
-        VIR_DEBUG("Using physical device %s, %d connections",
+        VIR_DEBUG("Using physical device %s, connections %d",
                   dev->device.dev, dev->connections);
+
+    }  else /* if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) */ {
+        virDomainHostdevDefPtr hostdev;
+
+        hostdev = virDomainNetGetActualHostdev(iface);
+        if (!hostdev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("the interface uses a hostdev mode, "
+                             "but has no hostdev"));
+            goto error;
+        }
+
+        /* find the matching interface and increment its connections */
+        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+            if (netdef->forwardIfs[ii].type
+                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
+                (virDevicePCIAddressEqual(hostdev->source.subsys.u.pci,
+                                          netdef->forwardIfs[ii].device.pci) == 0)) {
+                dev = &netdef->forwardIfs[ii];
+                break;
+            }
+        }
+        /* dev points at the physical device we want to use */
+        if (!dev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' doesn't have "
+                             "PCI device %04x:%02x:%02x.%x in use by domain"),
+                           netdef->name,
+                           hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+                goto error;
+        }
+
+        /* PASSTHROUGH mode, PRIVATE Mode + 802.1Qbh, and hostdev (PCI
+         * passthrough) all require exclusive access to a device, so
+         * current connections count must be 0 in those cases.
+         */
+        if ((dev->connections > 0) &&
+            netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' claims the PCI device at "
+                             "domain=%d bus=%d slot=%d function=%d "
+                             "is already in use by a different domain"),
+                           netdef->name,
+                           dev->device.pci.domain, dev->device.pci.bus,
+                           dev->device.pci.slot, dev->device.pci.function);
+            goto error;
+        }
+
+        /* we are now assured of success, so mark the allocation */
+        dev->connections++;
+        VIR_DEBUG("Using physical device %04x:%02x:%02x.%x, connections %d",
+                  dev->device.pci.domain, dev->device.pci.bus,
+                  dev->device.pci.slot, dev->device.pci.function,
+                  dev->connections);
     }
 
 success:
@@ -3270,10 +3417,11 @@ int
 networkReleaseActualDevice(virDomainNetDefPtr iface)
 {
     struct network_driver *driver = driverState;
+    enum virDomainNetType actualType = virDomainNetGetActualType(iface);
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
-    const char *actualDev;
-    int ret = -1;
+    virNetworkForwardIfDefPtr dev = NULL;
+    int ii, ret = -1;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
        return 0;
@@ -3289,48 +3437,91 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     }
     netdef = network->def;
 
-    if (!iface->data.network.actual ||
-        (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_DIRECT)) {
+    if ((!iface->data.network.actual) ||
+        ((actualType != VIR_DOMAIN_NET_TYPE_DIRECT) &&
+         (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV))) {
         VIR_DEBUG("Nothing to release to network %s", iface->data.network.name);
         goto success;
     }
 
-    actualDev = virDomainNetGetActualDirectDev(iface);
-    if (!actualDev) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("the interface uses a direct "
-                               "mode, but has no source dev"));
-        goto error;
-    }
-
     if (netdef->nForwardIfs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("network '%s' uses a direct mode, but "
+                       _("network '%s' uses a direct/hostdev mode, but "
                          "has no forward dev and no interface pool"),
                        netdef->name);
         goto error;
-    } else {
-        int ii;
-        virNetworkForwardIfDefPtr dev = NULL;
+    }
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        const char *actualDev;
+
+        actualDev = virDomainNetGetActualDirectDev(iface);
+        if (!actualDev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("the interface uses a direct mode, "
+                             "but has no source dev"));
+            goto error;
+        }
 
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
+            if (netdef->forwardIfs[ii].type
+                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
+                STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }
         }
-        /* dev points at the physical device we've been using */
+
         if (!dev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network '%s' doesn't have dev='%s' in use by domain"),
+                           _("network '%s' doesn't have dev='%s' "
+                             "in use by domain"),
                            netdef->name, actualDev);
             goto error;
         }
 
         dev->connections--;
-        VIR_DEBUG("Releasing physical device %s, %d connections",
+        VIR_DEBUG("Releasing physical device %s, connections %d",
                   dev->device.dev, dev->connections);
-    }
+
+    } else /* if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) */ {
+        virDomainHostdevDefPtr hostdev;
+
+        hostdev = virDomainNetGetActualHostdev(iface);
+        if (!hostdev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("the interface uses a hostdev mode, but has no hostdev"));
+            goto error;
+        }
+
+        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
+            if (netdef->forwardIfs[ii].type
+                == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
+                (virDevicePCIAddressEqual(hostdev->source.subsys.u.pci,
+                                          netdef->forwardIfs[ii].device.pci) == 0)) {
+                dev = &netdef->forwardIfs[ii];
+                break;
+            }
+        }
+
+        if (!dev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network '%s' doesn't have "
+                             "PCI device %04x:%02x:%02x.%x in use by domain"),
+                           netdef->name,
+                           hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+                goto error;
+        }
+
+        dev->connections--;
+        VIR_DEBUG("Releasing physical device %04x:%02x:%02x.%x, connections %d",
+                  dev->device.pci.domain, dev->device.pci.bus,
+                  dev->device.pci.slot, dev->device.pci.function,
+                  dev->connections);
+   }
 
 success:
     netdef->connections--;

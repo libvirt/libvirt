@@ -223,6 +223,42 @@
             (usually either a domain start, or a hotplug interface
             attach to a domain).<span class="since">Since 0.9.4</span>
           </dd>
+          <dt><code>hostdev</code></dt>
+          <dd>
+            This network facilitates PCI Passthrough of a network
+            device.  A network device is chosen from the interface
+            pool and directly assigned to the guest using generic
+            device passthrough, after first optionally setting the
+            device's MAC address and vlan tag to the configured value,
+            and optionally associating the device with an 802.1Qbh
+            capable switch using a <code>&lt;virtualport&gt;</code>
+            element.  Note that - due to limitations in standard
+            single-port PCI ethernet card driver design - only SR-IOV
+            (Single Root I/O Virtualization) virtual function (VF)
+            devices can be assigned in this manner; to assign a
+            standard single-port PCI or PCIe ethernet card to a guest,
+            use the traditional <code>&lt; hostdev&gt;</code> device
+            definition. <span class="since"> Since 0.10.0</span>
+
+            <p>Note that this "intelligent passthrough" of network
+            devices is very similar to the functionality of a
+            standard <code>&lt; hostdev&gt;</code> device, the
+            difference being that this method allows specifying a MAC
+            address, vlan tag, and <code>&lt;virtualport &gt;</code>
+            for the passed-through device. If these capabilities are
+            not required, if you have a standard single-port PCI,
+            PCIe, or USB network card that doesn't support SR-IOV (and
+            hence would anyway lose the configured MAC address during
+            reset after being assigned to the guest domain), or if you
+            are using a version of libvirt older than 0.10.0, you
+            should use a standard
+            <code>&lt;hostdev&gt;</code> device definition in the
+            domain's configuration to assign the device to the guest
+            instead of defining an <code>&lt;interface
+            type='network'&gt;</code> pointing to a network
+            with <code>&lt;forward mode='hostdev'/&gt;</code>.
+            </p>
+          </dd>
         </dl>
         As mentioned above, a <code>&lt;forward&gt;</code> element can
         have multiple <code>&lt;interface&gt;</code> subelements, each
@@ -272,6 +308,39 @@
         particular, 'passthrough' mode, and 'private' mode when using
         802.1Qbh), libvirt will choose an unused physical interface
         or, if it can't find an unused interface, fail the operation.</p>
+
+        <p>
+          <span class="since">since 0.10.0</span> When using forward
+          mode 'hostdev', the interface pool is specified with a list
+          of <code>&lt;address&gt;</code> elements, each of which has
+          <code>&lt; type&gt;</code> (must always be <code>'pci'</code>,
+          <code>&lt;domain&gt;</code>, <code>&lt;bus&gt;</code>,
+          <code>&lt;slot&gt;</code>, and <code>&lt;function&gt;</code>
+          attributes.
+        </p>
+        <pre>
+...
+  &lt;forward mode='hostdev' managed='yes'&gt;
+    &lt;address type='pci' domain='0' bus='4' slot='0' function='1'/&gt;
+    &lt;address type='pci' domain='0' bus='4' slot='0' function='2'/&gt;
+    &lt;address type='pci' domain='0' bus='4' slot='0' function='3'/&gt;
+  &lt;/forward&gt;
+...
+        </pre>
+
+        Alternatively the interface pool can also be defined using a
+        single physical function  <code>&lt;pf&gt;</code> subelement to
+        call out the  corresponding physical interface associated with
+        multiple virtual interfaces (similar to passthrough mode):
+
+        <pre>
+...
+  &lt;forward mode='hostdev' managed='yes'&gt;
+    &lt;pf dev='eth0'/&gt;
+  &lt;/forward&gt;
+...
+        </pre>
+
       </dd>
     </dl>
     <h5><a name="elementQoS">Quality of service</a></h5>
