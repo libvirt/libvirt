@@ -59,6 +59,7 @@
 #include "dnsmasq.h"
 #include "configmake.h"
 #include "virnetdev.h"
+#include "pci.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
@@ -2780,10 +2781,11 @@ static int
 networkCreateInterfacePool(virNetworkDefPtr netdef) {
     unsigned int num_virt_fns = 0;
     char **vfname = NULL;
+    struct pci_config_address **virt_fns;
     int ret = -1, ii = 0;
 
     if ((virNetDevGetVirtualFunctions(netdef->forwardPfs->dev,
-                                      &vfname, &num_virt_fns)) < 0) {
+                                      &vfname, &virt_fns, &num_virt_fns)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get Virtual functions on %s"),
                        netdef->forwardPfs->dev);
@@ -2805,18 +2807,34 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
     netdef->nForwardIfs = num_virt_fns;
 
     for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-        netdef->forwardIfs[ii].device.dev = strdup(vfname[ii]);
-        if (!netdef->forwardIfs[ii].device.dev) {
-            virReportOOMError();
-            goto finish;
+        if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) ||
+            (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
+            (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
+            (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+            netdef->forwardIfs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+            if(vfname[ii]) {
+                netdef->forwardIfs[ii].device.dev = strdup(vfname[ii]);
+                if (!netdef->forwardIfs[ii].device.dev) {
+                    virReportOOMError();
+                    goto finish;
+                }
+            }
+            else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Direct mode types requires interface names"));
+                goto finish;
+            }
         }
     }
 
     ret = 0;
 finish:
-    for (ii = 0; ii < num_virt_fns; ii++)
+    for (ii = 0; ii < num_virt_fns; ii++) {
         VIR_FREE(vfname[ii]);
+        VIR_FREE(virt_fns[ii]);
+    }
     VIR_FREE(vfname);
+    VIR_FREE(virt_fns);
     return ret;
 }
 
@@ -3008,31 +3026,22 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         } else {
             /* pick an interface from the pool */
 
+            if (netdef->nForwardPfs > 0 && netdef->nForwardIfs == 0 &&
+                networkCreateInterfacePool(netdef) < 0) {
+                goto error;
+            }
+
             /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both
              * require exclusive access to a device, so current
              * connections count must be 0.  Other modes can share, so
              * just search for the one with the lowest number of
              * connections.
              */
-            if (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) {
-                if ((netdef->nForwardPfs > 0) && (netdef->nForwardIfs <= 0)) {
-                    if ((networkCreateInterfacePool(netdef)) < 0) {
-                        goto error;
-                    }
-                }
-
-                /* pick first dev with 0 connections */
-
-                for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].connections == 0) {
-                        dev = &netdef->forwardIfs[ii];
-                        break;
-                    }
-                }
-            } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
-                       iface->data.network.actual->virtPortProfile &&
-                       (iface->data.network.actual->virtPortProfile->virtPortType
-                        == VIR_NETDEV_VPORT_PROFILE_8021QBH)) {
+            if ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
+                ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
+                 iface->data.network.actual->virtPortProfile &&
+                 (iface->data.network.actual->virtPortProfile->virtPortType
+                  == VIR_NETDEV_VPORT_PROFILE_8021QBH))) {
 
                 /* pick first dev with 0 connections */
                 for (ii = 0; ii < netdef->nForwardIfs; ii++) {

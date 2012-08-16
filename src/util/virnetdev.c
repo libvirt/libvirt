@@ -29,6 +29,7 @@
 #include "command.h"
 #include "memory.h"
 #include "pci.h"
+#include "logging.h"
 
 #include <sys/ioctl.h>
 #ifdef HAVE_NET_IF_H
@@ -981,18 +982,18 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
 int
 virNetDevGetVirtualFunctions(const char *pfname,
                              char ***vfname,
+                             struct pci_config_address ***virt_fns,
                              unsigned int *n_vfname)
 {
     int ret = -1, i;
     char *pf_sysfs_device_link = NULL;
     char *pci_sysfs_device_link = NULL;
-    struct pci_config_address **virt_fns;
     char *pciConfigAddr;
 
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
-    if (pciGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
+    if (pciGetVirtualFunctions(pf_sysfs_device_link, virt_fns,
                                n_vfname) < 0)
         goto cleanup;
 
@@ -1003,10 +1004,10 @@ virNetDevGetVirtualFunctions(const char *pfname,
 
     for (i = 0; i < *n_vfname; i++)
     {
-        if (pciGetDeviceAddrString(virt_fns[i]->domain,
-                                   virt_fns[i]->bus,
-                                   virt_fns[i]->slot,
-                                   virt_fns[i]->function,
+        if (pciGetDeviceAddrString((*virt_fns)[i]->domain,
+                                   (*virt_fns)[i]->bus,
+                                   (*virt_fns)[i]->slot,
+                                   (*virt_fns)[i]->function,
                                    &pciConfigAddr) < 0) {
             virReportSystemError(ENOSYS, "%s",
                                  _("Failed to get PCI Config Address String"));
@@ -1019,20 +1020,17 @@ virNetDevGetVirtualFunctions(const char *pfname,
         }
 
         if (pciDeviceNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0) {
-            virReportSystemError(ENOSYS, "%s",
-                                 _("Failed to get interface name of the VF"));
-            goto cleanup;
+            VIR_INFO("VF does not have an interface name");
         }
     }
 
     ret = 0;
 
 cleanup:
-    if (ret < 0)
+    if (ret < 0) {
         VIR_FREE(*vfname);
-    for (i = 0; i < *n_vfname; i++)
-        VIR_FREE(virt_fns[i]);
-    VIR_FREE(virt_fns);
+        VIR_FREE(*virt_fns);
+    }
     VIR_FREE(pf_sysfs_device_link);
     VIR_FREE(pci_sysfs_device_link);
     VIR_FREE(pciConfigAddr);
@@ -1169,6 +1167,7 @@ cleanup:
 int
 virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              char ***vfname ATTRIBUTE_UNUSED,
+                             struct pci_config_address ***virt_fns ATTRIBUTE_UNUSED,
                              unsigned int *n_vfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
