@@ -2628,8 +2628,8 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                    virDomainDevicePCIAddress *hostAddr ATTRIBUTE_UNUSED,
-                                    virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
+                                    virDevicePCIAddress *hostAddr ATTRIBUTE_UNUSED,
+                                    virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("pci_add not supported in JSON mode"));
@@ -2640,7 +2640,7 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                               const char *path ATTRIBUTE_UNUSED,
                               const char *bus ATTRIBUTE_UNUSED,
-                              virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
+                              virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("pci_add not supported in JSON mode"));
@@ -2650,7 +2650,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                  const char *nicstr ATTRIBUTE_UNUSED,
-                                 virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
+                                 virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("pci_add not supported in JSON mode"));
@@ -2659,7 +2659,7 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                   virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
+                                   virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("pci_del not supported in JSON mode"));
@@ -2916,7 +2916,7 @@ int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
 
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                            const char *bus ATTRIBUTE_UNUSED,
-                                           virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
+                                           virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("pci_add not supported in JSON mode"));
@@ -2955,7 +2955,7 @@ qemuMonitorJSONGetGuestDriveAddress(virJSONValuePtr reply,
 
 int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
                                const char *drivestr,
-                               virDomainDevicePCIAddress* controllerAddr,
+                               virDevicePCIAddress* controllerAddr,
                                virDomainDeviceDriveAddress* driveAddr)
 {
     int ret;

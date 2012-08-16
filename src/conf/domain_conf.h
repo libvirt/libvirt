@@ -45,6 +45,7 @@
 # include "virnetdevbandwidth.h"
 # include "virnetdevvlan.h"
 # include "virobject.h"
+# include "device_conf.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -180,30 +181,12 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
 
-enum virDomainDeviceAddressPciMulti {
-    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_DEFAULT = 0,
-    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON,
-    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_OFF,
-
-    VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST
-};
-
 enum virDomainPciRombarMode {
     VIR_DOMAIN_PCI_ROMBAR_DEFAULT = 0,
     VIR_DOMAIN_PCI_ROMBAR_ON,
     VIR_DOMAIN_PCI_ROMBAR_OFF,
 
     VIR_DOMAIN_PCI_ROMBAR_LAST
-};
-
-typedef struct _virDomainDevicePCIAddress virDomainDevicePCIAddress;
-typedef virDomainDevicePCIAddress *virDomainDevicePCIAddressPtr;
-struct _virDomainDevicePCIAddress {
-    unsigned int domain;
-    unsigned int bus;
-    unsigned int slot;
-    unsigned int function;
-    int          multi;  /* enum virDomainDeviceAddressPciMulti */
 };
 
 typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
@@ -267,7 +250,7 @@ struct _virDomainDeviceInfo {
     char *alias;
     int type;
     union {
-        virDomainDevicePCIAddress pci;
+        virDevicePCIAddress pci;
         virDomainDeviceDriveAddress drive;
         virDomainDeviceVirtioSerialAddress vioserial;
         virDomainDeviceCcidAddress ccid;
@@ -378,7 +361,7 @@ struct _virDomainHostdevSubsys {
             unsigned vendor;
             unsigned product;
         } usb;
-        virDomainDevicePCIAddress pci; /* host address */
+        virDevicePCIAddress pci; /* host address */
     } u;
 };
 
@@ -1896,7 +1879,6 @@ virDomainDeviceDefPtr virDomainDeviceDefCopy(virCapsPtr caps,
                                              virDomainDeviceDefPtr src);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
-int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
@@ -2168,7 +2150,6 @@ VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
-VIR_ENUM_DECL(virDomainDeviceAddressPciMulti)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)

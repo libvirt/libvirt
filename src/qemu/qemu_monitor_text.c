@@ -1898,7 +1898,7 @@ int qemuMonitorTextAddUSBDeviceMatch(qemuMonitorPtr mon,
 static int
 qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                 const char *reply,
-                                virDomainDevicePCIAddress *addr)
+                                virDevicePCIAddress *addr)
 {
     char *s, *e;
 
@@ -1960,8 +1960,8 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
-                                    virDomainDevicePCIAddress *hostAddr,
-                                    virDomainDevicePCIAddress *guestAddr)
+                                    virDevicePCIAddress *hostAddr,
+                                    virDevicePCIAddress *guestAddr)
 {
     char *cmd;
     char *reply = NULL;
@@ -2006,7 +2006,7 @@ cleanup:
 int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              virDomainDevicePCIAddress *guestAddr)
+                              virDevicePCIAddress *guestAddr)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -2058,7 +2058,7 @@ cleanup:
 
 int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 virDomainDevicePCIAddress *guestAddr)
+                                 virDevicePCIAddress *guestAddr)
 {
     char *cmd;
     char *reply = NULL;
@@ -2091,7 +2091,7 @@ cleanup:
 
 
 int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
-                                   virDomainDevicePCIAddress *guestAddr)
+                                   virDevicePCIAddress *guestAddr)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -2439,7 +2439,7 @@ cleanup:
 
 int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
-                                           virDomainDevicePCIAddress *guestAddr)
+                                           virDevicePCIAddress *guestAddr)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -2528,7 +2528,7 @@ qemudParseDriveAddReply(const char *reply,
 
 int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
                                const char *drivestr,
-                               virDomainDevicePCIAddress *controllerAddr,
+                               virDevicePCIAddress *controllerAddr,
                                virDomainDeviceDriveAddress *driveAddr)
 {
     char *cmd = NULL;

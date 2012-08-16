@@ -46,6 +46,7 @@
 #include "count-one-bits.h"
 #include "virfile.h"
 #include "viruri.h"
+#include "device_conf.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
@@ -2725,7 +2726,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             if (xenFormatSxprOnePCI(dev->data.hostdev, &buf, 0) < 0)
                 goto cleanup;
 
-            virDomainDevicePCIAddress PCIAddr;
+            virDevicePCIAddress PCIAddr;
 
             PCIAddr = dev->data.hostdev->source.subsys.u.pci;
             virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x", PCIAddr.domain,

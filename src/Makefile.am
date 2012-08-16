@@ -199,6 +199,10 @@ CPU_CONF_SOURCES =						\
 CONSOLE_CONF_SOURCES =						\
 		conf/virconsole.c conf/virconsole.h
 
+# Device Helper APIs
+DEVICE_CONF_SOURCES =                                           \
+		conf/device_conf.c conf/device_conf.h
+
 CONF_SOURCES =							\
 		$(NETDEV_CONF_SOURCES)				\
 		$(DOMAIN_CONF_SOURCES)				\
@@ -211,7 +215,8 @@ CONF_SOURCES =							\
 		$(INTERFACE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
-		$(CONSOLE_CONF_SOURCES)
+		$(CONSOLE_CONF_SOURCES)				\
+		$(DEVICE_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \

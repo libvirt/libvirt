@@ -163,20 +163,20 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
-                                    virDomainDevicePCIAddress *hostAddr,
-                                    virDomainDevicePCIAddress *guestAddr);
+                                    virDevicePCIAddress *hostAddr,
+                                    virDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              virDomainDevicePCIAddress *guestAddr);
+                              virDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 virDomainDevicePCIAddress *guestAddr);
+                                 virDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
-                                   virDomainDevicePCIAddress *guestAddr);
+                                   virDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
@@ -203,11 +203,11 @@ int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
 
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
-                                           virDomainDevicePCIAddress *guestAddr);
+                                           virDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
                                const char *drivestr,
-                               virDomainDevicePCIAddress *controllerAddr,
+                               virDevicePCIAddress *controllerAddr,
                                virDomainDeviceDriveAddress *driveAddr);
 
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,

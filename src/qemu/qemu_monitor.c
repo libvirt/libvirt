@@ -2151,8 +2151,8 @@ int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                virDomainDevicePCIAddress *hostAddr,
-                                virDomainDevicePCIAddress *guestAddr)
+                                virDevicePCIAddress *hostAddr,
+                                virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p domain=%d bus=%d slot=%d function=%d",
@@ -2176,7 +2176,7 @@ int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
 int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
                           const char *path,
                           const char *bus,
-                          virDomainDevicePCIAddress *guestAddr)
+                          virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p path=%s bus=%s",
@@ -2198,7 +2198,7 @@ int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
 
 int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
                              const char *nicstr,
-                             virDomainDevicePCIAddress *guestAddr)
+                             virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p nicstr=%s", mon, nicstr);
@@ -2218,7 +2218,7 @@ int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
 
 
 int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               virDomainDevicePCIAddress *guestAddr)
+                               virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p domain=%d bus=%d slot=%d function=%d",
@@ -2454,7 +2454,7 @@ int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
 
 int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
-                                       virDomainDevicePCIAddress *guestAddr)
+                                       virDevicePCIAddress *guestAddr)
 {
     VIR_DEBUG("mon=%p type=%s", mon, bus);
     int ret;
@@ -2476,7 +2476,7 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
 
 int qemuMonitorAttachDrive(qemuMonitorPtr mon,
                            const char *drivestr,
-                           virDomainDevicePCIAddress *controllerAddr,
+                           virDevicePCIAddress *controllerAddr,
                            virDomainDeviceDriveAddress *driveAddr)
 {
     VIR_DEBUG("mon=%p drivestr=%s domain=%d bus=%d slot=%d function=%d",

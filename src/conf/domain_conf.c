@@ -52,6 +52,7 @@
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
+#include "device_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -152,12 +153,6 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "usb",
               "spapr-vio",
               "virtio-s390")
-
-VIR_ENUM_IMPL(virDomainDeviceAddressPciMulti,
-              VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_LAST,
-              "default",
-              "on",
-              "off")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -1893,7 +1888,7 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        return virDomainDevicePCIAddressIsValid(&info->addr.pci);
+        return virDevicePCIAddressIsValid(&info->addr.pci);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         return 1;
@@ -1904,16 +1899,6 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
     return 0;
 }
-
-
-int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr)
-{
-    /* PCI bus has 32 slots and 8 functions per slot */
-    if (addr->slot >= 32 || addr->function >= 8)
-        return 0;
-    return addr->domain || addr->bus || addr->slot;
-}
-
 
 static bool
 virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
@@ -2139,7 +2124,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.pci.function);
         if (info->addr.pci.multi) {
            virBufferAsprintf(buf, " multifunction='%s'",
-                             virDomainDeviceAddressPciMultiTypeToString(info->addr.pci.multi));
+                             virDeviceAddressPciMultiTypeToString(info->addr.pci.multi));
         }
         break;
 
@@ -2185,75 +2170,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     return 0;
 }
-
-static int
-virDomainDevicePCIAddressParseXML(xmlNodePtr node,
-                                  virDomainDevicePCIAddressPtr addr)
-{
-    char *domain, *slot, *bus, *function, *multi;
-    int ret = -1;
-
-    memset(addr, 0, sizeof(*addr));
-
-    domain   = virXMLPropString(node, "domain");
-    bus      = virXMLPropString(node, "bus");
-    slot     = virXMLPropString(node, "slot");
-    function = virXMLPropString(node, "function");
-    multi    = virXMLPropString(node, "multifunction");
-
-    if (domain &&
-        virStrToLong_ui(domain, NULL, 0, &addr->domain) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'domain' attribute"));
-        goto cleanup;
-    }
-
-    if (bus &&
-        virStrToLong_ui(bus, NULL, 0, &addr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'bus' attribute"));
-        goto cleanup;
-    }
-
-    if (slot &&
-        virStrToLong_ui(slot, NULL, 0, &addr->slot) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'slot' attribute"));
-        goto cleanup;
-    }
-
-    if (function &&
-        virStrToLong_ui(function, NULL, 0, &addr->function) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'function' attribute"));
-        goto cleanup;
-    }
-
-    if (multi &&
-        ((addr->multi = virDomainDeviceAddressPciMultiTypeFromString(multi)) <= 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown value '%s' for <address> 'multifunction' attribute"),
-                       multi);
-        goto cleanup;
-
-    }
-    if (!virDomainDevicePCIAddressIsValid(addr)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Insufficient specification for PCI address"));
-        goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(domain);
-    VIR_FREE(bus);
-    VIR_FREE(slot);
-    VIR_FREE(function);
-    VIR_FREE(multi);
-    return ret;
-}
-
 
 static int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
@@ -2616,7 +2532,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        if (virDomainDevicePCIAddressParseXML(address, &info->addr.pci) < 0)
+        if (virDevicePCIAddressParseXML(address, &info->addr.pci) < 0)
             goto cleanup;
         break;
 
@@ -2664,7 +2580,7 @@ cleanup:
 
 static int
 virDomainParseLegacyDeviceAddress(char *devaddr,
-                                  virDomainDevicePCIAddressPtr pci)
+                                  virDevicePCIAddressPtr pci)
 {
     char *tmp;
 
@@ -2849,10 +2765,10 @@ virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "address")) {
-                virDomainDevicePCIAddressPtr addr =
+                virDevicePCIAddressPtr addr =
                     &def->source.subsys.u.pci;
 
-                if (virDomainDevicePCIAddressParseXML(cur, addr) < 0)
+                if (virDevicePCIAddressParseXML(cur, addr) < 0)
                     goto out;
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
@@ -11528,44 +11444,43 @@ virDomainHostdevSourceFormat(virBufferPtr buf,
                              bool includeTypeInAddr)
 {
     virBufferAddLit(buf, "<source>\n");
+    virBufferAdjustIndent(buf, 2);
     switch (def->source.subsys.type)
     {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (def->source.subsys.u.usb.vendor) {
-            virBufferAsprintf(buf, "  <vendor id='0x%.4x'/>\n",
+            virBufferAsprintf(buf, "<vendor id='0x%.4x'/>\n",
                               def->source.subsys.u.usb.vendor);
-            virBufferAsprintf(buf, "  <product id='0x%.4x'/>\n",
+            virBufferAsprintf(buf, "<product id='0x%.4x'/>\n",
                               def->source.subsys.u.usb.product);
         }
         if (def->source.subsys.u.usb.bus ||
             def->source.subsys.u.usb.device) {
-            virBufferAsprintf(buf, "  <address %sbus='%d' device='%d'/>\n",
+            virBufferAsprintf(buf, "<address %sbus='%d' device='%d'/>\n",
                               includeTypeInAddr ? "type='usb' " : "",
                               def->source.subsys.u.usb.bus,
                               def->source.subsys.u.usb.device);
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        virBufferAsprintf(buf, "  <address %sdomain='0x%.4x' bus='0x%.2x' "
-                          "slot='0x%.2x' function='0x%.1x'/>\n",
-                          includeTypeInAddr ? "type='pci' " : "",
-                          def->source.subsys.u.pci.domain,
-                          def->source.subsys.u.pci.bus,
-                          def->source.subsys.u.pci.slot,
-                          def->source.subsys.u.pci.function);
+        if (virDevicePCIAddressFormat(buf,
+                                      def->source.subsys.u.pci,
+                                      includeTypeInAddr) != 0)
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("PCI address Formatting failed"));
 
         if ((flags & VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES) &&
             (def->origstates.states.pci.unbind_from_stub ||
              def->origstates.states.pci.remove_slot ||
              def->origstates.states.pci.reprobe)) {
-            virBufferAddLit(buf, "  <origstates>\n");
+            virBufferAddLit(buf, "<origstates>\n");
             if (def->origstates.states.pci.unbind_from_stub)
-                virBufferAddLit(buf, "    <unbind/>\n");
+                virBufferAddLit(buf, "  <unbind/>\n");
             if (def->origstates.states.pci.remove_slot)
-                virBufferAddLit(buf, "    <removeslot/>\n");
+                virBufferAddLit(buf, "  <removeslot/>\n");
             if (def->origstates.states.pci.reprobe)
-                virBufferAddLit(buf, "    <reprobe/>\n");
-            virBufferAddLit(buf, "  </origstates>\n");
+                virBufferAddLit(buf, "  <reprobe/>\n");
+            virBufferAddLit(buf, "</origstates>\n");
         }
         break;
     default:
@@ -11575,6 +11490,7 @@ virDomainHostdevSourceFormat(virBufferPtr buf,
         return -1;
     }
 
+    virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</source>\n");
     return 0;
 }

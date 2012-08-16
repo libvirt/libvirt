@@ -32,6 +32,7 @@
 # include "bitmap.h"
 # include "virhash.h"
 # include "json.h"
+# include "device_conf.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -415,8 +416,8 @@ int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                virDomainDevicePCIAddress *hostAddr,
-                                virDomainDevicePCIAddress *guestAddr);
+                                virDevicePCIAddress *hostAddr,
+                                virDevicePCIAddress *guestAddr);
 
 /* XXX disk driver type eg,  qcow/etc.
  * XXX cache mode
@@ -424,17 +425,17 @@ int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
 int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
                           const char *path,
                           const char *bus,
-                          virDomainDevicePCIAddress *guestAddr);
+                          virDevicePCIAddress *guestAddr);
 
 /* XXX do we really want to hardcode 'nicstr' as the
  * sendable item here
  */
 int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
                              const char *nicstr,
-                             virDomainDevicePCIAddress *guestAddr);
+                             virDevicePCIAddress *guestAddr);
 
 int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               virDomainDevicePCIAddress *guestAddr);
+                               virDevicePCIAddress *guestAddr);
 
 
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
@@ -473,11 +474,11 @@ int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
 
 int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
-                                       virDomainDevicePCIAddress *guestAddr);
+                                       virDevicePCIAddress *guestAddr);
 
 int qemuMonitorAttachDrive(qemuMonitorPtr mon,
                            const char *drivestr,
-                           virDomainDevicePCIAddress *controllerAddr,
+                           virDevicePCIAddress *controllerAddr,
                            virDomainDeviceDriveAddress *driveAddr);
 
 
@@ -485,7 +486,7 @@ typedef struct _qemuMonitorPCIAddress qemuMonitorPCIAddress;
 struct _qemuMonitorPCIAddress {
     unsigned int vendor;
     unsigned int product;
-    virDomainDevicePCIAddress addr;
+    virDevicePCIAddress addr;
 };
 
 int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,

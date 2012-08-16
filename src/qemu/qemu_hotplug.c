@@ -43,6 +43,7 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
+#include "device_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -258,7 +259,7 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
             }
         }
     } else {
-        virDomainDevicePCIAddress guestAddr = disk->info.addr.pci;
+        virDevicePCIAddress guestAddr = disk->info.addr.pci;
         ret = qemuMonitorAddPCIDisk(priv->mon,
                                     disk->src,
                                     type,
@@ -655,7 +656,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     char *netstr = NULL;
     virNetDevVPortProfilePtr vport = NULL;
     int ret = -1;
-    virDomainDevicePCIAddress guestAddr;
+    virDevicePCIAddress guestAddr;
     int vlan;
     bool releaseaddr = false;
     bool iface_connected = false;
@@ -974,7 +975,7 @@ int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
                                          configfd, configfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
-        virDomainDevicePCIAddress guestAddr = hostdev->info->addr.pci;
+        virDevicePCIAddress guestAddr = hostdev->info->addr.pci;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorAddPCIHostDevice(priv->mon,

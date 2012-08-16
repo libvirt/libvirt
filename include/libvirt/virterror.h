@@ -110,6 +110,7 @@ typedef enum {
     VIR_FROM_AUTH = 46,         /* Error from auth handling */
     VIR_FROM_DBUS = 47,         /* Error from DBus */
     VIR_FROM_PARALLELS = 48,    /* Error from Parallels */
+    VIR_FROM_DEVICE = 49,       /* Error from Device */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

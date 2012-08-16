@@ -40,6 +40,7 @@
 #include "network/bridge_driver.h"
 #include "virnetdevtap.h"
 #include "base64.h"
+#include "device_conf.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -1028,7 +1029,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     addr = NULL;
 
     if ((info->addr.pci.function == 0) &&
-        (info->addr.pci.multi != VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)) {
+        (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
         int function;
         virDomainDeviceInfo temp_info = *info;
@@ -1611,7 +1612,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 
         /* USB2 needs special handling to put all companions in the same slot */
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
-            virDomainDevicePCIAddress addr = { 0, 0, 0, 0, false };
+            virDevicePCIAddress addr = { 0, 0, 0, 0, false };
             for (j = 0 ; j < i ; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
                     def->controllers[j]->idx == def->controllers[i]->idx) {
@@ -1626,7 +1627,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
                 addr.function = 0;
-                addr.multi = VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON;
+                addr.multi = VIR_DEVICE_ADDRESS_PCI_MULTI_ON;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
                 addr.function = 1;
@@ -1780,7 +1781,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                                  "are supported with this QEMU binary"));
                 return -1;
             }
-            if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON) {
+            if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_ON) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("'multifunction=on' is not supported with "
                                  "this QEMU binary"));
@@ -1798,9 +1799,9 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             virBufferAsprintf(buf, ",bus=pci.0");
         else
             virBufferAsprintf(buf, ",bus=pci");
-        if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_ON)
+        if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_ON)
             virBufferAddLit(buf, ",multifunction=on");
-        else if (info->addr.pci.multi == VIR_DOMAIN_DEVICE_ADDRESS_PCI_MULTI_OFF)
+        else if (info->addr.pci.multi == VIR_DEVICE_ADDRESS_PCI_MULTI_OFF)
             virBufferAddLit(buf, ",multifunction=off");
         virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
         if (info->addr.pci.function != 0)
