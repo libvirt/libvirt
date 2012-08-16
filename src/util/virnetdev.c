@@ -1533,33 +1533,41 @@ virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
                          int vlanid,
                          const char *stateDir)
 {
+    int ret = -1;
     virMacAddr oldmac;
     int oldvlanid = -1;
     char *path = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
+    char *fileData = NULL;
     int ifindex = -1;
 
     if (virNetDevGetVfConfig(pflinkdev, vf, &oldmac, &oldvlanid) < 0)
-        return -1;
+        goto cleanup;
 
     if (virAsprintf(&path, "%s/%s_vf%d",
                     stateDir, pflinkdev, vf) < 0) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
-    virMacAddrFormat(&oldmac, macstr);
-    if (virFileWriteStr(path, macstr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
-        virReportSystemError(errno, _("Unable to preserve mac for pf = %s,"
-                             " vf = %d"), pflinkdev, vf);
-        VIR_FREE(path);
-        return -1;
+    if (virAsprintf(&fileData, "%s\n%d\n",
+                    virMacAddrFormat(&oldmac, macstr), oldvlanid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (virFileWriteStr(path, fileData, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+        virReportSystemError(errno, _("Unable to preserve mac/vlan tag "
+                                      "for pf = %s, vf = %d"), pflinkdev, vf);
+        goto cleanup;
     }
 
-    VIR_FREE(path);
-
-    return virNetDevSetVfConfig(pflinkdev, ifindex, vf, true,
+    ret = virNetDevSetVfConfig(pflinkdev, ifindex, vf, true,
                                 macaddress, vlanid, NULL);
+
+cleanup:
+    VIR_FREE(path);
+    VIR_FREE(fileData);
+    return ret;
 }
 
 static int
@@ -1567,8 +1575,9 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
                          const char *stateDir)
 {
     int rc = -1;
-    char *macstr = NULL;
     char *path = NULL;
+    char *fileData = NULL;
+    char *vlan = NULL;
     virMacAddr oldmac;
     int vlanid = -1;
     int ifindex = -1;
@@ -1579,14 +1588,29 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
         return rc;
     }
 
-    if (virFileReadAll(path, VIR_MAC_STRING_BUFLEN, &macstr) < 0) {
+    if (virFileReadAll(path, 128, &fileData) < 0) {
         goto cleanup;
     }
 
-    if (virMacAddrParse(macstr, &oldmac) != 0) {
+    if ((vlan = strchr(fileData, '\n'))) {
+        char *endptr;
+
+        *vlan++ = 0; /* NULL terminate the mac address */
+        if (*vlan) {
+            if ((virStrToLong_i(vlan, &endptr, 10, &vlanid) < 0) ||
+                (endptr && *endptr != '\n' && *endptr != 0)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse vlan tag from '%s'"),
+                               vlan);
+                goto cleanup;
+            }
+        }
+    }
+
+    if (virMacAddrParse(fileData, &oldmac) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse MAC address from '%s'"),
-                       macstr);
+                       fileData);
         goto cleanup;
     }
 
@@ -1597,7 +1621,7 @@ virNetDevRestoreVfConfig(const char *pflinkdev, int vf,
 
 cleanup:
     VIR_FREE(path);
-    VIR_FREE(macstr);
+    VIR_FREE(fileData);
 
     return rc;
 }
