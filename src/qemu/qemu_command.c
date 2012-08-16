@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include "qemu_command.h"
+#include "qemu_hostdev.h"
 #include "qemu_capabilities.h"
 #include "qemu_bridge_filter.h"
 #include "cpu/cpu.h"
@@ -5222,12 +5223,41 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             actualType = virDomainNetGetActualType(net);
             if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-                /* type='hostdev' interfaces are handled in codepath
-                 * for standard hostdev (NB: when there is a network
-                 * with <forward mode='hostdev', there will need to be
-                 * code here that adds the newly minted hostdev to the
-                 * hostdevs array).
-                 */
+                if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                    virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+                    virDomainHostdevDefPtr found;
+                    /* For a network with <forward mode='hostdev'>, there is a need to
+                     * add the newly minted hostdev to the hostdevs array.
+                     */
+                    if (qemuAssignDeviceHostdevAlias(def, hostdev,
+                                                     (def->nhostdevs-1)) < 0) {
+                        goto error;
+                    }
+
+                    if (virDomainHostdevFind(def, hostdev, &found) < 0) {
+                        if (virDomainHostdevInsert(def, hostdev) < 0) {
+                            virReportOOMError();
+                            goto error;
+                        }
+                        if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
+                                                         &hostdev, 1) < 0) {
+                            goto error;
+                        }
+                    }
+                    else {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("PCI device %04x:%02x:%02x.%x "
+                                         "allocated from network %s is already "
+                                         "in use by domain %s"),
+                                       hostdev->source.subsys.u.pci.domain,
+                                       hostdev->source.subsys.u.pci.bus,
+                                       hostdev->source.subsys.u.pci.slot,
+                                       hostdev->source.subsys.u.pci.function,
+                                       net->data.network.name,
+                                       def->name);
+                        goto error;
+                    }
+                }
                 continue;
             }
 
