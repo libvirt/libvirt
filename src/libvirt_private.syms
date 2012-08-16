@@ -221,6 +221,7 @@ virStreamClass;
 # device_conf.h
 virDeviceAddressPciMultiTypeFromString;
 virDeviceAddressPciMultiTypeToString;
+virDevicePCIAddressEqual;
 virDevicePCIAddressFormat;
 virDevicePCIAddressIsValid;
 virDevicePCIAddressParseXML;

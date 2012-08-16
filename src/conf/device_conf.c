@@ -129,3 +129,19 @@ virDevicePCIAddressFormat(virBufferPtr buf,
                       addr.function);
     return 0;
 }
+
+int
+virDevicePCIAddressEqual(virDevicePCIAddress addr1,
+                         virDevicePCIAddress addr2)
+{
+    int ret = -1;
+
+    if (addr1.domain == addr2.domain &&
+        addr1.bus == addr2.bus &&
+        addr1.slot == addr2.slot &&
+        addr1.function == addr2.function) {
+        ret = 0;
+    }
+
+    return ret;
+}
