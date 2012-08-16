@@ -85,7 +85,7 @@ local-checks-to-skip =			\
 ifeq ($(filter dist%, $(MAKECMDGOALS)), )
 local-checks-to-skip +=	sc_vulnerable_makefile_CVE-2012-3386
 else
-distdir: sc_vulnerable_makefile_CVE-2012-3386
+distdir: sc_vulnerable_makefile_CVE-2012-3386.z
 endif
 
 # Files that should never cause syntax check failures.
