@@ -6982,8 +6982,23 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             int rc;
-            bool savedmask;
-            char oldnodemask[VIR_DOMAIN_CPUMASK_LEN];
+            char *nodeset = NULL;
+            char *nodeset_str = NULL;
+
+            if (VIR_ALLOC_N(nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                virReportOOMError();
+                ret = -1;
+                goto cleanup;
+            };
+
+            if (virDomainCpuSetParse(params[i].value.s,
+                                     0, nodeset,
+                                     VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Failed to parse nodeset"));
+                ret = -1;
+                continue;
+            }
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 if (vm->def->numatune.memory.mode !=
@@ -6991,72 +7006,62 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                    _("change of nodeset for running domain "
                                      "requires strict numa mode"));
-                    ret = -1;
-                    continue;
-                }
-                rc = virCgroupSetCpusetMems(group, params[i].value.s);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set numa tunable"));
+                    VIR_FREE(nodeset);
                     ret = -1;
                     continue;
                 }
 
+                /* Ensure the cpuset string is formated before passing to cgroup */
+                if (!(nodeset_str = virDomainCpuSetFormat(nodeset,
+                                                          VIR_DOMAIN_CPUMASK_LEN))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Failed to format nodeset"));
+                    VIR_FREE(nodeset);
+                    ret = -1;
+                    continue;
+                }
+
+                if ((rc = virCgroupSetCpusetMems(group, nodeset_str) != 0)) {
+                    virReportSystemError(-rc, "%s",
+                                         _("unable to set numa tunable"));
+                    VIR_FREE(nodeset);
+                    VIR_FREE(nodeset_str);
+                    ret = -1;
+                    continue;
+                }
+                VIR_FREE(nodeset_str);
+
                 /* update vm->def here so that dumpxml can read the new
                  * values from vm->def. */
-                savedmask = false;
                 if (!vm->def->numatune.memory.nodemask) {
                     if (VIR_ALLOC_N(vm->def->numatune.memory.nodemask,
                                     VIR_DOMAIN_CPUMASK_LEN) < 0) {
                         virReportOOMError();
+                        VIR_FREE(nodeset);
                         ret = -1;
                         goto cleanup;
                     }
                 } else {
-                    memcpy(oldnodemask, vm->def->numatune.memory.nodemask,
-                           VIR_DOMAIN_CPUMASK_LEN);
-                    savedmask = true;
+                    VIR_FREE(vm->def->numatune.memory.nodemask);
                 }
-                if (virDomainCpuSetParse(params[i].value.s,
-                                         0,
-                                         vm->def->numatune.memory.nodemask,
-                                         VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                    if (savedmask)
-                        memcpy(vm->def->numatune.memory.nodemask,
-                               oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
-                    else
-                        VIR_FREE(vm->def->numatune.memory.nodemask);
-                    ret = -1;
-                    continue;
-                }
+
+                vm->def->numatune.memory.nodemask = nodeset;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                savedmask = false;
                 if (!persistentDef->numatune.memory.nodemask) {
                     if (VIR_ALLOC_N(persistentDef->numatune.memory.nodemask,
                                     VIR_DOMAIN_CPUMASK_LEN) < 0) {
                         virReportOOMError();
+                        VIR_FREE(nodeset);
                         ret = -1;
                         goto cleanup;
                     }
                 } else {
-                    memcpy(oldnodemask, persistentDef->numatune.memory.nodemask,
-                           VIR_DOMAIN_CPUMASK_LEN);
-                    savedmask = true;
+                    VIR_FREE(persistentDef->numatune.memory.nodemask);
                 }
-                if (virDomainCpuSetParse(params[i].value.s,
-                                         0,
-                                         persistentDef->numatune.memory.nodemask,
-                                         VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                    if (savedmask)
-                        memcpy(persistentDef->numatune.memory.nodemask,
-                               oldnodemask, VIR_DOMAIN_CPUMASK_LEN);
-                    else
-                        VIR_FREE(persistentDef->numatune.memory.nodemask);
-                    ret = -1;
-                    continue;
-                }
+
+                persistentDef->numatune.memory.nodemask = nodeset;
             }
         }
     }
