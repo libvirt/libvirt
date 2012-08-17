@@ -10075,6 +10075,15 @@ static bool virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
                            NULLSTR(dst->target.name), NULLSTR(src->target.name));
             goto cleanup;
         }
+        if (src->source.type != dst->source.type &&
+            (src->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
+             dst->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) &&
+            !src->target.name) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Changing device type to/from spicevmc would"
+                             " change default target channel name"));
+            goto cleanup;
+        }
         break;
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
         if (memcmp(src->target.addr, dst->target.addr,
