@@ -118,9 +118,12 @@
     <pre>
   x:name  (log message only)
   x:+name (log message + stack trace)</pre>
-    <p>where <code>name</code> is a match string e.g. <code>remote</code> or
-    <code>qemu</code> and the x is the minimal level where matching messages
-    should be logged:</p>
+    <p>where <code>name</code> is a string which is matched against source
+    file name, e.g., <code>remote</code>, <code>qemu</code>, or
+    <code>util/json</code>, the optional <code>+</code> prefix tells libvirt
+    to log stack trace for each message matching <code>name</code>, and
+    <code>x</code> is the minimal level where matching messages should
+    be logged:</p>
     <ul>
       <li>1: DEBUG</li>
       <li>2: INFO</li>
