@@ -141,6 +141,7 @@ umlConnectTapDevice(virConnectPtr conn,
     if (virNetDevTapCreateInBridgePort(bridge, &net->ifname, &net->mac,
                                        vm->uuid, NULL,
                                        virDomainNetGetActualVirtPortProfile(net),
+                                       &net->vlan,
                                        VIR_NETDEV_TAP_CREATE_IFUP) < 0) {
         if (template_ifname)
             VIR_FREE(net->ifname);

@@ -25,6 +25,7 @@
 
 # include "internal.h"
 # include "virnetdevvportprofile.h"
+# include "virnetdevvlan.h"
 
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
@@ -50,6 +51,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const unsigned char *vmuuid,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile,
+                                   virNetDevVlanPtr virtVlan,
                                    unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;

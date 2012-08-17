@@ -27,13 +27,15 @@
 # include "internal.h"
 # include "util.h"
 # include "virnetdevvportprofile.h"
+# include "virnetdevvlan.h"
 
 
 int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,
                                 const virMacAddrPtr macaddr,
                                 const unsigned char *vmuuid,
-                                virNetDevVPortProfilePtr ovsport)
+                                virNetDevVPortProfilePtr ovsport,
+                                virNetDevVlanPtr virtVlan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 

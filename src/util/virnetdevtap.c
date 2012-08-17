@@ -280,6 +280,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const unsigned char *vmuuid,
                                    int *tapfd,
                                    virNetDevVPortProfilePtr virtPortProfile,
+                                   virNetDevVlanPtr virtVlan,
                                    unsigned int flags)
 {
     virMacAddr tapmac;
@@ -324,7 +325,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
 
     if (virtPortProfile) {
         if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr, vmuuid,
-                                        virtPortProfile) < 0) {
+                                        virtPortProfile, virtVlan) < 0) {
             goto error;
         }
     } else {

@@ -46,9 +46,11 @@
 int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                    const virMacAddrPtr macaddr,
                                    const unsigned char *vmuuid,
-                                   virNetDevVPortProfilePtr ovsport)
+                                   virNetDevVPortProfilePtr ovsport,
+                                   virNetDevVlanPtr virtVlan)
 {
     int ret = -1;
+    int i = 0;
     virCommandPtr cmd = NULL;
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
@@ -57,6 +59,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char *ifaceid_ex_id = NULL;
     char *profile_ex_id = NULL;
     char *vmid_ex_id = NULL;
+    virBufferPtr buf;
 
     virMacAddrFormat(macaddr, macaddrstr);
     virUUIDFormat(ovsport->interfaceID, ifuuidstr);
@@ -76,11 +79,35 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                         ovsport->profileID) < 0)
             goto out_of_memory;
     }
+    if (virtVlan) {
+        if (VIR_ALLOC(buf) < 0)
+            goto out_of_memory;
+
+        /* Trunk port first */
+        if (virtVlan->trunk) {
+            virBufferAddLit(buf, "trunk=");
+
+            /*
+             * Trunk ports have at least one VLAN. Do the first one
+             * outside the "for" loop so we can put a "," at the
+             * start of the for loop if there are more than one VLANs
+             * on this trunk port.
+             */
+            virBufferAsprintf(buf, "%d", virtVlan->tag[i]);
+
+            for (i = 1; i < virtVlan->nTags; i++) {
+                virBufferAddLit(buf, ",");
+                virBufferAsprintf(buf, "%d", virtVlan->tag[i]);
+            }
+        } else {
+            virBufferAsprintf(buf, "tag=%d", virtVlan->tag[0]);
+        }
+    }
 
     cmd = virCommandNew(OVSVSCTL);
     if (ovsport->profileID[0] == '\0') {
         virCommandAddArgList(cmd, "--", "--may-exist", "add-port",
-                        brname, ifname,
+                        brname, ifname, virBufferContentAndReset(buf),
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
                         "--", "set", "Interface", ifname, vmid_ex_id,
@@ -89,7 +116,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                         NULL);
     } else {
         virCommandAddArgList(cmd, "--", "--may-exist", "add-port",
-                        brname, ifname,
+                        brname, ifname, virBufferContentAndReset(buf),
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
                         "--", "set", "Interface", ifname, vmid_ex_id,
@@ -108,6 +135,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     ret = 0;
 cleanup:
+    VIR_FREE(buf);
     VIR_FREE(attachedmac_ex_id);
     VIR_FREE(ifaceid_ex_id);
     VIR_FREE(vmid_ex_id);
