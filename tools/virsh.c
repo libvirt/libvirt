@@ -1581,15 +1581,16 @@ typedef enum {
     VSH_TK_END /* No more commands */
 } vshCommandToken;
 
-typedef struct __vshCommandParser {
-    vshCommandToken(*getNextArg)(vshControl *, struct __vshCommandParser *,
-                                  char **);
+typedef struct _vshCommandParser vshCommandParser;
+struct _vshCommandParser {
+    vshCommandToken(*getNextArg)(vshControl *, vshCommandParser *,
+                                 char **);
     /* vshCommandStringGetArg() */
     char *pos;
     /* vshCommandArgvGetArg() */
     char **arg_pos;
     char **arg_end;
-} vshCommandParser;
+};
 
 static bool
 vshCommandParse(vshControl *ctl, vshCommandParser *parser)

@@ -140,9 +140,15 @@ enum {
     VSH_OFLAG_REQ_OPT  = (1 << 2), /* --optionname required */
 };
 
-/* dummy */
-typedef struct __vshControl vshControl;
-typedef struct __vshCmd vshCmd;
+/* forward declarations */
+typedef struct _vshCmd vshCmd;
+typedef struct _vshCmdDef vshCmdDef;
+typedef struct _vshCmdGrp vshCmdGrp;
+typedef struct _vshCmdInfo vshCmdInfo;
+typedef struct _vshCmdOpt vshCmdOpt;
+typedef struct _vshCmdOptDef vshCmdOptDef;
+typedef struct _vshControl vshControl;
+typedef struct _vshCtrlData vshCtrlData;
 
 /*
  * vshCmdInfo -- name/value pair for information about command
@@ -151,21 +157,21 @@ typedef struct __vshCmd vshCmd;
  * "name" - command name
  * "desc" - description of command, or empty string
  */
-typedef struct {
+struct _vshCmdInfo {
     const char *name;           /* name of information, or NULL for list end */
     const char *data;           /* non-NULL information */
-} vshCmdInfo;
+};
 
 /*
  * vshCmdOptDef - command option definition
  */
-typedef struct {
+struct _vshCmdOptDef {
     const char *name;           /* the name of option, or NULL for list end */
     vshCmdOptType type;         /* option type */
     unsigned int flags;         /* flags */
     const char *help;           /* non-NULL help string; or for VSH_OT_ALIAS
                                  * the name of a later public option */
-} vshCmdOptDef;
+};
 
 /*
  * vshCmdOpt - command options
@@ -173,11 +179,11 @@ typedef struct {
  * After parsing a command, all arguments to the command have been
  * collected into a list of these objects.
  */
-typedef struct vshCmdOpt {
+struct _vshCmdOpt {
     const vshCmdOptDef *def;    /* non-NULL pointer to option definition */
     char *data;                 /* allocated data, or NULL for bool option */
-    struct vshCmdOpt *next;
-} vshCmdOpt;
+    vshCmdOpt *next;
+};
 
 /*
  * Command Usage Flags
@@ -190,27 +196,27 @@ enum {
 /*
  * vshCmdDef - command definition
  */
-typedef struct {
+struct _vshCmdDef {
     const char *name;           /* name of command, or NULL for list end */
     bool (*handler) (vshControl *, const vshCmd *);    /* command handler */
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
     unsigned int flags;         /* bitwise OR of VSH_CMD_FLAG */
-} vshCmdDef;
+};
 
 /*
  * vshCmd - parsed command
  */
-typedef struct __vshCmd {
+struct _vshCmd {
     const vshCmdDef *def;       /* command definition */
     vshCmdOpt *opts;            /* list of command arguments */
-    struct __vshCmd *next;      /* next command */
-} __vshCmd;
+    vshCmd *next;      /* next command */
+};
 
 /*
  * vshControl
  */
-typedef struct __vshControl {
+struct _vshControl {
     char *name;                 /* connection name */
     virConnectPtr conn;         /* connection to hypervisor (MAY BE NULL) */
     vshCmd *cmd;                /* the current command */
@@ -237,13 +243,13 @@ typedef struct __vshControl {
 
     const char *escapeChar;     /* String representation of
                                    console escape character */
-} __vshControl;
+};
 
-typedef struct vshCmdGrp {
+struct _vshCmdGrp {
     const char *name;    /* name of group, or NULL for list end */
     const char *keyword; /* help keyword */
     const vshCmdDef *commands;
-} vshCmdGrp;
+};
 
 void vshError(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
@@ -338,11 +344,11 @@ double prettyCapacity(unsigned long long val, const char **unit);
  * There are used by some long lingering commands like
  * migrate, dump, save, managedsave.
  */
-typedef struct __vshCtrlData {
+struct _vshCtrlData {
     vshControl *ctl;
     const vshCmd *cmd;
     int writefd;
-} vshCtrlData;
+};
 
 typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
                                      void *opaque);
