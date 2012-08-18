@@ -43,7 +43,7 @@ vshDomainIOErrorToString(int error)
 }
 
 /* extract description or title from domain xml */
-static char *
+char *
 vshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
                         unsigned int flags)
 {

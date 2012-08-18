@@ -105,7 +105,20 @@ virt_host_validate_CFLAGS = \
 
 virsh_SOURCES =							\
 		console.c console.h				\
-		virsh.c
+		virsh.c virsh.h					\
+		$(NULL)
+#		virsh-domain.c virsh-domain.h			\
+#		virsh-domain-monitor.c virsh-domain-monitor.h	\
+#		virsh-host.c virsh-host.h			\
+#		virsh-interface.c virsh-interface.h		\
+#		virsh-network.c virsh-network.h			\
+#		virsh-nodedev.c virsh-nodedev.h			\
+#		virsh-nwfilter.c virsh-nwfilter.h		\
+#		virsh-pool.c virsh-pool.h			\
+#		virsh-secret.c virsh-secret.h			\
+#		virsh-snapshot.c virsh-snapshot.h		\
+#		virsh-volume.c virsh-volume.h			\
+#
 
 virsh_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
 virsh_LDADD =							\
