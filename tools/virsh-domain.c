@@ -23,6 +23,35 @@
  *
  */
 
+#include <config.h>
+#include "virsh-domain.h"
+
+#include <fcntl.h>
+#include <poll.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <termios.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "bitmap.h"
+#include "buf.h"
+#include "c-ctype.h"
+#include "conf/domain_conf.h"
+#include "console.h"
+#include "memory.h"
+#include "util.h"
+#include "virfile.h"
+#include "virkeycode.h"
+#include "virmacaddr.h"
+#include "virterror_internal.h"
+#include "virtypedparam.h"
+#include "xml.h"
+
 static const char *
 vshDomainVcpuStateToString(int state)
 {
@@ -1183,6 +1212,15 @@ print_job_progress(const char *label, unsigned long long remaining,
     fflush(stdout);
     fprintf(stderr, "\r%s: [%3d %%]", label, progress);
     fflush(stderr);
+}
+
+static volatile sig_atomic_t intCaught = 0;
+
+static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
+                        siginfo_t *siginfo ATTRIBUTE_UNUSED,
+                        void *context ATTRIBUTE_UNUSED)
+{
+    intCaught = 1;
 }
 
 /*
@@ -8044,7 +8082,7 @@ cleanup:
     return ret;
 }
 
-static const vshCmdDef domManagementCmds[] = {
+const vshCmdDef domManagementCmds[] = {
     {"attach-device", cmdAttachDevice, opts_attach_device,
      info_attach_device, 0},
     {"attach-disk", cmdAttachDisk, opts_attach_disk,

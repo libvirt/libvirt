@@ -106,8 +106,8 @@ virt_host_validate_CFLAGS = \
 virsh_SOURCES =							\
 		console.c console.h				\
 		virsh.c virsh.h					\
+		virsh-domain.c virsh-domain.h			\
 		$(NULL)
-#		virsh-domain.c virsh-domain.h			\
 #		virsh-domain-monitor.c virsh-domain-monitor.h	\
 #		virsh-host.c virsh-host.h			\
 #		virsh-interface.c virsh-interface.h		\

@@ -78,6 +78,8 @@
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
 
+#include "virsh-domain.h"
+
 static char *progname;
 
 static const vshCmdGrp cmdGroups[];
@@ -137,9 +139,9 @@ vshNameSorter(const void *a, const void *b)
     return vshStrcasecmp(*sa, *sb);
 }
 
-static double
-prettyCapacity(unsigned long long val,
-               const char **unit) {
+double
+prettyCapacity(unsigned long long val, const char **unit)
+{
     if (val < 1024) {
         *unit = "";
         return (double)val;
@@ -176,7 +178,7 @@ virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
 /*
  * Reset libvirt error on graceful fallback paths
  */
-static void
+void
 vshResetLibvirtError(void)
 {
     virFreeError(last_error);
@@ -191,7 +193,7 @@ vshResetLibvirtError(void)
  * twice during one command.  This case shouldn't really happen anyway,
  * and it's IMHO a bug that libvirt does that sometimes.
  */
-static void
+void
 virshReportError(vshControl *ctl)
 {
     if (last_error == NULL) {
@@ -214,15 +216,6 @@ virshReportError(vshControl *ctl)
 
 out:
     vshResetLibvirtError();
-}
-
-static volatile sig_atomic_t intCaught = 0;
-
-static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
-                        siginfo_t *siginfo ATTRIBUTE_UNUSED,
-                        void *context ATTRIBUTE_UNUSED)
-{
-    intCaught = 1;
 }
 
 /*
@@ -310,7 +303,7 @@ vshPrintRaw(vshControl *ctl, ...)
  *         -1  on error
  *          0  otherwise
  */
-static int
+int
 vshAskReedit(vshControl *ctl, const char *msg)
 {
     int c = -1;
@@ -359,8 +352,8 @@ vshAskReedit(vshControl *ctl, const char *msg ATTRIBUTE_UNUSED)
 }
 #endif /* WIN32 */
 
-static int vshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
-                         const char *bytes, size_t nbytes, void *opaque)
+int vshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
+                  const char *bytes, size_t nbytes, void *opaque)
 {
     int *fd = opaque;
 
@@ -2873,7 +2866,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-domain.c"
 #include "virsh-domain-monitor.c"
 #include "virsh-host.c"
 #include "virsh-interface.c"

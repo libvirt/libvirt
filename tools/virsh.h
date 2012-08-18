@@ -329,6 +329,10 @@ char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
 char *editWriteToTempFile(vshControl *ctl, const char *doc);
 int   editFile(vshControl *ctl, const char *filename);
 char *editReadBackFile(vshControl *ctl, const char *filename);
+int vshAskReedit(vshControl *ctl, const char *msg);
+int vshStreamSink(virStreamPtr st, const char *bytes, size_t nbytes,
+                  void *opaque);
+double prettyCapacity(unsigned long long val, const char **unit);
 
 /* Typedefs, function prototypes for job progress reporting.
  * There are used by some long lingering commands like
@@ -343,6 +347,12 @@ typedef struct __vshCtrlData {
 typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
                                      void *opaque);
 
+/* error handling */
+extern virErrorPtr last_error;
+void virshReportError(vshControl *ctl);
+void vshResetLibvirtError(void);
+
+/* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 # define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
 
@@ -364,7 +374,5 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
 # define calloc use_vshCalloc_instead_of_calloc
 # define realloc use_vshRealloc_instead_of_realloc
 # define strdup use_vshStrdup_instead_of_strdup
-
-extern virErrorPtr last_error;
 
 #endif /* VIRSH_H */
