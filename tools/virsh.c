@@ -361,10 +361,6 @@ static void vshDebug(vshControl *ctl, int level, const char *format, ...)
 #define vshStrcasecmp(S1, S2) strcasecmp(S1, S2)
 
 static int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
-static const char *vshDomainStateToString(int state);
-static const char *vshDomainStateReasonToString(int state, int reason);
-static const char *vshDomainControlStateToString(int state);
-static const char *vshDomainVcpuStateToString(int state);
 static bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
 static virTypedParameterPtr vshFindTypedParamByName(const char *name,
                                                     virTypedParameterPtr list,
@@ -389,16 +385,6 @@ typedef struct __vshCtrlData {
 typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
                                      void *opaque);
 
-static bool
-vshWatchJob(vshControl *ctl,
-            virDomainPtr dom,
-            bool verbose,
-            int pipe_fd,
-            int timeout,
-            jobWatchTimeoutFunc timeout_func,
-            void *opaque,
-            const char *label);
-
 static void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 #define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
 
@@ -407,8 +393,6 @@ static void *_vshCalloc(vshControl *ctl, size_t nmemb, size_t sz, const char *fi
 
 static char *_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
-
-static int parseRateStr(const char *rateStr, virNetDevBandwidthRatePtr rate);
 
 static void *
 _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)

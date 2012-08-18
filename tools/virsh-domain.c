@@ -2772,6 +2772,96 @@ out_sig:
 }
 
 static bool
+vshWatchJob(vshControl *ctl,
+            virDomainPtr dom,
+            bool verbose,
+            int pipe_fd,
+            int timeout,
+            jobWatchTimeoutFunc timeout_func,
+            void *opaque,
+            const char *label)
+{
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    struct pollfd pollfd;
+    struct timeval start, curr;
+    virDomainJobInfo jobinfo;
+    int ret = -1;
+    char retchar;
+    bool functionReturn = false;
+    sigset_t sigmask, oldsigmask;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+
+    intCaught = 0;
+    sig_action.sa_sigaction = vshCatchInt;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+    sigaction(SIGINT, &sig_action, &old_sig_action);
+
+    pollfd.fd = pipe_fd;
+    pollfd.events = POLLIN;
+    pollfd.revents = 0;
+
+    GETTIMEOFDAY(&start);
+    while (1) {
+repoll:
+        ret = poll(&pollfd, 1, 500);
+        if (ret > 0) {
+            if (pollfd.revents & POLLIN &&
+                saferead(pipe_fd, &retchar, sizeof(retchar)) > 0 &&
+                retchar == '0') {
+                if (verbose) {
+                    /* print [100 %] */
+                    print_job_progress(label, 0, 1);
+                }
+                break;
+            }
+            goto cleanup;
+        }
+
+        if (ret < 0) {
+            if (errno == EINTR) {
+                if (intCaught) {
+                    virDomainAbortJob(dom);
+                    intCaught = 0;
+                } else {
+                    goto repoll;
+                }
+            }
+            goto cleanup;
+        }
+
+        GETTIMEOFDAY(&curr);
+        if (timeout && (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
+                         (int)(curr.tv_usec - start.tv_usec) / 1000) >
+                        timeout * 1000)) {
+            /* suspend the domain when migration timeouts. */
+            vshDebug(ctl, VSH_ERR_DEBUG, "%s timeout", label);
+            if (timeout_func)
+                (timeout_func)(ctl, dom, opaque);
+            timeout = 0;
+        }
+
+        if (verbose) {
+            pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+            ret = virDomainGetJobInfo(dom, &jobinfo);
+            pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+            if (ret == 0)
+                print_job_progress(label, jobinfo.dataRemaining,
+                                   jobinfo.dataTotal);
+        }
+    }
+
+    functionReturn = true;
+
+cleanup:
+    sigaction(SIGINT, &old_sig_action, NULL);
+    return functionReturn;
+}
+
+static bool
 cmdSave(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
@@ -6423,96 +6513,6 @@ vshMigrationTimeout(vshControl *ctl,
     vshDebug(ctl, VSH_ERR_DEBUG, "suspending the domain, "
              "since migration timed out\n");
     virDomainSuspend(dom);
-}
-
-static bool
-vshWatchJob(vshControl *ctl,
-            virDomainPtr dom,
-            bool verbose,
-            int pipe_fd,
-            int timeout,
-            jobWatchTimeoutFunc timeout_func,
-            void *opaque,
-            const char *label)
-{
-    struct sigaction sig_action;
-    struct sigaction old_sig_action;
-    struct pollfd pollfd;
-    struct timeval start, curr;
-    virDomainJobInfo jobinfo;
-    int ret = -1;
-    char retchar;
-    bool functionReturn = false;
-    sigset_t sigmask, oldsigmask;
-
-    sigemptyset(&sigmask);
-    sigaddset(&sigmask, SIGINT);
-
-    intCaught = 0;
-    sig_action.sa_sigaction = vshCatchInt;
-    sig_action.sa_flags = SA_SIGINFO;
-    sigemptyset(&sig_action.sa_mask);
-    sigaction(SIGINT, &sig_action, &old_sig_action);
-
-    pollfd.fd = pipe_fd;
-    pollfd.events = POLLIN;
-    pollfd.revents = 0;
-
-    GETTIMEOFDAY(&start);
-    while (1) {
-repoll:
-        ret = poll(&pollfd, 1, 500);
-        if (ret > 0) {
-            if (pollfd.revents & POLLIN &&
-                saferead(pipe_fd, &retchar, sizeof(retchar)) > 0 &&
-                retchar == '0') {
-                if (verbose) {
-                    /* print [100 %] */
-                    print_job_progress(label, 0, 1);
-                }
-                break;
-            }
-            goto cleanup;
-        }
-
-        if (ret < 0) {
-            if (errno == EINTR) {
-                if (intCaught) {
-                    virDomainAbortJob(dom);
-                    intCaught = 0;
-                } else {
-                    goto repoll;
-                }
-            }
-            goto cleanup;
-        }
-
-        GETTIMEOFDAY(&curr);
-        if (timeout && (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
-                         (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                        timeout * 1000)) {
-            /* suspend the domain when migration timeouts. */
-            vshDebug(ctl, VSH_ERR_DEBUG, "%s timeout", label);
-            if (timeout_func)
-                (timeout_func)(ctl, dom, opaque);
-            timeout = 0;
-        }
-
-        if (verbose) {
-            pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
-            ret = virDomainGetJobInfo(dom, &jobinfo);
-            pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-            if (ret == 0)
-                print_job_progress(label, jobinfo.dataRemaining,
-                                   jobinfo.dataTotal);
-        }
-    }
-
-    functionReturn = true;
-
-cleanup:
-    sigaction(SIGINT, &old_sig_action, NULL);
-    return functionReturn;
 }
 
 static bool
