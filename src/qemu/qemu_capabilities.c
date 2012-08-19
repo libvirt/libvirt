@@ -176,6 +176,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "disable-s3",
 
               "disable-s4", /* 105 */
+              "usb-redir.filter",
     );
 
 struct qemu_feature_flags {
@@ -1407,6 +1408,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
                          "-device", "virtio-net-pci,?",
                          "-device", "scsi-disk,?",
                          "-device", "PIIX4_PM,?",
+                         "-device", "usb-redir,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
@@ -1452,6 +1454,8 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_NEC_USB_XHCI);
     if (strstr(str, "name \"usb-redir\""))
         qemuCapsSet(flags, QEMU_CAPS_USB_REDIR);
+    if (strstr(str, "usb-redir.filter"))
+        qemuCapsSet(flags, QEMU_CAPS_USB_REDIR_FILTER);
     if (strstr(str, "name \"usb-hub\""))
         qemuCapsSet(flags, QEMU_CAPS_USB_HUB);
     if (strstr(str, "name \"ich9-ahci\""))
