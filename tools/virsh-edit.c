@@ -75,17 +75,17 @@ do {
         goto edit_cleanup;
 
     /* Create and open the temporary file. */
-    tmp = editWriteToTempFile(ctl, doc);
+    tmp = vshEditWriteToTempFile(ctl, doc);
     if (!tmp)
         goto edit_cleanup;
 
 reedit:
     /* Start the editor. */
-    if (editFile(ctl, tmp) == -1)
+    if (vshEditFile(ctl, tmp) == -1)
         goto edit_cleanup;
 
     /* Read back the edited file. */
-    doc_edited = editReadBackFile(ctl, tmp);
+    doc_edited = vshEditReadBackFile(ctl, tmp);
     if (!doc_edited)
         goto edit_cleanup;
 

@@ -105,8 +105,8 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
-        virshReportError(ctl);
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshReportError(ctl);
         virDomainFree(dom);
         return false;
     }
@@ -2544,7 +2544,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
         if (virDomainManagedSaveRemove(dom, 0) < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             goto cleanup;
         }
     }
@@ -2618,7 +2618,7 @@ cleanup:
     return ret;
 
 error:
-    virshReportError(ctl);
+    vshReportError(ctl);
     goto cleanup;
 }
 
@@ -2687,7 +2687,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
             goto started;
         if (last_error->code != VIR_ERR_NO_SUPPORT &&
             last_error->code != VIR_ERR_INVALID_ARG) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             goto cleanup;
         }
         vshResetLibvirtError();
@@ -2697,7 +2697,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
             vshResetLibvirtError();
         } else if (rc > 0) {
             if (virDomainManagedSaveRemove(dom, 0) < 0) {
-                virshReportError(ctl);
+                vshReportError(ctl);
                 goto cleanup;
             }
         }
@@ -2808,6 +2808,9 @@ out_sig:
     VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
+
+typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
+                                     void *opaque);
 
 static bool
 vshWatchJob(vshControl *ctl,
@@ -4088,27 +4091,27 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         if (info.type == VIR_DOMAIN_JOB_BOUNDED)
             vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
         if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
-            val = prettyCapacity(info.dataProcessed, &unit);
+            val = vshPrettyCapacity(info.dataProcessed, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data processed:"), val, unit);
-            val = prettyCapacity(info.dataRemaining, &unit);
+            val = vshPrettyCapacity(info.dataRemaining, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data remaining:"), val, unit);
-            val = prettyCapacity(info.dataTotal, &unit);
+            val = vshPrettyCapacity(info.dataTotal, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data total:"), val, unit);
         }
         if (info.memTotal || info.memRemaining || info.memProcessed) {
-            val = prettyCapacity(info.memProcessed, &unit);
+            val = vshPrettyCapacity(info.memProcessed, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory processed:"), val, unit);
-            val = prettyCapacity(info.memRemaining, &unit);
+            val = vshPrettyCapacity(info.memRemaining, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory remaining:"), val, unit);
-            val = prettyCapacity(info.memTotal, &unit);
+            val = vshPrettyCapacity(info.memTotal, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory total:"), val, unit);
         }
         if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
-            val = prettyCapacity(info.fileProcessed, &unit);
+            val = vshPrettyCapacity(info.fileProcessed, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("File processed:"), val, unit);
-            val = prettyCapacity(info.fileRemaining, &unit);
+            val = vshPrettyCapacity(info.fileRemaining, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("File remaining:"), val, unit);
-            val = prettyCapacity(info.fileTotal, &unit);
+            val = vshPrettyCapacity(info.fileTotal, &unit);
             vshPrint(ctl, "%-17s %-.3lf %s\n", _("File total:"), val, unit);
         }
     } else {
@@ -4275,7 +4278,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         count = virDomainGetVcpusFlags(dom,
                                        maximum ? VIR_DOMAIN_VCPU_MAXIMUM : 0);
         if (count < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             ret = false;
         } else {
             vshPrint(ctl, "%d\n", count);
@@ -4299,7 +4302,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (count < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             ret = false;
         } else if (all) {
             vshPrint(ctl, "%-12s %-12s %3d\n", _("maximum"), _("config"),
@@ -4319,7 +4322,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (count < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             ret = false;
         } else if (all) {
             vshPrint(ctl, "%-12s %-12s %3d\n", _("maximum"), _("live"),
@@ -4355,7 +4358,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (count < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             ret = false;
         } else if (all) {
             vshPrint(ctl, "%-12s %-12s %3d\n", _("current"), _("config"),
@@ -4376,7 +4379,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (count < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             ret = false;
         } else if (all) {
             vshPrint(ctl, "%-12s %-12s %3d\n", _("current"), _("live"),
@@ -4869,7 +4872,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
         vshError(ctl, _("Failed to read file '%s' to compare"),
                  from);
         return false;
@@ -4972,7 +4975,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     /* add a separate container around the xml */
@@ -5234,7 +5237,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "paused"))
@@ -5288,7 +5291,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     dom = virDomainDefineXML(ctl->conn, buffer);
@@ -5448,15 +5451,15 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         if (edit) {
             /* Create and open the temporary file. */
-            if (!(tmp = editWriteToTempFile(ctl, desc)))
+            if (!(tmp = vshEditWriteToTempFile(ctl, desc)))
                 goto cleanup;
 
             /* Start the editor. */
-            if (editFile(ctl, tmp) == -1)
+            if (vshEditFile(ctl, tmp) == -1)
                 goto cleanup;
 
             /* Read back the edited file. */
-            if (!(desc_edited = editReadBackFile(ctl, tmp)))
+            if (!(desc_edited = vshEditReadBackFile(ctl, tmp)))
                 goto cleanup;
 
             /* strip a possible newline at the end of file; some
@@ -7368,8 +7371,8 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         goto cleanup;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
-        virshReportError(ctl);
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshReportError(ctl);
         goto cleanup;
     }
 
@@ -7434,8 +7437,8 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
-        virshReportError(ctl);
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshReportError(ctl);
         virDomainFree(dom);
         return false;
     }

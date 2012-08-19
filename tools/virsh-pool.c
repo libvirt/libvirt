@@ -141,7 +141,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     pool = virStoragePoolCreateXML(ctl->conn, buffer, 0);
@@ -303,7 +303,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     pool = virStoragePoolDefineXML(ctl->conn, buffer, 0);
@@ -748,7 +748,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     const char *unit;
 
                     /* Create the capacity output string */
-                    val = prettyCapacity(info.capacity, &unit);
+                    val = vshPrettyCapacity(info.capacity, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].capacity,
                                       "%.2lf %s", val, unit);
                     if (ret < 0) {
@@ -757,7 +757,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     }
 
                     /* Create the allocation output string */
-                    val = prettyCapacity(info.allocation, &unit);
+                    val = vshPrettyCapacity(info.allocation, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].allocation,
                                       "%.2lf %s", val, unit);
                     if (ret < 0) {
@@ -766,7 +766,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     }
 
                     /* Create the available space output string */
-                    val = prettyCapacity(info.available, &unit);
+                    val = vshPrettyCapacity(info.available, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].available,
                                       "%.2lf %s", val, unit);
                     if (ret < 0) {
@@ -1090,7 +1090,8 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     if (!vshConnectionUsability(ctl, ctl->conn))
         return false;
 
-    if (srcSpecFile && virFileReadAll(srcSpecFile, VIRSH_MAX_XML_FILE, &srcSpec) < 0)
+    if (srcSpecFile && virFileReadAll(srcSpecFile, VSH_MAX_XML_FILE,
+                                      &srcSpec) < 0)
         return false;
 
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
@@ -1186,13 +1187,13 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         if (info.state == VIR_STORAGE_POOL_RUNNING ||
             info.state == VIR_STORAGE_POOL_DEGRADED) {
-            val = prettyCapacity(info.capacity, &unit);
+            val = vshPrettyCapacity(info.capacity, &unit);
             vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
 
-            val = prettyCapacity(info.allocation, &unit);
+            val = vshPrettyCapacity(info.allocation, &unit);
             vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
 
-            val = prettyCapacity(info.available, &unit);
+            val = vshPrettyCapacity(info.available, &unit);
             vshPrint(ctl, "%-15s %2.2lf %s\n", _("Available:"), val, unit);
         }
     } else {

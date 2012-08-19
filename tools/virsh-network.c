@@ -143,7 +143,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     network = virNetworkCreateXML(ctl->conn, buffer);
@@ -188,7 +188,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
     network = virNetworkDefineXML(ctl->conn, buffer);

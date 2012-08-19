@@ -38,7 +38,7 @@
 # include "threads.h"
 # include "virnetdevbandwidth.h"
 
-# define VIRSH_MAX_XML_FILE 10*1024*1024
+# define VSH_MAX_XML_FILE (10*1024*1024)
 
 # define VSH_PROMPT_RW    "virsh # "
 # define VSH_PROMPT_RO    "virsh > "
@@ -46,12 +46,6 @@
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 # define GETTIMEOFDAY(T) gettimeofday(T, NULL)
-# define DIFF_MSEC(T, U) \
-        ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
-          ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
-
-/* Default escape char Ctrl-] as per telnet */
-# define CTRL_CLOSE_BRACKET "^]"
 
 /**
  * The log configuration
@@ -253,16 +247,11 @@ struct _vshCmdGrp {
 
 void vshError(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
-bool vshInit(vshControl *ctl);
-bool vshDeinit(vshControl *ctl);
-void vshUsage(void);
 void vshOpenLogFile(vshControl *ctl);
 void vshOutputLogFile(vshControl *ctl, int log_level, const char *format,
                       va_list ap)
     ATTRIBUTE_FMT_PRINTF(3, 0);
 void vshCloseLogFile(vshControl *ctl);
-
-bool vshParseArgv(vshControl *ctl, int argc, char **argv);
 
 const char *vshCmddefGetInfo(const vshCmdDef *cmd, const char *info);
 const vshCmdDef *vshCmddefSearch(const char *cmdname);
@@ -332,13 +321,13 @@ virTypedParameterPtr vshFindTypedParamByName(const char *name,
 char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-char *editWriteToTempFile(vshControl *ctl, const char *doc);
-int   editFile(vshControl *ctl, const char *filename);
-char *editReadBackFile(vshControl *ctl, const char *filename);
+char *vshEditWriteToTempFile(vshControl *ctl, const char *doc);
+int vshEditFile(vshControl *ctl, const char *filename);
+char *vshEditReadBackFile(vshControl *ctl, const char *filename);
 int vshAskReedit(vshControl *ctl, const char *msg);
 int vshStreamSink(virStreamPtr st, const char *bytes, size_t nbytes,
                   void *opaque);
-double prettyCapacity(unsigned long long val, const char **unit);
+double vshPrettyCapacity(unsigned long long val, const char **unit);
 
 /* Typedefs, function prototypes for job progress reporting.
  * There are used by some long lingering commands like
@@ -350,12 +339,9 @@ struct _vshCtrlData {
     int writefd;
 };
 
-typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
-                                     void *opaque);
-
 /* error handling */
 extern virErrorPtr last_error;
-void virshReportError(vshControl *ctl);
+void vshReportError(vshControl *ctl);
 void vshResetLibvirtError(void);
 
 /* allocation wrappers */

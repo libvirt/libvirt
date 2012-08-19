@@ -46,7 +46,7 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
         vshResetLibvirtError();
         persistent = virDomainIsPersistent(dom);
         if (persistent < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             goto cleanup;
         }
         if (!persistent) {
@@ -64,7 +64,7 @@ vshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
         goto cleanup;
 
     if (halt && virDomainDestroy(dom) < 0) {
-        virshReportError(ctl);
+        vshReportError(ctl);
         goto cleanup;
     }
 
@@ -149,12 +149,12 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "xmlfile", &from) <= 0)
         buffer = vshStrdup(ctl, "<domainsnapshot/>");
     else {
-        if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
             /* we have to report the error here because during cleanup
              * we'll run through virDomainFree(), which loses the
              * last error
              */
-            virshReportError(ctl);
+            vshReportError(ctl);
             goto cleanup;
         }
     }
@@ -362,7 +362,7 @@ vshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
         return -1;
     }
     if (!*snap) {
-        virshReportError(ctl);
+        vshReportError(ctl);
         return -1;
     }
 
@@ -455,7 +455,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         delete_flags = VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY;
         if (virDomainSnapshotDelete(rename_okay ? snapshot : edited,
                                     delete_flags) < 0) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             vshError(ctl, _("Failed to clean up %s"),
                      rename_okay ? name : edited_name);
             goto cleanup;
@@ -583,7 +583,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     if (!ret)
-        virshReportError(ctl);
+        vshReportError(ctl);
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
@@ -640,7 +640,7 @@ vshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
 
 cleanup:
     if (ret < 0) {
-        virshReportError(ctl);
+        vshReportError(ctl);
         vshError(ctl, "%s", _("unable to determine if snapshot has parent"));
     } else {
         vshResetLibvirtError();

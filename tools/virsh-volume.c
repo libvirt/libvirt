@@ -300,8 +300,8 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
-        virshReportError(ctl);
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshReportError(ctl);
         virStoragePoolFree(pool);
         return false;
     }
@@ -360,8 +360,8 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     if (!(inputvol = vshCommandOptVol(ctl, cmd, "vol", "inputpool", NULL)))
         goto cleanup;
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
-        virshReportError(ctl);
+    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
+        vshReportError(ctl);
         goto cleanup;
     }
 
@@ -847,10 +847,10 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("Type:"), _("unknown"));
         }
 
-        val = prettyCapacity(info.capacity, &unit);
+        val = vshPrettyCapacity(info.capacity, &unit);
         vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
 
-        val = prettyCapacity(info.allocation, &unit);
+        val = vshPrettyCapacity(info.allocation, &unit);
         vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
     } else {
         ret = false;
@@ -1098,7 +1098,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 }
 
                 /* Create the capacity output string */
-                val = prettyCapacity(volumeInfo.capacity, &unit);
+                val = vshPrettyCapacity(volumeInfo.capacity, &unit);
                 ret = virAsprintf(&volInfoTexts[i].capacity,
                                   "%.2lf %s", val, unit);
                 if (ret < 0) {
@@ -1107,7 +1107,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 }
 
                 /* Create the allocation output string */
-                val = prettyCapacity(volumeInfo.allocation, &unit);
+                val = vshPrettyCapacity(volumeInfo.allocation, &unit);
                 ret = virAsprintf(&volInfoTexts[i].allocation,
                                   "%.2lf %s", val, unit);
                 if (ret < 0) {

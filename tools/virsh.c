@@ -140,7 +140,7 @@ vshNameSorter(const void *a, const void *b)
 }
 
 double
-prettyCapacity(unsigned long long val, const char **unit)
+vshPrettyCapacity(unsigned long long val, const char **unit)
 {
     if (val < 1024) {
         *unit = "";
@@ -194,7 +194,7 @@ vshResetLibvirtError(void)
  * and it's IMHO a bug that libvirt does that sometimes.
  */
 void
-virshReportError(vshControl *ctl)
+vshReportError(vshControl *ctl)
 {
     if (last_error == NULL) {
         /* Calling directly into libvirt util functions won't trigger the
@@ -312,7 +312,7 @@ vshAskReedit(vshControl *ctl, const char *msg)
     if (!isatty(STDIN_FILENO))
         return -1;
 
-    virshReportError(ctl);
+    vshReportError(ctl);
 
     if (vshMakeStdinRaw(&ttyattr, false) < 0)
         return -1;
@@ -509,7 +509,7 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
 
 /* Common code for the edit / net-edit / pool-edit functions which follow. */
 char *
-editWriteToTempFile(vshControl *ctl, const char *doc)
+vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 {
     char *ret;
     const char *tmpdir;
@@ -554,7 +554,7 @@ editWriteToTempFile(vshControl *ctl, const char *doc)
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/_.:@"
 
 int
-editFile(vshControl *ctl, const char *filename)
+vshEditFile(vshControl *ctl, const char *filename)
 {
     const char *editor;
     virCommandPtr cmd;
@@ -595,7 +595,7 @@ editFile(vshControl *ctl, const char *filename)
     virCommandSetErrorFD(cmd, &errfd);
     if (virCommandRunAsync(cmd, NULL) < 0 ||
         virCommandWait(cmd, NULL) < 0) {
-        virshReportError(ctl);
+        vshReportError(ctl);
         goto cleanup;
     }
     ret = 0;
@@ -606,11 +606,11 @@ cleanup:
 }
 
 char *
-editReadBackFile(vshControl *ctl, const char *filename)
+vshEditReadBackFile(vshControl *ctl, const char *filename)
 {
     char *ret;
 
-    if (virFileReadAll(filename, VIRSH_MAX_XML_FILE, &ret) == -1) {
+    if (virFileReadAll(filename, VSH_MAX_XML_FILE, &ret) == -1) {
         vshError(ctl,
                  _("%s: failed to read temporary file: %s"),
                  filename, strerror(errno));
@@ -1551,7 +1551,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             disconnected++;
 
         if (!ret)
-            virshReportError(ctl);
+            vshReportError(ctl);
 
         if (!ret && disconnected != 0)
             vshReconnect(ctl);
@@ -1559,11 +1559,14 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(cmd->def->name, "quit"))        /* hack ... */
             return ret;
 
-        if (enable_timing)
-            vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"),
-                     DIFF_MSEC(&after, &before));
-        else
+        if (enable_timing) {
+            double diff_ms = (((after.tv_sec - before.tv_sec) * 1000000.0) +
+                              ((after.tv_usec - before.tv_usec) / 1000.0));
+
+            vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"), diff_ms);
+        } else {
             vshPrintExtra(ctl, "\n");
+        }
         cmd = cmd->next;
     }
     return ret;
@@ -2100,7 +2103,7 @@ vshEventLoop(void *opaque)
             break;
 
         if (virEventRunDefaultImpl() < 0)
-            virshReportError(ctl);
+            vshReportError(ctl);
     }
 }
 
@@ -2108,7 +2111,7 @@ vshEventLoop(void *opaque)
 /*
  * Initialize connection.
  */
-bool
+static bool
 vshInit(vshControl *ctl)
 {
     char *debugEnv;
@@ -2163,7 +2166,7 @@ vshInit(vshControl *ctl)
          * connection).
          */
         if (!ctl->conn) {
-            virshReportError(ctl);
+            vshReportError(ctl);
             vshError(ctl, "%s", _("failed to connect to the hypervisor"));
             return false;
         }
@@ -2544,7 +2547,7 @@ vshDeinitTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
 /*
  * Deinitialize virsh
  */
-bool
+static bool
 vshDeinit(vshControl *ctl)
 {
     vshReadlineDeinit(ctl);
@@ -2583,7 +2586,7 @@ vshDeinit(vshControl *ctl)
 /*
  * Print usage
  */
-void
+static void
 vshUsage(void)
 {
     const vshCmdGrp *grp;
@@ -2774,7 +2777,7 @@ vshAllowedEscapeChar(char c)
  * argv[]:  virsh [options] [command]
  *
  */
-bool
+static bool
 vshParseArgv(vshControl *ctl, int argc, char **argv)
 {
     int arg, len, debug;
@@ -2915,7 +2918,7 @@ main(int argc, char **argv)
     ctl->imode = true;          /* default is interactive mode */
     ctl->log_fd = -1;           /* Initialize log file descriptor */
     ctl->debug = VSH_DEBUG_DEFAULT;
-    ctl->escapeChar = CTRL_CLOSE_BRACKET;
+    ctl->escapeChar = "^]";     /* Same default as telnet */
 
 
     if (!setlocale(LC_ALL, "")) {
