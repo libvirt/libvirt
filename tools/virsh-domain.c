@@ -52,6 +52,11 @@
 #include "virtypedparam.h"
 #include "xml.h"
 
+/* Gnulib doesn't guarantee SA_SIGINFO support.  */
+#ifndef SA_SIGINFO
+# define SA_SIGINFO 0
+#endif
+
 static const char *
 vshDomainVcpuStateToString(int state)
 {

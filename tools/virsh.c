@@ -223,11 +223,6 @@ out:
  */
 static int disconnected = 0; /* we may have been disconnected */
 
-/* Gnulib doesn't guarantee SA_SIGINFO support.  */
-#ifndef SA_SIGINFO
-# define SA_SIGINFO 0
-#endif
-
 /*
  * vshCatchDisconnect:
  *
