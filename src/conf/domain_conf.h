@@ -453,6 +453,15 @@ enum virDomainDiskTray {
     VIR_DOMAIN_DISK_TRAY_LAST
 };
 
+enum  virDomainDiskGeometryTrans {
+    VIR_DOMAIN_DISK_TRANS_DEFAULT = 0,
+    VIR_DOMAIN_DISK_TRANS_NONE,
+    VIR_DOMAIN_DISK_TRANS_AUTO,
+    VIR_DOMAIN_DISK_TRANS_LBA,
+
+    VIR_DOMAIN_DISK_TRANS_LAST
+};
+
 typedef struct _virDomainDiskHostDef virDomainDiskHostDef;
 typedef virDomainDiskHostDef *virDomainDiskHostDefPtr;
 struct _virDomainDiskHostDef {
@@ -560,6 +569,13 @@ struct _virDomainDiskDef {
     char *mirror;
     char *mirrorFormat;
     bool mirroring;
+
+    struct {
+        unsigned int cylinders;
+        unsigned int heads;
+        unsigned int sectors;
+        int trans;
+    } geometry;
 
     virDomainBlockIoTuneInfo blkdeviotune;
 
@@ -2166,6 +2182,7 @@ VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
+VIR_ENUM_DECL(virDomainDiskGeometryTrans)
 VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)

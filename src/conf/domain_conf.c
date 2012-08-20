@@ -166,6 +166,12 @@ VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "floppy",
               "lun")
 
+VIR_ENUM_IMPL(virDomainDiskGeometryTrans, VIR_DOMAIN_DISK_TRANS_LAST,
+              "default",
+              "none",
+              "auto",
+              "lba")
+
 VIR_ENUM_IMPL(virDomainDiskBus, VIR_DOMAIN_DISK_BUS_LAST,
               "ide",
               "fdc",
@@ -3351,6 +3357,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *source = NULL;
     char *target = NULL;
     char *protocol = NULL;
+    char *trans = NULL;
     virDomainDiskHostDefPtr hosts = NULL;
     int nhosts = 0;
     char *bus = NULL;
@@ -3378,6 +3385,11 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         virReportOOMError();
         return NULL;
     }
+
+    def->geometry.cylinders = 0;
+    def->geometry.heads = 0;
+    def->geometry.sectors = 0;
+    def->geometry.trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
 
     ctxt->node = node;
 
@@ -3488,6 +3500,35 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                 if (target &&
                     STRPREFIX(target, "ioemu:"))
                     memmove(target, target+6, strlen(target)-5);
+            } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
+                if (virXPathUInt("string(./geometry/@cyls)",
+                                 ctxt, &def->geometry.cylinders) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("invalid geometry settings (cyls)"));
+                    goto error;
+                }
+                if (virXPathUInt("string(./geometry/@heads)",
+                                 ctxt, &def->geometry.heads) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("invalid geometry settings (heads)"));
+                    goto error;
+                }
+                if (virXPathUInt("string(./geometry/@secs)",
+                                 ctxt, &def->geometry.sectors) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("invalid geometry settings (secs)"));
+                    goto error;
+                }
+                trans = virXMLPropString(cur, "trans");
+                if (trans) {
+                    def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
+                    if (def->geometry.trans <= 0) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("invalid translation value '%s'"),
+                                       trans);
+                        goto error;
+                    }
+                }
             } else if (!driverName &&
                        xmlStrEqual(cur->name, BAD_CAST "driver")) {
                 driverName = virXMLPropString(cur, "name");
@@ -3966,6 +4007,7 @@ cleanup:
     VIR_FREE(target);
     VIR_FREE(source);
     VIR_FREE(tray);
+    VIR_FREE(trans);
     while (nhosts > 0) {
         virDomainDiskHostDefFree(&hosts[nhosts - 1]);
         nhosts--;
@@ -11109,6 +11151,28 @@ virDomainLeaseDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static void virDomainDiskGeometryDefFormat(virBufferPtr buf,
+                                           virDomainDiskDefPtr def)
+{
+    const char *trans =
+        virDomainDiskGeometryTransTypeToString(def->geometry.trans);
+
+    if (def->geometry.cylinders > 0 &&
+        def->geometry.heads > 0 &&
+        def->geometry.sectors > 0) {
+        virBufferAsprintf(buf,
+                          "      <geometry cyls='%u' heads='%u' secs='%u'",
+                          def->geometry.cylinders,
+                          def->geometry.heads,
+                          def->geometry.sectors);
+
+        if (def->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
+            virBufferEscapeString(buf, " trans='%s'", trans);
+
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
 static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
@@ -11279,6 +11343,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             return -1;
         }
     }
+
+    virDomainDiskGeometryDefFormat(buf, def);
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for

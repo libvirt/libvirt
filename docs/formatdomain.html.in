@@ -1224,6 +1224,12 @@
       &lt;target dev='sda' bus='scsi'/&gt;
       &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&gt;
     &lt;/disk&gt;
+    &lt;disk type='block' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source dev='/dev/sda'/&gt;
+      &lt;geometry cyls='16383' heads='16' secs='63' trans='lba'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1570,6 +1576,25 @@
         object, or an attribute <code>usage</code> with the name
         associated with the Ceph secret
         object.  <span class="since">libvirt 0.9.7</span>
+      </dd>
+      <dt><code>geometry</code></dt>
+      <dd>The optional <code>geometry</code> element provides the
+        ability to override geometry settings. This mostly useful for
+        S390 DASD-disks or older DOS-disks.  <span class="since">0.10.0</span>
+        <dl>
+          <dt><code>cyls</code></dt>
+          <dd>The <code>cyls</code> attribute is the
+            number of cylinders. </dd>
+          <dt><code>heads</code></dt>
+          <dd>The <code>heads</code> attribute is the
+            number of heads. </dd>
+          <dt><code>secs</code></dt>
+          <dd>The <code>secs</code> attribute is the
+            number of sectors per track. </dd>
+          <dt><code>trans</code></dt>
+          <dd>The optional <code>trans</code> attribute is the
+            BIOS-Translation-Modus (none, lba or auto)</dd>
+        </dl>
       </dd>
     </dl>
 

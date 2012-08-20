@@ -866,6 +866,9 @@
       <optional>
         <ref name="address"/>
       </optional>
+      <optional>
+        <ref name="geometry"/>
+      </optional>
     </interleave>
   </define>
   <define name="snapshot">
@@ -1063,6 +1066,28 @@
           <choice>
             <value>open</value>
             <value>closed</value>
+          </choice>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+  <define name="geometry">
+    <element name="geometry">
+      <attribute name="cyls">
+        <data type="integer"/>
+      </attribute>
+      <attribute name="heads">
+        <data type="integer"/>
+      </attribute>
+      <attribute name="secs">
+        <data type="integer"/>
+      </attribute>
+      <optional>
+        <attribute name="trans">
+          <choice>
+            <value>auto</value>
+            <value>none</value>
+            <value>lba</value>
           </choice>
         </attribute>
       </optional>
