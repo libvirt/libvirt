@@ -32,9 +32,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <getopt.h>
-#include <sys/types.h>
 #include <sys/time.h>
-#include <sys/wait.h>
 #include "c-ctype.h"
 #include <fcntl.h>
 #include <locale.h>
@@ -43,8 +41,6 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <inttypes.h>
-#include <signal.h>
-#include <poll.h>
 #include <strings.h>
 #include <termios.h>
 
