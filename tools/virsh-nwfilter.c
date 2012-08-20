@@ -1,5 +1,5 @@
 /*
- * virsh-domain.c: Commands to manage network filters
+ * virsh-nwfilter.c: Commands to manage network filters
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *
@@ -23,18 +23,29 @@
  *
  */
 
-/* default is lookup by Name and UUID */
-#define vshCommandOptNWFilter(_ctl, _cmd, _name)                    \
-    vshCommandOptNWFilterBy(_ctl, _cmd, _name,                      \
-                            VSH_BYUUID|VSH_BYNAME)
+#include <config.h>
+#include "virsh-nwfilter.h"
 
-static virNWFilterPtr
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
+virNWFilterPtr
 vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
-                        const char **name, int flag)
+                        const char **name, unsigned int flags)
 {
     virNWFilterPtr nwfilter = NULL;
     const char *n = NULL;
     const char *optname = "nwfilter";
+    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
+
     if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
@@ -48,13 +59,13 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by UUID */
-    if ((flag & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+    if ((flags & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter UUID\n",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
-    if (nwfilter == NULL && (flag & VSH_BYNAME)) {
+    if (!nwfilter && (flags & VSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter NAME\n",
                  cmd->def->name, optname);
         nwfilter = virNWFilterLookupByName(ctl->conn, n);
@@ -309,7 +320,7 @@ cleanup:
     return ret;
 }
 
-static const vshCmdDef nwfilterCmds[] = {
+const vshCmdDef nwfilterCmds[] = {
     {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define,
      info_nwfilter_define, 0},
     {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml,
