@@ -6076,6 +6076,7 @@ static virNetworkDriver network_driver = {
     .networkCreateXML = remoteNetworkCreateXML, /* 0.3.0 */
     .networkDefineXML = remoteNetworkDefineXML, /* 0.3.0 */
     .networkUndefine = remoteNetworkUndefine, /* 0.3.0 */
+    .networkUpdate = remoteNetworkUpdate, /* 0.10.2 */
     .networkCreate = remoteNetworkCreate, /* 0.3.0 */
     .networkDestroy = remoteNetworkDestroy, /* 0.3.0 */
     .networkGetXMLDesc = remoteNetworkGetXMLDesc, /* 0.3.0 */

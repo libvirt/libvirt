@@ -1336,6 +1336,15 @@ struct remote_network_undefine_args {
     remote_nonnull_network net;
 };
 
+struct remote_network_update_args {
+    remote_nonnull_network net;
+    unsigned int command;
+    unsigned int section;
+    int parentIndex;
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
 struct remote_network_create_args {
     remote_nonnull_network net;
 };
@@ -2997,8 +3006,9 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_SECRETS = 287, /* skipgen skipgen priority:high */
     REMOTE_PROC_NODE_SET_MEMORY_PARAMETERS = 288, /* autogen autogen */
     REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290 /* autogen autogen */
+    REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290, /* autogen autogen */
 
+    REMOTE_PROC_NETWORK_UPDATE = 291 /* autogen autogen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

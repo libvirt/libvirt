@@ -977,6 +977,14 @@ struct remote_network_define_xml_ret {
 struct remote_network_undefine_args {
         remote_nonnull_network     net;
 };
+struct remote_network_update_args {
+        remote_nonnull_network     net;
+        u_int                      command;
+        u_int                      section;
+        int                        index;
+        remote_nonnull_string      xml;
+        u_int                      flags;
+};
 struct remote_network_create_args {
         remote_nonnull_network     net;
 };
@@ -2406,4 +2414,5 @@ enum remote_procedure {
         REMOTE_PROC_NODE_SET_MEMORY_PARAMETERS = 288,
         REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289,
         REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290,
+        REMOTE_PROC_NETWORK_UPDATE = 291,
 };
