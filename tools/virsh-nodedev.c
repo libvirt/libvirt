@@ -23,6 +23,20 @@
  *
  */
 
+#include <config.h>
+#include "virsh-nodedev.h"
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
 /*
  * "nodedev-create" command
  */
@@ -381,7 +395,7 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-static const vshCmdDef nodedevCmds[] = {
+const vshCmdDef nodedevCmds[] = {
     {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create,
      info_node_device_create, 0},
     {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy,

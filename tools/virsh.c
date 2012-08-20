@@ -79,6 +79,7 @@
 #include "virsh-host.h"
 #include "virsh-interface.h"
 #include "virsh-network.h"
+#include "virsh-nodedev.h"
 
 static char *progname;
 
@@ -416,10 +417,6 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
 
 /* Tree listing helpers.  */
 
-/* Given an index, return either the name of that device (non-NULL) or
- * of its parent (NULL if a root).  */
-typedef const char * (*vshTreeLookup)(int devid, bool parent, void *opaque);
-
 static int
 vshTreePrintInternal(vshControl *ctl,
                      vshTreeLookup lookup,
@@ -487,7 +484,7 @@ cleanup:
     return ret;
 }
 
-static int
+int
 vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
              int num_devices, int devid)
 {
@@ -2817,7 +2814,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-nodedev.c"
 #include "virsh-nwfilter.c"
 #include "virsh-pool.c"
 #include "virsh-secret.c"

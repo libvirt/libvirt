@@ -296,6 +296,12 @@ typedef enum {
     VSH_BYMAC  = (1 << 4),
 } vshLookupByFlags;
 
+/* Given an index, return either the name of that device (non-NULL) or
+ * of its parent (NULL if a root).  */
+typedef const char * (*vshTreeLookup)(int devid, bool parent, void *opaque);
+int vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
+                 int num_devices, int devid);
+
 void vshPrintExtra(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
 void vshDebug(vshControl *ctl, int level, const char *format, ...)

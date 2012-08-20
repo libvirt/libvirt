@@ -111,8 +111,8 @@ virsh_SOURCES =							\
 		virsh-host.c virsh-host.h			\
 		virsh-interface.c virsh-interface.h		\
 		virsh-network.c virsh-network.h			\
+		virsh-nodedev.c virsh-nodedev.h			\
 		$(NULL)
-#		virsh-nodedev.c virsh-nodedev.h			\
 #		virsh-nwfilter.c virsh-nwfilter.h		\
 #		virsh-pool.c virsh-pool.h			\
 #		virsh-secret.c virsh-secret.h			\
