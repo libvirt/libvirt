@@ -587,9 +587,14 @@ sc_prohibit_diagnostic_without_format:
 	    exit 1; } || :
 
 # The strings "" and "%s" should never be marked for translation.
+# Files under tests/ and examples/ should not be translated.
 sc_prohibit_useless_translation:
 	@prohibit='_\("(%s)?"\)'					\
-	halt='$(ME): found useless translation'				\
+	halt='found useless translation'				\
+	  $(_sc_search_regexp)
+	@prohibit='\<N?_ *\('						\
+	in_vc_files='^(tests|examples)/'				\
+	halt='no translations in tests or examples'			\
 	  $(_sc_search_regexp)
 
 # Enforce recommended preprocessor indentation style.
