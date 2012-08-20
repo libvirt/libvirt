@@ -2076,6 +2076,8 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
+    const char *trans =
+        virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     int idx = virDiskNameToIndex(disk->dst);
     int busid = -1, unitid = -1;
 
@@ -2278,6 +2280,21 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
         virBufferAsprintf(&opt, ",format=%s", disk->driverType);
+
+    /* generate geometry command string */
+    if (disk->geometry.cylinders > 0 &&
+        disk->geometry.heads > 0 &&
+        disk->geometry.sectors > 0) {
+
+        virBufferAsprintf(&opt, ",cyls=%u,heads=%u,secs=%u",
+                          disk->geometry.cylinders,
+                          disk->geometry.heads,
+                          disk->geometry.sectors);
+
+        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
+            virBufferEscapeString(&opt, ",trans=%s", trans);
+    }
+
     if (disk->serial &&
         qemuCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
         if (qemuSafeSerialParamValue(disk->serial) < 0)
@@ -6723,6 +6740,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
     int idx = -1;
     int busid = -1;
     int unitid = -1;
+    int trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
 
     if ((nkeywords = qemuParseKeywords(val,
                                        &keywords,
@@ -6926,6 +6944,44 @@ qemuParseCommandLineDisk(virCapsPtr caps,
             if ((def->iomode = virDomainDiskIoTypeFromString(values[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse io mode '%s'"), values[i]);
+            }
+        } else if (STREQ(keywords[i], "cyls")) {
+            if (virStrToLong_ui(values[i], NULL, 10,
+                                &(def->geometry.cylinders)) < 0) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse cylinders value'%s'"),
+                               values[i]);
+            }
+        } else if (STREQ(keywords[i], "heads")) {
+            if (virStrToLong_ui(values[i], NULL, 10,
+                                &(def->geometry.heads)) < 0) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse heads value'%s'"),
+                               values[i]);
+            }
+        } else if (STREQ(keywords[i], "secs")) {
+            if (virStrToLong_ui(values[i], NULL, 10,
+                                &(def->geometry.sectors)) < 0) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse sectors value'%s'"),
+                               values[i]);
+            }
+        } else if (STREQ(keywords[i], "trans")) {
+            def->geometry.trans =
+                virDomainDiskGeometryTransTypeFromString(values[i]);
+            if ((trans < VIR_DOMAIN_DISK_TRANS_DEFAULT) ||
+                (trans >= VIR_DOMAIN_DISK_TRANS_LAST)) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse translation value'%s'"),
+                               values[i]);
             }
         }
     }
