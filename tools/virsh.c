@@ -81,6 +81,7 @@
 #include "virsh-network.h"
 #include "virsh-nodedev.h"
 #include "virsh-nwfilter.h"
+#include "virsh-pool.h"
 
 static char *progname;
 
@@ -2815,7 +2816,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-pool.c"
 #include "virsh-secret.c"
 #include "virsh-snapshot.c"
 #include "virsh-volume.c"

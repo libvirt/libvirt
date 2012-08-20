@@ -23,17 +23,27 @@
  *
  */
 
-/* default is lookup by Name and UUID */
-#define vshCommandOptPool(_ctl, _cmd, _optname, _name)           \
-    vshCommandOptPoolBy(_ctl, _cmd, _optname, _name,             \
-                           VSH_BYUUID|VSH_BYNAME)
+#include <config.h>
+#include "virsh-pool.h"
 
-static virStoragePoolPtr
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
+virStoragePoolPtr
 vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
-                    const char **name, int flag)
+                    const char **name, unsigned int flags)
 {
     virStoragePoolPtr pool = NULL;
     const char *n = NULL;
+    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
 
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
@@ -45,13 +55,13 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
         *name = n;
 
     /* try it by UUID */
-    if ((flag & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+    if ((flags & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool UUID\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
-    if (pool == NULL && (flag & VSH_BYNAME)) {
+    if (!pool && (flags & VSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool NAME\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByName(ctl->conn, n);
@@ -1414,7 +1424,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-static const vshCmdDef storagePoolCmds[] = {
+const vshCmdDef storagePoolCmds[] = {
     {"find-storage-pool-sources-as", cmdPoolDiscoverSourcesAs,
      opts_find_storage_pool_sources_as, info_find_storage_pool_sources_as, 0},
     {"find-storage-pool-sources", cmdPoolDiscoverSources,
