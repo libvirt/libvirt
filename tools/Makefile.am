@@ -108,8 +108,8 @@ virsh_SOURCES =							\
 		virsh.c virsh.h					\
 		virsh-domain.c virsh-domain.h			\
 		virsh-domain-monitor.c virsh-domain-monitor.h	\
+		virsh-host.c virsh-host.h			\
 		$(NULL)
-#		virsh-host.c virsh-host.h			\
 #		virsh-interface.c virsh-interface.h		\
 #		virsh-network.c virsh-network.h			\
 #		virsh-nodedev.c virsh-nodedev.h			\

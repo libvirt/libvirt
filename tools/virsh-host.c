@@ -23,6 +23,20 @@
  *
  */
 
+#include <config.h>
+#include "virsh-host.h"
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
 /*
  * "capabilities" command
  */
@@ -819,7 +833,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
-static const vshCmdDef hostAndHypervisorCmds[] = {
+const vshCmdDef hostAndHypervisorCmds[] = {
     {"capabilities", cmdCapabilities, NULL, info_capabilities, 0},
     {"connect", cmdConnect, opts_connect, info_connect,
      VSH_CMD_FLAG_NOCONNECT},
