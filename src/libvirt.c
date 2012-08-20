@@ -10407,6 +10407,68 @@ error:
 }
 
 /**
+ * virNetworkUpdate:
+ * @network: pointer to a defined network
+ * @section: which section of the network to update
+ *           (see virNetworkUpdateSection for descriptions)
+ * @command: what action to perform (add/delete/modify)
+ *           (see virNetworkUpdateCommand for descriptions)
+ * @parentIndex: which parent element, if there are multiple parents
+ *           of the same type (e.g. which <ip> element when modifying
+ *           a <dhcp>/<host> element), or "-1" for "don't care" or
+ *           "automatically find appropriate one".
+ * @xml: the XML description for the network, preferably in UTF-8
+ * @flags: bitwise OR of virNetworkUpdateFlags.
+ *
+ * Update the definition of an existing network, either its live
+ * running state, its persistent configuration, or both.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virNetworkUpdate(virNetworkPtr network,
+                 unsigned int command, /* virNetworkUpdateCommand */
+                 unsigned int section, /* virNetworkUpdateSection */
+                 int parentIndex,
+                 const char *xml,
+                 unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("network=%p, section=%d, parentIndex=%d, xml=%s, flags=0x%x",
+              network, section, parentIndex, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NETWORK(network)) {
+        virLibNetworkError(VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = network->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibNetworkError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    virCheckNonNullArgGoto(xml, error);
+
+    if (conn->networkDriver && conn->networkDriver->networkUpdate) {
+        int ret;
+        ret = conn->networkDriver->networkUpdate(network, section, command,
+                                                 parentIndex, xml, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(network->conn);
+    return -1;
+}
+
+/**
  * virNetworkCreate:
  * @network: pointer to a defined network
  *

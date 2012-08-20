@@ -1120,6 +1120,13 @@ typedef virNetworkPtr
 typedef int
         (*virDrvNetworkUndefine)        (virNetworkPtr network);
 typedef int
+        (*virDrvNetworkUpdate)          (virNetworkPtr network,
+                                         unsigned int command, /* virNetworkUpdateCommand */
+                                         unsigned int section, /* virNetworkUpdateSection */
+                                         int parentIndex,
+                                         const char *xml,
+                                         unsigned int flags);
+typedef int
         (*virDrvNetworkCreate)          (virNetworkPtr network);
 typedef int
         (*virDrvNetworkDestroy)         (virNetworkPtr network);
@@ -1169,6 +1176,7 @@ struct _virNetworkDriver {
         virDrvNetworkCreateXML      networkCreateXML;
         virDrvNetworkDefineXML      networkDefineXML;
         virDrvNetworkUndefine       networkUndefine;
+        virDrvNetworkUpdate         networkUpdate;
         virDrvNetworkCreate         networkCreate;
         virDrvNetworkDestroy        networkDestroy;
         virDrvNetworkGetXMLDesc     networkGetXMLDesc;

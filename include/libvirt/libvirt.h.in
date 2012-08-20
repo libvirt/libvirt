@@ -2347,6 +2347,72 @@ virNetworkPtr           virNetworkDefineXML     (virConnectPtr conn,
  */
 int                     virNetworkUndefine      (virNetworkPtr network);
 
+/**
+ * virNetworkUpdateCommand:
+ *
+ * describes which type of update to perform on a <network>
+ * definition.
+ *
+ */
+typedef enum {
+    VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid) */
+    VIR_NETWORK_UPDATE_COMMAND_MODIFY    = 2, /* modify an existing element */
+    VIR_NETWORK_UPDATE_COMMAND_DELETE    = 3, /* delete an existing element */
+    VIR_NETWORK_UPDATE_COMMAND_ADD_LAST  = 4, /* add an element at end of list */
+    VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST = 5, /* add an element at start of list */
+#ifdef VIR_ENUM_SENTINELS
+    VIR_NETWORK_UPDATE_COMMAND_LAST
+#endif
+} virNetworkUpdateCommand;
+
+/**
+ * virNetworkUpdateSection:
+ *
+ * describes which section of a <network> definition the provided
+ * xml should be applied to.
+ *
+ */
+typedef enum {
+    VIR_NETWORK_SECTION_NONE              =  0, /* (invalid) */
+    VIR_NETWORK_SECTION_BRIDGE            =  1, /* <bridge> */
+    VIR_NETWORK_SECTION_DOMAIN            =  2, /* <domain> */
+    VIR_NETWORK_SECTION_IP                =  3, /* <ip> */
+    VIR_NETWORK_SECTION_IP_DHCP_HOST      =  4, /* <ip>/<dhcp>/<host> */
+    VIR_NETWORK_SECTION_IP_DHCP_RANGE     =  5, /* <ip>/<dhcp>/<range> */
+    VIR_NETWORK_SECTION_FORWARD           =  6, /* <forward> */
+    VIR_NETWORK_SECTION_FORWARD_INTERFACE =  7, /* <forward>/<interface> */
+    VIR_NETWORK_SECTION_FORWARD_PF        =  8, /* <forward>/<pf> */
+    VIR_NETWORK_SECTION_PORTGROUP         =  9, /* <portgroup> */
+    VIR_NETWORK_SECTION_DNS_HOST          = 10, /* <dns>/<host> */
+    VIR_NETWORK_SECTION_DNS_TXT           = 11, /* <dns>/<txt> */
+    VIR_NETWORK_SECTION_DNS_SRV           = 12, /* <dns>/<srv> */
+#ifdef VIR_ENUM_SENTINELS
+    VIR_NETWORK_SECTION_LAST
+#endif
+} virNetworkUpdateSection;
+
+/**
+ * virNetworkUpdateFlags:
+ *
+ * Flags to control options for virNetworkUpdate()
+ */
+typedef enum {
+    VIR_NETWORK_UPDATE_AFFECT_CURRENT = 0,      /* affect live if network is active,
+                                                   config if it's not active */
+    VIR_NETWORK_UPDATE_AFFECT_LIVE    = 1 << 0, /* affect live state of network only */
+    VIR_NETWORK_UPDATE_AFFECT_CONFIG  = 1 << 1, /* affect persistent config only */
+    } virNetworkUpdateFlags;
+
+/*
+ * Update an existing network definition
+ */
+int                     virNetworkUpdate(virNetworkPtr network,
+                                         unsigned int command, /* virNetworkUpdateCommand */
+                                         unsigned int section, /* virNetworkUpdateSection */
+                                         int parentIndex,
+                                         const char *xml,
+                                         unsigned int flags);
+
 /*
  * Activate persistent network
  */

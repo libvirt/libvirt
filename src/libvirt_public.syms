@@ -563,6 +563,7 @@ LIBVIRT_0.10.2 {
         virConnectListAllSecrets;
         virConnectListAllStoragePools;
         virDomainBlockCommit;
+        virNetworkUpdate;
         virNodeGetMemoryParameters;
         virNodeSetMemoryParameters;
         virStoragePoolListAllVolumes;
