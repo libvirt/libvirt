@@ -23,20 +23,34 @@
  *
  */
 
-/* default is lookup by Name and UUID */
-#define vshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name)   \
-    vshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,     \
-                           VSH_BYUUID|VSH_BYNAME)
+#include <config.h>
+#include "virsh-volume.h"
 
-static virStorageVolPtr
+#include <fcntl.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "virfile.h"
+#include "virsh-pool.h"
+#include "xml.h"
+
+virStorageVolPtr
 vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                    const char *optname,
                    const char *pooloptname,
-                   const char **name, int flag)
+                   const char **name, unsigned int flags)
 {
     virStorageVolPtr vol = NULL;
     virStoragePoolPtr pool = NULL;
     const char *n = NULL, *p = NULL;
+    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
 
     if (vshCommandOptString(cmd, optname, &n) <= 0)
         return NULL;
@@ -47,7 +61,7 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (p)
-        pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flag);
+        pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flags);
 
     vshDebug(ctl, VSH_ERR_DEBUG, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -56,19 +70,19 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by name */
-    if (pool && (flag & VSH_BYNAME)) {
+    if (pool && (flags & VSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol name\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByName(pool, n);
     }
     /* try it by key */
-    if (vol == NULL && (flag & VSH_BYUUID)) {
+    if (!vol && (flags & VSH_BYUUID)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol key\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByKey(ctl->conn, n);
     }
     /* try it by path */
-    if (vol == NULL && (flag & VSH_BYUUID)) {
+    if (!vol && (flags & VSH_BYUUID)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as vol path\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByPath(ctl->conn, n);
@@ -1439,7 +1453,7 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
-static const vshCmdDef storageVolCmds[] = {
+const vshCmdDef storageVolCmds[] = {
     {"vol-clone", cmdVolClone, opts_vol_clone, info_vol_clone, 0},
     {"vol-create-as", cmdVolCreateAs, opts_vol_create_as,
      info_vol_create_as, 0},

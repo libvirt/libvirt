@@ -116,9 +116,8 @@ virsh_SOURCES =							\
 		virsh-pool.c virsh-pool.h			\
 		virsh-secret.c virsh-secret.h			\
 		virsh-snapshot.c virsh-snapshot.h		\
+		virsh-volume.c virsh-volume.h			\
 		$(NULL)
-#		virsh-volume.c virsh-volume.h			\
-#
 
 virsh_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
 virsh_LDADD =							\

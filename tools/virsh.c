@@ -84,6 +84,7 @@
 #include "virsh-pool.h"
 #include "virsh-secret.h"
 #include "virsh-snapshot.h"
+#include "virsh-volume.h"
 
 static char *progname;
 
@@ -2817,8 +2818,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     }
     return true;
 }
-
-#include "virsh-volume.c"
 
 static const vshCmdDef virshCmds[] = {
     {"cd", cmdCd, opts_cd, info_cd, VSH_CMD_FLAG_NOCONNECT},
