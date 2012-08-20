@@ -230,7 +230,7 @@ static void qemuDomainObjPrivateFree(void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
 
-    qemuCapsFree(priv->qemuCaps);
+    virObjectUnref(priv->caps);
 
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
@@ -290,11 +290,11 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAddLit(buf, "  </vcpus>\n");
     }
 
-    if (priv->qemuCaps) {
+    if (priv->caps) {
         int i;
         virBufferAddLit(buf, "  <qemuCaps>\n");
         for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
-            if (qemuCapsGet(priv->qemuCaps, i)) {
+            if (qemuCapsGet(priv->caps, i)) {
                 virBufferAsprintf(buf, "    <flag name='%s'/>\n",
                                   qemuCapsTypeToString(i));
             }
@@ -335,7 +335,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     char *tmp;
     int n, i;
     xmlNodePtr *nodes = NULL;
-    virBitmapPtr qemuCaps = NULL;
+    qemuCapsPtr caps = NULL;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
         virReportOOMError();
@@ -407,7 +407,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     }
     if (n > 0) {
-        if (!(qemuCaps = qemuCapsNew()))
+        if (!(caps = qemuCapsNew()))
             goto error;
 
         for (i = 0 ; i < n ; i++) {
@@ -421,11 +421,11 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
                     goto error;
                 }
                 VIR_FREE(str);
-                qemuCapsSet(qemuCaps, flag);
+                qemuCapsSet(caps, flag);
             }
         }
 
-        priv->qemuCaps = qemuCaps;
+        priv->caps = caps;
     }
     VIR_FREE(nodes);
 
@@ -476,7 +476,7 @@ error:
     virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
-    qemuCapsFree(qemuCaps);
+    virObjectUnref(caps);
     return -1;
 }
 

@@ -967,7 +967,7 @@ qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
  */
 int
 qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
-                             virBitmapPtr qemuCaps,
+                             qemuCapsPtr caps,
                              int *json_hmp)
 {
     int ret = -1;
@@ -999,15 +999,15 @@ qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
         if (STREQ(name, "human-monitor-command"))
             *json_hmp = 1;
         else if (STREQ(name, "system_wakeup"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
+            qemuCapsSet(caps, QEMU_CAPS_WAKEUP);
         else if (STREQ(name, "transaction"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_TRANSACTION);
+            qemuCapsSet(caps, QEMU_CAPS_TRANSACTION);
         else if (STREQ(name, "block_job_cancel"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
+            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_SYNC);
         else if (STREQ(name, "block-job-cancel"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
+            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_ASYNC);
         else if (STREQ(name, "dump-guest-memory"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY);
+            qemuCapsSet(caps, QEMU_CAPS_DUMP_GUEST_MEMORY);
     }
 
     ret = 0;
@@ -1021,7 +1021,7 @@ cleanup:
 
 int
 qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
-                           virBitmapPtr qemuCaps)
+                           qemuCapsPtr caps)
 {
     int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-events", NULL);
@@ -1057,7 +1057,7 @@ qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
             goto cleanup;
 
         if (STREQ(name, "BALLOON_CHANGE"))
-            qemuCapsSet(qemuCaps, QEMU_CAPS_BALLOON_EVENT);
+            qemuCapsSet(caps, QEMU_CAPS_BALLOON_EVENT);
     }
 
     ret = 0;

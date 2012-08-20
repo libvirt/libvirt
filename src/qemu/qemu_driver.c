@@ -1805,8 +1805,8 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
         }
     } else {
 #if HAVE_YAJL
-        if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
-            if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+        if (qemuCapsGet(priv->caps, QEMU_CAPS_MONITOR_JSON)) {
+            if (!qemuCapsGet(priv->caps, QEMU_CAPS_NO_SHUTDOWN)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Reboot is not supported with this QEMU binary"));
                 goto cleanup;
@@ -2328,7 +2328,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
         if ((vm->def->memballoon != NULL) &&
             (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
             info->memory = vm->def->mem.max_balloon;
-        } else if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
+        } else if (qemuCapsGet(priv->caps, QEMU_CAPS_BALLOON_EVENT)) {
             info->memory = vm->def->mem.cur_balloon;
         } else if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
             if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
@@ -3116,7 +3116,7 @@ static int qemuDumpToFd(struct qemud_driver *driver, virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY)) {
+    if (!qemuCapsGet(priv->caps, QEMU_CAPS_DUMP_GUEST_MEMORY)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("dump-guest-memory is not supported"));
         return -1;
@@ -5047,7 +5047,7 @@ static char *qemuDomainGetXMLDesc(virDomainPtr dom,
     /* Refresh current memory based on balloon info if supported */
     if ((vm->def->memballoon != NULL) &&
         (vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) &&
-        !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT) &&
+        !qemuCapsGet(priv->caps, QEMU_CAPS_BALLOON_EVENT) &&
         (virDomainObjIsActive(vm))) {
         /* Don't delay if someone's using the monitor, just use
          * existing most recent data instead */
@@ -5133,7 +5133,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
-    virBitmapPtr qemuCaps = NULL;
+    qemuCapsPtr caps = NULL;
     bool monitor_json = false;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
@@ -5225,19 +5225,19 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
                                    false,
                                    NULL,
-                                   &qemuCaps) < 0)
+                                   &caps) < 0)
         goto cleanup;
 
-    monitor_json = qemuCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
+    monitor_json = qemuCapsGet(caps, QEMU_CAPS_MONITOR_JSON);
 
     if (qemuProcessPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
-    if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
+    if (qemuAssignDeviceAliases(def, caps) < 0)
         goto cleanup;
 
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
-                                     &monConfig, monitor_json, qemuCaps,
+                                     &monConfig, monitor_json, caps,
                                      NULL, -1, NULL, VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)))
         goto cleanup;
 
@@ -5246,7 +5246,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 cleanup:
     qemuDriverUnlock(driver);
 
-    qemuCapsFree(qemuCaps);
+    virObjectUnref(caps);
     virCommandFree(cmd);
     virDomainDefFree(def);
     return ret;
@@ -10580,7 +10580,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
     int external = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (allow_reuse && !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+    if (allow_reuse && !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("reuse is not supported with this QEMU binary"));
         goto cleanup;
@@ -10661,7 +10661,7 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
     }
     if (active) {
         if (external == 1 ||
-            qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+            qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
             *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
         } else if (atomic && external > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -10934,7 +10934,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
             goto cleanup;
         }
     }
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+    if (qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
         actions = virJSONValueNewArray();
         if (!actions) {
             virReportOOMError();
@@ -11034,7 +11034,7 @@ cleanup:
     }
 
     if (vm && (ret == 0 ||
-               !qemuCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION))) {
+               !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION))) {
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0 ||
             (persist &&
              virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
@@ -12616,9 +12616,9 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     }
 
     priv = vm->privateData;
-    if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
+    if (qemuCapsGet(priv->caps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
         async = true;
-    } else if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
+    } else if (!qemuCapsGet(priv->caps, QEMU_CAPS_BLOCKJOB_SYNC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block jobs not supported with this QEMU binary"));
         goto cleanup;
@@ -12880,7 +12880,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto cleanup;
     }
     priv = vm->privateData;
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
+    if (!qemuCapsGet(priv->caps, QEMU_CAPS_DRIVE_IOTUNE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block I/O throttling not supported with this "
                          "QEMU binary"));
@@ -13733,7 +13733,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
+    if (!qemuCapsGet(priv->caps, QEMU_CAPS_WAKEUP) &&
         (target == VIR_NODE_SUSPEND_TARGET_MEM ||
          target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -13829,7 +13829,7 @@ qemuDomainPMWakeup(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (!qemuCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP)) {
+    if (!qemuCapsGet(priv->caps, QEMU_CAPS_WAKEUP)) {
        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                       _("Unable to wake up domain due to "
                         "missing system_wakeup monitor command"));

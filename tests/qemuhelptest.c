@@ -11,14 +11,14 @@
 
 struct testInfo {
     const char *name;
-    virBitmapPtr flags;
+    qemuCapsPtr flags;
     unsigned int version;
     unsigned int is_kvm;
     unsigned int kvm_version;
 };
 
-static void printMismatchedFlags(virBitmapPtr got,
-                                 virBitmapPtr expect)
+static void printMismatchedFlags(qemuCapsPtr got,
+                                 qemuCapsPtr expect)
 {
     int i;
 
@@ -38,7 +38,7 @@ static int testHelpStrParsing(const void *data)
     char *path = NULL;
     char *help = NULL;
     unsigned int version, is_kvm, kvm_version;
-    virBitmapPtr flags = NULL;
+    qemuCapsPtr flags = NULL;
     int ret = -1;
     char *got = NULL;
     char *expected = NULL;
@@ -75,8 +75,8 @@ static int testHelpStrParsing(const void *data)
             goto cleanup;
     }
 
-    got = virBitmapString(flags);
-    expected = virBitmapString(info->flags);
+    got = qemuCapsFlagsString(flags);
+    expected = qemuCapsFlagsString(info->flags);
     if (!got || !expected)
         goto cleanup;
 
@@ -116,7 +116,7 @@ static int testHelpStrParsing(const void *data)
 cleanup:
     VIR_FREE(path);
     VIR_FREE(help);
-    qemuCapsFree(flags);
+    virObjectUnref(flags);
     VIR_FREE(got);
     VIR_FREE(expected);
     return ret;
@@ -138,7 +138,7 @@ mymain(void)
         if (virtTestRun("QEMU Help String Parsing " name,                   \
                         1, testHelpStrParsing, &info) < 0)                  \
             ret = -1;                                                       \
-        qemuCapsFree(info.flags);                                           \
+        virObjectUnref(info.flags);                                         \
     } while (0)
 
     DO_TEST("qemu-0.9.1", 9001, 0, 0,

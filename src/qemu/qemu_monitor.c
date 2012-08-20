@@ -1128,7 +1128,7 @@ int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
 
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
-                               virBitmapPtr qemuCaps)
+                               qemuCapsPtr caps)
 {
     int ret;
     int json_hmp;
@@ -1145,12 +1145,12 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
         if (ret < 0)
             goto cleanup;
 
-        ret = qemuMonitorJSONCheckCommands(mon, qemuCaps, &json_hmp);
+        ret = qemuMonitorJSONCheckCommands(mon, caps, &json_hmp);
         if (ret < 0)
             goto cleanup;
         mon->json_hmp = json_hmp > 0;
 
-        ret = qemuMonitorJSONCheckEvents(mon, qemuCaps);
+        ret = qemuMonitorJSONCheckEvents(mon, caps);
         if (ret < 0)
             goto cleanup;
     } else {

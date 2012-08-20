@@ -43,10 +43,10 @@ int qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
 int qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon);
 
 int qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
-                                 virBitmapPtr qemuCaps,
+                                 qemuCapsPtr caps,
                                  int *json_hmp);
 int qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
-                               virBitmapPtr qemuCaps);
+                               qemuCapsPtr caps);
 
 int qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);

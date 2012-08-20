@@ -29,6 +29,7 @@
 # include "capabilities.h"
 # include "qemu_conf.h"
 # include "qemu_domain.h"
+# include "qemu_capabilities.h"
 
 /* Config type for XML import/export conversions */
 # define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
@@ -53,7 +54,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virDomainDefPtr def,
                                    virDomainChrSourceDefPtr monitor_chr,
                                    bool monitor_json,
-                                   virBitmapPtr qemuCaps,
+                                   qemuCapsPtr caps,
                                    const char *migrateFrom,
                                    int migrateFd,
                                    virDomainSnapshotObjPtr current_snapshot,
@@ -63,14 +64,14 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
 /* Generate string for arch-specific '-device' parameter */
 char *
 qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
-                       virBitmapPtr qemuCaps,
+                       qemuCapsPtr caps,
                        char *os_arch,
                        char *machine);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
                            struct qemud_driver *driver,
-                           virBitmapPtr qemuCaps,
+                           qemuCapsPtr caps,
                            char type_sep,
                            int vlan,
                            const char *tapfd,
@@ -85,50 +86,50 @@ char * qemuBuildNicStr(virDomainNetDefPtr net,
 char * qemuBuildNicDevStr(virDomainNetDefPtr net,
                           int vlan,
                           int bootindex,
-                          virBitmapPtr qemuCaps);
+                          qemuCapsPtr caps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
-                               virBitmapPtr qemuCaps);
+                               qemuCapsPtr caps);
 
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virConnectPtr conn,
                         virDomainDiskDefPtr disk,
                         bool bootable,
-                        virBitmapPtr qemuCaps);
+                        qemuCapsPtr caps);
 char *qemuBuildFSStr(virDomainFSDefPtr fs,
-                     virBitmapPtr qemuCaps);
+                     qemuCapsPtr caps);
 
 /* Current, best practice */
 char * qemuBuildDriveDevStr(virDomainDefPtr def,
                             virDomainDiskDefPtr disk,
                             int bootindex,
-                            virBitmapPtr qemuCaps);
+                            qemuCapsPtr caps);
 char * qemuBuildFSDevStr(virDomainFSDefPtr fs,
-                         virBitmapPtr qemuCaps);
+                         qemuCapsPtr caps);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainDefPtr domainDef,
                                  virDomainControllerDefPtr def,
-                                 virBitmapPtr qemuCaps,
+                                 qemuCapsPtr caps,
                                  int *nusbcontroller);
 
 char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev,
-                               virBitmapPtr qemuCaps);
+                               qemuCapsPtr caps);
 
 char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
-                                 virBitmapPtr qemuCaps);
+                                 qemuCapsPtr caps);
 
 char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev,
-                               virBitmapPtr qemuCaps);
+                               qemuCapsPtr caps);
 
 char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound,
-                            virBitmapPtr qemuCaps);
+                            qemuCapsPtr caps);
 
 /* Legacy, pre device support */
 char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
 char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
                                  const char *configfd,
-                                 virBitmapPtr qemuCaps);
+                                 qemuCapsPtr caps);
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
@@ -136,29 +137,29 @@ int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
 char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
-                                 virBitmapPtr qemuCaps);
+                                 qemuCapsPtr caps);
 
-char * qemuBuildHubDevStr(virDomainHubDefPtr dev, virBitmapPtr qemuCaps);
+char * qemuBuildHubDevStr(virDomainHubDefPtr dev, qemuCapsPtr caps);
 char * qemuBuildRedirdevDevStr(virDomainDefPtr def,
                                virDomainRedirdevDefPtr dev,
-                               virBitmapPtr qemuCaps);
+                               qemuCapsPtr caps);
 
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virConnectPtr conn,
                             struct qemud_driver *driver,
                             virDomainNetDefPtr net,
-                            virBitmapPtr qemuCaps)
+                            qemuCapsPtr caps)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
-                         virBitmapPtr qemuCaps,
+                         qemuCapsPtr caps,
                          enum virNetDevVPortProfileOp vmop);
 
 int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,
-                     virBitmapPtr qemuCaps,
+                     qemuCapsPtr caps,
                      int *vhostfd);
 
 int qemudCanonicalizeMachine(struct qemud_driver *driver,
@@ -186,13 +187,13 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         bool *monJSON);
 
 int qemuDomainAssignAddresses(virDomainDefPtr def,
-                              virBitmapPtr qemuCaps,
+                              qemuCapsPtr caps,
                               virDomainObjPtr);
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
-                                      virBitmapPtr qemuCaps);
+                                      qemuCapsPtr caps);
 
 int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
-                                 virBitmapPtr qemuCaps,
+                                 qemuCapsPtr caps,
                                  virDomainObjPtr obj);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
 int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
@@ -214,12 +215,12 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot);
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
 
-int qemuAssignDeviceAliases(virDomainDefPtr def, virBitmapPtr qemuCaps);
+int qemuAssignDeviceAliases(virDomainDefPtr def, qemuCapsPtr caps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
 int qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
                               virDomainDiskDefPtr def,
-                              virBitmapPtr qemuCaps);
+                              qemuCapsPtr caps);
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx);
 int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
 int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx);

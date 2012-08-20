@@ -78,7 +78,7 @@ typedef enum {
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
-                                     virBitmapPtr extraFlags,
+                                     qemuCapsPtr extraFlags,
                                      const char *migrateFrom,
                                      int migrateFd,
                                      virQemuXML2ArgvTestFlags flags)
@@ -235,7 +235,7 @@ out:
 
 struct testInfo {
     const char *name;
-    virBitmapPtr extraFlags;
+    qemuCapsPtr extraFlags;
     const char *migrateFrom;
     int migrateFd;
     unsigned int flags;
@@ -311,7 +311,7 @@ mymain(void)
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
             ret = -1;                                                   \
-        qemuCapsFree(info.extraFlags);                                  \
+        virObjectUnref(info.extraFlags);                                \
     } while (0)
 
 # define DO_TEST(name, ...)                                             \
