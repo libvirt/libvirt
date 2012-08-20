@@ -3126,7 +3126,9 @@ cleanup:
     return ret;
 }
 
-static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
+static
+virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml)
+{
     testConnPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
@@ -3179,6 +3181,54 @@ static int testNetworkUndefine(virNetworkPtr network) {
 cleanup:
     if (privnet)
         virNetworkObjUnlock(privnet);
+    testDriverUnlock(privconn);
+    return ret;
+}
+
+static int
+testNetworkUpdate(virNetworkPtr net,
+                  unsigned int command,
+                  unsigned int section,
+                  int parentIndex,
+                  const char *xml,
+                  unsigned int flags)
+{
+    testConnPtr privconn = net->conn->privateData;
+    virNetworkObjPtr network = NULL;
+    int isActive, ret = -1;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG,
+                  -1);
+
+    testDriverLock(privconn);
+
+    network = virNetworkFindByUUID(&privconn->networks, net->uuid);
+    if (!network) {
+        virReportError(VIR_ERR_NO_NETWORK,
+                       "%s", _("no network with matching uuid"));
+        goto cleanup;
+    }
+
+    /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
+     * is active, else change CONFIG
+    */
+    isActive = virNetworkObjIsActive(network);
+    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE
+                   | VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
+        VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
+        if (isActive)
+            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
+        else
+            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
+    }
+
+    /* update the network config in memory/on disk */
+    if (virNetworkObjUpdate(network, command, section, parentIndex, xml, flags) < 0)
+       goto cleanup;
+
+    ret = 0;
+cleanup:
     testDriverUnlock(privconn);
     return ret;
 }
@@ -5722,6 +5772,7 @@ static virNetworkDriver testNetworkDriver = {
     .networkCreateXML = testNetworkCreate, /* 0.3.2 */
     .networkDefineXML = testNetworkDefine, /* 0.3.2 */
     .networkUndefine = testNetworkUndefine, /* 0.3.2 */
+    .networkUpdate = testNetworkUpdate, /* 0.10.2 */
     .networkCreate = testNetworkStart, /* 0.3.2 */
     .networkDestroy = testNetworkDestroy, /* 0.3.2 */
     .networkGetXMLDesc = testNetworkGetXMLDesc, /* 0.3.2 */
