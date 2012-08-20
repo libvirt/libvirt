@@ -83,6 +83,7 @@
 #include "virsh-nwfilter.h"
 #include "virsh-pool.h"
 #include "virsh-secret.h"
+#include "virsh-snapshot.h"
 
 static char *progname;
 
@@ -2817,7 +2818,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-snapshot.c"
 #include "virsh-volume.c"
 
 static const vshCmdDef virshCmds[] = {

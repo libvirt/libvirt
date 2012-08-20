@@ -1,5 +1,5 @@
 /*
- * virsh-domain.c: Commands to manage domain snapshot
+ * virsh-snapshot.c: Commands to manage domain snapshot
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *
@@ -22,6 +22,23 @@
  *  Daniel P. Berrange <berrange@redhat.com>
  *
  */
+
+#include <config.h>
+#include "virsh-snapshot.h"
+
+#include <assert.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "virsh-domain.h"
+#include "xml.h"
 
 /* Helper for snapshot-create and snapshot-create-as */
 static bool
@@ -1597,7 +1614,7 @@ cleanup:
     return ret;
 }
 
-static const vshCmdDef snapshotCmds[] = {
+const vshCmdDef snapshotCmds[] = {
     {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create,
      info_snapshot_create, 0},
     {"snapshot-create-as", cmdSnapshotCreateAs, opts_snapshot_create_as,
