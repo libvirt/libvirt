@@ -141,7 +141,9 @@ cleanup:
 
 
 static char *
-virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
+virSecuritySELinuxGenNewContext(const char *basecontext,
+                                const char *mcs,
+                                bool isObjectContext)
 {
     context_t context = NULL;
     char *ret = NULL;
@@ -176,10 +178,11 @@ virSecuritySELinuxGenNewContext(const char *basecontext, const char *mcs)
         goto cleanup;
     }
 
-    if (context_role_set(context,
+    if (!isObjectContext &&
+        context_role_set(context,
                          context_role_get(ourContext)) != 0) {
         virReportSystemError(errno,
-                             _("Unable to set SELinux context user '%s'"),
+                             _("Unable to set SELinux context role '%s'"),
                              context_role_get(ourContext));
         goto cleanup;
     }
@@ -421,7 +424,8 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         if (!(def->seclabel.label =
               virSecuritySELinuxGenNewContext(def->seclabel.baselabel ?
                                               def->seclabel.baselabel :
-                                              data->domain_context, mcs)))
+                                              data->domain_context,
+                                              mcs, false)))
             goto cleanup;
         break;
 
@@ -438,7 +442,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
 
     if (!def->seclabel.norelabel) {
         if (!(def->seclabel.imagelabel =
-              virSecuritySELinuxGenNewContext(data->file_context, mcs)))
+              virSecuritySELinuxGenNewContext(data->file_context, mcs, true)))
             goto cleanup;
     }
 
@@ -1639,7 +1643,8 @@ virSecuritySELinuxGenImageLabel(virSecurityManagerPtr mgr,
                 virReportOOMError();
                 goto cleanup;
             }
-            if (!(label = virSecuritySELinuxGenNewContext(data->file_context, mcs)))
+            if (!(label = virSecuritySELinuxGenNewContext(data->file_context,
+                                                          mcs, true)))
                 goto cleanup;
         }
     }
