@@ -23,18 +23,28 @@
  *
  */
 
-/* default is lookup by Name and MAC */
-#define vshCommandOptInterface(_ctl, _cmd, _name)                    \
-    vshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name,                \
-                             VSH_BYMAC|VSH_BYNAME)
+#include <config.h>
+#include "virsh-interface.h"
 
-static virInterfacePtr
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
+virInterfacePtr
 vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
                          const char *optname,
-                         const char **name, int flag)
+                         const char **name, unsigned int flags)
 {
     virInterfacePtr iface = NULL;
     const char *n = NULL;
+    virCheckFlags(VSH_BYNAME | VSH_BYMAC, NULL);
 
     if (!optname)
        optname = "interface";
@@ -51,13 +61,13 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by NAME */
-    if (flag & VSH_BYNAME) {
+    if (flags & VSH_BYNAME) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface NAME\n",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByName(ctl->conn, n);
     }
     /* try it by MAC */
-    if (iface == NULL && (flag & VSH_BYMAC)) {
+    if (!iface && (flags & VSH_BYMAC)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as interface MAC\n",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByMACString(ctl->conn, n);
@@ -999,7 +1009,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-static const vshCmdDef ifaceCmds[] = {
+const vshCmdDef ifaceCmds[] = {
     {"iface-begin", cmdInterfaceBegin, opts_interface_begin,
      info_interface_begin, 0},
     {"iface-bridge", cmdInterfaceBridge, opts_interface_bridge,
