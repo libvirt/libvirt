@@ -114,8 +114,8 @@ virsh_SOURCES =							\
 		virsh-nodedev.c virsh-nodedev.h			\
 		virsh-nwfilter.c virsh-nwfilter.h		\
 		virsh-pool.c virsh-pool.h			\
+		virsh-secret.c virsh-secret.h			\
 		$(NULL)
-#		virsh-secret.c virsh-secret.h			\
 #		virsh-snapshot.c virsh-snapshot.h		\
 #		virsh-volume.c virsh-volume.h			\
 #

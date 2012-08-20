@@ -23,6 +23,21 @@
  *
  */
 
+#include <config.h>
+#include "virsh-secret.h"
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "base64.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
 static virSecretPtr
 vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
 {
@@ -357,7 +372,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
-static const vshCmdDef secretCmds[] = {
+const vshCmdDef secretCmds[] = {
     {"secret-define", cmdSecretDefine, opts_secret_define,
      info_secret_define, 0},
     {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml,
