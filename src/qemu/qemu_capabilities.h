@@ -195,9 +195,6 @@ int qemuCapsParseHelpStr(const char *qemu,
 int qemuCapsParseDeviceStr(const char *str,
                            qemuCapsPtr caps);
 
-virCommandPtr qemuCapsProbeCommand(const char *qemu,
-                                   qemuCapsPtr caps);
-
 VIR_ENUM_DECL(qemuCaps);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

@@ -254,6 +254,26 @@ static const struct qemu_arch_info const arch_info_xen[] = {
 };
 
 
+static virCommandPtr
+qemuCapsProbeCommand(const char *qemu,
+                     qemuCapsPtr caps)
+{
+    virCommandPtr cmd = virCommandNew(qemu);
+
+    if (caps) {
+        if (qemuCapsGet(caps, QEMU_CAPS_NO_USER_CONFIG))
+            virCommandAddArg(cmd, "-no-user-config");
+        else if (qemuCapsGet(caps, QEMU_CAPS_NODEFCONFIG))
+            virCommandAddArg(cmd, "-nodefconfig");
+    }
+
+    virCommandAddEnvPassCommon(cmd);
+    virCommandClearCaps(cmd);
+
+    return cmd;
+}
+
+
 /* Format is:
  * <machine> <desc> [(default)|(alias of <canonical>)]
  */
@@ -1747,24 +1767,4 @@ qemuCapsGet(qemuCapsPtr caps,
         return false;
     else
         return b;
-}
-
-
-virCommandPtr
-qemuCapsProbeCommand(const char *qemu,
-                     qemuCapsPtr caps)
-{
-    virCommandPtr cmd = virCommandNew(qemu);
-
-    if (caps) {
-        if (qemuCapsGet(caps, QEMU_CAPS_NO_USER_CONFIG))
-            virCommandAddArg(cmd, "-no-user-config");
-        else if (qemuCapsGet(caps, QEMU_CAPS_NODEFCONFIG))
-            virCommandAddArg(cmd, "-nodefconfig");
-    }
-
-    virCommandAddEnvPassCommon(cmd);
-    virCommandClearCaps(cmd);
-
-    return cmd;
 }
