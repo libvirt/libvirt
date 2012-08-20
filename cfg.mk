@@ -746,7 +746,7 @@ exclude_file_name_regexp--sc_copyright_address = \
 exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
-  ^src/rpc/gendispatch\.pl$$
+  ^(src/rpc/gendispatch\.pl$$|tests/)
 
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
