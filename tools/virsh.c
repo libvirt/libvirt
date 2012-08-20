@@ -343,7 +343,7 @@ vshAskReedit(vshControl *ctl, const char *msg)
     return c;
 }
 #else /* WIN32 */
-static int
+int
 vshAskReedit(vshControl *ctl, const char *msg ATTRIBUTE_UNUSED)
 {
     vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not "
