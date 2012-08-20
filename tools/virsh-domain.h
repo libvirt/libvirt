@@ -24,7 +24,7 @@
  */
 
 #ifndef VIRSH_DOMAIN_H
-#define VIRSH_DOMAIN_H
+# define VIRSH_DOMAIN_H
 
 # include "virsh.h"
 

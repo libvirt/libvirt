@@ -23,7 +23,7 @@
  */
 
 #ifndef VIRSH_H
-#define VIRSH_H
+# define VIRSH_H
 
 # include <stdio.h>
 # include <stdlib.h>
