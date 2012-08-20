@@ -286,9 +286,6 @@ int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                    const vshCmdOpt *opt);
-char *vshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
-                              bool title, unsigned int flags)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 # define VSH_BYID     (1 << 1)
 # define VSH_BYUUID   (1 << 2)

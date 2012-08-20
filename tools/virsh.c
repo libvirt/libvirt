@@ -75,6 +75,7 @@
 #include "virtypedparam.h"
 
 #include "virsh-domain.h"
+#include "virsh-domain-monitor.h"
 
 static char *progname;
 
@@ -2861,7 +2862,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-domain-monitor.c"
 #include "virsh-host.c"
 #include "virsh-interface.c"
 #include "virsh-network.c"

@@ -48,6 +48,7 @@
 #include "virfile.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"
+#include "virsh-domain-monitor.h"
 #include "virterror_internal.h"
 #include "virtypedparam.h"
 #include "xml.h"

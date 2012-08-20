@@ -23,7 +23,20 @@
  *
  */
 
+#include <config.h>
+#include "virsh-domain-monitor.h"
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "conf/domain_conf.h"
 #include "intprops.h"
+#include "memory.h"
+#include "virmacaddr.h"
+#include "xml.h"
 
 static const char *
 vshDomainIOErrorToString(int error)
@@ -1683,7 +1696,7 @@ cleanup:
 }
 #undef FILTER
 
-static const vshCmdDef domMonitoringCmds[] = {
+const vshCmdDef domMonitoringCmds[] = {
     {"domblkerror", cmdDomBlkError, opts_domblkerror, info_domblkerror, 0},
     {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
     {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
