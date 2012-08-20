@@ -78,6 +78,7 @@
 #include "virsh-domain-monitor.h"
 #include "virsh-host.h"
 #include "virsh-interface.h"
+#include "virsh-network.h"
 
 static char *progname;
 
@@ -2816,7 +2817,6 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     return true;
 }
 
-#include "virsh-network.c"
 #include "virsh-nodedev.c"
 #include "virsh-nwfilter.c"
 #include "virsh-pool.c"

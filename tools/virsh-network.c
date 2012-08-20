@@ -23,18 +23,29 @@
  *
  */
 
-/* default is lookup by Name and UUID */
-#define vshCommandOptNetwork(_ctl, _cmd, _name)                    \
-    vshCommandOptNetworkBy(_ctl, _cmd, _name,                      \
-                           VSH_BYUUID|VSH_BYNAME)
+#include <config.h>
+#include "virsh-network.h"
 
-static virNetworkPtr
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
+
+#include "internal.h"
+#include "buf.h"
+#include "memory.h"
+#include "util.h"
+#include "xml.h"
+
+virNetworkPtr
 vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
-                       const char **name, int flag)
+                       const char **name, unsigned int flags)
 {
     virNetworkPtr network = NULL;
     const char *n = NULL;
     const char *optname = "network";
+    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
+
     if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
@@ -48,13 +59,13 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by UUID */
-    if ((flag & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+    if ((flags & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network UUID\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
-    if (network==NULL && (flag & VSH_BYNAME)) {
+    if (!network && (flags & VSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as network NAME\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByName(ctl->conn, n);
@@ -686,7 +697,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-static const vshCmdDef networkCmds[] = {
+const vshCmdDef networkCmds[] = {
     {"net-autostart", cmdNetworkAutostart, opts_network_autostart,
      info_network_autostart, 0},
     {"net-create", cmdNetworkCreate, opts_network_create,
