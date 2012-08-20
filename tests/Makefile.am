@@ -113,7 +113,7 @@ endif
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest qemuxmlnstest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
-	qemumonitortest
+	qemumonitortest qemumonitorjsontest
 endif
 
 if WITH_LXC
@@ -350,6 +350,14 @@ qemuhelptest_LDADD = $(qemu_LDADDS)
 qemumonitortest_SOURCES = qemumonitortest.c testutils.c testutils.h
 qemumonitortest_LDADD = $(qemu_LDADDS)
 
+qemumonitorjsontest_SOURCES = \
+	qemumonitorjsontest.c \
+	testutils.c testutils.h \
+	testutilsqemu.c testutilsqemu.h \
+	$(NULL)
+qemumonitorjsontest_LDADD = $(qemu_LDADDS) libqemumonitortestutils.la
+qemumonitorjsontest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\""  $(AM_CFLAGS)
+
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
@@ -358,6 +366,7 @@ else
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuxmlnstest.c qemuhelptest.c domainsnapshotxml2xmltest.c \
 	qemumonitortest.c testutilsqemu.c testutilsqemu.h \
+	qemumonitorjsontest.c \
 	$(QEMUMONITORTESTUTILS_SOURCES)
 endif
 

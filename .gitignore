@@ -140,6 +140,7 @@
 /tests/openvzutilstest
 /tests/qemuargv2xmltest
 /tests/qemuhelptest
+/tests/qemumonitorjsontest
 /tests/qemumonitortest
 /tests/qemuxmlnstest
 /tests/qparamtest
