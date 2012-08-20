@@ -36,6 +36,7 @@
 #include "intprops.h"
 #include "memory.h"
 #include "virmacaddr.h"
+#include "virsh-domain.h"
 #include "xml.h"
 
 static const char *

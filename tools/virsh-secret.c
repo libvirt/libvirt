@@ -30,7 +30,7 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     const char *n = NULL;
     const char *optname = "secret";
 
-    if (!cmd_has_option(ctl, cmd, optname))
+    if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
     if (vshCommandOptString(cmd, optname, &n) <= 0)

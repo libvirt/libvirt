@@ -35,6 +35,7 @@
 #include "buf.h"
 #include "memory.h"
 #include "util.h"
+#include "virsh-domain.h"
 #include "xml.h"
 
 /*

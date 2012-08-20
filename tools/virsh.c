@@ -128,7 +128,7 @@ _vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
 /* Poison the raw allocating identifiers in favor of our vsh variants.  */
 #define strdup use_vshStrdup_instead_of_strdup
 
-static int
+int
 vshNameSorter(const void *a, const void *b)
 {
     const char **sa = (const char**)a;
@@ -1441,8 +1441,8 @@ vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
 /* Determine whether CMD->opts includes an option with name OPTNAME.
    If not, give a diagnostic and return false.
    If so, return true.  */
-static bool
-cmd_has_option(vshControl *ctl, const vshCmd *cmd, const char *optname)
+bool
+vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname)
 {
     /* Iterate through cmd->opts, to ensure that there is an entry
        with name OPTNAME and type VSH_OT_DATA. */
@@ -1459,54 +1459,6 @@ cmd_has_option(vshControl *ctl, const vshCmd *cmd, const char *optname)
         vshError(ctl, _("internal error: virsh %s: no %s VSH_OT_DATA option"),
                  cmd->def->name, optname);
     return found;
-}
-
-virDomainPtr
-vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
-                      const char **name, int flag)
-{
-    virDomainPtr dom = NULL;
-    const char *n = NULL;
-    int id;
-    const char *optname = "domain";
-    if (!cmd_has_option(ctl, cmd, optname))
-        return NULL;
-
-    if (vshCommandOptString(cmd, optname, &n) <= 0)
-        return NULL;
-
-    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
-             cmd->def->name, optname, n);
-
-    if (name)
-        *name = n;
-
-    /* try it by ID */
-    if (flag & VSH_BYID) {
-        if (virStrToLong_i(n, NULL, 10, &id) == 0 && id >= 0) {
-            vshDebug(ctl, VSH_ERR_DEBUG,
-                     "%s: <%s> seems like domain ID\n",
-                     cmd->def->name, optname);
-            dom = virDomainLookupByID(ctl->conn, id);
-        }
-    }
-    /* try it by UUID */
-    if (dom==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain UUID\n",
-                 cmd->def->name, optname);
-        dom = virDomainLookupByUUIDString(ctl->conn, n);
-    }
-    /* try it by NAME */
-    if (dom==NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain NAME\n",
-                 cmd->def->name, optname);
-        dom = virDomainLookupByName(ctl->conn, n);
-    }
-
-    if (!dom)
-        vshError(ctl, _("failed to get domain '%s'"), n);
-
-    return dom;
 }
 
 /*

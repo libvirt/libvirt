@@ -38,7 +38,7 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
 
     if (!optname)
        optname = "interface";
-    if (!cmd_has_option(ctl, cmd, optname))
+    if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
     if (vshCommandOptString(cmd, optname, &n) <= 0)

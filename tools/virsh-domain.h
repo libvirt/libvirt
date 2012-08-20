@@ -28,6 +28,13 @@
 
 # include "virsh.h"
 
+virDomainPtr vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
+                                   const char **name, unsigned int flags);
+
+/* default is lookup by Id, Name and UUID */
+# define vshCommandOptDomain(_ctl, _cmd, _name)                      \
+    vshCommandOptDomainBy(_ctl, _cmd, _name, VSH_BYID|VSH_BYUUID|VSH_BYNAME)
+
 extern const vshCmdDef domManagementCmds[];
 
 #endif /* VIRSH_DOMAIN_H */

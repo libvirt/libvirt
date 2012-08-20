@@ -58,6 +58,57 @@
 # define SA_SIGINFO 0
 #endif
 
+virDomainPtr
+vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
+                      const char **name, unsigned int flags)
+{
+    virDomainPtr dom = NULL;
+    const char *n = NULL;
+    int id;
+    const char *optname = "domain";
+    virCheckFlags(VSH_BYID | VSH_BYUUID | VSH_BYNAME, NULL);
+
+    if (!vshCmdHasOption(ctl, cmd, optname))
+        return NULL;
+
+    if (vshCommandOptString(cmd, optname, &n) <= 0)
+        return NULL;
+
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    /* try it by ID */
+    if (flags & VSH_BYID) {
+        if (virStrToLong_i(n, NULL, 10, &id) == 0 && id >= 0) {
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     "%s: <%s> seems like domain ID\n",
+                     cmd->def->name, optname);
+            dom = virDomainLookupByID(ctl->conn, id);
+        }
+    }
+    /* try it by UUID */
+    if (!dom && (flags & VSH_BYUUID) &&
+        strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain UUID\n",
+                 cmd->def->name, optname);
+        dom = virDomainLookupByUUIDString(ctl->conn, n);
+    }
+    /* try it by NAME */
+    if (!dom && (flags & VSH_BYNAME)) {
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as domain NAME\n",
+                 cmd->def->name, optname);
+        dom = virDomainLookupByName(ctl->conn, n);
+    }
+
+    if (!dom)
+        vshError(ctl, _("failed to get domain '%s'"), n);
+
+    return dom;
+}
+
 static const char *
 vshDomainVcpuStateToString(int state)
 {

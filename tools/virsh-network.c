@@ -35,7 +35,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     virNetworkPtr network = NULL;
     const char *n = NULL;
     const char *optname = "network";
-    if (!cmd_has_option(ctl, cmd, optname))
+    if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
     if (vshCommandOptString(cmd, optname, &n) <= 0)

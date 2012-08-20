@@ -286,18 +286,15 @@ int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                    const vshCmdOpt *opt);
+bool vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname);
 
-# define VSH_BYID     (1 << 1)
-# define VSH_BYUUID   (1 << 2)
-# define VSH_BYNAME   (1 << 3)
-# define VSH_BYMAC    (1 << 4)
-
-virDomainPtr vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
-                                   const char **name, int flag);
-
-/* default is lookup by Id, Name and UUID */
-# define vshCommandOptDomain(_ctl, _cmd, _name)                      \
-    vshCommandOptDomainBy(_ctl, _cmd, _name, VSH_BYID|VSH_BYUUID|VSH_BYNAME)
+/* Filter flags for various vshCommandOpt*By() functions */
+typedef enum {
+    VSH_BYID   = (1 << 1),
+    VSH_BYUUID = (1 << 2),
+    VSH_BYNAME = (1 << 3),
+    VSH_BYMAC  = (1 << 4),
+} vshLookupByFlags;
 
 void vshPrintExtra(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
@@ -309,6 +306,7 @@ void vshDebug(vshControl *ctl, int level, const char *format, ...)
 
 /* User visible sort, so we want locale-specific case comparison.  */
 # define vshStrcasecmp(S1, S2) strcasecmp(S1, S2)
+int vshNameSorter(const void *a, const void *b);
 
 int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
 bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
