@@ -79,10 +79,9 @@
 # define STRSKIP(a,b) (STRPREFIX(a,b) ? (a) + strlen(b) : NULL)
 
 # define STREQ_NULLABLE(a, b)                           \
-    ((!(a) && !(b)) || ((a) && (b) && STREQ((a), (b))))
+    ((a) ? (b) && STREQ((a) ? (a) : "", (b) ? (b) : "") : !(b))
 # define STRNEQ_NULLABLE(a, b)                          \
-    ((!(a) ^ !(b)) || ((a) && (b) && STRNEQ((a), (b))))
-
+    ((a) ? !(b) || STRNEQ((a) ? (a) : "", (b) ? (b) : "") : !!(b))
 
 # define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
 # define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
@@ -206,9 +205,7 @@
 /*
  * Use this when passing possibly-NULL strings to printf-a-likes.
  */
-# define NULLSTR(s) \
-    ((void)verify_true(sizeof(*(s)) == sizeof(char)),   \
-     (s) ? (s) : "(null)")
+# define NULLSTR(s) ((s) ? (s) : "(null)")
 
 /**
  * TODO:
