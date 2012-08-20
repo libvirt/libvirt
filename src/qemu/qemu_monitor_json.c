@@ -4042,3 +4042,77 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
+                                     char ***cpus)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    char **cpulist = NULL;
+    int n = 0;
+    size_t i;
+
+    *cpus = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-definitions", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-definitions reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-definitions reply data was not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(cpulist, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-cpu-definitions reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (!(cpulist[i] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *cpus = cpulist;
+
+cleanup:
+    if (ret < 0 && cpulist) {
+        for (i = 0 ; i < n ; i++)
+            VIR_FREE(cpulist[i]);
+        VIR_FREE(cpulist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

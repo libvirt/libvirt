@@ -3076,3 +3076,24 @@ void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
     VIR_FREE(machine->alias);
     VIR_FREE(machine);
 }
+
+int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
+                                 char ***cpus)
+{
+    VIR_DEBUG("mon=%p cpus=%p",
+              mon, cpus);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetCPUDefinitions(mon, cpus);
+}

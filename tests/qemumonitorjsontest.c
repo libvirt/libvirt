@@ -301,6 +301,68 @@ cleanup:
 
 
 static int
+testQemuMonitorJSONGetCPUDefinitions(const void *data)
+{
+    virCapsPtr caps = (virCapsPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    int ret = -1;
+    char **cpus = NULL;
+    int ncpus;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-cpu-definitions",
+                               "{ "
+                               "  \"return\": [ "
+                               "   { "
+                               "     \"name\": \"qemu64\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"Opteron_G4\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"Westmere\" "
+                               "   } "
+                               "  ]"
+                               "}") < 0)
+        goto cleanup;
+
+    if ((ncpus = qemuMonitorGetCPUDefinitions(qemuMonitorTestGetMonitor(test),
+                                              &cpus)) < 0)
+        goto cleanup;
+
+    if (ncpus != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "ncpus %d is not 3", ncpus);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname)                                              \
+    do {                                                                \
+        if (STRNEQ(cpus[i], (wantname))) {                              \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name %s is not %s",                         \
+                           cpus[i], (wantname));                        \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "qemu64");
+    CHECK(1, "Opteron_G4");
+    CHECK(2, "Westmere");
+
+#undef CHECK
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -321,6 +383,7 @@ mymain(void)
     DO_TEST(GetStatus);
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
+    DO_TEST(GetCPUDefinitions);
 
     virCapabilitiesFree(caps);
 

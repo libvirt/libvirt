@@ -593,6 +593,10 @@ int qemuMonitorGetMachines(qemuMonitorPtr mon,
 
 void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine);
 
+int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
+                                 char ***cpus);
+
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

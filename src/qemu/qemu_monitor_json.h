@@ -294,4 +294,8 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
                                qemuMonitorMachineInfoPtr **machines)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
+                                     char ***cpus)
+    ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */
