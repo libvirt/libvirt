@@ -533,11 +533,12 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     }
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
-        /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
+        /* If we does not know VCPU<->PID mapping or all vcpus run in the same
          * thread, we cannot control each vcpu.
          */
-        virCgroupFree(&cgroup);
-        return 0;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to get vcpus' pids."));
+        goto cleanup;
     }
 
     for (i = 0; i < priv->nvcpupids; i++) {
@@ -574,7 +575,11 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     return 0;
 
 cleanup:
-    virCgroupFree(&cgroup_vcpu);
+    if (cgroup_vcpu) {
+        virCgroupRemove(cgroup_vcpu);
+        virCgroupFree(&cgroup_vcpu);
+    }
+
     if (cgroup) {
         virCgroupRemove(cgroup);
         virCgroupFree(&cgroup);
@@ -583,6 +588,64 @@ cleanup:
     return -1;
 }
 
+int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
+                               virDomainObjPtr vm)
+{
+    virCgroupPtr cgroup = NULL;
+    virCgroupPtr cgroup_emulator = NULL;
+    int rc, i;
+
+    if (driver->cgroup == NULL)
+        return 0; /* Not supported, so claim success */
+
+    rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
+    if (rc != 0) {
+        virReportSystemError(-rc,
+                             _("Unable to find cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    rc = virCgroupForEmulator(cgroup, &cgroup_emulator, 1);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to create emulator cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (!qemuCgroupControllerActive(driver, i)) {
+            VIR_WARN("cgroup %d is not active", i);
+            continue;
+        }
+        rc = virCgroupMoveTask(cgroup, cgroup_emulator, i);
+        if (rc < 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to move tasks from domain cgroup to "
+                                   "emulator cgroup in controller %d for %s"),
+                                 i, vm->def->name);
+            goto cleanup;
+        }
+    }
+
+    virCgroupFree(&cgroup_emulator);
+    virCgroupFree(&cgroup);
+    return 0;
+
+cleanup:
+    if (cgroup_emulator) {
+        virCgroupRemove(cgroup_emulator);
+        virCgroupFree(&cgroup_emulator);
+    }
+
+    if (cgroup) {
+        virCgroupRemove(cgroup);
+        virCgroupFree(&cgroup);
+    }
+
+    return rc;
+}
 
 int qemuRemoveCgroup(struct qemud_driver *driver,
                      virDomainObjPtr vm,
