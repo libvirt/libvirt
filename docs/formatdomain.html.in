@@ -388,6 +388,8 @@
     &lt;shares&gt;2048&lt;/shares&gt;
     &lt;period&gt;1000000&lt;/period&gt;
     &lt;quota&gt;-1&lt;/quota&gt;
+    &lt;emulator_period&gt;1000000&lt;/period&gt;
+    &lt;emulator_quota&gt;-1&lt;/quota&gt;
   &lt;/cputune&gt;
   ...
 &lt;/domain&gt;
@@ -451,6 +453,28 @@
         <span class="since">Only QEMU driver support since 0.9.4, LXC since
         0.9.10</span>
       </dd>
+
+      <dt><code>emulator_period</code></dt>
+      <dd>
+        The optional <code>emulator_period</code> element specifies the enforcement
+        interval(unit: microseconds). Within <code>emulator_period</code>, emulator
+        threads(those excluding vcpus) of the domain will not be allowed to consume
+        more than <code>emulator_quota</code> worth of runtime. The value should be
+        in range [1000, 1000000]. A period with value 0 means no value.
+        <span class="since">Only QEMU driver support since 0.10.0</span>
+      </dd>
+      <dt><code>emulator_quota</code></dt>
+      <dd>
+        The optional <code>emulator_quota</code> element specifies the maximum
+        allowed bandwidth(unit: microseconds) for domain's emulator threads(those
+        excluding vcpus). A domain with <code>emulator_quota</code> as any negative
+        value indicates that the domain has infinite bandwidth for emulator threads
+        (those excluding vcpus), which means that it is not bandwidth controlled.
+        The value should be in range [1000, 18446744073709551] or less than 0. A
+        quota with value 0 means no value.
+        <span class="since">Only QEMU driver support since 0.10.0</span>
+      </dd>
+
     </dl>
 
 

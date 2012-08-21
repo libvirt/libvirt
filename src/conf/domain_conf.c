@@ -8344,6 +8344,14 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                          &def->cputune.quota) < 0)
         def->cputune.quota = 0;
 
+    if (virXPathULongLong("string(./cputune/emulator_period[1])", ctxt,
+                          &def->cputune.emulator_period) < 0)
+        def->cputune.emulator_period = 0;
+
+    if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
+                         &def->cputune.emulator_quota) < 0)
+        def->cputune.emulator_quota = 0;
+
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0) {
         goto error;
     }
@@ -13102,7 +13110,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->cputune.shares || def->cputune.vcpupin ||
         def->cputune.period || def->cputune.quota ||
-        def->cputune.emulatorpin)
+        def->cputune.emulatorpin ||
+        def->cputune.emulator_period || def->cputune.emulator_quota)
         virBufferAddLit(buf, "  <cputune>\n");
 
     if (def->cputune.shares)
@@ -13114,6 +13123,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->cputune.quota)
         virBufferAsprintf(buf, "    <quota>%lld</quota>\n",
                           def->cputune.quota);
+
+    if (def->cputune.emulator_period)
+        virBufferAsprintf(buf, "    <emulator_period>%llu"
+                          "</emulator_period>\n",
+                          def->cputune.emulator_period);
+
+    if (def->cputune.emulator_quota)
+        virBufferAsprintf(buf, "    <emulator_quota>%lld"
+                          "</emulator_quota>\n",
+                          def->cputune.emulator_quota);
+
     if (def->cputune.vcpupin) {
         for (i = 0; i < def->cputune.nvcpupin; i++) {
             virBufferAsprintf(buf, "    <vcpupin vcpu='%u' ",
@@ -13152,7 +13172,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->cputune.shares || def->cputune.vcpupin ||
         def->cputune.period || def->cputune.quota ||
-        def->cputune.emulatorpin)
+        def->cputune.emulatorpin ||
+        def->cputune.emulator_period || def->cputune.emulator_quota)
         virBufferAddLit(buf, "  </cputune>\n");
 
     if (def->numatune.memory.nodemask ||

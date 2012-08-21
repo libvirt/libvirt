@@ -1614,6 +1614,8 @@ struct _virDomainDef {
         unsigned long shares;
         unsigned long long period;
         long long quota;
+        unsigned long long emulator_period;
+        long long emulator_quota;
         int nvcpupin;
         virDomainVcpuPinDefPtr *vcpupin;
         virDomainVcpuPinDefPtr emulatorpin;

@@ -581,6 +581,16 @@
               <ref name="cpuquota"/>
             </element>
           </optional>
+          <optional>
+            <element name="emulator_period">
+              <ref name="cpuperiod"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="emulator_quota">
+              <ref name="cpuquota"/>
+            </element>
+          </optional>
           <zeroOrMore>
             <element name="vcpupin">
               <attribute name="vcpu">

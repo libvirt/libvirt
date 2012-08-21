@@ -564,7 +564,7 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     }
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
-        /* If we does not know VCPU<->PID mapping or all vcpus run in the same
+        /* If we don't know VCPU<->PID mapping or all vcpu runs in the same
          * thread, we cannot control each vcpu.
          */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -631,6 +631,8 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
     virCgroupPtr cgroup = NULL;
     virCgroupPtr cgroup_emulator = NULL;
     virDomainDefPtr def = vm->def;
+    unsigned long long period = vm->def->cputune.emulator_period;
+    long long quota = vm->def->cputune.emulator_quota;
     int rc, i;
 
     if (driver->cgroup == NULL)
@@ -671,6 +673,13 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
         qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET) &&
         qemuSetupCgroupEmulatorPin(cgroup_emulator, def->cputune.emulatorpin) < 0)
         goto cleanup;
+
+    if (period || quota) {
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+            if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
+                goto cleanup;
+        }
+    }
 
     virCgroupFree(&cgroup_emulator);
     virCgroupFree(&cgroup);
