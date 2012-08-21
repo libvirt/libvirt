@@ -718,6 +718,26 @@ struct remote_domain_get_vcpu_pin_info_ret {
         } cpumaps;
         int                        num;
 };
+struct remote_domain_pin_emulator_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              cpumap_len;
+                char *             cpumap_val;
+        } cpumap;
+        u_int                      flags;
+};
+struct remote_domain_get_emulator_pin_info_args {
+        remote_nonnull_domain      dom;
+        int                        maplen;
+        u_int                      flags;
+};
+struct remote_domain_get_emulator_pin_info_ret {
+        struct {
+                u_int              cpumaps_len;
+                char *             cpumaps_val;
+        } cpumaps;
+        int                        ret;
+};
 struct remote_domain_get_vcpus_args {
         remote_nonnull_domain      dom;
         int                        maxinfo;
@@ -2270,4 +2290,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276,
         REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277,
         REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278,
+        REMOTE_PROC_DOMAIN_PIN_EMULATOR = 279,
+        REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280,
 };

@@ -1885,6 +1885,103 @@ done:
 }
 
 static int
+remoteDomainPinEmulator (virDomainPtr dom,
+                         unsigned char *cpumap,
+                         int cpumaplen,
+                         unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_pin_emulator_args args;
+
+    remoteDriverLock(priv);
+
+    if (cpumaplen > REMOTE_CPUMAP_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("%s length greater than maximum: %d > %d"),
+                       "cpumap", cpumaplen, REMOTE_CPUMAP_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain(&args.dom, dom);
+    args.cpumap.cpumap_val = (char *)cpumap;
+    args.cpumap.cpumap_len = cpumaplen;
+    args.flags = flags;
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_PIN_EMULATOR,
+             (xdrproc_t) xdr_remote_domain_pin_emulator_args,
+             (char *) &args,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1) {
+        goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteDomainGetEmulatorPinInfo (virDomainPtr domain,
+                                unsigned char *cpumaps,
+                                int maplen,
+                                unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    remote_domain_get_emulator_pin_info_args args;
+    remote_domain_get_emulator_pin_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    /* There is only one cpumap for all emulator threads */
+    if (maplen > REMOTE_CPUMAPS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("vCPU map buffer length exceeds maximum: %d > %d"),
+                       maplen, REMOTE_CPUMAPS_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain(&args.dom, domain);
+    args.maplen = maplen;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO,
+              (xdrproc_t) xdr_remote_domain_get_emulator_pin_info_args,
+              (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_emulator_pin_info_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    if (ret.cpumaps.cpumaps_len > maplen) {
+        virReportError(VIR_ERR_RPC,
+                       _("host reports map buffer length exceeds maximum: %d > %d"),
+                       ret.cpumaps.cpumaps_len, maplen);
+        goto cleanup;
+    }
+
+    memset(cpumaps, 0, maplen);
+
+    for (i = 0; i < ret.cpumaps.cpumaps_len; ++i)
+        cpumaps[i] = ret.cpumaps.cpumaps_val[i];
+
+    rv = ret.ret;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_emulator_pin_info_ret,
+              (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetVcpus (virDomainPtr domain,
                       virVcpuInfoPtr info,
                       int maxinfo,
@@ -5344,6 +5441,8 @@ static virDriver remote_driver = {
     .domainPinVcpu = remoteDomainPinVcpu, /* 0.3.0 */
     .domainPinVcpuFlags = remoteDomainPinVcpuFlags, /* 0.9.3 */
     .domainGetVcpuPinInfo = remoteDomainGetVcpuPinInfo, /* 0.9.3 */
+    .domainPinEmulator = remoteDomainPinEmulator, /* 0.10.0 */
+    .domainGetEmulatorPinInfo = remoteDomainGetEmulatorPinInfo, /* 0.10.0 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */

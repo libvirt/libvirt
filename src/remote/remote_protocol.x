@@ -1059,6 +1059,23 @@ struct remote_domain_get_vcpu_pin_info_ret {
     int num;
 };
 
+struct remote_domain_pin_emulator_args {
+    remote_nonnull_domain dom;
+    opaque cpumap<REMOTE_CPUMAP_MAX>; /* (unsigned char *) */
+    unsigned int flags;
+};
+
+struct remote_domain_get_emulator_pin_info_args {
+    remote_nonnull_domain dom;
+    int maplen;
+    unsigned int flags;
+};
+
+struct remote_domain_get_emulator_pin_info_ret {
+    opaque cpumaps<REMOTE_CPUMAPS_MAX>;
+    int ret;
+};
+
 struct remote_domain_get_vcpus_args {
     remote_nonnull_domain dom;
     int maxinfo;
@@ -2869,7 +2886,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_ALL_CHILDREN = 275, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE = 276, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278 /* skipgen skipgen priority:high */
+    REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278, /* skipgen skipgen priority:high */
+    REMOTE_PROC_DOMAIN_PIN_EMULATOR = 279, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

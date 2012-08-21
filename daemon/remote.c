@@ -1593,6 +1593,97 @@ no_memory:
 }
 
 static int
+remoteDispatchDomainPinEmulator(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                virNetServerClientPtr client,
+                                virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                virNetMessageErrorPtr rerr,
+                                remote_domain_pin_emulator_args *args)
+{
+    int rv = -1;
+    virDomainPtr dom = NULL;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainPinEmulator(dom,
+                             (unsigned char *) args->cpumap.cpumap_val,
+                             args->cpumap.cpumap_len,
+                             args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+}
+
+
+static int
+remoteDispatchDomainGetEmulatorPinInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                       virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                       virNetMessageErrorPtr rerr,
+                                       remote_domain_get_emulator_pin_info_args *args,
+                                       remote_domain_get_emulator_pin_info_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    unsigned char *cpumaps = NULL;
+    int r;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    /* Allocate buffers to take the results */
+    if (args->maplen > 0 &&
+        VIR_ALLOC_N(cpumaps, args->maplen) < 0)
+        goto no_memory;
+
+    if ((r = virDomainGetEmulatorPinInfo(dom,
+                                         cpumaps,
+                                         args->maplen,
+                                         args->flags)) < 0)
+        goto cleanup;
+
+    ret->ret = r;
+    ret->cpumaps.cpumaps_len = args->maplen;
+    ret->cpumaps.cpumaps_val = (char *) cpumaps;
+    cpumaps = NULL;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    VIR_FREE(cpumaps);
+    if (dom)
+        virDomainFree(dom);
+    return rv;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+static int
 remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
                              virNetServerClientPtr client ATTRIBUTE_UNUSED,
                              virNetMessagePtr msg ATTRIBUTE_UNUSED,
