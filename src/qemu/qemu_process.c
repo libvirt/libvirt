@@ -2002,6 +2002,56 @@ cleanup:
     return ret;
 }
 
+/* Set CPU affinities for emulator threads if emulatorpin xml provided. */
+static int
+qemuProcessSetEmulatorAffinites(virConnectPtr conn,
+                                virDomainObjPtr vm)
+{
+    virDomainDefPtr def = vm->def;
+    pid_t pid = vm->pid;
+    unsigned char *cpumask = NULL;
+    unsigned char *cpumap = NULL;
+    virNodeInfo nodeinfo;
+    int cpumaplen, hostcpus, maxcpu, i;
+    int ret = -1;
+
+    if (virNodeGetInfo(conn, &nodeinfo) != 0)
+        return -1;
+
+    if (!def->cputune.emulatorpin)
+        return 0;
+
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    cpumaplen = VIR_CPU_MAPLEN(hostcpus);
+    maxcpu = cpumaplen * CHAR_BIT;
+
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    cpumask = (unsigned char *)def->cputune.emulatorpin->cpumask;
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
+        if (cpumask[i])
+            VIR_USE_CPU(cpumap, i);
+    }
+
+    if (virProcessInfoSetAffinity(pid,
+                                  cpumap,
+                                  cpumaplen,
+                                  maxcpu) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
+}
+
 static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          struct qemud_driver *driver,
@@ -3761,6 +3811,10 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting VCPU affinities");
     if (qemuProcessSetVcpuAffinites(conn, vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting affinity of emulator threads");
+    if (qemuProcessSetEmulatorAffinites(conn, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting any required VM passwords");
