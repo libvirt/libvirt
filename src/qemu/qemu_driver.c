@@ -3716,11 +3716,15 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef = NULL;
+    virCgroupPtr cgroup_dom = NULL;
+    virCgroupPtr cgroup_vcpu = NULL;
     int maxcpu, hostcpus;
     virNodeInfo nodeinfo;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool canResetting = true;
+    int newVcpuPinNum = 0;
+    virDomainVcpuPinDefPtr *newVcpuPin = NULL;
     int pcpu;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -3769,14 +3773,52 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
-        if (priv->vcpupids != NULL) {
-            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
-                                          cpumap, maplen, maxcpu) < 0)
-                goto cleanup;
-        } else {
+        if (priv->vcpupids == NULL) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
             goto cleanup;
+        }
+
+        if (vm->def->cputune.vcpupin) {
+            newVcpuPin = virDomainVcpuPinDefCopy(vm->def->cputune.vcpupin,
+                                                 vm->def->cputune.nvcpupin);
+            if (!newVcpuPin)
+                goto cleanup;
+
+            newVcpuPinNum = vm->def->cputune.nvcpupin;
+        } else {
+            if (VIR_ALLOC(newVcpuPin) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            newVcpuPinNum = 0;
+        }
+
+        if (virDomainVcpuPinAdd(newVcpuPin, &newVcpuPinNum, cpumap, maplen, vcpu) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to update vcpupin"));
+            virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+            goto cleanup;
+        }
+
+        /* Configure the corresponding cpuset cgroup before set affinity. */
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup_dom, 0) == 0 &&
+                virCgroupForVcpu(cgroup_dom, vcpu, &cgroup_vcpu, 0) == 0 &&
+                qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum, vcpu) < 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("failed to set cpuset.cpus in cgroup"
+                                 " for vcpu %d"), vcpu);
+                goto cleanup;
+            }
+        } else {
+            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
+                                          cpumap, maplen, maxcpu) < 0) {
+                virReportError(VIR_ERR_SYSTEM_ERROR,
+                               _("failed to set cpu affinity for vcpu %d"),
+                               vcpu);
+                goto cleanup;
+            }
         }
 
         if (canResetting) {
@@ -3787,24 +3829,16 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
                 goto cleanup;
             }
         } else {
-            if (!vm->def->cputune.vcpupin) {
-                if (VIR_ALLOC(vm->def->cputune.vcpupin) < 0) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-                vm->def->cputune.nvcpupin = 0;
-            }
-            if (virDomainVcpuPinAdd(vm->def->cputune.vcpupin,
-                                    &vm->def->cputune.nvcpupin,
-                                    cpumap,
-                                    maplen,
-                                    vcpu) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to update or add vcpupin xml of "
-                                 "a running domain"));
-                goto cleanup;
-            }
+            if (vm->def->cputune.vcpupin)
+                virDomainVcpuPinDefFree(vm->def->cputune.vcpupin, vm->def->cputune.nvcpupin);
+
+            vm->def->cputune.vcpupin = newVcpuPin;
+            vm->def->cputune.nvcpupin = newVcpuPinNum;
+            newVcpuPin = NULL;
         }
+
+        if (newVcpuPin)
+            virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
             goto cleanup;
@@ -3846,6 +3880,10 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    if (cgroup_vcpu)
+        virCgroupFree(&cgroup_vcpu);
+    if (cgroup_dom)
+        virCgroupFree(&cgroup_dom);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;

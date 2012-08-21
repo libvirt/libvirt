@@ -151,6 +151,9 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state);
 int virCgroupSetCpusetMems(virCgroupPtr group, const char *mems);
 int virCgroupGetCpusetMems(virCgroupPtr group, char **mems);
 
+int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus);
+int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
+
 int virCgroupRemove(virCgroupPtr group);
 
 void virCgroupFree(virCgroupPtr *group);

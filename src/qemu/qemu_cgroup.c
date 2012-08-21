@@ -491,11 +491,45 @@ cleanup:
     return -1;
 }
 
+int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
+                           virDomainVcpuPinDefPtr *vcpupin,
+                           int nvcpupin,
+                           int vcpuid)
+{
+    int i, rc = 0;
+    char *new_cpus = NULL;
+
+    for (i = 0; i < nvcpupin; i++) {
+        if (vcpuid == vcpupin[i]->vcpuid) {
+            new_cpus = virDomainCpuSetFormat(vcpupin[i]->cpumask,
+                                             VIR_DOMAIN_CPUMASK_LEN);
+            if (!new_cpus) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to convert cpu mask"));
+                rc = -1;
+                goto cleanup;
+            }
+            rc = virCgroupSetCpusetCpus(cgroup, new_cpus);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     "%s",
+                                     _("Unable to set cpuset.cpus"));
+                goto cleanup;
+            }
+        }
+    }
+
+cleanup:
+    VIR_FREE(new_cpus);
+    return rc;
+}
+
 int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     virCgroupPtr cgroup = NULL;
     virCgroupPtr cgroup_vcpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
     int rc;
     unsigned int i;
     unsigned long long period = vm->def->cputune.period;
@@ -566,6 +600,15 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
                     goto cleanup;
             }
         }
+
+        /* Set vcpupin in cgroup if vcpupin xml is provided */
+        if (def->cputune.nvcpupin &&
+            qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET) &&
+            qemuSetupCgroupVcpuPin(cgroup_vcpu,
+                                   def->cputune.vcpupin,
+                                   def->cputune.nvcpupin,
+                                   i) < 0)
+            goto cleanup;
 
         virCgroupFree(&cgroup_vcpu);
     }

@@ -53,6 +53,10 @@ int qemuSetupCgroup(struct qemud_driver *driver,
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
+int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
+                           virDomainVcpuPinDefPtr *vcpupin,
+                           int nvcpupin,
+                           int vcpuid);
 int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
                                virDomainObjPtr vm);

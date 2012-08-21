@@ -543,7 +543,8 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
         /* We need to control cpu bandwidth for each vcpu now */
         if ((flags & VIR_CGROUP_VCPU) &&
             (i != VIR_CGROUP_CONTROLLER_CPU &&
-             i != VIR_CGROUP_CONTROLLER_CPUACCT)) {
+             i != VIR_CGROUP_CONTROLLER_CPUACCT &&
+             i != VIR_CGROUP_CONTROLLER_CPUSET)) {
             /* treat it as unmounted and we can use virCgroupAddTask */
             VIR_FREE(group->controllers[i].mountPoint);
             continue;
@@ -1399,6 +1400,38 @@ int virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
                                 VIR_CGROUP_CONTROLLER_CPUSET,
                                 "cpuset.mems",
                                 mems);
+}
+
+/**
+ * virCgroupSetCpusetCpus:
+ *
+ * @group: The cgroup to set cpuset.cpus for
+ * @cpus: the cpus to set
+ *
+ * Retuens: 0 on success
+ */
+int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.cpus",
+                                cpus);
+}
+
+/**
+ * virCgroupGetCpusetCpus:
+ *
+ * @group: The cgroup to get cpuset.cpus for
+ * @cpus: the cpus to get
+ *
+ * Retuens: 0 on success
+ */
+int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
+{
+    return virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPUSET,
+                                "cpuset.cpus",
+                                cpus);
 }
 
 /**
