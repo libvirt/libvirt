@@ -35,6 +35,7 @@
 #include <sanlock_resource.h>
 #include <sanlock_admin.h>
 
+#include "dirname.h"
 #include "lock_driver.h"
 #include "logging.h"
 #include "virterror_internal.h"
@@ -150,6 +151,7 @@ static int virLockManagerSanlockSetupLockspace(void)
     int rv;
     struct sanlk_lockspace ls;
     char *path = NULL;
+    char *dir = NULL;
 
     if (virAsprintf(&path, "%s/%s",
                     driver->autoDiskLeasePath,
@@ -174,6 +176,19 @@ static int virLockManagerSanlockSetupLockspace(void)
      */
     if (stat(path, &st) < 0) {
         VIR_DEBUG("Lockspace %s does not yet exist", path);
+
+        if (!(dir = mdir_name(path))) {
+            virReportOOMError();
+            goto error;
+        }
+        if (stat(dir, &st) < 0 || !S_ISDIR(st.st_mode)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to create lockspace %s: parent directory"
+                             " does not exist or is not a directory"),
+                           path);
+            goto error;
+        }
+
         if ((fd = open(path, O_WRONLY|O_CREAT|O_EXCL, 0600)) < 0) {
             if (errno != EEXIST) {
                 virReportSystemError(errno,
@@ -257,6 +272,7 @@ error_unlink:
 error:
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(path);
+    VIR_FREE(dir);
     return -1;
 }
 
