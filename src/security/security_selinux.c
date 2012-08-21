@@ -450,7 +450,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     }
 
     if (!seclabel->norelabel) {
-        seclabel->imagelabel = virSecuritySELinuxGenNewContext(data->domain_context,
+        seclabel->imagelabel = virSecuritySELinuxGenNewContext(data->file_context,
                                                                mcs,
                                                                true);
         if (!seclabel->imagelabel)  {
