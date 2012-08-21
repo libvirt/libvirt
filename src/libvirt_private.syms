@@ -345,6 +345,8 @@ virDomainDiskSnapshotTypeFromString;
 virDomainDiskSnapshotTypeToString;
 virDomainDiskTypeFromString;
 virDomainDiskTypeToString;
+virDomainEmulatorPinAdd;
+virDomainEmulatorPinDel;
 virDomainFSDefFree;
 virDomainFSIndexByName;
 virDomainFSTypeFromString;

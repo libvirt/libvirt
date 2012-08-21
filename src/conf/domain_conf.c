@@ -11124,6 +11124,77 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
     return 0;
 }
 
+int
+virDomainEmulatorPinAdd(virDomainDefPtr def,
+                        unsigned char *cpumap,
+                        int maplen)
+{
+    virDomainVcpuPinDefPtr emulatorpin = NULL;
+    char *cpumask = NULL;
+    int i;
+
+    if (VIR_ALLOC_N(cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Convert bitmap (cpumap) to cpumask, which is byte map. */
+    for (i = 0; i < maplen; i++) {
+        int cur;
+
+        for (cur = 0; cur < 8; cur++) {
+            if (cpumap[i] & (1 << cur))
+                cpumask[i * 8 + cur] = 1;
+        }
+    }
+
+    if (!def->cputune.emulatorpin) {
+        /* No emulatorpin exists yet. */
+        if (VIR_ALLOC(emulatorpin) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        emulatorpin->vcpuid = -1;
+        emulatorpin->cpumask = cpumask;
+        def->cputune.emulatorpin = emulatorpin;
+    } else {
+        /* Since there is only 1 emulatorpin for each vm,
+         * juest replace the old one.
+         */
+        VIR_FREE(def->cputune.emulatorpin->cpumask);
+        def->cputune.emulatorpin->cpumask = cpumask;
+    }
+
+    return 0;
+
+cleanup:
+    VIR_FREE(cpumask);
+    return -1;
+}
+
+int
+virDomainEmulatorPinDel(virDomainDefPtr def)
+{
+    virDomainVcpuPinDefPtr emulatorpin = NULL;
+
+    /* No emulatorpin exists yet */
+    if (!def->cputune.emulatorpin) {
+        return 0;
+    }
+
+    emulatorpin = def->cputune.emulatorpin;
+
+    VIR_FREE(emulatorpin->cpumask);
+    VIR_FREE(emulatorpin);
+    def->cputune.emulatorpin = NULL;
+
+    if (def->cputune.emulatorpin)
+        return -1;
+
+    return 0;
+}
+
 static int
 virDomainLifecycleDefFormat(virBufferPtr buf,
                             int type,

@@ -1998,6 +1998,12 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
 
 int virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
 
+int virDomainEmulatorPinAdd(virDomainDefPtr def,
+                              unsigned char *cpumap,
+                              int maplen);
+
+int virDomainEmulatorPinDel(virDomainDefPtr def);
+
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                              bool allow_ambiguous);
 const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
