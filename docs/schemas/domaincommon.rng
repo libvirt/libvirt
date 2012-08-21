@@ -591,6 +591,13 @@
               </attribute>
             </element>
           </zeroOrMore>
+          <optional>
+            <element name="emulatorpin">
+              <attribute name="cpuset">
+                <ref name="cpuset"/>
+              </attribute>
+            </element>
+          </optional>
         </element>
       </optional>
 

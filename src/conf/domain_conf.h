@@ -1616,6 +1616,7 @@ struct _virDomainDef {
         long long quota;
         int nvcpupin;
         virDomainVcpuPinDefPtr *vcpupin;
+        virDomainVcpuPinDefPtr emulatorpin;
     } cputune;
 
     virDomainNumatuneDef numatune;

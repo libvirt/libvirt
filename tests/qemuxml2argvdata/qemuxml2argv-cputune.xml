@@ -10,6 +10,7 @@
     <quota>-1</quota>
     <vcpupin vcpu='0' cpuset='0'/>
     <vcpupin vcpu='1' cpuset='1'/>
+    <emulatorpin cpuset='1'/>
   </cputune>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

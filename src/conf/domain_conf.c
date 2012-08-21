@@ -8377,6 +8377,35 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./cputune/emulatorpin", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract emulatorpin nodes"));
+        goto error;
+    }
+
+    if (n) {
+        if (n > 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only one emulatorpin is supported"));
+            VIR_FREE(nodes);
+            goto error;
+        }
+
+        if (VIR_ALLOC(def->cputune.emulatorpin) < 0) {
+            goto no_memory;
+        }
+
+        virDomainVcpuPinDefPtr emulatorpin = NULL;
+        emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
+                                                  def->maxvcpus, 1);
+
+        if (!emulatorpin)
+            goto error;
+
+        def->cputune.emulatorpin = emulatorpin;
+    }
+    VIR_FREE(nodes);
+
     /* Extract numatune if exists. */
     if ((n = virXPathNodeSet("./numatune", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -13001,7 +13030,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 
     if (def->cputune.shares || def->cputune.vcpupin ||
-        def->cputune.period || def->cputune.quota)
+        def->cputune.period || def->cputune.quota ||
+        def->cputune.emulatorpin)
         virBufferAddLit(buf, "  <cputune>\n");
 
     if (def->cputune.shares)
@@ -13033,8 +13063,25 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
+    if (def->cputune.emulatorpin) {
+        virBufferAsprintf(buf, "    <emulatorpin ");
+
+        char *cpumask = NULL;
+        cpumask = virDomainCpuSetFormat(def->cputune.emulatorpin->cpumask,
+                                        VIR_DOMAIN_CPUMASK_LEN);
+        if (cpumask == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("failed to format cpuset for emulator"));
+                goto cleanup;
+        }
+
+        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        VIR_FREE(cpumask);
+    }
+
     if (def->cputune.shares || def->cputune.vcpupin ||
-        def->cputune.period || def->cputune.quota)
+        def->cputune.period || def->cputune.quota ||
+        def->cputune.emulatorpin)
         virBufferAddLit(buf, "  </cputune>\n");
 
     if (def->numatune.memory.nodemask ||
