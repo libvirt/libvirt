@@ -449,7 +449,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
                  _("Snapshot %s XML configuration not changed.\n"), \
                  name);                                             \
         ret = true;                                                 \
-        goto cleanup;                                               \
+        goto edit_cleanup;                                          \
     }
 #define EDIT_DEFINE \
     (strstr(doc, "<state>disk-snapshot</state>") ? \
@@ -487,10 +487,10 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    if (!ret)
+        vshError(ctl, _("Failed to update %s"), name);
     if (edited)
         virDomainSnapshotFree(edited);
-    else
-        vshError(ctl, _("Failed to update %s"), name);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
     if (dom)
