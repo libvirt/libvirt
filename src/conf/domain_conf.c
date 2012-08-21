@@ -10935,6 +10935,34 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
     return NULL;
 }
 
+static char *bitmapFromBytemap(unsigned char *bytemap, int maplen)
+{
+    char *bitmap = NULL;
+    int i;
+
+    if (VIR_ALLOC_N(bitmap, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Reset bitmap to all 0s. */
+    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++)
+        bitmap[i] = 0;
+
+    /* Convert bitmap (bytemap) to bitmap, which is byte map? */
+    for (i = 0; i < maplen; i++) {
+        int cur;
+
+        for (cur = 0; cur < 8; cur++) {
+            if (bytemap[i] & (1 << cur))
+                bitmap[i * 8 + cur] = 1;
+        }
+    }
+
+cleanup:
+    return bitmap;
+}
+
 int
 virDomainVcpuPinAdd(virDomainDefPtr def,
                     unsigned char *cpumap,
@@ -10944,26 +10972,9 @@ virDomainVcpuPinAdd(virDomainDefPtr def,
     virDomainVcpuPinDefPtr *vcpupin_list = NULL;
     virDomainVcpuPinDefPtr vcpupin = NULL;
     char *cpumask = NULL;
-    int i;
 
-    if (VIR_ALLOC_N(cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-        virReportOOMError();
+    if ((cpumask = bitmapFromBytemap(cpumap, maplen)) == NULL)
         goto cleanup;
-    }
-
-    /* Reset cpumask to all 0s. */
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++)
-        cpumask[i] = 0;
-
-    /* Convert bitmap (cpumap) to cpumask, which is byte map? */
-    for (i = 0; i < maplen; i++) {
-        int cur;
-
-        for (cur = 0; cur < 8; cur++) {
-            if (cpumap[i] & (1 << cur))
-                cpumask[i * 8 + cur] = 1;
-        }
-    }
 
     /* No vcpupin exists yet. */
     if (!def->cputune.nvcpupin) {
