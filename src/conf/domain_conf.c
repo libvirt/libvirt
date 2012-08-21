@@ -10963,69 +10963,52 @@ cleanup:
     return bitmap;
 }
 
-int
-virDomainVcpuPinAdd(virDomainDefPtr def,
-                    unsigned char *cpumap,
-                    int maplen,
-                    int vcpu)
+int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
+                        int *nvcpupin,
+                        unsigned char *cpumap,
+                        int maplen,
+                        int vcpu)
 {
-    virDomainVcpuPinDefPtr *vcpupin_list = NULL;
     virDomainVcpuPinDefPtr vcpupin = NULL;
     char *cpumask = NULL;
 
+    if (!vcpupin_list)
+        return -1;
+
     if ((cpumask = bitmapFromBytemap(cpumap, maplen)) == NULL)
-        goto cleanup;
+        return -1;
 
-    /* No vcpupin exists yet. */
-    if (!def->cputune.nvcpupin) {
-        if (VIR_ALLOC(vcpupin) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (VIR_ALLOC(vcpupin_list) < 0) {
-            virReportOOMError();
-            VIR_FREE(vcpupin);
-            goto cleanup;
-        }
-
+    vcpupin = virDomainVcpuPinFindByVcpu(vcpupin_list,
+                                         *nvcpupin,
+                                         vcpu);
+    if (vcpupin) {
         vcpupin->vcpuid = vcpu;
         vcpupin->cpumask = cpumask;
-        vcpupin_list[def->cputune.nvcpupin++] = vcpupin;
 
-        def->cputune.vcpupin = vcpupin_list;
-    } else {
-        if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
-                                        def->cputune.nvcpupin,
-                                        vcpu)) {
-            vcpupin = virDomainVcpuPinFindByVcpu(def->cputune.vcpupin,
-                                                 def->cputune.nvcpupin,
-                                                 vcpu);
-            vcpupin->vcpuid = vcpu;
-            vcpupin->cpumask = cpumask;
-        } else {
-            if (VIR_ALLOC(vcpupin) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-
-            if (VIR_REALLOC_N(def->cputune.vcpupin, def->cputune.nvcpupin + 1) < 0) {
-                virReportOOMError();
-                VIR_FREE(vcpupin);
-                goto cleanup;
-            }
-
-            vcpupin->vcpuid = vcpu;
-            vcpupin->cpumask = cpumask;
-            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
-       }
+        return 0;
     }
 
-    return 0;
+    /* No existing vcpupin matches vcpu, adding a new one */
 
-cleanup:
-    VIR_FREE(cpumask);
-    return -1;
+    if (VIR_ALLOC(vcpupin) < 0) {
+        virReportOOMError();
+        VIR_FREE(cpumask);
+        return -1;
+    }
+    vcpupin->vcpuid = vcpu;
+    vcpupin->cpumask = cpumask;
+
+
+    if (VIR_REALLOC_N(vcpupin_list, *nvcpupin + 1) < 0) {
+        virReportOOMError();
+        VIR_FREE(cpumask);
+        VIR_FREE(vcpupin);
+        return -1;
+    }
+
+    vcpupin_list[(*nvcpupin)++] = vcpupin;
+
+    return 0;
 }
 
 int

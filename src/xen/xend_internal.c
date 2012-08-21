@@ -2296,7 +2296,18 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         goto cleanup;
 
     if (ret == 0) {
-        if (virDomainVcpuPinAdd(def, cpumap, maplen, vcpu) < 0) {
+        if (!def->cputune.vcpupin) {
+            if (VIR_ALLOC(def->cputune.vcpupin) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            def->cputune.nvcpupin = 0;
+        }
+        if (virDomainVcpuPinAdd(def->cputune.vcpupin,
+                                &def->cputune.nvcpupin,
+                                cpumap,
+                                maplen,
+                                vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("failed to add vcpupin xml entry"));
             return -1;

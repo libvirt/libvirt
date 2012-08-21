@@ -1984,7 +1984,8 @@ int virDomainCpuSetParse(const char *str,
 char *virDomainCpuSetFormat(char *cpuset,
                             int maxcpu);
 
-int virDomainVcpuPinAdd(virDomainDefPtr def,
+int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
+                        int *nvcpupin,
                         unsigned char *cpumap,
                         int maplen,
                         int vcpu);
