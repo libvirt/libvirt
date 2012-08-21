@@ -3986,6 +3986,245 @@ cleanup:
 }
 
 static int
+qemudDomainPinEmulator(virDomainPtr dom,
+                       unsigned char *cpumap,
+                       int maplen,
+                       unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virCgroupPtr cgroup_dom = NULL;
+    virCgroupPtr cgroup_emulator = NULL;
+    pid_t pid;
+    virDomainDefPtr persistentDef = NULL;
+    int maxcpu, hostcpus;
+    virNodeInfo nodeinfo;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+    bool canResetting = true;
+    int pcpu;
+    int newVcpuPinNum = 0;
+    virDomainVcpuPinDefPtr *newVcpuPin = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &persistentDef) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+        goto cleanup;
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+    /* pinning to all physical cpus means resetting,
+     * so check if we can reset setting.
+     */
+    for (pcpu = 0; pcpu < hostcpus; pcpu++) {
+        if ((cpumap[pcpu/8] & (1 << (pcpu % 8))) == 0) {
+            canResetting = false;
+            break;
+        }
+    }
+
+    pid = vm->pid;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+
+        if (priv->vcpupids != NULL) {
+            if (VIR_ALLOC(newVcpuPin) < 0) {
+                virReportOOMError();
+                goto cleanup;
+                newVcpuPinNum = 0;
+            }
+
+            if (virDomainVcpuPinAdd(newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to update vcpupin"));
+                virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+                goto cleanup;
+            }
+
+            if (qemuCgroupControllerActive(driver,
+                                           VIR_CGROUP_CONTROLLER_CPUSET)) {
+                /*
+                 * Configure the corresponding cpuset cgroup.
+                 * If no cgroup for domain or hypervisor exists, do nothing.
+                 */
+                if (virCgroupForDomain(driver->cgroup, vm->def->name,
+                                       &cgroup_dom, 0) == 0) {
+                    if (virCgroupForEmulator(cgroup_dom, &cgroup_emulator, 0) == 0) {
+                        if (qemuSetupCgroupEmulatorPin(cgroup_emulator, newVcpuPin[0]) < 0) {
+                            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                           _("failed to set cpuset.cpus in cgroup"
+                                             " for emulator threads"));
+                            goto cleanup;
+                        }
+                    }
+                }
+            } else {
+                if (virProcessInfoSetAffinity(pid, cpumap, maplen, maxcpu) < 0) {
+                    virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                                   _("failed to set cpu affinity for "
+                                     "emulator threads"));
+                    goto cleanup;
+                }
+            }
+
+            if (canResetting) {
+                if (virDomainEmulatorPinDel(vm->def) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("failed to delete emulatorpin xml of "
+                                     "a running domain"));
+                    goto cleanup;
+                }
+            } else {
+                if (vm->def->cputune.emulatorpin) {
+                    VIR_FREE(vm->def->cputune.emulatorpin->cpumask);
+                    VIR_FREE(vm->def->cputune.emulatorpin);
+                }
+                vm->def->cputune.emulatorpin = newVcpuPin[0];
+                VIR_FREE(newVcpuPin);
+            }
+
+            if (newVcpuPin)
+                virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("cpu affinity is not supported"));
+            goto cleanup;
+        }
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+
+        if (canResetting) {
+            if (virDomainEmulatorPinDel(persistentDef) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to delete emulatorpin xml of "
+                                 "a persistent domain"));
+                goto cleanup;
+            }
+        } else {
+            if (virDomainEmulatorPinAdd(persistentDef, cpumap, maplen) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to update or add emulatorpin xml "
+                                 "of a persistent domain"));
+                goto cleanup;
+            }
+        }
+
+        ret = virDomainSaveConfig(driver->configDir, persistentDef);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (cgroup_emulator)
+        virCgroupFree(&cgroup_emulator);
+    if (cgroup_dom)
+        virCgroupFree(&cgroup_dom);
+
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+qemudDomainGetEmulatorPinInfo(virDomainPtr dom,
+                              unsigned char *cpumaps,
+                              int maplen,
+                              unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virNodeInfo nodeinfo;
+    virDomainDefPtr targetDef = NULL;
+    int ret = -1;
+    int maxcpu, hostcpus, pcpu;
+    virDomainVcpuPinDefPtr emulatorpin = NULL;
+    char *cpumask = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
+                                        &targetDef) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+        targetDef = vm->def;
+
+    /* Coverity didn't realize that targetDef must be set if we got here. */
+    sa_assert(targetDef);
+
+    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+        goto cleanup;
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    /* initialize cpumaps */
+    memset(cpumaps, 0xff, maplen);
+    if (maxcpu % 8) {
+        cpumaps[maplen - 1] &= (1 << maxcpu % 8) - 1;
+    }
+
+    /* If no emulatorpin, all cpus should be used */
+    emulatorpin = targetDef->cputune.emulatorpin;
+    if (!emulatorpin) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    cpumask = emulatorpin->cpumask;
+    for (pcpu = 0; pcpu < maxcpu; pcpu++) {
+        if (cpumask[pcpu] == 0)
+            VIR_UNUSE_CPU(cpumaps, pcpu);
+    }
+
+    ret = 1;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 qemudDomainGetVcpus(virDomainPtr dom,
                     virVcpuInfoPtr info,
                     int maxinfo,
@@ -13548,6 +13787,8 @@ static virDriver qemuDriver = {
     .domainPinVcpu = qemudDomainPinVcpu, /* 0.4.4 */
     .domainPinVcpuFlags = qemudDomainPinVcpuFlags, /* 0.9.3 */
     .domainGetVcpuPinInfo = qemudDomainGetVcpuPinInfo, /* 0.9.3 */
+    .domainPinEmulator = qemudDomainPinEmulator, /* 0.10.0 */
+    .domainGetEmulatorPinInfo = qemudDomainGetEmulatorPinInfo, /* 0.10.0 */
     .domainGetVcpus = qemudDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemudDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetSecurityLabel = qemudDomainGetSecurityLabel, /* 0.6.1 */
