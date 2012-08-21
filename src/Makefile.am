@@ -310,8 +310,11 @@ PDWTAGS = \
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
 
-check-symfile: libvirt.syms $(builddir)/.libs/libvirt.la
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms $(builddir)/.libs/libvirt.so
+# .libs/libvirt.so is built by libtool as a side-effect of the Makefile
+# rule for libvirt.la
+check-symfile: libvirt.syms libvirt.la
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms \
+	  .libs/libvirt.so
 
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
