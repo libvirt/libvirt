@@ -957,6 +957,48 @@ int virCgroupForVcpu(virCgroupPtr driver ATTRIBUTE_UNUSED,
 #endif
 
 /**
+ * virCgroupForEmulator:
+ *
+ * @driver: group for the domain
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns: 0 on success or -errno on failure
+ */
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+int virCgroupForEmulator(virCgroupPtr driver,
+                          virCgroupPtr *group,
+                          int create)
+{
+    int rc;
+    char *path;
+
+    if (driver == NULL)
+        return -EINVAL;
+
+    if (virAsprintf(&path, "%s/emulator", driver->path) < 0)
+        return -ENOMEM;
+
+    rc = virCgroupNew(path, group);
+    VIR_FREE(path);
+
+    if (rc == 0) {
+        rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_VCPU);
+        if (rc != 0)
+            virCgroupFree(group);
+    }
+
+    return rc;
+}
+#else
+int virCgroupForEmulator(virCgroupPtr driver ATTRIBUTE_UNUSED,
+                          virCgroupPtr *group ATTRIBUTE_UNUSED,
+                          int create ATTRIBUTE_UNUSED)
+{
+    return -ENXIO;
+}
+
+#endif
+/**
  * virCgroupSetBlkioWeight:
  *
  * @group: The cgroup to change io weight for

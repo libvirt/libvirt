@@ -71,6 +71,7 @@ virCgroupDenyDeviceMajor;
 virCgroupDenyDevicePath;
 virCgroupForDomain;
 virCgroupForDriver;
+virCgroupForEmulator;
 virCgroupForVcpu;
 virCgroupFree;
 virCgroupGetBlkioWeight;

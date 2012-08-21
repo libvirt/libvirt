@@ -59,6 +59,10 @@ int virCgroupForVcpu(virCgroupPtr driver,
                      virCgroupPtr *group,
                      int create);
 
+int virCgroupForEmulator(virCgroupPtr driver,
+                         virCgroupPtr *group,
+                         int create);
+
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,
                               const char *key,
