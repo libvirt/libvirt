@@ -1121,8 +1121,11 @@ if test "$with_qemu:$with_yajl" = yes:check; then
     else
       [qemu_version_sed='s/.*ersion \([0-9.,]*\).*/\1/']
       qemu_version=`$QEMU -version | sed "$qemu_version_sed"`
-      AS_VERSION_COMPARE([$qemu_version], [0.15],
-                         [], [with_yajl=yes], [with_yajl=yes])
+      case $qemu_version in
+        [[1-9]].* | 0.15.* ) with_yajl=yes ;;
+        0.* | '' ) ;;
+        *) AC_MSG_ERROR([Unexpected qemu version string]) ;;
+      esac
     fi
   fi
 fi
