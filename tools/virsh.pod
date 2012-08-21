@@ -1614,6 +1614,22 @@ If no flag is specified, behavior is different depending on hypervisor.
 B<Note>: The expression is sequentially evaluated, so "0-15,^8" is
 identical to "9-14,0-7,15" but not identical to "^8,0-15".
 
+=item B<emulatorpin> I<domain> [I<cpulist>] [[I<--live>] [I<--config>]
+ | [I<--current>]]
+
+Query or change the pinning of domain's emulator threads to host physical
+CPUs.
+
+See B<vcpupin> for I<cpulist>.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
+but I<--current> is exclusive.
+If no flag is specified, behavior is different depending on hypervisor.
+
+
 =item B<vncdisplay> I<domain>
 
 Output the IP address and port number for the VNC display. If the information

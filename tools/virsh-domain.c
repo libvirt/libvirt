@@ -4821,6 +4821,193 @@ parse_error:
 }
 
 /*
+ * "emulatorpin" command
+ */
+static const vshCmdInfo info_emulatorpin[] = {
+    {"help", N_("control or query domain emulator affinity")},
+    {"desc", N_("Pin domain emulator threads to host physical CPUs.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_emulatorpin[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"cpulist", VSH_OT_DATA, VSH_OFLAG_EMPTY_OK,
+     N_("host cpu number(s) to set, or omit option to query")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    virNodeInfo nodeinfo;
+    const char *cpulist = NULL;
+    bool ret = true;
+    unsigned char *cpumap = NULL;
+    unsigned char *cpumaps = NULL;
+    size_t cpumaplen;
+    int i, cpu, lastcpu, maxcpu;
+    bool unuse = false;
+    const char *cur;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool query = false; /* Query mode if no cpulist */
+    unsigned int flags = 0;
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+        /* neither option is specified */
+        if (!live && !config)
+            flags = -1;
+    }
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptString(cmd, "cpulist", &cpulist) < 0) {
+        vshError(ctl, "%s", _("emulatorpin: Missing cpulist."));
+        virDomainFree(dom);
+        return false;
+    }
+    query = !cpulist;
+
+    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+        virDomainFree(dom);
+        return false;
+    }
+
+    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+
+    /* Query mode: show CPU affinity information then exit.*/
+    if (query) {
+        /* When query mode and neither "live", "config" nor "current"
+         * is specified, set VIR_DOMAIN_AFFECT_CURRENT as flags */
+        if (flags == -1)
+            flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+        cpumaps = vshMalloc(ctl, cpumaplen);
+        if (virDomainGetEmulatorPinInfo(dom, cpumaps,
+                                        cpumaplen, flags) >= 0) {
+            vshPrint(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
+            vshPrint(ctl, "----------------------------------\n");
+            vshPrint(ctl, "       *: ");
+            ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, 0);
+            vshPrint(ctl, "\n");
+        } else {
+            ret = false;
+        }
+        VIR_FREE(cpumaps);
+        goto cleanup;
+    }
+
+    /* Pin mode: pinning emulator threads to specified physical cpus*/
+
+    cpumap = vshCalloc(ctl, cpumaplen, sizeof(cpumap));
+    /* Parse cpulist */
+    cur = cpulist;
+    if (*cur == 0) {
+        goto parse_error;
+    } else if (*cur == 'r') {
+        for (cpu = 0; cpu < maxcpu; cpu++)
+            VIR_USE_CPU(cpumap, cpu);
+        cur = "";
+    }
+
+    while (*cur != 0) {
+
+        /* the char '^' denotes exclusive */
+        if (*cur == '^') {
+            cur++;
+            unuse = true;
+        }
+
+        /* parse physical CPU number */
+        if (!c_isdigit(*cur))
+            goto parse_error;
+        cpu  = virParseNumber(&cur);
+        if (cpu < 0) {
+            goto parse_error;
+        }
+        if (cpu >= maxcpu) {
+            vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
+            goto parse_error;
+        }
+        virSkipSpaces(&cur);
+
+        if (*cur == ',' || *cur == 0) {
+            if (unuse) {
+                VIR_UNUSE_CPU(cpumap, cpu);
+            } else {
+                VIR_USE_CPU(cpumap, cpu);
+            }
+        } else if (*cur == '-') {
+            /* the char '-' denotes range */
+            if (unuse) {
+                goto parse_error;
+            }
+            cur++;
+            virSkipSpaces(&cur);
+            /* parse the end of range */
+            lastcpu = virParseNumber(&cur);
+            if (lastcpu < cpu) {
+                goto parse_error;
+            }
+            if (lastcpu >= maxcpu) {
+                vshError(ctl, _("Physical CPU %d doesn't exist."), maxcpu);
+                goto parse_error;
+            }
+            for (i = cpu; i <= lastcpu; i++) {
+                VIR_USE_CPU(cpumap, i);
+            }
+            virSkipSpaces(&cur);
+        }
+
+        if (*cur == ',') {
+            cur++;
+            virSkipSpaces(&cur);
+            unuse = false;
+        } else if (*cur == 0) {
+            break;
+        } else {
+            goto parse_error;
+        }
+    }
+
+    if (flags == -1)
+        flags = VIR_DOMAIN_AFFECT_LIVE;
+
+    if (virDomainPinEmulator(dom, cpumap, cpumaplen, flags) != 0)
+        ret = false;
+
+cleanup:
+    VIR_FREE(cpumap);
+    virDomainFree(dom);
+    return ret;
+
+parse_error:
+    vshError(ctl, "%s", _("cpulist: Invalid format."));
+    ret = false;
+    goto cleanup;
+}
+
+/*
  * "setvcpus" command
  */
 static const vshCmdInfo info_setvcpus[] = {
@@ -8252,6 +8439,7 @@ const vshCmdDef domManagementCmds[] = {
     {"vcpucount", cmdVcpucount, opts_vcpucount, info_vcpucount, 0},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo, 0},
     {"vcpupin", cmdVcpuPin, opts_vcpupin, info_vcpupin, 0},
+    {"emulatorpin", cmdEmulatorPin, opts_emulatorpin, info_emulatorpin, 0},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay, 0},
     {NULL, NULL, NULL, NULL, 0}
 };
