@@ -788,8 +788,8 @@ virNetSocketNewConnectLibSSH2(const char *host,
                                                host,
                                                portN,
                                                knownHosts,
-                                               false,
-                                               verify) != 0)
+                                               verify,
+                                               VIR_NET_SSH_HOSTKEY_FILE_CREATE) != 0)
         goto error;
 
     if (virNetSSHSessionSetChannelCommand(sess, command) != 0)

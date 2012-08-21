@@ -36,6 +36,11 @@ typedef enum {
     VIR_NET_SSH_HOSTKEY_VERIFY_IGNORE
 } virNetSSHHostkeyVerify;
 
+typedef enum {
+    VIR_NET_SSH_HOSTKEY_FILE_READONLY = 1 << 0,
+    VIR_NET_SSH_HOSTKEY_FILE_CREATE   = 1 << 1,
+} virNetSSHHostKeyFileFlags;
+
 int virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
                                       const char *command);
 
@@ -64,8 +69,8 @@ int virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
                                            const char *hostname,
                                            int port,
                                            const char *hostsfile,
-                                           bool readonly,
-                                           virNetSSHHostkeyVerify opt);
+                                           virNetSSHHostkeyVerify opt,
+                                           unsigned int flags);
 
 int virNetSSHSessionConnect(virNetSSHSessionPtr sess,
                             int sock);

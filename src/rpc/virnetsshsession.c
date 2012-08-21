@@ -1123,8 +1123,8 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
                                        const char *hostname,
                                        int port,
                                        const char *hostsfile,
-                                       bool readonly,
-                                       virNetSSHHostkeyVerify opt)
+                                       virNetSSHHostkeyVerify opt,
+                                       unsigned int flags)
 {
     char *errmsg;
 
@@ -1140,19 +1140,25 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
 
     /* load the known hosts file */
     if (hostsfile) {
-        if (libssh2_knownhost_readfile(sess->knownHosts,
-                                       hostsfile,
-                                       LIBSSH2_KNOWNHOST_FILE_OPENSSH) < 0) {
-            libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
+        if (virFileExists(hostsfile)) {
+            if (libssh2_knownhost_readfile(sess->knownHosts,
+                                           hostsfile,
+                                           LIBSSH2_KNOWNHOST_FILE_OPENSSH) < 0) {
+                libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
+                virReportError(VIR_ERR_SSH,
+                               _("unable to load knownhosts file '%s': %s"),
+                               hostsfile, errmsg);
+                goto error;
+            }
+        } else if (!(flags & VIR_NET_SSH_HOSTKEY_FILE_CREATE)) {
             virReportError(VIR_ERR_SSH,
-                           _("unable to load knownhosts file '%s': %s"),
-                           hostsfile, errmsg);
+                           _("known hosts file '%s' does not exist"),
+                           hostsfile);
             goto error;
         }
 
         /* set filename only if writing to the known hosts file is requested */
-
-        if (!readonly) {
+        if (!(flags & VIR_NET_SSH_HOSTKEY_FILE_READONLY)) {
             VIR_FREE(sess->knownHostsFile);
             if (!(sess->knownHostsFile = strdup(hostsfile)))
                 goto no_memory;
