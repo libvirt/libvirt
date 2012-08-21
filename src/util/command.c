@@ -547,17 +547,13 @@ virExecWithHook(const char *const*argv,
         goto fork_error;
     }
 
-    if (infd != STDIN_FILENO && infd != null)
+    if (infd != STDIN_FILENO && infd != null && infd != childerr &&
+        infd != childout)
         VIR_FORCE_CLOSE(infd);
-    if (childout > STDERR_FILENO && childout != null) {
-        tmpfd = childout;   /* preserve childout value */
-        VIR_FORCE_CLOSE(tmpfd);
-    }
-    if (childerr > STDERR_FILENO &&
-        childerr != childout &&
-        childerr != null) {
+    if (childout > STDERR_FILENO && childout != null && childout != childerr)
+        VIR_FORCE_CLOSE(childout);
+    if (childerr > STDERR_FILENO && childerr != null)
         VIR_FORCE_CLOSE(childerr);
-    }
     VIR_FORCE_CLOSE(null);
 
     /* Initialize full logging for a while */
