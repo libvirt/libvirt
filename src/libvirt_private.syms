@@ -60,6 +60,7 @@ virCapabilitiesSetMacPrefix;
 
 # cgroup.h
 virCgroupAddTask;
+virCgroupAddTaskController;
 virCgroupAllowDevice;
 virCgroupAllowDeviceMajor;
 virCgroupAllowDevicePath;
@@ -91,6 +92,7 @@ virCgroupKill;
 virCgroupKillPainfully;
 virCgroupKillRecursive;
 virCgroupMounted;
+virCgroupMoveTask;
 virCgroupPathOfController;
 virCgroupRemove;
 virCgroupSetBlkioDeviceWeight;

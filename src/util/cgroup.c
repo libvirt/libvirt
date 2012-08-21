@@ -802,6 +802,115 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
     return rc;
 }
 
+/**
+ * virCgroupAddTaskController:
+ *
+ * @group: The cgroup to add a task to
+ * @pid: The pid of the task to add
+ * @controller: The cgroup controller to be operated on
+ *
+ * Returns: 0 on success or -errno on failure
+ */
+int virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
+{
+    if (controller < 0 || controller > VIR_CGROUP_CONTROLLER_LAST)
+        return -EINVAL;
+
+    if (!group->controllers[controller].mountPoint)
+        return -EINVAL;
+
+    return virCgroupSetValueU64(group, controller, "tasks",
+                                (unsigned long long)pid);
+}
+
+
+static int virCgroupAddTaskStrController(virCgroupPtr group,
+                                        const char *pidstr,
+                                        int controller)
+{
+    char *str = NULL, *cur = NULL, *next = NULL;
+    unsigned long long p = 0;
+    int rc = 0;
+    char *endp;
+
+    if (virAsprintf(&str, "%s", pidstr) < 0)
+        return -1;
+
+    cur = str;
+    while (*cur != '\0') {
+        rc = virStrToLong_ull(cur, &endp, 10, &p);
+        if (rc != 0)
+            goto cleanup;
+
+        rc = virCgroupAddTaskController(group, p, controller);
+        if (rc != 0)
+            goto cleanup;
+
+        next = strchr(cur, '\n');
+        if (next) {
+            cur = next + 1;
+            *next = '\0';
+        } else {
+            break;
+        }
+    }
+
+cleanup:
+    VIR_FREE(str);
+    return rc;
+}
+
+/**
+ * virCgroupMoveTask:
+ *
+ * @src_group: The source cgroup where all tasks are removed from
+ * @dest_group: The destination where all tasks are added to
+ * @controller: The cgroup controller to be operated on
+ *
+ * Returns: 0 on success or -errno on failure
+ */
+int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group,
+                      int controller)
+{
+    int rc = 0, err = 0;
+    char *content = NULL;
+
+    if (controller < VIR_CGROUP_CONTROLLER_CPU ||
+        controller > VIR_CGROUP_CONTROLLER_BLKIO)
+        return -EINVAL;
+
+    if (!src_group->controllers[controller].mountPoint ||
+        !dest_group->controllers[controller].mountPoint) {
+        VIR_WARN("no vm cgroup in controller %d", controller);
+        return 0;
+    }
+
+    rc = virCgroupGetValueStr(src_group, controller, "tasks", &content);
+    if (rc != 0)
+        return rc;
+
+    rc = virCgroupAddTaskStrController(dest_group, content, controller);
+    if (rc != 0)
+        goto cleanup;
+
+    VIR_FREE(content);
+
+    return 0;
+
+cleanup:
+    /*
+     * We don't need to recover dest_cgroup because cgroup will make sure
+     * that one task only resides in one cgroup of the same controller.
+     */
+    err = virCgroupAddTaskStrController(src_group, content, controller);
+    if (err != 0)
+        VIR_ERROR(_("Cannot recover cgroup %s from %s"),
+                  src_group->controllers[controller].mountPoint,
+                  dest_group->controllers[controller].mountPoint);
+    VIR_FREE(content);
+
+    return rc;
+}
 
 /**
  * virCgroupForDriver:
