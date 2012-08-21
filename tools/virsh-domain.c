@@ -4577,6 +4577,45 @@ static const vshCmdOptDef opts_vcpupin[] = {
     {NULL, 0, 0, NULL}
 };
 
+/*
+ * Helper function to print vcpupin info.
+ */
+static bool
+vshPrintPinInfo(unsigned char *cpumaps, size_t cpumaplen,
+                int maxcpu, int vcpuindex)
+{
+    int cpu, lastcpu;
+    bool bit, lastbit, isInvert;
+
+    if (!cpumaps || cpumaplen <= 0 || maxcpu <= 0 || vcpuindex < 0) {
+        return false;
+    }
+
+    bit = lastbit = isInvert = false;
+    lastcpu = -1;
+
+    for (cpu = 0; cpu < maxcpu; cpu++) {
+        bit = VIR_CPU_USABLE(cpumaps, cpumaplen, vcpuindex, cpu);
+
+        isInvert = (bit ^ lastbit);
+        if (bit && isInvert) {
+            if (lastcpu == -1)
+                vshPrint(ctl, "%d", cpu);
+            else
+                vshPrint(ctl, ",%d", cpu);
+            lastcpu = cpu;
+        }
+        if (!bit && isInvert && lastcpu != cpu - 1)
+            vshPrint(ctl, "-%d", cpu - 1);
+        lastbit = bit;
+    }
+    if (bit && !isInvert) {
+        vshPrint(ctl, "-%d", maxcpu - 1);
+    }
+
+    return true;
+}
+
 static bool
 cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
@@ -4589,7 +4628,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     unsigned char *cpumap = NULL;
     unsigned char *cpumaps = NULL;
     size_t cpumaplen;
-    bool bit, lastbit, isInvert;
     int i, cpu, lastcpu, maxcpu, ncpus;
     bool unuse = false;
     const char *cur;
@@ -4674,30 +4712,11 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                if (vcpu != -1 && i != vcpu)
                    continue;
 
-               bit = lastbit = isInvert = false;
-               lastcpu = -1;
-
                vshPrint(ctl, "%4d: ", i);
-               for (cpu = 0; cpu < maxcpu; cpu++) {
-
-                   bit = VIR_CPU_USABLE(cpumaps, cpumaplen, i, cpu);
-
-                   isInvert = (bit ^ lastbit);
-                   if (bit && isInvert) {
-                       if (lastcpu == -1)
-                           vshPrint(ctl, "%d", cpu);
-                       else
-                           vshPrint(ctl, ",%d", cpu);
-                       lastcpu = cpu;
-                   }
-                   if (!bit && isInvert && lastcpu != cpu - 1)
-                       vshPrint(ctl, "-%d", cpu - 1);
-                   lastbit = bit;
-               }
-               if (bit && !isInvert) {
-                  vshPrint(ctl, "-%d", maxcpu - 1);
-               }
+               ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, i);
                vshPrint(ctl, "\n");
+               if (!ret)
+                   break;
             }
 
         } else {
