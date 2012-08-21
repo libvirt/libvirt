@@ -225,22 +225,27 @@ suspend_guest()
     name=$(guest_name "$uri" "$guest")
     label=$(eval_gettext "Suspending \$name: ")
     bypass=
+    slept=0
     test "x$BYPASS_CACHE" = x0 || bypass=--bypass-cache
-    printf %s "$label"
+    printf '%s...\n' "$label"
     run_virsh "$uri" managedsave $bypass "$guest" >/dev/null &
     virsh_pid=$!
     while true; do
         sleep 1
         kill -0 "$virsh_pid" >/dev/null 2>&1 || break
-        progress=$(run_virsh_c "$uri" domjobinfo "$guest" 2>/dev/null | \
-                   awk '/^Data processed:/{print $3, $4}')
-        if [ -n "$progress" ]; then
-            printf '\r%s%12s ' "$label" "$progress"
-        else
-            printf '\r%s%-12s ' "$label" "..."
+
+        slept=$(($slept + 1))
+        if [ $(($slept % 5)) -eq 0 ]; then
+            progress=$(run_virsh_c "$uri" domjobinfo "$guest" 2>/dev/null | \
+                    awk '/^Data processed:/{print $3, $4}')
+            if [ -n "$progress" ]; then
+                printf '%s%s\n' "$label" "$progress"
+            else
+                printf '%s%s\n' "$label" "..."
+            fi
         fi
     done
-    retval wait "$virsh_pid" && printf '\r%s%-12s\n' "$label" "$(gettext "done")"
+    retval wait "$virsh_pid" && printf '%s%s\n' "$label" "$(gettext "done")"
 }
 
 # shutdown_guest URI GUEST
@@ -252,30 +257,41 @@ shutdown_guest()
     guest=$2
 
     name=$(guest_name "$uri" "$guest")
-    label=$(eval_gettext "Shutting down \$name: ")
-    printf %s "$label"
+    eval_gettext "Starting shutdown on guest: \$name"
+    echo
     retval run_virsh "$uri" shutdown "$guest" >/dev/null || return
     timeout=$SHUTDOWN_TIMEOUT
     check_timeout=false
     if [ $timeout -gt 0 ]; then
         check_timeout=true
+        format=$(eval_gettext "Waiting for guest %s to shut down, %d seconds left\n")
+    else
+        slept=0
+        format=$(eval_gettext "Waiting for guest %s to shut down\n")
     fi
     while ! $check_timeout || [ "$timeout" -gt 0 ]; do
         sleep 1
         guest_is_on "$uri" "$guest" || return
         "$guest_running" || break
+
         if $check_timeout; then
-            timeout=$((timeout - 1))
-            printf '\r%s%-12d ' "$label" "$timeout"
+            if [ $(($timeout % 5)) -eq 0 ]; then
+                printf "$format" "$name" "$timeout"
+            fi
+            timeout=$(($timeout - 1))
+        else
+            slept=$(($slept + 1))
+            if [ $(($slept % 5)) -eq 0 ]; then
+                printf "$format" "$name"
+            fi
         fi
     done
 
     if guest_is_on "$uri" "$guest"; then
         if "$guest_running"; then
-            printf '\r%s%-12s\n' "$label" \
-                "$(gettext "failed to shutdown in time")"
+            eval_gettext "Shutdown of guest \$name failed to complete in time."
         else
-            printf '\r%s%-12s\n' "$label" "$(gettext "done")"
+            eval_gettext "Shutdown of guest \$name complete."
         fi
     fi
 }
@@ -356,6 +372,10 @@ shutdown_guests_parallel()
     timeout=$SHUTDOWN_TIMEOUT
     if [ $timeout -gt 0 ]; then
         check_timeout=true
+        format=$(eval_gettext "Waiting for %d guests to shut down, %d seconds left\n")
+    else
+        slept=0
+        format=$(eval_gettext "Waiting for %d guests to shut down\n")
     fi
     while [ -n "$on_shutdown" ] || [ -n "$guests" ]; do
         while [ -n "$guests" ] &&
@@ -368,14 +388,29 @@ shutdown_guests_parallel()
             on_shutdown="$on_shutdown $guest"
         done
         sleep 1
+
+        set -- $guests
+        guestcount=$#
+        set -- $on_shutdown
+        shutdowncount=$#
+
         if $check_timeout; then
+            if [ $(($timeout % 5)) -eq 0 ]; then
+                printf "$format" $(($guestcount + $shutdowncount)) "$timeout"
+            fi
             timeout=$(($timeout - 1))
             if [ $timeout -le 0 ]; then
                 eval_gettext "Timeout expired while shutting down domains"; echo
                 RETVAL=1
                 return
             fi
+        else
+            slept=$(($slept + 1))
+            if [ $(($slept % 5)) -eq 0 ]; then
+                printf "$format" $(($guestcount + $shutdowncount))
+            fi
         fi
+
         on_shutdown_prev=$on_shutdown
         on_shutdown=$(check_guests_shutdown "$uri" "$on_shutdown")
         print_guests_shutdown "$uri" "$on_shutdown_prev" "$on_shutdown"
