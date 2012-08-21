@@ -679,17 +679,35 @@ typedef virTypedParameter *virTypedParameterPtr;
  * VIR_DOMAIN_SCHEDULER_VCPU_PERIOD:
  *
  * Macro represents the enforcement period for a quota, in microseconds,
- * when using the posix scheduler, as a ullong.
+ * for vcpus only, when using the posix scheduler, as a ullong.
  */
 #define VIR_DOMAIN_SCHEDULER_VCPU_PERIOD "vcpu_period"
 
 /**
  * VIR_DOMAIN_SCHEDULER_VCPU_QUOTA:
  *
- * Macro represents the maximum bandwidth to be used within a period,
- * when using the posix scheduler, as an llong.
+ * Macro represents the maximum bandwidth to be used within a period for
+ * vcpus only, when using the posix scheduler, as an llong.
  */
 #define VIR_DOMAIN_SCHEDULER_VCPU_QUOTA "vcpu_quota"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota in microseconds,
+ * when using the posix scheduler, for all emulator activity not tied to
+ * vcpus, as a ullong.
+ */
+#define VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD "emulator_period"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * all emulator activity not tied to vcpus, when using the posix scheduler,
+ * as an llong.
+ */
+#define VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA "emulator_quota"
 
 /**
  * VIR_DOMAIN_SCHEDULER_WEIGHT:
