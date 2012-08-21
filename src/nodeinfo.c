@@ -184,6 +184,19 @@ virNodeParseSocket(const char *dir, unsigned int cpu)
     return ret;
 }
 
+# ifndef CPU_COUNT
+static int
+CPU_COUNT(cpu_set_t *set)
+{
+    int i, count = 0;
+
+    for (i = 0; i < CPU_SETSIZE; i++)
+        if (CPU_ISSET(i, set))
+            count++;
+    return count;
+}
+# endif /* !CPU_COUNT */
+
 /* parses a node entry, returning number of processors in the node and
  * filling arguments */
 static int
