@@ -417,23 +417,25 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     char *command = NULL;
 
     char *homedir = virGetUserDirectory();
+    char *confdir = virGetUserConfigDirectory();
     char *knownhosts = NULL;
     char *privkey = NULL;
 
     /* Use default paths for known hosts an public keys if not provided */
-    if (homedir) {
+    if (confdir) {
         if (!knownHostsPath) {
-            virBufferAsprintf(&buf, "%s/.ssh/known_hosts", homedir);
-            if (!(knownhosts = virBufferContentAndReset(&buf)))
-                goto no_memory;
-
-            if (!(virFileExists(knownhosts)))
-                VIR_FREE(knownhosts);
+            if (virFileExists(confdir)) {
+                virBufferAsprintf(&buf, "%s/known_hosts", confdir);
+                if (!(knownhosts = virBufferContentAndReset(&buf)))
+                    goto no_memory;
+            }
         } else {
             if (!(knownhosts = strdup(knownHostsPath)))
                 goto no_memory;
         }
+    }
 
+    if (homedir) {
         if (!privkeyPath) {
             /* RSA */
             virBufferAsprintf(&buf, "%s/.ssh/id_rsa", homedir);
@@ -501,6 +503,7 @@ cleanup:
     VIR_FREE(privkey);
     VIR_FREE(knownhosts);
     VIR_FREE(homedir);
+    VIR_FREE(confdir);
     VIR_FREE(nc);
     virObjectUnref(sock);
     return ret;
