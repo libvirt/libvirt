@@ -52,7 +52,7 @@ VIR_STATIC int virAtomicIntGet(volatile int *atomic)
  * (after the set)
  */
 VIR_STATIC void virAtomicIntSet(volatile int *atomic,
-                            int newval)
+                                int newval)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -93,8 +93,8 @@ VIR_STATIC bool virAtomicIntDecAndTest(volatile int *atomic)
  * This call acts as a full compiler and hardware memory barrier.
  */
 VIR_STATIC bool virAtomicIntCompareExchange(volatile int *atomic,
-                                        int oldval,
-                                        int newval)
+                                            int oldval,
+                                            int newval)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -107,7 +107,7 @@ VIR_STATIC bool virAtomicIntCompareExchange(volatile int *atomic,
  * This call acts as a full compiler and hardware memory barrier.
  */
 VIR_STATIC int virAtomicIntAdd(volatile int *atomic,
-                           int val)
+                               int val)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -121,7 +121,7 @@ VIR_STATIC int virAtomicIntAdd(volatile int *atomic,
  * { tmp = *atomic; *atomic &= val; return tmp; }
  */
 VIR_STATIC unsigned int virAtomicIntAnd(volatile unsigned int *atomic,
-                                    unsigned int val)
+                                        unsigned int val)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -135,7 +135,7 @@ VIR_STATIC unsigned int virAtomicIntAnd(volatile unsigned int *atomic,
  * This call acts as a full compiler and hardware memory barrier.
  */
 VIR_STATIC unsigned int virAtomicIntOr(volatile unsigned int *atomic,
-                                   unsigned int val)
+                                       unsigned int val)
     ATTRIBUTE_NONNULL(1);
 
 /**
@@ -149,7 +149,7 @@ VIR_STATIC unsigned int virAtomicIntOr(volatile unsigned int *atomic,
  * This call acts as a full compiler and hardware memory barrier.
  */
 VIR_STATIC unsigned int virAtomicIntXor(volatile unsigned int *atomic,
-                                    unsigned int val)
+                                        unsigned int val)
     ATTRIBUTE_NONNULL(1);
 
 # undef VIR_STATIC
