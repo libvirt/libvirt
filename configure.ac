@@ -874,6 +874,9 @@ if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
         unshare (!(LO_FLAGS_AUTOCLEAR + EPOLL_CLOEXEC));
     ], [
         with_lxc=yes
+       AC_DEFINE([HAVE_DECL_LO_FLAGS_AUTOCLEAR], [1],
+         [Define to 1 if you have the declaration of `LO_FLAGS_AUTOCLEAR',
+         and to 0 if you don't.])
     ], [
         if test "$with_lxc" = "check"; then
             with_lxc=no

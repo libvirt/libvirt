@@ -497,7 +497,7 @@ int virFileUpdatePerm(const char *path,
 }
 
 
-#ifdef __linux__
+#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
 static int virFileLoopDeviceOpen(char **dev_name)
 {
     int fd = -1;
