@@ -1050,66 +1050,67 @@ libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
 endif
 
 # Needed to keep automake quiet about conditionals
-libvirt_driver_storage_la_SOURCES =
-libvirt_driver_storage_la_CFLAGS = \
+libvirt_driver_storage_impl_la_SOURCES =
+libvirt_driver_storage_impl_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_storage_la_LIBADD =
+libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_storage_impl_la_LIBADD =
 if WITH_SECDRIVER_SELINUX
-libvirt_driver_storage_la_LIBADD += $(SELINUX_LIBS)
+libvirt_driver_storage_impl_la_LIBADD += $(SELINUX_LIBS)
 endif
 if WITH_SECDRIVER_APPARMOR
-libvirt_driver_storage_la_LIBADD += $(APPARMOR_LIBS)
+libvirt_driver_storage_impl_la_LIBADD += $(APPARMOR_LIBS)
 endif
 if HAVE_LIBBLKID
-libvirt_driver_storage_la_CFLAGS += $(BLKID_CFLAGS)
-libvirt_driver_storage_la_LIBADD += $(BLKID_LIBS)
+libvirt_driver_storage_impl_la_CFLAGS += $(BLKID_CFLAGS)
+libvirt_driver_storage_impl_la_LIBADD += $(BLKID_LIBS)
 endif
 if WITH_STORAGE
+noinst_LTLIBRARIES += libvirt_driver_storage_impl.la
+libvirt_driver_storage_la_SOURCES =
+libvirt_driver_storage_la_LIBADD = libvirt_driver_storage_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
+libvirt_driver_storage_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_storage_la_LDFOAGS = -module -avoid-version
 else
 noinst_LTLIBRARIES += libvirt_driver_storage.la
 # Stateful, so linked to daemon instead
 #libvirt_la_BUILT_LIBADD += libvirt_driver_storage.la
 endif
-if WITH_DRIVER_MODULES
-libvirt_driver_storage_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_storage_la_LDFLAGS += -module -avoid-version
-endif
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
 endif
 
 if WITH_STORAGE_LVM
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
 endif
 
 if WITH_STORAGE_ISCSI
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
 endif
 
 if WITH_STORAGE_SCSI
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SCSI_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SCSI_SOURCES)
 endif
 
 if WITH_STORAGE_MPATH
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_MPATH_SOURCES)
-libvirt_driver_storage_la_CFLAGS += $(DEVMAPPER_CFLAGS)
-libvirt_driver_storage_la_LIBADD += $(DEVMAPPER_LIBS)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_MPATH_SOURCES)
+libvirt_driver_storage_impl_la_CFLAGS += $(DEVMAPPER_CFLAGS)
+libvirt_driver_storage_impl_la_LIBADD += $(DEVMAPPER_LIBS)
 endif
 
 if WITH_STORAGE_DISK
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
 endif
 
 if WITH_STORAGE_RBD
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_RBD_SOURCES)
-libvirt_driver_storage_la_LIBADD += $(LIBRBD_LIBS)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_RBD_SOURCES)
+libvirt_driver_storage_impl_la_LIBADD += $(LIBRBD_LIBS)
 endif
 
 if WITH_STORAGE_SHEEPDOG
-libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SHEEPDOG_SOURCES)
+libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SHEEPDOG_SOURCES)
 endif
 
 if WITH_NODE_DEVICES

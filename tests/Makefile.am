@@ -412,7 +412,8 @@ if WITH_STORAGE_SHEEPDOG
 storagebackendsheepdogtest_SOURCES = \
 	storagebackendsheepdogtest.c \
 	testutils.c testutils.h
-storagebackendsheepdogtest_LDADD = ../src/libvirt_driver_storage.la $(LDADDS)
+storagebackendsheepdogtest_LDADD = \
+	../src/libvirt_driver_storage_impl.la $(LDADDS)
 else
 EXTRA_DIST += storagebackendsheepdogtest.c
 endif
