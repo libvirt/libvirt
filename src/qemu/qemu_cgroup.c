@@ -496,27 +496,38 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            int nvcpupin,
                            int vcpuid)
 {
-    int i, rc = 0;
-    char *new_cpus = NULL;
+    int i;
 
     for (i = 0; i < nvcpupin; i++) {
         if (vcpuid == vcpupin[i]->vcpuid) {
-            new_cpus = virDomainCpuSetFormat(vcpupin[i]->cpumask,
-                                             VIR_DOMAIN_CPUMASK_LEN);
-            if (!new_cpus) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to convert cpu mask"));
-                rc = -1;
-                goto cleanup;
-            }
-            rc = virCgroupSetCpusetCpus(cgroup, new_cpus);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     "%s",
-                                     _("Unable to set cpuset.cpus"));
-                goto cleanup;
-            }
+            return qemuSetupCgroupEmulatorPin(cgroup, vcpupin[i]);
         }
+    }
+
+    return -1;
+}
+
+int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
+                               virDomainVcpuPinDefPtr vcpupin)
+{
+    int rc = 0;
+    char *new_cpus = NULL;
+
+    new_cpus = virDomainCpuSetFormat(vcpupin->cpumask,
+                                     VIR_DOMAIN_CPUMASK_LEN);
+    if (!new_cpus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to convert cpu mask"));
+        rc = -1;
+        goto cleanup;
+    }
+
+    rc = virCgroupSetCpusetCpus(cgroup, new_cpus);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             "%s",
+                             _("Unable to set cpuset.cpus"));
+        goto cleanup;
     }
 
 cleanup:
@@ -636,6 +647,7 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
 {
     virCgroupPtr cgroup = NULL;
     virCgroupPtr cgroup_emulator = NULL;
+    virDomainDefPtr def = vm->def;
     int rc, i;
 
     if (driver->cgroup == NULL)
@@ -671,6 +683,11 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
             goto cleanup;
         }
     }
+
+    if (def->cputune.emulatorpin &&
+        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET) &&
+        qemuSetupCgroupEmulatorPin(cgroup_emulator, def->cputune.emulatorpin) < 0)
+        goto cleanup;
 
     virCgroupFree(&cgroup_emulator);
     virCgroupFree(&cgroup);

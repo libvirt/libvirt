@@ -57,6 +57,7 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            virDomainVcpuPinDefPtr *vcpupin,
                            int nvcpupin,
                            int vcpuid);
+int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virDomainVcpuPinDefPtr vcpupin);
 int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
                                virDomainObjPtr vm);
