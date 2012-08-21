@@ -6600,7 +6600,7 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
         else if (rc == 0)
             *nparams = 1;
         else
-            *nparams = 3;
+            *nparams = 5;
     }
 
     ret = strdup("posix");
@@ -7731,6 +7731,40 @@ cleanup:
 }
 
 static int
+qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
+                             unsigned long long period, long long quota)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup_emulator = NULL;
+    int rc;
+
+    if (period == 0 && quota == 0)
+        return 0;
+
+    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+        return 0;
+    }
+
+    rc = virCgroupForEmulator(cgroup, &cgroup_emulator, 0);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to find emulator cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
+        goto cleanup;
+
+    virCgroupFree(&cgroup_emulator);
+    return 0;
+
+cleanup:
+    virCgroupFree(&cgroup_emulator);
+    return -1;
+}
+
+static int
 qemuSetSchedulerParametersFlags(virDomainPtr dom,
                                 virTypedParameterPtr params,
                                 int nparams,
@@ -7752,6 +7786,10 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                                        VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
                                        VIR_TYPED_PARAM_ULLONG,
                                        VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
+                                       VIR_TYPED_PARAM_LLONG,
+                                       VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
+                                       VIR_TYPED_PARAM_ULLONG,
+                                       VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
                                        VIR_TYPED_PARAM_LLONG,
                                        NULL) < 0)
         return -1;
@@ -7834,6 +7872,32 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 vmdef->cputune.quota = params[i].value.l;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = qemuSetEmulatorBandwidthLive(vm, group, params[i].value.ul, 0);
+                if (rc != 0)
+                    goto cleanup;
+
+                if (params[i].value.ul)
+                    vm->def->cputune.emulator_period = params[i].value.ul;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.emulator_period = params[i].value.ul;
+            }
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA)) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+                rc = qemuSetEmulatorBandwidthLive(vm, group, 0, params[i].value.l);
+                if (rc != 0)
+                    goto cleanup;
+
+                if (params[i].value.l)
+                    vm->def->cputune.emulator_quota = params[i].value.l;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+                vmdef->cputune.emulator_quota = params[i].value.l;
             }
         }
     }
@@ -7939,6 +8003,43 @@ cleanup:
 }
 
 static int
+qemuGetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
+                             unsigned long long *period, long long *quota)
+{
+    virCgroupPtr cgroup_emulator = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+    int rc;
+    int ret = -1;
+
+    priv = vm->privateData;
+    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+        /* We don't create sub dir for each vcpu */
+        *period = 0;
+        *quota = 0;
+        return 0;
+    }
+
+    /* get period and quota for emulator */
+    rc = virCgroupForEmulator(cgroup, &cgroup_emulator, 0);
+    if (!cgroup_emulator) {
+        virReportSystemError(-rc,
+                             _("Unable to find emulator cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
+    }
+
+    rc = qemuGetVcpuBWLive(cgroup_emulator, period, quota);
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&cgroup_emulator);
+    return ret;
+}
+
+static int
 qemuGetSchedulerParametersFlags(virDomainPtr dom,
                                 virTypedParameterPtr params,
                                 int *nparams,
@@ -7950,6 +8051,8 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
     unsigned long long shares;
     unsigned long long period;
     long long quota;
+    unsigned long long emulator_period;
+    long long emulator_quota;
     int ret = -1;
     int rc;
     bool cpu_bw_status = false;
@@ -7989,6 +8092,8 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         if (*nparams > 1 && cpu_bw_status) {
             period = persistentDef->cputune.period;
             quota = persistentDef->cputune.quota;
+            emulator_period = persistentDef->cputune.emulator_period;
+            emulator_quota = persistentDef->cputune.emulator_quota;
         }
         goto out;
     }
@@ -8017,6 +8122,14 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
         if (rc != 0)
             goto cleanup;
     }
+
+    if (*nparams > 3 && cpu_bw_status) {
+        rc = qemuGetEmulatorBandwidthLive(vm, group, &emulator_period,
+                                          &emulator_quota);
+        if (rc != 0)
+            goto cleanup;
+    }
+
 out:
     if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_CPU_SHARES,
                                 VIR_TYPED_PARAM_ULLONG, shares) < 0)
@@ -8036,6 +8149,24 @@ out:
             if (virTypedParameterAssign(&params[2],
                                         VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
                                         VIR_TYPED_PARAM_LLONG, quota) < 0)
+                goto cleanup;
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            if (virTypedParameterAssign(&params[3],
+                                        VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
+                                        VIR_TYPED_PARAM_ULLONG,
+                                        emulator_period) < 0)
+                goto cleanup;
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            if (virTypedParameterAssign(&params[4],
+                                        VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
+                                        VIR_TYPED_PARAM_LLONG,
+                                        emulator_quota) < 0)
                 goto cleanup;
             saved_nparams++;
         }
