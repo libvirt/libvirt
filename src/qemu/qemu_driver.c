@@ -7697,68 +7697,9 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_vcpu = NULL;
     int rc;
-    long long vm_quota = 0;
-    long long old_quota = 0;
-    unsigned long long old_period = 0;
 
     if (period == 0 && quota == 0)
         return 0;
-
-    /* Ensure that we can multiply by vcpus without overflowing. */
-    if (quota > LLONG_MAX / vm->def->vcpus) {
-        virReportSystemError(EINVAL, "%s",
-                             _("Unable to set cpu bandwidth quota"));
-        goto cleanup;
-    }
-
-    if (quota > 0)
-        vm_quota = quota * vm->def->vcpus;
-    else
-        vm_quota = quota;
-
-    rc = virCgroupGetCpuCfsQuota(cgroup, &old_quota);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth tunable"));
-        goto cleanup;
-    }
-
-    rc = virCgroupGetCpuCfsPeriod(cgroup, &old_period);
-    if (rc < 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get cpu bandwidth period tunable"));
-        goto cleanup;
-    }
-
-    /*
-     * If quota will be changed to a small value, we should modify vcpu's quota
-     * first. Otherwise, we should modify vm's quota first.
-     *
-     * If period will be changed to a small value, we should modify vm's period
-     * first. Otherwise, we should modify vcpu's period first.
-     *
-     * If both quota and period will be changed to a big/small value, we cannot
-     * modify period and quota together.
-     */
-    if ((quota != 0) && (period != 0)) {
-        if (((quota > old_quota) && (period > old_period)) ||
-            ((quota < old_quota) && (period < old_period))) {
-            /* modify period */
-            if (qemuSetVcpusBWLive(vm, cgroup, period, 0) < 0)
-                goto cleanup;
-
-            /* modify quota */
-            if (qemuSetVcpusBWLive(vm, cgroup, 0, quota) < 0)
-                goto cleanup;
-            return 0;
-        }
-    }
-
-    if (((vm_quota != 0) && (vm_quota > old_quota)) ||
-        ((period != 0) && (period < old_period)))
-        /* Set cpu bandwidth for the vm */
-        if (qemuSetupCgroupVcpuBW(cgroup, period, vm_quota) < 0)
-            goto cleanup;
 
     /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
      * thread, we cannot control each vcpu. So we only modify cpu bandwidth
@@ -7781,12 +7722,6 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
             virCgroupFree(&cgroup_vcpu);
         }
     }
-
-    if (((vm_quota != 0) && (vm_quota <= old_quota)) ||
-        ((period != 0) && (period >= old_period)))
-        /* Set cpu bandwidth for the vm */
-        if (qemuSetupCgroupVcpuBW(cgroup, period, vm_quota) < 0)
-            goto cleanup;
 
     return 0;
 

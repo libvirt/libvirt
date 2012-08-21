@@ -545,10 +545,15 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     unsigned int i;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
-    long long vm_quota = 0;
 
     if (driver->cgroup == NULL)
         return 0; /* Not supported, so claim success */
+
+    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                       _("cgroup cpu is not active"));
+        return -1;
+    }
 
     rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
     if (rc != 0) {
@@ -556,25 +561,6 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
                              _("Unable to find cgroup for %s"),
                              vm->def->name);
         goto cleanup;
-    }
-
-    /* Set cpu bandwidth for the vm */
-    if (period || quota) {
-        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-            /* Ensure that we can multiply by vcpus without overflowing. */
-            if (quota > LLONG_MAX / vm->def->vcpus) {
-                virReportSystemError(EINVAL, "%s",
-                                     _("Unable to set cpu bandwidth quota"));
-                goto cleanup;
-            }
-
-            if (quota > 0)
-                vm_quota = quota * vm->def->vcpus;
-            else
-                vm_quota = quota;
-            if (qemuSetupCgroupVcpuBW(cgroup, period, vm_quota) < 0)
-                goto cleanup;
-        }
     }
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
@@ -606,10 +592,8 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
         }
 
         if (period || quota) {
-            if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-                if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
-                    goto cleanup;
-            }
+            if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
+                goto cleanup;
         }
 
         /* Set vcpupin in cgroup if vcpupin xml is provided */
@@ -624,7 +608,6 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
         virCgroupFree(&cgroup_vcpu);
     }
 
-    virCgroupFree(&cgroup_vcpu);
     virCgroupFree(&cgroup);
     return 0;
 
