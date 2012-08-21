@@ -1916,6 +1916,16 @@ int                     virDomainGetVcpuPinInfo (virDomainPtr domain,
                                                  int maplen,
                                                  unsigned int flags);
 
+int                     virDomainPinEmulator   (virDomainPtr domain,
+                                                unsigned char *cpumap,
+                                                int maplen,
+                                                unsigned int flags);
+
+int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
+                                                     unsigned char *cpumaps,
+                                                     int maplen,
+                                                     unsigned int flags);
+
 /**
  * VIR_USE_CPU:
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)

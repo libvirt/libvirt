@@ -8858,6 +8858,153 @@ error:
 }
 
 /**
+ * virDomainPinEmulator:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN)
+ *      Each bit set to 1 means that corresponding CPU is usable.
+ *      Bytes are stored in little-endian order: CPU0-7, 8-15...
+ *      In each byte, lowest CPU number is least significant bit.
+ * @maplen: number of bytes in cpumap, from 1 up to size of CPU map in
+ *      underlying virtualization system (Xen...).
+ *      If maplen < size, missing bytes are set to zero.
+ *      If maplen > size, failure code is returned.
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Dynamically change the real CPUs which can be allocated to all emulator
+ * threads. This function may require privileged access to the hypervisor.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ * Not all hypervisors can support all flag combinations.
+ *
+ * See also virDomainGetEmulatorPinInfo for querying this information.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ *
+ */
+int
+virDomainPinEmulator(virDomainPtr domain, unsigned char *cpumap,
+                     int maplen, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cpumap=%p, maplen=%d, flags=%x",
+                     cpumap, maplen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if ((cpumap == NULL) || (maplen < 1)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainPinEmulator) {
+        int ret;
+        ret = conn->driver->domainPinEmulator (domain, cpumap, maplen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainGetEmulatorPinInfo:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @cpumap: pointer to a bit map of real CPUs for all emulator threads of
+ *     this domain (in 8-bit bytes) (OUT)
+ *     There is only one cpumap for all emulator threads.
+ *     Must not be NULL.
+ * @maplen: the number of bytes in one cpumap, from 1 up to size of CPU map.
+ *     Must be positive.
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *     Must not be VIR_DOMAIN_AFFECT_LIVE and
+ *     VIR_DOMAIN_AFFECT_CONFIG concurrently.
+ *
+ * Query the CPU affinity setting of all emulator threads of domain, store
+ * it in cpumap.
+ *
+ * Returns 1 in case of success,
+ * 0 in case of no emulator threads are pined to pcpus,
+ * -1 in case of failure.
+ */
+int
+virDomainGetEmulatorPinInfo(virDomainPtr domain, unsigned char *cpumap,
+                            int maplen, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cpumap=%p, maplen=%d, flags=%x",
+                     cpumap, maplen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (!cpumap || maplen <= 0) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (INT_MULTIPLY_OVERFLOW(1, maplen)) {
+        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: 1 * %d"),
+                          maplen);
+        goto error;
+    }
+
+    /* At most one of these two flags should be set.  */
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
+        (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainGetEmulatorPinInfo) {
+        int ret;
+        ret = conn->driver->domainGetEmulatorPinInfo(domain, cpumap,
+                                                     maplen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
  * virDomainGetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)

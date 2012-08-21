@@ -550,6 +550,8 @@ LIBVIRT_0.10.0 {
         virConnectRegisterCloseCallback;
         virConnectUnregisterCloseCallback;
         virDomainGetSecurityLabelList;
+        virDomainPinEmulator;
+        virDomainGetEmulatorPinInfo;
 } LIBVIRT_0.9.13;
 
 # .... define new API here using predicted next version number ....
