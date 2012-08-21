@@ -7902,15 +7902,28 @@ cleanup:
     return ret;
 }
 
-/* Parse the XML definition for a vcpupin */
+/* Parse the XML definition for a vcpupin or emulatorpin.
+ *
+ * vcpupin has the form of
+ *
+ *   <vcpupin vcpu='0' cpuset='0'/>
+ *
+ * and emulatorpin has the form of
+ *
+ *   <emulatorpin cpuset='0'/>
+ *
+ * A vcpuid of -1 is valid and only valid for emulatorpin. So callers
+ * have to check the returned cpuid for validity.
+ */
 static virDomainVcpuPinDefPtr
 virDomainVcpuPinDefParseXML(const xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
-                            int maxvcpus)
+                            int maxvcpus,
+                            int emulator)
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
-    unsigned int vcpuid;
+    int vcpuid;
     char *tmp = NULL;
     int ret;
 
@@ -7921,14 +7934,14 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
 
     ctxt->node = node;
 
-    ret = virXPathUInt("string(./@vcpu)", ctxt, &vcpuid);
-    if (ret == -2) {
+    ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
+    if ((ret == -2) || (vcpuid < -1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vcpu id must be an unsigned integer"));
+                       "%s", _("vcpu id must be an unsigned integer or -1"));
         goto error;
-    } else if (ret == -1) {
+    } else if ((vcpuid == -1) && (emulator == 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("can't parse vcpupin node"));
+                       "%s", _("vcpu id value -1 is not allowed for vcpupin"));
         goto error;
     }
 
@@ -8346,7 +8359,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     for (i = 0 ; i < n ; i++) {
         virDomainVcpuPinDefPtr vcpupin = NULL;
-        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus);
+        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt, def->maxvcpus, 0);
 
         if (!vcpupin)
             goto error;
