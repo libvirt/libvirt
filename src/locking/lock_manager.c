@@ -64,6 +64,16 @@ struct _virLockManagerPlugin {
 
 #define DEFAULT_LOCK_MANAGER_PLUGIN_DIR LIBDIR "/libvirt/lock-driver"
 
+static const char *virLockManagerPluginDir = DEFAULT_LOCK_MANAGER_PLUGIN_DIR;
+
+void
+virLockManagerSetPluginDir(const char *dir)
+{
+    if (dir)
+        virLockManagerPluginDir = dir;
+}
+
+
 static void virLockManagerLogParams(size_t nparams,
                                     virLockManagerParamPtr params)
 {
@@ -128,7 +138,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
         driver = &virLockDriverNop;
     } else {
         if (moddir == NULL)
-            moddir = DEFAULT_LOCK_MANAGER_PLUGIN_DIR;
+            moddir = virLockManagerPluginDir;
 
         VIR_DEBUG("Module load %s from %s", name, moddir);
 

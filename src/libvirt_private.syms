@@ -757,6 +757,7 @@ virLockManagerPluginUnref;
 virLockManagerPluginUsesState;
 virLockManagerPluginGetName;
 virLockManagerRelease;
+virLockManagerSetPluginDir;
 
 
 # logging.h

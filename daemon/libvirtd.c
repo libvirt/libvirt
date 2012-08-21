@@ -55,6 +55,7 @@
 #include "hooks.h"
 #include "uuid.h"
 #include "viraudit.h"
+#include "locking/lock_manager.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"
@@ -971,7 +972,6 @@ int main(int argc, char **argv) {
     /* initialize early logging */
     virLogSetFromEnv();
 
-#ifdef WITH_DRIVER_MODULES
     if (strstr(argv[0], "lt-libvirtd") ||
         strstr(argv[0], "/daemon/.libs/libvirtd")) {
         char *tmp = strrchr(argv[0], '/');
@@ -990,11 +990,13 @@ int main(int argc, char **argv) {
                     argv[0], driverdir);
             exit(EXIT_FAILURE);
         }
+        virLockManagerSetPluginDir(driverdir);
+#ifdef WITH_DRIVER_MODULES
         virDriverModuleInitialize(driverdir);
+#endif
         *tmp = '/';
         /* Must not free 'driverdir' - it is still used */
     }
-#endif
 
     while (1) {
         int optidx = 0;
