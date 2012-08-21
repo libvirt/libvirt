@@ -1511,7 +1511,39 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
-static void
+virDomainVcpuPinDefPtr *
+virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
+{
+    int i = 0;
+    virDomainVcpuPinDefPtr *ret;
+
+    if (VIR_ALLOC_N(ret, nvcpupin) < 0) {
+        goto no_memory;
+    }
+
+    for (i = 0; i < nvcpupin; i++) {
+        if (VIR_ALLOC(ret[i]) < 0)
+            goto no_memory;
+        if (VIR_ALLOC_N(ret[i]->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto no_memory;
+        ret[i]->vcpuid = src[i]->vcpuid;
+        memcpy(ret[i]->cpumask, src[i]->cpumask, VIR_DOMAIN_CPUMASK_LEN);
+    }
+
+    return ret;
+
+no_memory:
+    while (i >= 0) {
+        VIR_FREE(ret[i]->cpumask);
+        VIR_FREE(ret[i]);
+    }
+    VIR_FREE(ret);
+    virReportOOMError();
+
+    return NULL;
+}
+
+void
 virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def,
                         int nvcpupin)
 {

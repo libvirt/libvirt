@@ -1536,6 +1536,11 @@ struct _virDomainVcpuPinDef {
     char *cpumask;
 };
 
+void virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def, int nvcpupin);
+
+virDomainVcpuPinDefPtr *virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src,
+                                                int nvcpupin);
+
 int virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
                                 int nvcpupin,
                                 int vcpu);
