@@ -68,25 +68,25 @@ void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
 static
 int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
 {
-    uid_t uid;
-    gid_t gid;
+    unsigned int theuid;
+    unsigned int thegid;
     char *endptr = NULL;
 
     if (label == NULL)
         return -1;
 
-    if (virStrToLong_ui(label, &endptr, 10, &uid) ||
+    if (virStrToLong_ui(label, &endptr, 10, &theuid) ||
         endptr == NULL || *endptr != ':') {
         return -1;
     }
 
-    if (virStrToLong_ui(endptr + 1, NULL, 10, &gid))
+    if (virStrToLong_ui(endptr + 1, NULL, 10, &thegid))
         return -1;
 
     if (uidPtr)
-        *uidPtr = uid;
+        *uidPtr = theuid;
     if (gidPtr)
-        *gidPtr = gid;
+        *gidPtr = thegid;
     return 0;
 }
 
