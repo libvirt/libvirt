@@ -292,7 +292,7 @@ qemuCapsProbeCommand(const char *qemu,
 static int
 qemuCapsParseMachineTypesStr(const char *output,
                              virCapsGuestMachinePtr **machines,
-                             int *nmachines)
+                             size_t *nmachines)
 {
     const char *p = output;
     const char *next;
@@ -361,7 +361,7 @@ int
 qemuCapsProbeMachineTypes(const char *binary,
                           qemuCapsPtr caps,
                           virCapsGuestMachinePtr **machines,
-                          int *nmachines)
+                          size_t *nmachines)
 {
     char *output;
     int ret = -1;
@@ -402,7 +402,7 @@ qemuCapsGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
                                const char *emulator,
                                time_t emulator_mtime,
                                virCapsGuestMachinePtr **machines,
-                               int *nmachines)
+                               size_t *nmachines)
 {
     virCapsGuestMachinePtr *list;
     int i;
@@ -457,7 +457,7 @@ qemuCapsGetOldMachines(const char *ostype,
                        time_t emulator_mtime,
                        virCapsPtr old_caps,
                        virCapsGuestMachinePtr **machines,
-                       int *nmachines)
+                       size_t *nmachines)
 {
     int i;
 
@@ -491,8 +491,8 @@ qemuCapsGetOldMachines(const char *ostype,
 
 typedef int
 (*qemuCapsParseCPUModels)(const char *output,
-                       unsigned int *retcount,
-                       const char ***retcpus);
+                          size_t *retcount,
+                          const char ***retcpus);
 
 /* Format:
  *      <arch> <model>
@@ -501,7 +501,7 @@ typedef int
  */
 static int
 qemuCapsParseX86Models(const char *output,
-                       unsigned int *retcount,
+                       size_t *retcount,
                        const char ***retcpus)
 {
     const char *p = output;
@@ -577,7 +577,7 @@ error:
  */
 static int
 qemuCapsParsePPCModels(const char *output,
-                       unsigned int *retcount,
+                       size_t *retcount,
                        const char ***retcpus)
 {
     const char *p = output;
@@ -647,7 +647,7 @@ int
 qemuCapsProbeCPUModels(const char *qemu,
                        qemuCapsPtr caps,
                        const char *arch,
-                       unsigned int *count,
+                       size_t *count,
                        const char ***cpus)
 {
     char *output = NULL;
@@ -704,9 +704,9 @@ qemuCapsInitGuest(virCapsPtr caps,
     char *binary = NULL;
     time_t binary_mtime;
     virCapsGuestMachinePtr *machines = NULL;
-    int nmachines = 0;
+    size_t nmachines = 0;
     struct stat st;
-    unsigned int ncpus;
+    size_t ncpus;
     qemuCapsPtr qemubinCaps = NULL;
     qemuCapsPtr kvmbinCaps = NULL;
     int ret = -1;

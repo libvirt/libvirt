@@ -180,12 +180,12 @@ virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 int qemuCapsProbeMachineTypes(const char *binary,
                               qemuCapsPtr caps,
                               virCapsGuestMachinePtr **machines,
-                              int *nmachines);
+                              size_t *nmachines);
 
 int qemuCapsProbeCPUModels(const char *qemu,
                            qemuCapsPtr caps,
                            const char *arch,
-                           unsigned int *count,
+                           size_t *count,
                            const char ***cpus);
 
 int qemuCapsExtractVersion(virCapsPtr caps,

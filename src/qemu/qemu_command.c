@@ -4082,7 +4082,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     const virCPUDefPtr host = driver->caps->host.cpu;
     virCPUDefPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
-    unsigned int ncpus = 0;
+    size_t ncpus = 0;
     const char **cpus = NULL;
     const char *default_model;
     union cpuData *data = NULL;
