@@ -142,8 +142,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
                     QEMU_CAPS_NO_ACPI,
                     QEMU_CAPS_LAST);
 
-    if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
-        goto out;
+    if (STREQ(vmdef->os.machine, "pc") &&
+        STREQ(vmdef->emulator, "/usr/bin/qemu-system-x86_64")) {
+        VIR_FREE(vmdef->os.machine);
+        if (!(vmdef->os.machine = strdup("pc-0.11")))
+            goto out;
+    }
 
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
         if (qemuDomainAssignAddresses(vmdef, extraFlags, NULL)) {

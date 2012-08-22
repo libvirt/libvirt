@@ -1510,6 +1510,26 @@ static int qemudNumDomains(virConnectPtr conn) {
     return n;
 }
 
+
+static int
+qemuCanonicalizeMachine(virDomainDefPtr def, qemuCapsPtr caps)
+{
+    const char *canon = qemuCapsGetCanonicalMachine(caps, def->os.machine);
+
+    if (canon != def->os.machine) {
+        char *tmp;
+        if (!(tmp = strdup(canon))) {
+            virReportOOMError();
+            return -1;
+        }
+        VIR_FREE(def->os.machine);
+        def->os.machine = tmp;
+    }
+
+    return 0;
+}
+
+
 static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                                       unsigned int flags) {
     struct qemud_driver *driver = conn->privateData;
@@ -1544,7 +1564,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (!(caps = qemuCapsCacheLookup(driver->capsCache, def->emulator)))
         goto cleanup;
 
-    if (qemudCanonicalizeMachine(driver, def) < 0)
+    if (qemuCanonicalizeMachine(def, caps) < 0)
         goto cleanup;
 
     if (qemuDomainAssignAddresses(def, caps, NULL) < 0)
@@ -5465,113 +5485,6 @@ qemuDomainStart(virDomainPtr dom)
     return qemuDomainStartWithFlags(dom, 0);
 }
 
-static int
-qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
-                                 virCapsGuestDomainInfoPtr info,
-                                 char **canonical)
-{
-    int i;
-
-    *canonical = NULL;
-
-    for (i = 0; i < info->nmachines; i++) {
-        virCapsGuestMachinePtr machine = info->machines[i];
-
-        if (!machine->canonical)
-            continue;
-
-        if (def->os.machine && STRNEQ(def->os.machine, machine->name))
-            continue;
-
-        if (!(*canonical = strdup(machine->canonical))) {
-            virReportOOMError();
-            return -1;
-        }
-
-        break;
-    }
-
-    return 0;
-}
-
-static int
-qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
-{
-    virCapsGuestMachinePtr *machines = NULL;
-    size_t i, nmachines = 0;
-
-    /* XXX we should be checking emulator capabilities and pass them instead
-     * of NULL so that -nodefconfig or -no-user-config is properly added when
-     * probing machine types. Luckily, qemu does not support specifying new
-     * machine types in its configuration files yet, which means passing this
-     * additional parameter makes no difference now.
-     */
-    if (qemuCapsProbeMachineTypes(def->emulator, NULL,
-                                  &machines, &nmachines) < 0)
-        return -1;
-
-    for (i = 0; i < nmachines; i++) {
-        if (!machines[i]->canonical)
-            continue;
-
-        if (def->os.machine && STRNEQ(def->os.machine, machines[i]->name))
-            continue;
-
-        *canonical = machines[i]->canonical;
-        machines[i]->canonical = NULL;
-        break;
-    }
-
-    virCapabilitiesFreeMachines(machines, nmachines);
-
-    return 0;
-}
-
-int
-qemudCanonicalizeMachine(struct qemud_driver *driver, virDomainDefPtr def)
-{
-    char *canonical = NULL;
-    int i;
-
-    for (i = 0; i < driver->caps->nguests; i++) {
-        virCapsGuestPtr guest = driver->caps->guests[i];
-        virCapsGuestDomainInfoPtr info;
-        int j;
-
-        for (j = 0; j < guest->arch.ndomains; j++) {
-            info = &guest->arch.domains[j]->info;
-
-            if (!info->emulator || !STREQ(info->emulator, def->emulator))
-                continue;
-
-            if (!info->nmachines)
-                info = &guest->arch.defaultInfo;
-
-            if (qemudCanonicalizeMachineFromInfo(def, info, &canonical) < 0)
-                return -1;
-            goto out;
-        }
-
-        info = &guest->arch.defaultInfo;
-
-        if (info->emulator && STREQ(info->emulator, def->emulator)) {
-            if (qemudCanonicalizeMachineFromInfo(def, info, &canonical) < 0)
-                return -1;
-            goto out;
-        }
-    }
-
-    if (qemudCanonicalizeMachineDirect(def, &canonical) < 0)
-        return -1;
-
-out:
-    if (canonical) {
-        VIR_FREE(def->os.machine);
-        def->os.machine = canonical;
-    }
-    return 0;
-}
-
 static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def;
@@ -5597,7 +5510,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (!(caps = qemuCapsCacheLookup(driver->capsCache, def->emulator)))
         goto cleanup;
 
-    if (qemudCanonicalizeMachine(driver, def) < 0)
+    if (qemuCanonicalizeMachine(def, caps) < 0)
         goto cleanup;
 
     if (qemuDomainAssignAddresses(def, caps, NULL) < 0)
@@ -12316,7 +12229,7 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (qemudCanonicalizeMachine(driver, def) < 0)
+    if (qemuCanonicalizeMachine(def, caps) < 0)
         goto cleanup;
 
     if (qemuDomainAssignAddresses(def, caps, NULL) < 0)

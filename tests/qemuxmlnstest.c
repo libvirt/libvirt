@@ -92,9 +92,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
                     QEMU_CAPS_NO_ACPI,
                     QEMU_CAPS_LAST);
 
-    if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
-        goto fail;
-
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE))
         qemuDomainAssignAddresses(vmdef, extraFlags, NULL);
 
