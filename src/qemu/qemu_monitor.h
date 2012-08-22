@@ -598,6 +598,8 @@ int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
 
 int qemuMonitorGetCommands(qemuMonitorPtr mon,
                            char ***commands);
+int qemuMonitorGetEvents(qemuMonitorPtr mon,
+                         char ***events);
 
 
 /**

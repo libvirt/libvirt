@@ -301,5 +301,8 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
     ATTRIBUTE_NONNULL(2);
+int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
+                             char ***events)
+    ATTRIBUTE_NONNULL(2);
 
 #endif /* QEMU_MONITOR_JSON_H */

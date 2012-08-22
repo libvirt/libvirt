@@ -1007,49 +1007,23 @@ int
 qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
                            qemuCapsPtr caps)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-events", NULL);
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr data;
-    int i, n;
+    char **events = NULL;
+    int nevents;
+    size_t i;
 
-    if (!cmd)
-        return ret;
+    if ((nevents = qemuMonitorJSONGetEvents(mon, &events)) < 0)
+        return -1;
 
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    if (!(data = virJSONValueObjectGet(reply, "return")) ||
-        data->type != VIR_JSON_TYPE_ARRAY ||
-        (n = virJSONValueArraySize(data)) <= 0)
-        goto cleanup;
-
-    for (i = 0; i < n; i++) {
-        virJSONValuePtr entry;
-        const char *name;
-
-        if (!(entry = virJSONValueArrayGet(data, i)) ||
-            !(name = virJSONValueObjectGetString(entry, "name")))
-            goto cleanup;
+    for (i = 0 ; i < nevents ; i++) {
+        char *name = events[i];
 
         if (STREQ(name, "BALLOON_CHANGE"))
             qemuCapsSet(caps, QEMU_CAPS_BALLOON_EVENT);
+        VIR_FREE(name);
     }
+    VIR_FREE(events);
 
-    ret = 0;
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
@@ -4165,6 +4139,80 @@ cleanup:
         for (i = 0 ; i < n ; i++)
             VIR_FREE(commandlist[i]);
         VIR_FREE(commandlist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
+                             char ***events)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    char **eventlist = NULL;
+    int n = 0;
+    size_t i;
+
+    *events = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-events", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-events reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-events reply data was not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(eventlist, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-events reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (!(eventlist[i] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *events = eventlist;
+
+cleanup:
+    if (ret < 0 && eventlist) {
+        for (i = 0 ; i < n ; i++)
+            VIR_FREE(eventlist[i]);
+        VIR_FREE(eventlist);
     }
     virJSONValueFree(cmd);
     virJSONValueFree(reply);

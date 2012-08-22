@@ -3119,3 +3119,25 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetCommands(mon, commands);
 }
+
+
+int qemuMonitorGetEvents(qemuMonitorPtr mon,
+                         char ***events)
+{
+    VIR_DEBUG("mon=%p events=%p",
+              mon, events);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetEvents(mon, events);
+}
