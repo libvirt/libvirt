@@ -378,8 +378,7 @@ error:
 
 
 static virCapsPtr
-qemuCreateCapabilities(virCapsPtr oldcaps,
-                       struct qemud_driver *driver)
+qemuCreateCapabilities(struct qemud_driver *driver)
 {
     size_t i;
     virCapsPtr caps;
@@ -388,7 +387,7 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
     const char *doi, *model;
 
     /* Basic host arch / guest machine capabilities */
-    if (!(caps = qemuCapsInit(oldcaps))) {
+    if (!(caps = qemuCapsInit(driver->capsCache))) {
         virReportOOMError();
         return NULL;
     }
@@ -768,8 +767,10 @@ qemudStartup(int privileged) {
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
-    if ((qemu_driver->caps = qemuCreateCapabilities(NULL,
-                                                    qemu_driver)) == NULL)
+    if ((qemu_driver->capsCache = qemuCapsCacheNew()) == NULL)
+        goto error;
+
+    if ((qemu_driver->caps = qemuCreateCapabilities(qemu_driver)) == NULL)
         goto error;
 
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
@@ -985,6 +986,7 @@ qemudShutdown(void) {
     pciDeviceListFree(qemu_driver->inactivePciHostdevs);
     usbDeviceListFree(qemu_driver->activeUsbHostdevs);
     virCapabilitiesFree(qemu_driver->caps);
+    qemuCapsCacheFree(qemu_driver->capsCache);
 
     virDomainObjListDeinit(&qemu_driver->domains);
     virBitmapFree(qemu_driver->reservedRemotePorts);
@@ -1224,8 +1226,7 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
 
     qemuDriverLock(driver);
 
-    if ((caps = qemuCreateCapabilities(qemu_driver->caps,
-                                       qemu_driver)) == NULL) {
+    if ((caps = qemuCreateCapabilities(qemu_driver)) == NULL) {
         virCapabilitiesFree(caps);
         goto cleanup;
     }

@@ -175,6 +175,7 @@ bool qemuCapsGet(qemuCapsPtr caps,
 
 char *qemuCapsFlagsString(qemuCapsPtr caps);
 
+const char *qemuCapsGetBinary(qemuCapsPtr caps);
 const char *qemuCapsGetArch(qemuCapsPtr caps);
 unsigned int qemuCapsGetVersion(qemuCapsPtr caps);
 unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps);
@@ -185,6 +186,10 @@ size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,
 const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
                                         const char *name);
 
+int qemuCapsGetMachineTypesCaps(qemuCapsPtr caps,
+                                size_t *nmachines,
+                                virCapsGuestMachinePtr **machines);
+
 bool qemuCapsIsValid(qemuCapsPtr caps);
 
 
@@ -193,7 +198,7 @@ qemuCapsPtr qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary);
 qemuCapsPtr qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary);
 void qemuCapsCacheFree(qemuCapsCachePtr cache);
 
-virCapsPtr qemuCapsInit(virCapsPtr old_caps);
+virCapsPtr qemuCapsInit(qemuCapsCachePtr cache);
 
 int qemuCapsProbeMachineTypes(const char *binary,
                               qemuCapsPtr caps,
