@@ -1075,7 +1075,7 @@ libvirt_driver_storage_la_LIBADD = libvirt_driver_storage_impl.la
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
 libvirt_driver_storage_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_storage_la_LDFOAGS = -module -avoid-version
+libvirt_driver_storage_la_LDFLAGS = -module -avoid-version
 else
 noinst_LTLIBRARIES += libvirt_driver_storage.la
 # Stateful, so linked to daemon instead
