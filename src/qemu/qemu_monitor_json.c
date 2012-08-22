@@ -4292,3 +4292,85 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
+                                  const char *type,
+                                  char ***props)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    char **proplist = NULL;
+    int n = 0;
+    size_t i;
+
+    *props = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("device-list-properties",
+                                           "s:typename", type,
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0 &&
+        qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
+        goto cleanup;
+    }
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("device-list-properties reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("device-list-properties reply data was not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(proplist, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("device-list-properties reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (!(proplist[i] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *props = proplist;
+
+cleanup:
+    if (ret < 0 && proplist) {
+        for (i = 0 ; i < n ; i++)
+            VIR_FREE(proplist[i]);
+        VIR_FREE(proplist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
