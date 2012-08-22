@@ -305,4 +305,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
                              char ***events)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
+                                  char ***types)
+    ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */

@@ -601,6 +601,9 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
 int qemuMonitorGetEvents(qemuMonitorPtr mon,
                          char ***events);
 
+int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
+                              char ***types);
+
 
 /**
  * When running two dd process and using <> redirection, we need a

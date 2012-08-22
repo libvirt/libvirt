@@ -4218,3 +4218,77 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
+                                  char ***types)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    char **typelist = NULL;
+    int n = 0;
+    size_t i;
+
+    *types = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list-types", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-list-types reply was missing return data"));
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-list-types reply data was not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(typelist, n) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("qom-list-types reply data was missing 'name'"));
+            goto cleanup;
+        }
+
+        if (!(typelist[i] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *types = typelist;
+
+cleanup:
+    if (ret < 0 && typelist) {
+        for (i = 0 ; i < n ; i++)
+            VIR_FREE(typelist[i]);
+        VIR_FREE(typelist);
+    }
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
