@@ -3097,3 +3097,25 @@ int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetCPUDefinitions(mon, cpus);
 }
+
+
+int qemuMonitorGetCommands(qemuMonitorPtr mon,
+                           char ***commands)
+{
+    VIR_DEBUG("mon=%p commands=%p",
+              mon, commands);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetCommands(mon, commands);
+}

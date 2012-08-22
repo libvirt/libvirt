@@ -363,6 +363,67 @@ cleanup:
 
 
 static int
+testQemuMonitorJSONGetCommands(const void *data)
+{
+    virCapsPtr caps = (virCapsPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    int ret = -1;
+    char **commands = NULL;
+    int ncommands;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-commands",
+                               "{ "
+                               "  \"return\": [ "
+                               "   { "
+                               "     \"name\": \"system_wakeup\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"cont\" "
+                               "   }, "
+                               "   { "
+                               "     \"name\": \"quit\" "
+                               "   } "
+                               "  ]"
+                               "}") < 0)
+        goto cleanup;
+
+    if ((ncommands = qemuMonitorGetCommands(qemuMonitorTestGetMonitor(test),
+                                        &commands)) < 0)
+        goto cleanup;
+
+    if (ncommands != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "ncommands %d is not 3", ncommands);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname)                                              \
+    do {                                                                \
+        if (STRNEQ(commands[i], (wantname))) {                          \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name %s is not %s",                         \
+                           commands[i], (wantname));                    \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "system_wakeup");
+    CHECK(1, "cont");
+    CHECK(2, "quit");
+
+#undef CHECK
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -384,6 +445,7 @@ mymain(void)
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
     DO_TEST(GetCPUDefinitions);
+    DO_TEST(GetCommands);
 
     virCapabilitiesFree(caps);
 

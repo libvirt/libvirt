@@ -596,6 +596,9 @@ void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine);
 int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
                                  char ***cpus);
 
+int qemuMonitorGetCommands(qemuMonitorPtr mon,
+                           char ***commands);
+
 
 /**
  * When running two dd process and using <> redirection, we need a
