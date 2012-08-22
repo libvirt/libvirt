@@ -164,6 +164,16 @@ bool qemuCapsGet(qemuCapsPtr caps,
 
 char *qemuCapsFlagsString(qemuCapsPtr caps);
 
+const char *qemuCapsGetArch(qemuCapsPtr caps);
+unsigned int qemuCapsGetVersion(qemuCapsPtr caps);
+unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps);
+size_t qemuCapsGetCPUDefinitions(qemuCapsPtr caps,
+                                 char ***names);
+size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,
+                               char ***names);
+const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
+                                        const char *name);
+
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 
 int qemuCapsProbeMachineTypes(const char *binary,

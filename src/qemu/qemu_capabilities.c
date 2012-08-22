@@ -183,6 +183,18 @@ struct _qemuCaps {
     virObject object;
 
     virBitmapPtr flags;
+
+    unsigned int version;
+    unsigned int kvmVersion;
+
+    char *arch;
+
+    size_t ncpuDefinitions;
+    char **cpuDefinitions;
+
+    size_t nmachineTypes;
+    char **machineTypes;
+    char **machineAliases;
 };
 
 
@@ -1718,6 +1730,21 @@ no_memory:
 void qemuCapsDispose(void *obj)
 {
     qemuCapsPtr caps = obj;
+    size_t i;
+
+    VIR_FREE(caps->arch);
+
+    for (i = 0 ; i < caps->nmachineTypes ; i++) {
+        VIR_FREE(caps->machineTypes[i]);
+        VIR_FREE(caps->machineAliases[i]);
+    }
+    VIR_FREE(caps->machineTypes);
+    VIR_FREE(caps->machineAliases);
+
+    for (i = 0 ; i < caps->ncpuDefinitions ; i++) {
+        VIR_FREE(caps->cpuDefinitions[i]);
+    }
+    VIR_FREE(caps->cpuDefinitions);
 
     virBitmapFree(caps->flags);
 }
@@ -1767,4 +1794,55 @@ qemuCapsGet(qemuCapsPtr caps,
         return false;
     else
         return b;
+}
+
+
+const char *qemuCapsGetArch(qemuCapsPtr caps)
+{
+    return caps->arch;
+}
+
+
+unsigned int qemuCapsGetVersion(qemuCapsPtr caps)
+{
+    return caps->version;
+}
+
+
+unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps)
+{
+    return caps->kvmVersion;
+}
+
+
+size_t qemuCapsGetCPUDefinitions(qemuCapsPtr caps,
+                                 char ***names)
+{
+    *names = caps->cpuDefinitions;
+    return caps->ncpuDefinitions;
+}
+
+
+size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,
+                               char ***names)
+{
+    *names = caps->machineTypes;
+    return caps->nmachineTypes;
+}
+
+
+const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
+                                        const char *name)
+
+{
+    size_t i;
+
+    for (i = 0 ; i < caps->nmachineTypes ; i++) {
+        if (!caps->machineAliases[i])
+            continue;
+        if (STREQ(caps->machineAliases[i], name))
+            return caps->machineTypes[i];
+    }
+
+    return name;
 }
