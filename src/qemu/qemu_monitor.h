@@ -606,7 +606,7 @@ int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
                               const char *type,
                               char ***props);
-
+char *qemuMonitorGetTargetArch(qemuMonitorPtr mon);
 
 /**
  * When running two dd process and using <> redirection, we need a

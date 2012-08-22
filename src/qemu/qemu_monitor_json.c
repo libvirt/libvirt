@@ -4374,3 +4374,48 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+char *
+qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon)
+{
+    char *ret = NULL;
+    int rv;
+    const char *arch;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-target", NULL)))
+        return NULL;
+
+    rv = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (rv == 0)
+        rv = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (rv < 0)
+        goto cleanup;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-target reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (!(arch = virJSONValueObjectGetString(data, "arch"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-target reply was missing arch data"));
+        goto cleanup;
+    }
+
+    if (!(ret = strdup(arch))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

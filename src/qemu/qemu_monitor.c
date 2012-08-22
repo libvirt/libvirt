@@ -3186,3 +3186,24 @@ int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetObjectProps(mon, type, props);
 }
+
+
+char *qemuMonitorGetTargetArch(qemuMonitorPtr mon)
+{
+    VIR_DEBUG("mon=%p",
+              mon);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return NULL;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return NULL;
+    }
+
+    return qemuMonitorJSONGetTargetArch(mon);
+}

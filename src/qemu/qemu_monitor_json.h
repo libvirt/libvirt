@@ -312,5 +312,6 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
                                   const char *type,
                                   char ***props)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+char *qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon);
 
 #endif /* QEMU_MONITOR_JSON_H */
