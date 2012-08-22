@@ -723,7 +723,7 @@ the command may continue to block a little while longer until the job
 is done cleaning up.
 
 I<path> specifies fully-qualified path of the disk.
-I<bandwidth> specifies copying bandwidth limit in Mbps.
+I<bandwidth> specifies copying bandwidth limit in MiB/s.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async]]
@@ -750,7 +750,7 @@ I<path> specifies fully-qualified path of the disk; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
 also B<domblklist> for listing these names).
-I<bandwidth> specifies copying bandwidth limit in Mbps.
+I<bandwidth> specifies copying bandwidth limit in MiB/s.
 
 =item B<blkdeviotune> I<domain> I<device>
 [[I<--config>] [I<--live>] | [I<--current>]]

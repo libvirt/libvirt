@@ -18344,7 +18344,7 @@ error:
  * virDomainBlockJobSetSpeed:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @bandwidth: specify bandwidth limit in Mbps
+ * @bandwidth: specify bandwidth limit in MiB/s
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Set the maximimum allowable bandwidth that a block job may consume.  If
@@ -18402,7 +18402,7 @@ error:
  * virDomainBlockPull:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
- * @bandwidth: (optional) specify copy bandwidth limit in Mbps
+ * @bandwidth: (optional) specify copy bandwidth limit in MiB/s
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Populate a disk image with data from its backing image.  Once all data from
@@ -18419,7 +18419,7 @@ error:
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * The maximum bandwidth (in Mbps) that will be used to do the copy can be
+ * The maximum bandwidth (in MiB/s) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
  * suitable default.  Some hypervisors do not support this feature and will
  * return an error if bandwidth is not 0; in this case, it might still be
@@ -18475,7 +18475,7 @@ error:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand
  * @base: path to backing file to keep, or NULL for no backing file
- * @bandwidth: (optional) specify copy bandwidth limit in Mbps
+ * @bandwidth: (optional) specify copy bandwidth limit in MiB/s
  * @flags: bitwise-OR of virDomainBlockRebaseFlags
  *
  * Populate a disk image with data from its backing image chain, and
@@ -18535,7 +18535,7 @@ error:
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * The maximum bandwidth (in Mbps) that will be used to do the copy can be
+ * The maximum bandwidth (in MiB/s) that will be used to do the copy can be
  * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
  * suitable default.  Some hypervisors do not support this feature and will
  * return an error if bandwidth is not 0; in this case, it might still be
