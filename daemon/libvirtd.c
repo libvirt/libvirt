@@ -1312,8 +1312,8 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    /* Register the netlink event service */
-    if (virNetlinkEventServiceStart() < 0) {
+    /* Register the netlink event service for NETLINK_ROUTE */
+    if (virNetlinkEventServiceStart(NETLINK_ROUTE, 0) < 0) {
         ret = VIR_DAEMON_ERR_NETWORK;
         goto cleanup;
     }
@@ -1327,7 +1327,7 @@ int main(int argc, char **argv) {
                 0, "shutdown", NULL, NULL);
 
 cleanup:
-    virNetlinkEventServiceStop();
+    virNetlinkEventServiceStop(NETLINK_ROUTE);
     virObjectUnref(remoteProgram);
     virObjectUnref(qemuProgram);
     virNetServerClose(srv);

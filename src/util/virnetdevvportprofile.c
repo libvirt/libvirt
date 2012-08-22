@@ -705,13 +705,14 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     }
 
     if (!nltarget_kernel) {
-        if ((src_pid = virNetlinkEventServiceLocalPid()) < 0)
+        if ((src_pid = virNetlinkEventServiceLocalPid(NETLINK_ROUTE)) < 0)
             goto cleanup;
         if ((dst_pid = virNetDevVPortProfileGetLldpadPid()) == 0)
             goto cleanup;
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, src_pid, dst_pid) < 0)
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen,
+                          src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
@@ -868,7 +869,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         return 0;
 
     if (!nltarget_kernel &&
-        (((src_pid = virNetlinkEventServiceLocalPid()) < 0) ||
+        (((src_pid = virNetlinkEventServiceLocalPid(NETLINK_ROUTE)) < 0) ||
          ((dst_pid = virNetDevVPortProfileGetLldpadPid()) == 0))) {
         rc = -1;
         goto cleanup;

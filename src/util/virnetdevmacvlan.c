@@ -149,7 +149,8 @@ virNetDevMacVLanCreate(const char *ifname,
 
     nla_nest_end(nl_msg, linkinfo);
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0,
+                          NETLINK_ROUTE, 0) < 0) {
         goto cleanup;
     }
 
@@ -237,7 +238,8 @@ int virNetDevMacVLanDelete(const char *ifname)
     if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0) < 0) {
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0,
+                          NETLINK_ROUTE, 0) < 0) {
         goto cleanup;
     }
 
@@ -757,7 +759,7 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
 {
     virNetlinkCallbackDataPtr calld = NULL;
 
-    if (virtPortProfile && virNetlinkEventServiceIsRunning()) {
+    if (virtPortProfile && virNetlinkEventServiceIsRunning(NETLINK_ROUTE)) {
         if (VIR_ALLOC(calld) < 0)
             goto memory_error;
         if ((calld->cr_ifname = strdup(ifname)) == NULL)
@@ -774,7 +776,7 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
 
         if (virNetlinkEventAddClient(virNetDevMacVLanVPortProfileCallback,
                                      virNetDevMacVLanVPortProfileDestroyCallback,
-                                     calld, macaddress) < 0)
+                                     calld, macaddress, NETLINK_ROUTE) < 0)
             goto error;
     }
 
@@ -1000,7 +1002,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
             ret = -1;
     }
 
-    virNetlinkEventRemoveClient(0, macaddr);
+    virNetlinkEventRemoveClient(0, macaddr, NETLINK_ROUTE);
 
     return ret;
 }

@@ -41,7 +41,8 @@ void virNetlinkShutdown(void);
 
 int virNetlinkCommand(struct nl_msg *nl_msg,
                       unsigned char **respbuf, unsigned int *respbuflen,
-                      uint32_t src_port, uint32_t dst_port);
+                      uint32_t src_pid, uint32_t dst_pid,
+                      unsigned int protocol, unsigned int groups);
 
 typedef void (*virNetlinkEventHandleCallback)(unsigned char *msg, int length, struct sockaddr_nl *peer, bool *handled, void *opaque);
 
@@ -50,33 +51,35 @@ typedef void (*virNetlinkEventRemoveCallback)(int watch, const virMacAddrPtr mac
 /**
  * stopNetlinkEventServer: stop the monitor to receive netlink messages for libvirtd
  */
-int virNetlinkEventServiceStop(void);
+int virNetlinkEventServiceStop(unsigned int protocol);
 
 /**
  * startNetlinkEventServer: start a monitor to receive netlink messages for libvirtd
  */
-int virNetlinkEventServiceStart(void);
+int virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups);
 
 /**
  * virNetlinkEventServiceIsRunning: returns if the netlink event service is running.
  */
-bool virNetlinkEventServiceIsRunning(void);
+bool virNetlinkEventServiceIsRunning(unsigned int protocol);
 
 /**
  * virNetlinkEventServiceLocalPid: returns nl_pid used to bind() netlink socket
  */
-int virNetlinkEventServiceLocalPid(void);
+int virNetlinkEventServiceLocalPid(unsigned int protocol);
 
 /**
  * virNetlinkEventAddClient: register a callback for handling of netlink messages
  */
 int virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                              virNetlinkEventRemoveCallback removeCB,
-                             void *opaque, const virMacAddrPtr macaddr);
+                             void *opaque, const virMacAddrPtr macaddr,
+                             unsigned int protocol);
 
 /**
  * virNetlinkEventRemoveClient: unregister a callback from a netlink monitor
  */
-int virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr);
+int virNetlinkEventRemoveClient(int watch, const virMacAddrPtr macaddr,
+                                unsigned int protocol);
 
 #endif /* __VIR_NETLINK_H__ */

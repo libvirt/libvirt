@@ -1277,7 +1277,8 @@ virNetDevLinkDump(const char *ifname, int ifindex,
             goto buffer_too_small;
     }
 
-    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, src_pid, dst_pid) < 0)
+    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen,
+                          src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
@@ -1405,7 +1406,8 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
         }
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, pid) < 0)
+    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, pid,
+                          NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
     if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
