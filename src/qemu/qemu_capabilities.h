@@ -203,21 +203,11 @@ void qemuCapsCacheFree(qemuCapsCachePtr cache);
 
 virCapsPtr qemuCapsInit(qemuCapsCachePtr cache);
 
-int qemuCapsProbeMachineTypes(const char *binary,
-                              qemuCapsPtr caps,
-                              virCapsGuestMachinePtr **machines,
-                              size_t *nmachines);
-
-int qemuCapsProbeCPUModels(const char *qemu,
-                           qemuCapsPtr caps,
-                           const char *arch,
-                           size_t *count,
-                           const char ***cpus);
-
 int qemuCapsGetDefaultVersion(virCapsPtr caps,
                               qemuCapsCachePtr capsCache,
                               unsigned int *version);
 
+/* Only for use by test suite */
 int qemuCapsParseHelpStr(const char *qemu,
                          const char *str,
                          qemuCapsPtr caps,
@@ -225,6 +215,7 @@ int qemuCapsParseHelpStr(const char *qemu,
                          unsigned int *is_kvm,
                          unsigned int *kvm_version,
                          bool check_yajl);
+/* Only for use by test suite */
 int qemuCapsParseDeviceStr(const char *str,
                            qemuCapsPtr caps);
 
