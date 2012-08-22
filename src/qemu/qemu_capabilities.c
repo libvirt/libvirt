@@ -228,53 +228,6 @@ static int qemuCapsOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(qemuCaps)
 
-struct qemu_feature_flags {
-    const char *name;
-    const int default_on;
-    const int toggle;
-};
-
-struct qemu_arch_info {
-    const char *arch;
-    int wordsize;
-    const char *binary;
-    const char *altbinary;
-    const struct qemu_feature_flags *flags;
-    int nflags;
-};
-
-/* Feature flags for the architecture info */
-static const struct qemu_feature_flags const arch_info_i686_flags [] = {
-    { "pae",  1, 0 },
-    { "nonpae",  1, 0 },
-    { "acpi", 1, 1 },
-    { "apic", 1, 0 },
-};
-
-static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
-    { "acpi", 1, 1 },
-    { "apic", 1, 0 },
-};
-
-/* The archicture tables for supported QEMU archs */
-static const struct qemu_arch_info const arch_info_hvm[] = {
-    {  "i686",   32, "qemu",
-       "qemu-system-x86_64", arch_info_i686_flags, 4 },
-    {  "x86_64", 64, "qemu-system-x86_64",
-       NULL, arch_info_x86_64_flags, 2 },
-    {  "arm",    32, "qemu-system-arm",    NULL, NULL, 0 },
-    {  "microblaze", 32, "qemu-system-microblaze",   NULL, NULL, 0 },
-    {  "microblazeel", 32, "qemu-system-microblazeel",   NULL, NULL, 0 },
-    {  "mips",   32, "qemu-system-mips",   NULL, NULL, 0 },
-    {  "mipsel", 32, "qemu-system-mipsel", NULL, NULL, 0 },
-    {  "sparc",  32, "qemu-system-sparc",  NULL, NULL, 0 },
-    {  "ppc",    32, "qemu-system-ppc",    NULL, NULL, 0 },
-    {  "ppc64",    64, "qemu-system-ppc64",    NULL, NULL, 0 },
-    {  "itanium", 64, "qemu-system-ia64",  NULL, NULL, 0 },
-    {  "s390x",  64, "qemu-system-s390x",  NULL, NULL, 0 },
-};
-
-
 static virCommandPtr
 qemuCapsProbeCommand(const char *qemu,
                      qemuCapsPtr caps)
@@ -570,11 +523,70 @@ cleanup:
 }
 
 
+static char *
+qemuCapsFindBinaryForArch(const char *hostarch,
+                          const char *guestarch)
+{
+    char *ret;
+
+    if (STREQ(guestarch, "i686")) {
+        ret = virFindFileInPath("qemu-system-i386");
+        if (ret && !virFileIsExecutable(ret))
+            VIR_FREE(ret);
+
+        if (!ret && STREQ(hostarch, "x86_64")) {
+            ret = virFindFileInPath("qemu-system-x86_64");
+            if (ret && !virFileIsExecutable(ret))
+                VIR_FREE(ret);
+        }
+
+        if (!ret)
+            ret = virFindFileInPath("qemu");
+    } else if (STREQ(guestarch, "itanium")) {
+        ret = virFindFileInPath("qemu-system-ia64");
+    } else {
+        char *bin;
+        if (virAsprintf(&bin, "qemu-system-%s", guestarch) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+        ret = virFindFileInPath(bin);
+        VIR_FREE(bin);
+    }
+    if (ret && !virFileIsExecutable(ret))
+        VIR_FREE(ret);
+    return ret;
+}
+
+static int
+qemuCapsGetArchWordSize(const char *guestarch)
+{
+    if (STREQ(guestarch, "i686") ||
+        STREQ(guestarch, "ppc") ||
+        STREQ(guestarch, "sparc") ||
+        STREQ(guestarch, "mips") ||
+        STREQ(guestarch, "mipsel"))
+        return 32;
+    return 64;
+}
+
+static bool
+qemuCapsIsValidForKVM(const char *hostarch,
+                      const char *guestarch)
+{
+    if (STREQ(hostarch, guestarch))
+        return true;
+    if (STREQ(hostarch, "x86_64") &&
+        STREQ(guestarch, "i686"))
+        return true;
+    return false;
+}
+
 static int
 qemuCapsInitGuest(virCapsPtr caps,
                   qemuCapsCachePtr cache,
-                  const char *hostmachine,
-                  const struct qemu_arch_info *info)
+                  const char *hostarch,
+                  const char *guestarch)
 {
     virCapsGuestPtr guest;
     int i;
@@ -591,12 +603,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     /* Check for existance of base emulator, or alternate base
      * which can be used with magic cpu choice
      */
-    binary = virFindFileInPath(info->binary);
-
-    if (binary == NULL || !virFileIsExecutable(binary)) {
-        VIR_FREE(binary);
-        binary = virFindFileInPath(info->altbinary);
-    }
+    binary = qemuCapsFindBinaryForArch(hostarch, guestarch);
 
     /* Ignore binary if extracting version info fails */
     if (binary) {
@@ -612,8 +619,7 @@ qemuCapsInitGuest(virCapsPtr caps,
      *  - hostarch is x86_64 and guest arch is i686
      * The latter simply needs "-cpu qemu32"
      */
-    if (STREQ(info->arch, hostmachine) ||
-        (STREQ(hostmachine, "x86_64") && STREQ(info->arch, "i686"))) {
+    if (qemuCapsIsValidForKVM(hostarch, guestarch)) {
         const char *const kvmbins[] = { "/usr/libexec/qemu-kvm", /* RHEL */
                                         "qemu-kvm", /* Fedora */
                                         "kvm" }; /* Upstream .spec */
@@ -660,8 +666,8 @@ qemuCapsInitGuest(virCapsPtr caps,
      * just give -no-kvm to disable acceleration if required */
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "hvm",
-                                         info->arch,
-                                         info->wordsize,
+                                         guestarch,
+                                         qemuCapsGetArchWordSize(guestarch),
                                          binary,
                                          NULL,
                                          nmachines,
@@ -718,15 +724,16 @@ qemuCapsInitGuest(virCapsPtr caps,
 
     }
 
-    if (info->nflags) {
-        for (i = 0 ; i < info->nflags ; i++) {
-            if (virCapabilitiesAddGuestFeature(guest,
-                                               info->flags[i].name,
-                                               info->flags[i].default_on,
-                                               info->flags[i].toggle) == NULL)
-                goto error;
-        }
-    }
+    if ((STREQ(guestarch, "i686") ||
+         STREQ(guestarch, "x86_64")) &&
+        (virCapabilitiesAddGuestFeature(guest, "acpi", 1, 1) == NULL ||
+         virCapabilitiesAddGuestFeature(guest, "apic", 1, 0) == NULL))
+        goto error;
+
+    if (STREQ(guestarch, "i686") &&
+        (virCapabilitiesAddGuestFeature(guest, "pae", 1, 0) == NULL ||
+         virCapabilitiesAddGuestFeature(guest, "nonpae", 1, 0) == NULL))
+        goto error;
 
     ret = 0;
 
@@ -798,13 +805,20 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     struct utsname utsname;
     virCapsPtr caps;
     int i;
+    const char *const arches[] = {
+        "i686", "x86_64", "arm",
+        "microblaze", "microblazeel",
+        "mips", "mipsel", "sparc",
+        "ppc", "ppc64", "itanium",
+        "s390x"
+    };
 
     /* Really, this never fails - look at the man-page. */
     uname (&utsname);
 
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    1, 1)) == NULL)
-        goto no_memory;
+        goto error;
 
     /* Using KVM's mac prefix for QEMU too */
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
@@ -830,11 +844,11 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
                                            "tcp");
 
     /* First the pure HVM guests */
-    for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
+    for (i = 0 ; i < ARRAY_CARDINALITY(arches) ; i++)
         if (qemuCapsInitGuest(caps, cache,
                               utsname.machine,
-                              &arch_info_hvm[i]) < 0)
-            goto no_memory;
+                              arches[i]) < 0)
+            goto error;
 
     /* QEMU Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
@@ -843,7 +857,7 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
 
     return caps;
 
- no_memory:
+error:
     virCapabilitiesFree(caps);
     return NULL;
 }
