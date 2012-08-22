@@ -143,7 +143,7 @@
             </dl>
           </dd>
           <dt><code>scsi</code></dt>
-          <dd>Desribes a SCSI device.  Sub-elements include:
+          <dd>Describes a SCSI device.  Sub-elements include:
             <dl>
               <dt><code>host</code></dt>
               <dd>The SCSI host containing the device.</dd>
@@ -184,7 +184,7 @@
                 available.</dd>
               <dt><code>capability</code></dt>
               <dd>If present, an additional capability is listed via
-                the attribute <code>type</code>.  Current capabilites
+                the attribute <code>type</code>.  Current capabilities
                 include "hotpluggable" and "removable", with the
                 latter implying the following
                 sub-elements: <code>media_available</code> (0 or

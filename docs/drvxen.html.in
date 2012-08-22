@@ -59,7 +59,7 @@
 
     <p>
     The libvirt Xen driver is a single-instance privileged driver,
-    with a driver name of 'xen'. Some example conection URIs for
+    with a driver name of 'xen'. Some example connection URIs for
     the libvirt driver are:
     </p>
 

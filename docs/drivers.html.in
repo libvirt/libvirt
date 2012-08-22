@@ -31,7 +31,7 @@
       <li><strong><a href="drvhyperv.html">Microsoft Hyper-V</a></strong></li>
     </ul>
 
-    <h2><a name="stroage">Storage drivers</a></h2>
+    <h2><a name="storage">Storage drivers</a></h2>
 
     <ul>
       <li><strong><a href="storage.html#StorageBackendDir">Directory backend</a></strong></li>

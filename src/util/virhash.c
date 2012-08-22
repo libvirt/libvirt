@@ -360,7 +360,7 @@ virHashUpdateEntry(virHashTablePtr table, const void *name,
  *
  * Find the userdata specified by @name
  *
- * Returns the a pointer to the userdata
+ * Returns a pointer to the userdata
  */
 void *
 virHashLookup(virHashTablePtr table, const void *name)
@@ -388,7 +388,7 @@ virHashLookup(virHashTablePtr table, const void *name)
  * Find the userdata specified by @name
  * and remove it from the hash without freeing it.
  *
- * Returns the a pointer to the userdata
+ * Returns a pointer to the userdata
  */
 void *virHashSteal(virHashTablePtr table, const void *name)
 {

@@ -165,7 +165,7 @@
     <p>
       If all went well, libvirtd will have talked to sanlock
       and created the basic lockspace. This can be checked
-      by looking for existance of the following file
+      by looking for existence of the following file
     </p>
 
     <pre>

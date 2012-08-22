@@ -54,7 +54,7 @@
     The libvirt QEMU driver is a multi-instance driver, providing a single
     system wide privileged driver (the "system" instance), and per-user
     unprivileged drivers (the "session" instance). The URI driver protocol
-    is "qemu". Some example conection URIs for the libvirt driver are:
+    is "qemu". Some example connection URIs for the libvirt driver are:
     </p>
 
 <pre>
@@ -476,7 +476,7 @@ $ virsh domxml-from-native qemu-argv demo.args
 &lt;/domain&gt;
 </pre>
 
-    <p>NB, don't include the literral \ in the args, put everything on one line</p>
+    <p>NB, don't include the literal \ in the args, put everything on one line</p>
 
     <h3><a name="xmlexport">Converting from domain XML to QEMU args</a></h3>
 

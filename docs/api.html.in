@@ -43,7 +43,7 @@
       <li>virNetworkPtr: represent one network either active or defined (i.e.
       existing as permanent config file and storage but not currently activated.
       The function <code class='docref'>virConnectListNetworks</code>
-      allows to list all the virtualization networks actived on this node.</li>
+      allows to list all the virtualization networks activated on this node.</li>
       <li>virStorageVolPtr: represent one storage volume, usually this is used
       as a block device available to one of the domains. The function
       <code class="docref">virStorageVolLookupByPath</code> allows to find

@@ -493,7 +493,7 @@
       <dt><code>memory</code></dt>
       <dd>The maximum allocation of memory for the guest at boot time.
         The units for this value are determined by the optional
-        atttribute <code>unit</code>, which defaults to "KiB"
+        attribute <code>unit</code>, which defaults to "KiB"
         (kibibytes, 2<sup>10</sup> or blocks of 1024 bytes).  Valid
         units are "b" or "bytes" for bytes, "KB" for kilobytes
         (10<sup>3</sup> or 1,000 bytes), "k" or "KiB" for kibibytes
@@ -1491,7 +1491,7 @@
             The optional <code>event_idx</code> attribute controls
             some aspects of device event processing. The value can be
             either 'on' or 'off' - if it is on, it will reduce the
-            number of interupts and exits for the guest. The default
+            number of interrupts and exits for the guest. The default
             is determined by QEMU; usually if the feature is
             supported, default is on. In case there is a situation
             where this behavior is suboptimal, this attribute provides
@@ -1502,7 +1502,7 @@
           </li>
           <li>
             The optional <code>copy_on_read</code> attribute controls
-            wether to copy read backing file into the image file. The
+            whether to copy read backing file into the image file. The
             value can be either "on" or "off".
             Copy-on-read avoids accessing the same backing file sectors
             repeatedly and is useful when the backing file is over a slow
@@ -2795,7 +2795,7 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         The <code>event_idx</code> attribute controls some aspects of
         device event processing. The value can be either 'on' or 'off'
-        - if it is on, it will reduce the number of interupts and
+        - if it is on, it will reduce the number of interrupts and
         exits for the guest. The default is determined by QEMU;
         usually if the feature is supported, default is on. In case
         there is a situation where this behavior is suboptimal, this

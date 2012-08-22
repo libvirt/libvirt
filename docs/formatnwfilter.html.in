@@ -605,7 +605,7 @@
     </ul>
     <p>
      The above example indicates that the traffic of type <code>ip</code>
-     will be asscociated with the chain 'ipv4' and the rule will have
+     will be associated with the chain 'ipv4' and the rule will have
      priority 500. If for example another filter is referenced whose
      traffic of type <code>ip</code> is also associated with the chain
      'ipv4' then that filter's rules will be ordered relative to the priority
@@ -632,7 +632,7 @@
     <ul>
      <li>UINT8 : 8 bit integer; range 0-255</li>
      <li>UINT16: 16 bit integer; range 0-65535</li>
-     <li>MAC_ADDR: MAC adrress in dotted decimal format, i.e., 00:11:22:33:44:55</li>
+     <li>MAC_ADDR: MAC address in dotted decimal format, i.e., 00:11:22:33:44:55</li>
      <li>MAC_MASK: MAC address mask in MAC address format, i.e., FF:FF:FF:FC:00:00</li>
      <li>IP_ADDR: IP address in dotted decimal format, i.e., 10.1.2.3</li>
      <li>IP_MASK: IP address mask in either dotted decimal format (255.255.248.0) or CIDR mask (0-32)</li>
@@ -810,7 +810,7 @@
        <tr>
          <td>type</td>
          <td>UINT8</td>
-         <td>Bridge Protcol Data Unit (BPDU) type</td>
+         <td>Bridge Protocol Data Unit (BPDU) type</td>
        </tr>
        <tr>
          <td>flags</td>
@@ -1911,7 +1911,7 @@
       unresponsive due to its traffic being dropped.
       Therefore, the limit of connections should be rather high so that
       fluctuations in new TCP connections don't cause odd
-      traffic behavior in relaton to idle connections.
+      traffic behavior in relation to idle connections.
     </p>
 
     <h2><a name="nwfcli">Command line tools</a></h2>
@@ -2053,7 +2053,7 @@
     tree that instantiates iptables or ip6tables rules, a rule to let
     the UDP packet pass will also be necessary to be provided for those
     filtering layers. This can be
-    achieved with a rule containing an approriate <code>udp</code> or
+    achieved with a rule containing an appropriate <code>udp</code> or
     <code>udp-ipv6</code> traffic filtering node.
     </p>
 
@@ -2253,7 +2253,7 @@
 </pre>
     <p>
      Before trying out a filter using the <code>RELATED</code> state,
-     you have to make sure that the approriate connection tracking module
+     you have to make sure that the appropriate connection tracking module
      has been loaded into the host's kernel. Depending on the version of the
      kernel, you must run either one of the following two commands before
      the ftp connection with the VM is established.

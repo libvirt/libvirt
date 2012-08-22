@@ -341,7 +341,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
             if (i > 0) {
                 virReportError(VIR_ERR_SSH, "%s",
                                _("no suitable method to retrieve "
-                                 "authentication cretentials"));
+                                 "authentication credentials"));
                 return -1;
             }
 
@@ -733,7 +733,7 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSessionPtr sess,
         case VIR_NET_SSH_AUTHCB_NO_METHOD:
             virReportError(VIR_ERR_SSH, "%s",
                            _("no suitable method to retrieve "
-                             "authentication cretentials"));
+                             "authentication credentials"));
             return -1;
         case VIR_NET_SSH_AUTHCB_OOM:
             virReportOOMError();

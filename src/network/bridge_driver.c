@@ -2877,7 +2877,7 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
             }
             else {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Direct mode types requires interface names"));
+                               _("Direct mode types require interface names"));
                 goto finish;
             }
         }

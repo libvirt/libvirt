@@ -255,7 +255,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix mistakes in augeas lens (Daniel P. Berrange),<br/>
       Standardize whitespace used in example config files (Daniel P. Berrange),<br/>
       Remove uid param from directory lookup APIs (Daniel P. Berrange),<br/>
-      Fix check for socket existance / daemon spawn (Daniel P. Berrange),<br/>
+      Fix check for socket existence / daemon spawn (Daniel P. Berrange),<br/>
       Remove last usage of PATH_MAX and ban its future use (Daniel P. Berrange),<br/>
       maint: avoid new automake warning about AM_PROG_CC_STDC (Jim Meyering),<br/>
       build: silence libtool warning on probes.o (Eric Blake),<br/>
@@ -1694,7 +1694,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: fix linking on BSD (Eric Blake),<br/>
       remote: fix mingw32 build (Laine Stump),<br/>
       build: fix deep VPATH builds (Eric Blake),<br/>
-      Use ENAMETOOLONG if the the socket path is longer than UNIX_PATH_MAX (Guido Günther),<br/>
+      Use ENAMETOOLONG if the socket path is longer than UNIX_PATH_MAX (Guido Günther),<br/>
       build: avoid RHEL 5 build failure on LXC (Eric Blake),<br/>
       build: use gnulib fdatasync (Eric Blake),<br/>
       Fix virFileOpenTty definition on Win32 (Daniel P. Berrange),<br/>
@@ -6380,7 +6380,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Convert QEMU driver all hotunplug code from pci_del to device_del (Daniel P. Berrange),<br/>
       Support hot-unplug for USB devices in QEMU (Daniel P. Berrange),<br/>
       Tweak container initialization to make upstart/init happier (Daniel P. Berrange),<br/>
-      Avoid creating top level cgroups if just querying for existance (Daniel P. Berrange),<br/>
+      Avoid creating top level cgroups if just querying for existence (Daniel P. Berrange),<br/>
       Support VCPU hotplug in QEMU guests (Daniel P. Berrange),<br/>
       Fix mis-leading error message in pool delete API (Daniel P. Berrange),<br/>
       Fix typo in QEMU migration command name (Daniel P. Berrange),<br/>
@@ -7039,7 +7039,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Enable udev instead of hal on F12 / RHEL-6 or later (Daniel P. Berrange),<br/>
       python: Actually implement list*Interfaces bindings (Cole Robinson),<br/>
       esx: Handle 'vmxnet3' in esxVMX_FormatEthernet() (Matthias Bolte),<br/>
-      Fix check for existance of cgroups at creation (Daniel P. Berrange),<br/>
+      Fix check for existence of cgroups at creation (Daniel P. Berrange),<br/>
       Fix virt-aa-helper when host and os.type arch differ (Jamie Strandboge),<br/>
       Add translation of PCI vendor and product IDs (David Allan),<br/>
       Add scsi_target device type (David Allan),<br/>
