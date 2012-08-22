@@ -155,6 +155,9 @@ enum qemuCapsFlags {
 typedef struct _qemuCaps qemuCaps;
 typedef qemuCaps *qemuCapsPtr;
 
+typedef struct _qemuCapsCache qemuCapsCache;
+typedef qemuCapsCache *qemuCapsCachePtr;
+
 qemuCapsPtr qemuCapsNew(void);
 qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
 qemuCapsPtr qemuCapsNewForBinary(const char *binary);
@@ -183,6 +186,12 @@ const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
                                         const char *name);
 
 bool qemuCapsIsValid(qemuCapsPtr caps);
+
+
+qemuCapsCachePtr qemuCapsCacheNew(void);
+qemuCapsPtr qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary);
+qemuCapsPtr qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary);
+void qemuCapsCacheFree(qemuCapsCachePtr cache);
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 

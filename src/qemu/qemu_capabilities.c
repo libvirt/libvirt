@@ -207,6 +207,11 @@ struct _qemuCaps {
     char **machineAliases;
 };
 
+struct _qemuCapsCache {
+    virMutex lock;
+    virHashTablePtr binaries;
+};
+
 
 static virClassPtr qemuCapsClass;
 static void qemuCapsDispose(void *obj);
@@ -2054,4 +2059,99 @@ bool qemuCapsIsValid(qemuCapsPtr caps)
         return false;
 
     return sb.st_mtime == caps->mtime;
+}
+
+
+static void
+qemuCapsHashDataFree(void *payload, const void *key ATTRIBUTE_UNUSED)
+{
+    virObjectUnref(payload);
+}
+
+
+qemuCapsCachePtr
+qemuCapsCacheNew(void)
+{
+    qemuCapsCachePtr cache;
+
+    if (VIR_ALLOC(cache) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (virMutexInit(&cache->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
+        VIR_FREE(cache);
+        return NULL;
+    }
+
+    if (!(cache->binaries = virHashCreate(10, qemuCapsHashDataFree)))
+        goto error;
+
+    return cache;
+
+error:
+    qemuCapsCacheFree(cache);
+    return NULL;
+}
+
+
+qemuCapsPtr
+qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary)
+{
+    qemuCapsPtr ret = NULL;
+    virMutexLock(&cache->lock);
+    ret = virHashLookup(cache->binaries, binary);
+    if (ret &&
+        !qemuCapsIsValid(ret)) {
+        VIR_DEBUG("Cached capabilities %p no longer valid for %s",
+                  ret, binary);
+        virHashRemoveEntry(cache->binaries, binary);
+        ret = NULL;
+    }
+    if (!ret) {
+        VIR_DEBUG("Creating capabilities for %s",
+                  binary);
+        ret = qemuCapsNewForBinary(binary);
+        if (ret) {
+            VIR_DEBUG("Caching capabilities %p for %s",
+                      ret, binary);
+            if (virHashAddEntry(cache->binaries, binary, ret) < 0) {
+                virObjectUnref(ret);
+                ret = NULL;
+            }
+        }
+    }
+    VIR_DEBUG("Returning caps %p for %s", ret, binary);
+    virObjectRef(ret);
+    virMutexUnlock(&cache->lock);
+    return ret;
+}
+
+
+qemuCapsPtr
+qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary)
+{
+    qemuCapsPtr caps = qemuCapsCacheLookup(cache, binary);
+    qemuCapsPtr ret;
+
+    if (!caps)
+        return NULL;
+
+    ret = qemuCapsNewCopy(caps);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
+void
+qemuCapsCacheFree(qemuCapsCachePtr cache)
+{
+    if (!cache)
+        return;
+
+    virHashFree(cache->binaries);
+    virMutexDestroy(&cache->lock);
+    VIR_FREE(cache);
 }
