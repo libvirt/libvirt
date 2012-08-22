@@ -54,6 +54,11 @@ typedef void (*virNetlinkEventRemoveCallback)(int watch, const virMacAddrPtr mac
 int virNetlinkEventServiceStop(unsigned int protocol);
 
 /**
+ * stopNetlinkEventServerAll: stop all the monitors to receive netlink messages for libvirtd
+ */
+int virNetlinkEventServiceStopAll(void);
+
+/**
  * startNetlinkEventServer: start a monitor to receive netlink messages for libvirtd
  */
 int virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups);

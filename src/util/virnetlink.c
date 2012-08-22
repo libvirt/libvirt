@@ -405,6 +405,46 @@ virNetlinkEventServiceStop(unsigned int protocol)
 }
 
 /**
+ * virNetlinkEventServiceStopAll:
+ *
+ * Stop all the monitors to receive netlink messages for libvirtd.
+ *
+ * Returns -1 if any monitor cannot be unregistered, 0 upon success
+ */
+int
+virNetlinkEventServiceStopAll(void)
+{
+    unsigned int i, j;
+    virNetlinkEventSrvPrivatePtr srv = NULL;
+
+    VIR_INFO("stopping all netlink event services");
+
+    for (i = 0; i < MAX_LINKS; i++) {
+        srv = server[i];
+        if (!srv)
+            continue;
+
+        virNetlinkEventServerLock(srv);
+        nl_close(srv->netlinknh);
+        virNetlinkFree(srv->netlinknh);
+        virEventRemoveHandle(srv->eventwatch);
+
+        for (j = 0; j < srv->handlesCount; j++) {
+            if (srv->handles[j].deleted == VIR_NETLINK_HANDLE_VALID)
+                virNetlinkEventRemoveClientPrimitive(j, i);
+        }
+
+        server[i] = NULL;
+        virNetlinkEventServerUnlock(srv);
+
+        virMutexDestroy(&srv->lock);
+        VIR_FREE(srv);
+    }
+
+    return 0;
+}
+
+/**
  * virNetlinkEventServiceIsRunning:
  *
  * Returns if the netlink event service is running.
@@ -726,6 +766,16 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
  * messages for libvirtd
  */
 int virNetlinkEventServiceStop(unsigned int protocol ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("%s", _(unsupported));
+    return 0;
+}
+
+/**
+ * stopNetlinkEventServerAll: stop all the monitors to receive netlink
+ * messages for libvirtd
+ */
+int virNetlinkEventServiceStopAll(void)
 {
     VIR_DEBUG("%s", _(unsupported));
     return 0;

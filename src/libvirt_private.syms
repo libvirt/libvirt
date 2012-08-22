@@ -1483,6 +1483,7 @@ virNetlinkEventRemoveClient;
 virNetlinkEventServiceIsRunning;
 virNetlinkEventServiceLocalPid;
 virNetlinkEventServiceStop;
+virNetlinkEventServiceStopAll;
 virNetlinkEventServiceStart;
 virNetlinkShutdown;
 virNetlinkStartup;

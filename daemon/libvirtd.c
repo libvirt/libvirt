@@ -1327,7 +1327,7 @@ int main(int argc, char **argv) {
                 0, "shutdown", NULL, NULL);
 
 cleanup:
-    virNetlinkEventServiceStop(NETLINK_ROUTE);
+    virNetlinkEventServiceStopAll();
     virObjectUnref(remoteProgram);
     virObjectUnref(qemuProgram);
     virNetServerClose(srv);
