@@ -237,7 +237,6 @@ struct qemu_feature_flags {
 struct qemu_arch_info {
     const char *arch;
     int wordsize;
-    const char *machine;
     const char *binary;
     const char *altbinary;
     const struct qemu_feature_flags *flags;
@@ -259,25 +258,20 @@ static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
 
 /* The archicture tables for supported QEMU archs */
 static const struct qemu_arch_info const arch_info_hvm[] = {
-    {  "i686",   32, NULL, "qemu",
+    {  "i686",   32, "qemu",
        "qemu-system-x86_64", arch_info_i686_flags, 4 },
-    {  "x86_64", 64, NULL, "qemu-system-x86_64",
+    {  "x86_64", 64, "qemu-system-x86_64",
        NULL, arch_info_x86_64_flags, 2 },
-    {  "arm",    32, NULL, "qemu-system-arm",    NULL, NULL, 0 },
-    {  "microblaze", 32, NULL, "qemu-system-microblaze",   NULL, NULL, 0 },
-    {  "microblazeel", 32, NULL, "qemu-system-microblazeel",   NULL, NULL, 0 },
-    {  "mips",   32, NULL, "qemu-system-mips",   NULL, NULL, 0 },
-    {  "mipsel", 32, NULL, "qemu-system-mipsel", NULL, NULL, 0 },
-    {  "sparc",  32, NULL, "qemu-system-sparc",  NULL, NULL, 0 },
-    {  "ppc",    32, NULL, "qemu-system-ppc",    NULL, NULL, 0 },
-    {  "ppc64",    64, NULL, "qemu-system-ppc64",    NULL, NULL, 0 },
-    {  "itanium", 64, NULL, "qemu-system-ia64",  NULL, NULL, 0 },
-    {  "s390x",  64, NULL, "qemu-system-s390x",  NULL, NULL, 0 },
-};
-
-static const struct qemu_arch_info const arch_info_xen[] = {
-    {  "i686",   32, "xenner", "xenner", NULL, arch_info_i686_flags, 4 },
-    {  "x86_64", 64, "xenner", "xenner", NULL, arch_info_x86_64_flags, 2 },
+    {  "arm",    32, "qemu-system-arm",    NULL, NULL, 0 },
+    {  "microblaze", 32, "qemu-system-microblaze",   NULL, NULL, 0 },
+    {  "microblazeel", 32, "qemu-system-microblazeel",   NULL, NULL, 0 },
+    {  "mips",   32, "qemu-system-mips",   NULL, NULL, 0 },
+    {  "mipsel", 32, "qemu-system-mipsel", NULL, NULL, 0 },
+    {  "sparc",  32, "qemu-system-sparc",  NULL, NULL, 0 },
+    {  "ppc",    32, "qemu-system-ppc",    NULL, NULL, 0 },
+    {  "ppc64",    64, "qemu-system-ppc64",    NULL, NULL, 0 },
+    {  "itanium", 64, "qemu-system-ia64",  NULL, NULL, 0 },
+    {  "s390x",  64, "qemu-system-s390x",  NULL, NULL, 0 },
 };
 
 
@@ -580,8 +574,7 @@ static int
 qemuCapsInitGuest(virCapsPtr caps,
                   qemuCapsCachePtr cache,
                   const char *hostmachine,
-                  const struct qemu_arch_info *info,
-                  int hvm)
+                  const struct qemu_arch_info *info)
 {
     virCapsGuestPtr guest;
     int i;
@@ -660,36 +653,13 @@ qemuCapsInitGuest(virCapsPtr caps,
         qemuCapsGet(qemubinCaps, QEMU_CAPS_KQEMU))
         haskqemu = 1;
 
-    if (info->machine) {
-        virCapsGuestMachinePtr machine;
-
-        if (VIR_ALLOC(machine) < 0) {
-            goto no_memory;
-        }
-
-        if (!(machine->name = strdup(info->machine))) {
-            VIR_FREE(machine);
-            goto no_memory;
-        }
-
-        nmachines = 1;
-
-        if (VIR_ALLOC_N(machines, nmachines) < 0) {
-            VIR_FREE(machine->name);
-            VIR_FREE(machine);
-            goto no_memory;
-        }
-
-        machines[0] = machine;
-    } else {
-        if (qemuCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
-            goto error;
-    }
+    if (qemuCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
+        goto error;
 
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
     if ((guest = virCapabilitiesAddGuest(caps,
-                                         hvm ? "hvm" : "xen",
+                                         "hvm",
                                          info->arch,
                                          info->wordsize,
                                          binary,
@@ -710,52 +680,42 @@ qemuCapsInitGuest(virCapsPtr caps,
         !virCapabilitiesAddGuestFeature(guest, "deviceboot", 1, 0))
         goto error;
 
-    if (hvm) {
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          "qemu",
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      "qemu",
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL)
+        goto error;
+
+    if (haskqemu &&
+        virCapabilitiesAddGuestDomain(guest,
+                                      "kqemu",
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL)
+        goto error;
+
+    if (haskvm) {
+        virCapsGuestDomainPtr dom;
+
+        if (kvmbin &&
+            qemuCapsGetMachineTypesCaps(kvmbinCaps, &nmachines, &machines) < 0)
             goto error;
 
-        if (haskqemu &&
-            virCapabilitiesAddGuestDomain(guest,
-                                          "kqemu",
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
+        if ((dom = virCapabilitiesAddGuestDomain(guest,
+                                                 "kvm",
+                                                 kvmbin ? kvmbin : binary,
+                                                 NULL,
+                                                 nmachines,
+                                                 machines)) == NULL) {
             goto error;
-
-        if (haskvm) {
-            virCapsGuestDomainPtr dom;
-
-            if (kvmbin &&
-                qemuCapsGetMachineTypesCaps(kvmbinCaps, &nmachines, &machines) < 0)
-                goto error;
-
-            if ((dom = virCapabilitiesAddGuestDomain(guest,
-                                                     "kvm",
-                                                     kvmbin ? kvmbin : binary,
-                                                     NULL,
-                                                     nmachines,
-                                                     machines)) == NULL) {
-                goto error;
-            }
-
-            machines = NULL;
-            nmachines = 0;
-
         }
-    } else {
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          "kvm",
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
-            goto error;
+
+        machines = NULL;
+        nmachines = 0;
+
     }
 
     if (info->nflags) {
@@ -777,9 +737,6 @@ cleanup:
     virObjectUnref(kvmbinCaps);
 
     return ret;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virCapabilitiesFreeMachines(machines, nmachines);
@@ -841,7 +798,6 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     struct utsname utsname;
     virCapsPtr caps;
     int i;
-    char *xenner = NULL;
 
     /* Really, this never fails - look at the man-page. */
     uname (&utsname);
@@ -877,27 +833,8 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_hvm) ; i++)
         if (qemuCapsInitGuest(caps, cache,
                               utsname.machine,
-                              &arch_info_hvm[i], 1) < 0)
+                              &arch_info_hvm[i]) < 0)
             goto no_memory;
-
-    /* Then possibly the Xen paravirt guests (ie Xenner */
-    xenner = virFindFileInPath("xenner");
-
-    if (xenner != NULL && virFileIsExecutable(xenner) == 0 &&
-        access("/dev/kvm", F_OK) == 0) {
-        for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_xen) ; i++)
-            /* Allow Xen 32-on-32, 32-on-64 and 64-on-64 */
-            if (STREQ(arch_info_xen[i].arch, utsname.machine) ||
-                (STREQ(utsname.machine, "x86_64") &&
-                 STREQ(arch_info_xen[i].arch, "i686"))) {
-                if (qemuCapsInitGuest(caps, cache,
-                                      utsname.machine,
-                                      &arch_info_xen[i], 0) < 0)
-                    goto no_memory;
-            }
-    }
-
-    VIR_FREE(xenner);
 
     /* QEMU Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
@@ -907,7 +844,6 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     return caps;
 
  no_memory:
-    VIR_FREE(xenner);
     virCapabilitiesFree(caps);
     return NULL;
 }
