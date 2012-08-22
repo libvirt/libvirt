@@ -539,7 +539,11 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     virCommandAddArgList(cmd, "--strict-order", "--bind-interfaces", NULL);
 
     if (network->def->domain)
-        virCommandAddArgList(cmd, "--domain", network->def->domain, NULL);
+        virCommandAddArgPair(cmd, "--domain", network->def->domain);
+    /* need to specify local even if no domain specified */
+    virCommandAddArgFormat(cmd, "--local=/%s/",
+                           network->def->domain ? network->def->domain : "");
+    virCommandAddArgList(cmd, "--domain-needed", "--filterwin2k", NULL);
 
     if (pidfile)
         virCommandAddArgPair(cmd, "--pid-file", pidfile);
