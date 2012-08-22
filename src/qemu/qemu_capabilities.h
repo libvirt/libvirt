@@ -162,7 +162,8 @@ typedef qemuCapsCache *qemuCapsCachePtr;
 
 qemuCapsPtr qemuCapsNew(void);
 qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
-qemuCapsPtr qemuCapsNewForBinary(const char *binary);
+qemuCapsPtr qemuCapsNewForBinary(const char *binary,
+                                 const char *libDir);
 
 int qemuCapsProbeQMP(qemuCapsPtr caps,
                      qemuMonitorPtr mon);
@@ -200,7 +201,7 @@ int qemuCapsGetMachineTypesCaps(qemuCapsPtr caps,
 bool qemuCapsIsValid(qemuCapsPtr caps);
 
 
-qemuCapsCachePtr qemuCapsCacheNew(void);
+qemuCapsCachePtr qemuCapsCacheNew(const char *libDir);
 qemuCapsPtr qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary);
 qemuCapsPtr qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary);
 void qemuCapsCacheFree(qemuCapsCachePtr cache);
