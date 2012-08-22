@@ -1318,6 +1318,12 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    /* Register the netlink event service for NETLINK_KOBJECT_UEVENT */
+    if (virNetlinkEventServiceStart(NETLINK_KOBJECT_UEVENT, 1) < 0) {
+        ret = VIR_DAEMON_ERR_NETWORK;
+        goto cleanup;
+    }
+
     /* Run event loop. */
     virNetServerRun(srv);
 
