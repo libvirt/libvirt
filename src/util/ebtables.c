@@ -55,7 +55,7 @@ virEbTablesOnceInit(void)
 {
     firewall_cmd_path = virFindFileInPath("firewall-cmd");
     if (!firewall_cmd_path) {
-        VIR_WARN("firewall-cmd not found on system. "
+        VIR_INFO("firewall-cmd not found on system. "
                  "firewalld support disabled for ebtables.");
     } else {
         virCommandPtr cmd = virCommandNew(firewall_cmd_path);
@@ -63,11 +63,11 @@ virEbTablesOnceInit(void)
 
         virCommandAddArgList(cmd, "--state", NULL);
         if (virCommandRun(cmd, &status) < 0 || status != 0) {
-            VIR_WARN("firewall-cmd found but disabled for ebtables");
+            VIR_INFO("firewall-cmd found but disabled for ebtables");
             VIR_FREE(firewall_cmd_path);
             firewall_cmd_path = NULL;
         } else {
-            VIR_WARN("using firewalld for ebtables commands");
+            VIR_INFO("using firewalld for ebtables commands");
         }
         virCommandFree(cmd);
     }
