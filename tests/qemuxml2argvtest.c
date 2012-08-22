@@ -157,10 +157,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(log);
     virResetLastError();
 
-    /* We do not call qemuCapsExtractVersionInfo() before calling
-     * qemuBuildCommandLine(), so we should set QEMU_CAPS_PCI_MULTIBUS for
-     * x86_64 and i686 architectures here.
-     */
     if (STREQLEN(vmdef->os.arch, "x86_64", 6) ||
         STREQLEN(vmdef->os.arch, "i686", 4)) {
         qemuCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);

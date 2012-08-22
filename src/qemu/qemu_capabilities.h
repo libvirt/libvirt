@@ -27,6 +27,7 @@
 # include "virobject.h"
 # include "capabilities.h"
 # include "command.h"
+# include "virobject.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemuCapsFlags {
@@ -211,13 +212,9 @@ int qemuCapsProbeCPUModels(const char *qemu,
                            size_t *count,
                            const char ***cpus);
 
-int qemuCapsExtractVersion(virCapsPtr caps,
-                           unsigned int *version);
-int qemuCapsExtractVersionInfo(const char *qemu,
-                               const char *arch,
-                               bool check_yajl,
-                               unsigned int *version,
-                               qemuCapsPtr *retcaps);
+int qemuCapsGetDefaultVersion(virCapsPtr caps,
+                              qemuCapsCachePtr capsCache,
+                              unsigned int *version);
 
 int qemuCapsParseHelpStr(const char *qemu,
                          const char *str,

@@ -188,7 +188,8 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
 
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               qemuCapsPtr caps,
-                              virDomainObjPtr);
+                              virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
                                       qemuCapsPtr caps);
 

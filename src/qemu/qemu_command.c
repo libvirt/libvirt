@@ -810,33 +810,13 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
 
 }
 
-static int
+static void
 qemuDomainAssignS390Addresses(virDomainDefPtr def, qemuCapsPtr caps)
 {
-    int ret = -1;
-    qemuCapsPtr localCaps = NULL;
-
-    if (!caps) {
-        /* need to get information from real environment */
-        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
-                                       false, NULL,
-                                       &localCaps) < 0)
-            goto cleanup;
-        caps = localCaps;
-    }
-
-    if (qemuCapsGet(caps, QEMU_CAPS_VIRTIO_S390)) {
-        /* deal with legacy virtio-s390 */
+    /* deal with legacy virtio-s390 */
+    if (qemuCapsGet(caps, QEMU_CAPS_VIRTIO_S390))
         qemuDomainPrimeS390VirtioDevices(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390);
-    }
-
-    ret = 0;
-
-cleanup:
-    virObjectUnref(localCaps);
-
-    return ret;
 }
 
 static int
@@ -863,7 +843,7 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
                           unsigned long long default_reg)
 {
     bool user_reg;
-    int rc;
+    int ret;
 
     if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
         return 0;
@@ -875,8 +855,8 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
         info->addr.spaprvio.has_reg = true;
     }
 
-    rc = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
-    while (rc != 0) {
+    ret = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
+    while (ret != 0) {
         if (user_reg) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("spapr-vio address %#llx already in use"),
@@ -886,7 +866,7 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
 
         /* We assigned the reg, so try a new value */
         info->addr.spaprvio.reg += 0x1000;
-        rc = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
+        ret = virDomainDeviceInfoIterate(def, qemuSpaprVIOFindByReg, info);
     }
 
     return 0;
@@ -895,45 +875,32 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
                                       qemuCapsPtr caps)
 {
-    int i, rc = -1;
+    int i, ret = -1;
     int model;
-    qemuCapsPtr localCaps = NULL;
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
-
-    if (!caps) {
-        /* need to get information from real environment */
-        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
-                                       false, NULL,
-                                       &localCaps) < 0)
-            goto cleanup;
-        caps = localCaps;
-    }
 
     for (i = 0 ; i < def->nnets; i++) {
         if (def->nets[i]->model &&
             STREQ(def->nets[i]->model, "spapr-vlan"))
             def->nets[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        rc = qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
-                                       0x1000ul);
-        if (rc)
+        if (qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
+                                      0x1000ul) < 0)
             goto cleanup;
     }
 
     for (i = 0 ; i < def->ncontrollers; i++) {
         model = def->controllers[i]->model;
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            rc = qemuSetScsiControllerModel(def, caps, &model);
-            if (rc)
+            if (qemuSetScsiControllerModel(def, caps, &model) < 0)
                 goto cleanup;
         }
 
         if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        rc = qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
-                                       0x2000ul);
-        if (rc)
+        if (qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
+                                      0x2000ul) < 0)
             goto cleanup;
     }
 
@@ -943,19 +910,17 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             STREQ(def->os.arch, "ppc64") &&
             STREQ(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        rc = qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
-                                       0x30000000ul);
-        if (rc)
+        if (qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
+                                      0x30000000ul) < 0)
             goto cleanup;
     }
 
     /* No other devices are currently supported on spapr-vio */
 
-    rc = 0;
+    ret = 0;
 
 cleanup:
-    virObjectUnref(localCaps);
-    return rc;
+    return ret;
 }
 
 #define QEMU_PCI_ADDRESS_LAST_SLOT 31
@@ -1070,19 +1035,8 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                              virDomainObjPtr obj)
 {
     int ret = -1;
-    qemuCapsPtr localCaps = NULL;
     qemuDomainPCIAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
-
-    if (!caps) {
-        /* need to get information from real environment */
-        if (qemuCapsExtractVersionInfo(def->emulator, def->os.arch,
-                                       false,
-                                       NULL,
-                                       &localCaps) < 0)
-            goto cleanup;
-        caps = localCaps;
-    }
 
     if (qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
         if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
@@ -1108,7 +1062,6 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     ret = 0;
 
 cleanup:
-    virObjectUnref(localCaps);
     qemuDomainPCIAddressSetFree(addrs);
 
     return ret;
@@ -1124,9 +1077,7 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
     if (rc)
         return rc;
 
-    rc = qemuDomainAssignS390Addresses(def, caps);
-    if (rc)
-        return rc;
+    qemuDomainAssignS390Addresses(def, caps);
 
     return qemuDomainAssignPCIAddresses(def, caps, obj);
 }

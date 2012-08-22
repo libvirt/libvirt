@@ -1471,79 +1471,6 @@ qemuCapsParseDeviceStr(const char *str, qemuCapsPtr caps)
     return 0;
 }
 
-int qemuCapsExtractVersionInfo(const char *qemu,
-                               const char *arch,
-                               bool check_yajl,
-                               unsigned int *retversion,
-                               qemuCapsPtr *retcaps)
-{
-    int ret = -1;
-    unsigned int version, is_kvm, kvm_version;
-    qemuCapsPtr caps = NULL;
-    char *help = NULL;
-    virCommandPtr cmd;
-
-    if (retcaps)
-        *retcaps = NULL;
-    if (retversion)
-        *retversion = 0;
-
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so it's hard to feed back a useful error.
-     */
-    if (!virFileIsExecutable(qemu)) {
-        virReportSystemError(errno, _("Cannot find QEMU binary %s"), qemu);
-        return -1;
-    }
-
-    cmd = qemuCapsProbeCommand(qemu, NULL);
-    virCommandAddArgList(cmd, "-help", NULL);
-    virCommandSetOutputBuffer(cmd, &help);
-
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    if (!(caps = qemuCapsNew()) ||
-        qemuCapsParseHelpStr(qemu, help, caps,
-                             &version, &is_kvm, &kvm_version,
-                             check_yajl) == -1)
-        goto cleanup;
-
-    /* Currently only x86_64 and i686 support PCI-multibus. */
-    if (STREQLEN(arch, "x86_64", 6) ||
-        STREQLEN(arch, "i686", 4)) {
-        qemuCapsSet(caps, QEMU_CAPS_PCI_MULTIBUS);
-    }
-
-    /* S390 and probably other archs do not support no-acpi -
-       maybe the qemu option parsing should be re-thought. */
-    if (STRPREFIX(arch, "s390"))
-        qemuCapsClear(caps, QEMU_CAPS_NO_ACPI);
-
-    /* qemuCapsExtractDeviceStr will only set additional caps if qemu
-     * understands the 0.13.0+ notion of "-device driver,".  */
-    if (qemuCapsGet(caps, QEMU_CAPS_DEVICE) &&
-        strstr(help, "-device driver,?") &&
-        qemuCapsExtractDeviceStr(qemu, caps) < 0)
-        goto cleanup;
-
-    if (retversion)
-        *retversion = version;
-    if (retcaps) {
-        *retcaps = caps;
-        caps = NULL;
-    }
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(help);
-    virCommandFree(cmd);
-    virObjectUnref(caps);
-
-    return ret;
-}
 
 static void
 uname_normalize (struct utsname *ut)
@@ -1559,12 +1486,13 @@ uname_normalize (struct utsname *ut)
         ut->machine[1] = '6';
 }
 
-int qemuCapsExtractVersion(virCapsPtr caps,
-                           unsigned int *version)
+int qemuCapsGetDefaultVersion(virCapsPtr caps,
+                              qemuCapsCachePtr capsCache,
+                              unsigned int *version)
 {
     const char *binary;
-    struct stat sb;
     struct utsname ut;
+    qemuCapsPtr qemucaps;
 
     if (*version > 0)
         return 0;
@@ -1579,17 +1507,11 @@ int qemuCapsExtractVersion(virCapsPtr caps,
         return -1;
     }
 
-    if (stat(binary, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("Cannot find QEMU binary %s"), binary);
+    if (!(qemucaps = qemuCapsCacheLookup(capsCache, binary)))
         return -1;
-    }
 
-    if (qemuCapsExtractVersionInfo(binary, ut.machine, false,
-                                   version, NULL) < 0) {
-        return -1;
-    }
-
+    *version = qemuCapsGetVersion(qemucaps);
+    virObjectUnref(qemucaps);
     return 0;
 }
 
