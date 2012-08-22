@@ -1683,6 +1683,24 @@ unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps)
 }
 
 
+int qemuCapsAddCPUDefinition(qemuCapsPtr caps,
+                             const char *name)
+{
+    char *tmp = strdup(name);
+    if (!tmp) {
+        virReportOOMError();
+        return -1;
+    }
+    if (VIR_EXPAND_N(caps->cpuDefinitions, caps->ncpuDefinitions, 1) < 0) {
+        VIR_FREE(tmp);
+        virReportOOMError();
+        return -1;
+    }
+    caps->cpuDefinitions[caps->ncpuDefinitions-1] = tmp;
+    return 0;
+}
+
+
 size_t qemuCapsGetCPUDefinitions(qemuCapsPtr caps,
                                  char ***names)
 {

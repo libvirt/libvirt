@@ -3,7 +3,7 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
-./qemu.sh \
+/usr/bin/qemu \
 -S \
 -M pc \
 -cpu Penryn,-sse4.1 \

@@ -23,6 +23,6 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-      <emulator>/./qemu.sh</emulator>
+      <emulator>/usr/bin/qemu</emulator>
   </devices>
 </domain>

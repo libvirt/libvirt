@@ -4067,7 +4067,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     virCPUDefPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
     size_t ncpus = 0;
-    const char **cpus = NULL;
+    char **cpus = NULL;
     const char *default_model;
     union cpuData *data = NULL;
     bool have_cpu = false;
@@ -4089,12 +4089,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         const char *preferred;
         int hasSVM;
 
-        if (host &&
-            qemuCapsProbeCPUModels(emulator, caps, host->arch,
-                                   &ncpus, &cpus) < 0)
-            goto cleanup;
-
-        if (!ncpus || !host) {
+        if (!host ||
+            (ncpus = qemuCapsGetCPUDefinitions(caps, &cpus)) == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CPU specification not supported by hypervisor"));
             goto cleanup;
@@ -4163,7 +4159,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
             guest->type = VIR_CPU_TYPE_GUEST;
             guest->fallback = cpu->fallback;
-            if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
+            if (cpuDecode(guest, data, (const char **)cpus, ncpus, preferred) < 0)
                 goto cleanup;
 
             virBufferAdd(&buf, guest->model, -1);
@@ -4243,12 +4239,6 @@ cleanup:
         cpuDataFree(host->arch, data);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
-
-    if (cpus) {
-        for (i = 0; i < ncpus; i++)
-            VIR_FREE(cpus[i]);
-        VIR_FREE(cpus);
-    }
 
     return ret;
 

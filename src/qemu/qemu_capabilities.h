@@ -180,6 +180,8 @@ const char *qemuCapsGetBinary(qemuCapsPtr caps);
 const char *qemuCapsGetArch(qemuCapsPtr caps);
 unsigned int qemuCapsGetVersion(qemuCapsPtr caps);
 unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps);
+int qemuCapsAddCPUDefinition(qemuCapsPtr caps,
+                             const char *name);
 size_t qemuCapsGetCPUDefinitions(qemuCapsPtr caps,
                                  char ***names);
 size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,

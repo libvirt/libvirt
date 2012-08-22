@@ -106,26 +106,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
-    /*
-     * For test purposes, we may want to fake emulator's output by providing
-     * our own script instead of a real emulator. For this to work we need to
-     * specify a relative path in <emulator/> element, which, however, is not
-     * allowed by RelaxNG schema for domain XML. To work around it we add an
-     * extra '/' at the beginning of relative emulator path so that it looks
-     * like, e.g., "/./qemu.sh" or "/../emulator/qemu.sh" instead of
-     * "./qemu.sh" or "../emulator/qemu.sh" respectively. The following code
-     * detects such paths, strips the extra '/' and makes the path absolute.
-     */
-    if (vmdef->emulator && STRPREFIX(vmdef->emulator, "/.")) {
-        if (!(emulator = strdup(vmdef->emulator + 1)))
-            goto out;
-        VIR_FREE(vmdef->emulator);
-        vmdef->emulator = NULL;
-        if (virAsprintf(&vmdef->emulator, "%s/qemuxml2argvdata/%s",
-                        abs_srcdir, emulator) < 0)
-            goto out;
-    }
-
     if (qemuCapsGet(extraFlags, QEMU_CAPS_DOMID))
         vmdef->id = 6;
     else
@@ -270,12 +250,40 @@ cleanup:
 }
 
 
+static int
+testAddCPUModels(qemuCapsPtr caps, bool skipLegacy)
+{
+    const char *newModels[] = {
+        "Opteron_G3", "Opteron_G2", "Opteron_G1",
+        "Nehalem", "Penryn", "Conroe",
+    };
+    const char *legacyModels[] = {
+        "n270", "athlon", "pentium3", "pentium2", "pentium",
+        "486", "coreduo", "kvm32", "qemu32", "kvm64",
+        "core2duo", "phenom", "qemu64",
+    };
+    size_t i;
+
+    for (i = 0 ; i < ARRAY_CARDINALITY(newModels) ; i++) {
+        if (qemuCapsAddCPUDefinition(caps, newModels[i]) < 0)
+            return -1;
+    }
+    if (skipLegacy)
+        return 0;
+    for (i = 0 ; i < ARRAY_CARDINALITY(legacyModels) ; i++) {
+        if (qemuCapsAddCPUDefinition(caps, legacyModels[i]) < 0)
+            return -1;
+    }
+    return 0;
+}
+
 
 static int
 mymain(void)
 {
     int ret = 0;
     char *map = NULL;
+    bool skipLegacyCPUs = false;
 
     abs_top_srcdir = getenv("abs_top_srcdir");
     if (!abs_top_srcdir)
@@ -306,6 +314,8 @@ mymain(void)
             name, NULL, migrateFrom, migrateFd, (flags)                 \
         };                                                              \
         if (!(info.extraFlags = qemuCapsNew()))                         \
+            return EXIT_FAILURE;                                        \
+        if (testAddCPUModels(info.extraFlags, skipLegacyCPUs) < 0)      \
             return EXIT_FAILURE;                                        \
         qemuCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);  \
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
@@ -766,8 +776,10 @@ mymain(void)
     DO_TEST("cpu-numa1", NONE);
     DO_TEST("cpu-numa2", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-host-model", NONE);
+    skipLegacyCPUs = true;
     DO_TEST("cpu-host-model-fallback", NONE);
     DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
+    skipLegacyCPUs = false;
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
     DO_TEST_FAILURE("cpu-host-passthrough", NONE);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough",
