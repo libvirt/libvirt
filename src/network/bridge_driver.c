@@ -1826,8 +1826,12 @@ networkStartNetworkVirtual(struct network_driver *driver,
     }
 
     /* Set bridge options */
+
+    /* delay is configured in seconds, but virNetDevBridgeSetSTPDelay
+     * expects milliseconds
+     */
     if (virNetDevBridgeSetSTPDelay(network->def->bridge,
-                          network->def->delay) < 0)
+                                   network->def->delay * 1000) < 0)
         goto err1;
 
     if (virNetDevBridgeSetSTP(network->def->bridge,
