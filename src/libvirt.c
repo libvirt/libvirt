@@ -2329,6 +2329,8 @@ virDomainRef(virDomainPtr domain)
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
  * This function may require privileged access.
+ * Moreover, suspend may not be supported if domain is in some
+ * special state like VIR_DOMAIN_PMSUSPENDED.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2375,6 +2377,8 @@ error:
  * Resume a suspended domain, the process is restarted from the state where
  * it was frozen by calling virDomainSuspend().
  * This function may require privileged access
+ * Moreover, resume may not be supported if domain is in some
+ * special state like VIR_DOMAIN_PMSUSPENDED.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

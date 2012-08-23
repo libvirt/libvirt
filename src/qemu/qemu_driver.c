@@ -1572,6 +1572,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     qemuDomainObjPrivatePtr priv;
     virDomainPausedReason reason;
     int eventDetail;
+    int state;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1607,7 +1608,13 @@ static int qemudDomainSuspend(virDomainPtr dom) {
                        "%s", _("domain is not running"));
         goto endjob;
     }
-    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
+
+    state = virDomainObjGetState(vm, NULL);
+    if (state == VIR_DOMAIN_PMSUSPENDED) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is pmsuspended"));
+        goto endjob;
+    } else if (state != VIR_DOMAIN_PAUSED) {
         if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0) {
             goto endjob;
         }
@@ -1639,6 +1646,7 @@ static int qemudDomainResume(virDomainPtr dom) {
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
+    int state;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1659,7 +1667,13 @@ static int qemudDomainResume(virDomainPtr dom) {
                        "%s", _("domain is not running"));
         goto endjob;
     }
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+
+    state = virDomainObjGetState(vm, NULL);
+    if (state == VIR_DOMAIN_PMSUSPENDED) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is pmsuspended"));
+        goto endjob;
+    } else if (state == VIR_DOMAIN_PAUSED) {
         if (qemuProcessStartCPUs(driver, vm, dom->conn,
                                  VIR_DOMAIN_RUNNING_UNPAUSED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
