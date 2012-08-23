@@ -5557,6 +5557,7 @@ static virDriver remote_driver = {
     .domainSetMetadata = remoteDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = remoteDomainGetMetadata, /* 0.9.10 */
     .domainGetHostname = remoteDomainGetHostname, /* 0.10.0 */
+    .qemuDomainArbitraryAgentCommand = qemuDomainAgentCommand, /* 0.10.1 */
 };
 
 static virNetworkDriver network_driver = {

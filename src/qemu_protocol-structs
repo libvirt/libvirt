@@ -19,7 +19,17 @@ struct qemu_domain_attach_args {
 struct qemu_domain_attach_ret {
         remote_nonnull_domain      dom;
 };
+struct qemu_domain_agent_command_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      cmd;
+        int                        timeout;
+        u_int                      flags;
+};
+struct qemu_domain_agent_command_ret {
+        remote_string              result;
+};
 enum qemu_procedure {
         QEMU_PROC_MONITOR_COMMAND = 1,
         QEMU_PROC_DOMAIN_ATTACH = 2,
+        QEMU_PROC_DOMAIN_AGENT_COMMAND = 3,
 };
