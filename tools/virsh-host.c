@@ -648,6 +648,93 @@ cleanup:
 }
 
 /*
+ * "qemu-agent-command" command
+ */
+static const vshCmdInfo info_qemu_agent_command[] = {
+    {"help", N_("QEMU Guest Agent Command")},
+    {"desc", N_("Run an arbitrary qemu guest agent command; use at your own risk")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_agent_command[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"timeout", VSH_OT_INT, VSH_OFLAG_REQ_OPT, N_("timeout seconds. must be positive.")},
+    {"async", VSH_OT_BOOL, 0, N_("execute command without waiting for timeout")},
+    {"block", VSH_OT_BOOL, 0, N_("execute command without timeout")},
+    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("command")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    char *guest_agent_cmd = NULL;
+    char *result = NULL;
+    int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
+    int judge = 0;
+    unsigned int flags = 0;
+    const vshCmdOpt *opt = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pad = false;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (pad)
+            virBufferAddChar(&buf, ' ');
+        pad = true;
+        virBufferAdd(&buf, opt->data, -1);
+    }
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to collect command"));
+        goto cleanup;
+    }
+    guest_agent_cmd = virBufferContentAndReset(&buf);
+
+    judge = vshCommandOptInt(cmd, "timeout", &timeout);
+    if (judge < 0) {
+        vshError(ctl, "%s", _("timeout number has to be a number"));
+    } else if (judge > 0) {
+        judge = 1;
+    }
+    if (judge && timeout < 1) {
+        vshError(ctl, "%s", _("timeout must be positive"));
+    }
+
+    if (vshCommandOptBool(cmd, "async")) {
+        timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT;
+        judge++;
+    }
+    if (vshCommandOptBool(cmd, "block")) {
+        timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK;
+        judge++;
+    }
+
+    if (judge > 1) {
+        vshError(ctl, "%s", _("timeout, async and block options are exclusive"));
+    }
+    result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
+
+    if (result) printf("%s\n", result);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(result);
+    VIR_FREE(guest_agent_cmd);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+/*
  * "sysinfo" command
  */
 static const vshCmdInfo info_sysinfo[] = {
@@ -847,6 +934,8 @@ const vshCmdDef hostAndHypervisorCmds[] = {
     {"qemu-attach", cmdQemuAttach, opts_qemu_attach, info_qemu_attach, 0},
     {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
      info_qemu_monitor_command, 0},
+    {"qemu-agent-command", cmdQemuAgentCommand, opts_qemu_agent_command,
+     info_qemu_agent_command, 0},
     {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},
     {"uri", cmdURI, NULL, info_uri, 0},
     {"version", cmdVersion, opts_version, info_version, 0},

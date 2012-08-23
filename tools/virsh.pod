@@ -164,6 +164,7 @@ group as an option.  For example:
      hostname                       print the hypervisor hostname
      qemu-attach                    Attach to existing QEMU process
      qemu-monitor-command           QEMU Monitor Command
+     qemu-agent-command             QEMU Guest Agent Command
      sysinfo                        print the hypervisor sysinfo
      uri                            print the hypervisor canonical URI
 
@@ -2794,6 +2795,18 @@ and libvirt will automatically convert it into QMP if needed.  In that case
 the result will also be converted back from QMP.  If more than one argument
 is provided for I<command>, they are concatenated with a space in between
 before passing the single command to the monitor.
+
+=back
+
+=item B<qemu-agent-command> I<domain> [I<--timeout> I<seconds> | I<--async> | I<--block>] I<command>...
+
+Send an arbitrary guest agent command I<command> to domain I<domain> through
+qemu agent.
+I<--timeout>, I<--async> and I<--block> options are exclusive.
+I<--timeout> requires timeout seconds I<seconds> and it must be positive.
+When I<--aysnc> is given, the command waits for timeout whether success or
+failed. And when I<--block> is given, the command waits forever with blocking
+timeout.
 
 =back
 
