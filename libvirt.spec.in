@@ -521,6 +521,11 @@ BuildRequires: util-linux
 BuildRequires: nfs-utils
 %endif
 
+%if %{with_firewalld}
+# Communication with the firewall daemon uses DBus
+BuildRequires: dbus-devel
+%endif
+
 # Fedora build root suckage
 BuildRequires: gawk
 
