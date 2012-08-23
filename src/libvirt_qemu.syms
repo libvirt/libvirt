@@ -19,3 +19,8 @@ LIBVIRT_QEMU_0.9.4 {
     global:
         virDomainQemuAttach;
 } LIBVIRT_QEMU_0.8.3;
+
+LIBVIRT_QEMU_0.10.1 {
+    global:
+        virDomainQemuAgentCommand;
+} LIBVIRT_QEMU_0.9.4;

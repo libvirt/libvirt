@@ -701,6 +701,9 @@ typedef int
 typedef int
     (*virDrvDomainQemuMonitorCommand)(virDomainPtr domain, const char *cmd,
                                       char **result, unsigned int flags);
+typedef char *
+    (*virDrvDomainQemuAgentCommand)(virDomainPtr domain, const char *cmd,
+                                    int timeout, unsigned int flags);
 
 /* Choice of unsigned int rather than pid_t is intentional.  */
 typedef virDomainPtr
@@ -1064,6 +1067,7 @@ struct _virDriver {
     virDrvDomainGetDiskErrors           domainGetDiskErrors;
     virDrvDomainSetMetadata             domainSetMetadata;
     virDrvDomainGetMetadata             domainGetMetadata;
+    virDrvDomainQemuAgentCommand        qemuDomainArbitraryAgentCommand;
 };
 
 typedef int

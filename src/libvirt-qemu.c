@@ -185,3 +185,57 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
+/**
+ * virDomainQemuAgentCommand:
+ * @domain: a domain object
+ * @cmd: the guest agent command string
+ * @timeout: timeout seconds
+ * @flags: execution flags
+ *
+ * Execute an arbitrary Guest Agent command.
+ *
+ * Issue @cmd to the guest agent running in @domain.
+ * @timeout must be -2, -1, 0 or positive.
+ * VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK(-2): meaning to block forever waiting for
+ * a result.
+ * VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT(-1): use default timeout value.
+ * VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT(0): does not wait.
+ * positive value: wait for @timeout seconds
+ *
+ * Returns strings if success, NULL in failure.
+ */
+char *
+virDomainQemuAgentCommand(virDomainPtr domain,
+                          const char *cmd,
+                          int timeout,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("domain=%p, cmd=%s, timeout=%d, flags=%x",
+              domain, cmd, timeout, flags);
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return NULL;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->qemuDomainArbitraryAgentCommand) {
+        return conn->driver->qemuDomainArbitraryAgentCommand(domain, cmd,
+                                                             timeout, flags);
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+    /* Copy to connection error object for back compatibility */
+    virDispatchError(conn);
+    return NULL;
+}

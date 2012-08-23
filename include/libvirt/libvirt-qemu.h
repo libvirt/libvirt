@@ -51,6 +51,9 @@ typedef enum {
     VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT = 0,
 } virDomainQemuAgentCommandTimeoutValues;
 
+char *virDomainQemuAgentCommand(virDomainPtr domain, const char *cmd,
+                                int timeout, unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif
