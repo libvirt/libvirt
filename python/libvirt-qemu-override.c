@@ -82,6 +82,34 @@ libvirt_qemu_virDomainQemuMonitorCommand(PyObject *self ATTRIBUTE_UNUSED,
     return py_retval;
 }
 
+static PyObject *
+libvirt_qemu_virDomainQemuAgentCommand(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+{
+    PyObject *py_retval;
+    char *result = NULL;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    int timeout;
+    unsigned int flags;
+    char *cmd;
+
+    if (!PyArg_ParseTuple(args, (char *)"Ozii:virDomainQemuAgentCommand",
+                          &pyobj_domain, &cmd, &timeout, &flags))
+        return NULL;
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (domain == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    result = virDomainQemuAgentCommand(domain, cmd, timeout, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (!result)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromString(result);
+    return py_retval;
+}
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -90,6 +118,7 @@ libvirt_qemu_virDomainQemuMonitorCommand(PyObject *self ATTRIBUTE_UNUSED,
 static PyMethodDef libvirtQemuMethods[] = {
 #include "libvirt-qemu-export.c"
     {(char *) "virDomainQemuMonitorCommand", libvirt_qemu_virDomainQemuMonitorCommand, METH_VARARGS, NULL},
+    {(char *) "virDomainQemuAgentCommand", libvirt_qemu_virDomainQemuAgentCommand, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
