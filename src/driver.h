@@ -1043,6 +1043,7 @@ struct _virDriver {
     virDrvDomainSnapshotDelete          domainSnapshotDelete;
     virDrvDomainQemuMonitorCommand      qemuDomainMonitorCommand;
     virDrvDomainQemuAttach              qemuDomainAttach;
+    virDrvDomainQemuAgentCommand        qemuDomainArbitraryAgentCommand;
     virDrvDomainOpenConsole             domainOpenConsole;
     virDrvDomainOpenGraphics            domainOpenGraphics;
     virDrvDomainInjectNMI               domainInjectNMI;
@@ -1067,7 +1068,6 @@ struct _virDriver {
     virDrvDomainGetDiskErrors           domainGetDiskErrors;
     virDrvDomainSetMetadata             domainSetMetadata;
     virDrvDomainGetMetadata             domainGetMetadata;
-    virDrvDomainQemuAgentCommand        qemuDomainArbitraryAgentCommand;
 };
 
 typedef int

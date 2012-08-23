@@ -5530,6 +5530,7 @@ static virDriver remote_driver = {
     .domainSnapshotDelete = remoteDomainSnapshotDelete, /* 0.8.0 */
     .qemuDomainMonitorCommand = remoteQemuDomainMonitorCommand, /* 0.8.3 */
     .qemuDomainAttach = qemuDomainAttach, /* 0.9.4 */
+    .qemuDomainArbitraryAgentCommand = qemuDomainAgentCommand, /* 0.10.0 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
     .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */
     .domainInjectNMI = remoteDomainInjectNMI, /* 0.9.2 */
@@ -5557,7 +5558,6 @@ static virDriver remote_driver = {
     .domainSetMetadata = remoteDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = remoteDomainGetMetadata, /* 0.9.10 */
     .domainGetHostname = remoteDomainGetHostname, /* 0.10.0 */
-    .qemuDomainArbitraryAgentCommand = qemuDomainAgentCommand, /* 0.10.1 */
 };
 
 static virNetworkDriver network_driver = {
