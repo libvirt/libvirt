@@ -13799,6 +13799,81 @@ qemuListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+static char *
+qemuDrvDomainAgentCommand(virDomainPtr domain,
+                       const char *cmd,
+                       int timeout,
+                       unsigned int flags)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    char *result = NULL;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, NULL);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (priv->agentError) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("QEMU guest agent is not available due to an error"));
+        goto cleanup;
+    }
+
+    if (!priv->agent) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("QEMU guest agent is not configured"));
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterAgent(driver, vm);
+    ret = qemuAgentArbitraryCommand(priv->agent, cmd, &result, timeout);
+    qemuDomainObjExitAgent(driver, vm);
+    if (ret < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to execute agent command"));
+        goto endjob;
+    }
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0) {
+        vm = NULL;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return result;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -13967,6 +14042,7 @@ static virDriver qemuDriver = {
     .domainPMSuspendForDuration = qemuDomainPMSuspendForDuration, /* 0.9.11 */
     .domainPMWakeup = qemuDomainPMWakeup, /* 0.9.11 */
     .domainGetCPUStats = qemuDomainGetCPUStats, /* 0.9.11 */
+    .qemuDomainArbitraryAgentCommand = qemuDrvDomainAgentCommand, /* 0.10.1 */
 };
 
 
