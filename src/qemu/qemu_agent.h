@@ -77,4 +77,9 @@ int qemuAgentFSThaw(qemuAgentPtr mon);
 
 int qemuAgentSuspend(qemuAgentPtr mon,
                      unsigned int target);
+
+int qemuAgentArbitraryCommand(qemuAgentPtr mon,
+                              const char *cmd,
+                              char **result,
+                              int timeout);
 #endif /* __QEMU_AGENT_H__ */

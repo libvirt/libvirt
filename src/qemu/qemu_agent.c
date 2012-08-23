@@ -1410,3 +1410,33 @@ qemuAgentSuspend(qemuAgentPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuAgentArbitraryCommand(qemuAgentPtr mon,
+                          const char *cmd_str,
+                          char **result,
+                          int timeout)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    *result = NULL;
+    if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN)
+        return ret;
+
+    cmd = virJSONValueFromString(cmd_str);
+    if (!cmd)
+        return ret;
+
+    ret = qemuAgentCommand(mon, cmd, &reply, timeout);
+
+    if (ret == 0) {
+        ret = qemuAgentCheckError(cmd, reply);
+        *result = virJSONValueToString(reply, false);
+    }
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
