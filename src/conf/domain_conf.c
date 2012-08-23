@@ -7923,7 +7923,7 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
 {
     virDomainVcpuPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
-    int vcpuid;
+    int vcpuid = -1;
     char *tmp = NULL;
     int ret;
 
@@ -7934,15 +7934,17 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
 
     ctxt->node = node;
 
-    ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
-    if ((ret == -2) || (vcpuid < -1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vcpu id must be an unsigned integer or -1"));
-        goto error;
-    } else if ((vcpuid == -1) && (emulator == 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vcpu id value -1 is not allowed for vcpupin"));
-        goto error;
+    if (emulator == 0) {
+        ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
+        if ((ret == -2) || (vcpuid < -1)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("vcpu id must be an unsigned integer or -1"));
+            goto error;
+        } else if (vcpuid == -1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("vcpu id value -1 is not allowed for vcpupin"));
+            goto error;
+        }
     }
 
     if (vcpuid >= maxvcpus) {
