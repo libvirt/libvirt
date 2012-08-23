@@ -44,6 +44,13 @@ virDomainPtr virDomainQemuAttach(virConnectPtr domain,
                                  unsigned int pid_value,
                                  unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN = -2,
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK = -2,
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT = -1,
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT = 0,
+} virDomainQemuAgentCommandTimeoutValues;
+
 # ifdef __cplusplus
 }
 # endif

@@ -837,6 +837,8 @@ void qemuAgentClose(qemuAgentPtr mon)
  * @mon: Monitor
  * @msg: Message
  * @timeout: use timeout?
+ * @seconds: timeout seconds. if VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT and
+ *           @timeout is true, use default value.
  *
  * Send @msg to agent @mon.
  * Wait max QEMU_AGENT_WAIT_TIME for agent
@@ -848,7 +850,8 @@ void qemuAgentClose(qemuAgentPtr mon)
  */
 static int qemuAgentSend(qemuAgentPtr mon,
                          qemuAgentMessagePtr msg,
-                         bool timeout)
+                         bool timeout,
+                         int seconds)
 {
     int ret = -1;
     unsigned long long now, then = 0;
@@ -864,7 +867,10 @@ static int qemuAgentSend(qemuAgentPtr mon,
     if (timeout) {
         if (virTimeMillisNow(&now) < 0)
             return -1;
-        then = now + QEMU_AGENT_WAIT_TIME;
+        if (!(seconds >= 0 || seconds == VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT))
+            return -1;
+        then = now + (seconds == VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT ?
+                      QEMU_AGENT_WAIT_TIME : seconds * 1000ull);
     }
 
     mon->msg = msg;
@@ -937,7 +943,8 @@ qemuAgentGuestSync(qemuAgentPtr mon)
 
     VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
 
-    send_ret = qemuAgentSend(mon, &sync_msg, true);
+    send_ret = qemuAgentSend(mon, &sync_msg, true,
+                             VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT);
 
     VIR_DEBUG("qemuAgentSend returned: %d", send_ret);
 
@@ -977,7 +984,8 @@ cleanup:
 static int
 qemuAgentCommand(qemuAgentPtr mon,
                  virJSONValuePtr cmd,
-                 virJSONValuePtr *reply)
+                 virJSONValuePtr *reply,
+                 int seconds)
 {
     int ret = -1;
     qemuAgentMessage msg;
@@ -1003,9 +1011,9 @@ qemuAgentCommand(qemuAgentPtr mon,
     }
     msg.txLength = strlen(msg.txBuffer);
 
-    VIR_DEBUG("Send command '%s' for write", cmdstr);
+    VIR_DEBUG("Send command '%s' for write, seconds = %d", cmdstr, seconds);
 
-    ret = qemuAgentSend(mon, &msg, false);
+    ret = qemuAgentSend(mon, &msg, seconds < -1 ? false : true, seconds);
 
     VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
               ret, msg.rxObject);
@@ -1283,7 +1291,8 @@ int qemuAgentShutdown(qemuAgentPtr mon,
         return -1;
 
     mon->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
-    ret = qemuAgentCommand(mon, cmd, &reply);
+    ret = qemuAgentCommand(mon, cmd, &reply,
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT);
 
     if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
@@ -1315,7 +1324,8 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
     if (!cmd)
         return -1;
 
-    if (qemuAgentCommand(mon, cmd, &reply) < 0 ||
+    if (qemuAgentCommand(mon, cmd, &reply,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT) < 0 ||
         qemuAgentCheckError(cmd, reply) < 0)
         goto cleanup;
 
@@ -1352,7 +1362,8 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
     if (!cmd)
         return -1;
 
-    if (qemuAgentCommand(mon, cmd, &reply) < 0 ||
+    if (qemuAgentCommand(mon, cmd, &reply,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT) < 0 ||
         qemuAgentCheckError(cmd, reply) < 0)
         goto cleanup;
 
@@ -1389,7 +1400,8 @@ qemuAgentSuspend(qemuAgentPtr mon,
         return -1;
 
     mon->await_event = QEMU_AGENT_EVENT_SUSPEND;
-    ret = qemuAgentCommand(mon, cmd, &reply);
+    ret = qemuAgentCommand(mon, cmd, &reply,
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT);
 
     if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
