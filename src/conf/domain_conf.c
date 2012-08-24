@@ -3121,14 +3121,22 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         def->baselabel = p;
     }
 
-    /* Always parse model */
-    p = virXPathStringLimit("string(./@model)",
-                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-    if (p == NULL && def->type != VIR_DOMAIN_SECLABEL_NONE) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("missing security model"));
+    /* Only parse model, if static labelling, or a base
+     * label is set, or doing active XML
+     */
+    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
+        def->baselabel ||
+        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
+         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
+
+        p = virXPathStringLimit("string(./@model)",
+                                VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+        if (p == NULL && def->type != VIR_DOMAIN_SECLABEL_NONE) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           "%s", _("missing security model"));
+        }
+        def->model = p;
     }
-    def->model = p;
 
     return def;
 
@@ -3225,12 +3233,8 @@ virSecurityDeviceLabelDefParseXML(virDomainDiskDefPtr def,
     for (i = 0; i < n; i++) {
         /* get model associated to this override */
         model = virXMLPropString(list[i], "model");
-        if (model == NULL) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid security model"));
-            goto error;
-        } else {
-            /* find the security label that it's being overriden */
+        if (model) {
+            /* find the security label that it's being overridden */
             for (j = 0; j < nvmSeclabels; j++) {
                 if (STREQ(vmSeclabels[j]->model, model)) {
                     vmDef = vmSeclabels[j];
@@ -3275,7 +3279,7 @@ virSecurityDeviceLabelDefParseXML(virDomainDiskDefPtr def,
             virReportError(VIR_ERR_XML_ERROR,
                            _("Cannot specify a label if relabelling is "
                              "turned off. model=%s"),
-                             def->seclabels[i]->model);
+                             NULLSTR(def->seclabels[i]->model));
             goto error;
         }
     }
@@ -11271,8 +11275,13 @@ static void
 virSecurityDeviceLabelDefFormat(virBufferPtr buf,
                                 virSecurityDeviceLabelDefPtr def)
 {
-    virBufferAsprintf(buf, "<seclabel model='%s' relabel='%s'",
-                      def->model, def->norelabel ? "no" : "yes");
+    virBufferAsprintf(buf, "<seclabel");
+
+    if (def->model)
+        virBufferAsprintf(buf, " model='%s'", def->model);
+
+    virBufferAsprintf(buf, " relabel='%s'", def->norelabel ? "no" : "yes");
+
     if (def->label) {
         virBufferAddLit(buf, ">\n");
         virBufferEscapeString(buf, "  <label>%s</label>\n",
