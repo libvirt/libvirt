@@ -1481,13 +1481,19 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             !(cmd->def->flags & VSH_CMD_FLAG_NOCONNECT))
             vshReconnect(ctl);
 
-        if (enable_timing)
-            GETTIMEOFDAY(&before);
+        if ((cmd->def->flags & VSH_CMD_FLAG_NOCONNECT) ||
+            vshConnectionUsability(ctl, ctl->conn)) {
+            if (enable_timing)
+                GETTIMEOFDAY(&before);
 
-        ret = cmd->def->handler(ctl, cmd);
+            ret = cmd->def->handler(ctl, cmd);
 
-        if (enable_timing)
-            GETTIMEOFDAY(&after);
+            if (enable_timing)
+                GETTIMEOFDAY(&after);
+        } else {
+            /* connection is not usable, return error */
+            ret = false;
+        }
 
         /* try to automatically catch disconnections */
         if (!ret &&
@@ -1948,13 +1954,17 @@ vshFindTypedParamByName(const char *name, virTypedParameterPtr list, int count)
 bool
 vshConnectionUsability(vshControl *ctl, virConnectPtr conn)
 {
-    /* TODO: use something like virConnectionState() to
-     *       check usability of the connection
-     */
-    if (!conn) {
+    if (!conn ||
+        virConnectIsAlive(conn) == 0) {
         vshError(ctl, "%s", _("no valid connection"));
         return false;
     }
+
+    /* The connection is considered dead only if
+     * virConnectIsAlive() successfuly says so.
+     */
+    vshResetLibvirtError();
+
     return true;
 }
 
