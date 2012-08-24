@@ -63,9 +63,6 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -110,10 +107,6 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr dev = NULL;
     bool ret = true;
     const char *name = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn)) {
-        return false;
-    }
 
     if (vshCommandOptString(cmd, "name", &name) <= 0)
         return false;
@@ -168,9 +161,6 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int num_devices, i;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool ret = true;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "cap", &cap) <= 0)
         cap = NULL;
@@ -249,8 +239,6 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     char *xml;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (vshCommandOptString(cmd, "device", &name) <= 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
@@ -292,8 +280,6 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (vshCommandOptString(cmd, "device", &name) <= 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
@@ -335,8 +321,6 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (vshCommandOptString(cmd, "device", &name) <= 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
@@ -376,8 +360,6 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (vshCommandOptString(cmd, "device", &name) <= 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {

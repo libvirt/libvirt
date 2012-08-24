@@ -96,9 +96,6 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     int autostart;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
@@ -144,9 +141,6 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
@@ -261,9 +255,6 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!buildPoolXML(cmd, &name, &xml))
         return false;
 
@@ -307,9 +298,6 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -346,9 +334,6 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!buildPoolXML(cmd, &name, &xml))
         return false;
@@ -395,9 +380,6 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     unsigned int flags = 0;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
@@ -443,9 +425,6 @@ cmdPoolDestroy(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
@@ -481,9 +460,6 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
@@ -518,9 +494,6 @@ cmdPoolRefresh(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     bool ret = true;
     const char *name;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
@@ -562,9 +535,6 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     if (inactive)
         flags |= VIR_STORAGE_XML_INACTIVE;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
@@ -625,10 +595,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool active = !inactive || all;
     inactive |= all;
-
-    /* Check the connection to libvirtd daemon is still working */
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     /* Retrieve the number of active storage pools */
     if (active) {
@@ -1024,9 +990,6 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (host) {
         const char *port = NULL;
         virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -1097,9 +1060,6 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (srcSpecFile && virFileReadAll(srcSpecFile, VSH_MAX_XML_FILE,
                                       &srcSpec) < 0)
         return false;
@@ -1139,9 +1099,6 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
     int persistent = 0;
     bool ret = true;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
@@ -1233,8 +1190,6 @@ cmdPoolName(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                            VSH_BYUUID)))
         return false;
@@ -1264,9 +1219,6 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     bool ret = true;
     const char *name = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
          return false;
@@ -1303,9 +1255,6 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
@@ -1339,9 +1288,6 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                            VSH_BYNAME)))
@@ -1378,9 +1324,6 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool_edited = NULL;
     unsigned int flags = VIR_STORAGE_XML_INACTIVE;
     char *tmp_desc = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     pool = vshCommandOptPool(ctl, cmd, "pool", NULL);
     if (pool == NULL)

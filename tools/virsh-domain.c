@@ -151,9 +151,6 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     int ret;
     unsigned int flags;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -383,9 +380,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xml;
     struct stat st;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
@@ -623,9 +617,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xml;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
@@ -772,9 +763,6 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     int autostart;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -862,9 +850,6 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
         if (live)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         goto cleanup;
@@ -1071,9 +1056,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -1185,9 +1167,6 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     int ret = -1;
     const char *base = NULL;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         goto cleanup;
@@ -1670,9 +1649,6 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     int ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "path", (const char **) &path) < 0) {
         vshError(ctl, "%s", _("Path must not be empty"));
         return false;
@@ -1768,9 +1744,6 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     const char *name = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -1829,9 +1802,6 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur = NULL;
     xmlBufferPtr xml_buf = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -2017,9 +1987,6 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -2185,9 +2152,6 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     bool ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -2232,9 +2196,6 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     unsigned int suspendTarget;
     unsigned long long duration = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -2299,9 +2260,6 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     bool ret = false;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -2405,9 +2363,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA;
         snapshots_safe = true;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -2716,9 +2671,6 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = VIR_DOMAIN_NONE;
     int rc;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME | VSH_BYUUID)))
         return false;
@@ -2823,9 +2775,6 @@ doSave(void *opaque)
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto out;
 
     if (vshCommandOptString(cmd, "file", &to) <= 0)
         goto out;
@@ -3033,9 +2982,6 @@ cmdSaveImageDumpxml(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &file) <= 0)
         return false;
 
@@ -3082,9 +3028,6 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SAVE_PAUSED;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "file", &file) <= 0)
         return false;
@@ -3148,9 +3091,6 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &file) <= 0)
         return false;
 
@@ -3209,9 +3149,6 @@ doManagedsave(void *opaque)
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto out;
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
@@ -3303,9 +3240,6 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     bool ret = false;
     int hassave;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -3477,9 +3411,6 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -3602,9 +3533,6 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     const char *xmlfile = NULL;
     char *xml = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -3678,9 +3606,6 @@ doDump(void *opaque)
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto out;
 
     if (vshCommandOptString(cmd, "file", &to) <= 0)
         goto out;
@@ -3787,11 +3712,6 @@ vshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
     const char *ext = NULL;
     char *ret = NULL;
 
-    /* We should be already connected, but doesn't
-     * hurt to check */
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return NULL;
-
     if (!dom) {
         vshError(ctl, "%s", _("Invalid domain supplied"));
         return NULL;
@@ -3830,9 +3750,6 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     bool created = false;
     bool generated = false;
     char *mime = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "file", (const char **) &file) < 0) {
         vshError(ctl, "%s", _("file must not be empty"));
@@ -3923,9 +3840,6 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -3964,9 +3878,6 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     const char *mode = NULL;
     int flags = 0;
     int rv;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
@@ -4026,9 +3937,6 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     const char *mode = NULL;
     int flags = 0;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
         return false;
@@ -4080,9 +3988,6 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -4117,9 +4022,6 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     virDomainJobInfo info;
     virDomainPtr dom;
     bool ret = true;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -4199,9 +4101,6 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -4236,9 +4135,6 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("Invalid type"));
         return false;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     vcpus = virConnectGetMaxVcpus(ctl->conn, type);
     if (vcpus < 0)
@@ -4320,9 +4216,6 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
                  _("--config, --live, and --current are mutually exclusive"));
         return false;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -4477,9 +4370,6 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     size_t cpumaplen;
     bool ret = true;
     int n, m;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -4652,9 +4542,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         if (!live && !config)
             flags = -1;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -4874,9 +4761,6 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
             flags = -1;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -5054,9 +4938,6 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
             flags = -1;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -5128,9 +5009,6 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     xmlBufferPtr xml_buf = NULL;
     xmlNodePtr node;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
@@ -5232,9 +5110,6 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -5331,9 +5206,6 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     int i, j, pos, max_id, cpu = -1, show_count = -1, nparams;
     bool show_total = false, show_per_cpu = false;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5494,9 +5366,6 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 #endif
     unsigned int flags = VIR_DOMAIN_NONE;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -5548,9 +5417,6 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -5595,9 +5461,6 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     unsigned int flags = 0;
     int result;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -5676,9 +5539,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (live)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5797,9 +5657,6 @@ cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     int ret = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -5851,9 +5708,6 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     const vshCmdOpt *opt = NULL;
     int keycode;
     unsigned int keycodes[VIR_DOMAIN_SEND_KEY_MAX_KEYS];
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5944,9 +5798,6 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
             flags = -1;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -6024,9 +5875,6 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         if (!live && !config)
             flags = -1;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6139,9 +5987,6 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
         if (live)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6316,9 +6161,6 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
     }
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -6456,9 +6298,6 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (update)
         flags |= VIR_DOMAIN_XML_UPDATE_CPU;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -6498,9 +6337,6 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
     char *configData;
     char *xmlData;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "format", &format) < 0 ||
         vshCommandOptString(cmd, "config", &configFile) < 0)
@@ -6546,9 +6382,6 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
     char *xmlData;
     unsigned int flags = 0;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "format", &format) < 0
         || vshCommandOptString(cmd, "xml", &xmlFile) < 0)
         return false;
@@ -6587,8 +6420,6 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYID|VSH_BYUUID)))
         return false;
@@ -6618,8 +6449,6 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     unsigned int id;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME|VSH_BYUUID)))
         return false;
@@ -6653,8 +6482,6 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, NULL,
                                       VSH_BYNAME|VSH_BYID)))
         return false;
@@ -6721,9 +6548,6 @@ doMigrate(void *opaque)
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto out;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto out;
@@ -6904,9 +6728,6 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     long long downtime = 0;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -6950,9 +6771,6 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     unsigned long bandwidth = 0;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -6991,9 +6809,6 @@ cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     unsigned long bandwidth;
     bool ret = false;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7043,9 +6858,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     int iter = 0;
     int tmp;
     int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7211,9 +7023,6 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     char *listen_addr = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -7278,9 +7087,6 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     char *doc;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -7329,9 +7135,6 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
     char *hostname;
     virDomainPtr dom;
     bool ret = false;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7625,9 +7428,6 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     bool funcRet = false;
     unsigned int flags;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -7688,9 +7488,6 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     int ret;
     unsigned int flags;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7766,9 +7563,6 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     int ret;
     int functionReturn = false;
     unsigned int flags;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
@@ -8113,9 +7907,6 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags;
     xmlNodePtr disk_node = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
@@ -8181,9 +7972,6 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     virDomainPtr dom_edited = NULL;
     unsigned int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -8300,9 +8088,6 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
 
     if (force)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;

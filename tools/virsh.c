@@ -1465,6 +1465,23 @@ vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname)
     return found;
 }
 
+static bool
+vshConnectionUsability(vshControl *ctl, virConnectPtr conn)
+{
+    if (!conn ||
+        virConnectIsAlive(conn) == 0) {
+        vshError(ctl, "%s", _("no valid connection"));
+        return false;
+    }
+
+    /* The connection is considered dead only if
+     * virConnectIsAlive() successfuly says so.
+     */
+    vshResetLibvirtError();
+
+    return true;
+}
+
 /*
  * Executes command(s) and returns return code from last command
  */
@@ -1949,23 +1966,6 @@ vshFindTypedParamByName(const char *name, virTypedParameterPtr list, int count)
 
     /* not found */
     return NULL;
-}
-
-bool
-vshConnectionUsability(vshControl *ctl, virConnectPtr conn)
-{
-    if (!conn ||
-        virConnectIsAlive(conn) == 0) {
-        vshError(ctl, "%s", _("no valid connection"));
-        return false;
-    }
-
-    /* The connection is considered dead only if
-     * virConnectIsAlive() successfuly says so.
-     */
-    vshResetLibvirtError();
-
-    return true;
 }
 
 void

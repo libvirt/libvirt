@@ -315,7 +315,6 @@ void vshDebug(vshControl *ctl, int level, const char *format, ...)
 int vshNameSorter(const void *a, const void *b);
 
 int vshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
-bool vshConnectionUsability(vshControl *ctl, virConnectPtr conn);
 virTypedParameterPtr vshFindTypedParamByName(const char *name,
                                              virTypedParameterPtr list,
                                              int count);

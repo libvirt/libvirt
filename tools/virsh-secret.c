@@ -87,9 +87,6 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     virSecretPtr res;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -134,9 +131,6 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     char *xml;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     secret = vshCommandOptSecret(ctl, cmd, NULL);
     if (secret == NULL)
         return false;
@@ -177,9 +171,6 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     char *value;
     int res;
     bool ret = false;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     secret = vshCommandOptSecret(ctl, cmd, NULL);
     if (secret == NULL)
@@ -236,9 +227,6 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     size_t value_size;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     secret = vshCommandOptSecret(ctl, cmd, NULL);
     if (secret == NULL)
         return false;
@@ -286,9 +274,6 @@ cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *uuid;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     secret = vshCommandOptSecret(ctl, cmd, &uuid);
     if (secret == NULL)
         return false;
@@ -319,9 +304,6 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     int maxuuids = 0, i;
     char **uuids = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     maxuuids = virConnectNumOfSecrets(ctl->conn);
     if (maxuuids < 0) {

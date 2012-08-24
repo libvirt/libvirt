@@ -156,9 +156,6 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "atomic"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -296,9 +293,6 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "atomic"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -429,9 +423,6 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptBool(cmd, "snapshotname"))
         define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -531,9 +522,6 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     dom = vshCommandOptDomain(ctl, cmd, &domname);
     if (dom == NULL)
@@ -700,9 +688,6 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags;
     int current;
     int metadata;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -1183,9 +1168,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virDomainSnapshotPtr start = NULL;
     vshSnapshotListPtr snaplist = NULL;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -1381,9 +1363,6 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -1437,9 +1416,6 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char *parent = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -1511,9 +1487,6 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "force"))
         force = true;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -1571,9 +1544,6 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)

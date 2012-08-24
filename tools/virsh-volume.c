@@ -147,9 +147,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     unsigned long long capacity, allocation = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                      VSH_BYNAME)))
         return false;
@@ -302,9 +299,6 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                            VSH_BYNAME)))
         return false;
@@ -360,9 +354,6 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     char *buffer = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         goto cleanup;
@@ -456,9 +447,6 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     xmlChar *newxml = NULL;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     if (!(origvol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         goto cleanup;
 
@@ -543,9 +531,6 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     virStreamPtr st = NULL;
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
         vshError(ctl, _("Unable to parse integer"));
@@ -634,9 +619,6 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
         vshError(ctl, _("Unable to parse integer"));
         return false;
@@ -722,9 +704,6 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
         return false;
     }
@@ -770,9 +749,6 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
     const char *algorithm_str = NULL;
     int algorithm = VIR_STORAGE_VOL_WIPE_ALG_ZERO;
     int funcRet;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
         return false;
@@ -828,9 +804,6 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     virStorageVolInfo info;
     virStorageVolPtr vol;
     bool ret = true;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
@@ -915,9 +888,6 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "shrink"))
         flags |= VIR_STORAGE_VOL_RESIZE_SHRINK;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
@@ -981,9 +951,6 @@ cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *dump;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
@@ -1038,10 +1005,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         char *type;
     };
     struct volInfoText *volInfoTexts = NULL;
-
-    /* Check the connection to libvirtd daemon is still working */
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
@@ -1315,9 +1278,6 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", NULL, NULL,
                                    VSH_BYUUID)))
         return false;
@@ -1348,10 +1308,6 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
-    /* Check the connection to libvirtd daemon is still working */
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     /* Use the supplied string to locate the volume */
     if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", NULL, NULL,
@@ -1403,9 +1359,6 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
@@ -1434,9 +1387,6 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
     char * StorageVolPath;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL))) {
         return false;

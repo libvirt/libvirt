@@ -101,9 +101,6 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
     virInterfacePtr iface_edited = NULL;
     unsigned int flags = VIR_INTERFACE_XML_INACTIVE;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     iface = vshCommandOptInterface(ctl, cmd, NULL);
     if (iface == NULL)
         goto cleanup;
@@ -157,9 +154,6 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int maxactive = 0, maxinactive = 0, i;
     char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (active) {
         maxactive = virConnectNumOfInterfaces(ctl->conn);
@@ -265,8 +259,6 @@ cmdInterfaceName(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(iface = vshCommandOptInterfaceBy(ctl, cmd, NULL, NULL,
                                            VSH_BYMAC)))
         return false;
@@ -295,8 +287,6 @@ cmdInterfaceMAC(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(iface = vshCommandOptInterfaceBy(ctl, cmd, NULL, NULL,
                                            VSH_BYNAME)))
         return false;
@@ -332,9 +322,6 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     if (inactive)
         flags |= VIR_INTERFACE_XML_INACTIVE;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(iface = vshCommandOptInterface(ctl, cmd, NULL)))
         return false;
@@ -372,9 +359,6 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
@@ -417,9 +401,6 @@ cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
         return false;
 
@@ -454,9 +435,6 @@ cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
     virInterfacePtr iface;
     bool ret = true;
     const char *name;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
         return false;
@@ -493,9 +471,6 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(iface = vshCommandOptInterface(ctl, cmd, &name)))
         return false;
 
@@ -528,9 +503,6 @@ static const vshCmdOptDef opts_interface_begin[] = {
 static bool
 cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (virInterfaceChangeBegin(ctl->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to begin network config change transaction"));
         return false;
@@ -556,9 +528,6 @@ static const vshCmdOptDef opts_interface_commit[] = {
 static bool
 cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (virInterfaceChangeCommit(ctl->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to commit network config change transaction"));
         return false;
@@ -584,9 +553,6 @@ static const vshCmdOptDef opts_interface_rollback[] = {
 static bool
 cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (virInterfaceChangeRollback(ctl->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to rollback network config change transaction"));
         return false;
@@ -630,9 +596,6 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml_doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr top_node, br_node, if_node, cur;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     /* Get a handle to the original device */
     if (!(if_handle = vshCommandOptInterfaceBy(ctl, cmd, "interface",
@@ -847,9 +810,6 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml_doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr top_node, br_node, if_node, cur;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     /* Get a handle to the original device */
     if (!(br_handle = vshCommandOptInterfaceBy(ctl, cmd, "bridge",

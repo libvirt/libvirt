@@ -99,9 +99,6 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -143,9 +140,6 @@ cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, &name)))
         return false;
 
@@ -181,9 +175,6 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *dump;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL)))
         return false;
 
@@ -218,9 +209,6 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int numfilters, i;
     char **names;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     numfilters = virConnectNumOfNWFilters(ctl->conn);
     if (numfilters < 0) {
@@ -285,9 +273,6 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virNWFilterPtr nwfilter = NULL;
     virNWFilterPtr nwfilter_edited = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL);
     if (nwfilter == NULL)

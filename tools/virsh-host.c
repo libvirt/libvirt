@@ -52,9 +52,6 @@ cmdCapabilities(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *caps;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if ((caps = virConnectGetCapabilities(ctl->conn)) == NULL) {
         vshError(ctl, "%s", _("failed to get capabilities"));
         return false;
@@ -148,10 +145,6 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     char *cap_xml = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if ( (cell_given = vshCommandOptInt(cmd, "cellno", &cell)) < 0) {
         vshError(ctl, "%s", _("cell number has to be a number"));
@@ -259,9 +252,6 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virNodeInfo info;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (virNodeGetInfo(ctl->conn, &info) < 0) {
         vshError(ctl, "%s", _("failed to get node information"));
         return false;
@@ -312,9 +302,6 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     } cpu_stats[2];
     double user_time, sys_time, idle_time, iowait_time, total_time;
     double usage;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptInt(cmd, "cpu", &cpuNum) < 0) {
         vshError(ctl, "%s", _("Invalid value of cpuNum"));
@@ -429,9 +416,6 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     virNodeMemoryStatsPtr params = NULL;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptInt(cmd, "cell", &cellNum) < 0) {
         vshError(ctl, "%s", _("Invalid value of cellNum"));
         return false;
@@ -492,9 +476,6 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     unsigned int suspendTarget;
     long long duration;
     unsigned int flags = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (vshCommandOptString(cmd, "target", &target) < 0) {
         vshError(ctl, _("Invalid target argument"));
@@ -563,9 +544,6 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool pad = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -623,9 +601,6 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     unsigned int pid_value; /* API uses unsigned int, not pid_t */
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
-
     if (vshCommandOptUInt(cmd, "pid", &pid_value) <= 0) {
         vshError(ctl, "%s", _("missing pid value"));
         goto cleanup;
@@ -678,9 +653,6 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool pad = false;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -752,9 +724,6 @@ cmdSysinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *sysinfo;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     sysinfo = virConnectGetSysinfo(ctl->conn, 0);
     if (sysinfo == NULL) {
         vshError(ctl, "%s", _("failed to get sysinfo"));
@@ -781,9 +750,6 @@ cmdHostname(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *hostname;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     hostname = virConnectGetHostname(ctl->conn);
     if (hostname == NULL) {
         vshError(ctl, "%s", _("failed to get hostname"));
@@ -809,9 +775,6 @@ static bool
 cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *uri;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     uri = virConnectGetURI(ctl->conn);
     if (uri == NULL) {
@@ -852,9 +815,6 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     unsigned int major;
     unsigned int minor;
     unsigned int rel;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     hvType = virConnectGetType(ctl->conn);
     if (hvType == NULL) {

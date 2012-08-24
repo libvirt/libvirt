@@ -100,9 +100,6 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     int autostart;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return false;
 
@@ -148,9 +145,6 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -193,9 +187,6 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (vshCommandOptString(cmd, "file", &from) <= 0)
         return false;
 
@@ -237,9 +228,6 @@ cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return false;
 
@@ -277,9 +265,6 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     char *dump;
     unsigned int flags = 0;
     int inactive;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
@@ -324,9 +309,6 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
     int persistent = -1;
     int active = -1;
     char *bridge = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
@@ -384,9 +366,6 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int maxactive = 0, maxinactive = 0, i;
     char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (active) {
         maxactive = virConnectNumOfNetworks(ctl->conn);
@@ -505,8 +484,6 @@ cmdNetworkName(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
     if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
                                            VSH_BYUUID)))
         return false;
@@ -536,9 +513,6 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
     virNetworkPtr network;
     bool ret = true;
     const char *name = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
          return false;
@@ -574,9 +548,6 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
         return false;
 
@@ -610,9 +581,6 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
     char uuid[VIR_UUID_STRING_BUFLEN];
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(network = vshCommandOptNetworkBy(ctl, cmd, NULL,
                                            VSH_BYNAME)))
@@ -663,9 +631,6 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virNetworkPtr network = NULL;
     virNetworkPtr network_edited = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        goto cleanup;
 
     network = vshCommandOptNetwork(ctl, cmd, NULL);
     if (network == NULL)

@@ -306,9 +306,6 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     struct _virDomainMemoryStat stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats, i;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -364,9 +361,6 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = true;
     const char *device = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -425,9 +419,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
     details = vshCommandOptBool(cmd, "details");
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -530,9 +521,6 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -631,9 +619,6 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL;
     xmlXPathObjectPtr obj = NULL;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -747,9 +732,6 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     virDomainControlInfo info;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -842,9 +824,6 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     int i = 0;
     bool ret = false;
     bool human = vshCommandOptBool(cmd, "human"); /* human readable output */
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -968,9 +947,6 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL, *device = NULL;
     struct _virDomainInterfaceStats stats;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
@@ -1037,9 +1013,6 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     int count;
     bool ret = false;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -1100,9 +1073,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     unsigned int id;
     char *str, uuid[VIR_UUID_STRING_BUFLEN];
     int has_managed_save = 0;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -1232,9 +1202,6 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     bool showReason = vshCommandOptBool(cmd, "reason");
     int state, reason;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -1629,9 +1596,6 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     if (!optUUID && !optName)
         optTable = true;
-
-    if (!vshConnectionUsability(ctl, ctl->conn))
-        return false;
 
     if (!(list = vshDomainListCollect(ctl, flags)))
         goto cleanup;
