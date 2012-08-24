@@ -4140,6 +4140,7 @@ ebiptablesDriverInitWithFirewallD(void)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *firewall_cmd_path;
     char *output = NULL;
+    int status;
     int ret = -1;
 
     if (!virNWFilterDriverIsWatchingFirewallD())
@@ -4155,9 +4156,11 @@ ebiptablesDriverInitWithFirewallD(void)
                           "%s",
                           CMD_STOPONERR(1));
 
-        if (ebiptablesExecCLI(&buf, NULL, &output) == 0 &&
-            strlen(output) == 0) {
-            VIR_DEBUG("Using firewall-cmd in nwfilter_ebiptables_driver.");
+        if (ebiptablesExecCLI(&buf, &status, &output) < 0 ||
+            status != 0) {
+            VIR_INFO("firewalld support disabled for nwfilter");
+        } else {
+            VIR_INFO("firewalld support enabled for nwfilter");
 
             ignore_value(virAsprintf(&ebtables_cmd_path,
                                      "%s --direct --passthrough eb",
