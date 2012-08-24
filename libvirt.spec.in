@@ -409,7 +409,11 @@ BuildRequires: sanlock-devel >= 1.8
 BuildRequires: libpcap-devel
 %endif
 %if %{with_libnl}
+%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
+BuildRequires: libnl3-devel
+%else
 BuildRequires: libnl-devel
+%endif
 %endif
 %if %{with_avahi}
 BuildRequires: avahi-devel
@@ -489,11 +493,16 @@ BuildRequires: libcap-ng-devel >= 0.5.0
 %if %{with_phyp}
 BuildRequires: libssh2-devel
 %endif
+
 %if %{with_netcf}
+%if 0%{?fedora} >= 18 || 0%{?rhel} >= 7
+BuildRequires: netcf-devel >= 0.2.2
+%else
 %if 0%{?fedora} >= 16 || 0%{?rhel} >= 6
 BuildRequires: netcf-devel >= 0.1.8
 %else
 BuildRequires: netcf-devel >= 0.1.4
+%endif
 %endif
 %endif
 %if %{with_esx}
