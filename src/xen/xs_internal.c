@@ -1115,8 +1115,11 @@ int xenStoreDomainGetUUID(virConnectPtr conn,
     snprintf(prop, 199, "/local/domain/%d/vm", id);
     prop[199] = 0;
     /* This will return something like
-     * /vm/00000000-0000-0000-0000-000000000000 */
+     * /vm/00000000-0000-0000-0000-000000000000[-*] */
     uuidstr = xs_read(priv->xshandle, 0, prop, &len);
+    /* Strip optional version suffix when VM was renamed */
+    if (len > 40) /* strlen('/vm/') + VIR_UUID_STRING_BUFLEN - sizeof('\0') */
+        uuidstr[40] = '\0';
 
     /* remove "/vm/" */
     ret = virUUIDParse(uuidstr + 4, uuid);
