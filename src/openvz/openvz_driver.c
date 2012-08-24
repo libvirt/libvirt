@@ -1707,7 +1707,7 @@ openvzDomainGetBarrierLimit(virDomainPtr domain,
     virCommandSetOutputBuffer(cmd, &output);
     virCommandAddArgFormat(cmd, "-o%s.b,%s.l", param, param);
     virCommandAddArg(cmd, domain->name);
-    if (virCommandRun(cmd, &status)) {
+    if (virCommandRun(cmd, &status) < 0 || status != 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to get %s for %s: %d"), param, domain->name,
                        status);
@@ -1758,7 +1758,7 @@ openvzDomainSetBarrierLimit(virDomainPtr domain,
     virCommandAddArgFormat(cmd, "--%s", param);
     virCommandAddArgFormat(cmd, "%llu:%llu", barrier, limit);
     virCommandAddArg(cmd, "--save");
-    if (virCommandRun(cmd, &status)) {
+    if (virCommandRun(cmd, &status) < 0 || status != 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to set %s for %s: %d"), param, domain->name,
                        status);
