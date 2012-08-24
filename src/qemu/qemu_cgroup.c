@@ -567,9 +567,9 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
         /* If we don't know VCPU<->PID mapping or all vcpu runs in the same
          * thread, we cannot control each vcpu.
          */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("Unable to get vcpus' pids."));
-        goto cleanup;
+        VIR_WARN("Unable to get vcpus' pids.");
+        virCgroupFree(&cgroup);
+        return 0;
     }
 
     for (i = 0; i < priv->nvcpupids; i++) {
