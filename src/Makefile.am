@@ -1650,7 +1650,8 @@ libvirt_lxc_LDADD += $(APPARMOR_LIBS)
 endif
 libvirt_lxc_CFLAGS =				\
 		-I$(top_srcdir)/src/conf	\
-		$(AM_CFLAGS)
+		$(AM_CFLAGS)                    \
+		$(LIBNL_CFLAGS)
 if HAVE_LIBBLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
