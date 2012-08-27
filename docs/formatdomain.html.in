@@ -369,7 +369,8 @@
         if it's specified. If both <code>cpuset</code> and <code>placement</code>
         are not specified, or if <code>placement</code> is "static", but no
         <code>cpuset</code> is specified, the domain process will be pinned to
-        all the available physical CPUs.
+        all the available physical CPUs. These settings are superseded
+        by <a href="#elementsCPUTuning">CPU tuning</a>.
       </dd>
     </dl>
 
@@ -404,9 +405,11 @@
       </dd>
       <dt><code>vcpupin</code></dt>
       <dd>
-        The optional <code>vcpupin</code> element specifies which of host
-        physical CPUS the domain VCPU will be pinned to. If this is omitted,
-        each VCPU is pinned to all the physical CPUS by default. It contains two
+        The optional <code>vcpupin</code> element specifies which of host's
+        physical CPUs the domain VCPU will be pinned to. This setting supersedes
+        previous VCPU placement specified in <a href="#elementsCPUAllocation">CPU
+        Allocation</a> using <code>vcpu</code> element. If this is omitted,
+        each VCPU is pinned to all the physical CPUs by default. It contains two
         required attributes, the attribute <code>vcpu</code> specifies vcpu id,
         and the attribute <code>cpuset</code> is same as
         attribute <code>cpuset</code>
