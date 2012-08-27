@@ -3500,7 +3500,7 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
 
-                vm->def->graphics[0]->data.spice.tlsPort = port;
+                vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
             }
         }
 
