@@ -701,11 +701,13 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     judge = vshCommandOptInt(cmd, "timeout", &timeout);
     if (judge < 0) {
         vshError(ctl, "%s", _("timeout number has to be a number"));
+        goto cleanup;
     } else if (judge > 0) {
         judge = 1;
     }
     if (judge && timeout < 1) {
         vshError(ctl, "%s", _("timeout must be positive"));
+        goto cleanup;
     }
 
     if (vshCommandOptBool(cmd, "async")) {
@@ -719,6 +721,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 
     if (judge > 1) {
         vshError(ctl, "%s", _("timeout, async and block options are exclusive"));
+        goto cleanup;
     }
     result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
 
