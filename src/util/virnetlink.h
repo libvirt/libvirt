@@ -26,7 +26,11 @@
 
 # if defined(__linux__) && defined(HAVE_LIBNL)
 
+/* Work around a bug where older libnl-1 headers expected older gcc
+ * semantics of 'extern inline' that conflict with C99 semantics.  */
+#  define inline
 #  include <netlink/msg.h>
+#  undef inline
 
 # else
 
