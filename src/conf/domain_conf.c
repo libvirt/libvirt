@@ -3179,6 +3179,7 @@ error:
         virSecurityLabelDefFree(def->seclabels[i - 1]);
     }
     VIR_FREE(def->seclabels);
+    def->nseclabels = 0;
     VIR_FREE(list);
     return -1;
 }
