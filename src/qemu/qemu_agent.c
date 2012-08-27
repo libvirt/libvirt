@@ -880,7 +880,7 @@ static int qemuAgentSend(qemuAgentPtr mon,
         if ((timeout && virCondWaitUntil(&mon->notify, &mon->lock, then) < 0) ||
             (!timeout && virCondWait(&mon->notify, &mon->lock) < 0)) {
             if (errno == ETIMEDOUT) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
                                _("Guest agent not available for now"));
                 ret = -2;
             } else {

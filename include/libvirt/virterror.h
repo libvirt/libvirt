@@ -283,6 +283,8 @@ typedef enum {
     VIR_ERR_OPERATION_UNSUPPORTED = 84, /* The requested operation is not
                                            supported */
     VIR_ERR_SSH = 85,                   /* error in ssh transport driver */
+    VIR_ERR_AGENT_UNRESPONSIVE = 86,    /* guest agent is unresponsive,
+                                           not running or not usable */
 } virErrorNumber;
 
 /**

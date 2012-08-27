@@ -1199,6 +1199,13 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("SSH transport error");
             else
                 errmsg = _("SSH transport error: %s");
+            break;
+        case VIR_ERR_AGENT_UNRESPONSIVE:
+            if (info == NULL)
+                errmsg = _("Guest agent is not responding");
+            else
+                errmsg = _("Guest agent is not responding: %s");
+            break;
     }
     return errmsg;
 }

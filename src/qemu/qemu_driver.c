@@ -1734,8 +1734,9 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
 
     if (useAgent) {
         if (priv->agentError) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("QEMU guest agent is not available due to an error"));
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("QEMU guest agent is not "
+                             "available due to an error"));
             goto cleanup;
         }
         if (!priv->agent) {
@@ -1815,8 +1816,9 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     if (useAgent) {
         if (priv->agentError) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("QEMU guest agent is not available due to an error"));
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("QEMU guest agent is not "
+                             "available due to an error"));
             goto cleanup;
         }
         if (!priv->agent) {
@@ -10391,7 +10393,7 @@ qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
     int freezed;
 
     if (priv->agentError) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
                        _("QEMU guest agent is not "
                          "available due to an error"));
         return -1;
@@ -10419,7 +10421,7 @@ qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
 
     if (priv->agentError) {
         if (report)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
                            _("QEMU guest agent is not "
                              "available due to an error"));
         return -1;
@@ -13708,8 +13710,9 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     }
 
     if (priv->agentError) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("QEMU guest agent is not available due to an error"));
+        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                       _("QEMU guest agent is not "
+                         "available due to an error"));
         goto cleanup;
     }
 
@@ -13849,8 +13852,9 @@ qemuDomainAgentCommand(virDomainPtr domain,
     }
 
     if (priv->agentError) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("QEMU guest agent is not available due to an error"));
+        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                       _("QEMU guest agent is not "
+                         "available due to an error"));
         goto cleanup;
     }
 
