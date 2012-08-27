@@ -644,7 +644,8 @@ virNetClientMarkClose(virNetClientPtr client,
                       int reason)
 {
     VIR_DEBUG("client=%p, reason=%d", client, reason);
-    virNetSocketRemoveIOCallback(client->sock);
+    if (client->sock)
+        virNetSocketRemoveIOCallback(client->sock);
     client->wantClose = true;
     client->closeReason = reason;
 }
