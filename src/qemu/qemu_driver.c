@@ -5540,6 +5540,7 @@ out:
 static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = conn->privateData;
     virDomainDefPtr def;
+    virDomainDefPtr def_backup = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
@@ -5563,20 +5564,48 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (qemuDomainAssignAddresses(def, NULL, NULL) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains,
-                                  def, false))) {
-        goto cleanup;
+    /* We need to differentiate two cases:
+     * a) updating an existing domain - must preserve previous definition
+     *                                  so we can roll back if something fails
+     * b) defining a brand new domain - virDomainAssignDef is just sufficient
+     */
+    if ((vm = virDomainFindByUUID(&driver->domains, def->uuid))) {
+        if (virDomainObjIsActive(vm)) {
+            def_backup = vm->newDef;
+            vm->newDef = def;
+        } else {
+            def_backup = vm->def;
+            vm->def = def;
+        }
+    } else {
+        if (!(vm = virDomainAssignDef(driver->caps,
+                                      &driver->domains,
+                                      def, false))) {
+            goto cleanup;
+        }
     }
     def = NULL;
     vm->persistent = 1;
 
     if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
-        VIR_INFO("Defining domain '%s'", vm->def->name);
-        qemuDomainRemoveInactive(driver, vm);
-        vm = NULL;
+        if (def_backup) {
+            /* There is backup so this VM was defined before.
+             * Just restore the backup. */
+            VIR_INFO("Restoring domain '%s' definition", vm->def->name);
+            if (virDomainObjIsActive(vm))
+                vm->newDef = def_backup;
+            else
+                vm->def = def_backup;
+        } else {
+            /* Brand new domain. Remove it */
+            VIR_INFO("Deleting domain '%s'", vm->def->name);
+            qemuDomainRemoveInactive(driver, vm);
+            vm = NULL;
+        }
         goto cleanup;
+    } else {
+        virDomainDefFree(def_backup);
     }
 
     event = virDomainEventNewFromObj(vm,
