@@ -191,14 +191,16 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
     }
 
     if (virSetNonBlock(monfd) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Unable to put monitor into non-blocking mode"));
+        virReportSystemError(errno, "%s",
+                             _("Unable to put monitor "
+                               "into non-blocking mode"));
         goto error;
     }
 
     if (virSetCloseExec(monfd) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Unable to set monitor close-on-exec flag"));
+        virReportSystemError(errno, "%s",
+                             _("Unable to set monitor "
+                               "close-on-exec flag"));
         goto error;
     }
 
@@ -256,14 +258,14 @@ qemuAgentOpenPty(const char *monitor)
     int monfd;
 
     if ((monfd = open(monitor, O_RDWR | O_NONBLOCK)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to open monitor path %s"), monitor);
+        virReportSystemError(errno,
+                             _("Unable to open monitor path %s"), monitor);
         return -1;
     }
 
     if (virSetCloseExec(monfd) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Unable to set monitor close-on-exec flag"));
+        virReportSystemError(errno, "%s",
+                             _("Unable to set monitor close-on-exec flag"));
         goto error;
     }
 
@@ -733,14 +735,14 @@ qemuAgentOpen(virDomainObjPtr vm,
         return NULL;
 
     if (virMutexInit(&mon->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot initialize monitor mutex"));
+        virReportSystemError(errno, "%s",
+                             _("cannot initialize monitor mutex"));
         VIR_FREE(mon);
         return NULL;
     }
     if (virCondInit(&mon->notify) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot initialize monitor condition"));
+        virReportSystemError(errno, "%s",
+                             _("cannot initialize monitor condition"));
         virMutexDestroy(&mon->lock);
         VIR_FREE(mon);
         return NULL;
@@ -884,8 +886,8 @@ static int qemuAgentSend(qemuAgentPtr mon,
                                _("Guest agent not available for now"));
                 ret = -2;
             } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to wait on monitor condition"));
+                virReportSystemError(errno, "%s",
+                                     _("Unable to wait on monitor condition"));
             }
             goto cleanup;
         }
