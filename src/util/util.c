@@ -2629,6 +2629,7 @@ int
 virSetUIDGID(uid_t uid, gid_t gid)
 {
     int err;
+    char *buf = NULL;
 
     if (gid > 0) {
         if (setregid(gid, gid) < 0) {
@@ -2642,7 +2643,6 @@ virSetUIDGID(uid_t uid, gid_t gid)
     if (uid > 0) {
 # ifdef HAVE_INITGROUPS
         struct passwd pwd, *pwd_result;
-        char *buf = NULL;
         size_t bufsize;
         int rc;
 
@@ -2659,25 +2659,32 @@ virSetUIDGID(uid_t uid, gid_t gid)
                                 &pwd_result)) == ERANGE) {
             if (VIR_RESIZE_N(buf, bufsize, bufsize, bufsize) < 0) {
                 virReportOOMError();
-                VIR_FREE(buf);
                 err = ENOMEM;
                 goto error;
             }
         }
-        if (rc || !pwd_result) {
+
+        if (rc) {
             virReportSystemError(err = rc, _("cannot getpwuid_r(%d)"),
                                  (unsigned int) uid);
-            VIR_FREE(buf);
             goto error;
         }
+
+        if (!pwd_result) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("getpwuid_r failed to retrieve data "
+                             "for uid '%d'"),
+                           (unsigned int) uid);
+            err = EINVAL;
+            goto error;
+        }
+
         if (initgroups(pwd.pw_name, pwd.pw_gid) < 0) {
             virReportSystemError(err = errno,
                                  _("cannot initgroups(\"%s\", %d)"),
                                  pwd.pw_name, (unsigned int) pwd.pw_gid);
-            VIR_FREE(buf);
             goto error;
         }
-        VIR_FREE(buf);
 # endif
         if (setreuid(uid, uid) < 0) {
             virReportSystemError(err = errno,
@@ -2686,9 +2693,12 @@ virSetUIDGID(uid_t uid, gid_t gid)
             goto error;
         }
     }
+
+    VIR_FREE(buf);
     return 0;
 
 error:
+    VIR_FREE(buf);
     errno = err;
     return -1;
 }
