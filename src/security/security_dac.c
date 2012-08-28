@@ -890,6 +890,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         break;
     case VIR_DOMAIN_SECLABEL_NONE:
         /* no op */
+        return 0;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -899,7 +900,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     }
 
     if (!seclabel->norelabel) {
-        if (seclabel->imagelabel == NULL) {
+        if (seclabel->imagelabel == NULL && seclabel->label != NULL) {
             seclabel->imagelabel = strdup(seclabel->label);
             if (seclabel->imagelabel == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
