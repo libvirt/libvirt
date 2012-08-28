@@ -28,9 +28,13 @@
 
 /* Work around a bug where older libnl-1 headers expected older gcc
  * semantics of 'extern inline' that conflict with C99 semantics.  */
-#  define inline
+#  ifdef HAVE_LIBNL1
+#   define inline
+#  endif
 #  include <netlink/msg.h>
-#  undef inline
+#  ifdef HAVE_LIBNL1
+#   undef inline
+#  endif
 
 # else
 
