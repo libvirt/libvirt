@@ -1614,9 +1614,10 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
  * virCommandToString:
  * @cmd: the command to convert
  *
- * Call after adding all arguments and environment settings, but before
- * Run/RunAsync, to return a string representation of the environment and
- * arguments of cmd.  If virCommandRun cannot succeed (because of an
+ * Call after adding all arguments and environment settings, but
+ * before Run/RunAsync, to return a string representation of the
+ * environment and arguments of cmd, suitably quoted for pasting into
+ * a shell.  If virCommandRun cannot succeed (because of an
  * out-of-memory condition while building cmd), NULL will be returned.
  * Caller is responsible for freeing the resulting string.
  */
@@ -1639,13 +1640,25 @@ virCommandToString(virCommandPtr cmd)
     }
 
     for (i = 0; i < cmd->nenv; i++) {
-        virBufferAdd(&buf, cmd->env[i], strlen(cmd->env[i]));
+        /* In shell, a='b c' has a different meaning than 'a=b c', so
+         * we must determine where the '=' lives.  */
+        char *eq = strchr(cmd->env[i], '=');
+
+        if (!eq) {
+            virBufferFreeAndReset(&buf);
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid use of command API"));
+            return NULL;
+        }
+        eq++;
+        virBufferAdd(&buf, cmd->env[i], eq - cmd->env[i]);
+        virBufferEscapeShell(&buf, eq);
         virBufferAddChar(&buf, ' ');
     }
-    virBufferAdd(&buf, cmd->args[0], strlen(cmd->args[0]));
+    virBufferEscapeShell(&buf, cmd->args[0]);
     for (i = 1; i < cmd->nargs; i++) {
         virBufferAddChar(&buf, ' ');
-        virBufferAdd(&buf, cmd->args[i], strlen(cmd->args[i]));
+        virBufferEscapeShell(&buf, cmd->args[i]);
     }
 
     if (virBufferError(&buf)) {
