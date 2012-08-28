@@ -7585,6 +7585,8 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                 }
 
                 vm->def->numatune.memory.nodemask = nodeset;
+                vm->def->numatune.memory.placement_mode =
+                    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -7601,11 +7603,16 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                 }
 
                 persistentDef->numatune.memory.nodemask = nodeset;
+                persistentDef->numatune.memory.placement_mode =
+                    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
             }
         }
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!persistentDef->numatune.memory.placement_mode)
+            persistentDef->numatune.memory.placement_mode =
+                VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO;
         if (virDomainSaveConfig(driver->configDir, persistentDef) < 0)
             ret = -1;
     }
