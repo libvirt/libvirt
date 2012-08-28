@@ -152,7 +152,7 @@ int virSecurityDACParseImageIds(virDomainDefPtr def,
         return -1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-    if (seclabel == NULL) {
+    if (seclabel == NULL || seclabel->imagelabel == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label for DAC not found in domain %s"),
                        def->name);
