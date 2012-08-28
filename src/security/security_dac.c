@@ -101,7 +101,7 @@ int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
         return -1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
-    if (seclabel == NULL) {
+    if (seclabel == NULL || seclabel->label == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label for DAC not found in domain %s"),
                        def->name);
