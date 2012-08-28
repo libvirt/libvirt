@@ -84,7 +84,7 @@ static char *ebtables_cmd_path;
 static char *iptables_cmd_path;
 static char *ip6tables_cmd_path;
 static char *grep_cmd_path;
-static char *gawk_cmd_path;
+static char *awk_cmd_path;
 
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
     snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
@@ -586,7 +586,7 @@ static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                       grep_cmd_path, udchain,
 
                       syschain, pos, udchain,
-                      gawk_cmd_path,
+                      awk_cmd_path,
 
                       pos,
 
@@ -4288,7 +4288,7 @@ ebiptablesDriverInit(bool privileged)
     if (virMutexInit(&execCLIMutex) < 0)
         return -EINVAL;
 
-    gawk_cmd_path = virFindFileInPath("gawk");
+    awk_cmd_path = virFindFileInPath("awk");
     grep_cmd_path = virFindFileInPath("grep");
 
     /*
@@ -4302,9 +4302,9 @@ ebiptablesDriverInit(bool privileged)
     /* make sure tools are available and work */
     ebiptablesDriverTestCLITools();
 
-    /* ip(6)tables support needs gawk & grep, ebtables doesn't */
+    /* ip(6)tables support needs awk & grep, ebtables doesn't */
     if ((iptables_cmd_path != NULL || ip6tables_cmd_path != NULL) &&
-        (!grep_cmd_path || !gawk_cmd_path)) {
+        (!grep_cmd_path || !awk_cmd_path)) {
         VIR_ERROR(_("essential tools to support ip(6)tables "
                   "firewalls could not be located"));
         VIR_FREE(iptables_cmd_path);
@@ -4326,7 +4326,7 @@ ebiptablesDriverInit(bool privileged)
 static void
 ebiptablesDriverShutdown(void)
 {
-    VIR_FREE(gawk_cmd_path);
+    VIR_FREE(awk_cmd_path);
     VIR_FREE(grep_cmd_path);
     VIR_FREE(ebtables_cmd_path);
     VIR_FREE(iptables_cmd_path);
