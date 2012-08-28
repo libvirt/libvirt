@@ -168,7 +168,11 @@ static int
 nwfilterDriverStartup(int privileged)
 {
     char *base = NULL;
-    DBusConnection *sysbus = virDBusGetSystemBus();
+    DBusConnection *sysbus = NULL;
+
+#if HAVE_DBUS
+    sysbus = virDBusGetSystemBus();
+#endif /* HAVE_DBUS */
 
     if (VIR_ALLOC(driverState) < 0)
         goto alloc_err_exit;
