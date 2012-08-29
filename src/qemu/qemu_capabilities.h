@@ -138,6 +138,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_NETDEV_BRIDGE      = 100, /* bridge helper support */
     QEMU_CAPS_SCSI_LSI           = 101, /* -device lsi */
     QEMU_CAPS_VIRTIO_SCSI_PCI    = 102, /* -device virtio-scsi-pci */
+    QEMU_CAPS_IOLIMITS           = 103, /* -device ...logical_block_size & co */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

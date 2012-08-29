@@ -2637,6 +2637,14 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     if (bootindex && qemuCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&opt, ",bootindex=%d", bootindex);
+    if (qemuCapsGet(qemuCaps, QEMU_CAPS_IOLIMITS)) {
+        if (disk->iolimits.logical_block_size > 0)
+            virBufferAsprintf(&opt, ",logical_block_size=%u",
+                              disk->iolimits.logical_block_size);
+        if (disk->iolimits.physical_block_size > 0)
+            virBufferAsprintf(&opt, ",physical_block_size=%u",
+                              disk->iolimits.physical_block_size);
+    }
 
     if (virBufferError(&opt)) {
         virReportOOMError();

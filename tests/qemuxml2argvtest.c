@@ -789,6 +789,9 @@ mymain(void)
             QEMU_CAPS_IDE_CD);
 
     DO_TEST("disk-geometry", QEMU_CAPS_DRIVE);
+    DO_TEST("disk-iolimits",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_IDE_CD, QEMU_CAPS_IOLIMITS);
 
     VIR_FREE(driver.stateDir);
     virCapabilitiesFree(driver.caps);

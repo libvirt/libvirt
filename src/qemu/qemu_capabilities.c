@@ -172,6 +172,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "bridge", /* 100 */
               "lsi",
               "virtio-scsi-pci",
+              "iolimits",
 
     );
 
@@ -1499,6 +1500,16 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
         qemuCapsSet(flags, QEMU_CAPS_SCSI_CD);
     if (strstr(str, "ide-cd"))
         qemuCapsSet(flags, QEMU_CAPS_IDE_CD);
+    /*
+     * the iolimit detection is not really straight forward:
+     * in qemu this is a capability of the block layer, if
+     * present any of -device scsi-disk, virtio-blk-*, ...
+     * will offer to specify logical and physical block size
+     * and other properties...
+     */
+    if (strstr(str, ".logical_block_size") &&
+        strstr(str, ".physical_block_size"))
+        qemuCapsSet(flags, QEMU_CAPS_IOLIMITS);
 
     return 0;
 }
