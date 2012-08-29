@@ -569,6 +569,11 @@ struct _virDomainDiskDef {
         int trans;
     } geometry;
 
+    struct {
+        unsigned int logical_block_size;
+        unsigned int physical_block_size;
+    } iolimits;
+
     virDomainBlockIoTuneInfo blkdeviotune;
 
     char *serial;

@@ -886,6 +886,9 @@
       <optional>
         <ref name="geometry"/>
       </optional>
+      <optional>
+        <ref name="diskIoLimits"/>
+      </optional>
     </interleave>
   </define>
   <define name="snapshot">
@@ -1106,6 +1109,20 @@
             <value>none</value>
             <value>lba</value>
           </choice>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+  <define name="diskIoLimits">
+    <element name="iolimits">
+      <optional>
+        <attribute name="logical_block_size">
+          <data type="integer"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="physical_block_size">
+          <data type="integer"/>
         </attribute>
       </optional>
     </element>
