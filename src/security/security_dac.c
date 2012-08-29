@@ -891,7 +891,6 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_SECLABEL_NONE:
         /* no op */
         return 0;
-        break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected security label type '%s'"),
