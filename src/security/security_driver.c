@@ -35,7 +35,6 @@
 # include "security_apparmor.h"
 #endif
 
-#include "security_dac.h"
 #include "security_nop.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
@@ -47,7 +46,6 @@ static virSecurityDriverPtr security_drivers[] = {
 #ifdef WITH_SECDRIVER_APPARMOR
     &virAppArmorSecurityDriver,
 #endif
-    &virSecurityDriverDAC,
     &virSecurityDriverNop, /* Must always be last, since it will always probe */
 };
 
