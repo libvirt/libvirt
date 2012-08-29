@@ -247,7 +247,7 @@
 
   <define name='wwn'>
     <data type='string'>
-      <param name='pattern'>(0-9a-fA-F){16}</param>
+      <param name='pattern'>[0-9a-fA-F]{16}</param>
     </data>
   </define>
 
