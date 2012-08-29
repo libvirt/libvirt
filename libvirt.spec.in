@@ -1863,6 +1863,17 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Wed Aug 29 2012 Daniel Veillard <veillard@redhat.com> - 0.10.0-1
+- agent: add qemuAgentArbitraryCommand() for general qemu agent command
+- Introduce virDomainPinEmulator and virDomainGetEmulatorPinInfo functions
+- network: use firewalld instead of iptables, when available
+- network: make network driver vlan-aware
+- esx: Implement network driver
+- driver for parallels hypervisor
+- Various LXC improvements
+- Add virDomainGetHostname
+- a lot of bug fixes, improvements and portability work
+
 * Mon Jul  2 2012 Daniel Veillard <veillard@redhat.com> - 0.9.13-1
 - S390: support for s390(x)
 - snapshot: implement new APIs for esx and vbox
