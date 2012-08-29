@@ -549,7 +549,8 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     if (driver->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
+    if ((period || quota) &&
+        !qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                        _("cgroup cpu is not active"));
         return -1;
