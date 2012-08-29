@@ -99,7 +99,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                 virBufferAddLit(buf, ",");
                 virBufferAsprintf(buf, "%d", virtVlan->tag[i]);
             }
-        } else {
+        } else if (virtVlan->nTags) {
             virBufferAsprintf(buf, "tag=%d", virtVlan->tag[0]);
         }
     }
