@@ -1312,17 +1312,21 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+#if defined(__linux__) && defined(NETLINK_ROUTE)
     /* Register the netlink event service for NETLINK_ROUTE */
     if (virNetlinkEventServiceStart(NETLINK_ROUTE, 0) < 0) {
         ret = VIR_DAEMON_ERR_NETWORK;
         goto cleanup;
     }
+#endif
 
+#if defined(__linux__) && defined(NETLINK_KOBJECT_UEVENT)
     /* Register the netlink event service for NETLINK_KOBJECT_UEVENT */
     if (virNetlinkEventServiceStart(NETLINK_KOBJECT_UEVENT, 1) < 0) {
         ret = VIR_DAEMON_ERR_NETWORK;
         goto cleanup;
     }
+#endif
 
     /* Run event loop. */
     virNetServerRun(srv);
