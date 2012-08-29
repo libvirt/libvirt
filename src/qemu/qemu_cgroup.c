@@ -546,15 +546,20 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
 
-    if (driver->cgroup == NULL)
-        return 0; /* Not supported, so claim success */
-
     if ((period || quota) &&
-        !qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-        virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                       _("cgroup cpu is not active"));
+        (!driver->cgroup ||
+         !qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
         return -1;
     }
+
+    /* We are trying to setup cgroups for CPU pinning, which can also be done
+     * with virProcessInfoSetAffinity, thus the lack of cgroups is not fatal
+     * here.
+     */
+    if (driver->cgroup == NULL)
+        return 0;
 
     rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
     if (rc != 0) {
@@ -636,6 +641,14 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
     long long quota = vm->def->cputune.emulator_quota;
     int rc, i;
 
+    if ((period || quota) &&
+        (!driver->cgroup ||
+         !qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
     if (driver->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
@@ -656,10 +669,8 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
     }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!qemuCgroupControllerActive(driver, i)) {
-            VIR_WARN("cgroup %d is not active", i);
+        if (!qemuCgroupControllerActive(driver, i))
             continue;
-        }
         rc = virCgroupMoveTask(cgroup, cgroup_emulator, i);
         if (rc < 0) {
             virReportSystemError(-rc,
