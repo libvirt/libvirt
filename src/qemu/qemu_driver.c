@@ -7179,32 +7179,34 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    /* Get current swap hard limit */
-    rc = virCgroupGetMemSwapHardLimit(group, &val);
-    if (rc != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("unable to get swap hard limit"));
-        goto cleanup;
-    }
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        /* Get current swap hard limit */
+        rc = virCgroupGetMemSwapHardLimit(group, &val);
+        if (rc != 0) {
+            virReportSystemError(-rc, "%s",
+                                 _("unable to get swap hard limit"));
+            goto cleanup;
+        }
 
-    /* Swap hard_limit and swap_hard_limit to ensure the setting
-     * could succeed if both of them are provided.
-     */
-    if (swap_hard_limit && hard_limit) {
-        virTypedParameter param;
+        /* Swap hard_limit and swap_hard_limit to ensure the setting
+         * could succeed if both of them are provided.
+         */
+        if (swap_hard_limit && hard_limit) {
+            virTypedParameter param;
 
-        if (swap_hard_limit->value.ul > val) {
-             if (hard_limit_index < swap_hard_limit_index) {
-                 param = params[hard_limit_index];
-                 params[hard_limit_index] = params[swap_hard_limit_index];
-                 params[swap_hard_limit_index] = param;
-             }
-        } else {
-             if (hard_limit_index > swap_hard_limit_index) {
-                 param = params[hard_limit_index];
-                 params[hard_limit_index] = params[swap_hard_limit_index];
-                 params[swap_hard_limit_index] = param;
-             }
+            if (swap_hard_limit->value.ul > val) {
+                if (hard_limit_index < swap_hard_limit_index) {
+                    param = params[hard_limit_index];
+                    params[hard_limit_index] = params[swap_hard_limit_index];
+                    params[swap_hard_limit_index] = param;
+                }
+            } else {
+                if (hard_limit_index > swap_hard_limit_index) {
+                    param = params[hard_limit_index];
+                    params[hard_limit_index] = params[swap_hard_limit_index];
+                    params[swap_hard_limit_index] = param;
+                }
+            }
         }
     }
 
