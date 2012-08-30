@@ -258,7 +258,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     err = virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
                                          def->uuid, &tapfd,
                                          virDomainNetGetActualVirtPortProfile(net),
-                                         &net->vlan,
+                                         virDomainNetGetActualVlan(net),
                                          tap_create_flags);
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err < 0) {
