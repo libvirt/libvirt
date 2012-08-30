@@ -1675,9 +1675,15 @@ I<source> is path for the files and devices. I<target> controls the bus or
 device under which the disk is exposed to the guest OS. It indicates the
 "logical" device name.  I<driver> can be I<file>, I<tap> or I<phy> for the Xen
 hypervisor depending on the kind of access; or I<qemu> for the QEMU emulator.
-I<type> can indicate I<lun>, I<cdrom> or I<floppy> as alternative to the disk default,
-although this use only replaces the media within the existing virtual cdrom or
-floppy device; consider using B<update-device> for this usage instead.
+Further details to the driver can be passed using I<subdriver>. For Xen
+I<subdriver> can be I<aio>, while for QEMU subdriver should match the format
+of the disk source, such as I<raw> or I<qcow2>.  Hypervisor default will be
+used if I<subdriver> is not specified.  However, the default may not be
+correct, esp. for QEMU as for security reasons it is configured not to detect
+disk formats.  I<type> can indicate I<lun>, I<cdrom> or I<floppy> as
+alternative to the disk default, although this use only replaces the media
+within the existing virtual cdrom or floppy device; consider using
+B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 I<--config> indicates the changes will affect the next boot of the domain,
 for compatibility purposes, I<--persistent> is alias of I<--config>.
