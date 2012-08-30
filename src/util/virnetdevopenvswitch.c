@@ -83,7 +83,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     if (virtVlan && virtVlan->nTags > 0) {
 
         /* Trunk port first */
-        if (virtVlan->trunk == true) {
+        if (virtVlan->trunk) {
             virBufferAddLit(&buf, "trunk=");
 
             /*
