@@ -66,6 +66,9 @@
 # ifdef WITH_LXC
 #  include "lxc/lxc_driver.h"
 # endif
+# ifdef WITH_XEN
+#  include "xen/xen_driver.h"
+# endif
 # ifdef WITH_LIBXL
 #  include "libxl/libxl_driver.h"
 # endif
@@ -382,6 +385,12 @@ static void daemonInitialize(void)
 # ifdef WITH_NETCF
     virDriverLoadModule("interface");
 # endif
+# ifdef WITH_XEN
+    virDriverLoadModule("xen");
+# endif
+# ifdef WITH_LIBXL
+    virDriverLoadModule("libxl");
+# endif
 # ifdef WITH_QEMU
     virDriverLoadModule("qemu");
 # endif
@@ -390,12 +399,6 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_UML
     virDriverLoadModule("uml");
-# endif
-# ifdef WITH_XEN
-    virDriverLoadModule("xen");
-# endif
-# ifdef WITH_LIBXL
-    virDriverLoadModule("libxl");
 # endif
 #else
 # ifdef WITH_NETWORK
@@ -415,6 +418,9 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_NWFILTER
     nwfilterRegister();
+# endif
+# ifdef WITH_XEN
+    xenRegister();
 # endif
 # ifdef WITH_LIBXL
     libxlRegister();
