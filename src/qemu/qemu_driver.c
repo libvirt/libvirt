@@ -251,14 +251,11 @@ qemuSecurityInit(struct qemud_driver *driver)
     char **names;
     virSecurityManagerPtr mgr = NULL;
     virSecurityManagerPtr stack = NULL;
-    bool hasDAC = false;
 
-    if (driver->securityDriverNames) {
+    if (driver->securityDriverNames &&
+        driver->securityDriverNames[0]) {
         names = driver->securityDriverNames;
         while (names && *names) {
-            if (STREQ("dac", *names))
-                hasDAC = true;
-
             if (!(mgr = virSecurityManagerNew(*names,
                                               QEMU_DRIVER_NAME,
                                               driver->allowDiskFormatProbing,
@@ -287,7 +284,7 @@ qemuSecurityInit(struct qemud_driver *driver)
         mgr = NULL;
     }
 
-    if (!hasDAC && driver->privileged) {
+    if (driver->privileged) {
         if (!(mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
                                              driver->user,
                                              driver->group,
