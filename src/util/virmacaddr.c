@@ -30,6 +30,9 @@
 #include "virmacaddr.h"
 #include "virrandom.h"
 
+static const unsigned char virMacAddrBroadcastAddrRaw[VIR_MAC_BUFLEN] =
+    { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
 /* Compare two MAC addresses, ignoring differences in case,
  * as well as leading zeros.
  */
@@ -217,4 +220,10 @@ bool
 virMacAddrIsUnicast(const virMacAddrPtr mac)
 {
     return !(mac->addr[0] & 1);
+}
+
+bool
+virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN])
+{
+    return memcmp(virMacAddrBroadcastAddrRaw, s, sizeof(*s)) == 0;
 }

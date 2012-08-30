@@ -1326,6 +1326,7 @@ virMacAddrCompare;
 virMacAddrFormat;
 virMacAddrGenerate;
 virMacAddrGetRaw;
+virMacAddrIsBroadcastRaw;
 virMacAddrIsMulticast;
 virMacAddrIsUnicast;
 virMacAddrParse;

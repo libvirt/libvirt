@@ -52,4 +52,6 @@ int virMacAddrParse(const char* str,
                     virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
 bool virMacAddrIsUnicast(const virMacAddrPtr addr);
 bool virMacAddrIsMulticast(const virMacAddrPtr addr);
+bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);
+
 #endif /* __VIR_MACADDR_H__ */
