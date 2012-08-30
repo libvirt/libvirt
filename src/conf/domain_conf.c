@@ -1496,7 +1496,7 @@ virDomainVcpuPinDefPtr *
 virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 {
     int i = 0;
-    virDomainVcpuPinDefPtr *ret;
+    virDomainVcpuPinDefPtr *ret = NULL;
 
     if (VIR_ALLOC_N(ret, nvcpupin) < 0) {
         goto no_memory;
@@ -1514,11 +1514,15 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
     return ret;
 
 no_memory:
-    while (i >= 0) {
-        VIR_FREE(ret[i]->cpumask);
-        VIR_FREE(ret[i]);
+    if (ret) {
+        for ( ; i >= 0; --i) {
+            if (ret[i]) {
+                VIR_FREE(ret[i]->cpumask);
+                VIR_FREE(ret[i]);
+            }
+        }
+        VIR_FREE(ret);
     }
-    VIR_FREE(ret);
     virReportOOMError();
 
     return NULL;
