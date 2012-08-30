@@ -2461,7 +2461,7 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
         }
         vm->def->cputune.nvcpupin = 0;
     }
-    if (virDomainVcpuPinAdd(vm->def->cputune.vcpupin,
+    if (virDomainVcpuPinAdd(&vm->def->cputune.vcpupin,
                             &vm->def->cputune.nvcpupin,
                             cpumap,
                             maplen,

@@ -3782,7 +3782,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             newVcpuPinNum = 0;
         }
 
-        if (virDomainVcpuPinAdd(newVcpuPin, &newVcpuPinNum, cpumap, maplen, vcpu) < 0) {
+        if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update vcpupin"));
             virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
@@ -3849,7 +3849,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
                 }
                 persistentDef->cputune.nvcpupin = 0;
             }
-            if (virDomainVcpuPinAdd(persistentDef->cputune.vcpupin,
+            if (virDomainVcpuPinAdd(&persistentDef->cputune.vcpupin,
                                     &persistentDef->cputune.nvcpupin,
                                     cpumap,
                                     maplen,
@@ -4042,7 +4042,7 @@ qemudDomainPinEmulator(virDomainPtr dom,
                 newVcpuPinNum = 0;
             }
 
-            if (virDomainVcpuPinAdd(newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
+            if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to update vcpupin"));
                 virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);

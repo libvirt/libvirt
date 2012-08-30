@@ -11037,7 +11037,7 @@ cleanup:
     return bitmap;
 }
 
-int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
+int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         int *nvcpupin,
                         unsigned char *cpumap,
                         int maplen,
@@ -11052,7 +11052,7 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
     if ((cpumask = bitmapFromBytemap(cpumap, maplen)) == NULL)
         return -1;
 
-    vcpupin = virDomainVcpuPinFindByVcpu(vcpupin_list,
+    vcpupin = virDomainVcpuPinFindByVcpu(*vcpupin_list,
                                          *nvcpupin,
                                          vcpu);
     if (vcpupin) {
@@ -11073,14 +11073,14 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr *vcpupin_list,
     vcpupin->cpumask = cpumask;
 
 
-    if (VIR_REALLOC_N(vcpupin_list, *nvcpupin + 1) < 0) {
+    if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0) {
         virReportOOMError();
         VIR_FREE(cpumask);
         VIR_FREE(vcpupin);
         return -1;
     }
 
-    vcpupin_list[(*nvcpupin)++] = vcpupin;
+    (*vcpupin_list)[(*nvcpupin)++] = vcpupin;
 
     return 0;
 }

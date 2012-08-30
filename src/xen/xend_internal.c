@@ -2303,7 +2303,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
             }
             def->cputune.nvcpupin = 0;
         }
-        if (virDomainVcpuPinAdd(def->cputune.vcpupin,
+        if (virDomainVcpuPinAdd(&def->cputune.vcpupin,
                                 &def->cputune.nvcpupin,
                                 cpumap,
                                 maplen,
