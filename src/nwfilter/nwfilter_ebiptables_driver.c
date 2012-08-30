@@ -3374,10 +3374,10 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
         VIR_FREE(srcIPParam);
 
-        if (idx == num_dhcpsrvrs)
-            break;
-
         idx++;
+
+        if (idx >= num_dhcpsrvrs)
+            break;
     }
 
     virBufferAsprintf(&buf,
