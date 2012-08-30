@@ -1296,7 +1296,7 @@ int qemuAgentShutdown(qemuAgentPtr mon,
 
     mon->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
     ret = qemuAgentCommand(mon, cmd, &reply,
-                           VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT);
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
     if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
@@ -1329,7 +1329,7 @@ int qemuAgentFSFreeze(qemuAgentPtr mon)
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT) < 0 ||
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
         qemuAgentCheckError(cmd, reply) < 0)
         goto cleanup;
 
@@ -1367,7 +1367,7 @@ int qemuAgentFSThaw(qemuAgentPtr mon)
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT) < 0 ||
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
         qemuAgentCheckError(cmd, reply) < 0)
         goto cleanup;
 
@@ -1405,7 +1405,7 @@ qemuAgentSuspend(qemuAgentPtr mon,
 
     mon->await_event = QEMU_AGENT_EVENT_SUSPEND;
     ret = qemuAgentCommand(mon, cmd, &reply,
-                           VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT);
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
 
     if (reply && ret == 0)
         ret = qemuAgentCheckError(cmd, reply);
