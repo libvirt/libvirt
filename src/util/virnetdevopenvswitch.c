@@ -104,9 +104,15 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     }
 
     cmd = virCommandNew(OVSVSCTL);
+
+    virCommandAddArgList(cmd, "--", "--may-exist", "add-port",
+                        brname, ifname, NULL);
+
+    if (virBufferUse(&buf) != 0)
+        virCommandAddArgList(cmd, virBufferCurrentContent(&buf), NULL);
+
     if (ovsport->profileID[0] == '\0') {
-        virCommandAddArgList(cmd, "--", "--may-exist", "add-port",
-                        brname, ifname, virBufferCurrentContent(&buf),
+        virCommandAddArgList(cmd,
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
                         "--", "set", "Interface", ifname, vmid_ex_id,
@@ -114,8 +120,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                         "external-ids:iface-status=active",
                         NULL);
     } else {
-        virCommandAddArgList(cmd, "--", "--may-exist", "add-port",
-                        brname, ifname, virBufferCurrentContent(&buf),
+        virCommandAddArgList(cmd,
                         "--", "set", "Interface", ifname, attachedmac_ex_id,
                         "--", "set", "Interface", ifname, ifaceid_ex_id,
                         "--", "set", "Interface", ifname, vmid_ex_id,
