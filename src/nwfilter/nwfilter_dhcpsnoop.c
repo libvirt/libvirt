@@ -1010,6 +1010,17 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
     if (len < 0)
         return -2;                 /* invalid packet length */
 
+    /*
+     * some DHCP servers send their responses as MAC broadcast replies
+     * filter messages from the server also by the destination MAC
+     * inside the DHCP response
+     */
+    if (!fromVM) {
+        if (virMacAddrCmpRaw(&req->macaddr,
+                             (unsigned char *)&pd->d_chaddr) != 0)
+            return -2;
+    }
+
     if (virNWFilterSnoopDHCPGetOpt(pd, len, &mtype, &leasetime) < 0)
         return -2;
 
@@ -1069,7 +1080,6 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
     char pcap_errbuf[PCAP_ERRBUF_SIZE];
     char *ext_filter = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
-    const char *ext;
 
     virMacAddrFormat(mac, macaddr);
 
@@ -1080,14 +1090,24 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
          * extend the filter with the macaddr of the VM; filter the
          * more unlikely parameters first, then go for the MAC
          */
-        ext = "and ether src";
+        if (virAsprintf(&ext_filter,
+                        "%s and ether src %s", filter, macaddr) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
     } else {
-        ext = "and ether dst";
-    }
-
-    if (virAsprintf(&ext_filter, "%s %s %s", filter, ext, macaddr) < 0) {
-        virReportOOMError();
-        return NULL;
+        /*
+         * Some DHCP servers respond via MAC broadcast; we rely on later
+         * filtering of responses by comparing the MAC address inside the
+         * DHCP response against the one of the VM. Assuming that the
+         * bridge learns the VM's MAC address quickly this should not
+         * generate much more traffic than if we filtered by VM and
+         * braodcast MAC as well
+         */
+        if (virAsprintf(&ext_filter, "%s", filter) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
     }
 
     handle = pcap_create(ifname, pcap_errbuf);

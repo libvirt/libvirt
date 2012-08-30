@@ -3345,6 +3345,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     while (true) {
         char *srcIPParam = NULL;
+        int ctr;
 
         if (idx < num_dhcpsrvrs) {
             const char *dhcpserver;
@@ -3357,20 +3358,26 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
             }
         }
 
-        virBufferAsprintf(&buf,
-                          CMD_DEF("$EBT -t nat -A %s"
-                                  " -d %s"
-                                  " -p ipv4 --ip-protocol udp"
-                                  " %s"
-                                  " --ip-sport 67 --ip-dport 68"
-                                  " -j ACCEPT") CMD_SEPARATOR
-                          CMD_EXEC
-                          "%s",
+        /*
+         * create two rules allowing response to MAC address of VM
+         * or to broadcast MAC address
+         */
+        for (ctr = 0; ctr < 2; ctr++) {
+            virBufferAsprintf(&buf,
+                              CMD_DEF("$EBT -t nat -A %s"
+                                      " -d %s"
+                                      " -p ipv4 --ip-protocol udp"
+                                      " %s"
+                                      " --ip-sport 67 --ip-dport 68"
+                                      " -j ACCEPT") CMD_SEPARATOR
+                              CMD_EXEC
+                              "%s",
 
-                          chain_out,
-                          macaddr_str,
-                          srcIPParam != NULL ? srcIPParam : "",
-                          CMD_STOPONERR(1));
+                              chain_out,
+                              (ctr == 0) ? macaddr_str : "ff:ff:ff:ff:ff:ff",
+                              srcIPParam != NULL ? srcIPParam : "",
+                              CMD_STOPONERR(1));
+        }
 
         VIR_FREE(srcIPParam);
 
