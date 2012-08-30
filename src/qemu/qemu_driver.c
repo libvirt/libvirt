@@ -249,119 +249,70 @@ static int
 qemuSecurityInit(struct qemud_driver *driver)
 {
     char **names;
-    char *primary = NULL;
     virSecurityManagerPtr mgr = NULL;
-    virSecurityManagerPtr nested = NULL;
     virSecurityManagerPtr stack = NULL;
     bool hasDAC = false;
 
-    /* set the name of the primary security driver */
-    if (driver->securityDriverNames)
-        primary = driver->securityDriverNames[0];
-
-    /* add primary security driver */
-    if ((primary == NULL && driver->privileged) ||
-        STREQ_NULLABLE(primary, "dac")) {
-        if (!driver->privileged) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("DAC security driver usable only when "
-                             "running privileged (as root)"));
-            goto error;
-        }
-
-        mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
-                                       driver->user,
-                                       driver->group,
-                                       driver->allowDiskFormatProbing,
-                                       driver->securityDefaultConfined,
-                                       driver->securityRequireConfined,
-                                       driver->dynamicOwnership);
-        hasDAC = true;
-    } else {
-        mgr = virSecurityManagerNew(primary,
-                                    QEMU_DRIVER_NAME,
-                                    driver->allowDiskFormatProbing,
-                                    driver->securityDefaultConfined,
-                                    driver->securityRequireConfined);
-    }
-
-    if (!mgr)
-        goto error;
-
-    /* We need a stack to group the security drivers if:
-     * - additional drivers are provived in configuration
-     * - the primary driver isn't DAC and we are running privileged
-     */
-    if ((driver->privileged && !hasDAC) ||
-        (driver->securityDriverNames && driver->securityDriverNames[1])) {
-        if (!(stack = virSecurityManagerNewStack(mgr)))
-            goto error;
-        mgr = stack;
-    }
-
-    /* Loop through additional driver names and add them as nested */
     if (driver->securityDriverNames) {
-        names = driver->securityDriverNames + 1;
+        names = driver->securityDriverNames;
         while (names && *names) {
-            if (STREQ("dac", *names)) {
-                /* A DAC driver has specific parameters */
-                if (!driver->privileged) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("DAC security driver usable only when "
-                                     "running privileged (as root)"));
-                    goto error;
-                }
-
-                nested = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
-                                                  driver->user,
-                                                  driver->group,
-                                                  driver->allowDiskFormatProbing,
-                                                  driver->securityDefaultConfined,
-                                                  driver->securityRequireConfined,
-                                                  driver->dynamicOwnership);
+            if (STREQ("dac", *names))
                 hasDAC = true;
+
+            if (!(mgr = virSecurityManagerNew(*names,
+                                              QEMU_DRIVER_NAME,
+                                              driver->allowDiskFormatProbing,
+                                              driver->securityDefaultConfined,
+                                              driver->securityRequireConfined)))
+                goto error;
+            if (!stack) {
+                if (!(stack = virSecurityManagerNewStack(mgr)))
+                    goto error;
             } else {
-                nested = virSecurityManagerNew(*names,
-                                               QEMU_DRIVER_NAME,
-                                               driver->allowDiskFormatProbing,
-                                               driver->securityDefaultConfined,
-                                               driver->securityRequireConfined);
+                if (virSecurityManagerStackAddNested(stack, mgr) < 0)
+                    goto error;
             }
-
-            if (!nested)
-                goto error;
-
-            if (virSecurityManagerStackAddNested(stack, nested))
-                goto error;
-
-            nested = NULL;
+            mgr = NULL;
             names++;
         }
+    } else {
+        if (!(mgr = virSecurityManagerNew(NULL,
+                                          QEMU_DRIVER_NAME,
+                                          driver->allowDiskFormatProbing,
+                                          driver->securityDefaultConfined,
+                                          driver->securityRequireConfined)))
+            goto error;
+        if (!(stack = virSecurityManagerNewStack(mgr)))
+            goto error;
+        mgr = NULL;
     }
 
-    if (driver->privileged && !hasDAC) {
-        if (!(nested = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
-                                                driver->user,
-                                                driver->group,
-                                                driver->allowDiskFormatProbing,
-                                                driver->securityDefaultConfined,
-                                                driver->securityRequireConfined,
-                                                driver->dynamicOwnership)))
+    if (!hasDAC && driver->privileged) {
+        if (!(mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
+                                             driver->user,
+                                             driver->group,
+                                             driver->allowDiskFormatProbing,
+                                             driver->securityDefaultConfined,
+                                             driver->securityRequireConfined,
+                                             driver->dynamicOwnership)))
             goto error;
-
-        if (virSecurityManagerStackAddNested(stack, nested))
-            goto error;
-
-        nested = NULL;
+        if (!stack) {
+            if (!(stack = virSecurityManagerNewStack(mgr)))
+                goto error;
+        } else {
+            if (virSecurityManagerStackAddNested(stack, mgr) < 0)
+                goto error;
+        }
+        mgr = NULL;
     }
 
-    driver->securityManager = mgr;
+    driver->securityManager = stack;
     return 0;
 
 error:
     VIR_ERROR(_("Failed to initialize security drivers"));
+    virSecurityManagerFree(stack);
     virSecurityManagerFree(mgr);
-    virSecurityManagerFree(nested);
     return -1;
 }
 

@@ -27,18 +27,10 @@ extern virSecurityDriver virSecurityDriverStack;
 
 
 int
-virSecurityStackAddPrimary(virSecurityManagerPtr mgr,
-                           virSecurityManagerPtr primary);
-int
 virSecurityStackAddNested(virSecurityManagerPtr mgr,
                           virSecurityManagerPtr nested);
 virSecurityManagerPtr
 virSecurityStackGetPrimary(virSecurityManagerPtr mgr);
-
-void virSecurityStackSetPrimary(virSecurityManagerPtr mgr,
-                                virSecurityManagerPtr primary);
-void virSecurityStackSetSecondary(virSecurityManagerPtr mgr,
-                                  virSecurityManagerPtr secondary);
 
 virSecurityManagerPtr*
 virSecurityStackGetNested(virSecurityManagerPtr mgr);

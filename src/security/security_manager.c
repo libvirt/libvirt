@@ -49,6 +49,12 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
 {
     virSecurityManagerPtr mgr;
 
+    VIR_DEBUG("drv=%p (%s) virtDriver=%s allowDiskFormatProbing=%d "
+              "defaultConfined=%d requireConfined=%d",
+              drv, drv->name, virtDriver,
+              allowDiskFormatProbing, defaultConfined,
+              requireConfined);
+
     if (VIR_ALLOC_VAR(mgr, char, drv->privateDataLen) < 0) {
         virReportOOMError();
         return NULL;
@@ -80,7 +86,7 @@ virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary)
     if (!mgr)
         return NULL;
 
-    virSecurityStackAddPrimary(mgr, primary);
+    virSecurityStackAddNested(mgr, primary);
 
     return mgr;
 }

@@ -38,20 +38,8 @@ struct _virSecurityStackItem {
 };
 
 struct _virSecurityStackData {
-    virSecurityManagerPtr primary;
     virSecurityStackItemPtr itemsHead;
 };
-
-int
-virSecurityStackAddPrimary(virSecurityManagerPtr mgr,
-                           virSecurityManagerPtr primary)
-{
-    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    if (virSecurityStackAddNested(mgr, primary) < 0)
-        return -1;
-    priv->primary = primary;
-    return 0;
-}
 
 int
 virSecurityStackAddNested(virSecurityManagerPtr mgr,
@@ -59,14 +47,22 @@ virSecurityStackAddNested(virSecurityManagerPtr mgr,
 {
     virSecurityStackItemPtr item = NULL;
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr tmp;
+
+    tmp = priv->itemsHead;
+    while (tmp && tmp->next)
+        tmp = tmp->next;
 
     if (VIR_ALLOC(item) < 0) {
         virReportOOMError();
         return -1;
     }
     item->securityManager = nested;
-    item->next = priv->itemsHead;
-    priv->itemsHead = item;
+    if (tmp)
+        tmp->next = item;
+    else
+        priv->itemsHead = item;
+
     return 0;
 }
 
@@ -74,19 +70,7 @@ virSecurityManagerPtr
 virSecurityStackGetPrimary(virSecurityManagerPtr mgr)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    return (priv->primary) ? priv->primary : priv->itemsHead->securityManager;
-}
-
-void virSecurityStackSetPrimary(virSecurityManagerPtr mgr,
-                                virSecurityManagerPtr primary)
-{
-    virSecurityStackAddPrimary(mgr, primary);
-}
-
-void virSecurityStackSetSecondary(virSecurityManagerPtr mgr,
-                                  virSecurityManagerPtr secondary)
-{
-    virSecurityStackAddNested(mgr, secondary);
+    return priv->itemsHead->securityManager;
 }
 
 static virSecurityDriverStatus
