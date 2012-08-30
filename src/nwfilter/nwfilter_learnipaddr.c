@@ -414,9 +414,7 @@ learnIPAddressThread(void *arg)
             req->status = EINVAL;
             goto done;
         }
-        virBufferAsprintf(&buf, " ether dst %s"
-                                " and src port 67 and dst port 68",
-                          macaddr);
+        virBufferAsprintf(&buf, "src port 67 and dst port 68");
         break;
     default:
         if (techdriver->applyBasicRules(req->ifname,
@@ -424,7 +422,8 @@ learnIPAddressThread(void *arg)
             req->status = EINVAL;
             goto done;
         }
-        virBufferAsprintf(&buf, "ether host %s", macaddr);
+        virBufferAsprintf(&buf, "ether host %s or ether dst ff:ff:ff:ff:ff:ff",
+                          macaddr);
     }
 
     if (virBufferError(&buf)) {
@@ -529,7 +528,9 @@ learnIPAddressThread(void *arg)
                     }
                 }
             } else if (virMacAddrCmpRaw(&req->macaddr,
-                                        ether_hdr->ether_dhost) == 0) {
+                                        ether_hdr->ether_dhost) == 0 ||
+                       /* allow Broadcast replies from DHCP server */
+                       virMacAddrIsBroadcastRaw(ether_hdr->ether_dhost)) {
                 /* packets to the VM */
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
