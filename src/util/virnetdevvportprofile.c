@@ -1235,7 +1235,8 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
         /* avoid disassociating twice */
         if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_FINISH)
             break;
-        ignore_value(virNetDevSetOnline(linkdev, false));
+        if (vf < 0)
+            ignore_value(virNetDevSetOnline(linkdev, false));
         rc = virNetDevVPortProfileOp8021Qbh(linkdev, macvtap_macaddr, vf,
                                             virtPort, NULL,
                                             VIR_NETDEV_VPORT_PROFILE_LINK_OP_DISASSOCIATE);
