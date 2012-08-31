@@ -1509,7 +1509,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             return ret;
 
         if (enable_timing) {
-            double diff_ms = (((after.tv_sec - before.tv_sec) * 1000000.0) +
+            double diff_ms = (((after.tv_sec - before.tv_sec) * 1000.0) +
                               ((after.tv_usec - before.tv_usec) / 1000.0));
 
             vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"), diff_ms);
