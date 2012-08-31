@@ -13460,7 +13460,7 @@ getSumVcpuPercpuStats(virCgroupPtr group,
             goto cleanup;
         }
 
-        if (virCgroupGetCpuacctPercpuUsage(group, &buf) < 0)
+        if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
             goto cleanup;
 
         pos = buf;
