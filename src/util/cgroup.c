@@ -360,7 +360,7 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 
     VIR_DEBUG("Get value %s", keypath);
 
-    rc = virFileReadAll(keypath, 1024, value);
+    rc = virFileReadAll(keypath, 1024*1024, value);
     if (rc < 0) {
         rc = -errno;
         VIR_DEBUG("Failed to read %s: %m\n", keypath);
