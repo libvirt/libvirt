@@ -8236,7 +8236,7 @@ static const vshCmdOptDef opts_change_media[] = {
                                    "depends on implementation of hypervisor driver")},
     {"live", VSH_OT_BOOL, 0, N_("alter live configuration of running domain")},
     {"config", VSH_OT_BOOL, 0, N_("alter persistent configuration, effect observed on next boot")},
-    {"force",  VSH_OT_BOOL, 0, N_("force media insertion")},
+    {"force",  VSH_OT_BOOL, 0, N_("force media changing")},
     {NULL, 0, 0, NULL}
 };
 
