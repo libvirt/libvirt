@@ -389,8 +389,8 @@
     &lt;shares&gt;2048&lt;/shares&gt;
     &lt;period&gt;1000000&lt;/period&gt;
     &lt;quota&gt;-1&lt;/quota&gt;
-    &lt;emulator_period&gt;1000000&lt;/period&gt;
-    &lt;emulator_quota&gt;-1&lt;/quota&gt;
+    &lt;emulator_period&gt;1000000&lt;/emulator_period&gt;
+    &lt;emulator_quota&gt;-1&lt;/emulator_quota&gt;
   &lt;/cputune&gt;
   ...
 &lt;/domain&gt;
