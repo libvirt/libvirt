@@ -295,6 +295,7 @@ struct _virSecurityLabelDef {
     char *baselabel;    /* base name of label string */
     int type;           /* virDomainSeclabelType */
     bool norelabel;
+    bool implicit;      /* true if seclabel is auto-added */
 };
 
 

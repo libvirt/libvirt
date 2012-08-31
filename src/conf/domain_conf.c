@@ -11244,10 +11244,16 @@ virSecurityLabelDefFormat(virBufferPtr buf, virSecurityLabelDefPtr def)
     if (def->type == VIR_DOMAIN_SECLABEL_DEFAULT)
         return;
 
+    /* To avoid backward compatibility issues, suppress DAC labels that are
+     * automatically generated.
+     */
+    if (STREQ_NULLABLE(def->model, "dac") && def->implicit)
+        return;
+
     virBufferAsprintf(buf, "<seclabel type='%s'",
                       sectype);
 
-    if (def->model)
+    if (def->model && STRNEQ(def->model, "none"))
         virBufferEscapeString(buf, " model='%s'", def->model);
 
     if (def->type == VIR_DOMAIN_SECLABEL_NONE) {
@@ -14995,6 +15001,7 @@ virSecurityLabelDefPtr
 virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
 {
     int i;
+    virSecurityLabelDefPtr seclabel = NULL;
 
     if (def == NULL || model == NULL)
         return NULL;
@@ -15006,7 +15013,11 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
             return def->seclabels[i];
     }
 
-    return virDomainDefAddSecurityLabelDef(def, model);
+    seclabel = virDomainDefAddSecurityLabelDef(def, model);
+    if (seclabel)
+        seclabel->implicit = true;
+
+    return seclabel;
 }
 
 virSecurityDeviceLabelDefPtr
