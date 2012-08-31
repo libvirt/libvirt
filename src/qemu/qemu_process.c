@@ -3467,7 +3467,7 @@ int qemuProcessStart(virConnectPtr conn,
         if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             !vm->def->graphics[0]->data.vnc.socket &&
             vm->def->graphics[0]->data.vnc.autoport) {
-            int port = qemuProcessNextFreePort(driver, QEMU_REMOTE_PORT_MIN);
+            int port = qemuProcessNextFreePort(driver, driver->remotePortMin);
             if (port < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Unable to find an unused port for VNC"));
@@ -3478,7 +3478,7 @@ int qemuProcessStart(virConnectPtr conn,
             int port = -1;
             if (vm->def->graphics[0]->data.spice.autoport ||
                 vm->def->graphics[0]->data.spice.port == -1) {
-                port = qemuProcessNextFreePort(driver, QEMU_REMOTE_PORT_MIN);
+                port = qemuProcessNextFreePort(driver, driver->remotePortMin);
 
                 if (port < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
