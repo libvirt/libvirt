@@ -3106,22 +3106,10 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         def->baselabel = p;
     }
 
-    /* Only parse model, if static labelling, or a base
-     * label is set, or doing active XML
-     */
-    if (def->type == VIR_DOMAIN_SECLABEL_STATIC ||
-        def->baselabel ||
-        (!(flags & VIR_DOMAIN_XML_INACTIVE) &&
-         def->type != VIR_DOMAIN_SECLABEL_NONE)) {
-
-        p = virXPathStringLimit("string(./@model)",
-                                VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
-        if (p == NULL && def->type != VIR_DOMAIN_SECLABEL_NONE) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           "%s", _("missing security model"));
-        }
-        def->model = p;
-    }
+    /* Always parse model */
+    p = virXPathStringLimit("string(./@model)",
+                            VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
+    def->model = p;
 
     return def;
 
@@ -3133,10 +3121,12 @@ error:
 static int
 virSecurityLabelDefsParseXML(virDomainDefPtr def,
                             xmlXPathContextPtr ctxt,
+                            virCapsPtr caps,
                             unsigned int flags)
 {
     int i = 0, n;
     xmlNodePtr *list = NULL, saved_node;
+    virCapsHostPtr host = &caps->host;
 
     /* Check args and save context */
     if (def == NULL || ctxt == NULL)
@@ -3163,18 +3153,47 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
     ctxt->node = saved_node;
     VIR_FREE(list);
 
-    /* Checking missing model information
-     * when there is more than one seclabel */
-    if (n > 1) {
+    /* libvirt versions prior to 0.10.0 support just a single seclabel element
+     * in guest's XML and model attribute can be suppressed if type is none or
+     * type is dynamic, baselabel is not defined and INACTIVE flag is set.
+     *
+     * To avoid compatibility issues, for this specific case the first model
+     * defined in host's capabilities is used as model for the seclabel.
+     */
+    if (def->nseclabels == 1 &&
+        !def->seclabels[0]->model &&
+        host->nsecModels > 0) {
+        if (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_NONE ||
+            (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
+             !def->seclabels[0]->baselabel &&
+             (flags & VIR_DOMAIN_XML_INACTIVE))) {
+            /* Copy model from host. */
+            VIR_DEBUG("Found seclabel without a model, using '%s'",
+                      host->secModels[0].model);
+            def->seclabels[0]->model = strdup(host->secModels[0].model);
+            if (!def->seclabels[0]->model) {
+                virReportOOMError();
+                goto error;
+            }
+        } else {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing security model in domain seclabel"));
+            goto error;
+        }
+    }
+
+    /* Checking missing model information */
+    if (def->nseclabels > 1) {
         for(; n; n--) {
             if (def->seclabels[n - 1]->model == NULL) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                                     _("missing security model "
-                                       "when using multiple labels"));
+                               _("missing security model "
+                                 "when using multiple labels"));
                 goto error;
             }
         }
     }
+
     return 0;
 
 error:
@@ -8170,7 +8189,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     /* analysis of security label, done early even though we format it
      * late, so devices can refer to this for defaults */
-    if (virSecurityLabelDefsParseXML(def, ctxt, flags) == -1)
+    if (virSecurityLabelDefsParseXML(def, ctxt, caps, flags) == -1)
         goto error;
 
     /* Extract domain memory */
