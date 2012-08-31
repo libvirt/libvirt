@@ -8,6 +8,54 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>0.10.1: August 31 2012</h3>
+    <ul>
+      <li> Bug Fixes:<br/>
+      conf: Avoid formatting auto-generated DAC labels (Marcelo Cerri),<br/>
+      conf: Fix parsing of seclabels without model (Marcelo Cerri),<br/>
+      virsh: fixed incorrect timing report (Viktor Mihajlovski),<br/>
+      qemu: Don't ignore CPU tuning config if required cgroups are missing (Jiri Denemark),<br/>
+      cgroup: fix libvirtd crash caused by messed memory (Guannan Ren),<br/>
+      cgroup: fix a typo on extracting data from vcpu cgroup (Guannan Ren),<br/>
+      cgroup: read more data from cgroup cpuacct.usage_percpu (Guannan Ren),<br/>
+      nwfilter: adapt IP learning for broadcasted DHCP replies (Stefan Berger),<br/>
+      nwfilter: accept broadcasted DHCP replies in DHCP snooping code (Stefan Berger),<br/>
+      Fix adding ports to OVS bridges without VLAN tags (Kyle Mestery),<br/>
+      Fix xen driver following changes to make it stateful (Jim Fehlig),<br/>
+      Fix issue of PF brought down if VF is 8021.Qbh and pci passthrough (Nishank Trivedi),<br/>
+      nwfilter: loop generated too many rules (Stefan Berger),<br/>
+      security: Re-apply commit ce53382ba28179d3a504b29b4f888b6e130d53f0 (Peter Krempa),<br/>
+      vcpupin: Fix returning of arrays from virDomainVcpuPinAdd (Peter Krempa),<br/>
+      qemu: Fix possible infinite loop and segfault on error path. (Peter Krempa),<br/>
+      qemu: Clean up security driver initialisation and config file (Peter Krempa),<br/>
+      qemu: Revert to blocking behavior of qemuAgentCommand (Jiri Denemark),<br/>
+      qemu: Remove redundant parameter from qemuAgentSend (Jiri Denemark),<br/>
+      network: get vlan info for Open vSwitch interfaces from proper source (Laine Stump),<br/>
+      Small cleanup on previous patch (Daniel Veillard),<br/>
+      Fix a crash when using Open vSwitch virtual ports (Kyle Mestery),<br/>
+      qemu: Sort the numa params only when it affects the live config (Osier Yang),<br/>
+      Fix configuration of QEMU security drivers (Daniel P. Berrange),<br/>
+      qemu: Refactor initialisation of security drivers. (Peter Krempa),<br/>
+      Revert "security: Add DAC to security_drivers" (Peter Krempa),<br/>
+      qemu: Fix starting domains with no cpu cgroup (Jiri Denemark)<br/>
+      </li>
+
+      <li> Documentation:<br/>
+      virsh: Document subdriver option of attach-disk (Jiri Denemark),<br/>
+      update option force to subcommand change-media (Guannan Ren),<br/>
+      Fix typo in CPU tuning (Jiri Denemark),<br/>
+      Fix emulator pinning example in formatdomain.html (Peter Krempa)<br/>
+      </li>
+
+      <li> Improvement:<br/>
+      Implement virMacAddrIsBroadcastRaw (Stefan Berger)<br/>
+      </li>
+
+      <li> Cleanup:<br/>
+      security: remove dead code from virSecurityDACGenLabel (Alex Jia)<br/>
+      </li>
+    </ul>
+
     <h3>0.10.0: August 29 2012</h3>
     <ul>
       <li> Features:<br/>

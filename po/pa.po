@@ -7,14 +7,14 @@
 # A S Alam <apbrar@gmail.com>, 2006.
 # A S Alam <apreet.alam@gmail.com>, 2011.
 # Daniel  <veillard@redhat.com>, 2011.
-# Jaswinder Singh <jsingh@redhat.com>, 2007, 2009, 2010, 2012.
+# Jaswinder Singh <jsingh@redhat.com>, 2007,2009-2010,2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-29 11:42+0800\n"
-"PO-Revision-Date: 2012-06-27 02:46+0000\n"
-"Last-Translator: Daniel <veillard@redhat.com>\n"
+"POT-Creation-Date: 2012-08-31 20:38+0800\n"
+"PO-Revision-Date: 2012-08-31 09:37+0000\n"
+"Last-Translator: Jaswinder Singh <j.phulewala@gmail.com>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
 "libvirt/language/pa/)\n"
 "Language: pa\n"
@@ -48,12 +48,12 @@ msgstr "remoteReadConfigFile: %s: %s: ਗਲਤ ਕਿਸਮ: %s ਮਿਲਿਆ
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s"
 msgstr "remoteReadConfigFile: %s: %s: ਨਾ-ਸਹਿਯੋਗੀ auth %s"
 
-#: daemon/libvirtd.c:213
+#: daemon/libvirtd.c:216
 #, c-format
 msgid "%s: error: unable to determine if daemon is running: %s\n"
 msgstr "%s: ਗਲਤੀ: ਪਤਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ ਹੈ ਕਿ ਕੀ ਡੈਮਨ ਚੱਲ ਰਿਹਾ ਹੈ ਜਾਂ ਨਹੀਂ: %s\n"
 
-#: daemon/libvirtd.c:219
+#: daemon/libvirtd.c:222
 #, c-format
 msgid ""
 "%s: error: %s. Check /var/log/messages or run without --daemon for more "
@@ -61,29 +61,29 @@ msgid ""
 msgstr ""
 "%s: ਗਲਤੀ: %s. ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ /var/log/messages ਵੇਖੋ ਜਾਂ without --daemon ਚਲਾਓ।\n"
 
-#: daemon/libvirtd.c:456 daemon/libvirtd.c:461
+#: daemon/libvirtd.c:462 daemon/libvirtd.c:467
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "'%s' ਨੂੰ  ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: daemon/libvirtd.c:703
+#: daemon/libvirtd.c:709
 msgid "additional privileges are required"
 msgstr "ਵਾਧੂ ਅਧਿਕਾਰਾਂ ਦੀ ਲੋੜ ਹੈ"
 
-#: daemon/libvirtd.c:709
+#: daemon/libvirtd.c:715
 msgid "failed to set reduced privileges"
 msgstr "ਅਧਿਕਾਰ ਹਟਾਉਣ ਤੋਂ ਫੇਲ"
 
-#: daemon/libvirtd.c:760
+#: daemon/libvirtd.c:766
 msgid "Driver state initialization failed"
 msgstr "ਡਰਾਈਵਰ ਸਟੇਟ ਸ਼ੁਰੂਆਤੀ ਫੇਲ ਹੋਈ"
 
-#: daemon/libvirtd.c:842
+#: daemon/libvirtd.c:848
 #, c-format
 msgid "Unable to migrate %s to %s"
 msgstr ""
 
-#: daemon/libvirtd.c:864
+#: daemon/libvirtd.c:870
 #, c-format
 msgid ""
 "\n"
@@ -116,7 +116,7 @@ msgstr ""
 "\n"
 "libvirt management daemon:\n"
 
-#: daemon/libvirtd.c:881
+#: daemon/libvirtd.c:887
 #, c-format
 msgid ""
 "\n"
@@ -157,8 +157,7 @@ msgstr ""
 "      %s/run/libvirtd.pid\n"
 "\n"
 
-#: daemon/libvirtd.c:908
-#, fuzzy
+#: daemon/libvirtd.c:914
 msgid ""
 "\n"
 "  Default paths:\n"
@@ -182,105 +181,104 @@ msgstr ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/libvirtd.conf\n"
+"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
 "\n"
 "    Sockets:\n"
-"      %s/run/libvirt/libvirt-sock\n"
-"      %s/run/libvirt/libvirt-sock-ro\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock (in UNIX abstract namespace)\n"
 "\n"
 "    TLS:\n"
-"      CA certificate:     %s/pki/CA/caert.pem\n"
-"      Server certificate: %s/pki/libvirt/servercert.pem\n"
-"      Server private key: %s/pki/libvirt/private/serverkey.pem\n"
+"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
+"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
+"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
 "\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
 "\n"
 
-#: daemon/libvirtd.c:968 daemon/libvirtd.c:985 src/lxc/lxc_controller.c:1495
+#: daemon/libvirtd.c:974 daemon/libvirtd.c:991 src/lxc/lxc_controller.c:1495
 #: src/security/virt-aa-helper.c:1181 src/storage/parthelper.c:75
 #: src/util/iohelper.c:228 src/util/iohelper.c:234
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: ਸ਼ੁਰੂਆਤੀ ਫੇਲ ਹੋਈ\n"
 
-#: daemon/libvirtd.c:979
-#, fuzzy, c-format
+#: daemon/libvirtd.c:985
+#, c-format
 msgid "%s: cannot identify driver directory\n"
-msgstr "pwd: ਮੌਜੂਦਾ ਡਾਇਰੈਕਟਰੀ ਨਹੀਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕਿਆ: %s"
+msgstr ""
 
-#: daemon/libvirtd.c:989
+#: daemon/libvirtd.c:995
 #, c-format
 msgid "%s: expected driver directory '%s' is missing\n"
 msgstr ""
 
-#: daemon/libvirtd.c:1031
+#: daemon/libvirtd.c:1037
 msgid "Invalid value for timeout"
 msgstr "ਟਾਈਮਆਊਟ ਲਈ ਗਲਤ ਮੁੱਲ"
 
-#: daemon/libvirtd.c:1039 daemon/libvirtd.c:1047
+#: daemon/libvirtd.c:1045 daemon/libvirtd.c:1053
 msgid "Can't allocate memory"
 msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1061
+#: daemon/libvirtd.c:1067
 #, c-format
 msgid "%s: internal error: unknown flag: %c"
 msgstr "%s: ਅੰਦਰੂਨੀ ਗਲਤੀ: ਅਣਜਾਣ ਫਲੈਗ: %c"
 
-#: daemon/libvirtd.c:1074
+#: daemon/libvirtd.c:1080
 msgid "Can't create initial configuration"
 msgstr "ਸ਼ੁਰੂਆਤੀ ਸੰਰਚਨਾ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1083
+#: daemon/libvirtd.c:1089
 msgid "Can't determine config path"
 msgstr "ਸੰਰਚਨਾ ਮਾਰਗ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1093
+#: daemon/libvirtd.c:1099
 #, c-format
 msgid "Can't load config file: %s: %s"
 msgstr ""
 
-#: daemon/libvirtd.c:1096
+#: daemon/libvirtd.c:1102
 #, c-format
 msgid "Can't load config file: %s"
-msgstr ""
+msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਲੋਡ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
 
-#: daemon/libvirtd.c:1102
+#: daemon/libvirtd.c:1108
 msgid "Exiting due to failure to migrate profile"
 msgstr ""
 
-#: daemon/libvirtd.c:1108
+#: daemon/libvirtd.c:1114
 #, c-format
 msgid "invalid host UUID: %s"
 msgstr "ਗਲਤ ਹੋਸਟ UUID ਮਾਰਗ: %s"
 
-#: daemon/libvirtd.c:1113
+#: daemon/libvirtd.c:1119
 msgid "Can't initialize logging"
 msgstr "ਲਾਗਿੰਗ ਚਾਲੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1120
+#: daemon/libvirtd.c:1126
 msgid "Can't determine pid file path."
 msgstr "pid ਫਾਇਲ ਮਾਰਗ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1129
+#: daemon/libvirtd.c:1135
 msgid "Can't determine socket paths"
 msgstr "ਸਾਕਟ ਮਾਰਗ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1139
+#: daemon/libvirtd.c:1145
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr "ਰੂਟ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਤਬਦੀਲ ਨਹੀਂ ਹੋ ਸਕਦਾ: %s"
 
-#: daemon/libvirtd.c:1145
+#: daemon/libvirtd.c:1151
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "ਡੈਮਨ ਤੌਰ ਤੇ ਫੌਰਕ ਕਰਨ ਲਈ ਫੇਲ: %s"
 
-#: daemon/libvirtd.c:1158
+#: daemon/libvirtd.c:1164
 msgid "Can't determine user directory"
 msgstr "ਯੂਜ਼ਰ ਡਾਇਰੈਕਟਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: daemon/libvirtd.c:1174
+#: daemon/libvirtd.c:1180
 #, c-format
 msgid "unable to create rundir %s: %s"
 msgstr "rundir %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
@@ -452,9 +450,8 @@ msgid "size > maximum buffer size"
 msgstr "ਅਕਾਰ > ਵੱਧ-ਤੋਂ-ਵੱਧ ਬਫਰ ਅਕਾਰ"
 
 #: daemon/remote.c:1462
-#, fuzzy
 msgid "failed to copy security label"
-msgstr "ਸੁਰੱਖਿਆ ਲੇਬਲ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: daemon/remote.c:1549
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
@@ -716,11 +713,11 @@ msgstr "ਅਣਜਾਣੀ ਗਲਤੀ"
 
 #: gnulib/lib/regcomp.c:130
 msgid "Success"
-msgstr ""
+msgstr "ਸਫਲ"
 
 #: gnulib/lib/regcomp.c:133
 msgid "No match"
-msgstr ""
+msgstr "ਕੋਈ ਮੇਲ ਨਹੀਂ"
 
 #: gnulib/lib/regcomp.c:136
 msgid "Invalid regular expression"
@@ -752,7 +749,7 @@ msgstr ""
 
 #: gnulib/lib/regcomp.c:157
 msgid "Unmatched \\{"
-msgstr ""
+msgstr "ਨਾ-ਮਿਲਦਾ \\{"
 
 #: gnulib/lib/regcomp.c:160
 msgid "Invalid content of \\{\\}"
@@ -827,9 +824,8 @@ msgid "vendor_id must be exactly %d characters long"
 msgstr ""
 
 #: src/conf/cpu_conf.c:323
-#, fuzzy
 msgid "vendor id is invalid"
-msgstr "ਡੋਮੇਨ ਪੁਆਂਇਟਰ ਗਲਤ ਹੈ"
+msgstr ""
 
 #: src/conf/cpu_conf.c:336
 msgid "CPU vendor specified without CPU model"
@@ -973,12 +969,12 @@ msgstr "ਟਾਰਗਿਟ CPU ਫੀਚਰ ਪਾਲਿਸੀ %s ਸੋਰਸ %
 msgid "Cannot parse <address> 'domain' attribute"
 msgstr "<address> 'domain' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/device_conf.c:75 src/conf/domain_conf.c:2227
-#: src/conf/domain_conf.c:2281 src/conf/domain_conf.c:2364
+#: src/conf/device_conf.c:75 src/conf/domain_conf.c:2231
+#: src/conf/domain_conf.c:2285 src/conf/domain_conf.c:2368
 msgid "Cannot parse <address> 'bus' attribute"
 msgstr "<address> 'bus' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/device_conf.c:82 src/conf/domain_conf.c:2323
+#: src/conf/device_conf.c:82 src/conf/domain_conf.c:2327
 msgid "Cannot parse <address> 'slot' attribute"
 msgstr "<address> 'slot' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -1004,1400 +1000,1397 @@ msgstr "ਭਾਰ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 msgid "missing per-device path"
 msgstr "ਪ੍ਰਤੀ-ਜੰਤਰ ਮਾਰਗ ਗੌਰ-ਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:1705 src/conf/interface_conf.c:1285
+#: src/conf/domain_conf.c:1709 src/conf/interface_conf.c:1285
 #: src/conf/network_conf.c:249 src/conf/node_device_conf.c:189
 #: src/conf/nwfilter_conf.c:3047 src/conf/storage_conf.c:1510
 #: src/libxl/libxl_driver.c:864 src/parallels/parallels_driver.c:622
-#: src/qemu/qemu_driver.c:575 src/remote/remote_driver.c:861
+#: src/qemu/qemu_driver.c:547 src/remote/remote_driver.c:861
 #: src/rpc/virnetclientstream.c:157 src/rpc/virnetserver.c:410
 #: src/test/test_driver.c:529 src/test/test_driver.c:769
 #: src/xen/xen_driver.c:328
 msgid "cannot initialize mutex"
 msgstr "mutex ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:1871 src/lxc/lxc_driver.c:2625
-#: src/openvz/openvz_driver.c:1968 src/qemu/qemu_driver.c:1589
-#: src/qemu/qemu_driver.c:1608 src/qemu/qemu_driver.c:1667
-#: src/qemu/qemu_driver.c:1754 src/qemu/qemu_driver.c:1852
-#: src/qemu/qemu_driver.c:1907 src/qemu/qemu_driver.c:1995
-#: src/qemu/qemu_driver.c:2213 src/qemu/qemu_driver.c:2224
-#: src/qemu/qemu_driver.c:2295 src/qemu/qemu_driver.c:2458
-#: src/qemu/qemu_driver.c:2962 src/qemu/qemu_driver.c:3021
-#: src/qemu/qemu_driver.c:3288 src/qemu/qemu_driver.c:3398
-#: src/qemu/qemu_driver.c:3490 src/qemu/qemu_driver.c:5083
-#: src/qemu/qemu_driver.c:8298 src/qemu/qemu_driver.c:8363
-#: src/qemu/qemu_driver.c:8386 src/qemu/qemu_driver.c:8448
-#: src/qemu/qemu_driver.c:8476 src/qemu/qemu_driver.c:8617
-#: src/qemu/qemu_driver.c:8978 src/qemu/qemu_driver.c:9113
-#: src/qemu/qemu_driver.c:9664 src/qemu/qemu_driver.c:10174
-#: src/qemu/qemu_driver.c:10209 src/qemu/qemu_driver.c:10271
-#: src/qemu/qemu_driver.c:10329 src/qemu/qemu_driver.c:10504
-#: src/qemu/qemu_driver.c:10890 src/qemu/qemu_driver.c:12341
-#: src/qemu/qemu_driver.c:12350 src/qemu/qemu_driver.c:12494
-#: src/qemu/qemu_driver.c:12613 src/qemu/qemu_driver.c:12646
-#: src/qemu/qemu_driver.c:12697 src/qemu/qemu_driver.c:12789
-#: src/qemu/qemu_driver.c:13175 src/qemu/qemu_driver.c:13655
-#: src/qemu/qemu_driver.c:13728 src/qemu/qemu_driver.c:13759
-#: src/qemu/qemu_driver.c:13805 src/qemu/qemu_driver.c:13879
-#: src/qemu/qemu_driver.c:13901 src/qemu/qemu_migration.c:2622
+#: src/conf/domain_conf.c:1875 src/lxc/lxc_driver.c:2625
+#: src/openvz/openvz_driver.c:1968 src/qemu/qemu_driver.c:1561
+#: src/qemu/qemu_driver.c:1580 src/qemu/qemu_driver.c:1639
+#: src/qemu/qemu_driver.c:1726 src/qemu/qemu_driver.c:1824
+#: src/qemu/qemu_driver.c:1879 src/qemu/qemu_driver.c:1967
+#: src/qemu/qemu_driver.c:2185 src/qemu/qemu_driver.c:2196
+#: src/qemu/qemu_driver.c:2267 src/qemu/qemu_driver.c:2430
+#: src/qemu/qemu_driver.c:2934 src/qemu/qemu_driver.c:2993
+#: src/qemu/qemu_driver.c:3260 src/qemu/qemu_driver.c:3370
+#: src/qemu/qemu_driver.c:3462 src/qemu/qemu_driver.c:5055
+#: src/qemu/qemu_driver.c:8279 src/qemu/qemu_driver.c:8344
+#: src/qemu/qemu_driver.c:8367 src/qemu/qemu_driver.c:8429
+#: src/qemu/qemu_driver.c:8457 src/qemu/qemu_driver.c:8598
+#: src/qemu/qemu_driver.c:8959 src/qemu/qemu_driver.c:9094
+#: src/qemu/qemu_driver.c:9645 src/qemu/qemu_driver.c:10155
+#: src/qemu/qemu_driver.c:10190 src/qemu/qemu_driver.c:10252
+#: src/qemu/qemu_driver.c:10310 src/qemu/qemu_driver.c:10485
+#: src/qemu/qemu_driver.c:10871 src/qemu/qemu_driver.c:12322
+#: src/qemu/qemu_driver.c:12331 src/qemu/qemu_driver.c:12475
+#: src/qemu/qemu_driver.c:12594 src/qemu/qemu_driver.c:12627
+#: src/qemu/qemu_driver.c:12678 src/qemu/qemu_driver.c:12770
+#: src/qemu/qemu_driver.c:13156 src/qemu/qemu_driver.c:13639
+#: src/qemu/qemu_driver.c:13712 src/qemu/qemu_driver.c:13743
+#: src/qemu/qemu_driver.c:13789 src/qemu/qemu_driver.c:13863
+#: src/qemu/qemu_driver.c:13885 src/qemu/qemu_migration.c:2622
 #: src/uml/uml_driver.c:2424 src/xen/xen_driver.c:2141
 #: src/xen/xen_hypervisor.c:1181 src/xen/xen_hypervisor.c:1262
 #: src/xen/xen_hypervisor.c:1381 src/xen/xm_internal.c:711
 msgid "domain is not running"
 msgstr "ਡੋਮੇਨ ਚੱਲ ਨਹੀਂ ਰਿਹਾ"
 
-#: src/conf/domain_conf.c:1878 src/libxl/libxl_driver.c:1663
+#: src/conf/domain_conf.c:1882 src/libxl/libxl_driver.c:1663
 #: src/libxl/libxl_driver.c:2273
 msgid "cannot change persistent config of a transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:1884
+#: src/conf/domain_conf.c:1888
 msgid "Get persistent config failed"
 msgstr ""
 
-#: src/conf/domain_conf.c:2128
+#: src/conf/domain_conf.c:2132
 #, c-format
 msgid "unexpected rom bar value %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:2194
+#: src/conf/domain_conf.c:2198
 #, c-format
 msgid "unknown address type '%d'"
 msgstr "ਅਣਪਛਾਤੀ ਐਡਰੈੱਸ ਕਿਸਮ '%d'"
 
-#: src/conf/domain_conf.c:2220 src/conf/domain_conf.c:2274
-#: src/conf/domain_conf.c:2316
+#: src/conf/domain_conf.c:2224 src/conf/domain_conf.c:2278
+#: src/conf/domain_conf.c:2320
 msgid "Cannot parse <address> 'controller' attribute"
 msgstr "<address> 'controller' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2234
+#: src/conf/domain_conf.c:2238
 msgid "Cannot parse <address> 'target' attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:2241
+#: src/conf/domain_conf.c:2245
 msgid "Cannot parse <address> 'unit' attribute"
 msgstr "<address> 'unit' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2288 src/conf/domain_conf.c:2354
+#: src/conf/domain_conf.c:2292 src/conf/domain_conf.c:2358
 msgid "Cannot parse <address> 'port' attribute"
 msgstr ""
 "<address> 'port' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ<address> 'port' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰ "
 "ਸਨਹੀ"
 
-#: src/conf/domain_conf.c:2389
+#: src/conf/domain_conf.c:2393
 msgid "Cannot parse <address> 'reg' attribute"
 msgstr "<address> 'reg' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/conf/domain_conf.c:2417
+#: src/conf/domain_conf.c:2421
 msgid "Cannot parse <master> 'startport' attribute"
 msgstr "<master> 'startport' ਐਟਰੀਬਿਊਟ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/conf/domain_conf.c:2440
+#: src/conf/domain_conf.c:2444
 msgid "missing boot order attribute"
 msgstr "ਬੂਟ ਆਰਡਰ ਐਟਰੀਬਿਊਟ ਗੌਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:2445
+#: src/conf/domain_conf.c:2449
 #, c-format
 msgid "incorrect boot order '%s', expecting positive integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:2454
+#: src/conf/domain_conf.c:2458
 msgid "boot orders have to be contiguous and starting from 1"
 msgstr "ਇੰਪੋਰਟ 1"
 
-#: src/conf/domain_conf.c:2458
+#: src/conf/domain_conf.c:2462
 #, c-format
 msgid "boot order %d used for more than one device"
 msgstr "ਬੂਟ ਆਰਡਰ %d ਇੱਕ ਤੋਂ ਜਿਆਦਾ ਜੰਤਰਾਂ ਲਈ ਵਰਤਿਆ ਗਿਆ ਹੈ"
 
-#: src/conf/domain_conf.c:2537
+#: src/conf/domain_conf.c:2541
 #, c-format
 msgid "unknown rom bar value '%s'"
 msgstr "ਅਣਜਾਣ ਮੁੱਲ '%s' ਲਈ"
 
-#: src/conf/domain_conf.c:2553 src/conf/network_conf.c:1189
+#: src/conf/domain_conf.c:2557 src/conf/network_conf.c:1189
 #: src/conf/network_conf.c:1208
 #, c-format
 msgid "unknown address type '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਐਡਰੈੱਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:2558 src/conf/network_conf.c:1194
+#: src/conf/domain_conf.c:2562 src/conf/network_conf.c:1194
 msgid "No type specified for device address"
 msgstr "ਜੰਤਰ ਐਡਰੈੱਸ ਲਈ ਕੋਈ ਕਿਸਮ ਨਹੀਂ ਦਿੱਤੀ"
 
-#: src/conf/domain_conf.c:2597
+#: src/conf/domain_conf.c:2601
 msgid "Unknown device address type"
 msgstr "ਅਣਜਾਣ ਜੰਤਰ ਐਡਰੈੱਸ ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:2653
+#: src/conf/domain_conf.c:2657
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "ਵਿਕਰੇਤਾ id %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2660
+#: src/conf/domain_conf.c:2664
 msgid "usb vendor needs id"
 msgstr "usb ਵਿਕਰੇਤਾ ਨੂੰ id ਦੀ ਲੋੜ ਹੈ"
 
-#: src/conf/domain_conf.c:2671
+#: src/conf/domain_conf.c:2675
 #, c-format
 msgid "cannot parse product %s"
 msgstr "ਉਤਪਾਦ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2679
+#: src/conf/domain_conf.c:2683
 msgid "usb product needs id"
 msgstr "usb ਉਤਪਾਦ ਨੂੰ id ਦੀ ਲੋੜ ਹੈ"
 
-#: src/conf/domain_conf.c:2690
+#: src/conf/domain_conf.c:2694
 #, c-format
 msgid "cannot parse bus %s"
 msgstr "ਬੱਸ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2697
+#: src/conf/domain_conf.c:2701
 msgid "usb address needs bus id"
 msgstr "usb ਐਡਰੈੱਸ ਨੂੰ ਬੱਸ id ਦੀ ਲੋੜ ਹੈ"
 
-#: src/conf/domain_conf.c:2706
+#: src/conf/domain_conf.c:2710
 #, c-format
 msgid "cannot parse device %s"
 msgstr "ਜੰਤਰ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:2714
+#: src/conf/domain_conf.c:2718
 msgid "usb address needs device id"
 msgstr "usb ਐਡਰੈੱਸ ਨੂੰ ਜੰਤਰ id ਦੀ ਲੋੜ ਹੈ"
 
-#: src/conf/domain_conf.c:2719
+#: src/conf/domain_conf.c:2723
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "ਅਚਾਨਕ usb ਸੋਰਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:2729
+#: src/conf/domain_conf.c:2733
 msgid "vendor cannot be 0."
 msgstr "ਵਿਕਰੇਤਾ 0 ਨਹੀਂ ਹੋ ਸਕਦਾ।"
 
-#: src/conf/domain_conf.c:2735
+#: src/conf/domain_conf.c:2739
 msgid "missing vendor"
 msgstr "ਗੁੰਮ ਵਿਕਰੇਤਾ"
 
-#: src/conf/domain_conf.c:2740
+#: src/conf/domain_conf.c:2744
 msgid "missing product"
 msgstr "ਗੁੰਮ ਉਤਪਾਦ"
 
-#: src/conf/domain_conf.c:2774
+#: src/conf/domain_conf.c:2778
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr ""
 
-#: src/conf/domain_conf.c:2810 src/conf/domain_conf.c:3944
-#: src/conf/domain_conf.c:4759
+#: src/conf/domain_conf.c:2814 src/conf/domain_conf.c:3967
+#: src/conf/domain_conf.c:4782
 #, c-format
 msgid "Unable to parse devaddr parameter '%s'"
 msgstr "devaddr ਪੈਰਾਮੀਟਰ '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/conf/domain_conf.c:2823
+#: src/conf/domain_conf.c:2827
 #, c-format
 msgid "unknown pci source type '%s'"
 msgstr "ਅਚਾਨਕ pci ਸੋਰਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:2855
+#: src/conf/domain_conf.c:2859
 #, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "ਅਚਾਨਕ hostdev ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:2884
+#: src/conf/domain_conf.c:2888
 #, c-format
 msgid "unknown host device source address type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:2890
+#: src/conf/domain_conf.c:2894
 msgid "missing source address type"
 msgstr "ਐਡਰੈੱਸ ਗੈਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:2896
+#: src/conf/domain_conf.c:2900
 msgid "Missing <source> element in hostdev device"
 msgstr ""
 
-#: src/conf/domain_conf.c:2910
+#: src/conf/domain_conf.c:2914
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr ""
 
-#: src/conf/domain_conf.c:3028
+#: src/conf/domain_conf.c:3032
 msgid "invalid security type"
 msgstr "ਗਲਤ ਸੁਰੱਖਿਆ ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:3042 src/conf/domain_conf.c:3245
+#: src/conf/domain_conf.c:3046 src/conf/domain_conf.c:3268
 #, c-format
 msgid "invalid security relabel value %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:3050
+#: src/conf/domain_conf.c:3054
 msgid "dynamic label type must use resource relabeling"
 msgstr "ਕੋਈ OS ਕਿਸਮ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:3056
+#: src/conf/domain_conf.c:3060
 msgid "resource relabeling is not compatible with 'none' label type"
 msgstr "ਗਿਸਟ CPU ਹੋਸਟ CPU ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ"
 
-#: src/conf/domain_conf.c:3077
+#: src/conf/domain_conf.c:3081
 msgid "security label is missing"
 msgstr "ਸੁਰੱਖਿਆ ਲੇਬਲ ਗੈਰ-ਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:3092
+#: src/conf/domain_conf.c:3096
 msgid "security imagelabel is missing"
 msgstr "ਸੁਰੱਖਿਆ ਈਮੇਜ਼ਲੇਬਲ ਗੈਰ-ਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:3117
-msgid "missing security model"
-msgstr "ਗੈਰ-ਮੌਜੂਦ ਸੁਰੱਖਿਆ ਮਾਡਲ"
-
-#: src/conf/domain_conf.c:3168
+#: src/conf/domain_conf.c:3180
 #, fuzzy
-msgid "missing security model when using multiple labels"
+msgid "missing security model in domain seclabel"
 msgstr "ਗੈਰ-ਮੌਜੂਦ ਸੁਰੱਖਿਆ ਮਾਡਲ"
 
-#: src/conf/domain_conf.c:3232
+#: src/conf/domain_conf.c:3190
+msgid "missing security model when using multiple labels"
+msgstr ""
+
+#: src/conf/domain_conf.c:3255
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr "ਕੋਈ OS ਕਿਸਮ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:3262
-#, fuzzy, c-format
+#: src/conf/domain_conf.c:3285
+#, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
-msgstr " ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
-#: src/conf/domain_conf.c:3317
+#: src/conf/domain_conf.c:3340
 msgid "Missing 'key' element for lease"
 msgstr "ਰੂਟ (root) ਇਕਾਈ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:3322
+#: src/conf/domain_conf.c:3345
 msgid "Missing 'target' element for lease"
 msgstr ""
 
-#: src/conf/domain_conf.c:3329
+#: src/conf/domain_conf.c:3352
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:3418
+#: src/conf/domain_conf.c:3441
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਡਿਸਕ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3452
+#: src/conf/domain_conf.c:3475
 msgid "missing protocol type"
 msgstr "ਗੌਰਮੌਜੂਦ ਪਰੋਟੋਕਾਲ ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:3458
+#: src/conf/domain_conf.c:3481
 #, c-format
 msgid "unknown protocol type '%s'"
 msgstr "ਅਣਜਾਣ ਪਰੋਟੋਕਾਲ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3465
+#: src/conf/domain_conf.c:3488
 msgid "missing name for disk source"
 msgstr ""
 
-#: src/conf/domain_conf.c:3483
+#: src/conf/domain_conf.c:3506
 msgid "missing name for host"
 msgstr "ਨਾਂ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:3489
+#: src/conf/domain_conf.c:3512
 msgid "missing port for host"
 msgstr "ਨਾਂ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:3498 src/conf/domain_conf.c:11481
+#: src/conf/domain_conf.c:3521 src/conf/domain_conf.c:11510
 #, c-format
 msgid "unexpected disk type %s"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਕਿਸਮ %s"
 
-#: src/conf/domain_conf.c:3525
+#: src/conf/domain_conf.c:3548
 msgid "invalid geometry settings (cyls)"
 msgstr ""
 
-#: src/conf/domain_conf.c:3531
+#: src/conf/domain_conf.c:3554
 msgid "invalid geometry settings (heads)"
 msgstr ""
 
-#: src/conf/domain_conf.c:3537
+#: src/conf/domain_conf.c:3560
 msgid "invalid geometry settings (secs)"
 msgstr ""
 
-#: src/conf/domain_conf.c:3545
-#, fuzzy, c-format
+#: src/conf/domain_conf.c:3568
+#, c-format
 msgid "invalid translation value '%s'"
-msgstr "ਗਲਤ ਡੋਮੇਨ ਸਥਿਤੀ '%s'"
+msgstr ""
 
-#: src/conf/domain_conf.c:3567
+#: src/conf/domain_conf.c:3590
 msgid "mirror requires file name"
 msgstr ""
 
-#: src/conf/domain_conf.c:3580
+#: src/conf/domain_conf.c:3603
 msgid "missing username for auth"
 msgstr ""
 
-#: src/conf/domain_conf.c:3592
+#: src/conf/domain_conf.c:3615
 msgid "missing type for secret"
 msgstr "ਸੀਕਰੇਟ ਦੀ ਗੌਰਮੌਜੂਦ ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:3598
+#: src/conf/domain_conf.c:3621
 #, c-format
 msgid "invalid secret type %s"
 msgstr "ਗਲਤ ਸੀਕਰੇਟ ਕਿਸਮ %s"
 
-#: src/conf/domain_conf.c:3608
+#: src/conf/domain_conf.c:3631
 msgid "only one of uuid and usage can be specified"
 msgstr "init ਬਾਇਨਰੀ ਨਿਰਧਾਰਤ ਕਰਨਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:3616
+#: src/conf/domain_conf.c:3639
 #, c-format
 msgid "malformed uuid %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:3670
+#: src/conf/domain_conf.c:3693
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "bytes_sec ਦਿਨ ਦਾ ਸਮਾਂ ਨਹੀਂ ਲੈ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:3680
+#: src/conf/domain_conf.c:3703
 msgid "total and read/write iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/conf/domain_conf.c:3714
+#: src/conf/domain_conf.c:3737
 #, c-format
 msgid "unknown disk device '%s'"
 msgstr "ਅਣਪਛਾਤਾ ਡਿਸਕ ਜੰਤਰ '%s'"
 
-#: src/conf/domain_conf.c:3751
+#: src/conf/domain_conf.c:3774
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "ਗਲਤ ਫਲਾਪੀ ਜੰਤਰ ਨਾਂ: %s"
 
-#: src/conf/domain_conf.c:3767
+#: src/conf/domain_conf.c:3790
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "ਗਲਤ ਹਾਰਡਡਿਸਕ ਜੰਤਰ ਨਾਂ: %s"
 
-#: src/conf/domain_conf.c:3775 src/conf/snapshot_conf.c:125
+#: src/conf/domain_conf.c:3798 src/conf/snapshot_conf.c:125
 #, c-format
 msgid "unknown disk snapshot setting '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਡਿਸਕ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3792
+#: src/conf/domain_conf.c:3815
 #, c-format
 msgid "unknown disk rawio setting '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਡਿਸਕ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3798
+#: src/conf/domain_conf.c:3821
 msgid "rawio can be used only with device='lun'"
 msgstr "rawio can be used only with device='lun'"
 
-#: src/conf/domain_conf.c:3806
+#: src/conf/domain_conf.c:3829
 #, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਬੱਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3831
+#: src/conf/domain_conf.c:3854
 #, c-format
 msgid "unknown disk tray status '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:3838
+#: src/conf/domain_conf.c:3861
 msgid "tray is only valid for cdrom and floppy"
 msgstr ""
 
-#: src/conf/domain_conf.c:3850
+#: src/conf/domain_conf.c:3873
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "ਗਲਤ ਬੱਸ ਕਿਸਮ '%s' ਫਲਾਪੀ ਡਿਸਕ ਲਈ"
 
-#: src/conf/domain_conf.c:3856
+#: src/conf/domain_conf.c:3879
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "ਡਿਸਕ ਲਈ ਗਲਤ ਬੱਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:3863
+#: src/conf/domain_conf.c:3886
 #, c-format
 msgid "unknown disk cache mode '%s'"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਕੈਸ਼ੇ ਮੋਡ: '%s'"
 
-#: src/conf/domain_conf.c:3870
+#: src/conf/domain_conf.c:3893
 #, c-format
 msgid "unknown disk error policy '%s'"
 msgstr "ਅਣਜਾਮ ਡਿਸਕ ਗਲਤੀ ਪਾਲਿਸੀ '%s'"
 
-#: src/conf/domain_conf.c:3879
+#: src/conf/domain_conf.c:3902
 #, c-format
 msgid "unknown disk read error policy '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:3888
+#: src/conf/domain_conf.c:3911
 #, c-format
 msgid "unknown disk io mode '%s'"
 msgstr "ਅਣਜਾਣ ਡਿਸਕ io ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:3896
+#: src/conf/domain_conf.c:3919
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr ""
 
-#: src/conf/domain_conf.c:3904
+#: src/conf/domain_conf.c:3927
 #, c-format
 msgid "unknown disk ioeventfd mode '%s'"
 msgstr "ਅਣਜਾਣ ਡਿਸਕ ioeventfd ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:3914
+#: src/conf/domain_conf.c:3937
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr ""
 
-#: src/conf/domain_conf.c:3922
+#: src/conf/domain_conf.c:3945
 #, c-format
 msgid "unknown disk event_idx mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:3933
+#: src/conf/domain_conf.c:3956
 #, c-format
 msgid "unknown disk copy_on_read mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:3960
+#: src/conf/domain_conf.c:3983
 #, c-format
 msgid "unknown startupPolicy value '%s'"
 msgstr "ਅਣਜਾਣ startupPolicy ਮੁੱਲ '%s'"
 
-#: src/conf/domain_conf.c:3968
+#: src/conf/domain_conf.c:3991
 #, c-format
 msgid "Setting disk %s is allowed only for cdrom or floppy"
 msgstr ""
 
-#: src/conf/domain_conf.c:4102
+#: src/conf/domain_conf.c:4125
 #, c-format
 msgid "Unknown controller type '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਕੰਟਰੋਲਰ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:4111
+#: src/conf/domain_conf.c:4134
 #, c-format
 msgid "Cannot parse controller index %s"
 msgstr "ਕੰਟਰੋਲਰ ਸੂਚੀ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:4120
+#: src/conf/domain_conf.c:4143
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "ਅਣਪਛਾਤੀ ਮਾਡਲ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:4138
+#: src/conf/domain_conf.c:4161
 #, c-format
 msgid "Invalid ports: %s"
 msgstr "ਗਲਤ ਪੋਰਟਾਂ: %s"
 
-#: src/conf/domain_conf.c:4153
+#: src/conf/domain_conf.c:4176
 #, c-format
 msgid "Invalid vectors: %s"
 msgstr "ਗਲਤ ਵੈਕਟਰ: %s"
 
-#: src/conf/domain_conf.c:4195
+#: src/conf/domain_conf.c:4218
 msgid "Controllers must use the 'pci' address type"
 msgstr "ਕੰਟਰੋਲਰਾਂ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/conf/domain_conf.c:4239
+#: src/conf/domain_conf.c:4262
 #, c-format
 msgid "could not parse element %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:4243
+#: src/conf/domain_conf.c:4266
 #, c-format
 msgid "missing element %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:4298
+#: src/conf/domain_conf.c:4321
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "ਅਚਾਨਕ ਫਾਇਲ-ਸਿਸਟਮ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:4309
+#: src/conf/domain_conf.c:4332
 #, c-format
 msgid "unknown accessmode '%s'"
 msgstr "ਅਣਜਾਣ ਐਕਸੈੱਸ ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:4361
+#: src/conf/domain_conf.c:4384
 #, c-format
 msgid "unknown fs driver type '%s'"
 msgstr "ਅਣਜਾਣ fs ਡਰਾਈਵਰ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:4369
+#: src/conf/domain_conf.c:4392
 #, c-format
 msgid "unknown filesystem write policy '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4392
+#: src/conf/domain_conf.c:4415
 msgid "missing 'usage' attribute for RAM filesystem"
 msgstr ""
 
-#: src/conf/domain_conf.c:4397
+#: src/conf/domain_conf.c:4420
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
 msgstr ""
 
-#: src/conf/domain_conf.c:4461
+#: src/conf/domain_conf.c:4484
 msgid "missing type attribute in interface's <actual> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:4466
+#: src/conf/domain_conf.c:4489
 #, c-format
 msgid "unknown type '%s' in interface's <actual> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:4474
+#: src/conf/domain_conf.c:4497
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:4495
-#, fuzzy, c-format
+#: src/conf/domain_conf.c:4518
+#, c-format
 msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
-msgstr "ਇੰਟਰਫੇਸ <actual> ਐਲੀਮੈਂਟ ਵਿੱਚ ਅਣਜਾਣ ਮੋਡ '%s' "
+msgstr ""
 
-#: src/conf/domain_conf.c:4509
+#: src/conf/domain_conf.c:4532
 #, c-format
 msgid "Unkown mode '%s' in interface <actual> element"
 msgstr "ਇੰਟਰਫੇਸ <actual> ਐਲੀਮੈਂਟ ਵਿੱਚ ਅਣਜਾਣ ਮੋਡ '%s' "
 
-#: src/conf/domain_conf.c:4614
+#: src/conf/domain_conf.c:4637
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "ਅਚਾਨਕ ਇੰਟਰਫੇਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:4665
+#: src/conf/domain_conf.c:4688
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%s'>"
 msgstr ""
 
-#: src/conf/domain_conf.c:4706
+#: src/conf/domain_conf.c:4729
 msgid "Invalid specification of multiple <filterref>s in a single <interface>"
 msgstr ""
 
-#: src/conf/domain_conf.c:4741 src/qemu/qemu_command.c:7224
+#: src/conf/domain_conf.c:4764 src/qemu/qemu_command.c:7224
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "ਮੈਕ ਐਜਰੈੱਸ '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/conf/domain_conf.c:4747
+#: src/conf/domain_conf.c:4770
 #, c-format
 msgid "expected unicast mac address, found multicast '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4778
+#: src/conf/domain_conf.c:4801
 msgid "Network interfaces must use 'pci' address type"
 msgstr "ਨੈੱਟਵਰਕ ਇੰਟਰਫੇਸ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/conf/domain_conf.c:4786
+#: src/conf/domain_conf.c:4809
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
 "ਕੋਈ <source> 'network' attribute specified with <interface type='network'/> "
 "ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:4812
+#: src/conf/domain_conf.c:4835
 msgid ""
 "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
 msgstr "ਕੋਈ <source> 'bridge' ਐਟਰੀਬਿਊਟ <interface type='bridge'/> ਨਾਲ ਨਹੀਂ ਦਿੱਤਾ"
 
-#: src/conf/domain_conf.c:4829
+#: src/conf/domain_conf.c:4852
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "ਕੋਈ <source> 'port' ਐਟਰੀਬਿਊਟ ਸਾਕਟ ਇੰਟਰਫੇਸ ਨਾਲ ਨਹੀਂ ਦਿੱਤਾ"
 
-#: src/conf/domain_conf.c:4835
+#: src/conf/domain_conf.c:4858
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "<source> 'port' ਐਟਰੀਬਿਊਟ ਨੂੰ ਸਾਕਟ ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:4844
+#: src/conf/domain_conf.c:4867
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "ਕੋਈ <source> 'address' ਐਟਰੀਬਿਊਟ ਨੂੰ ਸੈਕਟ ਇੰਟਰਫੇਸ ਨਾਲ ਨਿਰਧਾਰਤ ਨਹੀਂ ਕੀਤਾ"
 
-#: src/conf/domain_conf.c:4857
+#: src/conf/domain_conf.c:4880
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
 msgstr ""
 "ਕੋਈ <source> 'name' ਐਟਰੀਬਿਊਟ ਨੂੰ <interface type='internal'/>ਨਾਲ ਨਿਰਧਾਰਤ ਨਹੀਂ "
 "ਕੀਤਾ"
 
-#: src/conf/domain_conf.c:4868
+#: src/conf/domain_conf.c:4891
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
 msgstr "ਕੋਈ <source> 'dev' ਐਟਰੀਬਿਊਟ <interface type='direct'/> ਨਾਲ ਨਹੀਂ ਦਿੱਤਾ"
 
-#: src/conf/domain_conf.c:4877
+#: src/conf/domain_conf.c:4900
 msgid "Unkown mode has been specified"
 msgstr "ਅਣਜਾਣ ਮੋਡ ਦਿੱਤਾ ਗਿਆ ਹੈ"
 
-#: src/conf/domain_conf.c:4938
+#: src/conf/domain_conf.c:4961
 msgid "Model name contains invalid characters"
 msgstr "ਮਾਡਲ ਨਾਂ ਵਿੱਚ ਗਲਤ ਅੱਖਰ ਹਨ"
 
-#: src/conf/domain_conf.c:4951
+#: src/conf/domain_conf.c:4974
 #, c-format
 msgid "Unknown interface <driver name='%s'> has been specified"
 msgstr "ਅਣਜਾਣ ਇੰਟਰਫੇਸ <driver name='%s'> ਨਿਰਧਾਰਤ ਕੀਤਾ ਗਿਆ ਹੈ"
 
-#: src/conf/domain_conf.c:4963
+#: src/conf/domain_conf.c:4986
 #, c-format
 msgid "Unknown interface <driver txmode='%s'> has been specified"
 msgstr "ਅਣਜਾਣ ਇੰਟਰਫੇਸ <driver txmode='%s'> ਨਿਰਧਾਰਤ ਕੀਤਾ ਗਿਆ ਹੈ"
 
-#: src/conf/domain_conf.c:4974
+#: src/conf/domain_conf.c:4997
 #, c-format
 msgid "unknown interface ioeventfd mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4984
+#: src/conf/domain_conf.c:5007
 #, c-format
 msgid "unknown interface event_idx mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4996
+#: src/conf/domain_conf.c:5019
 #, c-format
 msgid "unknown interface link state '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:5022
+#: src/conf/domain_conf.c:5045
 msgid "sndbuf must be a positive integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:5070
+#: src/conf/domain_conf.c:5093
 #, c-format
 msgid "target type must be specified for %s device"
 msgstr "%s ਜੰਤਰ ਲਈ ਟਾਰਗਿਟ ਕਿਸਮ ਨਿਰਧਾਰਤ ਕਰਨੀ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:5077
+#: src/conf/domain_conf.c:5100
 msgid "Driver does not have a default console type set"
 msgstr ""
 
-#: src/conf/domain_conf.c:5145
+#: src/conf/domain_conf.c:5168
 #, c-format
 msgid "unknown target type '%s' specified for character device"
 msgstr ""
 
-#: src/conf/domain_conf.c:5159
+#: src/conf/domain_conf.c:5182
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd ਚੈਨਲ ਨੇ ਟਾਰਗਿਟ ਐਡਰੈੱਸ ਨਹੀਂ ਦੱਸਿਆ"
 
-#: src/conf/domain_conf.c:5174
+#: src/conf/domain_conf.c:5197
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd ਚੈਨਲ ਸਿਰਫ IPv4 ਐਡਰੈੱਸਾਂ ਨੂੰ ਸਹਿਯੋਗ ਦਿੰਦਾ ਹੈ।"
 
-#: src/conf/domain_conf.c:5181
+#: src/conf/domain_conf.c:5204
 msgid "guestfwd channel does not define a target port"
 msgstr "guestfwd ਚੈਨਲ ਨੇ ਟਾਰਗਿਟ ਪੋਰਟ ਨਹੀਂ ਦਿੱਤੀ"
 
-#: src/conf/domain_conf.c:5188 src/conf/domain_conf.c:5212
+#: src/conf/domain_conf.c:5211 src/conf/domain_conf.c:5235
 #: src/conf/storage_conf.c:525
 #, c-format
 msgid "Invalid port number: %s"
 msgstr "ਗਲਤ ਪੋਰਟ ਨੰਬਰ: %s"
 
-#: src/conf/domain_conf.c:5284
+#: src/conf/domain_conf.c:5307
 #, c-format
 msgid "Unknown source mode '%s'"
 msgstr "ਅਣਜਾਣ ਸਰੋਤ ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:5317 src/conf/domain_conf.c:5400
+#: src/conf/domain_conf.c:5340 src/conf/domain_conf.c:5423
 msgid "Missing source path attribute for char device"
 msgstr "char ਜੰਤਰ ਲਈ ਸੋਰਸ ਪਾਥ ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:5335 src/conf/domain_conf.c:5352
+#: src/conf/domain_conf.c:5358 src/conf/domain_conf.c:5375
 msgid "Missing source host attribute for char device"
 msgstr "ਜੰਤਰ ਲਈ ਸੋਰਸ ਮੇਜ਼ਬਾਨ ਨਾਂ ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:5340 src/conf/domain_conf.c:5357
-#: src/conf/domain_conf.c:5382
+#: src/conf/domain_conf.c:5363 src/conf/domain_conf.c:5380
+#: src/conf/domain_conf.c:5405
 msgid "Missing source service attribute for char device"
 msgstr "ਜੰਤਰ ਲਈ ਸੋਰਸ ਸਰਵਿਸ ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:5373
+#: src/conf/domain_conf.c:5396
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "ਅਣਜਾਣ ਪਰੋਟੋਕਾਲ '%s'"
 
-#: src/conf/domain_conf.c:5503 src/conf/domain_conf.c:5647
+#: src/conf/domain_conf.c:5526 src/conf/domain_conf.c:5670
 #, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:5511
+#: src/conf/domain_conf.c:5534
 #, c-format
 msgid "unknown character device type: %s"
 msgstr "ਅਣਜਾਣ ਅਖਰ ਜੰਤਰਕਿਸਮ: %s"
 
-#: src/conf/domain_conf.c:5540
+#: src/conf/domain_conf.c:5563
 msgid "spicevmc device type only supports virtio"
 msgstr ""
 
-#: src/conf/domain_conf.c:5580
+#: src/conf/domain_conf.c:5603
 msgid "missing smartcard device mode"
 msgstr ""
 
-#: src/conf/domain_conf.c:5585
+#: src/conf/domain_conf.c:5608
 #, c-format
 msgid "unknown smartcard device mode: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:5602 src/conf/domain_conf.c:5631
+#: src/conf/domain_conf.c:5625 src/conf/domain_conf.c:5654
 msgid "host-certificates mode needs exactly three certificates"
 msgstr ""
 
-#: src/conf/domain_conf.c:5622
+#: src/conf/domain_conf.c:5645
 #, c-format
 msgid "expecting absolute path: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:5641
+#: src/conf/domain_conf.c:5664
 msgid "passthrough mode requires a character device type attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:5665
+#: src/conf/domain_conf.c:5688
 msgid "unknown smartcard mode"
 msgstr ""
 
-#: src/conf/domain_conf.c:5674
+#: src/conf/domain_conf.c:5697
 msgid "Controllers must use the 'ccid' address type"
 msgstr "ਕੰਟਰੋਲਰਾਂ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/conf/domain_conf.c:5710
+#: src/conf/domain_conf.c:5733
 msgid "missing input device type"
 msgstr "ਇੰਪੁੱਟ ਜੰਤਰ ਕਿਸਮ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:5716
+#: src/conf/domain_conf.c:5739
 #, c-format
 msgid "unknown input device type '%s'"
 msgstr "ਅਚਾਨਕ ਇੰਪੁੱਟ ਜੰਤਰ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:5723
+#: src/conf/domain_conf.c:5746
 #, c-format
 msgid "unknown input bus type '%s'"
 msgstr "ਅਚਾਨਕ ਇੰਪੁੱਟ ਬੱਸ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:5731
+#: src/conf/domain_conf.c:5754
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/conf/domain_conf.c:5737 src/conf/domain_conf.c:5744
+#: src/conf/domain_conf.c:5760 src/conf/domain_conf.c:5767
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਇੰਪੁੱਟ ਬੱਸ %s"
 
-#: src/conf/domain_conf.c:5749
+#: src/conf/domain_conf.c:5772
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
 
-#: src/conf/domain_conf.c:5772 src/conf/domain_conf.c:7153
+#: src/conf/domain_conf.c:5795 src/conf/domain_conf.c:7176
 msgid "Invalid address for a USB device"
 msgstr "ਗਲਤ ਐਡਰੈੱਸ।"
 
-#: src/conf/domain_conf.c:5805
+#: src/conf/domain_conf.c:5828
 msgid "missing hub device type"
 msgstr ""
 
-#: src/conf/domain_conf.c:5811
+#: src/conf/domain_conf.c:5834
 #, c-format
 msgid "unknown hub device type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:5856
+#: src/conf/domain_conf.c:5879
 msgid "missing timer name"
 msgstr "ਗੈਰ-ਮੌਜੂਦ ਟਾਈਮਰ ਨਾਂ"
 
-#: src/conf/domain_conf.c:5861
+#: src/conf/domain_conf.c:5884
 #, c-format
 msgid "unknown timer name '%s'"
 msgstr "ਅਣਜਾਣ ਟਾਈਮਰ ਨਾਂ '%s'"
 
-#: src/conf/domain_conf.c:5873
+#: src/conf/domain_conf.c:5896
 #, c-format
 msgid "unknown timer present value '%s'"
 msgstr "ਅਣਜਾਣ ਟਾਈਮਰ ਮੌਜੂਦਾ ਮੁੱਲ '%s'"
 
-#: src/conf/domain_conf.c:5883
+#: src/conf/domain_conf.c:5906
 #, c-format
 msgid "unknown timer tickpolicy '%s'"
 msgstr "ਅਣਜਾਣ ਟਾਈਮਰ ਟਿੱਕਪਾਲਿਸੀ '%s'"
 
-#: src/conf/domain_conf.c:5893
+#: src/conf/domain_conf.c:5916
 #, c-format
 msgid "unknown timer track '%s'"
 msgstr "ਅਣਜਾਣ ਟਾਈਮਰ ਟਰੈਕ '%s'"
 
-#: src/conf/domain_conf.c:5903
+#: src/conf/domain_conf.c:5926
 msgid "invalid timer frequency"
 msgstr "ਗਲਤ ਟਾਈਮਰ ਫਰੀਕੁਇੰਸੀ"
 
-#: src/conf/domain_conf.c:5912
+#: src/conf/domain_conf.c:5935
 #, c-format
 msgid "unknown timer mode '%s'"
 msgstr "ਅਣਜਾਣ ਟਾਈਮਰ ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:5925
+#: src/conf/domain_conf.c:5948
 msgid "invalid catchup threshold"
 msgstr "ਗਲਤ ਕੈਚਅੱਪ ਥਰਿੱਸ਼ੋਲਡ"
 
-#: src/conf/domain_conf.c:5934
+#: src/conf/domain_conf.c:5957
 msgid "invalid catchup slew"
 msgstr "ਗਲਤ ਕੈਚਅੱਪ ਸਲਿਊ"
 
-#: src/conf/domain_conf.c:5943
+#: src/conf/domain_conf.c:5966
 msgid "invalid catchup limit"
 msgstr "ਗਲਤ ਕੈਚਅੱਪ ਸੀਮਾ"
 
-#: src/conf/domain_conf.c:5996
+#: src/conf/domain_conf.c:6019
 #, c-format
 msgid "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
 msgstr "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
 
-#: src/conf/domain_conf.c:6015
+#: src/conf/domain_conf.c:6038
 #, c-format
 msgid "unknown connected value %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6026
+#: src/conf/domain_conf.c:6049
 msgid "VNC supports connected='keep' only"
 msgstr "VNC supports connected='keep' only"
 
-#: src/conf/domain_conf.c:6048
+#: src/conf/domain_conf.c:6071
 msgid "graphics listen type must be specified"
 msgstr ""
 
-#: src/conf/domain_conf.c:6054
+#: src/conf/domain_conf.c:6077
 #, c-format
 msgid "unknown graphics listen type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6074
+#: src/conf/domain_conf.c:6097
 msgid "network attribute not allowed when listen type is not network"
 msgstr ""
 
-#: src/conf/domain_conf.c:6116
+#: src/conf/domain_conf.c:6139
 msgid "missing graphics device type"
 msgstr "ਗਰਾਫਿਕਸ ਜੰਤਰ ਕਿਸਮ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:6122
+#: src/conf/domain_conf.c:6145
 #, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "ਗਰਾਫਿਕਸ ਜੰਤਰ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:6189
+#: src/conf/domain_conf.c:6212
 #, c-format
 msgid ""
 "graphics listen attribute %s must match address attribute of first listen "
 "element (found %s)"
 msgstr ""
 
-#: src/conf/domain_conf.c:6205
+#: src/conf/domain_conf.c:6228
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "vnc ਪੋਰਟ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:6246 src/conf/domain_conf.c:6313
+#: src/conf/domain_conf.c:6269 src/conf/domain_conf.c:6336
 #, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "ਅਚਾਨਕ ਫੁੱਲ ਸਕਰੀਨ ਮੁੱਲ '%s'"
 
-#: src/conf/domain_conf.c:6265
+#: src/conf/domain_conf.c:6288
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp ਪੋਰਟ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/conf/domain_conf.c:6334
+#: src/conf/domain_conf.c:6357
 #, c-format
 msgid "cannot parse spice port %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6347
+#: src/conf/domain_conf.c:6370
 #, c-format
 msgid "cannot parse spice tlsPort %s"
 msgstr "ਬੱਸ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:6367
+#: src/conf/domain_conf.c:6390
 #, c-format
 msgid "unknown default spice channel mode %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6403
+#: src/conf/domain_conf.c:6426
 msgid "spice channel missing name/mode"
 msgstr "ਨਾਂ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:6411
+#: src/conf/domain_conf.c:6434
 #, c-format
 msgid "unknown spice channel name %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6419
+#: src/conf/domain_conf.c:6442
 #, c-format
 msgid "unknown spice channel mode %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6435
+#: src/conf/domain_conf.c:6458
 msgid "spice image missing compression"
 msgstr ""
 
-#: src/conf/domain_conf.c:6442
+#: src/conf/domain_conf.c:6465
 #, c-format
 msgid "unknown spice image compression %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6456
+#: src/conf/domain_conf.c:6479
 msgid "spice jpeg missing compression"
 msgstr "ਸਪਾਈਸ jpeg ਵਿੱਚ ਕੰਪਰੈਸ਼ਨ ਗੈਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:6463
+#: src/conf/domain_conf.c:6486
 #, c-format
 msgid "unknown spice jpeg compression %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6477
+#: src/conf/domain_conf.c:6500
 msgid "spice zlib missing compression"
 msgstr "ਸਪਾਈਸ zlib ਵਿੱਚ ਕੰਪਰੈਸ਼ਨ ਗੈਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:6484
+#: src/conf/domain_conf.c:6507
 #, c-format
 msgid "unknown spice zlib compression %s"
 msgstr "ਅਣਜਾਣ ਸਪਾਈਸ zlib ਕੰਪਰੈਸ਼ਨ %s"
 
-#: src/conf/domain_conf.c:6498
+#: src/conf/domain_conf.c:6521
 msgid "spice playback missing compression"
 msgstr ""
 
-#: src/conf/domain_conf.c:6505
+#: src/conf/domain_conf.c:6528
 msgid "unknown spice playback compression"
 msgstr "ਅਣਜਾਣ ਸਪਾਈਸ ਪਲੇਬੈਕ ਕੰਪਰੈਸ਼ਨ"
 
-#: src/conf/domain_conf.c:6519
+#: src/conf/domain_conf.c:6542
 msgid "spice streaming missing mode"
 msgstr "ਸਪਾਈਸ ਸਟਰੀਮਿੰਗ ਵਿੱਚ ਮੋਡ ਗੈਰਮਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:6525
+#: src/conf/domain_conf.c:6548
 msgid "unknown spice streaming mode"
 msgstr "ਅਣਜਾਣ ਸਪਾਈਸ ਸਟਰੀਮਿੰਗ ਮੋਡ"
 
-#: src/conf/domain_conf.c:6539
+#: src/conf/domain_conf.c:6562
 msgid "spice clipboard missing copypaste"
 msgstr "ਸਪਾਈਸ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀਪੇਸਟ ਗੈਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:6546
+#: src/conf/domain_conf.c:6569
 #, c-format
 msgid "unknown copypaste value '%s'"
 msgstr "ਅਣਜਾਣ ਕਾਪੀਪੇਸਟ ਮੁੱਲ '%s'"
 
-#: src/conf/domain_conf.c:6559
+#: src/conf/domain_conf.c:6582
 msgid "spice mouse missing mode"
 msgstr "ਸਪਾਈਸ ਮਾਊਸ ਵਿੱਚ ਮੋਡ ਗੈਰਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:6565
+#: src/conf/domain_conf.c:6588
 #, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "ਅਣਜਾਣ ਮਾਊਸ ਮੋਡ ਮੁੱਲ '%s'"
 
-#: src/conf/domain_conf.c:6608
+#: src/conf/domain_conf.c:6631
 #, c-format
 msgid "unknown codec type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6643
+#: src/conf/domain_conf.c:6666
 #, c-format
 msgid "unknown sound model '%s'"
 msgstr "ਅਚਾਨਕ ਸਾਊਂਡ ਮਾਡਲ'%s'"
 
-#: src/conf/domain_conf.c:6710
+#: src/conf/domain_conf.c:6733
 msgid "watchdog must contain model name"
 msgstr "watchdog ਵਿੱਚ ਮਾਡਲ ਨਾਂ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:6716
+#: src/conf/domain_conf.c:6739
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "ਅਣਜਾਣ watchdog ਮਾਡਲ '%s'"
 
-#: src/conf/domain_conf.c:6727
+#: src/conf/domain_conf.c:6750
 #, c-format
 msgid "unknown watchdog action '%s'"
 msgstr "ਅਣਜਾਣ watchdog ਕਾਰਵਾਈ '%s'"
 
-#: src/conf/domain_conf.c:6763
+#: src/conf/domain_conf.c:6786
 msgid "balloon memory must contain model name"
 msgstr "ਬੈਲੂਨ ਮੈਮੋਰੀ ਵਿੱਚ ਮਾਡਲ ਨਾਂ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:6768
+#: src/conf/domain_conf.c:6791
 #, c-format
 msgid "unknown memory balloon model '%s'"
 msgstr "ਅਣਜਾਣ ਮੈਮੋਰੀ ਬੈਲੂਨ ਮਾਡਲ '%s'"
 
-#: src/conf/domain_conf.c:6795
+#: src/conf/domain_conf.c:6818
 msgid "XML does not contain expected 'sysinfo' element"
 msgstr "XML ਵਿੱਚ ਲੋੜੀਂਦਾ 'sysinfo' ਐਲੀਮੈਂਟ ਨਹੀਂ ਹੈ"
 
-#: src/conf/domain_conf.c:6807
+#: src/conf/domain_conf.c:6830
 msgid "sysinfo must contain a type attribute"
 msgstr "sysinfo ਵਿੱਚ ਕਿਸਮ ਐਟਰੀਬਿਊਟ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:6812
+#: src/conf/domain_conf.c:6835
 #, c-format
 msgid "unknown sysinfo type '%s'"
 msgstr "ਅਣਜਾਣ sysinfo ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:6990
+#: src/conf/domain_conf.c:7013
 #, c-format
 msgid "unknown video model '%s'"
 msgstr "ਅਣਜਾਣ ਵੀਡੀਓ ਮਾਡਲ '%s'"
 
-#: src/conf/domain_conf.c:6996
+#: src/conf/domain_conf.c:7019
 msgid "missing video model and cannot determine default"
 msgstr "ਵੀਡੀਓ ਮਾਡਲ ਗੌਰ-ਮੌਜੂਦ ਹੈ ਅਤੇ ਮੂਲ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:7004
+#: src/conf/domain_conf.c:7027
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "ਵੀਡੀਓ ਰੈਮ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:7014
+#: src/conf/domain_conf.c:7037
 #, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "ਵੀਡੀਓ ਹੈੱਡ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:7071
+#: src/conf/domain_conf.c:7094
 msgid "PCI host devices must use 'pci' address type"
 msgstr "PCI ਹੋਸਟ ਜੰਤਰਾਂ ਨੂੰ 'pci' ਐਡਰੈੱਸ ਕਿਸਮ ਵਰਤਣੀ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/conf/domain_conf.c:7108
+#: src/conf/domain_conf.c:7131
 #, c-format
 msgid "unknown redirdev bus '%s'"
 msgstr "ਅਣਜਾਣ redirdev ਬੱਸ '%s'"
 
-#: src/conf/domain_conf.c:7119
+#: src/conf/domain_conf.c:7142
 #, c-format
 msgid "unknown redirdev character device type '%s'"
 msgstr "ਅਣਜਾਣ redirdev ਅੱਖਰ ਜੰਤਰ ਕਿਸਮ '%s'"
 
-#: src/conf/domain_conf.c:7124
+#: src/conf/domain_conf.c:7147
 msgid "missing type in redirdev"
 msgstr "redirdev ਵਿੱਚ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
-#: src/conf/domain_conf.c:7182
+#: src/conf/domain_conf.c:7205
 #, c-format
 msgid "unknown lifecycle action %s"
 msgstr "ਅਣਜਾਣ ਲਾਈਫਸਾਈਕਲ ਕਾਰਵਾਈ %s"
 
-#: src/conf/domain_conf.c:7201 tools/virsh-domain.c:7517
+#: src/conf/domain_conf.c:7224 tools/virsh-domain.c:7517
 msgid "(device_definition)"
 msgstr "(device_definition)"
 
-#: src/conf/domain_conf.c:7271
+#: src/conf/domain_conf.c:7294
 msgid "unknown device type"
 msgstr "ਅਚਾਨਕ ਜੰਤਰ ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:7779
+#: src/conf/domain_conf.c:7802
 msgid "unknown virt type"
 msgstr "ਅਣਜਾਣ virt ਕਿਸਮ"
 
-#: src/conf/domain_conf.c:7790
+#: src/conf/domain_conf.c:7813
 #, c-format
 msgid "no emulator for domain %s os type %s on architecture %s"
 msgstr "ਕੋਈ ਈਮੂਲੇਟਰ ਡੋਮੇਨ %s os ਕਿਸਮ %s ਲਈ ਢਾਂਚੇ %s ਉੱਪਰ ਨਹੀਂ ਹੈ"
 
-#: src/conf/domain_conf.c:7818
+#: src/conf/domain_conf.c:7841
 msgid "cannot count boot devices"
 msgstr "ਬੂਟ ਜੰਤਰ ਨਹੀ ਗਿਣ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:7829
+#: src/conf/domain_conf.c:7852
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "ਪ੍ਰਤੀ-ਜੰਤਰ ਬੂਟ ਐਲੀਮੈਂਟ os/boot ਐਲੀਮੈਂਟਾਂ ਨਾਲ ਨਹੀਂ ਵਰਤੇ ਜਾ ਸਕਦੇ"
 
-#: src/conf/domain_conf.c:7839
+#: src/conf/domain_conf.c:7862
 msgid "missing boot device"
 msgstr "ਬੂਟ ਜੰਤਰ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:7844
+#: src/conf/domain_conf.c:7867
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "ਅਚਾਨਕ ਬੂਟ ਜੰਤਰ '%s'"
 
-#: src/conf/domain_conf.c:7872
+#: src/conf/domain_conf.c:7895
 msgid "need at least one serial port for useserial"
 msgstr "useserial ਲਈ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਸੀਰੀਅਲ ਪੋਰਟ ਦੀ ਲੋੜ ਹੈ"
 
-#: src/conf/domain_conf.c:7927
-#, fuzzy
+#: src/conf/domain_conf.c:7950
 msgid "vcpu id must be an unsigned integer or -1"
-msgstr "vcpu id ਇੱਕ ਅਨਸਾਈਂਨਡ ਪੂਰਨਅੰਕ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
+msgstr ""
 
-#: src/conf/domain_conf.c:7931
+#: src/conf/domain_conf.c:7954
 msgid "vcpu id value -1 is not allowed for vcpupin"
 msgstr ""
 
-#: src/conf/domain_conf.c:7938
+#: src/conf/domain_conf.c:7961
 msgid "vcpu id must be less than maxvcpus"
 msgstr "vcpu id maxvcpus ਤੋਂ ਘੱਟ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:7960
+#: src/conf/domain_conf.c:7983
 msgid "missing cpuset for vcpupin"
 msgstr "cpuset ਗੈਰਮੌਜੂਦ ਹੈ vcpupin ਲਈ"
 
-#: src/conf/domain_conf.c:8080
+#: src/conf/domain_conf.c:8103
 msgid "missing domain type attribute"
 msgstr "ਡੋਮੇਨ ਕਿਸਮ ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:8086
+#: src/conf/domain_conf.c:8109
 #, c-format
 msgid "invalid domain type %s"
 msgstr "ਗਲਤ ਡੋਮੇਨ ਕਿਸਮ %s"
 
-#: src/conf/domain_conf.c:8094
+#: src/conf/domain_conf.c:8117
 #, c-format
 msgid "unexpected domain type %s, expecting %s"
 msgstr "ਅਣਜਾਣ ਡੋਮੇਨ ਕਿਸਮ %s, %s ਦੀ ਉਮੀਦ ਸੀ"
 
-#: src/conf/domain_conf.c:8119
+#: src/conf/domain_conf.c:8142
 #, c-format
 msgid "unexpected domain type %s, expecting one of these: %s"
 msgstr "ਅਣਜਾਣ ਡੋਮੇਨ ਕਿਸਮ %s, ਇਹਨਾਂ ਵਿੱਚੋਂ ਇੱਕ ਦੀ ਉਮੀਦ ਹੈ: %s"
 
-#: src/conf/domain_conf.c:8143 src/conf/network_conf.c:981
+#: src/conf/domain_conf.c:8166 src/conf/network_conf.c:981
 #: src/conf/secret_conf.c:180 src/openvz/openvz_conf.c:1102
 #: src/xenxs/xen_xm.c:219
 msgid "Failed to generate UUID"
 msgstr "UUID ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/conf/domain_conf.c:8150 src/conf/domain_conf.c:9407
+#: src/conf/domain_conf.c:8173 src/conf/domain_conf.c:9430
 #: src/conf/network_conf.c:988 src/conf/nwfilter_conf.c:2575
 #: src/conf/secret_conf.c:186 src/conf/storage_conf.c:766
 msgid "malformed uuid element"
 msgstr "malformed uuid ਇਕਾਈ"
 
-#: src/conf/domain_conf.c:8160
+#: src/conf/domain_conf.c:8183
 msgid "Domain title can't contain newlines"
 msgstr "ਡੋਮੇਨ ਟਾਈਟਲ ਵਿੱਚ ਨਵੀਂ-ਲਾਈਨ ਨਹੀਂ ਹੋ ਸਕਦੀ"
 
-#: src/conf/domain_conf.c:8188
+#: src/conf/domain_conf.c:8211
 #, c-format
 msgid "current memory '%lluk' exceeds maximum '%lluk'"
 msgstr "ਮੌਜੂਦਾ ਮੈਮੋਰੀ '%lluk' ਵੱਧੋ-ਵੱਧ '%lluk' ਤੋਂ ਘੱਟ ਹੈ"
 
-#: src/conf/domain_conf.c:8212
+#: src/conf/domain_conf.c:8235
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune ਨੋਡਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:8228
+#: src/conf/domain_conf.c:8251
 #, c-format
 msgid "duplicate device weight path '%s'"
 msgstr "ਡੁਪਲੀਕੇਟ ਜੰਤਰ ਭਾਰ ਮਾਰਗ '%s'"
 
-#: src/conf/domain_conf.c:8256
+#: src/conf/domain_conf.c:8279
 msgid "maximum vcpus must be an integer"
 msgstr "ਵੱਧ-ਤੋਂ-ਵੱਧ vcpus ਇੱਕ ਪੂਰਨ ਅੰਕ ਹੋਣਾ ਜਰੂਰੀ ਹੈਵੱਧ-ਤੋਂ-ਵੱਧ vcpus ਇੱਕ ਪੂਰਨ ਅੱਕ"
 
-#: src/conf/domain_conf.c:8264
+#: src/conf/domain_conf.c:8287
 #, c-format
 msgid "invalid maxvcpus %lu"
 msgstr "ਗਲਤ maxvcpus %lu"
 
-#: src/conf/domain_conf.c:8272
+#: src/conf/domain_conf.c:8295
 msgid "current vcpus must be an integer"
 msgstr "ਮੌਜੂਦਾ vcpus ਇੱਕ ਪੂਰਨ ਅੰਕ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:8280
+#: src/conf/domain_conf.c:8303
 #, c-format
 msgid "invalid current vcpus %lu"
 msgstr "ਗਲਤ ਮੌਜੂਦਾ vcpus %lu"
 
-#: src/conf/domain_conf.c:8286
+#: src/conf/domain_conf.c:8309
 #, c-format
 msgid "maxvcpus must not be less than current vcpus (%d < %lu)"
 msgstr "maxvcpus ਮੌਜੂਦਾ vcpus ਨਾਲੋਂ ਘੱਟ ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ (%d < %lu)"
 
-#: src/conf/domain_conf.c:8297
+#: src/conf/domain_conf.c:8320
 #, c-format
 msgid "Unsupported CPU placement mode '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ CPU ਪਲੇਸਮੈਂਟ ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:8352
+#: src/conf/domain_conf.c:8375
 msgid "vcpupin nodes must be less than maxvcpus"
 msgstr "vcpupin ਨੋਡ maxvcpus ਤੋਂ ਘੱਟ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:8367
+#: src/conf/domain_conf.c:8390
 msgid "duplicate vcpupin for same vcpu"
 msgstr "ਇੱਕੋ vcpu ਲਈ ਡੁਪਲੀਕੇਟ vcpupin"
 
-#: src/conf/domain_conf.c:8378
-#, fuzzy
+#: src/conf/domain_conf.c:8401
 msgid "cannot extract emulatorpin nodes"
-msgstr "numatune ਨੋਡਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
-
-#: src/conf/domain_conf.c:8385
-#, fuzzy
-msgid "only one emulatorpin is supported"
-msgstr "ਸਿਰਫ ਇੱਕ numatune ਸਹਿਯੋਗੀ ਹੈ"
+msgstr ""
 
 #: src/conf/domain_conf.c:8408
+msgid "only one emulatorpin is supported"
+msgstr ""
+
+#: src/conf/domain_conf.c:8431
 msgid "cannot extract numatune nodes"
 msgstr "numatune ਨੋਡਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:8414
+#: src/conf/domain_conf.c:8437
 msgid "only one numatune is supported"
 msgstr "ਸਿਰਫ ਇੱਕ numatune ਸਹਿਯੋਗੀ ਹੈ"
 
-#: src/conf/domain_conf.c:8433
+#: src/conf/domain_conf.c:8456
 #, c-format
 msgid "Unsupported NUMA memory tuning mode '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ NUMA ਮੈਮਮੋਰੀ ਟਿਊਨਿੰਗ ਮੋਡ '%s'"
 
-#: src/conf/domain_conf.c:8471
+#: src/conf/domain_conf.c:8494
 #, c-format
 msgid "Unsupported memory placement mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8493
+#: src/conf/domain_conf.c:8516
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8512
+#: src/conf/domain_conf.c:8535
 #, c-format
 msgid "unsupported XML element %s"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ XML ਐਲੀਮੈਂਟ %s"
 
-#: src/conf/domain_conf.c:8538
+#: src/conf/domain_conf.c:8561
 #, c-format
 msgid "unexpected feature %s"
 msgstr "ਅਚਾਨਕੀ ਵਿਸ਼ੇਸ਼ਤਾ %s"
 
-#: src/conf/domain_conf.c:8567
+#: src/conf/domain_conf.c:8590
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr "ਅਣਜਾਣ ਘੜੀ ਆਫਸੈੱਟ '%s'"
 
-#: src/conf/domain_conf.c:8585
+#: src/conf/domain_conf.c:8608
 #, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8613
+#: src/conf/domain_conf.c:8636
 #, c-format
 msgid "unknown clock basis '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8626
+#: src/conf/domain_conf.c:8649
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "ਘੜੀ ਦਾ 'timezone' ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ ਜਿਸ ਦਾ offset='timezone' ਹੈ"
 
-#: src/conf/domain_conf.c:8659
+#: src/conf/domain_conf.c:8682
 msgid "no OS type"
 msgstr "ਕੋਈ OS ਕਿਸਮ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:8686
+#: src/conf/domain_conf.c:8709
 #, c-format
 msgid "No guest options available for arch '%s'"
 msgstr "ਕੋਈ ਗਿਸਟ ਚੋਣ arch '%s' ਲਈ ਉਪਲੱਬਧ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:8695
+#: src/conf/domain_conf.c:8718
 #, c-format
 msgid "No os type '%s' available for arch '%s'"
 msgstr "ਕੋਈ os ਕਿਸਮ '%s' ਢਾਂਚੇ '%s' ਲਈ ਉਪਲੱਬਧ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:8703 src/xenxs/xen_xm.c:295
+#: src/conf/domain_conf.c:8726 src/xenxs/xen_xm.c:295
 #, c-format
 msgid "no supported architecture for os type '%s'"
 msgstr "os ਕਿਸਮ '%s' ਲਈ ਕੋਈ ਸਹਿਯੋਗੀ ਢਾਂਚਾ ਨਹੀਂ ਹੈ"
 
-#: src/conf/domain_conf.c:8744
+#: src/conf/domain_conf.c:8767
 msgid "init binary must be specified"
 msgstr "init ਬਾਇਨਰੀ ਨਿਰਧਾਰਤ ਕਰਨਾ ਜਰੂਰੀ ਹੈ"
 
-#: src/conf/domain_conf.c:8760
+#: src/conf/domain_conf.c:8783
 msgid "No data supplied for <initarg> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:8834 src/conf/domain_conf.c:8842
+#: src/conf/domain_conf.c:8857 src/conf/domain_conf.c:8865
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:8863
+#: src/conf/domain_conf.c:8886
 msgid "cannot extract device leases"
 msgstr "ਜੰਤਰ leases ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:8994
+#: src/conf/domain_conf.c:9017
 msgid "cannot extract console devices"
 msgstr "ਕੰਸੋਲ ਜੰਤਰਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:9031
+#: src/conf/domain_conf.c:9054
 msgid "Only the first console can be a serial port"
 msgstr "ਸਿਰਫ ਪਹਿਲਾਂ ਕੰਸੋਲ ਇੱਕ ਸੀਰੀਅਲ ਪੋਰਟ ਹੋ ਸਕਦਾ ਹੈ"
 
-#: src/conf/domain_conf.c:9127
+#: src/conf/domain_conf.c:9150
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
 
-#: src/conf/domain_conf.c:9232
+#: src/conf/domain_conf.c:9255
 msgid "cannot determine default video type"
 msgstr "ਮੂਲ ਵੀਡੀਓ ਕਿਸਮ ਪਛਾਣ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:9261
+#: src/conf/domain_conf.c:9284
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 
-#: src/conf/domain_conf.c:9277
+#: src/conf/domain_conf.c:9300
 msgid "only a single watchdog device is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗੀ ਹੈ"
 
-#: src/conf/domain_conf.c:9297
+#: src/conf/domain_conf.c:9320
 msgid "only a single memory balloon device is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਹੀ ਮੈਮੋਰੀ ਬੈਲੂਨ ਨੂੰ ਸਹਿਯੋਗ ਹੈ ਨੂੰਸਿਰਫ ਇੱਕ ਹੀ ਮੈਮੋਰੀ ਬੈਲੂਨ ਨ"
 
-#: src/conf/domain_conf.c:9337
+#: src/conf/domain_conf.c:9360
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9360
+#: src/conf/domain_conf.c:9383
 msgid "Can't add redirected USB device: USB is disabled for this domain"
 msgstr ""
 
-#: src/conf/domain_conf.c:9383
+#: src/conf/domain_conf.c:9406
 msgid "Maximum CPUs greater than topology limit"
 msgstr "ਵੱਧੋ-ਵੱਧ CPUs ਟੋਪੋਲੋਜੀ ਸੀਮਾਂ ਤੋਂ ਜਿਆਦਾ ਹਨ"
 
-#: src/conf/domain_conf.c:9389
+#: src/conf/domain_conf.c:9412
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "Number of CPUs in <numa> exceeds the <vcpu> count"
 
-#: src/conf/domain_conf.c:9414
+#: src/conf/domain_conf.c:9437
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr ""
 
-#: src/conf/domain_conf.c:9426
+#: src/conf/domain_conf.c:9449
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9493
+#: src/conf/domain_conf.c:9516
 msgid "no domain config"
 msgstr "ਕੋਈ ਡੋਮੇਨ ਸੰਰਚਨਾ ਨਹੀਂ"
 
-#: src/conf/domain_conf.c:9507
+#: src/conf/domain_conf.c:9530
 msgid "missing domain state"
 msgstr "ਡੋਮੇਨ ਹਾਲਤ ਗੁੰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:9512
+#: src/conf/domain_conf.c:9535
 #, c-format
 msgid "invalid domain state '%s'"
 msgstr "ਗਲਤ ਡੋਮੇਨ ਸਥਿਤੀ '%s'"
 
-#: src/conf/domain_conf.c:9521
+#: src/conf/domain_conf.c:9544
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9532
+#: src/conf/domain_conf.c:9555
 msgid "invalid pid"
 msgstr "ਗਲਤ pid"
 
-#: src/conf/domain_conf.c:9546
+#: src/conf/domain_conf.c:9569
 #, c-format
 msgid "Unknown taint flag %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9580 src/security/virt-aa-helper.c:654
+#: src/conf/domain_conf.c:9603 src/security/virt-aa-helper.c:654
 #: tools/virsh-domain-monitor.c:97 tools/virsh-domain-monitor.c:439
 #: tools/virsh-domain-monitor.c:543 tools/virsh-domain-monitor.c:655
 #: tools/virsh-domain.c:1868 tools/virsh-domain.c:2485
@@ -2407,42 +2400,42 @@ msgstr ""
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
 
-#: src/conf/domain_conf.c:9618
+#: src/conf/domain_conf.c:9641
 #, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr ""
 
-#: src/conf/domain_conf.c:9651
+#: src/conf/domain_conf.c:9674
 #, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr ""
 
-#: src/conf/domain_conf.c:9701
+#: src/conf/domain_conf.c:9724
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9709
+#: src/conf/domain_conf.c:9732
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:9717
+#: src/conf/domain_conf.c:9740
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr ""
 
-#: src/conf/domain_conf.c:9724
+#: src/conf/domain_conf.c:9747
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9745
+#: src/conf/domain_conf.c:9768
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9758
+#: src/conf/domain_conf.c:9781
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
@@ -2451,81 +2444,81 @@ msgstr ""
 "ਟਾਰਗਿਟ ਜੰਤਰ PCI ਐਡਰੈੱਸ %04x:%02x:%02x.%02x ਸਰੋਤ %04x:%02x:%02x.%02x ਨਾਲ ਮੇਲ ਨਹੀਂ "
 "ਖਾਂਦਾ ਹੈ"
 
-#: src/conf/domain_conf.c:9772
+#: src/conf/domain_conf.c:9795
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 
-#: src/conf/domain_conf.c:9786
+#: src/conf/domain_conf.c:9809
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:9799
+#: src/conf/domain_conf.c:9822
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr "Target device ccid address %d:%d does not match source %d:%d"
 
-#: src/conf/domain_conf.c:9823
+#: src/conf/domain_conf.c:9846
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9831
+#: src/conf/domain_conf.c:9854
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9839
+#: src/conf/domain_conf.c:9862
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9846
+#: src/conf/domain_conf.c:9869
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9853
+#: src/conf/domain_conf.c:9876
 msgid "Target disk access mode does not match source"
-msgstr ""
-
-#: src/conf/domain_conf.c:9874
-#, c-format
-msgid "Target controller type %s does not match source %s"
-msgstr ""
-
-#: src/conf/domain_conf.c:9882
-#, c-format
-msgid "Target controller index %d does not match source %d"
-msgstr ""
-
-#: src/conf/domain_conf.c:9889
-#, c-format
-msgid "Target controller model %d does not match source %d"
 msgstr ""
 
 #: src/conf/domain_conf.c:9897
 #, c-format
-msgid "Target controller ports %d does not match source %d"
+msgid "Target controller type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9904
+#: src/conf/domain_conf.c:9905
 #, c-format
-msgid "Target controller vectors %d does not match source %d"
+msgid "Target controller index %d does not match source %d"
+msgstr ""
+
+#: src/conf/domain_conf.c:9912
+#, c-format
+msgid "Target controller model %d does not match source %d"
+msgstr ""
+
+#: src/conf/domain_conf.c:9920
+#, c-format
+msgid "Target controller ports %d does not match source %d"
 msgstr ""
 
 #: src/conf/domain_conf.c:9927
 #, c-format
+msgid "Target controller vectors %d does not match source %d"
+msgstr ""
+
+#: src/conf/domain_conf.c:9950
+#, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9934
+#: src/conf/domain_conf.c:9957
 msgid "Target filesystem access mode does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:9955
+#: src/conf/domain_conf.c:9978
 #, c-format
 msgid ""
 "Target network card mac %02x:%02x:%02x:%02x:%02x:%02xdoes not match source "
@@ -2534,530 +2527,528 @@ msgstr ""
 "ਟਾਰਗਿਟ ਨੈੱਟਵਰਕ ਕਾਰਡ mac %02x:%02x:%02x:%02x:%02x:%02x ਸਰੋਤ %02x:%02x:%02x:%02x:"
 "%02x:%02x ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ ਹੈ"
 
-#: src/conf/domain_conf.c:9966
+#: src/conf/domain_conf.c:9989
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9988
+#: src/conf/domain_conf.c:10011
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:9996
+#: src/conf/domain_conf.c:10019
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10019
+#: src/conf/domain_conf.c:10042
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10042
+#: src/conf/domain_conf.c:10065
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10050
+#: src/conf/domain_conf.c:10073
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10057
+#: src/conf/domain_conf.c:10080
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10065
+#: src/conf/domain_conf.c:10088
 msgid "Target video card acceleration does not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10072
+#: src/conf/domain_conf.c:10095
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10079
+#: src/conf/domain_conf.c:10102
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:10102
+#: src/conf/domain_conf.c:10125
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10111
+#: src/conf/domain_conf.c:10134
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10150 src/conf/domain_conf.c:10172
+#: src/conf/domain_conf.c:10173 src/conf/domain_conf.c:10195
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10194
+#: src/conf/domain_conf.c:10217
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10204
+#: src/conf/domain_conf.c:10227
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10213
+#: src/conf/domain_conf.c:10236
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 msgstr ""
 
-#: src/conf/domain_conf.c:10224
+#: src/conf/domain_conf.c:10247
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10250
+#: src/conf/domain_conf.c:10273
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10273
+#: src/conf/domain_conf.c:10296
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10296
+#: src/conf/domain_conf.c:10319
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10319
+#: src/conf/domain_conf.c:10342
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10347
+#: src/conf/domain_conf.c:10370
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10359
+#: src/conf/domain_conf.c:10382
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10366
+#: src/conf/domain_conf.c:10389
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:10372
+#: src/conf/domain_conf.c:10395
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr ""
 
-#: src/conf/domain_conf.c:10378
+#: src/conf/domain_conf.c:10401
 #, c-format
 msgid "Target domain huge page backing %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10386
+#: src/conf/domain_conf.c:10409
 #, c-format
 msgid "Target domain vpu count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10392
+#: src/conf/domain_conf.c:10415
 #, c-format
 msgid "Target domain vpu max %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10399 src/conf/domain_conf.c:10411
+#: src/conf/domain_conf.c:10422 src/conf/domain_conf.c:10434
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10405
+#: src/conf/domain_conf.c:10428
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10418
+#: src/conf/domain_conf.c:10441
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10426
+#: src/conf/domain_conf.c:10449
 #, c-format
 msgid "Target domain features %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10433
+#: src/conf/domain_conf.c:10456
 msgid "Target domain timers do not match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:10450
+#: src/conf/domain_conf.c:10473
 #, c-format
 msgid "Target domain disk count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10461
+#: src/conf/domain_conf.c:10484
 #, c-format
 msgid "Target domain disk controller count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10472
+#: src/conf/domain_conf.c:10495
 #, c-format
 msgid "Target domain filesystem count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10483
+#: src/conf/domain_conf.c:10506
 #, c-format
 msgid "Target domain net card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10494
+#: src/conf/domain_conf.c:10517
 #, c-format
 msgid "Target domain input device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10505
+#: src/conf/domain_conf.c:10528
 #, c-format
 msgid "Target domain sound card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10516
+#: src/conf/domain_conf.c:10539
 #, c-format
 msgid "Target domain video card count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10527
+#: src/conf/domain_conf.c:10550
 #, c-format
 msgid "Target domain host device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10538
+#: src/conf/domain_conf.c:10561
 #, c-format
 msgid "Target domain smartcard count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10549
+#: src/conf/domain_conf.c:10572
 #, c-format
 msgid "Target domain serial port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10560
+#: src/conf/domain_conf.c:10583
 #, c-format
 msgid "Target domain parallel port count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10571
+#: src/conf/domain_conf.c:10594
 #, c-format
 msgid "Target domain channel count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10582
+#: src/conf/domain_conf.c:10605
 #, c-format
 msgid "Target domain console count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10593
+#: src/conf/domain_conf.c:10616
 #, c-format
 msgid "Target domain hub device count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10606
+#: src/conf/domain_conf.c:10629
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10618
+#: src/conf/domain_conf.c:10641
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:10965
+#: src/conf/domain_conf.c:10988
 msgid "topology cpuset syntax error"
 msgstr "ਟਪੌਲੋਜੀ cpuset ਖਾਕਾ ਗਲਤੀ"
 
-#: src/conf/domain_conf.c:11203
+#: src/conf/domain_conf.c:11226
 #, c-format
 msgid "unexpected lifecycle type %d"
 msgstr "ਅਚਾਨਕ ਲਾਈਫਸਾਈਕਲ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11338
+#: src/conf/domain_conf.c:11367
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11343
+#: src/conf/domain_conf.c:11372
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਜੰਤਰ %d"
 
-#: src/conf/domain_conf.c:11348
+#: src/conf/domain_conf.c:11377
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਬੱਸ %d"
 
-#: src/conf/domain_conf.c:11353
+#: src/conf/domain_conf.c:11382
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "ਅਚਾਨਕ ਡਿਸਕ ਕੈਸ਼ੇ ਮੋਡ %d"
 
-#: src/conf/domain_conf.c:11358
+#: src/conf/domain_conf.c:11387
 #, c-format
 msgid "unexpected disk io mode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11598
+#: src/conf/domain_conf.c:11627
 #, c-format
 msgid "unexpected controller type %d"
 msgstr "ਅਚਾਨਕ ਕੰਟਰੋਲਰ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11607
+#: src/conf/domain_conf.c:11636
 #, c-format
 msgid "unexpected model type %d"
 msgstr "ਅਚਾਨਕ ਮਾਡਲ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11676
+#: src/conf/domain_conf.c:11705
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "ਅਚਾਨਕ ਫਾਇਲ-ਸਿਸਟਮ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11682
+#: src/conf/domain_conf.c:11711
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr "ਅਚਾਨਕ ਐਕਸੈੱਸਮੋਡ %d"
 
-#: src/conf/domain_conf.c:11782
-#, fuzzy
+#: src/conf/domain_conf.c:11811
 msgid "PCI address Formatting failed"
-msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
+msgstr ""
 
-#: src/conf/domain_conf.c:11800 src/conf/domain_conf.c:12864
+#: src/conf/domain_conf.c:11829 src/conf/domain_conf.c:12893
 #: src/qemu/qemu_hotplug.c:2152
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "ਅਚਾਨਕ hostdev ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11824 src/conf/domain_conf.c:11894
-#: src/conf/domain_conf.c:12662
+#: src/conf/domain_conf.c:11853 src/conf/domain_conf.c:11923
+#: src/conf/domain_conf.c:12691
 #, c-format
 msgid "unexpected net type %d"
 msgstr "ਅਚਾਨਕ ਨੈੱਟ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:11851
+#: src/conf/domain_conf.c:11880
 #, c-format
 msgid "unexpected source mode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:11869
+#: src/conf/domain_conf.c:11898
 #, c-format
 msgid "unexpected net type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:12059
+#: src/conf/domain_conf.c:12088
 #, c-format
 msgid "unexpected char type %d"
 msgstr "ਅਚਾਨਕ char ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:12160
+#: src/conf/domain_conf.c:12189
 #, c-format
 msgid "unexpected char device type %d"
 msgstr "ਅਚਾਨਕ char ਜੰਤਰ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:12179
+#: src/conf/domain_conf.c:12208
 msgid "Could not format channel target type"
 msgstr "ਚੈਨਲ ਟਾਰਗਿਟ ਕਿਸਮ ਨੂੰ ਫਾਰਮਿਟ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/conf/domain_conf.c:12189
+#: src/conf/domain_conf.c:12218
 msgid "Unable to format guestfwd port"
 msgstr "guestfwd ਪੋਰਟ ਫਾਰਮੈਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/conf/domain_conf.c:12249 src/conf/domain_conf.c:12280
+#: src/conf/domain_conf.c:12278 src/conf/domain_conf.c:12309
 #: src/qemu/qemu_command.c:5474
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:12297
+#: src/conf/domain_conf.c:12326
 #, c-format
 msgid "unexpected codec type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:12317 src/xenxs/xen_sxpr.c:2159
+#: src/conf/domain_conf.c:12346 src/xenxs/xen_sxpr.c:2159
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "ਅਚਾਨਕ ਸਾਊਂਡ ਨੋਡ %d"
 
-#: src/conf/domain_conf.c:12359
+#: src/conf/domain_conf.c:12388
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr "ਅਚਾਨਕ memballoon ਮੋਡ %d"
 
-#: src/conf/domain_conf.c:12399
+#: src/conf/domain_conf.c:12428
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr "ਅਚਾਨਕ watchdog ਮਾਡਲ %d"
 
-#: src/conf/domain_conf.c:12405
+#: src/conf/domain_conf.c:12434
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr "ਅਚਾਨਕ watchdog ਕਾਰਵਾਈ %d"
 
-#: src/conf/domain_conf.c:12446
+#: src/conf/domain_conf.c:12475
 #, c-format
 msgid "unexpected video model %d"
 msgstr "ਅਚਾਨਕ ਵੀਡੀਓ ਮਾਡਲ %d"
 
-#: src/conf/domain_conf.c:12483 src/xenxs/xen_sxpr.c:2196
+#: src/conf/domain_conf.c:12512 src/xenxs/xen_sxpr.c:2196
 #, c-format
 msgid "unexpected input type %d"
 msgstr "ਅਚਾਨਕ ਇੰਪੁੱਟ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:12488
+#: src/conf/domain_conf.c:12517
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "ਅਚਾਨਕ ਇੰਪੁੱਟ ਬੱਸ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:12516
+#: src/conf/domain_conf.c:12545
 #, c-format
 msgid "unexpected timer name %d"
 msgstr "ਅਚਾਨਕ ਟਾਈਮਰ ਨਾਂ %d"
 
-#: src/conf/domain_conf.c:12532
+#: src/conf/domain_conf.c:12561
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "ਅਚਾਨਕ ਟਾਈਮਰ ਟਿੱਕਪਾਲਿਸੀ %d"
 
-#: src/conf/domain_conf.c:12546
+#: src/conf/domain_conf.c:12575
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "ਅਚਾਨਕ ਟਾਈਮਰ ਟਰੈਕ %d"
 
-#: src/conf/domain_conf.c:12564
+#: src/conf/domain_conf.c:12593
 #, c-format
 msgid "unexpected timer mode %d"
 msgstr "ਅਚਾਨਕ ਟਾਈਮਰ ਮੋਡ %d"
 
-#: src/conf/domain_conf.c:12855
+#: src/conf/domain_conf.c:12884
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "ਅਚਾਨਕ hostdev ਮੋਡ %d"
 
-#: src/conf/domain_conf.c:12915
+#: src/conf/domain_conf.c:12944
 #, c-format
 msgid "unexpected hub type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:12968
+#: src/conf/domain_conf.c:12997
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "ਅਚਾਨਕ ਡੋਮੇਨ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:13141
+#: src/conf/domain_conf.c:13170
 msgid "failed to format cpuset for vcpupin"
 msgstr ""
 
-#: src/conf/domain_conf.c:13158
-#, fuzzy
+#: src/conf/domain_conf.c:13187
 msgid "failed to format cpuset for emulator"
-msgstr "ਨੋਡ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
-#: src/conf/domain_conf.c:13188
+#: src/conf/domain_conf.c:13217
 msgid "failed to format nodeset for NUMA memory tuning"
 msgstr ""
 
-#: src/conf/domain_conf.c:13251
+#: src/conf/domain_conf.c:13280
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "ਅਚਾਨਕ ਬੂਟ ਜੰਤਰ ਕਿਸਮ %d"
 
-#: src/conf/domain_conf.c:13279
+#: src/conf/domain_conf.c:13308
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:13294
+#: src/conf/domain_conf.c:13323
 #, c-format
 msgid "unexpected feature %d"
 msgstr "ਅਚਾਨਕ ਵਿਸ਼ੇਸ਼ਤਾ %d"
 
-#: src/conf/domain_conf.c:13599
+#: src/conf/domain_conf.c:13628
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
 
-#: src/conf/domain_conf.c:13619 src/conf/network_conf.c:1724
+#: src/conf/domain_conf.c:13648 src/conf/network_conf.c:1724
 #: src/conf/nwfilter_conf.c:2728 src/util/dnsmasq.c:529
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "ਸੰਰਚਨਾ ਡਾਇਰੈਕਟਰੀ '%s' ਬਣਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:13764
+#: src/conf/domain_conf.c:13793
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "ਅਚਾਨਕ ਡੋਮੇਨ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:13802 src/conf/network_conf.c:1824
+#: src/conf/domain_conf.c:13831 src/conf/network_conf.c:1824
 #: src/conf/nwfilter_conf.c:3118 src/conf/storage_conf.c:1587
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "'%s' ਡਾਇਰੈਕਟਰੀ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:13866
+#: src/conf/domain_conf.c:13895
 #, c-format
 msgid "cannot remove config %s"
 msgstr "ਸੰਰਚਨਾ %s ਨੂੰ ਹਟਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:13972 src/xen/xm_internal.c:1116
+#: src/conf/domain_conf.c:14001 src/xen/xm_internal.c:1116
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਪਰਿਭਾਸ਼ਤ ਕੀਤਾ ਹੈ"
 
-#: src/conf/domain_conf.c:13981
+#: src/conf/domain_conf.c:14010
 #, c-format
 msgid "domain is already active as '%s'"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ '%s' ਤੌਰ ਤੇ ਸਰਗਰਮ ਹੈ"
 
-#: src/conf/domain_conf.c:13995
+#: src/conf/domain_conf.c:14024
 #, c-format
 msgid "domain '%s' already exists with uuid %s"
 msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌਜੂਦ ਹੈ"
 
-#: src/conf/domain_conf.c:14225
+#: src/conf/domain_conf.c:14254
 #, c-format
 msgid "unknown disk format '%s' for %s"
 msgstr "ਅਣਪਛਾਤੀ ਡਿਸਕ ਫਾਰਮੈਟ ਕਿਸਮ '%s' %s ਲਈ"
 
-#: src/conf/domain_conf.c:14234 src/qemu/qemu_driver.c:9242
+#: src/conf/domain_conf.c:14263 src/qemu/qemu_driver.c:9223
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "%s ਲਈ ਕੋਈ ਡਿਸਕ ਫਾਰਮੈਟ ਨਹੀਂ ਹੈ ਅਤੇ ਪੜਤਾਲ ਅਯੋਗ ਕੀਤੀ ਹੈ"
 
-#: src/conf/domain_conf.c:14251
+#: src/conf/domain_conf.c:14280
 #, c-format
 msgid "backing store for %s is self-referential"
 msgstr "%s ਲਈ ਬੈਕਟਰੇਸ ਸਟੋਰ ਆਟੋਮੈਟਿਕ ਹੈ"
 
-#: src/conf/domain_conf.c:14263
+#: src/conf/domain_conf.c:14292
 #, c-format
 msgid "unable to open disk path %s"
 msgstr "ਡਿਸਕ ਮਾਗਰ %s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਮਰਥ"
 
-#: src/conf/domain_conf.c:14276
+#: src/conf/domain_conf.c:14305
 #, c-format
 msgid "could not close file %s"
 msgstr "ਫਾਇਲ %s ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/conf/domain_conf.c:14380
+#: src/conf/domain_conf.c:14409
 #, c-format
 msgid "invalid domain state: %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:14812
+#: src/conf/domain_conf.c:14841
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr ""
@@ -3253,9 +3244,8 @@ msgid ""
 msgstr ""
 
 #: src/conf/netdev_vlan_conf.c:63
-#, fuzzy
 msgid "missing or invalid vlan tag id attribute"
-msgstr "ਡੋਮੇਨ ਕਿਸਮ ਐਟਰੀਬਿਊਟ ਗੁੰਮ ਹੈ"
+msgstr ""
 
 #: src/conf/netdev_vlan_conf.c:68
 #, c-format
@@ -3275,19 +3265,17 @@ msgid "invalid \"trunk='%s'\" in <vlan> - must be yes or no"
 msgstr ""
 
 #: src/conf/netdev_vlan_conf.c:121
-#, fuzzy
 msgid "missing vlan tag data"
-msgstr "ਡੋਮੇਨ ਹਾਲਤ ਗੁੰਮ ਹੈ"
+msgstr ""
 
 #: src/conf/netdev_vport_profile_conf.c:60
-#, fuzzy, c-format
+#, c-format
 msgid "unknown virtualport type %s"
-msgstr "ਅਣਜਾਣ virt ਕਿਸਮ"
+msgstr ""
 
 #: src/conf/netdev_vport_profile_conf.c:67
-#, fuzzy
 msgid "missing required virtualport type"
-msgstr "ਐਡਰੈੱਸ ਗੈਰਮੌਜੂਦ ਹੈ"
+msgstr ""
 
 #: src/conf/netdev_vport_profile_conf.c:89
 msgid "cannot parse value of managerid parameter"
@@ -5064,7 +5052,7 @@ msgstr "ਸਨੈਪਸ਼ਾਟ '%s' ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹ
 msgid "Could not create snapshot: %s"
 msgstr ""
 
-#: src/esx/esx_driver.c:4654 src/qemu/qemu_driver.c:11641
+#: src/esx/esx_driver.c:4654 src/qemu/qemu_driver.c:11622
 #: src/vbox/vbox_tmpl.c:6377
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -5086,43 +5074,42 @@ msgid "Could not change memory parameters: %s"
 msgstr ""
 
 #: src/esx/esx_network_driver.c:203
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find HostVirtualSwitch with UUID '%s'"
-msgstr "UUID '%s' ਵਾਲਾ ਕੋਈ ਡੋਮੇਨ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:269
 msgid "Different inbound and outbound bandwidth is unsupported"
 msgstr ""
 
 #: src/esx/esx_network_driver.c:362
-#, fuzzy
 msgid ""
 "HostVirtualSwitch already exists, editing existing ones is not supported yet"
-msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ, ਮੌਜੂਦਾ ਡੋਮੇਨਾਂ ਦੀ ਸੋਧ ਹਾਲੇ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:370
 msgid "Cannot use predefined UUID"
 msgstr ""
 
 #: src/esx/esx_network_driver.c:378
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported forward mode '%s'"
-msgstr "ਨਾ-ਸਹਿਯੋਗੀ CPU ਪਲੇਸਮੈਂਟ ਮੋਡ '%s'"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:394
-#, fuzzy, c-format
+#, c-format
 msgid "HostPortGroup with name '%s' exists already"
-msgstr "ਡੋਮੇਨ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:428
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported device type in network %s interface pool"
-msgstr "dom ਇੰਟਰਫੇਸ ਵਿੱਚ ਨਾ-ਸਹਿਯੋਗੀ < 5"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:450
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find PhysicalNic with name '%s'"
-msgstr "ਨਾਂ '%s' ਨਾਲ ਮਿਲਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:570
 #, c-format
@@ -5130,24 +5117,23 @@ msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
 msgstr ""
 
 #: src/esx/esx_network_driver.c:583 src/esx/esx_network_driver.c:611
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find HostPortGroup for key '%s'"
-msgstr "typefile '%s' ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:773
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find PhysicalNic with key '%s'"
-msgstr "ਨਾਂ '%s' ਨਾਲ ਮਿਲਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:855
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find HostPortGroup with key '%s'"
-msgstr "'%s' ਨਾਂ ਵਾਲਾ ਡਾਟਾਸਟੋਰ ਲੱਭ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_network_driver.c:907
-#, fuzzy
 msgid "Cannot deactivate network autostart"
-msgstr "ਸਟੋਰਜ਼ ਪੂਲ ਸੋਰਸ ਜੰਤਰਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ ਹੈ"
+msgstr ""
 
 #: src/esx/esx_storage_driver.c:88 src/esx/esx_storage_driver.c:573
 msgid "DatastoreInfo has unexpected type"
@@ -5393,18 +5379,16 @@ msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
 #: src/esx/esx_vi.c:684
-#, fuzzy
 msgid "Cannot add uninitialized CURL handle to a multi handle"
-msgstr "ਕੰਡੀਸ਼ਨ ਵੇਰੀਏਬਲ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/esx/esx_vi.c:690
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr ""
 
 #: src/esx/esx_vi.c:699
-#, fuzzy
 msgid "Could not initialize CURL (multi)"
-msgstr "CURL mutex ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_vi.c:721
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
@@ -5714,19 +5698,19 @@ msgid "Could not retrieve the AutoStartDefaults object"
 msgstr ""
 
 #: src/esx/esx_vi.c:4047
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find physical NIC with name '%s'"
-msgstr "'%s' ਨਾਂ ਵਾਲਾ ਸਨੈਪਸ਼ਾਟ ਲੱਭ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_vi.c:4096
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find physical NIC with MAC address '%s'"
-msgstr "'%s' ਨਾਂ ਵਾਲਾ ਸਨੈਪਸ਼ਾਟ ਲੱਭ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_vi.c:4191
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find HostVirtualSwitch with name '%s'"
-msgstr "ਨਾਂ '%s' ਨਾਲ ਮਿਲਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
+msgstr ""
 
 #: src/esx/esx_vi.c:4314 src/esx/esx_vi.c:4348
 #, c-format
@@ -6409,9 +6393,8 @@ msgid "cannot perform tunnelled migration without using peer2peer flag"
 msgstr "peer2peer ਫਲੈਗ ਤੋਂ ਬਿਨਾਂ ਟਨਲ ਮਾਈਗਰੇਸ਼ਨ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
 #: src/libvirt.c:5583 src/libvirt.c:5719
-#, fuzzy
 msgid "direct migration is not supported by the connection driver"
-msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/libvirt.c:6009 src/libvirt.c:6177
 #, c-format
@@ -6449,9 +6432,9 @@ msgid "input too large: %d * %d"
 msgstr ""
 
 #: src/libvirt.c:8982
-#, fuzzy, c-format
+#, c-format
 msgid "input too large: 1 * %d"
-msgstr "ncpus ਬਹੁਤ ਵੱਡਾ"
+msgstr ""
 
 #: src/libvirt.c:9282
 #, c-format
@@ -6521,14 +6504,12 @@ msgid "fd %d in %s must be a socket"
 msgstr ""
 
 #: src/libvirt.c:18826
-#, fuzzy
 msgid "A close callback is already registered"
-msgstr "ਈਵੈਂਟ ਕਾਲਬੈਕ ਪਹਿਲਾਂ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ ਹੈ"
+msgstr ""
 
 #: src/libvirt.c:18876
-#, fuzzy
 msgid "A different callback was requested"
-msgstr "ਈਵੈਂਟ ਕਾਲਬੈਕ ਪਹਿਲਾਂ ਹੀ ਜਾਂਚ ਕੀਤੀ ਗਈ ਹੈ"
+msgstr ""
 
 #: src/libvirt.c:19158
 #, c-format
@@ -6835,14 +6816,13 @@ msgid "Unable to add task %d to cgroup for domain %s"
 msgstr "ਕਾਰਜ %d ਨੂੰ cgroup ਵਿੱਚ ਡੋਮੇਨ %s ਲਈ ਜੋੜਨ ਤੋਂ ਅਸਮਰਥ ਹੈ"
 
 #: src/lxc/lxc_container.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
-msgstr "ਗਲਤ ਮੈਕ ਐਜਰੈੱਸ '%s'"
+msgstr ""
 
 #: src/lxc/lxc_container.c:164
-#, fuzzy
 msgid "Unable to clone to check reboot support"
-msgstr "root dir ਵਿੱਚ ਤਬਦੀਲ ਹੋਣ ਤੋਂ ਅਸਮਰੱਥ"
+msgstr ""
 
 #: src/lxc/lxc_container.c:230
 msgid "setsid failed"
@@ -7128,19 +7108,17 @@ msgstr ""
 msgid "Failed to run clone container"
 msgstr "ਕਲੋਨ ਕੰਨਟੇਨਰ ਚੱਲਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/lxc/lxc_conf.c:81 src/qemu/qemu_driver.c:374 src/uml/uml_conf.c:91
+#: src/lxc/lxc_conf.c:81 src/qemu/qemu_driver.c:346 src/uml/uml_conf.c:91
 msgid "cannot get the host uuid"
 msgstr "ਹੋਸਟ uuid ਲੈ ਨਹੀਂ ਸਕਿਆ"
 
 #: src/lxc/lxc_controller.c:201
-#, fuzzy
 msgid "Unable to close loop device"
-msgstr "ਜੰਤਰ %s ਮਨਜੂਰ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/lxc/lxc_controller.c:297
-#, fuzzy
 msgid "Unable to set console file descriptor non-blocking"
-msgstr "ਮਾਨੀਟਰ ਨੂੰ ਨਾਨ-ਬਲਾਕਿੰਗ ਮੋਡ ਵਿੱਚ ਪਾਉਣ ਤੋਂ ਅਸਫਲ"
+msgstr ""
 
 #: src/lxc/lxc_controller.c:309
 msgid "error sending continue signal to daemon"
@@ -7375,37 +7353,37 @@ msgstr "ਡੋਮੇਨ %s ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ �
 
 #: src/lxc/lxc_driver.c:796 src/lxc/lxc_driver.c:1815
 #: src/lxc/lxc_driver.c:1959 src/lxc/lxc_driver.c:2064
-#: src/lxc/lxc_driver.c:2169 src/qemu/qemu_driver.c:6833
-#: src/qemu/qemu_driver.c:6994 src/qemu/qemu_driver.c:7183
-#: src/qemu/qemu_driver.c:7338 src/qemu/qemu_driver.c:7500
-#: src/qemu/qemu_driver.c:7674 src/qemu/qemu_driver.c:7871
-#: src/qemu/qemu_driver.c:8154 src/qemu/qemu_driver.c:13667
+#: src/lxc/lxc_driver.c:2169 src/qemu/qemu_driver.c:6805
+#: src/qemu/qemu_driver.c:6966 src/qemu/qemu_driver.c:7155
+#: src/qemu/qemu_driver.c:7312 src/qemu/qemu_driver.c:7474
+#: src/qemu/qemu_driver.c:7655 src/qemu/qemu_driver.c:7852
+#: src/qemu/qemu_driver.c:8135 src/qemu/qemu_driver.c:13651
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "ਡੋਮੇਨ %s ਲਈ cgroup ਨਹੀਂ ਲੱਭ ਸਕਿਆ"
 
-#: src/lxc/lxc_driver.c:808 src/qemu/qemu_driver.c:7245
+#: src/lxc/lxc_driver.c:808 src/qemu/qemu_driver.c:7219
 msgid "unable to set memory hard_limit tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:815 src/qemu/qemu_driver.c:7258
+#: src/lxc/lxc_driver.c:815 src/qemu/qemu_driver.c:7232
 msgid "unable to set memory soft_limit tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:822 src/qemu/qemu_driver.c:7271
+#: src/lxc/lxc_driver.c:822 src/qemu/qemu_driver.c:7245
 msgid "unable to set swap_hard_limit tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:886 src/qemu/qemu_driver.c:7399
+#: src/lxc/lxc_driver.c:886 src/qemu/qemu_driver.c:7373
 msgid "unable to get memory hard limit"
 msgstr "ਮੈਮੋਰੀ ਹਾਰਡ ਸੀਮਾ ਪਤਾ ਕਰਨ ਤੋਂ ਫੇਲ"
 
-#: src/lxc/lxc_driver.c:897 src/qemu/qemu_driver.c:7412
+#: src/lxc/lxc_driver.c:897 src/qemu/qemu_driver.c:7386
 msgid "unable to get memory soft limit"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:908 src/qemu/qemu_driver.c:7211
-#: src/qemu/qemu_driver.c:7425
+#: src/lxc/lxc_driver.c:908 src/qemu/qemu_driver.c:7184
+#: src/qemu/qemu_driver.c:7399
 msgid "unable to get swap hard limit"
 msgstr "ਸਵੈਪ ਹਾਰਡ ਸੀਮਾ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
@@ -7417,47 +7395,47 @@ msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
 #: src/lxc/lxc_driver.c:1132 src/lxc/lxc_driver.c:2619
 #: src/libxl/libxl_driver.c:2809 src/openvz/openvz_driver.c:1962
 #: src/parallels/parallels_driver.c:68 src/parallels/parallels_driver.c:854
-#: src/qemu/qemu_driver.c:1326 src/qemu/qemu_driver.c:1378
-#: src/qemu/qemu_driver.c:1402 src/qemu/qemu_driver.c:1426
-#: src/qemu/qemu_driver.c:1584 src/qemu/qemu_driver.c:1658
-#: src/qemu/qemu_driver.c:1724 src/qemu/qemu_driver.c:1806
-#: src/qemu/qemu_driver.c:1898 src/qemu/qemu_driver.c:1960
-#: src/qemu/qemu_driver.c:2044 src/qemu/qemu_driver.c:2073
-#: src/qemu/qemu_driver.c:2104 src/qemu/qemu_driver.c:2207
-#: src/qemu/qemu_driver.c:2284 src/qemu/qemu_driver.c:2330
-#: src/qemu/qemu_driver.c:2419 src/qemu/qemu_driver.c:2452
-#: src/qemu/qemu_driver.c:2956 src/qemu/qemu_driver.c:3015
-#: src/qemu/qemu_driver.c:3088 src/qemu/qemu_driver.c:3117
-#: src/qemu/qemu_driver.c:3278 src/qemu/qemu_driver.c:3643
-#: src/qemu/qemu_driver.c:3757 src/qemu/qemu_driver.c:3946
-#: src/qemu/qemu_driver.c:4036 src/qemu/qemu_driver.c:4195
-#: src/qemu/qemu_driver.c:4264 src/qemu/qemu_driver.c:4355
-#: src/qemu/qemu_driver.c:4396 src/qemu/qemu_driver.c:4454
-#: src/qemu/qemu_driver.c:5064 src/qemu/qemu_driver.c:5398
-#: src/qemu/qemu_driver.c:5652 src/qemu/qemu_driver.c:6336
-#: src/qemu/qemu_driver.c:6512 src/qemu/qemu_driver.c:6539
-#: src/qemu/qemu_driver.c:8357 src/qemu/qemu_driver.c:8442
-#: src/qemu/qemu_driver.c:8611 src/qemu/qemu_driver.c:8969
-#: src/qemu/qemu_driver.c:9030 src/qemu/qemu_driver.c:9098
-#: src/qemu/qemu_driver.c:9195 src/qemu/qemu_driver.c:9558
-#: src/qemu/qemu_driver.c:9648 src/qemu/qemu_driver.c:9835
-#: src/qemu/qemu_driver.c:9906 src/qemu/qemu_driver.c:10150
-#: src/qemu/qemu_driver.c:10200 src/qemu/qemu_driver.c:10262
-#: src/qemu/qemu_driver.c:10318 src/qemu/qemu_driver.c:10375
-#: src/qemu/qemu_driver.c:11108 src/qemu/qemu_driver.c:11350
-#: src/qemu/qemu_driver.c:11380 src/qemu/qemu_driver.c:11410
-#: src/qemu/qemu_driver.c:11443 src/qemu/qemu_driver.c:11483
-#: src/qemu/qemu_driver.c:11523 src/qemu/qemu_driver.c:11562
-#: src/qemu/qemu_driver.c:11597 src/qemu/qemu_driver.c:11627
-#: src/qemu/qemu_driver.c:11670 src/qemu/qemu_driver.c:11705
-#: src/qemu/qemu_driver.c:11743 src/qemu/qemu_driver.c:11783
-#: src/qemu/qemu_driver.c:11856 src/qemu/qemu_driver.c:12224
-#: src/qemu/qemu_driver.c:12335 src/qemu/qemu_driver.c:12488
-#: src/qemu/qemu_driver.c:12608 src/qemu/qemu_driver.c:12783
-#: src/qemu/qemu_driver.c:12878 src/qemu/qemu_driver.c:13033
-#: src/qemu/qemu_driver.c:13164 src/qemu/qemu_driver.c:13249
-#: src/qemu/qemu_driver.c:13349 src/qemu/qemu_driver.c:13720
-#: src/qemu/qemu_driver.c:13796 src/qemu/qemu_driver.c:13871
+#: src/qemu/qemu_driver.c:1298 src/qemu/qemu_driver.c:1350
+#: src/qemu/qemu_driver.c:1374 src/qemu/qemu_driver.c:1398
+#: src/qemu/qemu_driver.c:1556 src/qemu/qemu_driver.c:1630
+#: src/qemu/qemu_driver.c:1696 src/qemu/qemu_driver.c:1778
+#: src/qemu/qemu_driver.c:1870 src/qemu/qemu_driver.c:1932
+#: src/qemu/qemu_driver.c:2016 src/qemu/qemu_driver.c:2045
+#: src/qemu/qemu_driver.c:2076 src/qemu/qemu_driver.c:2179
+#: src/qemu/qemu_driver.c:2256 src/qemu/qemu_driver.c:2302
+#: src/qemu/qemu_driver.c:2391 src/qemu/qemu_driver.c:2424
+#: src/qemu/qemu_driver.c:2928 src/qemu/qemu_driver.c:2987
+#: src/qemu/qemu_driver.c:3060 src/qemu/qemu_driver.c:3089
+#: src/qemu/qemu_driver.c:3250 src/qemu/qemu_driver.c:3615
+#: src/qemu/qemu_driver.c:3729 src/qemu/qemu_driver.c:3918
+#: src/qemu/qemu_driver.c:4008 src/qemu/qemu_driver.c:4167
+#: src/qemu/qemu_driver.c:4236 src/qemu/qemu_driver.c:4327
+#: src/qemu/qemu_driver.c:4368 src/qemu/qemu_driver.c:4426
+#: src/qemu/qemu_driver.c:5036 src/qemu/qemu_driver.c:5370
+#: src/qemu/qemu_driver.c:5624 src/qemu/qemu_driver.c:6308
+#: src/qemu/qemu_driver.c:6484 src/qemu/qemu_driver.c:6511
+#: src/qemu/qemu_driver.c:8338 src/qemu/qemu_driver.c:8423
+#: src/qemu/qemu_driver.c:8592 src/qemu/qemu_driver.c:8950
+#: src/qemu/qemu_driver.c:9011 src/qemu/qemu_driver.c:9079
+#: src/qemu/qemu_driver.c:9176 src/qemu/qemu_driver.c:9539
+#: src/qemu/qemu_driver.c:9629 src/qemu/qemu_driver.c:9816
+#: src/qemu/qemu_driver.c:9887 src/qemu/qemu_driver.c:10131
+#: src/qemu/qemu_driver.c:10181 src/qemu/qemu_driver.c:10243
+#: src/qemu/qemu_driver.c:10299 src/qemu/qemu_driver.c:10356
+#: src/qemu/qemu_driver.c:11089 src/qemu/qemu_driver.c:11331
+#: src/qemu/qemu_driver.c:11361 src/qemu/qemu_driver.c:11391
+#: src/qemu/qemu_driver.c:11424 src/qemu/qemu_driver.c:11464
+#: src/qemu/qemu_driver.c:11504 src/qemu/qemu_driver.c:11543
+#: src/qemu/qemu_driver.c:11578 src/qemu/qemu_driver.c:11608
+#: src/qemu/qemu_driver.c:11651 src/qemu/qemu_driver.c:11686
+#: src/qemu/qemu_driver.c:11724 src/qemu/qemu_driver.c:11764
+#: src/qemu/qemu_driver.c:11837 src/qemu/qemu_driver.c:12205
+#: src/qemu/qemu_driver.c:12316 src/qemu/qemu_driver.c:12469
+#: src/qemu/qemu_driver.c:12589 src/qemu/qemu_driver.c:12764
+#: src/qemu/qemu_driver.c:12859 src/qemu/qemu_driver.c:13014
+#: src/qemu/qemu_driver.c:13145 src/qemu/qemu_driver.c:13230
+#: src/qemu/qemu_driver.c:13330 src/qemu/qemu_driver.c:13704
+#: src/qemu/qemu_driver.c:13780 src/qemu/qemu_driver.c:13855
 #: src/test/test_driver.c:2131 src/uml/uml_driver.c:1666
 #: src/uml/uml_driver.c:1691 src/uml/uml_driver.c:1724
 #: src/uml/uml_driver.c:2067 src/uml/uml_driver.c:2185
@@ -7466,28 +7444,28 @@ msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s' ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਹੈ"
 
-#: src/lxc/lxc_driver.c:1138 src/qemu/qemu_driver.c:3666
-#: src/qemu/qemu_driver.c:4402 src/qemu/qemu_driver.c:4460
+#: src/lxc/lxc_driver.c:1138 src/qemu/qemu_driver.c:3638
+#: src/qemu/qemu_driver.c:4374 src/qemu/qemu_driver.c:4432
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "ਅਣਜਾਣ virt ਕਿਸਮ ਡੋਮੇਨ ਪਰਿਭਾਸ਼ਾ '%d' ਵਿੱਚ"
 
-#: src/lxc/lxc_driver.c:1161 src/qemu/qemu_driver.c:4425
-#: src/qemu/qemu_driver.c:4495
+#: src/lxc/lxc_driver.c:1161 src/qemu/qemu_driver.c:4397
+#: src/qemu/qemu_driver.c:4467
 msgid "Failed to get security label"
 msgstr "ਸੁਰੱਖਿਆ ਲੇਬਲ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/lxc/lxc_driver.c:1192 src/qemu/qemu_driver.c:4529
+#: src/lxc/lxc_driver.c:1192 src/qemu/qemu_driver.c:4501
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਸਤਰ ਅਧਿਕਤਮ %d ਬਾਈਟ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/lxc/lxc_driver.c:1201 src/qemu/qemu_driver.c:4539
+#: src/lxc/lxc_driver.c:1201 src/qemu/qemu_driver.c:4511
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "ਸੁਰੱਖਿਆ DOI ਸਤਰ ਅਧਿਕਤਮ %d ਬਾਈਟ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#: src/lxc/lxc_driver.c:1394 src/qemu/qemu_driver.c:339
+#: src/lxc/lxc_driver.c:1394 src/qemu/qemu_driver.c:310
 msgid "Failed to initialize security drivers"
 msgstr ""
 
@@ -7497,16 +7475,16 @@ msgid "Unknown release: %s"
 msgstr "ਅਚਾਨਕ ਰੀਲੀਜ਼: %s"
 
 #: src/lxc/lxc_driver.c:1663 src/lxc/lxc_driver.c:1810
-#: src/lxc/lxc_driver.c:1953 src/qemu/qemu_driver.c:6637
-#: src/qemu/qemu_driver.c:7866 src/qemu/qemu_driver.c:8148
+#: src/lxc/lxc_driver.c:1953 src/qemu/qemu_driver.c:6609
+#: src/qemu/qemu_driver.c:7847 src/qemu/qemu_driver.c:8129
 msgid "cgroup CPU controller is not mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:1696 src/qemu/qemu_driver.c:7994
+#: src/lxc/lxc_driver.c:1696 src/qemu/qemu_driver.c:7975
 msgid "unable to get cpu bandwidth period tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:1703 src/qemu/qemu_driver.c:8001
+#: src/lxc/lxc_driver.c:1703 src/qemu/qemu_driver.c:7982
 msgid "unable to get cpu bandwidth tunable"
 msgstr ""
 
@@ -7528,39 +7506,39 @@ msgstr ""
 
 #: src/lxc/lxc_driver.c:1792 src/lxc/lxc_driver.c:1934
 #: src/lxc/lxc_driver.c:2047 src/lxc/lxc_driver.c:2145
-#: src/qemu/qemu_driver.c:6816 src/qemu/qemu_driver.c:6970
-#: src/qemu/qemu_driver.c:7166 src/qemu/qemu_driver.c:7321
-#: src/qemu/qemu_driver.c:7483 src/qemu/qemu_driver.c:7651
-#: src/qemu/qemu_driver.c:7848 src/qemu/qemu_driver.c:8127
-#: src/qemu/qemu_driver.c:8692 src/qemu/qemu_driver.c:8855
-#: src/qemu/qemu_driver.c:13648
+#: src/qemu/qemu_driver.c:6788 src/qemu/qemu_driver.c:6942
+#: src/qemu/qemu_driver.c:7138 src/qemu/qemu_driver.c:7295
+#: src/qemu/qemu_driver.c:7457 src/qemu/qemu_driver.c:7632
+#: src/qemu/qemu_driver.c:7829 src/qemu/qemu_driver.c:8108
+#: src/qemu/qemu_driver.c:8673 src/qemu/qemu_driver.c:8836
+#: src/qemu/qemu_driver.c:13632
 #, c-format
 msgid "No such domain %s"
 msgstr "ਕੋਈ ਅਜਿਹਾ ਡੋਮੇਨ %s ਨਹੀਂ"
 
-#: src/lxc/lxc_driver.c:1829 src/qemu/qemu_driver.c:7885
+#: src/lxc/lxc_driver.c:1829 src/qemu/qemu_driver.c:7866
 msgid "unable to set cpu shares tunable"
 msgstr "cpu ਸ਼ੇਅਰ ਟਿਊਨੇਬਲ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਫਲ"
 
-#: src/lxc/lxc_driver.c:1966 src/qemu/qemu_driver.c:8161
+#: src/lxc/lxc_driver.c:1966 src/qemu/qemu_driver.c:8142
 msgid "unable to get cpu shares tunable"
 msgstr "cpu ਸ਼ੇਅਰ ਟਿਊਨੇਬਲ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਫਲ"
 
 #: src/lxc/lxc_driver.c:2058 src/lxc/lxc_driver.c:2163
-#: src/qemu/qemu_driver.c:6827 src/qemu/qemu_driver.c:6988
+#: src/qemu/qemu_driver.c:6799 src/qemu/qemu_driver.c:6960
 msgid "blkio cgroup isn't mounted"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2076 src/lxc/lxc_driver.c:2099
-#: src/qemu/qemu_driver.c:6848 src/qemu/qemu_driver.c:6904
+#: src/qemu/qemu_driver.c:6820 src/qemu/qemu_driver.c:6876
 msgid "out of blkio weight range."
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2083 src/qemu/qemu_driver.c:6856
+#: src/lxc/lxc_driver.c:2083 src/qemu/qemu_driver.c:6828
 msgid "unable to set blkio weight tunable"
 msgstr "cpu ਸ਼ੇਅਰ ਟਿਊਨੇਬਲ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਫਲ"
 
-#: src/lxc/lxc_driver.c:2182 src/qemu/qemu_driver.c:7009
+#: src/lxc/lxc_driver.c:2182 src/qemu/qemu_driver.c:6981
 msgid "unable to get blkio weight"
 msgstr "VIOS ਨਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
 
@@ -7579,13 +7557,13 @@ msgid "Cannot create autostart directory %s"
 msgstr "ਆਟੋਸਟਾਰਟ ਡਾਇਰੈਕਟਰੀ %s ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
 #: src/lxc/lxc_driver.c:2365 src/libxl/libxl_driver.c:3510
-#: src/qemu/qemu_driver.c:6567 src/uml/uml_driver.c:2304
+#: src/qemu/qemu_driver.c:6539 src/uml/uml_driver.c:2304
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "symlink '%s ਤੋਂ '%s' ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
 #: src/lxc/lxc_driver.c:2372 src/libxl/libxl_driver.c:3517
-#: src/network/bridge_driver.c:2768 src/qemu/qemu_driver.c:6574
+#: src/network/bridge_driver.c:2768 src/qemu/qemu_driver.c:6546
 #: src/storage/storage_driver.c:1064 src/uml/uml_driver.c:2311
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -7608,7 +7586,7 @@ msgstr "ਜੰਤਰ '%s' ਲਈ ਅੰਕੜੇ ਲੱਭ ਨਹੀਂ ਸਕ�
 msgid "default"
 msgstr "ਮੂਲ"
 
-#: src/lxc/lxc_driver.c:2653 src/qemu/qemu_driver.c:12530
+#: src/lxc/lxc_driver.c:2653 src/qemu/qemu_driver.c:12511
 #: src/uml/uml_driver.c:2452 src/xen/xen_driver.c:2169
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -7620,7 +7598,7 @@ msgid "cannot initialize monitor mutex"
 msgstr "ਮਾਨੀਟਰ mutex ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #: src/lxc/lxc_process.c:340 src/network/bridge_driver.c:1888
-#: src/qemu/qemu_command.c:282 src/qemu/qemu_driver.c:8786
+#: src/qemu/qemu_command.c:282 src/qemu/qemu_driver.c:8767
 #: src/util/virnetdevmacvlan.c:930
 #, c-format
 msgid "cannot set bandwidth limits on %s"
@@ -7764,21 +7742,21 @@ msgstr "ਡੋਮੇਨ ਈਮੇਜ ਪੜ ਨਹੀਂ ਸਕਦਾ"
 msgid "failed to read libxl header"
 msgstr "qemu ਸਿਰਲੇਖ ਪੜਨ ਤੋਂ ਫੇਲ"
 
-#: src/libxl/libxl_driver.c:238 src/qemu/qemu_driver.c:4604
+#: src/libxl/libxl_driver.c:238 src/qemu/qemu_driver.c:4576
 msgid "image magic is incorrect"
 msgstr "ਈਮੇਜ ਮੈਜਿਕ ਗਲਤ ਹੈ"
 
-#: src/libxl/libxl_driver.c:244 src/qemu/qemu_driver.c:4630
+#: src/libxl/libxl_driver.c:244 src/qemu/qemu_driver.c:4602
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "ਈਮੇਜ ਵਰਜਨ ਨੂੰ ਸਹਿਯੋ ਨਹੀਂ ਹੈ (%d > %d)"
 
-#: src/libxl/libxl_driver.c:251 src/qemu/qemu_driver.c:4637
+#: src/libxl/libxl_driver.c:251 src/qemu/qemu_driver.c:4609
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "ਗਲਤ XML ਲੰਬਾਈ: %d"
 
-#: src/libxl/libxl_driver.c:261 src/qemu/qemu_driver.c:4648
+#: src/libxl/libxl_driver.c:261 src/qemu/qemu_driver.c:4620
 msgid "failed to read XML"
 msgstr "XML ਪੜਨ ਵਿੱਚ ਫੇਲ"
 
@@ -7792,7 +7770,7 @@ msgstr ""
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:642 src/qemu/qemu_driver.c:5022
+#: src/libxl/libxl_driver.c:642 src/qemu/qemu_driver.c:4994
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -7823,18 +7801,18 @@ msgstr ""
 msgid "Failed to create log dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:908 src/qemu/qemu_driver.c:667
+#: src/libxl/libxl_driver.c:908 src/qemu/qemu_driver.c:639
 #, c-format
 msgid "Failed to create state dir '%s': %s"
 msgstr "ਸਟੇਟ dir '%s' ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
-#: src/libxl/libxl_driver.c:913 src/qemu/qemu_driver.c:672
+#: src/libxl/libxl_driver.c:913 src/qemu/qemu_driver.c:644
 #, c-format
 msgid "Failed to create lib dir '%s': %s"
 msgstr "lib dir '%s' ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
-#: src/libxl/libxl_driver.c:918 src/qemu/qemu_driver.c:682
-#: src/qemu/qemu_driver.c:687
+#: src/libxl/libxl_driver.c:918 src/qemu/qemu_driver.c:654
+#: src/qemu/qemu_driver.c:659
 #, c-format
 msgid "Failed to create save dir '%s': %s"
 msgstr "ਸੰਭਾਲ ਡਾਇਰੈਕਟਰੀ '%s' ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
@@ -7921,7 +7899,7 @@ msgstr ""
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:1698 src/qemu/qemu_driver.c:2140
+#: src/libxl/libxl_driver.c:1698 src/qemu/qemu_driver.c:2112
 #: src/uml/uml_driver.c:1736
 msgid "cannot set memory higher than max memory"
 msgstr "ਅਧਿਕਤਮ ਮੈਮੋਰੀ ਤੋਂ ਜਿਆਦਾ ਮੈਮੋਰੀ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -7984,7 +7962,7 @@ msgstr ""
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2118 src/qemu/qemu_driver.c:3026
+#: src/libxl/libxl_driver.c:2118 src/qemu/qemu_driver.c:2998
 msgid "cannot do managed save for transient domain"
 msgstr ""
 
@@ -8002,12 +7980,12 @@ msgstr ""
 msgid "cannot set vcpus on an inactive domain"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2279 src/qemu/qemu_driver.c:3673
+#: src/libxl/libxl_driver.c:2279 src/qemu/qemu_driver.c:3645
 #: src/xen/xend_internal.c:2222 src/xen/xm_internal.c:727
 msgid "could not determine max vcpus for the domain"
 msgstr "ਡੋਮੇਨ ਲਈ ਅਧਿਕਤਮ vcpus ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
-#: src/libxl/libxl_driver.c:2289 src/qemu/qemu_driver.c:3683
+#: src/libxl/libxl_driver.c:2289 src/qemu/qemu_driver.c:3655
 #: src/xen/xend_internal.c:2227 src/xen/xm_internal.c:736
 #, c-format
 msgid ""
@@ -8037,7 +8015,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2595 src/libxl/libxl_driver.c:2638
-#: src/qemu/qemu_driver.c:5127 src/qemu/qemu_driver.c:5171
+#: src/qemu/qemu_driver.c:5099 src/qemu/qemu_driver.c:5143
 #: src/xen/xen_driver.c:1288 src/xen/xen_driver.c:1337
 #, c-format
 msgid "unsupported config type %s"
@@ -8051,16 +8029,16 @@ msgstr ""
 msgid "parsing xm config failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2815 src/qemu/qemu_driver.c:5658
+#: src/libxl/libxl_driver.c:2815 src/qemu/qemu_driver.c:5630
 #: src/uml/uml_driver.c:1973 src/vmware/vmware_driver.c:711
 msgid "cannot undefine transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2827 src/qemu/qemu_driver.c:5683
+#: src/libxl/libxl_driver.c:2827 src/qemu/qemu_driver.c:5655
 msgid "Failed to remove domain managed save image"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2832 src/qemu/qemu_driver.c:5689
+#: src/libxl/libxl_driver.c:2832 src/qemu/qemu_driver.c:5661
 #: tools/virsh-domain.c:2599
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
@@ -8097,13 +8075,13 @@ msgstr "ਡਿਸਕ ਸਰੋਤ ਟਿਕਾਣਾ ਗੈਰ-ਮੌਜੂਦ �
 msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2972 src/qemu/qemu_driver.c:5781
+#: src/libxl/libxl_driver.c:2972 src/qemu/qemu_driver.c:5753
 #: src/uml/uml_driver.c:2090
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ਡਿਸਕ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:2978 src/qemu/qemu_driver.c:5787
+#: src/libxl/libxl_driver.c:2978 src/qemu/qemu_driver.c:5759
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ਡਿਸਕ ਜੰਤਰ ਕਿਸਮ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
@@ -8129,18 +8107,18 @@ msgstr ""
 msgid "device type '%s' cannot hot unplugged"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3057 src/qemu/qemu_driver.c:5877
+#: src/libxl/libxl_driver.c:3057 src/qemu/qemu_driver.c:5849
 #: src/uml/uml_driver.c:2095
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "ਜੰਤਰ ਕਿਸਮ '%s' ਜੋੜੀ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: src/libxl/libxl_driver.c:3075 src/qemu/qemu_driver.c:6059
+#: src/libxl/libxl_driver.c:3075 src/qemu/qemu_driver.c:6031
 #, c-format
 msgid "target %s already exists."
 msgstr "ਟਾਰਗਿਟ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।"
 
-#: src/libxl/libxl_driver.c:3088 src/qemu/qemu_driver.c:6144
+#: src/libxl/libxl_driver.c:3088 src/qemu/qemu_driver.c:6116
 msgid "persistent attach of device is not supported"
 msgstr ""
 
@@ -8149,55 +8127,55 @@ msgstr ""
 msgid "device type '%s' cannot be detached"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3126 src/qemu/qemu_driver.c:6167
+#: src/libxl/libxl_driver.c:3126 src/qemu/qemu_driver.c:6139
 #, c-format
 msgid "no target device %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:6224
+#: src/libxl/libxl_driver.c:3134 src/qemu/qemu_driver.c:6196
 msgid "persistent detach of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3159 src/qemu/qemu_driver.c:5999
+#: src/libxl/libxl_driver.c:3159 src/qemu/qemu_driver.c:5971
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3166 src/qemu/qemu_driver.c:6036
+#: src/libxl/libxl_driver.c:3166 src/qemu/qemu_driver.c:6008
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3187 src/openvz/openvz_driver.c:2008
-#: src/qemu/qemu_driver.c:6244
+#: src/qemu/qemu_driver.c:6216
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "ਕਮਾਂਡ '%s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ."
 
-#: src/libxl/libxl_driver.c:3193 src/qemu/qemu_driver.c:6251
+#: src/libxl/libxl_driver.c:3193 src/qemu/qemu_driver.c:6223
 msgid "this disk doesn't support update"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3214 src/qemu/qemu_driver.c:6297
+#: src/libxl/libxl_driver.c:3214 src/qemu/qemu_driver.c:6269
 msgid "persistent update of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3269 src/qemu/qemu_driver.c:6360
+#: src/libxl/libxl_driver.c:3269 src/qemu/qemu_driver.c:6332
 msgid "cannot modify device on transient domain"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3295 src/libxl/libxl_driver.c:3319
-#: src/qemu/qemu_driver.c:6400 src/qemu/qemu_driver.c:6424
+#: src/qemu/qemu_driver.c:6372 src/qemu/qemu_driver.c:6396
 #, c-format
 msgid "unknown domain modify action %d"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3488 src/qemu/qemu_driver.c:6545
+#: src/libxl/libxl_driver.c:3488 src/qemu/qemu_driver.c:6517
 #: src/uml/uml_driver.c:2282
 msgid "cannot set autostart for transient domain"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਲਈ ਆਟੋਸਟਾਰਟ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/libxl/libxl_driver.c:3503 src/qemu/qemu_driver.c:6560
+#: src/libxl/libxl_driver.c:3503 src/qemu/qemu_driver.c:6532
 #: src/storage/storage_driver.c:1049 src/uml/uml_driver.c:2297
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -8912,139 +8890,139 @@ msgstr ""
 msgid "virNWFilterSnoopListDel failed"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1097
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1117
 msgid "pcap_create failed"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1105
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1125
 msgid "setup of pcap handle failed"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1111
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1131
 #, c-format
 msgid "pcap_compile: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1117
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1137
 #, c-format
 msgid "pcap_setfilter: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1123
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1143
 #, c-format
 msgid "pcap_setdirection: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1158
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1178
 #, c-format
 msgid "Instantiation of rules failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1464
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1484
 #, c-format
 msgid "interface '%s' failing; reopening"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1518
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1538
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1624
-#: src/nwfilter/nwfilter_learnipaddr.c:676
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1644
+#: src/nwfilter/nwfilter_learnipaddr.c:677
 msgid ""
 "IP parameter must be provided since snooping the IP address does not work "
 "possibly due to missing tools"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1636
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1656
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1643
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1663
 #, c-format
 msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1653
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1673
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%s\" key \"%s\""
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1662
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1682
 #, c-format
 msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%s\" ifkey \"%s\""
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1674
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1694
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1684
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1704
 #, c-format
 msgid "Activation of snoop request failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1691
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1711
 #, c-format
 msgid "Restoring of leases failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1770
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1790
 msgid "lease file write failed"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1877
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1897
 #, c-format
 msgid "unlink(\"%s\")"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1882
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1902
 #, c-format
 msgid "open(\"%s\")"
-msgstr ""
+msgstr "open(\"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1896 src/qemu/qemu_driver.c:2841
-#: src/qemu/qemu_driver.c:2856 src/qemu/qemu_driver.c:3432
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1916 src/qemu/qemu_driver.c:2813
+#: src/qemu/qemu_driver.c:2828 src/qemu/qemu_driver.c:3404
 #: src/vbox/vbox_tmpl.c:9205
 #, c-format
 msgid "unable to close %s"
 msgstr "%s ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਅਸਫਲ"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1902
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1922
 #, c-format
 msgid "rename(\"%s\", \"%s\")"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1932
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1941
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1952
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1961
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1958
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1978
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%s\""
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1966
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1986
 #, c-format
 msgid "line %d corrupt ipaddr \"%s\""
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:2110
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2130
 #, c-format
 msgid "ifname \"%s\" not in key map"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:2124
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2144
 #, c-format
 msgid "ifkey \"%s\" has no req"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:2206
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2226
 msgid "libvirt was not compiled with libpcap and \""
 msgstr ""
 
@@ -9130,50 +9108,50 @@ msgstr ""
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3207
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3304
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3433
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3440
 msgid "cannot create rules since ebtables tool is missing."
 msgstr ""
 
 #: src/nwfilter/nwfilter_ebiptables_driver.c:3266
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3409
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3479
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3416
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3486
 msgid "Some rules could not be created."
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3584
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3591
 #, c-format
 msgid "To enable ip%stables filtering for the VM do 'echo 1 > %s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:3911
+#: src/nwfilter/nwfilter_ebiptables_driver.c:3918
 #, c-format
 msgid "Some rules could not be created for interface %s%s%s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4051
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4058
 msgid "error while executing CLI commands"
 msgstr "CLI ਕਮਾਂਡਾਂ ਚਲਾਉਣ ਸਮੇਂ ਗਲਤੀ"
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4237
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4244
 #, c-format
 msgid "Testing of ebtables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4254
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4261
 #, c-format
 msgid "Testing of iptables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4271
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4278
 #, c-format
 msgid "Testing of ip6tables command failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4308
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4315
 msgid "essential tools to support ip(6)tables firewalls could not be located"
 msgstr ""
 
-#: src/nwfilter/nwfilter_ebiptables_driver.c:4315
+#: src/nwfilter/nwfilter_ebiptables_driver.c:4322
 msgid "firewall tools were not found or cannot be used"
 msgstr ""
 
@@ -9237,27 +9215,27 @@ msgstr ""
 msgid "interface name %s does not fit into buffer "
 msgstr ""
 
-#: src/nwfilter/nwfilter_learnipaddr.c:593
+#: src/nwfilter/nwfilter_learnipaddr.c:594
 #, c-format
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_learnipaddr.c:612
+#: src/nwfilter/nwfilter_learnipaddr.c:613
 #, c-format
 msgid "encountered an error on interface %s index %d"
 msgstr "ਇੰਟਰਫੇਸ %s ਇੰਡੈਕਸ %d ਉੱਪਰ ਇੱਕ ਗਲਤੀ ਆਈ ਹੈ"
 
-#: src/nwfilter/nwfilter_learnipaddr.c:704
+#: src/nwfilter/nwfilter_learnipaddr.c:705
 #, c-format
 msgid "Destination buffer for ifname ('%s') not large enough"
 msgstr ""
 
-#: src/nwfilter/nwfilter_learnipaddr.c:712
+#: src/nwfilter/nwfilter_learnipaddr.c:713
 #, c-format
 msgid "Destination buffer for linkdev ('%s') not large enough"
 msgstr "linkdev ('%s') ਲਈ ਨੀਯਤ ਬਫਰ ਲੋੜ ਮੁਤਾਬਕ ਵੱਡਾ ਨਹੀਂ ਹੈ"
 
-#: src/nwfilter/nwfilter_learnipaddr.c:764
+#: src/nwfilter/nwfilter_learnipaddr.c:765
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
@@ -9325,14 +9303,13 @@ msgid "Could not read '%s' from config for container %d"
 msgstr ""
 
 #: src/openvz/openvz_conf.c:461
-#, fuzzy
 msgid "Unable to parse quota"
-msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/openvz/openvz_conf.c:514
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse barrier of '%s' from config for container %d"
-msgstr "'NETIF' ਨੂੰ ਸੰਰਚਨਾ ਵਿੱਚੋਂ ਕੰਨਟੇਨਰ ਲਈ %d ਪੜ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/openvz/openvz_conf.c:536
 #, c-format
@@ -9359,9 +9336,9 @@ msgid "Duplicate container UUID %s detected for %d"
 msgstr ""
 
 #: src/openvz/openvz_conf.c:672
-#, fuzzy, c-format
+#, c-format
 msgid "Could not add UUID for container %d"
-msgstr "ਕੰਨਟੇਨਰ %d ਲਈ ਸੰਰਚਨਾ ਪੜ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/openvz/openvz_conf.c:1040
 #, c-format
@@ -9401,9 +9378,9 @@ msgid "Can't set soft limit without hard limit"
 msgstr ""
 
 #: src/openvz/openvz_driver.c:262
-#, fuzzy, c-format
+#, c-format
 msgid "Hostname of '%s' is unset"
-msgstr "'%s' ਦਾ ਸਟੇਟਸ ਫੇਲ ਹੋਇਆ"
+msgstr ""
 
 #: src/openvz/openvz_driver.c:411
 #, c-format
@@ -9487,7 +9464,7 @@ msgstr "ਡੋਮੇਨ ਸ਼ੱਟਆਫ ਦੀ ਸਥਿਤੀ ਵਿੱਚ ਨ�
 msgid "Could not read container config"
 msgstr "ਕੰਨਟੇਨਰ ਸੰਰਚਨਾ ਪੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/openvz/openvz_driver.c:1296 src/qemu/qemu_driver.c:1180
+#: src/openvz/openvz_driver.c:1296 src/qemu/qemu_driver.c:1152
 #, c-format
 msgid "unknown type '%s'"
 msgstr "ਅਣਜਾਣ ਕਿਸਮ '%s'"
@@ -9546,7 +9523,7 @@ msgstr ""
 msgid "Failed to set %s for %s: %d"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:1985 src/qemu/qemu_driver.c:8634
+#: src/openvz/openvz_driver.c:1985 src/qemu/qemu_driver.c:8615
 #: src/test/test_driver.c:2860
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
@@ -9566,39 +9543,36 @@ msgid "Can't determine page size"
 msgstr ""
 
 #: src/parallels/parallels_driver.c:73
-#, fuzzy
 msgid "Can't parse prlctl output"
-msgstr "vzlist ਆਊਟਪੁੱਟ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:669
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected Parallels URI path '%s', try parallels:///system"
-msgstr "ਅਚਾਨਕ UML URI ਟਿਕਾਣਾ '%s', uml:///system ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
+msgstr ""
 
-#: src/parallels/parallels_driver.c:881 src/qemu/qemu_driver.c:1351
-#: src/qemu/qemu_driver.c:9604 src/qemu/qemu_driver.c:9872
+#: src/parallels/parallels_driver.c:881 src/qemu/qemu_driver.c:1323
+#: src/qemu/qemu_driver.c:9585 src/qemu/qemu_driver.c:9853
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "ਨਾਂ '%s' ਨਾਲ ਮਿਲਦਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਹੈ"
 
 #: src/parallels/parallels_driver.c:1079
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%s' not %s"
-msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1212
-#, fuzzy
 msgid "changing display parameters is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1258
 msgid "changing serial device parameters is not supported by parallels driver"
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1273
-#, fuzzy
 msgid "Only one video device is supported by parallels driver"
-msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗੀ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1282
 msgid "Only VGA video device is supported by parallels driver"
@@ -9618,9 +9592,8 @@ msgid "Video RAM size should be multiple of 1Mb."
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1343
-#, fuzzy
 msgid "titles are not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1349
 msgid "blkio parameters are not supported by parallels driver"
@@ -9639,24 +9612,20 @@ msgid "Memory parameter is not supported by parallels driver"
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1391
-#, fuzzy
 msgid "current vcpus must be equal to maxvcpus"
-msgstr "ਮੌਜੂਦਾ vcpu ਕਾਊਂਟ ਵੱਧ-ਤੋਂ-ਵੱਧ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1405
-#, fuzzy
 msgid "changing cpu placement mode is not supported by parallels driver"
-msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1414
-#, fuzzy
 msgid "changing cpu mask is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1425
-#, fuzzy
 msgid "cputune is not supported by parallels driver"
-msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1434
 msgid "numa parameters are not supported by parallels driver"
@@ -9669,38 +9638,33 @@ msgid ""
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1463
-#, fuzzy
 msgid "changing OS parameters is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1470
-#, fuzzy
 msgid "changing emulator is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1477
-#, fuzzy
 msgid "changing features is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1486
-#, fuzzy
 msgid "changing clock parameters is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1503
-#, fuzzy
 msgid "changing devices parameters is not supported by parallels driver"
-msgstr "SASL ਵਿਧੀ %s ਨੂੰ ਸਰਵਰ ਤੋਂ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1515
 msgid "changing input devices parameters is not supported by parallels driver"
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1551
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find volume with path '%s'"
-msgstr "ਵਾਲੀਅਮ ਟਾਰਗਿਟ ਮਾਰਗ '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1563
 #, c-format
@@ -9712,29 +9676,26 @@ msgid "(unnamed)"
 msgstr ""
 
 #: src/parallels/parallels_driver.c:1571
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find storage pool with name '%s'"
-msgstr "ਕੋਈ ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਨਾਂ ਨਾਲ ਨਹੀਂ ਮੇਲ ਖਾਂਦਾ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1579
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find storage volume definition for path '%s'"
-msgstr "ਸਟੋਰਜ਼ ਵਾਲੀਅਮ ਨੂੰ ਮਾਰਗ '%s' ਨਾਲ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1620
-#, fuzzy
 msgid "Can't parse XML desc"
-msgstr "vcpupin ਨੋਡ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1625
-#, fuzzy
 msgid "Already exists"
-msgstr "ਟਾਰਗਿਟ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1640
-#, fuzzy
 msgid "Can't allocate domobj"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/parallels/parallels_driver.c:1653
 #, c-format
@@ -9746,14 +9707,14 @@ msgid "Can't find prlctl command in the PATH env"
 msgstr ""
 
 #: src/parallels/parallels_utils.c:84
-#, fuzzy, c-format
+#, c-format
 msgid "invalid output from prlctl: %s"
-msgstr "'%s' ਤੋਂ ਗਲਤ ਖੋਜ "
+msgstr ""
 
 #: src/parallels/parallels_storage.c:41
-#, fuzzy, c-format
+#, c-format
 msgid "pool '%s' not found"
-msgstr "ਨੈੱਟਵਰਕ '%s' ਨਹੀਂ ਲੱਭਿਆ"
+msgstr ""
 
 #: src/parallels/parallels_storage.c:92 src/storage/storage_backend_fs.c:828
 #, c-format
@@ -9761,9 +9722,8 @@ msgid "cannot open path '%s'"
 msgstr "ਮਾਰਗ '%s' ਨੂੰ ਖੋਲ ਨਹੀਂ ਸਕਦਾ"
 
 #: src/parallels/parallels_storage.c:175
-#, fuzzy
 msgid "Failed to load pool configs"
-msgstr "ਪੂਲ %s ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_storage.c:400 src/storage/storage_backend_fs.c:912
 #, c-format
@@ -9771,14 +9731,13 @@ msgid "cannot statvfs path '%s'"
 msgstr " statvfs ਮਾਰਗ '%s' ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #: src/parallels/parallels_storage.c:431
-#, fuzzy
 msgid "Only local directories are supported"
-msgstr "ਸਿਰਫ x509 ਸਾਰਟੀਫਿਕੇਟ ਨੂੰ ਸਹਿਯੋਗ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_storage.c:487
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%s' is still active"
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਹਾਲੇ ਵੀ ਸਰਗਰਮ ਹੈ"
+msgstr ""
 
 #: src/parallels/parallels_storage.c:526 src/test/test_driver.c:4014
 #: src/test/test_driver.c:4186 src/test/test_driver.c:4222
@@ -9852,14 +9811,13 @@ msgid "Not enough free space in pool for volume '%s'"
 msgstr "ਪੂਲ ਵਿੱਚ ਵਾਲੀਅਮ '%s' ਲਈ ਲੋੜੀਂਦੀ ਸਪੇਸ ਨਹੀਂ ਹੈ"
 
 #: src/parallels/parallels_storage.c:977
-#, fuzzy
 msgid "Can't create file with volume description"
-msgstr "ਸ਼ੁਰੂਆਤੀ ਸੰਰਚਨਾ ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
+msgstr ""
 
 #: src/parallels/parallels_storage.c:1176
-#, fuzzy, c-format
+#, c-format
 msgid "Can't remove file '%s'"
-msgstr "ਸੰਰਚਨਾ ਫਾਇਲ '%s' ਹਟਾ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
 #: src/phyp/phyp_driver.c:426
 #, c-format
@@ -10171,50 +10129,50 @@ msgstr "ਮਾਨੀਟਰ ਕਿਸਮ ਪਰਬੰਧਨ ਵਿੱਚ ਅਸ�
 msgid "unable to register monitor events"
 msgstr "ਮਾਨੀਟਰ ਈਵੈਂਟ ਰਜਿਸਟਰ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/qemu/qemu_agent.c:886
+#: src/qemu/qemu_agent.c:888
 msgid "Guest agent not available for now"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:890 src/qemu/qemu_monitor.c:857
+#: src/qemu/qemu_agent.c:892 src/qemu/qemu_monitor.c:857
 msgid "Unable to wait on monitor condition"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:960 src/qemu/qemu_agent.c:1031
+#: src/qemu/qemu_agent.c:962 src/qemu/qemu_agent.c:1033
 #: src/qemu/qemu_monitor_json.c:268
 msgid "Missing monitor reply object"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:967
+#: src/qemu/qemu_agent.c:969
 msgid "Malformed return value"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:974
+#: src/qemu/qemu_agent.c:976
 #, c-format
 msgid "Guest agent returned ID: %llu instead of %llu"
 msgstr ""
 
-#: src/qemu/qemu_agent.c:1130 src/qemu/qemu_agent.c:1148
+#: src/qemu/qemu_agent.c:1132 src/qemu/qemu_agent.c:1150
 #: src/qemu/qemu_monitor_json.c:341 src/qemu/qemu_monitor_json.c:359
 #, c-format
 msgid "unable to execute QEMU command '%s'"
 msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_agent.c:1134 src/qemu/qemu_monitor_json.c:345
+#: src/qemu/qemu_agent.c:1136 src/qemu/qemu_monitor_json.c:345
 #, c-format
 msgid "unable to execute QEMU command '%s': %s"
 msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ: %s"
 
-#: src/qemu/qemu_agent.c:1180 src/qemu/qemu_monitor_json.c:419
+#: src/qemu/qemu_agent.c:1182 src/qemu/qemu_monitor_json.c:419
 #, c-format
 msgid "argument key '%s' is too short, missing type prefix"
 msgstr "ਆਰਗੂਮੈਂਟ ਕੁੰਜੀ '%s' ਬਹੁਤ ਛੋਟੀ ਹੈ, ਕਿਸਮ ਅਗੇਤਰ ਗੁੰਮ ਹੈ"
 
-#: src/qemu/qemu_agent.c:1234 src/qemu/qemu_monitor_json.c:482
+#: src/qemu/qemu_agent.c:1236 src/qemu/qemu_monitor_json.c:482
 #, c-format
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਾਟਾ ਕਿਸਮ '%c' ਆਰਗ '%s' ਲਈ"
 
-#: src/qemu/qemu_agent.c:1336 src/qemu/qemu_agent.c:1374
+#: src/qemu/qemu_agent.c:1338 src/qemu/qemu_agent.c:1376
 msgid "malformed return value"
 msgstr ""
 
@@ -10329,57 +10287,54 @@ msgid "Unable to set cpuset.mems for domain %s"
 msgstr ""
 
 #: src/qemu/qemu_cgroup.c:520
-#, fuzzy
 msgid "failed to convert cpu mask"
-msgstr "%s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/qemu/qemu_cgroup.c:529
-#, fuzzy
 msgid "Unable to set cpuset.cpus"
-msgstr "cpu ਸ਼ੇਅਰ ਟਿਊਨੇਬਲ ਸੈੱਟ ਕਰਨ ਤੋਂ ਅਸਫਲ"
+msgstr ""
 
-#: src/qemu/qemu_cgroup.c:554
-#, fuzzy
-msgid "cgroup cpu is not active"
-msgstr "ਲਾਗ ਮਾਰਗ ਇੱਕ ਫਾਇਲ ਨਹੀਂ ਹੈ"
+#: src/qemu/qemu_cgroup.c:553 src/qemu/qemu_cgroup.c:648
+msgid "cgroup cpu is required for scheduler tuning"
+msgstr ""
 
-#: src/qemu/qemu_cgroup.c:561 src/qemu/qemu_cgroup.c:644
-#: src/qemu/qemu_cgroup.c:716 src/qemu/qemu_driver.c:5753
-#: src/qemu/qemu_driver.c:5982 src/qemu/qemu_driver.c:10897
+#: src/qemu/qemu_cgroup.c:567 src/qemu/qemu_cgroup.c:658
+#: src/qemu/qemu_cgroup.c:728 src/qemu/qemu_driver.c:5725
+#: src/qemu/qemu_driver.c:5954 src/qemu/qemu_driver.c:10878
 #: src/qemu/qemu_hotplug.c:1089 src/qemu/qemu_hotplug.c:1672
 #: src/qemu/qemu_hotplug.c:1776 src/qemu/qemu_migration.c:3216
 #, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s ਲਈ cgroup ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_cgroup.c:579
+#: src/qemu/qemu_cgroup.c:585
 #, c-format
 msgid "Unable to create vcpu cgroup for %s(vcpu: %d)"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:589
+#: src/qemu/qemu_cgroup.c:595
 #, c-format
 msgid "unable to add vcpu %d task %d to cgroup"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:652
-#, fuzzy, c-format
+#: src/qemu/qemu_cgroup.c:666
+#, c-format
 msgid "Unable to create emulator cgroup for %s"
-msgstr "%s ਲਈ cgroup ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_cgroup.c:665
+#: src/qemu/qemu_cgroup.c:677
 #, c-format
 msgid ""
 "Unable to move tasks from domain cgroup to emulator cgroup in controller %d "
 "for %s"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:739
+#: src/qemu/qemu_cgroup.c:751
 #, c-format
 msgid "unable to find cgroup for domain %s"
 msgstr "ਡੋਮੇਨ %s ਲਈ cgroup ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_cgroup.c:747
+#: src/qemu/qemu_cgroup.c:759
 #, c-format
 msgid "unable to add domain %s task %d to cgroup"
 msgstr "ਡੋਮੇਨ %s ਕਾਰਜ %d cgroup ਵਿੱਚ ਸ਼ਾਮਿਲ ਕਰਨ ਲਈ ਫੇਲ ਹੋਇਆ"
@@ -10390,9 +10345,9 @@ msgid "Network type %d is not supported"
 msgstr "ਨੈੱਟਵਰਕ ਕਿਸਮ %d ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 #: src/qemu/qemu_command.c:273
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add ebtables rule to allow MAC address on '%s'"
-msgstr "iptables ਰੂਲ ਨੂੰ '%s' ਤੋਂ MAC ਐਡਰੈੱਸ ਮਨਜੂਰ ਕਰਨ ਲਈ ਜੋੜਨ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:323
 msgid "vhost-net is not supported with this QEMU binary"
@@ -10430,9 +10385,8 @@ msgid "Unsupported controller model: %s"
 msgstr ""
 
 #: src/qemu/qemu_command.c:515
-#, fuzzy
 msgid "Unable to determine model for scsi controller"
-msgstr "ਨੈੱਟਵਰਕ ਜੰਤਰ ਲਈ ਜੰਤਰ ਸੂਚੀ ਪਤਾ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:602
 msgid "Unable to determine device index for network device"
@@ -10584,9 +10538,8 @@ msgid "target must be 0 for controller fdc"
 msgstr ""
 
 #: src/qemu/qemu_command.c:2159
-#, fuzzy
 msgid "unexpected address type for s390-virtio disk"
-msgstr "scsi ਡਿਸਕ ਲਈ ਅਚਾਨਕ ਐਡਰੈੱਸ ਕਿਸਮ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:2182 src/qemu/qemu_command.c:5097
 #, c-format
@@ -10626,7 +10579,7 @@ msgstr ""
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2391 src/qemu/qemu_driver.c:12884
+#: src/qemu/qemu_command.c:2391 src/qemu/qemu_driver.c:12865
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr ""
 
@@ -10868,7 +10821,7 @@ msgstr "qemu ਇੰਮੂਲੇਟਰ '%s' xen ਨੂੰ ਸਹਿਯੋਗ ਨ�
 msgid "the QEMU binary %s does not support smbios settings"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4536 src/qemu/qemu_driver.c:1153
+#: src/qemu/qemu_command.c:4536 src/qemu/qemu_driver.c:1125
 msgid "Host SMBIOS information is not available"
 msgstr ""
 
@@ -10912,7 +10865,7 @@ msgstr "pit ਟਾਈਮਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 msgid "hypervisor lacks deviceboot feature"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4863 src/qemu/qemu_driver.c:5745
+#: src/qemu/qemu_command.c:4863 src/qemu/qemu_driver.c:5717
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਰਾਈਵਰ ਨਾਂ '%s' ਡਿਸਕ '%s' ਲਈ"
@@ -10922,9 +10875,8 @@ msgid "SATA is not supported with this QEMU binary"
 msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
 #: src/qemu/qemu_command.c:4910
-#, fuzzy
 msgid "Multiple legacy USB controllers are not supported"
-msgstr "ਸਿਰਫ 1 %s ਕੰਟਰੋਲਰ ਸਹਿਯੋਗੀ ਹੈ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:4967 src/qemu/qemu_command.c:5067
 #, c-format
@@ -11125,24 +11077,24 @@ msgid "cannot parse io mode '%s'"
 msgstr ""
 
 #: src/qemu/qemu_command.c:6955
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse cylinders value'%s'"
-msgstr "ਵੀਡੀਓ ਰੈਮ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:6964
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse heads value'%s'"
-msgstr "ਵੀਡੀਓ ਹੈੱਡ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:6973
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse sectors value'%s'"
-msgstr "ਮੈਮੋਰੀ ਲੈਵਲ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:6984
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse translation value'%s'"
-msgstr "%s ਵਿੱਚ NIC vlan ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+msgstr ""
 
 #: src/qemu/qemu_command.c:6997
 #, c-format
@@ -11315,9 +11267,8 @@ msgid "unable to find hugetlbfs mountpoint"
 msgstr "hugetlbfs ਮਾਊਂਟਪੁਆਂਇਟ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
 
 #: src/qemu/qemu_conf.c:208
-#, fuzzy
 msgid "security_driver be a list of strings"
-msgstr "cgroup_device_acl ਸਤਰਾਂ ਦੀ ਇੱਕ ਸੂਚੀ ਹੋਣੀ ਜਰੂਰੀ ਹੈ"
+msgstr ""
 
 #: src/qemu/qemu_conf.c:311
 #, c-format
@@ -11510,101 +11461,101 @@ msgstr ""
 msgid "Failed to start job on VM '%s': %s"
 msgstr "VM '%s' ਉੱਪਰ ਜੌਬ ਚਾਲੂ ਕਰਨ ਤੋਂ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/qemu/qemu_driver.c:436
+#: src/qemu/qemu_driver.c:408
 #, c-format
 msgid "Failed to allocate memory for snapshot directory for domain %s"
 msgstr "ਡੋਮੇਨ %s ਲਈ ਸਨੈਪਸ਼ਾਟ ਡਾਇਰੈਕਟਰੀਆਂ ਲਈ ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_driver.c:446
+#: src/qemu/qemu_driver.c:418
 #, c-format
 msgid "Failed to open snapshot directory %s for domain %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:461
+#: src/qemu/qemu_driver.c:433
 msgid "Failed to allocate memory for path"
 msgstr "ਮਾਰਗ ਲਈ ਮੈਮੋਰੀ ਨਿਰਧਾਰਨ ਫੇਲ ਹੋਇਆ"
 
-#: src/qemu/qemu_driver.c:468
+#: src/qemu/qemu_driver.c:440
 #, c-format
 msgid "Failed to read snapshot file %s: %s"
 msgstr "ਸਨਾਪਸ਼ਾਟ ਫਾਇਲ %s ਪੜ੍ਹਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
 
-#: src/qemu/qemu_driver.c:479
+#: src/qemu/qemu_driver.c:451
 #, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:500
+#: src/qemu/qemu_driver.c:472
 #, c-format
 msgid "Too many snapshots claiming to be current for domain %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:506
+#: src/qemu/qemu_driver.c:478
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:677
+#: src/qemu/qemu_driver.c:649
 #, c-format
 msgid "Failed to create cache dir '%s': %s"
 msgstr "ਕੈਸ਼ੇ dir '%s' ਬਣਾਉਣ ਤੋਂ ਫੇਲ: %s"
 
-#: src/qemu/qemu_driver.c:692
+#: src/qemu/qemu_driver.c:664
 #, c-format
 msgid "Failed to create dump dir '%s': %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:729
+#: src/qemu/qemu_driver.c:701
 msgid "Missing lock manager implementation"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:752
+#: src/qemu/qemu_driver.c:724
 #, c-format
 msgid "unable to set ownership of '%s' to user %d:%d"
 msgstr "'%s' ਦੀ ਮਲਕੀਅਤ ਯੂਜ਼ਰ %d ਨੂੰ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ:%d"
 
-#: src/qemu/qemu_driver.c:758 src/qemu/qemu_driver.c:764
-#: src/qemu/qemu_driver.c:770
+#: src/qemu/qemu_driver.c:730 src/qemu/qemu_driver.c:736
+#: src/qemu/qemu_driver.c:742
 #, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
 msgstr "'%s' ਦੀ ਮਲਕੀਅਤ %d ਨੂੰ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ:%d"
 
-#: src/qemu/qemu_driver.c:792
+#: src/qemu/qemu_driver.c:764
 #, c-format
 msgid "unable to create hugepage path %s"
 msgstr "hugepage ਟਿਕਾਣਾ %s ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:800
+#: src/qemu/qemu_driver.c:772
 #, c-format
 msgid "unable to set ownership on %s to %d:%d"
 msgstr "%s ਦੀ ਮਲਕੀਅਤ %d ਨੂੰ ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ:%d"
 
-#: src/qemu/qemu_driver.c:1035
+#: src/qemu/qemu_driver.c:1007
 msgid "qemu state driver is not active"
 msgstr "qemu ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_driver.c:1041
+#: src/qemu/qemu_driver.c:1013
 #, c-format
 msgid "no QEMU URI path given, try %s"
 msgstr "ਕੋਈ QEMU URI ਮਾਰਗ ਨਹੀਂ ਦਿੱਤਾ, %s ਕੋਸ਼ਿਸ਼ ਕਰੋ"
 
-#: src/qemu/qemu_driver.c:1052
+#: src/qemu/qemu_driver.c:1024
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "unexpected QEMU URI path '%s', try qemu:///system"
 
-#: src/qemu/qemu_driver.c:1059
+#: src/qemu/qemu_driver.c:1031
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr "ਅਚਾਨਕ QEMU URI ਟਿਕਾਣਾ '%s', qemu:///session ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
 
-#: src/qemu/qemu_driver.c:1130 src/util/iohelper.c:58 src/util/virfile.c:529
+#: src/qemu/qemu_driver.c:1102 src/util/iohelper.c:58 src/util/virfile.c:529
 #: src/util/virfile.c:584
 #, c-format
 msgid "Unable to open %s"
 msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/qemu/qemu_driver.c:1299 src/uml/uml_driver.c:1553
+#: src/qemu/qemu_driver.c:1271 src/uml/uml_driver.c:1553
 #: src/uml/uml_driver.c:1594 src/vbox/vbox_tmpl.c:1226
 #: src/vbox/vbox_tmpl.c:1553 src/vbox/vbox_tmpl.c:1605
 #: src/vbox/vbox_tmpl.c:1659 src/vbox/vbox_tmpl.c:1717
@@ -11614,98 +11565,97 @@ msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 msgid "no domain with matching id %d"
 msgstr "ਕੋਈ ਡੋਮੇਨ id %d ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ"
 
-#: src/qemu/qemu_driver.c:1615 src/qemu/qemu_driver.c:1674
-#, fuzzy
+#: src/qemu/qemu_driver.c:1587 src/qemu/qemu_driver.c:1646
 msgid "domain is pmsuspended"
-msgstr "ਡੋਮੇਨ %s ਮੁਅੱਤਲ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:1682 src/qemu/qemu_migration.c:3016
+#: src/qemu/qemu_driver.c:1654 src/qemu/qemu_migration.c:3016
 #: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:575
 #: src/qemu/qemu_process.c:3871
 msgid "resume operation failed"
 msgstr "ਮੁੜ-ਪ੍ਰਾਪਤੀ ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_driver.c:1738 src/qemu/qemu_driver.c:1820
-#: src/qemu/qemu_driver.c:10426 src/qemu/qemu_driver.c:10454
-#: src/qemu/qemu_driver.c:13743 src/qemu/qemu_driver.c:13885
+#: src/qemu/qemu_driver.c:1710 src/qemu/qemu_driver.c:1792
+#: src/qemu/qemu_driver.c:10407 src/qemu/qemu_driver.c:10435
+#: src/qemu/qemu_driver.c:13727 src/qemu/qemu_driver.c:13869
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1744 src/qemu/qemu_driver.c:1826
-#: src/qemu/qemu_driver.c:10432 src/qemu/qemu_driver.c:10461
-#: src/qemu/qemu_driver.c:13750 src/qemu/qemu_driver.c:13892
+#: src/qemu/qemu_driver.c:1716 src/qemu/qemu_driver.c:1798
+#: src/qemu/qemu_driver.c:10413 src/qemu/qemu_driver.c:10442
+#: src/qemu/qemu_driver.c:13734 src/qemu/qemu_driver.c:13876
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1834
+#: src/qemu/qemu_driver.c:1806
 msgid "Reboot is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1840
+#: src/qemu/qemu_driver.c:1812
 msgid "Reboot is not supported without the JSON monitor"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1976
+#: src/qemu/qemu_driver.c:1948
 msgid "failed to kill qemu process with SIGTERM"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2120
+#: src/qemu/qemu_driver.c:2092
 msgid "cannot resize the maximum memory on an active domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2157
+#: src/qemu/qemu_driver.c:2129
 msgid ""
 "Unable to change memory of active domain without the balloon device and "
 "guest OS balloon driver"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2269
+#: src/qemu/qemu_driver.c:2241
 #, c-format
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2341 src/uml/uml_driver.c:1772
+#: src/qemu/qemu_driver.c:2313 src/uml/uml_driver.c:1772
 msgid "cannot read cputime for domain"
 msgstr "ਡੋਮੇਨ ਲਈ cputime ਪੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/qemu/qemu_driver.c:2552
+#: src/qemu/qemu_driver.c:2524
 #, c-format
 msgid "failed to write header to domain save file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2560 src/qemu/qemu_driver.c:4976
+#: src/qemu/qemu_driver.c:2532 src/qemu/qemu_driver.c:4948
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "xml ਨੂੰ '%s' ਤੇ ਲਿਖਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:2619
+#: src/qemu/qemu_driver.c:2591
 #, c-format
 msgid "unable to open %s"
 msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
 
-#: src/qemu/qemu_driver.c:2634 src/qemu/qemu_driver.c:2658
+#: src/qemu/qemu_driver.c:2606 src/qemu/qemu_driver.c:2630
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr "ਫਾਇਲ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:2649
+#: src/qemu/qemu_driver.c:2621
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2670
+#: src/qemu/qemu_driver.c:2642
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' ਬਣਾਉਣ ਵਾਲੇ ਅਧੀਨ ਕਾਰਜ ਤੋਂ ਗਲਤੀ"
 
-#: src/qemu/qemu_driver.c:2720 src/qemu/qemu_driver.c:11114
+#: src/qemu/qemu_driver.c:2692 src/qemu/qemu_driver.c:11095
 #: src/qemu/qemu_migration.c:807
 msgid "domain is marked for auto destroy"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2748 src/qemu/qemu_driver.c:3306
-#: src/qemu/qemu_driver.c:10520 src/qemu/qemu_driver.c:10932
-#: src/qemu/qemu_driver.c:11992 src/qemu/qemu_driver.c:12044
+#: src/qemu/qemu_driver.c:2720 src/qemu/qemu_driver.c:3278
+#: src/qemu/qemu_driver.c:10501 src/qemu/qemu_driver.c:10913
+#: src/qemu/qemu_driver.c:11973 src/qemu/qemu_driver.c:12025
 #: src/qemu/qemu_hotplug.c:416 src/qemu/qemu_hotplug.c:796
 #: src/qemu/qemu_migration.c:1936 src/qemu/qemu_migration.c:2237
 #: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
@@ -11713,786 +11663,774 @@ msgstr ""
 msgid "guest unexpectedly quit"
 msgstr "ਗਿਸਟ ਅਚਾਨਕ ਬੰਦ ਹੋ ਗਿਆ"
 
-#: src/qemu/qemu_driver.c:2780
+#: src/qemu/qemu_driver.c:2752
 msgid "failed to get domain xml"
 msgstr "ਡੋਮੇਨ xml ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:2810 src/qemu/qemu_driver.c:3182
-#: src/qemu/qemu_driver.c:4575
+#: src/qemu/qemu_driver.c:2782 src/qemu/qemu_driver.c:3154
+#: src/qemu/qemu_driver.c:4547
 msgid "bypass cache unsupported by this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2852
+#: src/qemu/qemu_driver.c:2824
 #, c-format
 msgid "unable to write %s"
 msgstr "%s ਵਿੱਚ ਲਿਖਣ ਤੋਂ ਅਸਮਰਥ"
 
-#: src/qemu/qemu_driver.c:2939
+#: src/qemu/qemu_driver.c:2911
 msgid "Invalid save image format specified in configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਵਿੱਚ ਗਲਤ ਸੰਭਾਲਿਆ ਈਮੇਜ਼ ਫਾਰਮੈਟ ਦਿੱਤਾ ਗਿਆ ਹੈ"
 
-#: src/qemu/qemu_driver.c:2945
+#: src/qemu/qemu_driver.c:2917
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3144
+#: src/qemu/qemu_driver.c:3116
 msgid "dump-guest-memory is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3210
+#: src/qemu/qemu_driver.c:3182
 #, c-format
 msgid "unable to close file %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3242
+#: src/qemu/qemu_driver.c:3214
 msgid "Invalid dump image format specified in configuration file, using raw"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3247
+#: src/qemu/qemu_driver.c:3219
 msgid ""
 "Compression program for dump image format in configuration file isn't "
 "available, using raw"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3343
+#: src/qemu/qemu_driver.c:3315
 msgid "resuming after dump failed"
 msgstr "ਡੰਪ ਤੋਂ ਬਾਅਦ ਮੁੜ-ਪ੍ਰਾਪਤੀ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_driver.c:3387 src/qemu/qemu_driver.c:8287
+#: src/qemu/qemu_driver.c:3359 src/qemu/qemu_driver.c:8268
 #, c-format
 msgid "no domain matching uuid '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3406
+#: src/qemu/qemu_driver.c:3378
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3417 src/qemu/qemu_driver.c:9125
+#: src/qemu/qemu_driver.c:3389 src/qemu/qemu_driver.c:9106
 #: src/vbox/vbox_tmpl.c:9157
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:3438 src/vbox/vbox_tmpl.c:9211
+#: src/qemu/qemu_driver.c:3410 src/vbox/vbox_tmpl.c:9211
 msgid "unable to open stream"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3500
+#: src/qemu/qemu_driver.c:3472
 msgid "Dump failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3508
+#: src/qemu/qemu_driver.c:3480
 msgid "Resuming after dump failed"
 msgstr "ਡੰਪ ਤੋਂ ਬਾਅਦ ਮੁੜ-ਪ੍ਰਾਪਤੀ ਫੇਲ ਹੋਈ"
 
-#: src/qemu/qemu_driver.c:3587 src/qemu/qemu_process.c:1673
+#: src/qemu/qemu_driver.c:3559 src/qemu/qemu_process.c:1673
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr "QEMU ਮਾਨੀਟਰ ਤੋਂ vCPU pids ਦੀ ਗਲਤ ਗਿਣਤੀ ਪ੍ਰਾਪਤ ਹੋਈ ਹੈ। ਮਿਲੇ %d, ਚਾਹੀਦੇ %d"
 
-#: src/qemu/qemu_driver.c:3608
+#: src/qemu/qemu_driver.c:3580
 msgid "cannot change vcpu count of this domain"
 msgstr "ਇਸ ਡੋਮੇਨ ਦਾ vcpu ਕਾਊਂਟ ਤਬਦੀਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:3631 src/test/test_driver.c:2180
+#: src/qemu/qemu_driver.c:3603 src/test/test_driver.c:2180
 #: src/xen/xen_driver.c:1136
 #, c-format
 msgid "argument out of range: %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3660
+#: src/qemu/qemu_driver.c:3632
 msgid "cannot adjust maximum on running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3769
+#: src/qemu/qemu_driver.c:3741
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu ਨੰਬਰ ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ %d > %d"
 
-#: src/qemu/qemu_driver.c:3794 src/qemu/qemu_driver.c:4126
+#: src/qemu/qemu_driver.c:3766 src/qemu/qemu_driver.c:4098
 #: src/qemu/qemu_process.c:1962
 msgid "cpu affinity is not supported"
 msgstr "cpu affinity ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_driver.c:3815 src/qemu/qemu_driver.c:4075
-#, fuzzy
+#: src/qemu/qemu_driver.c:3787 src/qemu/qemu_driver.c:4047
 msgid "failed to update vcpupin"
-msgstr "uuid ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:3826
+#: src/qemu/qemu_driver.c:3798
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for vcpu %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3834
-#, fuzzy, c-format
+#: src/qemu/qemu_driver.c:3806
+#, c-format
 msgid "failed to set cpu affinity for vcpu %d"
-msgstr "CPU affinity ਨੂੰਕਾਰਜ %d ਤੇ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:3843
+#: src/qemu/qemu_driver.c:3815
 msgid "failed to delete vcpupin xml of a running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3868
+#: src/qemu/qemu_driver.c:3840
 msgid "failed to delete vcpupin xml of a persistent domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3886
+#: src/qemu/qemu_driver.c:3858
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4091
-#, fuzzy
+#: src/qemu/qemu_driver.c:4063
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
-msgstr "%s ਲਈ ਮਾਨੀਟਰ ਲਈ ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:4100
-#, fuzzy
+#: src/qemu/qemu_driver.c:4072
 msgid "failed to set cpu affinity for emulator threads"
-msgstr "%s ਲਈ ਮਾਨੀਟਰ ਲਈ ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:4109
-#, fuzzy
+#: src/qemu/qemu_driver.c:4081
 msgid "failed to delete emulatorpin xml of a running domain"
-msgstr "ਚੱਲ ਰਹੇ ਡੋਮੇਨ ਦੇ ਸਨੈਪਸ਼ਾਟ ਹਟਾ ਨਹੀਂ ਸਕਿਆ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:4139
-#, fuzzy
+#: src/qemu/qemu_driver.c:4111
 msgid "failed to delete emulatorpin xml of a persistent domain"
-msgstr "ਡੋਮੇਨ %s ਲਈ ਮੈਮੋਰੀ ਸੀਮਾ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:4146
-#, fuzzy
+#: src/qemu/qemu_driver.c:4118
 msgid "failed to update or add emulatorpin xml of a persistent domain"
-msgstr "ਮਾਈਗਰੇਸ਼ਨ ਤੋਂ ਬਾਅਦ ਡੋਮੇਨ ਨੂੰ ਨਿਰੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:4271
+#: src/qemu/qemu_driver.c:4243
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ vcpu ਨੂੰ ਵੇਖਾ ਨਹੀਂ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:4303
+#: src/qemu/qemu_driver.c:4275
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU ਪਲੇਸਮੈਂਟ ਤੇ pCPU ਟਾਈਮ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:4321
+#: src/qemu/qemu_driver.c:4293
 msgid "cpu affinity is not available"
 msgstr "cpu affinity ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_driver.c:4592 src/qemu/qemu_driver.c:4612
+#: src/qemu/qemu_driver.c:4564 src/qemu/qemu_driver.c:4584
 #, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4599
+#: src/qemu/qemu_driver.c:4571
 msgid "failed to read qemu header"
 msgstr "qemu ਸਿਰਲੇਖ ਪੜਨ ਤੋਂ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:4608
+#: src/qemu/qemu_driver.c:4580
 msgid "save image is incomplete"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4656 src/qemu/qemu_driver.c:4761
+#: src/qemu/qemu_driver.c:4628 src/qemu/qemu_driver.c:4733
 #, c-format
 msgid "cannot close file: %s"
 msgstr "ਫਾਇਲ ਨੂੰ ਬੰਦ ਨਹੀਂ ਕਰ ਸਕਦਾ: %s"
 
-#: src/qemu/qemu_driver.c:4717
+#: src/qemu/qemu_driver.c:4689
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "ਗਲਤ ਕੰਪਰੈੱਸਡ ਸੰਭਾਲ ਫਾਰਮੈਟ %d"
 
-#: src/qemu/qemu_driver.c:4732
+#: src/qemu/qemu_driver.c:4704
 #, c-format
 msgid "Failed to start decompression binary %s"
 msgstr "ਡੀਕੰਪਰੈਸ਼ਨ ਬਾਇਮਰੀ %s ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:4785
+#: src/qemu/qemu_driver.c:4757
 msgid "failed to resume domain"
 msgstr "ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:4961
+#: src/qemu/qemu_driver.c:4933
 msgid "new xml too large to fit in file"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4970
+#: src/qemu/qemu_driver.c:4942
 #, c-format
 msgid "cannot seek in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5332
+#: src/qemu/qemu_driver.c:5304
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5407
+#: src/qemu/qemu_driver.c:5379
 msgid "domain is already running"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
 
-#: src/qemu/qemu_driver.c:5666
+#: src/qemu/qemu_driver.c:5638
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5770
+#: src/qemu/qemu_driver.c:5742
 msgid "disk device='lun' is not supported for usb bus"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5817
+#: src/qemu/qemu_driver.c:5789
 #, c-format
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "ਡਿਸਕ ਕੰਟਰੋਲਰ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।"
 
-#: src/qemu/qemu_driver.c:5904 src/uml/uml_driver.c:2206
+#: src/qemu/qemu_driver.c:5876 src/uml/uml_driver.c:2206
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ਡਿਸਕ ਦੀ ਇਹ ਕਿਸਮ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
-#: src/qemu/qemu_driver.c:5908
+#: src/qemu/qemu_driver.c:5880
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5929
+#: src/qemu/qemu_driver.c:5901
 #, c-format
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "ਡਿਸਕ ਕੰਟਰੋਲਰ ਬੱਸ '%s' ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।"
 
-#: src/qemu/qemu_driver.c:5961 src/uml/uml_driver.c:2210
+#: src/qemu/qemu_driver.c:5933 src/uml/uml_driver.c:2210
 msgid "This type of device cannot be hot unplugged"
 msgstr "ਜੰਤਰ ਦੀ ਇਹ ਕਿਸਮ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ"
 
-#: src/qemu/qemu_driver.c:6082
+#: src/qemu/qemu_driver.c:6054
 #, c-format
 msgid "mac %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6098
+#: src/qemu/qemu_driver.c:6070
 msgid "device is already in the domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6114
+#: src/qemu/qemu_driver.c:6086
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6130
-#, fuzzy
+#: src/qemu/qemu_driver.c:6102
 msgid "Target already exists"
-msgstr "ਟਾਰਗਿਟ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:6180
+#: src/qemu/qemu_driver.c:6152
 #, c-format
 msgid "no nic of mac %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6190 src/qemu/qemu_driver.c:6214
+#: src/qemu/qemu_driver.c:6162 src/qemu/qemu_driver.c:6186
 msgid "device not present in domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6202 src/qemu/qemu_hotplug.c:2398
+#: src/qemu/qemu_driver.c:6174 src/qemu/qemu_hotplug.c:2398
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6282
+#: src/qemu/qemu_driver.c:6254
 #, c-format
 msgid "mac %s doesn't exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6352
+#: src/qemu/qemu_driver.c:6324
 msgid "cannot do live update a device on inactive domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6741
+#: src/qemu/qemu_driver.c:6713
 #, c-format
 msgid "unable to parse device weight '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6876
+#: src/qemu/qemu_driver.c:6848
 #, c-format
 msgid "Unable to set io device weight for path %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7061 src/qemu/qemu_driver.c:7101
+#: src/qemu/qemu_driver.c:7033 src/qemu/qemu_driver.c:7073
 #: src/util/virtypedparam.c:139
 #, c-format
 msgid "Field name '%s' too long"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7177 src/qemu/qemu_driver.c:7332
-#: src/qemu/qemu_driver.c:7668
+#: src/qemu/qemu_driver.c:7149 src/qemu/qemu_driver.c:7306
+#: src/qemu/qemu_driver.c:7649
 msgid "cgroup memory controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7203
-#, fuzzy
+#: src/qemu/qemu_driver.c:7175
 msgid "hard limit must be lower than swap hard limit"
-msgstr "ਸਵੈਪ ਹਾਰਡ ਸੀਮਾ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:7494
+#: src/qemu/qemu_driver.c:7468
 msgid "cgroup cpuset controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7514
+#: src/qemu/qemu_driver.c:7488
 msgid "can't change numa mode for running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7537
-#, fuzzy
+#: src/qemu/qemu_driver.c:7511
 msgid "Failed to parse nodeset"
-msgstr "'%s' ਨੂੰ  ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:7546
+#: src/qemu/qemu_driver.c:7520
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7557
-#, fuzzy
+#: src/qemu/qemu_driver.c:7531
 msgid "Failed to format nodeset"
-msgstr "ਸਾਕਟ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:7565
+#: src/qemu/qemu_driver.c:7539
 msgid "unable to set numa tunable"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7706
+#: src/qemu/qemu_driver.c:7687
 msgid "unable to get numa nodeset"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7758
+#: src/qemu/qemu_driver.c:7739
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: %d)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7796 src/qemu/qemu_driver.c:8071
-#, fuzzy, c-format
+#: src/qemu/qemu_driver.c:7777 src/qemu/qemu_driver.c:8052
+#, c-format
 msgid "Unable to find emulator cgroup for %s"
-msgstr "%s ਲਈ cgroup ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:8033
+#: src/qemu/qemu_driver.c:8014
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: 0)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8264
+#: src/qemu/qemu_driver.c:8245
 msgid "empty path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8272
+#: src/qemu/qemu_driver.c:8253
 #, c-format
 msgid "size must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8304 src/qemu/qemu_driver.c:8369
-#: src/qemu/qemu_driver.c:8455 src/test/test_driver.c:2805
+#: src/qemu/qemu_driver.c:8285 src/qemu/qemu_driver.c:8350
+#: src/qemu/qemu_driver.c:8436 src/test/test_driver.c:2805
 #, c-format
 msgid "invalid path: %s"
 msgstr "ਗਲਤ ਮਾਰਗ: %s"
 
-#: src/qemu/qemu_driver.c:8376 src/qemu/qemu_driver.c:8462
+#: src/qemu/qemu_driver.c:8357 src/qemu/qemu_driver.c:8443
 #: src/qemu/qemu_hotplug.c:79
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s ਲਈ ਜੰਤਰ ਜੰਤਰ ਉਪ ਨਾਂ ਗੁੰਮ ਹੈ"
 
-#: src/qemu/qemu_driver.c:8648
+#: src/qemu/qemu_driver.c:8629
 msgid "interface stats not implemented on this platform"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8704 src/qemu/qemu_driver.c:8712
-#: src/qemu/qemu_driver.c:8876
+#: src/qemu/qemu_driver.c:8685 src/qemu/qemu_driver.c:8693
+#: src/qemu/qemu_driver.c:8857
 #, c-format
 msgid "Can't find device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8989
+#: src/qemu/qemu_driver.c:8970
 msgid "cannot get RSS for domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9036 src/qemu/qemu_driver.c:9201
+#: src/qemu/qemu_driver.c:9017 src/qemu/qemu_driver.c:9182
 #: src/uml/uml_driver.c:2357
 msgid "NULL or empty path"
 msgstr "NULL ਜਾਂ ਖਾਲੀ ਮਾਰਗ"
 
-#: src/qemu/qemu_driver.c:9043 src/uml/uml_driver.c:2364
+#: src/qemu/qemu_driver.c:9024 src/uml/uml_driver.c:2364
 #, c-format
 msgid "invalid path '%s'"
 msgstr "ਗਲਤ ਮਾਰਗ '%s'"
 
-#: src/qemu/qemu_driver.c:9052
+#: src/qemu/qemu_driver.c:9033
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:9063
+#: src/qemu/qemu_driver.c:9044
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: ਖੋਜਣ ਜਾਂ ਪੜਨ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:9104
+#: src/qemu/qemu_driver.c:9085
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ਫਲੈਗ ਪੈਰਾਮੀਟਰ VIR_MEMORY_VIRTUAL ਜਾਂ VIR_MEMORY_PHYSICAL ਹੋਣੇ ਜਰੂਰੀ ਹਨ"
 
-#: src/qemu/qemu_driver.c:9149
+#: src/qemu/qemu_driver.c:9130
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "ਟੈਂਪਲਿਟ %s ਨਾਲ ਬਣਾਈ ਆਰਜੀ ਫਾਇਲ ਪੜਨ ਤੋਂ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:9208
+#: src/qemu/qemu_driver.c:9189
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9214
+#: src/qemu/qemu_driver.c:9195
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9224
+#: src/qemu/qemu_driver.c:9205
 #, c-format
 msgid "failed to open path '%s'"
 msgstr "ਮਾਰਗ '%s' ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
 
-#: src/qemu/qemu_driver.c:9232
+#: src/qemu/qemu_driver.c:9213
 #, c-format
 msgid "unknown disk format %s for %s"
 msgstr "ਅਣਜਾਣ ਡਿਸਕ ਫਾਰਮੈਟ %s %s ਲਈ"
 
-#: src/qemu/qemu_driver.c:9261 src/storage/storage_backend.c:1022
+#: src/qemu/qemu_driver.c:9242 src/storage/storage_backend.c:1022
 #: src/storage/storage_backend.c:1050 src/storage/storage_backend.c:1170
 #: src/util/storage_file.c:746 src/util/storage_file.c:842
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "ਫਾਇਲ '%s' ਦੀ ਹਾਲਤ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#: src/qemu/qemu_driver.c:9283
+#: src/qemu/qemu_driver.c:9264
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9437 src/qemu/qemu_driver.c:9509
-#: src/qemu/qemu_driver.c:9749 src/qemu/qemu_driver.c:9784
+#: src/qemu/qemu_driver.c:9418 src/qemu/qemu_driver.c:9490
+#: src/qemu/qemu_driver.c:9730 src/qemu/qemu_driver.c:9765
 msgid "no domain XML passed"
 msgstr "ਕੋਈ ਡੋਮੇਨ XML ਪੈਸ ਨਹੀਂ ਕੀਤਾ"
 
-#: src/qemu/qemu_driver.c:9442 src/qemu/qemu_driver.c:9789
+#: src/qemu/qemu_driver.c:9423 src/qemu/qemu_driver.c:9770
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel ਕਾਲ ਕੀਤੀ ਗਈ ਪਰ ਕੋਈ TUNNELLED ਫਲੈਗ ਸੈੱਟ ਨਹੀਂ"
 
-#: src/qemu/qemu_driver.c:9447 src/qemu/qemu_driver.c:9794
+#: src/qemu/qemu_driver.c:9428 src/qemu/qemu_driver.c:9775
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr "tunnelled ਮਾਈਗਰੇਸ਼ਨ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਪਰ NULL ਸਟਰੀਮ ਪਾਸ ਕੀਤੀ ਗਈ"
 
-#: src/qemu/qemu_driver.c:9453 src/qemu/qemu_driver.c:9493
-#: src/qemu/qemu_driver.c:9548
+#: src/qemu/qemu_driver.c:9434 src/qemu/qemu_driver.c:9474
+#: src/qemu/qemu_driver.c:9529
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9503 src/qemu/qemu_driver.c:9743
+#: src/qemu/qemu_driver.c:9484 src/qemu/qemu_driver.c:9724
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "Tunnelled ਮਾਈਗਰੇਸ਼ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਪਰ ਗਲਤ RPC ਢੰਗ ਕਾਲ ਕੀਤਾ ਗਿਆ"
 
-#: src/qemu/qemu_driver.c:9691 src/qemu/qemu_migration.c:1375
+#: src/qemu/qemu_driver.c:9672 src/qemu/qemu_migration.c:1375
 msgid "domain disappeared"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9978 src/xen/xen_driver.c:1979
+#: src/qemu/qemu_driver.c:9959 src/xen/xen_driver.c:1979
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "ਜੰਤਰ %s ਇੱਕ PCI ਜੰਤਰ ਨਹੀਂ ਹੈ"
 
-#: src/qemu/qemu_driver.c:10042
+#: src/qemu/qemu_driver.c:10023
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10046
+#: src/qemu/qemu_driver.c:10027
 #, c-format
 msgid "PCI device %s is still in use"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10106
-#, fuzzy
+#: src/qemu/qemu_driver.c:10087
 msgid "cannot get host capabilities"
-msgstr "ਹੋਸਟ CPU ਅਨੁਕੂਲਤਾ ਲੈ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
-#: src/qemu/qemu_driver.c:10217
+#: src/qemu/qemu_driver.c:10198
 msgid "no job is active on the domain"
 msgstr "ਡੋਮੇਨ ਤੇ ਕੋਈ ਜੌਬ ਸਰਗਰਮ ਨਹੀਂ"
 
-#: src/qemu/qemu_driver.c:10221
+#: src/qemu/qemu_driver.c:10202
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10279
+#: src/qemu/qemu_driver.c:10260
 msgid "domain is not being migrated"
 msgstr "ਡੋਮੇਨ ਮਾਈਗਰੇਟ ਨਹੀਂ ਹੋਇਆ"
 
-#: src/qemu/qemu_driver.c:10409
+#: src/qemu/qemu_driver.c:10390
 #, c-format
 msgid "Disk '%s' does not support snapshotting"
 msgstr "ਡਿਸਕ '%s' ਸਨੈਪਸ਼ਾਟਿੰਗ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦੀ"
 
-#: src/qemu/qemu_driver.c:10554 src/qemu/qemu_driver.c:11030
+#: src/qemu/qemu_driver.c:10535 src/qemu/qemu_driver.c:11011
 msgid "resuming after snapshot failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10584
+#: src/qemu/qemu_driver.c:10565
 msgid "reuse is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10595
+#: src/qemu/qemu_driver.c:10576
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10603
+#: src/qemu/qemu_driver.c:10584
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10621
+#: src/qemu/qemu_driver.c:10602
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10629
+#: src/qemu/qemu_driver.c:10610
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10635
+#: src/qemu/qemu_driver.c:10616
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10650 src/qemu/qemu_driver.c:10704
+#: src/qemu/qemu_driver.c:10631 src/qemu/qemu_driver.c:10685
 msgid "unexpected code path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10657
+#: src/qemu/qemu_driver.c:10638
 msgid "disk snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10667
+#: src/qemu/qemu_driver.c:10648
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11090
+#: src/qemu/qemu_driver.c:11071
 msgid "quiesce requires disk-only"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11119
+#: src/qemu/qemu_driver.c:11100
 msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11133
+#: src/qemu/qemu_driver.c:11114
 #, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11140
+#: src/qemu/qemu_driver.c:11121
 #, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11147
+#: src/qemu/qemu_driver.c:11128
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11165
+#: src/qemu/qemu_driver.c:11146
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11176
+#: src/qemu/qemu_driver.c:11157
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11184
+#: src/qemu/qemu_driver.c:11165
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11229
+#: src/qemu/qemu_driver.c:11210
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11450 src/qemu/qemu_driver.c:11490
-#: src/qemu/qemu_driver.c:11530 src/qemu/qemu_driver.c:11634
-#: src/qemu/qemu_driver.c:11712 src/qemu/qemu_driver.c:11750
-#: src/qemu/qemu_driver.c:11790 src/qemu/qemu_driver.c:11863
-#: src/qemu/qemu_driver.c:12231
+#: src/qemu/qemu_driver.c:11431 src/qemu/qemu_driver.c:11471
+#: src/qemu/qemu_driver.c:11511 src/qemu/qemu_driver.c:11615
+#: src/qemu/qemu_driver.c:11693 src/qemu/qemu_driver.c:11731
+#: src/qemu/qemu_driver.c:11771 src/qemu/qemu_driver.c:11844
+#: src/qemu/qemu_driver.c:12212
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11569
+#: src/qemu/qemu_driver.c:11550
 #, c-format
 msgid "no snapshot with matching name '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11676
+#: src/qemu/qemu_driver.c:11657
 msgid "the domain does not have a current snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11874
+#: src/qemu/qemu_driver.c:11855
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11880
+#: src/qemu/qemu_driver.c:11861
 msgid "revert to external disk snapshot not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11887
+#: src/qemu/qemu_driver.c:11868
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11897
+#: src/qemu/qemu_driver.c:11878
 msgid "must respawn qemu to start inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12246
+#: src/qemu/qemu_driver.c:12227
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12273
+#: src/qemu/qemu_driver.c:12254
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12400
+#: src/qemu/qemu_driver.c:12381
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12405
+#: src/qemu/qemu_driver.c:12386
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12523
+#: src/qemu/qemu_driver.c:12504
 #, c-format
 msgid "cannot find character device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12543
+#: src/qemu/qemu_driver.c:12524
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12582
+#: src/qemu/qemu_driver.c:12563
 msgid "No device found for specified path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12622
+#: src/qemu/qemu_driver.c:12603
 msgid "block jobs not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12626
+#: src/qemu/qemu_driver.c:12607
 msgid "partial block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12631
+#: src/qemu/qemu_driver.c:12612
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12797
+#: src/qemu/qemu_driver.c:12778
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12809
+#: src/qemu/qemu_driver.c:12790
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12933
+#: src/qemu/qemu_driver.c:12914
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12940
+#: src/qemu/qemu_driver.c:12921
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12987
+#: src/qemu/qemu_driver.c:12968
 msgid "Write to config file failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13273
+#: src/qemu/qemu_driver.c:13254
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13279 src/qemu/qemu_driver.c:13306
-#: src/qemu/qemu_driver.c:13375
+#: src/qemu/qemu_driver.c:13260 src/qemu/qemu_driver.c:13287
+#: src/qemu/qemu_driver.c:13356
 msgid "unknown metadata type"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13301 src/qemu/qemu_driver.c:13369
+#: src/qemu/qemu_driver.c:13282 src/qemu/qemu_driver.c:13350
 msgid "QEMU driver does not support<metadata> element"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13382
+#: src/qemu/qemu_driver.c:13363
 msgid "Requested metadata element is not present"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13411 src/qemu/qemu_driver.c:13425
+#: src/qemu/qemu_driver.c:13392 src/qemu/qemu_driver.c:13406
 msgid "unable to get cpu account"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13478
+#: src/qemu/qemu_driver.c:13459
 msgid "error accessing cgroup cpuacct for vcpu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13489 src/qemu/qemu_driver.c:13567
+#: src/qemu/qemu_driver.c:13470 src/qemu/qemu_driver.c:13551
 msgid "cpuacct parse error"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13545
+#: src/qemu/qemu_driver.c:13526
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13597
+#: src/qemu/qemu_driver.c:13581
 msgid "the set of online cpus changed while reading"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13661
+#: src/qemu/qemu_driver.c:13645
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13699
+#: src/qemu/qemu_driver.c:13683
 msgid "Duration not supported. Use 0 for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13707
+#: src/qemu/qemu_driver.c:13691
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13736
+#: src/qemu/qemu_driver.c:13720
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13813
+#: src/qemu/qemu_driver.c:13797
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13910
-#, fuzzy
+#: src/qemu/qemu_driver.c:13894
 msgid "Failed to execute agent command"
-msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ"
+msgstr ""
 
 #: src/qemu/qemu_hostdev.c:277
 #, c-format
@@ -12514,9 +12452,8 @@ msgid ""
 msgstr ""
 
 #: src/qemu/qemu_hostdev.c:342
-#, fuzzy
 msgid "vlan trunking is not supported by SR-IOV network devices"
-msgstr "ਇਸ ਫੰਕਸ਼ਨ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਡਰਾਈਵਰ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/qemu/qemu_hostdev.c:348
 #, c-format
@@ -12640,9 +12577,8 @@ msgid "cannot change network interface type"
 msgstr ""
 
 #: src/qemu/qemu_hotplug.c:1346
-#, fuzzy
 msgid "cannot change <virtualport> settings"
-msgstr "vnc ਗਰਾਫਿਕਸ ਉੱਪਰ ਪੋਰਟ ਸੈਟਿੰਗ ਤਬਦੀਲ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/qemu/qemu_hotplug.c:1358
 msgid "cannot modify ethernet network device configuration"
@@ -12783,9 +12719,9 @@ msgid "unable to determine original VLAN"
 msgstr "ਅਸਲੀ VLAN ਪਤਾ ਕਰਨ ਲਈ ਅਸਮਰਥ"
 
 #: src/qemu/qemu_hotplug.c:2285
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove ebtables rule on '%s'"
-msgstr "ebtables ਰੂਲ ਨੂੰ '%s' ਤੋਂ ਹਟਾਉਣ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/qemu/qemu_hotplug.c:2334
 msgid "Graphics password only supported for VNC"
@@ -14181,19 +14117,16 @@ msgid "VM is already active"
 msgstr "VM ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
 
 #: src/qemu/qemu_process.c:3473
-#, fuzzy
 msgid "Unable to find an unused port for VNC"
-msgstr "ਇੱਕ ਨਾ-ਵਰਤੀ VNC ਪੋਰਟ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/qemu/qemu_process.c:3485
-#, fuzzy
 msgid "Unable to find an unused port for SPICE"
-msgstr "ਇੱਕ ਨਾ-ਵਰਤੀ VNC ਪੋਰਟ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/qemu/qemu_process.c:3498
-#, fuzzy
 msgid "Unable to find an unused port for SPICE TLS"
-msgstr "ਇੱਕ ਨਾ-ਵਰਤੀ VNC ਪੋਰਟ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/qemu/qemu_process.c:3531 src/qemu/qemu_process.c:4280
 #: src/uml/uml_driver.c:1029
@@ -14233,9 +14166,9 @@ msgid "unable to set balloon to %lld"
 msgstr ""
 
 #: src/qemu/qemu_process.c:4089
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove ebtables rule to allow MAC address on '%s'"
-msgstr "iptables ਰੂਲ ਨੂੰ '%s' ਤੋਂ MAC ਐਡਰੈੱਸ ਮਨਜੂਰ ਕਰਨ ਲਈ ਜੋੜਨ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/remote/remote_client_bodies.h:17 src/remote/remote_client_bodies.h:1305
 #: src/remote/remote_client_bodies.h:1344
@@ -14281,9 +14214,9 @@ msgid "too many remote undefineds: %d > %d"
 msgstr ""
 
 #: src/remote/remote_driver.c:364
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value of URI component %s"
-msgstr "ਬਲਾਕ ਨਾਂ %s ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+msgstr ""
 
 #: src/remote/remote_driver.c:436
 #, c-format
@@ -14291,12 +14224,10 @@ msgid "using unix socket and remote server '%s' is not supported."
 msgstr ""
 
 #: src/remote/remote_driver.c:453
-#, fuzzy
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2)"
 msgstr ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 
 #: src/remote/remote_driver.c:581
 msgid "remote_open: for 'ext' transport, command is required"
@@ -14373,9 +14304,9 @@ msgid "security label exceeds maximum: %zu"
 msgstr ""
 
 #: src/remote/remote_driver.c:2125
-#, fuzzy, c-format
+#, c-format
 msgid "security label exceeds maximum: %zd"
-msgstr "ਸੁਰੱਖਿਆ ਲੇਬਲ ਦੀ ਲੰਬਾਈ ਅਧਿਕਤਮ ਤੋਂ ਵਧ ਗਈ ਹੈ: %d"
+msgstr ""
 
 #: src/remote/remote_driver.c:2197
 #, c-format
@@ -14504,9 +14435,8 @@ msgid "unable to make pipe"
 msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
 
 #: src/rpc/virnetclient.c:542
-#, fuzzy
 msgid "Unable to register async IO callback"
-msgstr "ਕਾਲਬੈਕ ID %d ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/rpc/virnetclient.c:560
 msgid "Unable to enable keepalives without async IO support"
@@ -14885,9 +14815,8 @@ msgid "Tunnelling sockets not supported on this platform"
 msgstr ""
 
 #: src/rpc/virnetsocket.c:762
-#, fuzzy
 msgid "Failed to parse port number"
-msgstr "ਬਲਾਕ ਨਾਂ %s ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+msgstr ""
 
 #: src/rpc/virnetsocket.c:782
 #, c-format
@@ -14895,9 +14824,9 @@ msgid "Invalid host key verification method: '%s'"
 msgstr ""
 
 #: src/rpc/virnetsocket.c:819
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid authentication method: '%s'"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: %s"
+msgstr ""
 
 #: src/rpc/virnetsocket.c:864
 msgid "libssh2 transport support was not enabled"
@@ -15007,9 +14936,9 @@ msgid "Unable to get current time"
 msgstr "ਮੌਜੂਦਾ ਸਮਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
 
 #: src/rpc/virnetservermdns.c:375
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add timer with timeout %lld"
-msgstr "netdev ਨੂੰ '%s' ਨਾਲ ਜੋੜਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
+msgstr ""
 
 #: src/rpc/virnetservermdns.c:463
 #, c-format
@@ -15055,9 +14984,9 @@ msgid "authentication required"
 msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਦੀ ਲੋੜ ਹੈ"
 
 #: src/rpc/virnetsshsession.c:304
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to retrieve ssh host key: %s"
-msgstr "ਪੂਲ %s ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:326
 msgid ""
@@ -15069,9 +14998,8 @@ msgid "no suitable method to retrieve authentication credentials"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:353
-#, fuzzy
 msgid "failed to calculate ssh host key hash"
-msgstr "ਸਾਕਟ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:372
 #, c-format
@@ -15079,9 +15007,8 @@ msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:384
-#, fuzzy
 msgid "failed to retrieve decision to accept host key"
-msgstr "ਮੇਜ਼ਬਾਨ ਨਾਂ ਪਤਾ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:396
 #, c-format
@@ -15089,19 +15016,18 @@ msgid "SSH host key for '%s' (%s) was not accepted"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:419
-#, fuzzy
 msgid "unsupported SSH key type"
-msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਜੰਤਰ ਕਿਸਮ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:448
-#, fuzzy, c-format
+#, c-format
 msgid "unable to add SSH host key for host '%s': %s"
-msgstr "USB ਡਿਸਕ %s ਸ਼ਾਮਿਲ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:463
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write known_host file '%s': %s"
-msgstr "ਸਨਾਪਸ਼ਾਟ ਫਾਇਲ %s ਪੜ੍ਹਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:479
 #, c-format
@@ -15112,29 +15038,26 @@ msgid ""
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:490
-#, fuzzy, c-format
+#, c-format
 msgid "failed to validate SSH host key: %s"
-msgstr "ਸਰਵਰ ਸਾਕਟ %s ਨੂੰ ਸੁਣਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:495
-#, fuzzy
 msgid "Unknown error value"
-msgstr "ਅਣਜਾਣੀ ਗਲਤੀ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:519
-#, fuzzy
 msgid "Failed to connect to ssh agent"
-msgstr "%s ਨਾਲ ਜੁੜਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:525
-#, fuzzy
 msgid "Failed to list ssh agent identities"
-msgstr "ਨੋਡ ਜੰਤਰ ਵੇਖਾਉਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:543 src/rpc/virnetsshsession.c:567
-#, fuzzy, c-format
+#, c-format
 msgid "failed to authenticate using SSH agent: %s"
-msgstr "ਕਮਾਂਡ '%s' ਵਰਤ ਕੇ ਸਨੈਪਸ਼ਾਟ  ਲੈਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:555
 msgid "SSH Agent did not provide any authentication identity"
@@ -15145,9 +15068,9 @@ msgid "All identities provided by the SSH Agent were rejected"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:600 src/rpc/virnetsshsession.c:659
-#, fuzzy, c-format
+#, c-format
 msgid "authentication with private key '%s' has failed: %s"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:609
 msgid ""
@@ -15168,9 +15091,9 @@ msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "tunelled password authentication failed: %s"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:719
 msgid ""
@@ -15179,19 +15102,17 @@ msgid ""
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:743
-#, fuzzy
 msgid "failed to retrieve credentials"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਅਧਿਕਾਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:760 src/rpc/virnetsshsession.c:767
-#, fuzzy, c-format
+#, c-format
 msgid "keyboard interactive authentication failed: %s"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:786 src/rpc/virnetsshsession.c:900
-#, fuzzy
 msgid "No authentication methods and credentials provided"
-msgstr "ਕੋਈ ਪ੍ਰਮਾਣਿਕਤਾ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:802
 #, c-format
@@ -15199,9 +15120,8 @@ msgid "couldn't retrieve authentication methods list: %s"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:847
-#, fuzzy
 msgid "No authentication methods supplied"
-msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਦੀ ਲੋੜ ਹੈ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:852
 msgid ""
@@ -15215,19 +15135,18 @@ msgid ""
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:873
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open ssh channel: %s"
-msgstr "chardev ਫਾਇਲ ਖੋਲਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:881
-#, fuzzy, c-format
+#, c-format
 msgid "failed to execute command '%s': %s"
-msgstr "QEMU ਕਮਾਂਡ '%s' ਨੂੰ ਚਲਾਉਣ ਤੋਂ ਅਸਮਰਥ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:907
-#, fuzzy
 msgid "No channel command provided"
-msgstr "ਕੋਈ ਕਾਲਬੈਕ ਨਹੀਂ ਦਿੱਤੀ।"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:914
 msgid "Hostname is needed for host key verification"
@@ -15247,43 +15166,39 @@ msgid ""
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:1149
-#, fuzzy, c-format
+#, c-format
 msgid "unable to load knownhosts file '%s': %s"
-msgstr "ਮੇਜ਼ਬਾਨ-ਨਾਂ '%s' ਰਿਜ਼ੌਲਵ ਕਰਨ ਵਿੱਚ ਫੇਲ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1155
-#, fuzzy, c-format
+#, c-format
 msgid "known hosts file '%s' does not exist"
-msgstr "ਫਾਇਲ %s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1192 tools/virsh.c:2876
 msgid "Failed to initialize mutex"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:1203
-#, fuzzy
 msgid "Failed to initialize libssh2 session"
-msgstr "SASL ਲਾਇਬਰੇਰੀ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ: %d (%s)"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1209
-#, fuzzy
 msgid "Failed to initialize libssh2 known hosts table"
-msgstr "LUs ਨੂੰ ਮੇਜ਼ਬਾਨ %u ਤੇ ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1215
-#, fuzzy
 msgid "Failed to initialize libssh2 agent handle"
-msgstr "ਆਡਿਟ ਲੇਅਰ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1247
-#, fuzzy
 msgid "Invalid virNetSSHSessionPtr"
-msgstr "ਅਢੁੱਕਵਾਂ ਅੰਤਰਾਲ"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1263
-#, fuzzy, c-format
+#, c-format
 msgid "SSH session handshake failed: %s"
-msgstr "TLS ਹੈਂਡਸ਼ੇਕ ਫੇਲ: %s"
+msgstr ""
 
 #: src/rpc/virnetsshsession.c:1308 src/rpc/virnetsshsession.c:1419
 #: src/rpc/virnetsshsession.c:1431
@@ -15301,9 +15216,9 @@ msgid "Remote command terminated with non-zero code: %d"
 msgstr ""
 
 #: src/rpc/virnetsshsession.c:1456
-#, fuzzy, c-format
+#, c-format
 msgid "write failed: %s"
-msgstr "ਕਾਰਵਾਈ ਫੇਲ ਹੋਈ: %s"
+msgstr ""
 
 #: src/rpc/virnettlscontext.c:112
 #, c-format
@@ -15741,14 +15656,14 @@ msgid "Invalid security label '%s'"
 msgstr "ਗਲਤ ਸੁਰੱਖਿਆ ਲੇਬਲ '%s'"
 
 #: src/security/security_dac.c:106 src/security/security_dac.c:157
-#, fuzzy, c-format
+#, c-format
 msgid "security label for DAC not found in domain %s"
-msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨਹੀਂ ਲੱਭਿਆ: %s"
+msgstr ""
 
 #: src/security/security_dac.c:113 src/security/security_dac.c:165
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse uid and gid for DAC security driver: %s"
-msgstr "ਸਟੋਰੇਜ਼ ਡਰਾਈਵਰ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ: %s"
+msgstr ""
 
 #: src/security/security_dac.c:257
 #, c-format
@@ -15761,9 +15676,8 @@ msgid "cannot resolve symlink %s"
 msgstr "symlink %s ਨੂੰ ਰਿਜ਼ੌਲਵ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #: src/security/security_dac.c:845 src/security/security_selinux.c:472
-#, fuzzy
 msgid "invalid security driver"
-msgstr "ਗਲਤ ਸੁਰੱਖਿਆ ਕਿਸਮ"
+msgstr ""
 
 #: src/security/security_dac.c:856 src/security/security_selinux.c:493
 msgid "security image label already defined for VM"
@@ -15779,55 +15693,54 @@ msgstr ""
 msgid "missing label for static security driver in domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:886 src/security/security_dac.c:907
-#, fuzzy, c-format
+#: src/security/security_dac.c:886 src/security/security_dac.c:906
+#, c-format
 msgid "cannot generate dac user and group id for domain %s"
-msgstr "instanceid ਲਈ ਲਗਾਤਾਰ uuid ਨਹੀਂ ਬਣਾ ਸਕਦਾ"
+msgstr ""
 
-#: src/security/security_dac.c:897 src/security/security_selinux.c:548
+#: src/security/security_dac.c:896 src/security/security_selinux.c:548
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr ""
 
-#: src/security/security_driver.c:79
-#, fuzzy, c-format
+#: src/security/security_driver.c:77
+#, c-format
 msgid "Security driver %s not enabled"
-msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨਹੀਂ ਲੱਭਿਆ"
+msgstr ""
 
-#: src/security/security_driver.c:92
+#: src/security/security_driver.c:90
 #, c-format
 msgid "Security driver %s not found"
 msgstr ""
 
-#: src/security/security_manager.c:135
+#: src/security/security_manager.c:141
 msgid "Security driver \"none\" cannot create confined guests"
 msgstr ""
 
-#: src/security/security_manager.c:346
+#: src/security/security_manager.c:354
 msgid "Unconfined guests are not allowed on this host"
 msgstr ""
 
 #: src/security/security_selinux.c:116 src/security/security_selinux.c:257
-#, fuzzy
 msgid "Unable to get current process SELinux context"
-msgstr "ਮੌਜੂਦਾ ਸਮਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਮਰਥ"
+msgstr ""
 
 #: src/security/security_selinux.c:121 src/security/security_selinux.c:262
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
-msgstr "ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ '%s' ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:134
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse sensitivity level in %s"
-msgstr "ਮੈਮੋਰੀ ਲੈਵਲ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/security/security_selinux.c:149 src/security/security_selinux.c:156
 #: src/security/security_selinux.c:172 src/security/security_selinux.c:179
 #: src/security/security_selinux.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse category in %s"
-msgstr "ਕੰਟਰੋਲਰ ਸੂਚੀ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/security/security_selinux.c:165
 msgid "No category range available"
@@ -15839,29 +15752,28 @@ msgid "Category range c%d-c%d too small"
 msgstr ""
 
 #: src/security/security_selinux.c:270
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse base SELinux context '%s'"
-msgstr "ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ '%s' ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:278
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set SELinux context user '%s'"
-msgstr "ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ '%s' ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:287
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set SELinux context role '%s'"
-msgstr "ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ '%s' ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:294
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set SELinux context MCS '%s'"
-msgstr "ਸੁਰੱਖਿਆ ਪ੍ਰਸੰਗ '%s' ਸੈੱਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:300
-#, fuzzy
 msgid "Unable to format SELinux context"
-msgstr "guestfwd ਪੋਰਟ ਫਾਰਮੈਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/security/security_selinux.c:329
 #, c-format
@@ -16166,9 +16078,8 @@ msgid "skipped non-absolute path"
 msgstr ""
 
 #: src/security/virt-aa-helper.c:784
-#, fuzzy
 msgid "could not find realpath for disk"
-msgstr "ਹਟਾਉਣ ਲਈ ਈਵੈਂਟ ਕਾਲ ਬੈਕ ਨੂੰ ਲੱਭ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
 #: src/security/virt-aa-helper.c:798
 msgid "skipped restricted file"
@@ -16447,9 +16358,8 @@ msgid "cannot open file using fd"
 msgstr ""
 
 #: src/storage/storage_backend.c:1636
-#, fuzzy
 msgid "read error on pipe"
-msgstr "'%s' ਨੂੰ ਪੜਨ ਵੇਲੇ ਪਾਈਪ ਗਲਤੀ"
+msgstr ""
 
 #: src/storage/storage_backend.c:1665 src/storage/storage_backend.c:1678
 #, c-format
@@ -16532,9 +16442,8 @@ msgid "invalid netfs path (ends in /): %s"
 msgstr "ਗਲਤ netfs ਮਾਰਗ (/ ਵਿੱਚ ਅੰਤ ਹੁੰਦਾ ਹੈ): %s"
 
 #: src/storage/storage_backend_fs.c:263 src/test/test_driver.c:4063
-#, fuzzy
 msgid "hostname must be specified for netfs sources"
-msgstr "%s ਜੰਤਰ ਲਈ ਟਾਰਗਿਟ ਕਿਸਮ ਨਿਰਧਾਰਤ ਕਰਨੀ ਜਰੂਰੀ ਹੈ"
+msgstr ""
 
 #: src/storage/storage_backend_fs.c:273 src/storage/storage_backend_fs.c:364
 #: src/storage/storage_backend_fs.c:461
@@ -16567,9 +16476,9 @@ msgid "missing source device"
 msgstr "ਸਰੋਤ ਜੰਤਰ ਗੁੰਮ ਹੈ"
 
 #: src/storage/storage_backend_fs.c:388
-#, fuzzy, c-format
+#, c-format
 msgid "Target '%s' is already mounted"
-msgstr "ਟਾਰਗਿਟ '%s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgstr ""
 
 #: src/storage/storage_backend_fs.c:471
 msgid "missing source dir"
@@ -16655,14 +16564,14 @@ msgid "cannot unlink file '%s'"
 msgstr "ਫਾਇਲ '%s' ਦਾ ਲਿੰਕ ਨਹੀਂ ਹਟਾ ਸਕਦਾ"
 
 #: src/storage/storage_backend_fs.c:1148
-#, fuzzy, c-format
+#, c-format
 msgid "cannot remove directory '%s'"
-msgstr "ਡਾਇਰੈਕਟਰੀ %s ਬਣਾ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
 #: src/storage/storage_backend_fs.c:1157
-#, fuzzy, c-format
+#, c-format
 msgid "removing block or network volumes is not supported: %s"
-msgstr "ਨਾਨ-ਰਾਅ ਫਾਇਲ ਈਮੇਨ ਨੂੰ qemu-img ਤੋਂ ਬਿਨਾਂ ਬਣਾਉਣ ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ।"
+msgstr ""
 
 #: src/storage/storage_backend_iscsi.c:67
 #, c-format
@@ -16725,9 +16634,8 @@ msgid "Failed to find LUs on host %u"
 msgstr "LUs ਨੂੰ ਮੇਜ਼ਬਾਨ %u ਤੇ ਲੱਭਣ ਵਿੱਚ ਫੇਲ"
 
 #: src/storage/storage_backend_iscsi.c:587
-#, fuzzy
 msgid "hostname and device path must be specified for iscsi sources"
-msgstr "%s ਜੰਤਰ ਲਈ ਟਾਰਗਿਟ ਕਿਸਮ ਨਿਰਧਾਰਤ ਕਰਨੀ ਜਰੂਰੀ ਹੈ"
+msgstr ""
 
 #: src/storage/storage_backend_logical.c:152
 msgid "malformed volume extent stripes value"
@@ -16742,9 +16650,8 @@ msgid "malformed volume extent size value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
 
 #: src/storage/storage_backend_logical.c:176
-#, fuzzy
 msgid "malformed volume allocation value"
-msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
+msgstr ""
 
 #: src/storage/storage_backend_logical.c:219
 msgid "malformed volume extent devices value"
@@ -16930,9 +16837,8 @@ msgid "Write to '%s' to trigger host scan failed"
 msgstr "ਟਰਿੱਗਰ ਹੋਸਟ ਸਕੈਨ ਵਿੱਚ '%s' ਵਿੱਚ ਲਿਖਣਾ ਫੇਲ ਹੋਇਆ"
 
 #: src/storage/storage_backend_sheepdog.c:163
-#, fuzzy
 msgid "Sheepdog does not support encrypted volumes"
-msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ ਇਨਕ੍ਰਿਪਟਡ ਵਾਲੀਅਮਾਂ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
+msgstr ""
 
 #: src/storage/storage_driver.c:78
 #, c-format
@@ -17268,9 +17174,9 @@ msgid "cannot hotplug vcpus for an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ vcpus ਨੂੰ ਹਾਟਪਲੱਗ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #: src/test/test_driver.c:2207
-#, fuzzy, c-format
+#, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
-msgstr "vCPU ਕਾਊਂਟ ਅਧਿਕਤਮ ਤੋਂ ਜਿਆਦਾ ਹੈ: %d > %d"
+msgstr ""
 
 #: src/test/test_driver.c:2278
 msgid "cannot list vcpus for an inactive domain"
@@ -17540,9 +17446,9 @@ msgid "Unable to remove %s (%d)"
 msgstr ""
 
 #: src/util/cgroup.c:908
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot recover cgroup %s from %s"
-msgstr "%s ਲਈ ਸੰਰਚਨਾ ਹਟਾ ਨਹੀਂ ਸਕਦਾ"
+msgstr ""
 
 #: src/util/command.c:173
 #, c-format
@@ -18258,14 +18164,14 @@ msgid "cannot determine filesystem for '%s'"
 msgstr ""
 
 #: src/util/storage_file.c:1127
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get LVM key for %s"
-msgstr "%s ਲਈ cgroup ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/util/storage_file.c:1165
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get SCSI key for %s"
-msgstr "%s ਲਈ cgroup ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+msgstr ""
 
 #: src/util/sysinfo.c:222 src/util/sysinfo.c:366 src/util/sysinfo.c:381
 #, c-format
@@ -18623,9 +18529,9 @@ msgid "Unable to mark loop device as autoclear"
 msgstr ""
 
 #: src/util/virfile.c:624
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to associate file %s with loop device"
-msgstr "ਜੰਤਰ %s ਮਨਜੂਰ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/util/virhash.c:42
 msgid "Hash operation not allowed during iteration"
@@ -18816,9 +18722,9 @@ msgid "Unable to preserve mac/vlan tag for pf = %s, vf = %d"
 msgstr ""
 
 #: src/util/virnetdev.c:1604
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse vlan tag from '%s'"
-msgstr "%s ਵਿੱਚ NIC vlan ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+msgstr ""
 
 #: src/util/virnetdev.c:1682
 msgid "Unable to dump link info on this platform"
@@ -18948,12 +18854,12 @@ msgstr ""
 msgid "Cannot create macvlan devices on this platform"
 msgstr ""
 
-#: src/util/virnetdevopenvswitch.c:132
+#: src/util/virnetdevopenvswitch.c:135
 #, c-format
 msgid "Unable to add port %s to OVS bridge %s"
 msgstr ""
 
-#: src/util/virnetdevopenvswitch.c:170
+#: src/util/virnetdevopenvswitch.c:173
 #, c-format
 msgid "Unable to delete port %s from OVS"
 msgstr ""
@@ -19001,9 +18907,9 @@ msgid "missing %s in <virtualport type='%s'>"
 msgstr ""
 
 #: src/util/virnetdevvportprofile.c:243
-#, fuzzy, c-format
+#, c-format
 msgid "extra %s unsupported in <virtualport type='%s'>"
-msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਮਾਨੀਟਰ ਕਿਸਮ '%s'"
+msgstr ""
 
 #: src/util/virnetdevvportprofile.c:271
 #, c-format
@@ -19045,9 +18951,8 @@ msgid ""
 msgstr ""
 
 #: src/util/virnetdevvportprofile.c:381
-#, fuzzy
 msgid "corrupted profileid string"
-msgstr "ਨਾ-ਖਤਮ ਸਤਰ"
+msgstr ""
 
 #: src/util/virnetdevvportprofile.c:463
 msgid "error parsing pid of lldpad"
@@ -19113,7 +19018,7 @@ msgstr ""
 msgid "operation type %d not supported"
 msgstr "ਕਾਰਵਾਈ ਕਿਸਮ %d ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#: src/util/virnetdevvportprofile.c:1259 src/util/virnetdevvportprofile.c:1271
+#: src/util/virnetdevvportprofile.c:1260 src/util/virnetdevvportprofile.c:1272
 msgid "Virtual port profile association not supported on this platform"
 msgstr ""
 
@@ -19123,27 +19028,26 @@ msgstr ""
 
 #: src/util/virnetlink.c:199 src/util/virnetlink.c:461
 #: src/util/virnetlink.c:510
-#, fuzzy, c-format
+#, c-format
 msgid "invalid protocol argument: %d"
-msgstr "ਗਲਤ ਆਰਗੂਮੈਂਟ: %s"
+msgstr ""
 
 #: src/util/virnetlink.c:206
 msgid "cannot allocate nlhandle for netlink"
 msgstr ""
 
 #: src/util/virnetlink.c:212 src/util/virnetlink.c:542
-#, fuzzy, c-format
+#, c-format
 msgid "cannot connect to netlink socket with protocol %d"
-msgstr "netlink ਸਾਕਟ ਨੂੰ ਭੇਜ ਨਹੀਂ ਸਕਦਾ ਹੈ"
+msgstr ""
 
 #: src/util/virnetlink.c:221 src/util/virnetlink.c:549
 msgid "cannot get netlink socket fd"
 msgstr ""
 
 #: src/util/virnetlink.c:228 src/util/virnetlink.c:555
-#, fuzzy
 msgid "cannot add netlink membership"
-msgstr "netlink ਸਾਕਟ ਨੂੰ ਭੇਜ ਨਹੀਂ ਸਕਦਾ ਹੈ"
+msgstr ""
 
 #: src/util/virnetlink.c:240
 msgid "cannot send to netlink socket"
@@ -19214,9 +19118,8 @@ msgid "Invalid suspend target"
 msgstr ""
 
 #: src/util/virnodesuspend.c:236
-#, fuzzy
 msgid "Failed to create thread to suspend the host"
-msgstr "polkit ਕੰਟੈਕਸਟ %s ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: src/util/virpidfile.c:332
 #, c-format
@@ -19993,23 +19896,22 @@ msgid "block copy still active: %s"
 msgstr ""
 
 #: src/util/virterror.c:1193
-#, fuzzy
 msgid "Operation not supported"
-msgstr "ਕਾਰਵਾਈ ਕਿਸਮ %d ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/util/virterror.c:1195
-#, fuzzy, c-format
+#, c-format
 msgid "Operation not supported: %s"
-msgstr "ਕਾਰਵਾਈ ਕਿਸਮ %d ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+msgstr ""
 
 #: src/util/virterror.c:1199
 msgid "SSH transport error"
 msgstr ""
 
 #: src/util/virterror.c:1201
-#, fuzzy, c-format
+#, c-format
 msgid "SSH transport error: %s"
-msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ %s"
+msgstr ""
 
 #: src/util/virterror.c:1205
 #, fuzzy
@@ -20080,9 +19982,9 @@ msgid "unexpected type %d for field %s"
 msgstr ""
 
 #: src/util/viruri.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse URI %s"
-msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਅਸਫਲ"
+msgstr ""
 
 #: src/util/xml.c:78
 msgid "Invalid parameter to virXPathString()"
@@ -20629,14 +20531,13 @@ msgid "unable to write data to '%s'"
 msgstr ""
 
 #: src/vbox/vbox_tmpl.c:9281
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get list of domains, rc=%08x"
-msgstr "ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਨਹੀਂ ਲੈ ਸਕਿਆ, rc=%08x"
+msgstr ""
 
 #: src/vbox/vbox_tmpl.c:9315
-#, fuzzy
 msgid "could not get snapshot count for listed domains"
-msgstr "ਡੋਮੇਨ  %s ਲਈ ਸਨੈਪਸ਼ਾਟ ਗਿਣਤੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+msgstr ""
 
 #: src/vmware/vmware_conf.c:254
 #, c-format
@@ -21168,9 +21069,9 @@ msgid "Floppy '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr ""
 
 #: src/vmx/vmx.c:3667
-#, fuzzy, c-format
+#, c-format
 msgid "Only '%s' filesystem type is supported"
-msgstr "ਸਿਰਫ ਇੱਕ ਫਾਇਲ ਸਿਸਟਮ ਸਹਿਯੋਗੀ ਹੈ"
+msgstr ""
 
 #: src/vmx/vmx.c:3711
 #, c-format
@@ -21271,20 +21172,20 @@ msgid "cannot find default console device"
 msgstr ""
 
 #: src/xen/xen_hypervisor.c:542
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to lock %zu bytes of memory"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+msgstr ""
 
 #: src/xen/xen_hypervisor.c:558
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlock %zu bytes of memory"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+msgstr ""
 
 #: src/xen/xen_hypervisor.c:927 src/xen/xen_hypervisor.c:966
 #: src/xen/xen_hypervisor.c:1006 src/xen/xen_hypervisor.c:1046
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to issue hypervisor ioctl %d"
-msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕਿਸਮ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/xen/xen_hypervisor.c:1169 src/xen/xen_hypervisor.c:1250
 #: src/xen/xen_hypervisor.c:1356
@@ -21333,9 +21234,9 @@ msgid "invalid path, vif<domid> should match this domain ID"
 msgstr ""
 
 #: src/xen/xen_hypervisor.c:2069 src/xen/xen_hypervisor.c:2173
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to issue hypervisor ioctl %lu"
-msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕਿਸਮ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
+msgstr ""
 
 #: src/xen/xen_hypervisor.c:2456
 msgid "could not read CPU flags"
@@ -21448,9 +21349,9 @@ msgid "xend_post: error from xen daemon: %s"
 msgstr "xend_post: xen ਡੈਮਨ ਤੋਂ ਗਲਤੀ: %s"
 
 #: src/xen/xend_internal.c:456
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected HTTP error code %d"
-msgstr "ਅਣਜਾਣ CPU ਮੋਡ %d"
+msgstr ""
 
 #: src/xen/xend_internal.c:676
 #, c-format
@@ -22324,9 +22225,8 @@ msgid "Failed to reconnect to the hypervisor"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਮੁੜ-ਜੁੜਨ ਲਈ ਫੇਲ"
 
 #: tools/virsh.c:271
-#, fuzzy
 msgid "Unable to register disconnect callback"
-msgstr "ਸਾਕਟ ਤੇ ਸੁਣਨ ਲਈ ਅਸਮਰੱਥ"
+msgstr ""
 
 #: tools/virsh.c:273
 msgid "Reconnected to the hypervisor"
@@ -22834,9 +22734,9 @@ msgid "option -d takes a numeric argument"
 msgstr "ਚੋਣ -d ਦਾ ਮੁੱਲ ਅੰਕਾਂ ਵਿੱਚ ਹੁੰਦਾ ਹੈ"
 
 #: tools/virsh.c:2757
-#, fuzzy, c-format
+#, c-format
 msgid "ignoring debug level %d out of range [%d-%d]"
-msgstr "ਸਟਾਰਟ ਸੈੱਲ %d ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ (0-%d)"
+msgstr ""
 
 #: tools/virsh.c:2798
 #, c-format
@@ -25195,14 +25095,12 @@ msgid "control or query domain emulator affinity"
 msgstr ""
 
 #: tools/virsh-domain.c:4828
-#, fuzzy
 msgid "Pin domain emulator threads to host physical CPUs."
-msgstr "ਮੇਜ਼ਬਾਨ ਭੌਤਿਕ CPU ਲਈ ਡੋਮੇਨ VCPU ਹਨ।"
+msgstr ""
 
 #: tools/virsh-domain.c:4884
-#, fuzzy
 msgid "emulatorpin: Missing cpulist."
-msgstr "vcpupin: Missing cpulist."
+msgstr ""
 
 #: tools/virsh-domain.c:4908
 msgid "emulator:"
@@ -25832,23 +25730,20 @@ msgid "Get the maximum migration bandwidth (in MiB/s) for a domain."
 msgstr ""
 
 #: tools/virsh-domain.c:7017
-#, fuzzy
 msgid "domain display connection URI"
-msgstr "ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਕੁਨੈਕਸ਼ਨ"
+msgstr ""
 
 #: tools/virsh-domain.c:7018
-#, fuzzy
 msgid "Output the IP address and port number for the graphical display."
-msgstr "VNC ਡਿਸਪਲੇਅ ਲਈ IP ਸਿਰਨਾਵਾਂ ਅਤੇ ਪੋਰਟ ਨੰਬਰ ਨੂੰ ਆਉਟਪੁੱਟ ਵੇਖਾਓ।"
+msgstr ""
 
 #: tools/virsh-domain.c:7024
 msgid "includes the password into the connection URI if available"
 msgstr ""
 
 #: tools/virsh-domain.c:7168
-#, fuzzy
 msgid "Failed to create display URI"
-msgstr "ਪਾਈਪ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
+msgstr ""
 
 #: tools/virsh-domain.c:7193
 msgid "vnc display"
@@ -25871,9 +25766,8 @@ msgid "Output the device for the TTY console."
 msgstr "TTY ਕੰਸੋਲ ਲਈ ਜੰਤਰ ਵੇਖਾਓ।"
 
 #: tools/virsh-domain.c:7316
-#, fuzzy
 msgid "print the domain's hostname"
-msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਮੇਜ਼ਬਾਨ ਨਾਂ ਪ੍ਰਿੰਟ ਕਰੋ"
+msgstr ""
 
 #: tools/virsh-domain.c:7341 tools/virsh-host.c:789
 msgid "failed to get hostname"
@@ -26078,7 +25972,7 @@ msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
 
 #: tools/virsh-domain.c:8239
-msgid "force media insertion"
+msgid "force media changing"
 msgstr ""
 
 #: tools/virsh-domain.c:8268
@@ -26446,18 +26340,18 @@ msgid "failed to get hypervisor type"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕਿਸਮ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
 #: tools/virsh-host.c:870
-#, fuzzy, c-format
+#, c-format
 msgid "Compiled against library: libvirt %d.%d.%d\n"
-msgstr "ਲਾਈਬਰੇਰੀ ਵਰਜਨ ਨਾਲ ਕੰਪਾਇਲ: libvir %d.%d.%d\n"
+msgstr ""
 
 #: tools/virsh-host.c:875
 msgid "failed to get the library version"
 msgstr "ਲਾਇਬਰੇਰੀ ਵਰਜਨ ਲੈਣ ਲਈ ਅਸਫ਼ਲ"
 
 #: tools/virsh-host.c:882
-#, fuzzy, c-format
+#, c-format
 msgid "Using library: libvirt %d.%d.%d\n"
-msgstr "ਲਾਇਬਰੇਰੀ ਰਾਹੀਂ: libvir %d.%d.%d\n"
+msgstr ""
 
 #: tools/virsh-host.c:889
 #, c-format
@@ -28842,42 +28736,3 @@ msgstr ""
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr ""
-
-#~ msgid "a parameter is missing for 802.1Qbg description"
-#~ msgstr ""
-#~ "802.1Qbg ਵਰਣਨ ਲਈ ਇੱਕ ਪੈਰਾਮੀਟਰ ਗੈਰਮੌਜੂਦ ਹੈ802.1Qbg ਵਰਣਨ ਲਈ ਇੱਕ ਪੈਰਾਮੀਟਰ "
-#~ "ਗੈਰਮੌਦ802.1Qbg ਵਰਣਨ ਲਈ ਇੱਕ ਪੈਰਾਮੀਟਰ ਗੈਰਮੌ802.1Qbg ਵਰਣਨ ਲਈ ਇੱਕ ਪੈਰਾਮੀਟਰ ਗੌਰ802.1Qbg "
-#~ "ਵਰਣਨ ਲਈ ਇੱਕ ਪੈਰਾਮੀਟਰ ਗੌ802.1Qbg ਵਰਮ802.1Qbg ਵੇ802.1Qbg ਵ"
-
-#~ msgid "Could not retrieve the HostSystem object"
-#~ msgstr "ਹੋਸਟਸਿਸਟਮ ਆਬਜੈਕਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-#~ msgid "failed to create server socket '%s'"
-#~ msgstr "ਸਰਵਰ ਸਾਕਟ '%s' ਬਣਾਉਣ ਲਈ ਫੇਲ"
-
-#~ msgid "Socket path %s too long for destination"
-#~ msgstr "ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਸਾਕਟ ਮਾਰਗ %s ਬਹੁਤ ਲੰਬਾ ਹੈ"
-
-#~ msgid "failed to bind server socket '%s'"
-#~ msgstr "ਸਰਵਰ ਸਾਕਟ '%s' ਬਾਈਂਡ ਕਰਨ ਲਈ ਫੇਲ"
-
-#~ msgid "Failed to accept a connection from driver"
-#~ msgstr "ਡਰਾਈਵਰ ਤੋਂ ਕੁਨੈਕਸ਼ਨ ਸਵੀਕਾਰ ਕਰਨ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
-
-#~ msgid "Failed to create client socket"
-#~ msgstr "ਕਲਾਂਈਟ ਸਾਕਟ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
-
-#~ msgid "Socket path %s too big for destination"
-#~ msgstr "ਸਾਕਟ ਮਾਰਗ %s ਨੀਯਤ ਟਿਕਾਣੇ ਲਈ ਬਹੁਤ ਵੱਡਾ ਹੈ"
-
-#~ msgid "Failed to connect to client socket"
-#~ msgstr "ਕਲਾਂਈਟ ਸਾਕਟ ਨਾਲ ਜੁੜਨ ਤੋਂ ਫੇਲ"
-
-#~ msgid "%s"
-#~ msgstr "%s"
-
-#~ msgid "Shutting down $name: "
-#~ msgstr "$name ਨੂੰ ਬੰਦ ਕਰ ਰਿਹਾ ਹੈ: "
-
-#~ msgid "failed to shutdown in time"
-#~ msgstr "ਸਮੇਂ ਨਾਲ ਸ਼ੱਟਡਾਊਨ ਕਰਨ ਤੋਂ ਫੇਲ ਹੋਇਆ ਹੈ"
