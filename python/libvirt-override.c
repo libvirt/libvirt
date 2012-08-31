@@ -5763,8 +5763,10 @@ libvirt_virDomainBlockPeek(PyObject *self ATTRIBUTE_UNUSED,
     c_retval = virDomainBlockPeek(domain, disk, offset, size, buf, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_retval < 0)
+    if (c_retval < 0) {
+        py_retval = VIR_PY_NONE;
         goto cleanup;
+    }
 
     py_retval = PyString_FromStringAndSize(buf, size);
 
@@ -5798,8 +5800,10 @@ libvirt_virDomainMemoryPeek(PyObject *self ATTRIBUTE_UNUSED,
     c_retval = virDomainMemoryPeek(domain, start, size, buf, flags);
     LIBVIRT_END_ALLOW_THREADS;
 
-    if (c_retval < 0)
+    if (c_retval < 0) {
+        py_retval = VIR_PY_NONE;
         goto cleanup;
+    }
 
     py_retval = PyString_FromStringAndSize(buf, size);
 
