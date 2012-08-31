@@ -84,7 +84,6 @@ static char *ebtables_cmd_path;
 static char *iptables_cmd_path;
 static char *ip6tables_cmd_path;
 static char *grep_cmd_path;
-static char *awk_cmd_path;
 
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
     snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
@@ -565,12 +564,11 @@ static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                                          int stopOnError)
 {
     virBufferAsprintf(buf,
-                      "res=$($IPT -L %s -n --line-number | "
-                          "%s \" %s \")\n"
+                      "res=$($IPT -L %s -n --line-number | %s '%s')\n"
                       "if [ $? -ne 0 ]; then\n"
                       "  $IPT -I %s %d -j %s\n"
                       "else\n"
-                      "  r=$(echo $res | %s '{print $1}')\n"
+                      "  set dummy $res; r=$2\n"
                       "  if [ \"${r}\" != \"%d\" ]; then\n"
                       "    " CMD_DEF("$IPT -I %s %d -j %s") CMD_SEPARATOR
                       "    " CMD_EXEC
@@ -582,11 +580,9 @@ static int iptablesLinkIPTablesBaseChain(virBufferPtr buf,
                       "  fi\n"
                       "fi\n",
 
-                      syschain,
-                      grep_cmd_path, udchain,
+                      syschain, grep_cmd_path, udchain,
 
                       syschain, pos, udchain,
-                      awk_cmd_path,
 
                       pos,
 
@@ -4295,7 +4291,6 @@ ebiptablesDriverInit(bool privileged)
     if (virMutexInit(&execCLIMutex) < 0)
         return -EINVAL;
 
-    awk_cmd_path = virFindFileInPath("awk");
     grep_cmd_path = virFindFileInPath("grep");
 
     /*
@@ -4311,7 +4306,7 @@ ebiptablesDriverInit(bool privileged)
 
     /* ip(6)tables support needs awk & grep, ebtables doesn't */
     if ((iptables_cmd_path != NULL || ip6tables_cmd_path != NULL) &&
-        (!grep_cmd_path || !awk_cmd_path)) {
+        !grep_cmd_path) {
         VIR_ERROR(_("essential tools to support ip(6)tables "
                   "firewalls could not be located"));
         VIR_FREE(iptables_cmd_path);
@@ -4333,7 +4328,6 @@ ebiptablesDriverInit(bool privileged)
 static void
 ebiptablesDriverShutdown(void)
 {
-    VIR_FREE(awk_cmd_path);
     VIR_FREE(grep_cmd_path);
     VIR_FREE(ebtables_cmd_path);
     VIR_FREE(iptables_cmd_path);
