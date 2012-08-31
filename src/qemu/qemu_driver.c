@@ -13496,7 +13496,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     char *map = NULL;
     char *map2 = NULL;
     int rv = -1;
-    int i, max_id;
+    int i, id, max_id;
     char *pos;
     char *buf = NULL;
     unsigned long long *sum_cpu_time = NULL;
@@ -13537,10 +13537,13 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     /* return percpu cputime in index 0 */
     param_idx = 0;
 
-    if (max_id - start_cpu > ncpus - 1)
-        max_id = start_cpu + ncpus - 1;
+    /* number of cpus to compute */
+    id = max_id;
 
-    for (i = 0; i <= max_id; i++) {
+    if (max_id - start_cpu > ncpus - 1)
+        id = start_cpu + ncpus - 1;
+
+    for (i = 0; i <= id; i++) {
         if (!map[i]) {
             cpu_time = 0;
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
@@ -13580,7 +13583,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     }
 
     sum_cpu_pos = sum_cpu_time;
-    for (i = 0; i <= max_id; i++) {
+    for (i = 0; i <= id; i++) {
         if (!map[i])
             cpu_time = 0;
         else
