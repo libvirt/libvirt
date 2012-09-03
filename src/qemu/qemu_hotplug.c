@@ -1517,6 +1517,8 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
                                                     &dev->data.vnc.auth,
                                                     driver->vncPassword);
+            if (ret < 0)
+                return ret;
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
@@ -1575,6 +1577,9 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
                                                     &dev->data.spice.auth,
                                                     driver->spicePassword);
+
+            if (ret < 0)
+                return ret;
 
             /* Steal the new dev's char * reference */
             VIR_FREE(olddev->data.spice.auth.passwd);
