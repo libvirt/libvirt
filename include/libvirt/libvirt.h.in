@@ -2279,6 +2279,26 @@ int                     virConnectNumOfDefinedNetworks  (virConnectPtr conn);
 int                     virConnectListDefinedNetworks   (virConnectPtr conn,
                                                          char **const names,
                                                          int maxnames);
+/*
+ * virConnectListAllNetworks:
+ *
+ * Flags used to filter the returned networks. Flags in each group
+ * are exclusive attributes of a network.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_NETWORKS_INACTIVE      = 1 << 0,
+    VIR_CONNECT_LIST_NETWORKS_ACTIVE        = 1 << 1,
+
+    VIR_CONNECT_LIST_NETWORKS_PERSISTENT    = 1 << 2,
+    VIR_CONNECT_LIST_NETWORKS_TRANSIENT     = 1 << 3,
+
+    VIR_CONNECT_LIST_NETWORKS_AUTOSTART     = 1 << 4,
+    VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART  = 1 << 5,
+} virConnectListAllNetworksFlags;
+
+int                     virConnectListAllNetworks       (virConnectPtr conn,
+                                                         virNetworkPtr **nets,
+                                                         unsigned int flags);
 
 /*
  * Lookup network by name or uuid

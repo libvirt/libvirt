@@ -1082,6 +1082,10 @@ typedef int
         (*virDrvListDefinedNetworks)    (virConnectPtr conn,
                                          char **const names,
                                          int maxnames);
+typedef int
+        (*virDrvListAllNetworks)        (virConnectPtr conn,
+                                         virNetworkPtr **nets,
+                                         unsigned int flags);
 typedef virNetworkPtr
         (*virDrvNetworkLookupByUUID)    (virConnectPtr conn,
                                          const unsigned char *uuid);
@@ -1140,6 +1144,7 @@ struct _virNetworkDriver {
         virDrvListNetworks          listNetworks;
         virDrvNumOfDefinedNetworks  numOfDefinedNetworks;
         virDrvListDefinedNetworks   listDefinedNetworks;
+        virDrvListAllNetworks       listAllNetworks;
         virDrvNetworkLookupByUUID   networkLookupByUUID;
         virDrvNetworkLookupByName   networkLookupByName;
         virDrvNetworkCreateXML      networkCreateXML;

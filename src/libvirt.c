@@ -9799,6 +9799,76 @@ virNetworkGetConnect (virNetworkPtr net)
 }
 
 /**
+ * virConnectListAllNetworks:
+ * @conn: Pointer to the hypervisor connection.
+ * @nets: Pointer to a variable to store the array containing the network
+ *        objects or NULL if the list is not required (just returns number
+ *        of networks).
+ * @flags: bitwise-OR of virConnectListAllNetworksFlags.
+ *
+ * Collect the list of networks, and allocate an array to store those
+ * objects. This API solves the race inherent between virConnectListNetworks
+ * and virConnectListDefinedNetworks.
+ *
+ * Normally, all networks are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted networks.  The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a network, and where all bits
+ * within a group describe all possible networks.
+ *
+ * The first group of @flags is VIR_CONNECT_LIST_NETWORKS_ACTIVE (up) and
+ * VIR_CONNECT_LIST_NETWORKS_INACTIVE (down) to filter the networks by state.
+ *
+ * The second group of @flags is VIR_CONNECT_LIST_NETWORKS_PERSISTENT (defined)
+ * and VIR_CONNECT_LIST_NETWORKS_TRANSIENT (running but not defined), to filter
+ * the networks by whether they have persistent config or not.
+ *
+ * The third group of @flags is VIR_CONNECT_LIST_NETWORKS_AUTOSTART
+ * and VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART, to filter the networks by
+ * whether they are marked as autostart or not.
+ *
+ * Returns the number of networks found or -1 and sets @nets to  NULL in case
+ * of error.  On success, the array stored into @nets is guaranteed to have an
+ * extra allocated element set to NULL but not included in the return count,
+ * to make iteration easier.  The caller is responsible for calling
+ * virNetworkFree() on each array element, then calling free() on @nets.
+ */
+int
+virConnectListAllNetworks(virConnectPtr conn,
+                          virNetworkPtr **nets,
+                          unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, nets=%p, flags=%x", conn, nets, flags);
+
+    virResetLastError();
+
+    if (nets)
+        *nets = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->networkDriver &&
+        conn->networkDriver->listAllNetworks) {
+        int ret;
+        ret = conn->networkDriver->listAllNetworks(conn, nets, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virConnectNumOfNetworks:
  * @conn: pointer to the hypervisor connection
  *
@@ -9842,7 +9912,13 @@ error:
  *
  * Collect the list of active networks, and store their names in @names
  *
- * Returns the number of networks found or -1 in case of error
+ * For more control over the results, see virConnectListAllNetworks().
+ *
+ * Returns the number of networks found or -1 in case of error.  Note that
+ * this command is inherently racy; a network can be started between a call
+ * to virConnectNumOfNetworks() and this call; you are only guaranteed that
+ * all currently active networks were listed if the return is less than
+ * @maxnames.
  */
 int
 virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
@@ -9919,7 +9995,13 @@ error:
  *
  * list the inactive networks, stores the pointers to the names in @names
  *
- * Returns the number of names provided in the array or -1 in case of error
+ * For more control over the results, see virConnectListAllNetworks().
+ *
+ * Returns the number of names provided in the array or -1 in case of error.
+ * Note that this command is inherently racy; a network can be defined between
+ * a call to virConnectNumOfDefinedNetworks() and this call; you are only
+ * guaranteed that all currently defined networks were listed if the return
+ * is less than @maxnames.  The client must call free() on each returned name.
  */
 int
 virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
