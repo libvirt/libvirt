@@ -589,6 +589,9 @@ Requires: iptables-ipv6
 %if %{with_nwfilter}
 Requires: ebtables
 %endif
+%if %{with_netcf} && (0%{?fedora} >= 18 || 0%{?rhel} >= 7)
+Requires: netcf-libs >= 0.2.2
+%endif
 # needed for device enumeration
 %if %{with_hal}
 Requires: hal
