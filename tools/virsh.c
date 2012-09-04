@@ -511,6 +511,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     char *ret;
     const char *tmpdir;
     int fd;
+    char ebuf[1024];
 
     tmpdir = getenv ("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
@@ -521,14 +522,14 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     fd = mkstemps(ret, 4);
     if (fd == -1) {
         vshError(ctl, _("mkstemps: failed to create temporary file: %s"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
         VIR_FREE(ret);
         return NULL;
     }
 
     if (safewrite(fd, doc, strlen(doc)) == -1) {
         vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
-                 ret, strerror(errno));
+                 ret, virStrerror(errno, ebuf, sizeof(ebuf)));
         VIR_FORCE_CLOSE(fd);
         unlink(ret);
         VIR_FREE(ret);
@@ -536,7 +537,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     }
     if (VIR_CLOSE(fd) < 0) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
-                 ret, strerror(errno));
+                 ret, virStrerror(errno, ebuf, sizeof(ebuf)));
         unlink(ret);
         VIR_FREE(ret);
         return NULL;
@@ -606,11 +607,12 @@ char *
 vshEditReadBackFile(vshControl *ctl, const char *filename)
 {
     char *ret;
+    char ebuf[1024];
 
     if (virFileReadAll(filename, VSH_MAX_XML_FILE, &ret) == -1) {
         vshError(ctl,
                  _("%s: failed to read temporary file: %s"),
-                 filename, strerror(errno));
+                 filename, virStrerror(errno, ebuf, sizeof(ebuf)));
         return NULL;
     }
     return ret;
@@ -637,6 +639,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
     const char *dir = NULL;
     char *dir_malloced = NULL;
     bool ret = true;
+    char ebuf[1024];
 
     if (!ctl->imode) {
         vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
@@ -650,7 +653,8 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
         dir = "/";
 
     if (chdir(dir) == -1) {
-        vshError(ctl, _("cd: %s: %s"), strerror(errno), dir);
+        vshError(ctl, _("cd: %s: %s"),
+                 virStrerror(errno, ebuf, sizeof(ebuf)), dir);
         ret = false;
     }
 
@@ -672,11 +676,12 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     char *cwd;
     bool ret = true;
+    char ebuf[1024];
 
     cwd = getcwd(NULL, 0);
     if (!cwd) {
         vshError(ctl, _("pwd: cannot get current directory: %s"),
-                 strerror(errno));
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
         ret = false;
     } else {
         vshPrint(ctl, _("%s\n"), cwd);
@@ -2188,7 +2193,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     size_t len;
     const char *lvl = "";
     time_t stTime;
-    struct tm *stTm;
+    struct tm stTm;
 
     if (ctl->log_fd == -1)
         return;
@@ -2198,15 +2203,15 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
      *
      * [YYYY.MM.DD HH:MM:SS SIGNATURE PID] LOG_LEVEL message
     */
-    time (&stTime);
-    stTm = localtime(&stTime);
+    time(&stTime);
+    localtime_r(&stTime, &stTm);
     virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s %d] ",
-                      (1900 + stTm->tm_year),
-                      (1 + stTm->tm_mon),
-                      stTm->tm_mday,
-                      stTm->tm_hour,
-                      stTm->tm_min,
-                      stTm->tm_sec,
+                      (1900 + stTm.tm_year),
+                      (1 + stTm.tm_mon),
+                      stTm.tm_mday,
+                      stTm.tm_hour,
+                      stTm.tm_min,
+                      stTm.tm_sec,
                       SIGN_NAME,
                       (int) getpid());
     switch (log_level) {
@@ -2264,10 +2269,13 @@ error:
 void
 vshCloseLogFile(vshControl *ctl)
 {
+    char ebuf[1024];
+
     /* log file close */
     if (VIR_CLOSE(ctl->log_fd) < 0) {
         vshError(ctl, _("%s: failed to write log file: %s"),
-                 ctl->logfile ? ctl->logfile : "?", strerror (errno));
+                 ctl->logfile ? ctl->logfile : "?",
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
     }
 
     if (ctl->logfile) {

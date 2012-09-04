@@ -1,7 +1,7 @@
 /*
  * console.c: A dumb serial console client
  *
- * Copyright (C) 2007-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -299,13 +299,16 @@ vshGetEscapeChar(const char *s)
     return *s;
 }
 
-int vshMakeStdinRaw(struct termios *ttyattr, bool report_errors) {
+int
+vshMakeStdinRaw(struct termios *ttyattr, bool report_errors)
+{
     struct termios rawattr;
+    char ebuf[1024];
 
     if (tcgetattr(STDIN_FILENO, ttyattr) < 0) {
         if (report_errors)
             VIR_ERROR(_("unable to get tty attributes: %s"),
-                      strerror(errno));
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
         return -1;
     }
 
@@ -315,7 +318,7 @@ int vshMakeStdinRaw(struct termios *ttyattr, bool report_errors) {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &rawattr) < 0) {
         if (report_errors)
             VIR_ERROR(_("unable to set tty attributes: %s"),
-                      strerror(errno));
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
         return -1;
     }
 

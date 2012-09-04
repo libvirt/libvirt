@@ -3723,7 +3723,7 @@ vshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
         ext = ".png";
     /* add mime type here */
 
-    time (&cur_time);
+    time(&cur_time);
     localtime_r(&cur_time, &time_info);
     strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
 
