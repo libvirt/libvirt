@@ -2263,6 +2263,22 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
     return -1;
 }
 
+static int
+networkListAllNetworks(virConnectPtr conn,
+                       virNetworkPtr **nets,
+                       unsigned int flags)
+{
+    struct network_driver *driver = conn->networkPrivateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
+
+    networkDriverLock(driver);
+    ret = virNetworkList(conn, driver->networks, nets, flags);
+    networkDriverUnlock(driver);
+
+    return ret;
+}
 
 static int networkIsActive(virNetworkPtr net)
 {
@@ -2793,6 +2809,7 @@ static virNetworkDriver networkDriver = {
     .listNetworks = networkListNetworks, /* 0.2.0 */
     .numOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */
     .listDefinedNetworks = networkListDefinedNetworks, /* 0.2.0 */
+    .listAllNetworks = networkListAllNetworks, /* 0.10.2 */
     .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
     .networkLookupByName = networkLookupByName, /* 0.2.0 */
     .networkCreateXML = networkCreate, /* 0.2.0 */
