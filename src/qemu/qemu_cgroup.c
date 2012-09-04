@@ -542,7 +542,7 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     int rc;
-    unsigned int i;
+    unsigned int i, j;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
 
@@ -603,13 +603,22 @@ int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm)
         }
 
         /* Set vcpupin in cgroup if vcpupin xml is provided */
-        if (def->cputune.nvcpupin &&
-            qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET) &&
-            qemuSetupCgroupVcpuPin(cgroup_vcpu,
-                                   def->cputune.vcpupin,
-                                   def->cputune.nvcpupin,
-                                   i) < 0)
-            goto cleanup;
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            /* find the right CPU to pin, otherwise
+             * qemuSetupCgroupVcpuPin will fail. */
+            for (j = 0; j < def->cputune.nvcpupin; j++) {
+                if (def->cputune.vcpupin[j]->vcpuid != i)
+                    continue;
+
+                if (qemuSetupCgroupVcpuPin(cgroup_vcpu,
+                                           def->cputune.vcpupin,
+                                           def->cputune.nvcpupin,
+                                           i) < 0)
+                    goto cleanup;
+
+                break;
+            }
+        }
 
         virCgroupFree(&cgroup_vcpu);
     }
