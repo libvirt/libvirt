@@ -10730,6 +10730,67 @@ virInterfaceGetConnect (virInterfacePtr iface)
 }
 
 /**
+ * virConnectListAllInterfaces:
+ * @conn: Pointer to the hypervisor connection.
+ * @ifaces: Pointer to a variable to store the array containing the interface
+ *          objects or NULL if the list is not required (just returns number
+ *          of interfaces).
+ * @flags: bitwise-OR of virConnectListAllInterfacesFlags.
+ *
+ * Collect the list of interfaces, and allocate an array to store those
+ * objects. This API solves the race inherent between virConnectListInterfaces
+ * and virConnectListDefinedInterfaces.
+ *
+ * Normally, all interfaces are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted interfaces.  The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a interface, and where all bits
+ * within a group describe all possible interfaces.
+ *
+ * The only group of @flags is VIR_CONNECT_LIST_INTERFACES_ACTIVE (up) and
+ * VIR_CONNECT_LIST_INTERFACES_INACTIVE (down) to filter the interfaces by state.
+ *
+ * Returns the number of interfaces found or -1 and sets @ifaces to  NULL in case
+ * of error.  On success, the array stored into @ifaces is guaranteed to have an
+ * extra allocated element set to NULL but not included in the return count,
+ * to make iteration easier.  The caller is responsible for calling
+ * virStorageInterfaceFree() on each array element, then calling free() on @ifaces.
+ */
+int
+virConnectListAllInterfaces(virConnectPtr conn,
+                            virInterfacePtr **ifaces,
+                            unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, ifaces=%p, flags=%x", conn, ifaces, flags);
+
+    virResetLastError();
+
+    if (ifaces)
+        *ifaces = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->interfaceDriver &&
+        conn->interfaceDriver->listAllInterfaces) {
+        int ret;
+        ret = conn->interfaceDriver->listAllInterfaces(conn, ifaces, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virConnectNumOfInterfaces:
  * @conn: pointer to the hypervisor connection
  *
@@ -10774,7 +10835,13 @@ error:
  * Collect the list of active physical host interfaces,
  * and store their names in @names
  *
- * Returns the number of interfaces found or -1 in case of error
+ * For more control over the results, see virConnectListAllInterfaces().
+ *
+ * Returns the number of interfaces found or -1 in case of error.  Note that
+ * this command is inherently racy; a interface can be started between a call
+ * to virConnectNumOfInterfaces() and this call; you are only guaranteed that
+ * all currently active interfaces were listed if the return is less than
+ * @maxnames.
  */
 int
 virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
@@ -10852,7 +10919,13 @@ error:
  * Collect the list of defined (inactive) physical host interfaces,
  * and store their names in @names.
  *
- * Returns the number of interfaces found or -1 in case of error
+ * For more control over the results, see virConnectListAllInterfaces().
+ *
+ * Returns the number of names provided in the array or -1 in case of error.
+ * Note that this command is inherently racy; a interface can be defined between
+ * a call to virConnectNumOfDefinedInterfaces() and this call; you are only
+ * guaranteed that all currently defined interfaces were listed if the return
+ * is less than @maxnames.  The client must call free() on each returned name.
  */
 int
 virConnectListDefinedInterfaces(virConnectPtr conn,

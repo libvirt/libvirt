@@ -2386,6 +2386,19 @@ int                     virConnectNumOfDefinedInterfaces (virConnectPtr conn);
 int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
                                                           char **const names,
                                                           int maxnames);
+/*
+ * virConnectListAllInterfaces:
+ *
+ * Flags used to filter the returned interfaces.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0,
+    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1,
+} virConnectListAllInterfacesFlags;
+
+int                     virConnectListAllInterfaces (virConnectPtr conn,
+                                                     virInterfacePtr **ifaces,
+                                                     unsigned int flags);
 
 virInterfacePtr         virInterfaceLookupByName  (virConnectPtr conn,
                                                    const char *name);

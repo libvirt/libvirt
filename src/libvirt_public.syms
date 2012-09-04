@@ -556,6 +556,7 @@ LIBVIRT_0.10.0 {
 
 LIBVIRT_0.10.2 {
     global:
+        virConnectListAllInterfaces;
         virConnectListAllNetworks;
         virConnectListAllStoragePools;
         virStoragePoolListAllVolumes;

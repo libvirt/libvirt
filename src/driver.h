@@ -1173,6 +1173,10 @@ typedef int
         (*virDrvListDefinedInterfaces)  (virConnectPtr conn,
                                          char **const names,
                                          int maxnames);
+typedef int
+        (*virDrvListAllInterfaces)      (virConnectPtr conn,
+                                         virInterfacePtr **ifaces,
+                                         unsigned int flags);
 typedef virInterfacePtr
         (*virDrvInterfaceLookupByName)  (virConnectPtr conn,
                                          const char *name);
@@ -1231,6 +1235,7 @@ struct _virInterfaceDriver {
     virDrvListInterfaces             listInterfaces;
     virDrvNumOfDefinedInterfaces     numOfDefinedInterfaces;
     virDrvListDefinedInterfaces      listDefinedInterfaces;
+    virDrvListAllInterfaces          listAllInterfaces;
     virDrvInterfaceLookupByName      interfaceLookupByName;
     virDrvInterfaceLookupByMACString interfaceLookupByMACString;
     virDrvInterfaceGetXMLDesc        interfaceGetXMLDesc;
