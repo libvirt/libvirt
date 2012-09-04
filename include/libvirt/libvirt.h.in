@@ -2654,6 +2654,9 @@ int                     virStoragePoolNumOfVolumes      (virStoragePoolPtr pool)
 int                     virStoragePoolListVolumes       (virStoragePoolPtr pool,
                                                          char **const names,
                                                          int maxnames);
+int                     virStoragePoolListAllVolumes    (virStoragePoolPtr pool,
+                                                         virStorageVolPtr **vols,
+                                                         unsigned int flags);
 
 virConnectPtr           virStorageVolGetConnect         (virStorageVolPtr vol);
 

@@ -461,6 +461,7 @@ skip_function = (
     'virDomainListAllSnapshots', # overridden in virDomain.py
     'virDomainSnapshotListAllChildren', # overridden in virDomainSnapshot.py
     'virConnectListAllStoragePools', # overridden in virConnect.py
+    'virStoragePoolListAllVolumes', # overridden in virStoragePool.py
 
     'virStreamRecvAll', # Pure python libvirt-override-virStream.py
     'virStreamSendAll', # Pure python libvirt-override-virStream.py

@@ -557,6 +557,7 @@ LIBVIRT_0.10.0 {
 LIBVIRT_0.10.2 {
     global:
         virConnectListAllStoragePools;
+        virStoragePoolListAllVolumes;
 } LIBVIRT_0.10.0;
 
 # .... define new API here using predicted next version number ....

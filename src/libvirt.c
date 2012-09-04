@@ -12596,6 +12596,54 @@ error:
     return -1;
 }
 
+/**
+ * virStoragePoolListAllVolumes:
+ * @pool: Pointer to storage pool
+ * @vols: Pointer to a variable to store the array containing storage volume
+ *        objects or NULL if the list is not required (just returns number
+ *        of volumes).
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect the list of storage volumes, and allocate an array to store those
+ * objects.
+ *
+ * Returns the number of storage volumes found or -1 and sets @vols to
+ * NULL in case of error.  On success, the array stored into @vols is
+ * guaranteed to have an extra allocated element set to NULL but not included
+ * in the return count, to make iteration easier.  The caller is responsible
+ * for calling virStorageVolFree() on each array element, then calling
+ * free() on @vols.
+ */
+int
+virStoragePoolListAllVolumes(virStoragePoolPtr pool,
+                             virStorageVolPtr **vols,
+                             unsigned int flags)
+{
+    VIR_DEBUG("pool=%p, vols=%p, flags=%x", pool, vols, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_STORAGE_POOL(pool)) {
+        virLibConnError(VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (pool->conn->storageDriver &&
+        pool->conn->storageDriver->poolListAllVolumes) {
+        int ret;
+        ret = pool->conn->storageDriver->poolListAllVolumes(pool, vols, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(pool->conn);
+    return -1;
+}
 
 /**
  * virStoragePoolNumOfVolumes:
@@ -12642,6 +12690,8 @@ error:
  *
  * Fetch list of storage volume names, limiting to
  * at most maxnames.
+ *
+ * To list the volume objects directly, see virStoragePoolListAllVolumes().
  *
  * Returns the number of names fetched, or -1 on error
  */

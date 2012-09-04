@@ -1311,7 +1311,10 @@ typedef int
     (*virDrvStoragePoolListVolumes)          (virStoragePoolPtr pool,
                                               char **const names,
                                               int maxnames);
-
+typedef int
+    (*virDrvStoragePoolListAllVolumes)       (virStoragePoolPtr pool,
+                                              virStorageVolPtr **vols,
+                                              unsigned int flags);
 
 typedef virStorageVolPtr
     (*virDrvStorageVolLookupByName)          (virStoragePoolPtr pool,
@@ -1419,6 +1422,7 @@ struct _virStorageDriver {
     virDrvStoragePoolSetAutostart           poolSetAutostart;
     virDrvStoragePoolNumOfVolumes           poolNumOfVolumes;
     virDrvStoragePoolListVolumes            poolListVolumes;
+    virDrvStoragePoolListAllVolumes         poolListAllVolumes;
 
     virDrvStorageVolLookupByName            volLookupByName;
     virDrvStorageVolLookupByKey             volLookupByKey;
