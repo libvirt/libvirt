@@ -3944,6 +3944,22 @@ no_memory:
     return -1;
 }
 
+static int
+testStorageListAllPools(virConnectPtr conn,
+                        virStoragePoolPtr **pools,
+                        unsigned int flags)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL, -1);
+
+    testDriverLock(privconn);
+    ret = virStoragePoolList(conn, privconn->pools, pools, flags);
+    testDriverUnlock(privconn);
+
+    return ret;
+}
 
 static int testStoragePoolIsActive(virStoragePoolPtr pool)
 {
@@ -5662,6 +5678,7 @@ static virStorageDriver testStorageDriver = {
     .listPools = testStorageListPools, /* 0.5.0 */
     .numOfDefinedPools = testStorageNumDefinedPools, /* 0.5.0 */
     .listDefinedPools = testStorageListDefinedPools, /* 0.5.0 */
+    .listAllPools = testStorageListAllPools, /* 0.10.2 */
     .findPoolSources = testStorageFindPoolSources, /* 0.5.0 */
     .poolLookupByName = testStoragePoolLookupByName, /* 0.5.0 */
     .poolLookupByUUID = testStoragePoolLookupByUUID, /* 0.5.0 */
