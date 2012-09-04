@@ -2554,6 +2554,39 @@ int                     virConnectListDefinedStoragePools(virConnectPtr conn,
                                                           int maxnames);
 
 /*
+ * virConnectListAllStoragePoolsFlags:
+ *
+ * Flags used to tune pools returned by virConnectListAllStoragePools().
+ * Note that these flags come in groups; if all bits from a group are 0,
+ * then that group is not used to filter results.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE      = 1 << 0,
+    VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE        = 1 << 1,
+
+    VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT    = 1 << 2,
+    VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT     = 1 << 3,
+
+    VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART     = 1 << 4,
+    VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART  = 1 << 5,
+
+    /* List pools by type */
+    VIR_CONNECT_LIST_STORAGE_POOLS_DIR           = 1 << 6,
+    VIR_CONNECT_LIST_STORAGE_POOLS_FS            = 1 << 7,
+    VIR_CONNECT_LIST_STORAGE_POOLS_NETFS         = 1 << 8,
+    VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL       = 1 << 9,
+    VIR_CONNECT_LIST_STORAGE_POOLS_DISK          = 1 << 10,
+    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI         = 1 << 11,
+    VIR_CONNECT_LIST_STORAGE_POOLS_SCSI          = 1 << 12,
+    VIR_CONNECT_LIST_STORAGE_POOLS_MPATH         = 1 << 13,
+    VIR_CONNECT_LIST_STORAGE_POOLS_RBD           = 1 << 14,
+    VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG      = 1 << 15,
+} virConnectListAllStoragePoolsFlags;
+
+int                     virConnectListAllStoragePools(virConnectPtr conn,
+                                                      virStoragePoolPtr **pools,
+                                                      unsigned int flags);
+/*
  * Query a host for storage pools of a particular type
  */
 char *                  virConnectFindStoragePoolSources(virConnectPtr conn,

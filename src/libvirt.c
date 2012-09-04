@@ -11416,6 +11416,90 @@ virStoragePoolGetConnect (virStoragePoolPtr pool)
 }
 
 /**
+ * virConnectListAllStoragePools:
+ * @conn: Pointer to the hypervisor connection.
+ * @pools: Pointer to a variable to store the array containing storage pool
+ *         objects or NULL if the list is not required (just returns number
+ *         of pools).
+ * @flags: bitwise-OR of virConnectListAllStoragePoolsFlags.
+ *
+ * Collect the list of storage pools, and allocate an array to store those
+ * objects. This API solves the race inherent between
+ * virConnectListStoragePools and virConnectListDefinedStoragePools.
+ *
+ * Normally, all storage pools are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted pools.  The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a pool, and where all bits
+ * within a group describe all possible pools.
+ *
+ * The first group of @flags is VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE (online)
+ * and VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE (offline) to filter the pools
+ * by state.
+ *
+ * The second group of @flags is VIR_CONNECT_LIST_STORAGE_POOLS_PERSITENT
+ * (defined) and VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT (running but not
+ * defined), to filter the pools by whether they have persistent config or not.
+ *
+ * The third group of @flags is VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART
+ * and VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART, to filter the pools by
+ * whether they are marked as autostart or not.
+ *
+ * The last group of @flags is provided to filter the pools by the types,
+ * the flags include:
+ * VIR_CONNECT_LIST_STORAGE_POOLS_DIR
+ * VIR_CONNECT_LIST_STORAGE_POOLS_FS
+ * VIR_CONNECT_LIST_STORAGE_POOLS_NETFS
+ * VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL
+ * VIR_CONNECT_LIST_STORAGE_POOLS_DISK
+ * VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI
+ * VIR_CONNECT_LIST_STORAGE_POOLS_SCSI
+ * VIR_CONNECT_LIST_STORAGE_POOLS_MPATH
+ * VIR_CONNECT_LIST_STORAGE_POOLS_RBD
+ * VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG
+ *
+ * Returns the number of storage pools found or -1 and sets @pools to
+ * NULL in case of error.  On success, the array stored into @pools is
+ * guaranteed to have an extra allocated element set to NULL but not included
+ * in the return count, to make iteration easier.  The caller is responsible
+ * for calling virStoragePoolFree() on each array element, then calling
+ * free() on @pools.
+ */
+int
+virConnectListAllStoragePools(virConnectPtr conn,
+                              virStoragePoolPtr **pools,
+                              unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, pools=%p, flags=%x", conn, pools, flags);
+
+    virResetLastError();
+
+    if (pools)
+        *pools = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->storageDriver &&
+        conn->storageDriver->listAllPools) {
+        int ret;
+        ret = conn->storageDriver->listAllPools(conn, pools, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virConnectNumOfStoragePools:
  * @conn: pointer to hypervisor connection
  *
@@ -11457,11 +11541,17 @@ error:
  * @names: array of char * to fill with pool names (allocated by caller)
  * @maxnames: size of the names array
  *
- * Provides the list of names of active storage pools
- * upto maxnames. If there are more than maxnames, the
- * remaining names will be silently ignored.
+ * Provides the list of names of active storage pools up to maxnames.
+ * If there are more than maxnames, the remaining names will be silently
+ * ignored.
  *
- * Returns 0 on success, -1 on error
+ * For more control over the results, see virConnectListAllStoragePools().
+ *
+ * Returns the number of pools found or -1 in case of error.  Note that
+ * this command is inherently racy; a pool can be started between a call to
+ * virConnectNumOfStoragePools() and this call; you are only guaranteed
+ * that all currently active pools were listed if the return is less than
+ * @maxnames.
  */
 int
 virConnectListStoragePools(virConnectPtr conn,
@@ -11540,11 +11630,17 @@ error:
  * @names: array of char * to fill with pool names (allocated by caller)
  * @maxnames: size of the names array
  *
- * Provides the list of names of inactive storage pools
- * upto maxnames. If there are more than maxnames, the
- * remaining names will be silently ignored.
+ * Provides the list of names of inactive storage pools up to maxnames.
+ * If there are more than maxnames, the remaining names will be silently
+ * ignored.
  *
- * Returns 0 on success, -1 on error
+ * For more control over the results, see virConnectListAllStoragePools().
+ *
+ * Returns the number of names provided in the array or -1 in case of error.
+ * Note that this command is inherently racy; a pool can be defined between
+ * a call to virConnectNumOfDefinedStoragePools() and this call; you are only
+ * guaranteed that all currently defined pools were listed if the return
+ * is less than @maxnames.  The client must call free() on each returned name.
  */
 int
 virConnectListDefinedStoragePools(virConnectPtr conn,
