@@ -3039,6 +3039,22 @@ no_memory:
     return -1;
 }
 
+static int
+testNetworkListAllNetworks(virConnectPtr conn,
+                           virNetworkPtr **nets,
+                           unsigned int flags)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
+
+    testDriverLock(privconn);
+    ret = virNetworkList(conn, privconn->networks, nets, flags);
+    testDriverUnlock(privconn);
+
+    return ret;
+}
 
 static int testNetworkIsActive(virNetworkPtr net)
 {
@@ -5698,6 +5714,7 @@ static virNetworkDriver testNetworkDriver = {
     .listNetworks = testListNetworks, /* 0.3.2 */
     .numOfDefinedNetworks = testNumDefinedNetworks, /* 0.3.2 */
     .listDefinedNetworks = testListDefinedNetworks, /* 0.3.2 */
+    .listAllNetworks = testNetworkListAllNetworks, /* 0.10.2 */
     .networkLookupByUUID = testLookupNetworkByUUID, /* 0.3.2 */
     .networkLookupByName = testLookupNetworkByName, /* 0.3.2 */
     .networkCreateXML = testNetworkCreate, /* 0.3.2 */
