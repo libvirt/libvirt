@@ -7801,6 +7801,8 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
+    unsigned long long value_ul;
+    long long value_l;
     int ret = -1;
     int rc;
 
@@ -7857,74 +7859,65 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
+        value_ul = param->value.ul;
+        value_l = param->value.l;
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = virCgroupSetCpuShares(group, params[i].value.ul);
-                if (rc != 0) {
+                if ((rc = virCgroupSetCpuShares(group, value_ul))) {
                     virReportSystemError(-rc, "%s",
                                          _("unable to set cpu shares tunable"));
                     goto cleanup;
                 }
-
-                vm->def->cputune.shares = params[i].value.ul;
+                vm->def->cputune.shares = value_ul;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.shares = params[i].value.ul;
-            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.shares = value_ul;
+
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = qemuSetVcpusBWLive(vm, group, params[i].value.ul, 0);
-                if (rc != 0)
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+                if ((rc = qemuSetVcpusBWLive(vm, group, value_ul, 0)))
                     goto cleanup;
 
-                if (params[i].value.ul)
-                    vm->def->cputune.period = params[i].value.ul;
+                vm->def->cputune.period = value_ul;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
                 vmdef->cputune.period = params[i].value.ul;
-            }
+
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = qemuSetVcpusBWLive(vm, group, 0, params[i].value.l);
-                if (rc != 0)
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+                if ((rc = qemuSetVcpusBWLive(vm, group, 0, value_l)))
                     goto cleanup;
 
-                if (params[i].value.l)
-                    vm->def->cputune.quota = params[i].value.l;
+                vm->def->cputune.quota = value_l;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.quota = params[i].value.l;
-            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.quota = value_l;
+
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = qemuSetEmulatorBandwidthLive(vm, group, params[i].value.ul, 0);
-                if (rc != 0)
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+                if ((rc = qemuSetEmulatorBandwidthLive(vm, group, value_ul, 0)))
                     goto cleanup;
 
-                if (params[i].value.ul)
-                    vm->def->cputune.emulator_period = params[i].value.ul;
+                vm->def->cputune.emulator_period = value_ul;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.emulator_period = params[i].value.ul;
-            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.emulator_period = value_ul;
+
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = qemuSetEmulatorBandwidthLive(vm, group, 0, params[i].value.l);
-                if (rc != 0)
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+                if ((rc = qemuSetEmulatorBandwidthLive(vm, group, 0, value_l)))
                     goto cleanup;
 
-                if (params[i].value.l)
-                    vm->def->cputune.emulator_quota = params[i].value.l;
+                vm->def->cputune.emulator_quota = value_l;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.emulator_quota = params[i].value.l;
-            }
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.emulator_quota = value_l;
         }
     }
 
