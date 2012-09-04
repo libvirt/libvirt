@@ -2045,6 +2045,17 @@ struct remote_connect_list_all_networks_ret {
         } nets;
         u_int                      ret;
 };
+struct remote_connect_list_all_interfaces_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_list_all_interfaces_ret {
+        struct {
+                u_int              ifaces_len;
+                remote_nonnull_interface * ifaces_val;
+        } ifaces;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2329,4 +2340,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281,
         REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282,
         REMOTE_PROC_CONNECT_LIST_ALL_NETWORKS = 283,
+        REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284,
 };

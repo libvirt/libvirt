@@ -2781,6 +2781,69 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllInterfaces(virConnectPtr conn,
+                               virInterfacePtr **ifaces,
+                               unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virInterfacePtr *tmp_ifaces = NULL;
+    remote_connect_list_all_interfaces_args args;
+    remote_connect_list_all_interfaces_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!ifaces;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES,
+             (xdrproc_t) xdr_remote_connect_list_all_interfaces_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_interfaces_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (ifaces) {
+        if (VIR_ALLOC_N(tmp_ifaces, ret.ifaces.ifaces_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.ifaces.ifaces_len; i++) {
+            tmp_ifaces[i] = get_nonnull_interface (conn, ret.ifaces.ifaces_val[i]);
+            if (!tmp_ifaces[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *ifaces = tmp_ifaces;
+        tmp_ifaces = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (tmp_ifaces) {
+        for (i = 0; i < ret.ifaces.ifaces_len; i++)
+            if (tmp_ifaces[i])
+                virInterfaceFree(tmp_ifaces[i]);
+    }
+    VIR_FREE(tmp_ifaces);
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_interfaces_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -5792,6 +5855,7 @@ static virInterfaceDriver interface_driver = {
     .listInterfaces = remoteListInterfaces, /* 0.7.2 */
     .numOfDefinedInterfaces = remoteNumOfDefinedInterfaces, /* 0.7.2 */
     .listDefinedInterfaces = remoteListDefinedInterfaces, /* 0.7.2 */
+    .listAllInterfaces = remoteConnectListAllInterfaces, /* 0.10.2 */
     .interfaceLookupByName = remoteInterfaceLookupByName, /* 0.7.2 */
     .interfaceLookupByMACString = remoteInterfaceLookupByMACString, /* 0.7.2 */
     .interfaceGetXMLDesc = remoteInterfaceGetXMLDesc, /* 0.7.2 */

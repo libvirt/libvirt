@@ -4267,6 +4267,60 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllInterfaces(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                       virNetServerClientPtr client,
+                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                       virNetMessageErrorPtr rerr,
+                                       remote_connect_list_all_interfaces_args *args,
+                                       remote_connect_list_all_interfaces_ret *ret)
+{
+    virInterfacePtr *ifaces = NULL;
+    int nifaces = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((nifaces = virConnectListAllInterfaces(priv->conn,
+                                               args->need_results ? &ifaces : NULL,
+                                               args->flags)) < 0)
+        goto cleanup;
+
+    if (ifaces && nifaces) {
+        if (VIR_ALLOC_N(ret->ifaces.ifaces_val, nifaces) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->ifaces.ifaces_len = nifaces;
+
+        for (i = 0; i < nifaces; i++)
+            make_nonnull_interface(ret->ifaces.ifaces_val + i, ifaces[i]);
+    } else {
+        ret->ifaces.ifaces_len = 0;
+        ret->ifaces.ifaces_val = NULL;
+    }
+
+    ret->ret = nifaces;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (ifaces) {
+        for (i = 0; i < nifaces; i++)
+            virInterfaceFree(ifaces[i]);
+        VIR_FREE(ifaces);
+    }
+    return rv;
+}
+
 
 /*----- Helpers. -----*/
 
