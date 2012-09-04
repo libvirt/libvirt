@@ -1934,10 +1934,20 @@ variables, and defaults to C<vi>.
 Returns basic information about the I<network> object.
 
 =item B<net-list> [I<--inactive> | I<--all>]
+                  [I<--persistent>] [<--transient>]
+                  [I<--autostart>] [<--no-autostart>]
 
 Returns the list of active networks, if I<--all> is specified this will also
 include defined but inactive networks, if I<--inactive> is specified only the
-inactive ones will be listed.
+inactive ones will be listed. You may also want to filter the returned networks
+by I<--persistent> to list the persitent ones, I<--transient> to list the
+transient ones, I<--autostart> to list the ones with autostart enabled, and
+I<--no-autostart> to list the ones with autostart disabled.
+
+NOTE: When talking to older servers, this command is forced to use a series of
+API calls with an inherent race, where a pool might not be listed or might appear
+more than once if it changed state between calls while the list was being
+collected.  Newer servers do not have this problem.
 
 =item B<net-name> I<network-UUID>
 
