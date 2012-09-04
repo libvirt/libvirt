@@ -114,7 +114,7 @@ volatile int atomic;
 static void
 thread_func(void *data)
 {
-    int idx = (int)(long)data;
+    int idx = (intptr_t)data;
     int i;
     int d;
 
@@ -142,7 +142,7 @@ testThreads(const void *data ATTRIBUTE_UNUSED)
         bucket[i] = 0;
 
     for (i = 0; i < THREADS; i++) {
-        if (virThreadCreate(&(threads[i]), true, thread_func, (void*)(long)i) < 0)
+        if (virThreadCreate(&(threads[i]), true, thread_func, (void*)(intptr_t)i) < 0)
             return -1;
     }
 
