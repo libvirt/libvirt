@@ -166,6 +166,50 @@ vshPrettyCapacity(unsigned long long val, const char **unit)
     }
 }
 
+/*
+ * Convert the strings separated by ',' into array. The caller
+ * must free the returned array after use.
+ *
+ * Returns the length of the filled array on success, or -1
+ * on error.
+ */
+int
+vshStringToArray(char *str,
+                 char ***array)
+{
+    char *str_tok = NULL;
+    unsigned int nstr_tokens = 0;
+    char **arr = NULL;
+
+    /* tokenize the string from user and save it's parts into an array */
+    if (str) {
+        nstr_tokens = 1;
+
+        /* count the delimiters */
+        str_tok = str;
+        while (*str_tok) {
+            if (*str_tok == ',')
+                nstr_tokens++;
+            str_tok++;
+        }
+
+        if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+
+        /* tokenize the input string */
+        nstr_tokens = 0;
+        str_tok = str;
+        do {
+            arr[nstr_tokens] = strsep(&str_tok, ",");
+            nstr_tokens++;
+        } while (str_tok);
+    }
+
+    *array = arr;
+    return nstr_tokens;
+}
 
 virErrorPtr last_error;
 

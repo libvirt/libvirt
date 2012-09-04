@@ -2443,23 +2443,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
         /* tokenize the string from user and save it's parts into an array */
         if (volumes) {
-            /* count the delimiters */
-            volume_tok = volumes;
-            nvolume_tokens = 1; /* we need at least one member */
-            while (*volume_tok) {
-                if (*(volume_tok++) == ',')
-                    nvolume_tokens++;
-            }
-
-            volume_tokens = vshCalloc(ctl, nvolume_tokens, sizeof(char *));
-
-            /* tokenize the input string */
-            nvolume_tokens = 0;
-            volume_tok = volumes;
-            do {
-                volume_tokens[nvolume_tokens] = strsep(&volume_tok, ",");
-                nvolume_tokens++;
-            } while (volume_tok);
+            if ((nvolume_tokens = vshStringToArray(volumes, &volume_tokens)) < 0)
+                goto cleanup;
         }
 
         if ((nvolumes = virXPathNodeSet("./devices/disk", ctxt,
