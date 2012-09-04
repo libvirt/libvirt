@@ -206,3 +206,15 @@
             retlist.append(virDomain(self, _obj=domptr))
 
         return retlist
+
+    def listAllStoragePools(self, flags):
+        """Returns a list of storage pool objects"""
+        ret = libvirtmod.virConnectListAllStoragePools(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllStoragePools() failed", conn=self)
+
+        retlist = list()
+        for poolptr in ret:
+            retlist.append(virStoragePool(self, _obj=poolptr))
+
+        return retlist

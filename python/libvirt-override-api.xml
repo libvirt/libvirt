@@ -306,6 +306,12 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='str *' info='the list of Names of None in case of error'/>
     </function>
+    <function name='virConnectListAllStoragePools' file='python'>
+      <info>returns list of all storage pools</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='pool *' info='the list of pools or None in case of error'/>
+    </function>
     <function name='virStoragePoolListVolumes' file='python'>
       <info>list the storage volumes, stores the pointers to the names in @names</info>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to the storage pool'/>
