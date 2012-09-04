@@ -353,18 +353,18 @@ snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
 	@prohibit='! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
 	exclude=':# *define STR(N?EQLEN|PREFIX)\('			\
-	halt='$(ME): use STREQLEN or STRPREFIX instead of str''ncmp'	\
+	halt='use STREQLEN or STRPREFIX instead of str''ncmp'		\
 	  $(_sc_search_regexp)
 
 # strtol and friends are too easy to misuse
 sc_prohibit_strtol:
 	@prohibit='\bstrto(u?ll?|[ui]max) *\('				\
 	exclude='exempt from syntax-check'				\
-	halt='$(ME): use virStrToLong_*, not strtol variants'		\
+	halt='use virStrToLong_*, not strtol variants'			\
 	  $(_sc_search_regexp)
 	@prohibit='\bstrto[df] *\('					\
 	exclude='exempt from syntax-check'				\
-	halt='$(ME): use virStrToDouble, not strtod variants'		\
+	halt='use virStrToDouble, not strtod variants'			\
 	  $(_sc_search_regexp)
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
@@ -550,7 +550,7 @@ func_re := ($(func_or))
 sc_libvirt_unmarked_diagnostics:
 	@prohibit='\<$(func_re) *\([^"]*"[^"]*[a-z]{3}'			\
 	exclude='_\('							\
-	halt='$(ME): found unmarked diagnostic(s)'			\
+	halt='found unmarked diagnostic(s)'				\
 	  $(_sc_search_regexp)
 	@{ grep     -nE '\<$(func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
 	   grep -A1 -nE '\<$(func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
