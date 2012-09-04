@@ -2558,6 +2558,15 @@ struct remote_connect_list_all_domains_ret {
     unsigned int ret;
 };
 
+struct remote_connect_list_all_storage_pools_args {
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_list_all_storage_pools_ret {
+    remote_nonnull_storage_pool pools<>;
+    unsigned int ret;
+};
 
 /*----- Protocol. -----*/
 
@@ -2888,7 +2897,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_HOSTNAME = 277, /* autogen autogen */
     REMOTE_PROC_DOMAIN_GET_SECURITY_LABEL_LIST = 278, /* skipgen skipgen priority:high */
     REMOTE_PROC_DOMAIN_PIN_EMULATOR = 279, /* skipgen skipgen */
-    REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280, /* skipgen skipgen */
+
+    REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

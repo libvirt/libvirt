@@ -4099,6 +4099,60 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllStoragePools(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                         virNetServerClientPtr client,
+                                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                         virNetMessageErrorPtr rerr,
+                                         remote_connect_list_all_storage_pools_args *args,
+                                         remote_connect_list_all_storage_pools_ret *ret)
+{
+    virStoragePoolPtr *pools = NULL;
+    int npools = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((npools = virConnectListAllStoragePools(priv->conn,
+                                                args->need_results ? &pools : NULL,
+                                                args->flags)) < 0)
+        goto cleanup;
+
+    if (pools && npools) {
+        if (VIR_ALLOC_N(ret->pools.pools_val, npools) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->pools.pools_len = npools;
+
+        for (i = 0; i < npools; i++)
+            make_nonnull_storage_pool(ret->pools.pools_val + i, pools[i]);
+    } else {
+        ret->pools.pools_len = 0;
+        ret->pools.pools_val = NULL;
+    }
+
+    ret->ret = npools;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (pools) {
+        for (i = 0; i < npools; i++)
+            virStoragePoolFree(pools[i]);
+        VIR_FREE(pools);
+    }
+    return rv;
+}
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
