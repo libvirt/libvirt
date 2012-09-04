@@ -1058,6 +1058,7 @@ virStoragePoolDefParseString;
 virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
+virStoragePoolList;
 virStoragePoolLoadAllConfigs;
 virStoragePoolObjAssignDef;
 virStoragePoolObjClearVols;
