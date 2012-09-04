@@ -2285,6 +2285,23 @@ cleanup:
     return ret;
 }
 
+static int
+storageListAllPools(virConnectPtr conn,
+                    virStoragePoolPtr **pools,
+                    unsigned int flags)
+{
+    virStorageDriverStatePtr driver = conn->storagePrivateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL, -1);
+
+    storageDriverLock(driver);
+    ret = virStoragePoolList(conn, driver->pools, pools, flags);
+    storageDriverUnlock(driver);
+
+    return ret;
+}
+
 static virStorageDriver storageDriver = {
     .name = "storage",
     .open = storageOpen, /* 0.4.0 */
@@ -2293,6 +2310,7 @@ static virStorageDriver storageDriver = {
     .listPools = storageListPools, /* 0.4.0 */
     .numOfDefinedPools = storageNumDefinedPools, /* 0.4.0 */
     .listDefinedPools = storageListDefinedPools, /* 0.4.0 */
+    .listAllPools = storageListAllPools, /* 0.10.2 */
     .findPoolSources = storageFindPoolSources, /* 0.4.0 */
     .poolLookupByName = storagePoolLookupByName, /* 0.4.0 */
     .poolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
