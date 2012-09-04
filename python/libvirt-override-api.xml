@@ -315,7 +315,13 @@
     <function name='virStoragePoolListVolumes' file='python'>
       <info>list the storage volumes, stores the pointers to the names in @names</info>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to the storage pool'/>
-      <return type='str *' info='the list of Names of None in case of error'/>
+      <return type='str *' info='the list of Names or None in case of error'/>
+    </function>
+    <function name='virStoragePoolListAllVolumes' file='python'>
+      <info>return list of storage volume objects</info>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to the storage pool'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='volume *' info='the list of volumes or None in case of error'/>
     </function>
     <function name='virStoragePoolGetInfo' file='python'>
       <info>Extract information about a storage pool. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>

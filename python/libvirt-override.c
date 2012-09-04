@@ -3083,6 +3083,55 @@ libvirt_virStoragePoolListVolumes(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virStoragePoolListAllVolumes(PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args)
+{
+    PyObject *py_retval = NULL;
+    PyObject *tmp = NULL;
+    virStoragePoolPtr pool;
+    virStorageVolPtr *vols = NULL;
+    int c_retval = 0;
+    int i;
+    unsigned int flags;
+    PyObject *pyobj_pool;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virStoragePoolListAllVolumes",
+                          &pyobj_pool, &flags))
+        return NULL;
+
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolListAllVolumes(pool, &vols, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if (!(tmp = libvirt_virStorageVolPtrWrap(vols[i])) ||
+            PyList_SetItem(py_retval, i, tmp) < 0) {
+            Py_XDECREF(tmp);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        /* python steals the pointer */
+        vols[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (vols[i])
+            virStorageVolFree(vols[i]);
+    VIR_FREE(vols);
+    return py_retval;
+}
+
+
+static PyObject *
 libvirt_virStoragePoolGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval, autostart;
@@ -5927,6 +5976,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectListAllStoragePools", libvirt_virConnectListAllStoragePools, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetAutostart", libvirt_virStoragePoolGetAutostart, METH_VARARGS, NULL},
     {(char *) "virStoragePoolListVolumes", libvirt_virStoragePoolListVolumes, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolListAllVolumes", libvirt_virStoragePoolListAllVolumes, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetInfo", libvirt_virStoragePoolGetInfo, METH_VARARGS, NULL},
     {(char *) "virStorageVolGetInfo", libvirt_virStorageVolGetInfo, METH_VARARGS, NULL},
     {(char *) "virStoragePoolGetUUID", libvirt_virStoragePoolGetUUID, METH_VARARGS, NULL},
