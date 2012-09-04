@@ -4555,6 +4555,72 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
     return -1;
 }
 
+static int
+testStoragePoolListAllVolumes(virStoragePoolPtr obj,
+                              virStorageVolPtr **vols,
+                              unsigned int flags) {
+    testConnPtr privconn = obj->conn->privateData;
+    virStoragePoolObjPtr pool;
+    int i;
+    virStorageVolPtr *tmp_vols = NULL;
+    virStorageVolPtr vol = NULL;
+    int nvols = 0;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    testDriverLock(privconn);
+    pool = virStoragePoolObjFindByUUID(&privconn->pools, obj->uuid);
+    testDriverUnlock(privconn);
+
+    if (!pool) {
+        virReportError(VIR_ERR_NO_STORAGE_POOL, "%s",
+                       _("no storage pool with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("storage pool is not active"));
+        goto cleanup;
+    }
+
+     /* Just returns the volumes count */
+    if (!vols) {
+        ret = pool->volumes.count;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(tmp_vols, pool->volumes.count + 1) < 0) {
+         virReportOOMError();
+         goto cleanup;
+    }
+
+    for (i = 0 ; i < pool->volumes.count; i++) {
+        if (!(vol = virGetStorageVol(obj->conn, pool->def->name,
+                                     pool->volumes.objs[i]->name,
+                                     pool->volumes.objs[i]->key)))
+            goto cleanup;
+        tmp_vols[nvols++] = vol;
+    }
+
+    *vols = tmp_vols;
+    tmp_vols = NULL;
+    ret = nvols;
+
+ cleanup:
+    if (tmp_vols) {
+        for (i = 0; i < nvols; i++) {
+            if (tmp_vols[i])
+                virStorageVolFree(tmp_vols[i]);
+        }
+    }
+
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+
+    return ret;
+}
 
 static virStorageVolPtr
 testStorageVolumeLookupByName(virStoragePoolPtr pool,
@@ -5697,6 +5763,7 @@ static virStorageDriver testStorageDriver = {
     .poolSetAutostart = testStoragePoolSetAutostart, /* 0.5.0 */
     .poolNumOfVolumes = testStoragePoolNumVolumes, /* 0.5.0 */
     .poolListVolumes = testStoragePoolListVolumes, /* 0.5.0 */
+    .poolListAllVolumes = testStoragePoolListAllVolumes, /* 0.10.2 */
 
     .volLookupByName = testStorageVolumeLookupByName, /* 0.5.0 */
     .volLookupByKey = testStorageVolumeLookupByKey, /* 0.5.0 */
