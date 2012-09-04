@@ -230,3 +230,15 @@
             retlist.append(virNetwork(self, _obj=netptr))
 
         return retlist
+
+    def listAllInterfaces(self, flags):
+        """Returns a list of interface objects"""
+        ret = libvirtmod.virConnectListAllInterfaces(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllInterfaces() failed", conn=self)
+
+        retlist = list()
+        for ifaceptr in ret:
+            retlist.append(virInterface(self, _obj=ifaceptr))
+
+        return retlist

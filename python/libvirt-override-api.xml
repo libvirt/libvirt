@@ -416,6 +416,12 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='str *' info='the list of Names of None in case of error'/>
     </function>
+    <function name='virConnectListAllInterfaces' file='python'>
+      <info>returns list of all interfaces</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='interface *' info='the list of interfaces or None in case of error'/>
+    </function>
     <function name='virConnectBaselineCPU' file='python'>
       <info>Computes the most feature-rich CPU which is compatible with all given host CPUs.</info>
       <return type='char *' info='XML description of the computed CPU or NULL on error.'/>
