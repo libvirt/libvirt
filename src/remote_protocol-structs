@@ -2022,6 +2022,18 @@ struct remote_connect_list_all_storage_pools_ret {
         } pools;
         u_int                      ret;
 };
+struct remote_storage_pool_list_all_volumes_args {
+        remote_nonnull_storage_pool pool;
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_storage_pool_list_all_volumes_ret {
+        struct {
+                u_int              vols_len;
+                remote_nonnull_storage_vol * vols_val;
+        } vols;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2304,4 +2316,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_PIN_EMULATOR = 279,
         REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280,
         REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281,
+        REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282,
 };

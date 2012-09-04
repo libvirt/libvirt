@@ -2568,6 +2568,17 @@ struct remote_connect_list_all_storage_pools_ret {
     unsigned int ret;
 };
 
+struct remote_storage_pool_list_all_volumes_args {
+    remote_nonnull_storage_pool pool;
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_storage_pool_list_all_volumes_ret {
+    remote_nonnull_storage_vol vols<>;
+    unsigned int ret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2899,7 +2910,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_PIN_EMULATOR = 279, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280, /* skipgen skipgen */
 
-    REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281 /* skipgen skipgen priority:high */
+    REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281, /* skipgen skipgen priority:high */
+    REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
