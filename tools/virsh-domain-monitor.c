@@ -1290,7 +1290,6 @@ vshDomainListFree(vshDomainListPtr domlist)
     VIR_FREE(domlist);
 }
 
-#define MATCH(FLAG) (flags & (FLAG))
 static vshDomainListPtr
 vshDomainListCollect(vshControl *ctl, unsigned int flags)
 {
@@ -1346,8 +1345,8 @@ fallback:
     vshResetLibvirtError();
 
     /* list active domains, if necessary */
-    if (!MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
         if ((nids = virConnectNumOfDomains(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to list active domains"));
             goto cleanup;
@@ -1363,8 +1362,8 @@ fallback:
         }
     }
 
-    if (!MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
         if ((nnames = virConnectNumOfDefinedDomains(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to list inactive domains"));
             goto cleanup;
@@ -1407,31 +1406,31 @@ filter:
         dom = list->domains[i];
 
         /* persistence filter */
-        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT)) {
             if ((persistent = virDomainIsPersistent(dom)) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain persistence info"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT) && persistent) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) && !persistent)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT) && persistent) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) && !persistent)))
                 goto remove_entry;
         }
 
         /* domain state filter */
-        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
             if (virDomainGetState(dom, &state, NULL, 0) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain state"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
                    state == VIR_DOMAIN_RUNNING) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
                    state == VIR_DOMAIN_PAUSED) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
                    state == VIR_DOMAIN_SHUTOFF) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
                    (state != VIR_DOMAIN_RUNNING &&
                     state != VIR_DOMAIN_PAUSED &&
                     state != VIR_DOMAIN_SHUTOFF))))
@@ -1439,38 +1438,38 @@ filter:
         }
 
         /* autostart filter */
-        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART)) {
             if (virDomainGetAutostart(dom, &autostart) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain autostart state"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) && autostart) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) && !autostart)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) && autostart) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) && !autostart)))
                 goto remove_entry;
         }
 
         /* managed save filter */
-        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE)) {
             if ((mansave = virDomainHasManagedSaveImage(dom, 0)) < 0) {
                 vshError(ctl, "%s",
                          _("Failed to check for managed save image"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) && mansave) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE) && !mansave)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) && mansave) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE) && !mansave)))
                 goto remove_entry;
         }
 
         /* snapshot filter */
-        if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
             if ((nsnap = virDomainSnapshotNum(dom, 0)) < 0) {
                 vshError(ctl, "%s", _("Failed to get snapshot count"));
                 goto cleanup;
             }
-            if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
-                  (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap == 0)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap == 0)))
                 goto remove_entry;
         }
 
@@ -1509,7 +1508,6 @@ cleanup:
     VIR_FREE(ids);
     return list;
 }
-#undef MATCH
 
 static const vshCmdOptDef opts_list[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("list inactive domains")},

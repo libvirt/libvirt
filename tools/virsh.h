@@ -47,6 +47,8 @@
 
 # define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 
+# define VSH_MATCH(FLAG) (flags & (FLAG))
+
 /**
  * The log configuration
  */
