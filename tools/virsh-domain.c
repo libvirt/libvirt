@@ -3707,7 +3707,7 @@ static char *
 vshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
 {
     char timestr[100];
-    struct timeval cur_time;
+    time_t cur_time;
     struct tm time_info;
     const char *ext = NULL;
     char *ret = NULL;
@@ -3723,8 +3723,8 @@ vshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
         ext = ".png";
     /* add mime type here */
 
-    gettimeofday(&cur_time, NULL);
-    localtime_r(&cur_time.tv_sec, &time_info);
+    time (&cur_time);
+    localtime_r(&cur_time, &time_info);
     strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
 
     if (virAsprintf(&ret, "%s-%s%s", virDomainGetName(dom),

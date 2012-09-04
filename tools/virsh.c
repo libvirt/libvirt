@@ -2187,7 +2187,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     char *str;
     size_t len;
     const char *lvl = "";
-    struct timeval stTimeval;
+    time_t stTime;
     struct tm *stTm;
 
     if (ctl->log_fd == -1)
@@ -2198,8 +2198,8 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
      *
      * [YYYY.MM.DD HH:MM:SS SIGNATURE PID] LOG_LEVEL message
     */
-    gettimeofday(&stTimeval, NULL);
-    stTm = localtime(&stTimeval.tv_sec);
+    time (&stTime);
+    stTm = localtime(&stTime);
     virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s %d] ",
                       (1900 + stTm->tm_year),
                       (1 + stTm->tm_mon),
