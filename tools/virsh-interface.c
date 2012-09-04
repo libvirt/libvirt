@@ -131,6 +131,176 @@ cleanup:
     return ret;
 }
 
+static int
+vshInterfaceSorter(const void *a, const void *b)
+{
+    virInterfacePtr *ia = (virInterfacePtr *) a;
+    virInterfacePtr *ib = (virInterfacePtr *) b;
+
+    if (*ia && !*ib)
+        return -1;
+
+    if (!*ia)
+        return *ib != NULL;
+
+    return vshStrcasecmp(virInterfaceGetName(*ia),
+                      virInterfaceGetName(*ib));
+}
+
+struct vshInterfaceList {
+    virInterfacePtr *ifaces;
+    size_t nifaces;
+};
+typedef struct vshInterfaceList *vshInterfaceListPtr;
+
+static void
+vshInterfaceListFree(vshInterfaceListPtr list)
+{
+    int i;
+
+    if (list && list->nifaces) {
+        for (i = 0; i < list->nifaces; i++) {
+            if (list->ifaces[i])
+                virInterfaceFree(list->ifaces[i]);
+        }
+        VIR_FREE(list->ifaces);
+    }
+    VIR_FREE(list);
+}
+
+static vshInterfaceListPtr
+vshInterfaceListCollect(vshControl *ctl,
+                        unsigned int flags)
+{
+    vshInterfaceListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    int ret;
+    char **activeNames = NULL;
+    char **inactiveNames = NULL;
+    virInterfacePtr iface;
+    bool success = false;
+    size_t deleted = 0;
+    int nActiveIfaces = 0;
+    int nInactiveIfaces = 0;
+    int nAllIfaces = 0;
+
+    /* try the list with flags support (0.10.2 and later) */
+    if ((ret = virConnectListAllInterfaces(ctl->conn,
+                                           &list->ifaces,
+                                           flags)) >= 0) {
+        list->nifaces = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT)
+        goto fallback;
+
+    /* there was an error during the first or second call */
+    vshError(ctl, "%s", _("Failed to list interfaces"));
+    goto cleanup;
+
+
+fallback:
+    /* fall back to old method (0.10.1 and older) */
+    vshResetLibvirtError();
+
+    if (flags & VIR_CONNECT_LIST_INTERFACES_ACTIVE) {
+        nActiveIfaces = virConnectNumOfInterfaces(ctl->conn);
+        if (nActiveIfaces < 0) {
+            vshError(ctl, "%s", _("Failed to list active interfaces"));
+            goto cleanup;
+        }
+        if (nActiveIfaces) {
+            activeNames = vshMalloc(ctl, sizeof(char *) * nActiveIfaces);
+
+            if ((nActiveIfaces = virConnectListInterfaces(ctl->conn, activeNames,
+                                                          nActiveIfaces)) < 0) {
+                vshError(ctl, "%s", _("Failed to list active interfaces"));
+                goto cleanup;
+            }
+        }
+    }
+
+    if (flags & VIR_CONNECT_LIST_INTERFACES_INACTIVE) {
+        nInactiveIfaces = virConnectNumOfDefinedInterfaces(ctl->conn);
+        if (nInactiveIfaces < 0) {
+            vshError(ctl, "%s", _("Failed to list inactive interfaces"));
+            goto cleanup;
+        }
+        if (nInactiveIfaces) {
+            inactiveNames = vshMalloc(ctl, sizeof(char *) * nInactiveIfaces);
+
+            if ((nInactiveIfaces =
+                     virConnectListDefinedInterfaces(ctl->conn, inactiveNames,
+                                                     nInactiveIfaces)) < 0) {
+                vshError(ctl, "%s", _("Failed to list inactive interfaces"));
+                goto cleanup;
+            }
+        }
+    }
+
+    nAllIfaces = nActiveIfaces + nInactiveIfaces;
+    if (nAllIfaces == 0) {
+        VIR_FREE(activeNames);
+        VIR_FREE(inactiveNames);
+        return list;
+    }
+
+    list->ifaces = vshMalloc(ctl, sizeof(virInterfacePtr) * (nAllIfaces));
+    list->nifaces = 0;
+
+    /* get active interfaces */
+    for (i = 0; i < nActiveIfaces; i++) {
+        if (!(iface = virInterfaceLookupByName(ctl->conn, activeNames[i]))) {
+            vshResetLibvirtError();
+            continue;
+        }
+        list->ifaces[list->nifaces++] = iface;
+    }
+
+    /* get inactive interfaces */
+    for (i = 0; i < nInactiveIfaces; i++) {
+        if (!(iface = virInterfaceLookupByName(ctl->conn, inactiveNames[i]))) {
+            vshResetLibvirtError();
+            continue;
+        }
+        list->ifaces[list->nifaces++] = iface;
+    }
+
+    /* truncate interfaces that weren't found */
+    deleted = nAllIfaces - list->nifaces;
+
+finished:
+    /* sort the list */
+    if (list->ifaces && list->nifaces)
+        qsort(list->ifaces, list->nifaces,
+              sizeof(*list->ifaces), vshInterfaceSorter);
+
+    /* truncate the list if filter simulation deleted entries */
+    if (deleted)
+        VIR_SHRINK_N(list->ifaces, list->nifaces, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nActiveIfaces; i++)
+        VIR_FREE(activeNames[i]);
+
+    for (i = 0; i < nInactiveIfaces; i++)
+        VIR_FREE(inactiveNames[i]);
+
+    VIR_FREE(activeNames);
+    VIR_FREE(inactiveNames);
+
+    if (!success) {
+        vshInterfaceListFree(list);
+        list = NULL;
+    }
+
+    return list;
+}
+
 /*
  * "iface-list" command
  */
@@ -145,99 +315,40 @@ static const vshCmdOptDef opts_interface_list[] = {
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active interfaces")},
     {NULL, 0, 0, NULL}
 };
+
 static bool
 cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
-    bool active = !inactive || all;
-    int maxactive = 0, maxinactive = 0, i;
-    char **activeNames = NULL, **inactiveNames = NULL;
-    inactive |= all;
+    unsigned int flags = VIR_CONNECT_LIST_INTERFACES_ACTIVE;
+    vshInterfaceListPtr list = NULL;
+    int i;
 
-    if (active) {
-        maxactive = virConnectNumOfInterfaces(ctl->conn);
-        if (maxactive < 0) {
-            vshError(ctl, "%s", _("Failed to list active interfaces"));
-            return false;
-        }
-        if (maxactive) {
-            activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
+    if (inactive)
+        flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE;
+    if (all)
+        flags = VIR_CONNECT_LIST_INTERFACES_INACTIVE |
+                VIR_CONNECT_LIST_INTERFACES_ACTIVE;
 
-            if ((maxactive = virConnectListInterfaces(ctl->conn, activeNames,
-                                                    maxactive)) < 0) {
-                vshError(ctl, "%s", _("Failed to list active interfaces"));
-                VIR_FREE(activeNames);
-                return false;
-            }
+    if (!(list = vshInterfaceListCollect(ctl, flags)))
+        return false;
 
-            qsort(&activeNames[0], maxactive, sizeof(char *), vshNameSorter);
-        }
-    }
-    if (inactive) {
-        maxinactive = virConnectNumOfDefinedInterfaces(ctl->conn);
-        if (maxinactive < 0) {
-            vshError(ctl, "%s", _("Failed to list inactive interfaces"));
-            VIR_FREE(activeNames);
-            return false;
-        }
-        if (maxinactive) {
-            inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
-
-            if ((maxinactive =
-                     virConnectListDefinedInterfaces(ctl->conn, inactiveNames,
-                                                     maxinactive)) < 0) {
-                vshError(ctl, "%s", _("Failed to list inactive interfaces"));
-                VIR_FREE(activeNames);
-                VIR_FREE(inactiveNames);
-                return false;
-            }
-
-            qsort(&inactiveNames[0], maxinactive, sizeof(char*), vshNameSorter);
-        }
-    }
     vshPrintExtra(ctl, "%-20s %-10s %s\n", _("Name"), _("State"),
                   _("MAC Address"));
     vshPrintExtra(ctl, "--------------------------------------------\n");
 
-    for (i = 0; i < maxactive; i++) {
-        virInterfacePtr iface =
-            virInterfaceLookupByName(ctl->conn, activeNames[i]);
-
-        /* this kind of work with interfaces is not atomic */
-        if (!iface) {
-            VIR_FREE(activeNames[i]);
-            continue;
-        }
+    for (i = 0; i < list->nifaces; i++) {
+        virInterfacePtr iface = list->ifaces[i];
 
         vshPrint(ctl, "%-20s %-10s %s\n",
                  virInterfaceGetName(iface),
-                 _("active"),
+                 virInterfaceIsActive(iface) ? _("active") : _("inactive"),
                  virInterfaceGetMACString(iface));
-        virInterfaceFree(iface);
-        VIR_FREE(activeNames[i]);
     }
-    for (i = 0; i < maxinactive; i++) {
-        virInterfacePtr iface =
-            virInterfaceLookupByName(ctl->conn, inactiveNames[i]);
 
-        /* this kind of work with interfaces is not atomic */
-        if (!iface) {
-            VIR_FREE(inactiveNames[i]);
-            continue;
-        }
-
-        vshPrint(ctl, "%-20s %-10s %s\n",
-                 virInterfaceGetName(iface),
-                 _("inactive"),
-                 virInterfaceGetMACString(iface));
-        virInterfaceFree(iface);
-        VIR_FREE(inactiveNames[i]);
-    }
-    VIR_FREE(activeNames);
-    VIR_FREE(inactiveNames);
+    vshInterfaceListFree(list);
     return true;
-
 }
 
 /*
