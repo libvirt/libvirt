@@ -1153,6 +1153,72 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     return -1;
 }
 
+static int
+storagePoolListAllVolumes(virStoragePoolPtr pool,
+                          virStorageVolPtr **vols,
+                          unsigned int flags) {
+    virStorageDriverStatePtr driver = pool->conn->storagePrivateData;
+    virStoragePoolObjPtr obj;
+    int i;
+    virStorageVolPtr *tmp_vols = NULL;
+    virStorageVolPtr vol = NULL;
+    int nvols = 0;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    storageDriverLock(driver);
+    obj = virStoragePoolObjFindByUUID(&driver->pools, pool->uuid);
+    storageDriverUnlock(driver);
+
+    if (!obj) {
+        virReportError(VIR_ERR_NO_STORAGE_POOL, "%s",
+                       _("no storage pool with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virStoragePoolObjIsActive(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("storage pool is not active"));
+        goto cleanup;
+    }
+
+     /* Just returns the volumes count */
+    if (!vols) {
+        ret = obj->volumes.count;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(tmp_vols, obj->volumes.count + 1) < 0) {
+         virReportOOMError();
+         goto cleanup;
+    }
+
+    for (i = 0 ; i < obj->volumes.count; i++) {
+        if (!(vol = virGetStorageVol(pool->conn, obj->def->name,
+                                     obj->volumes.objs[i]->name,
+                                     obj->volumes.objs[i]->key)))
+            goto cleanup;
+        tmp_vols[nvols++] = vol;
+    }
+
+    *vols = tmp_vols;
+    tmp_vols = NULL;
+    ret = nvols;
+
+ cleanup:
+    if (tmp_vols) {
+        for (i = 0; i < nvols; i++) {
+            if (tmp_vols[i])
+                virStorageVolFree(tmp_vols[i]);
+        }
+    }
+
+    if (obj)
+        virStoragePoolObjUnlock(obj);
+
+    return ret;
+}
 
 static virStorageVolPtr
 storageVolumeLookupByName(virStoragePoolPtr obj,
@@ -2329,6 +2395,7 @@ static virStorageDriver storageDriver = {
     .poolSetAutostart = storagePoolSetAutostart, /* 0.4.0 */
     .poolNumOfVolumes = storagePoolNumVolumes, /* 0.4.0 */
     .poolListVolumes = storagePoolListVolumes, /* 0.4.0 */
+    .poolListAllVolumes = storagePoolListAllVolumes, /* 0.10.2 */
 
     .volLookupByName = storageVolumeLookupByName, /* 0.4.0 */
     .volLookupByKey = storageVolumeLookupByKey, /* 0.4.0 */
