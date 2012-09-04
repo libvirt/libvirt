@@ -966,6 +966,133 @@ cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+static int
+vshStorageVolSorter(const void *a, const void *b)
+{
+    virStorageVolPtr *va = (virStorageVolPtr *) a;
+    virStorageVolPtr *vb = (virStorageVolPtr *) b;
+
+    if (*va && !*vb)
+        return -1;
+
+    if (!*va)
+        return *vb != NULL;
+
+    return vshStrcasecmp(virStorageVolGetName(*va),
+                      virStorageVolGetName(*vb));
+}
+
+struct vshStorageVolList {
+    virStorageVolPtr *vols;
+    size_t nvols;
+};
+typedef struct vshStorageVolList *vshStorageVolListPtr;
+
+static void
+vshStorageVolListFree(vshStorageVolListPtr list)
+{
+    int i;
+
+    if (list && list->vols) {
+        for (i = 0; i < list->nvols; i++) {
+            if (list->vols[i])
+                virStorageVolFree(list->vols[i]);
+        }
+        VIR_FREE(list->vols);
+    }
+    VIR_FREE(list);
+}
+
+static vshStorageVolListPtr
+vshStorageVolListCollect(vshControl *ctl,
+                         virStoragePoolPtr pool,
+                         unsigned int flags)
+{
+    vshStorageVolListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    char **names = NULL;
+    virStorageVolPtr vol = NULL;
+    bool success = false;
+    size_t deleted = 0;
+    int nvols = 0;
+    int ret = -1;
+
+    /* try the list with flags support (0.10.0 and later) */
+    if ((ret = virStoragePoolListAllVolumes(pool,
+                                            &list->vols,
+                                            flags)) >= 0) {
+        list->nvols = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
+        vshResetLibvirtError();
+        goto fallback;
+    }
+
+    /* there was an error during the call */
+    vshError(ctl, "%s", _("Failed to list volumes"));
+    goto cleanup;
+
+fallback:
+    /* fall back to old method (0.9.13 and older) */
+    vshResetLibvirtError();
+
+    /* Determine the number of volumes in the pool */
+    if ((nvols = virStoragePoolNumOfVolumes(pool)) < 0) {
+        vshError(ctl, "%s", _("Failed to list storage volumes"));
+        goto cleanup;
+    }
+
+    if (nvols == 0) {
+        success = true;
+        return list;
+    }
+
+    /* Retrieve the list of volume names in the pool */
+    names = vshCalloc(ctl, nvols, sizeof(*names));
+    if ((nvols = virStoragePoolListVolumes(pool, names, nvols)) < 0) {
+        vshError(ctl, "%s", _("Failed to list storage volumes"));
+        goto cleanup;
+    }
+
+    list->vols = vshMalloc(ctl, sizeof(virStorageVolPtr) * (nvols));
+    list->nvols = 0;
+
+    /* get the vols */
+    for (i = 0; i < nvols; i++) {
+        if (!(vol = virStorageVolLookupByName(pool, names[i])))
+            continue;
+        list->vols[list->nvols++] = vol;
+    }
+
+    /* truncate the list for not found vols */
+    deleted = nvols - list->nvols;
+
+finished:
+    /* sort the list */
+    if (list->vols && list->nvols)
+        qsort(list->vols, list->nvols, sizeof(*list->vols), vshStorageVolSorter);
+
+    if (deleted)
+        VIR_SHRINK_N(list->vols, list->nvols, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nvols; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(names);
+
+    if (!success) {
+        vshStorageVolListFree(list);
+        list = NULL;
+    }
+
+    return list;
+}
+
 /*
  * "vol-list" command
  */
@@ -986,14 +1113,13 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStorageVolInfo volumeInfo;
     virStoragePoolPtr pool;
-    char **activeNames = NULL;
     char *outputStr = NULL;
     const char *unit;
     double val;
     bool details = vshCommandOptBool(cmd, "details");
-    int numVolumes = 0, i;
+    int i;
     int ret;
-    bool functionReturn;
+    bool functionReturn = false;
     int stringLength = 0;
     size_t allocStrLength = 0, capStrLength = 0;
     size_t nameStrLength = 0, pathStrLength = 0;
@@ -1005,43 +1131,22 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         char *type;
     };
     struct volInfoText *volInfoTexts = NULL;
+    vshStorageVolListPtr list = NULL;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
-    /* Determine the number of volumes in the pool */
-    numVolumes = virStoragePoolNumOfVolumes(pool);
+    if (!(list = vshStorageVolListCollect(ctl, pool, 0)))
+        goto cleanup;
 
-    if (numVolumes < 0) {
-        vshError(ctl, "%s", _("Failed to list storage volumes"));
-        virStoragePoolFree(pool);
-        return false;
-    }
-
-    /* Retrieve the list of volume names in the pool */
-    if (numVolumes > 0) {
-        activeNames = vshCalloc(ctl, numVolumes, sizeof(*activeNames));
-        if ((numVolumes = virStoragePoolListVolumes(pool, activeNames,
-                                                    numVolumes)) < 0) {
-            vshError(ctl, "%s", _("Failed to list active vols"));
-            VIR_FREE(activeNames);
-            virStoragePoolFree(pool);
-            return false;
-        }
-
-        /* Sort the volume names */
-        qsort(&activeNames[0], numVolumes, sizeof(*activeNames), vshNameSorter);
-
-        /* Set aside memory for volume information pointers */
-        volInfoTexts = vshCalloc(ctl, numVolumes, sizeof(*volInfoTexts));
-    }
+    if (list->nvols > 0)
+        volInfoTexts = vshCalloc(ctl, list->nvols, sizeof(*volInfoTexts));
 
     /* Collect the rest of the volume information for display */
-    for (i = 0; i < numVolumes; i++) {
+    for (i = 0; i < list->nvols; i++) {
         /* Retrieve volume info */
-        virStorageVolPtr vol = virStorageVolLookupByName(pool,
-                                                         activeNames[i]);
+        virStorageVolPtr vol = list->vols[i];
 
         /* Retrieve the volume path */
         if ((volInfoTexts[i].path = virStorageVolGetPath(vol)) == NULL) {
@@ -1099,7 +1204,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
              */
 
             /* Keep the length of name string if longest so far */
-            stringLength = strlen(activeNames[i]);
+            stringLength = strlen(virStorageVolGetName(list->vols[i]));
             if (stringLength > nameStrLength)
                 nameStrLength = stringLength;
 
@@ -1123,9 +1228,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if (stringLength > allocStrLength)
                 allocStrLength = stringLength;
         }
-
-        /* Cleanup memory allocation */
-        virStorageVolFree(vol);
     }
 
     /* If the --details option wasn't selected, we output the volume
@@ -1138,8 +1240,8 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         /* The old output format */
         vshPrintExtra(ctl, "%-20s %-40s\n", _("Name"), _("Path"));
         vshPrintExtra(ctl, "-----------------------------------------\n");
-        for (i = 0; i < numVolumes; i++) {
-            vshPrint(ctl, "%-20s %-40s\n", activeNames[i],
+        for (i = 0; i < list->nvols; i++) {
+            vshPrint(ctl, "%-20s %-40s\n", virStorageVolGetName(list->vols[i]),
                      volInfoTexts[i].path);
         }
 
@@ -1210,9 +1312,9 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrintExtra(ctl, "\n");
 
     /* Display the volume info rows */
-    for (i = 0; i < numVolumes; i++) {
+    for (i = 0; i < list->nvols; i++) {
         vshPrint(ctl, outputStr,
-                 activeNames[i],
+                 virStorageVolGetName(list->vols[i]),
                  volInfoTexts[i].path,
                  volInfoTexts[i].type,
                  volInfoTexts[i].capacity,
@@ -1240,20 +1342,21 @@ asprintf_failure:
 cleanup:
 
     /* Safely free the memory allocated in this function */
-    for (i = 0; i < numVolumes; i++) {
-        /* Cleanup the memory for one volume info structure per loop */
-        VIR_FREE(volInfoTexts[i].path);
-        VIR_FREE(volInfoTexts[i].type);
-        VIR_FREE(volInfoTexts[i].capacity);
-        VIR_FREE(volInfoTexts[i].allocation);
-        VIR_FREE(activeNames[i]);
+    if (list && list->nvols) {
+        for (i = 0; i < list->nvols; i++) {
+            /* Cleanup the memory for one volume info structure per loop */
+            VIR_FREE(volInfoTexts[i].path);
+            VIR_FREE(volInfoTexts[i].type);
+            VIR_FREE(volInfoTexts[i].capacity);
+            VIR_FREE(volInfoTexts[i].allocation);
+        }
     }
 
     /* Cleanup remaining memory */
     VIR_FREE(outputStr);
     VIR_FREE(volInfoTexts);
-    VIR_FREE(activeNames);
     virStoragePoolFree(pool);
+    vshStorageVolListFree(list);
 
     /* Return the desired value */
     return functionReturn;
