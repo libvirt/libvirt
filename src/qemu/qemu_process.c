@@ -511,9 +511,15 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event;
+    qemuDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
+
     event = virDomainEventRebootNewFromObj(vm);
+    priv = vm->privateData;
+    if (priv->agent)
+        qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_RESET);
+
     virDomainObjUnlock(vm);
 
     if (event) {

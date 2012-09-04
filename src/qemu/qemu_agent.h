@@ -55,7 +55,8 @@ void qemuAgentClose(qemuAgentPtr mon);
 typedef enum {
     QEMU_AGENT_EVENT_NONE = 0,
     QEMU_AGENT_EVENT_SHUTDOWN,
-    QEMU_AGENT_EVENT_SUSPEND
+    QEMU_AGENT_EVENT_SUSPEND,
+    QEMU_AGENT_EVENT_RESET,
 } qemuAgentEvent;
 
 void qemuAgentNotifyEvent(qemuAgentPtr mon,
