@@ -106,6 +106,11 @@
 #define QEMU_NB_TOTAL_CPU_STAT_PARAM 3
 #define QEMU_NB_PER_CPU_STAT_PARAM 2
 
+#define QEMU_SCHED_MIN_PERIOD              1000LL
+#define QEMU_SCHED_MAX_PERIOD           1000000LL
+#define QEMU_SCHED_MIN_QUOTA               1000LL
+#define QEMU_SCHED_MAX_QUOTA  18446744073709551LL
+
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
 #endif
@@ -7790,6 +7795,15 @@ cleanup:
     return -1;
 }
 
+#define SCHED_RANGE_CHECK(VAR, NAME, MIN, MAX)                              \
+    if (((VAR) > 0 && (VAR) < (MIN)) || (VAR) > (MAX)) {                    \
+        virReportError(VIR_ERR_INVALID_ARG,                                 \
+                       _("value of '%s' is out of range [%lld, %lld]"),     \
+                       NAME, MIN, MAX);                                     \
+        rc = -1;                                                            \
+        goto cleanup;                                                       \
+    }
+
 static int
 qemuSetSchedulerParametersFlags(virDomainPtr dom,
                                 virTypedParameterPtr params,
@@ -7876,6 +7890,9 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 vmdef->cputune.shares = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
+            SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
+                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
                 if ((rc = qemuSetVcpusBWLive(vm, group, value_ul, 0)))
                     goto cleanup;
@@ -7887,6 +7904,9 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 vmdef->cputune.period = params[i].value.ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
+            SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
+                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
                 if ((rc = qemuSetVcpusBWLive(vm, group, 0, value_l)))
                     goto cleanup;
@@ -7898,6 +7918,9 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 vmdef->cputune.quota = value_l;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
+            SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
+                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
                 if ((rc = qemuSetEmulatorBandwidthLive(vm, group, value_ul, 0)))
                     goto cleanup;
@@ -7909,6 +7932,9 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                 vmdef->cputune.emulator_period = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA)) {
+            SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
+                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
                 if ((rc = qemuSetEmulatorBandwidthLive(vm, group, 0, value_l)))
                     goto cleanup;
@@ -7944,6 +7970,7 @@ cleanup:
     qemuDriverUnlock(driver);
     return ret;
 }
+#undef SCHED_RANGE_CHECK
 
 static int
 qemuSetSchedulerParameters(virDomainPtr dom,
