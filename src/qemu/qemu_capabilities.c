@@ -172,7 +172,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "bridge", /* 100 */
               "lsi",
               "virtio-scsi-pci",
-              "iolimits",
+              "blockio",
               "disable-s3",
 
               "disable-s4", /* 105 */
@@ -1512,7 +1512,7 @@ qemuCapsParseDeviceStr(const char *str, virBitmapPtr flags)
      */
     if (strstr(str, ".logical_block_size") &&
         strstr(str, ".physical_block_size"))
-        qemuCapsSet(flags, QEMU_CAPS_IOLIMITS);
+        qemuCapsSet(flags, QEMU_CAPS_BLOCKIO);
     if (strstr(str, "PIIX4_PM.disable_s3="))
         qemuCapsSet(flags, QEMU_CAPS_DISABLE_S3);
     if (strstr(str, "PIIX4_PM.disable_s4="))

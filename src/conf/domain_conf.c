@@ -3439,8 +3439,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     def->geometry.sectors = 0;
     def->geometry.trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
 
-    def->iolimits.logical_block_size = 0;
-    def->iolimits.physical_block_size = 0;
+    def->blockio.logical_block_size = 0;
+    def->blockio.physical_block_size = 0;
 
     ctxt->node = node;
 
@@ -3580,12 +3580,12 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                         goto error;
                     }
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "iolimits")) {
+            } else if (xmlStrEqual(cur->name, BAD_CAST "blockio")) {
                 logical_block_size =
                     virXMLPropString(cur, "logical_block_size");
                 if (logical_block_size &&
                     virStrToLong_ui(logical_block_size, NULL, 0,
-                                    &def->iolimits.logical_block_size) < 0) {
+                                    &def->blockio.logical_block_size) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("invalid logical block size '%s'"),
                                    logical_block_size);
@@ -3595,7 +3595,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                     virXMLPropString(cur, "physical_block_size");
                 if (physical_block_size &&
                     virStrToLong_ui(physical_block_size, NULL, 0,
-                                    &def->iolimits.physical_block_size) < 0) {
+                                    &def->blockio.physical_block_size) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("invalid physical block size '%s'"),
                                    physical_block_size);
@@ -11406,21 +11406,21 @@ static void virDomainDiskGeometryDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 }
-static void virDomainDiskIolimitsDefFormat(virBufferPtr buf,
-                                           virDomainDiskDefPtr def)
+static void virDomainDiskBlockIoDefFormat(virBufferPtr buf,
+                                          virDomainDiskDefPtr def)
 {
-    if (def->iolimits.logical_block_size > 0 ||
-        def->iolimits.physical_block_size > 0) {
-        virBufferAddLit(buf,"      <iolimits");
-        if (def->iolimits.logical_block_size > 0) {
+    if (def->blockio.logical_block_size > 0 ||
+        def->blockio.physical_block_size > 0) {
+        virBufferAddLit(buf,"      <blockio");
+        if (def->blockio.logical_block_size > 0) {
             virBufferAsprintf(buf,
                               " logical_block_size='%u'",
-                              def->iolimits.logical_block_size);
+                              def->blockio.logical_block_size);
         }
-        if (def->iolimits.physical_block_size > 0) {
+        if (def->blockio.physical_block_size > 0) {
             virBufferAsprintf(buf,
                               " physical_block_size='%u'",
-                              def->iolimits.physical_block_size);
+                              def->blockio.physical_block_size);
         }
         virBufferAddLit(buf, "/>\n");
     }
@@ -11599,7 +11599,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     }
 
     virDomainDiskGeometryDefFormat(buf, def);
-    virDomainDiskIolimitsDefFormat(buf, def);
+    virDomainDiskBlockIoDefFormat(buf, def);
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for

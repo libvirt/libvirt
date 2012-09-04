@@ -1288,7 +1288,7 @@
       &lt;driver name='qemu' type='raw'/&gt;
       &lt;source dev='/dev/sda'/&gt;
       &lt;geometry cyls='16383' heads='16' secs='63' trans='lba'/&gt;
-      &lt;iolimits logical_block_size='512' physical_block_size='4096'/&gt;
+      &lt;blockio logical_block_size='512' physical_block_size='4096'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
@@ -1657,8 +1657,8 @@
             BIOS-Translation-Modus (none, lba or auto)</dd>
         </dl>
       </dd>
-      <dt><code>iolimits</code></dt>
-      <dd>If present, the <code>iolimits</code> element allows
+      <dt><code>blockio</code></dt>
+      <dd>If present, the <code>blockio</code> element allows
         to override any of the block device properties listed below.
         <span class="since">Since 0.10.2 (QEMU and KVM)</span>
         <dl>

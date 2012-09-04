@@ -541,7 +541,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
             QEMU_CAPS_CPU_HOST,
-            QEMU_CAPS_IOLIMITS);
+            QEMU_CAPS_BLOCKIO);
     DO_TEST("qemu-kvm-0.12.1.2-rhel62-beta", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -609,7 +609,7 @@ mymain(void)
             QEMU_CAPS_DRIVE_COPY_ON_READ,
             QEMU_CAPS_CPU_HOST,
             QEMU_CAPS_SCSI_CD,
-            QEMU_CAPS_IOLIMITS);
+            QEMU_CAPS_BLOCKIO);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -682,7 +682,7 @@ mymain(void)
             QEMU_CAPS_SCSI_CD,
             QEMU_CAPS_IDE_CD,
             QEMU_CAPS_SCSI_LSI,
-            QEMU_CAPS_IOLIMITS);
+            QEMU_CAPS_BLOCKIO);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -763,7 +763,7 @@ mymain(void)
             QEMU_CAPS_NETDEV_BRIDGE,
             QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_VIRTIO_SCSI_PCI,
-            QEMU_CAPS_IOLIMITS);
+            QEMU_CAPS_BLOCKIO);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

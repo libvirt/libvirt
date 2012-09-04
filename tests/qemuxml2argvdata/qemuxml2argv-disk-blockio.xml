@@ -23,7 +23,7 @@
       <source file='/tmp/idedisk.img'/>
       <target dev='hdc' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
-      <iolimits logical_block_size='512' physical_block_size='512'/>
+      <blockio logical_block_size='512' physical_block_size='512'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>

@@ -572,7 +572,7 @@ struct _virDomainDiskDef {
     struct {
         unsigned int logical_block_size;
         unsigned int physical_block_size;
-    } iolimits;
+    } blockio;
 
     virDomainBlockIoTuneInfo blkdeviotune;
 
