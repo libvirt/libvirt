@@ -2718,6 +2718,69 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllNetworks(virConnectPtr conn,
+                             virNetworkPtr **nets,
+                             unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virNetworkPtr *tmp_nets = NULL;
+    remote_connect_list_all_networks_args args;
+    remote_connect_list_all_networks_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!nets;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_NETWORKS,
+             (xdrproc_t) xdr_remote_connect_list_all_networks_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_networks_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (nets) {
+        if (VIR_ALLOC_N(tmp_nets, ret.nets.nets_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.nets.nets_len; i++) {
+            tmp_nets[i] = get_nonnull_network (conn, ret.nets.nets_val[i]);
+            if (!tmp_nets[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *nets = tmp_nets;
+        tmp_nets = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (tmp_nets) {
+        for (i = 0; i < ret.nets.nets_len; i++)
+            if (tmp_nets[i])
+                virNetworkFree(tmp_nets[i]);
+        VIR_FREE(tmp_nets);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_networks_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -5696,6 +5759,7 @@ static virNetworkDriver network_driver = {
     .listNetworks = remoteListNetworks, /* 0.3.0 */
     .numOfDefinedNetworks = remoteNumOfDefinedNetworks, /* 0.3.0 */
     .listDefinedNetworks = remoteListDefinedNetworks, /* 0.3.0 */
+    .listAllNetworks = remoteConnectListAllNetworks, /* 0.10.2 */
     .networkLookupByUUID = remoteNetworkLookupByUUID, /* 0.3.0 */
     .networkLookupByName = remoteNetworkLookupByName, /* 0.3.0 */
     .networkCreateXML = remoteNetworkCreateXML, /* 0.3.0 */

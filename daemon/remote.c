@@ -4213,6 +4213,61 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllNetworks(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                     virNetServerClientPtr client,
+                                     virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                     virNetMessageErrorPtr rerr,
+                                     remote_connect_list_all_networks_args *args,
+                                     remote_connect_list_all_networks_ret *ret)
+{
+    virNetworkPtr *nets = NULL;
+    int nnets = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((nnets = virConnectListAllNetworks(priv->conn,
+                                           args->need_results ? &nets : NULL,
+                                           args->flags)) < 0)
+        goto cleanup;
+
+    if (nets && nnets) {
+        if (VIR_ALLOC_N(ret->nets.nets_val, nnets) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->nets.nets_len = nnets;
+
+        for (i = 0; i < nnets; i++)
+            make_nonnull_network(ret->nets.nets_val + i, nets[i]);
+    } else {
+        ret->nets.nets_len = 0;
+        ret->nets.nets_val = NULL;
+    }
+
+    ret->ret = nnets;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (nets) {
+        for (i = 0; i < nnets; i++)
+            virNetworkFree(nets[i]);
+        VIR_FREE(nets);
+    }
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
