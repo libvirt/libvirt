@@ -321,4 +321,26 @@ void virNetworkObjUnlock(virNetworkObjPtr obj);
 
 VIR_ENUM_DECL(virNetworkForward)
 
+# define VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE   \
+                (VIR_CONNECT_LIST_NETWORKS_ACTIVE | \
+                 VIR_CONNECT_LIST_NETWORKS_INACTIVE)
+
+# define VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT   \
+                (VIR_CONNECT_LIST_NETWORKS_PERSISTENT | \
+                 VIR_CONNECT_LIST_NETWORKS_TRANSIENT)
+
+# define VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART    \
+                (VIR_CONNECT_LIST_NETWORKS_AUTOSTART |  \
+                 VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART)
+
+# define VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL                  \
+                (VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE     | \
+                 VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT | \
+                 VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)
+
+int virNetworkList(virConnectPtr conn,
+                   virNetworkObjList netobjs,
+                   virNetworkPtr **nets,
+                   unsigned int flags);
+
 #endif /* __NETWORK_CONF_H__ */

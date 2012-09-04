@@ -837,6 +837,7 @@ virNetworkFindByName;
 virNetworkFindByUUID;
 virNetworkIpDefNetmask;
 virNetworkIpDefPrefix;
+virNetworkList;
 virNetworkLoadAllConfigs;
 virNetworkObjIsDuplicate;
 virNetworkObjListFree;

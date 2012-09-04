@@ -2056,3 +2056,94 @@ void virNetworkObjUnlock(virNetworkObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
+#define MATCH(FLAG) (flags & (FLAG))
+static bool
+virNetworkMatch (virNetworkObjPtr netobj,
+                 unsigned int flags)
+{
+    /* filter by active state */
+    if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) &&
+        !((MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE) &&
+           virNetworkObjIsActive(netobj)) ||
+          (MATCH(VIR_CONNECT_LIST_NETWORKS_INACTIVE) &&
+           !virNetworkObjIsActive(netobj))))
+        return false;
+
+    /* filter by persistence */
+    if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT) &&
+        !((MATCH(VIR_CONNECT_LIST_NETWORKS_PERSISTENT) &&
+           netobj->persistent) ||
+          (MATCH(VIR_CONNECT_LIST_NETWORKS_TRANSIENT) &&
+           !netobj->persistent)))
+        return false;
+
+    /* filter by autostart option */
+    if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART) &&
+        !((MATCH(VIR_CONNECT_LIST_NETWORKS_AUTOSTART) &&
+           netobj->autostart) ||
+          (MATCH(VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART) &&
+           !netobj->autostart)))
+        return false;
+
+    return true;
+}
+#undef MATCH
+
+int
+virNetworkList(virConnectPtr conn,
+               virNetworkObjList netobjs,
+               virNetworkPtr **nets,
+               unsigned int flags)
+{
+    virNetworkPtr *tmp_nets = NULL;
+    virNetworkPtr net = NULL;
+    int nnets = 0;
+    int ret = -1;
+    int i;
+
+    if (nets) {
+        if (VIR_ALLOC_N(tmp_nets, netobjs.count + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; i < netobjs.count; i++) {
+        virNetworkObjPtr netobj = netobjs.objs[i];
+        virNetworkObjLock(netobj);
+        if (virNetworkMatch(netobj, flags)) {
+            if (nets) {
+                if (!(net = virGetNetwork(conn,
+                                          netobj->def->name,
+                                          netobj->def->uuid))) {
+                    virNetworkObjUnlock(netobj);
+                    goto cleanup;
+                }
+                tmp_nets[nnets] = net;
+            }
+            nnets++;
+        }
+        virNetworkObjUnlock(netobj);
+    }
+
+    if (tmp_nets) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(tmp_nets, nnets + 1));
+        *nets = tmp_nets;
+        tmp_nets = NULL;
+    }
+
+    ret = nnets;
+
+cleanup:
+    if (tmp_nets) {
+        for (i = 0; i < nnets; i++) {
+            if (tmp_nets[i])
+                virNetworkFree(tmp_nets[i]);
+        }
+    }
+
+    VIR_FREE(tmp_nets);
+    return ret;
+}
