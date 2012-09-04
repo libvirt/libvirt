@@ -1523,9 +1523,10 @@ domain's guest OS.
 
 =item B<dompmwakeup> I<domain>
 
-Wakeup a domain suspended by dompmsuspend command. Injects a wakeup
-into the guest that previously used dompmsuspend, rather than waiting
-for the previously requested duration (if any) to elapse.
+Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
+from the guest itself). Injects a wakeup into the guest that is in pmsuspended
+state, rather than waiting for the previously requested duration (if any) to
+elapse. This operation doesn't not necessarily fail if the domain is running.
 
 =item B<ttyconsole> I<domain>
 

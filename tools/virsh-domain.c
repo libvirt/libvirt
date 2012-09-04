@@ -2242,9 +2242,9 @@ cleanup:
  */
 
 static const vshCmdInfo info_dom_pm_wakeup[] = {
-    {"help", N_("wakeup a domain suspended by dompmsuspend command")},
-    {"desc", N_("Wakeup a domain previously suspended "
-                "by dompmsuspend command.")},
+    {"help", N_("wakeup a domain from pmsuspended state")},
+    {"desc", N_("Wakeup a domain that was previously suspended "
+                "by power management.")},
     {NULL, NULL}
 };
 
