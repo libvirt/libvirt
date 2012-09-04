@@ -2594,6 +2594,53 @@ libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
     return py_retval;
 }
 
+static PyObject *
+libvirt_virConnectListAllNetworks(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args)
+{
+    PyObject *pyobj_conn;
+    PyObject *py_retval = NULL;
+    PyObject *tmp = NULL;
+    virConnectPtr conn;
+    virNetworkPtr *nets = NULL;
+    int c_retval = 0;
+    int i;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllNetworks",
+                          &pyobj_conn, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virConnectListAllNetworks(conn, &nets, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if (!(tmp = libvirt_virNetworkPtrWrap(nets[i])) ||
+            PyList_SetItem(py_retval, i, tmp) < 0) {
+            Py_XDECREF(tmp);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        /* python steals the pointer */
+        nets[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (nets[i])
+            virNetworkFree(nets[i]);
+    VIR_FREE(nets);
+    return py_retval;
+}
+
 
 static PyObject *
 libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
@@ -5943,6 +5990,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnGetLastError", libvirt_virConnGetLastError, METH_VARARGS, NULL},
     {(char *) "virConnectListNetworks", libvirt_virConnectListNetworks, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedNetworks", libvirt_virConnectListDefinedNetworks, METH_VARARGS, NULL},
+    {(char *) "virConnectListAllNetworks", libvirt_virConnectListAllNetworks, METH_VARARGS, NULL},
     {(char *) "virNetworkGetUUID", libvirt_virNetworkGetUUID, METH_VARARGS, NULL},
     {(char *) "virNetworkGetUUIDString", libvirt_virNetworkGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virNetworkLookupByUUID", libvirt_virNetworkLookupByUUID, METH_VARARGS, NULL},

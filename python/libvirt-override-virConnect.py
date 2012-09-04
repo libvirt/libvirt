@@ -218,3 +218,15 @@
             retlist.append(virStoragePool(self, _obj=poolptr))
 
         return retlist
+
+    def listAllNetworks(self, flags):
+        """Returns a list of network objects"""
+        ret = libvirtmod.virConnectListAllNetworks(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllNetworks() failed", conn=self)
+
+        retlist = list()
+        for netptr in ret:
+            retlist.append(virNetwork(self, _obj=netptr))
+
+        return retlist

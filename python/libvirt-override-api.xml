@@ -37,6 +37,12 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='str *' info='the list of Names or None in case of error'/>
     </function>
+    <function name='virConnectListAllNetworks' file='python'>
+      <info>returns list of all networks</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='network *' info='the list of networks or None in case of error'/>
+    </function>
     <function name='virDomainLookupByUUID' file='python'>
       <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
