@@ -685,8 +685,9 @@ static void qemuMonitorJSONHandleGraphics(qemuMonitorPtr mon, virJSONValuePtr da
 
     authScheme = virJSONValueObjectGetString(server, "auth");
     if (!authScheme) {
-        VIR_WARN("missing auth scheme in graphics event");
-        return;
+        /* not all events are required to contain auth scheme */
+        VIR_DEBUG("missing auth scheme in graphics event");
+        authScheme = "";
     }
 
     localFamily = virJSONValueObjectGetString(server, "family");
