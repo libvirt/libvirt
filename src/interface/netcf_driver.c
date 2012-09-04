@@ -30,6 +30,7 @@
 #include "netcf_driver.h"
 #include "interface_conf.h"
 #include "memory.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
@@ -258,6 +259,152 @@ static int interfaceListDefinedInterfaces(virConnectPtr conn, char **const names
     return count;
 
 }
+
+static int
+interfaceListAllInterfaces(virConnectPtr conn,
+                           virInterfacePtr **ifaces,
+                           unsigned int flags)
+{
+    struct interface_driver *driver = conn->interfacePrivateData;
+    int count;
+    int i;
+    struct netcf_if *iface = NULL;
+    virInterfacePtr *tmp_iface_objs = NULL;
+    virInterfacePtr iface_obj = NULL;
+    unsigned int status;
+    int niface_objs = 0;
+    int ret = -1;
+    char **names = NULL;
+
+    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
+                  VIR_CONNECT_LIST_INTERFACES_INACTIVE, -1);
+
+    interfaceDriverLock(driver);
+
+    /* List all interfaces, in case of we might support new filter flags
+     * except active|inactive in future.
+     */
+    count = ncf_num_of_interfaces(driver->netcf, NETCF_IFACE_ACTIVE |
+                                  NETCF_IFACE_INACTIVE);
+    if (count < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to get number of host interfaces: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (count == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(names, count) < 0) {
+        virReportOOMError();
+        ret = -1;
+        goto cleanup;
+    }
+
+    if ((count = ncf_list_interfaces(driver->netcf, count, names,
+                                     NETCF_IFACE_ACTIVE |
+                                     NETCF_IFACE_INACTIVE)) < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        virReportError(netcf_to_vir_err(errcode),
+                       _("failed to list host interfaces: %s%s%s"),
+                       errmsg, details ? " - " : "",
+                       details ? details : "");
+        goto cleanup;
+    }
+
+    if (ifaces) {
+        if (VIR_ALLOC_N(tmp_iface_objs, count + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; i < count; i++) {
+        iface = ncf_lookup_by_name(driver->netcf, names[i]);
+        if (!iface) {
+            const char *errmsg, *details;
+            int errcode = ncf_error(driver->netcf, &errmsg, &details);
+            if (errcode != NETCF_NOERROR) {
+                virReportError(netcf_to_vir_err(errcode),
+                               _("couldn't find interface named '%s': %s%s%s"),
+                               names[i], errmsg,
+                               details ? " - " : "", details ? details : "");
+                goto cleanup;
+            } else {
+                /* Ignore the NETCF_NOERROR, as the interface is very likely
+                 * deleted by other management apps (e.g. virt-manager).
+                 */
+                VIR_WARN("couldn't find interface named '%s', might be "
+                         "deleted by other process", names[i]);
+                continue;
+            }
+        }
+
+        if (ncf_if_status(iface, &status) < 0) {
+            const char *errmsg, *details;
+            int errcode = ncf_error(driver->netcf, &errmsg, &details);
+            virReportError(netcf_to_vir_err(errcode),
+                           _("failed to get status of interface %s: %s%s%s"),
+                           names[i], errmsg, details ? " - " : "",
+                           details ? details : "");
+            goto cleanup;
+        }
+
+        /* XXX: Filter the result, need to be splitted once new filter flags
+         * except active|inactive are supported.
+         */
+        if (((status & NETCF_IFACE_ACTIVE) &&
+             (flags & VIR_CONNECT_LIST_INTERFACES_ACTIVE)) ||
+            ((status & NETCF_IFACE_INACTIVE) &&
+             (flags & VIR_CONNECT_LIST_INTERFACES_INACTIVE))) {
+            if (ifaces) {
+                iface_obj = virGetInterface(conn, ncf_if_name(iface),
+                                            ncf_if_mac_string(iface));
+                tmp_iface_objs[niface_objs] = iface_obj;
+            }
+            niface_objs++;
+        }
+
+        ncf_if_free(iface);
+        iface = NULL;
+    }
+
+    if (tmp_iface_objs) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(tmp_iface_objs, niface_objs + 1));
+        *ifaces = tmp_iface_objs;
+        tmp_iface_objs = NULL;
+    }
+
+    ret = niface_objs;
+
+cleanup:
+    ncf_if_free(iface);
+
+    if (names)
+        for (i = 0; i < count; i++)
+            VIR_FREE(names[i]);
+    VIR_FREE(names);
+
+    if (tmp_iface_objs) {
+        for (i = 0; i < niface_objs; i++) {
+            if (tmp_iface_objs[i])
+                virInterfaceFree(tmp_iface_objs[i]);
+        }
+    }
+
+    interfaceDriverUnlock(driver);
+    return ret;
+}
+
 
 static virInterfacePtr interfaceLookupByName(virConnectPtr conn,
                                              const char *name)
@@ -642,6 +789,7 @@ static virInterfaceDriver interfaceDriver = {
     .listInterfaces = interfaceListInterfaces, /* 0.7.0 */
     .numOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */
     .listDefinedInterfaces = interfaceListDefinedInterfaces, /* 0.7.0 */
+    .listAllInterfaces = interfaceListAllInterfaces, /* 0.10.2 */
     .interfaceLookupByName = interfaceLookupByName, /* 0.7.0 */
     .interfaceLookupByMACString = interfaceLookupByMACString, /* 0.7.0 */
     .interfaceGetXMLDesc = interfaceGetXMLDesc, /* 0.7.0 */
