@@ -649,10 +649,6 @@ Requires: device-mapper
 # For multipath support
 Requires: device-mapper
 %endif
-%if %{with_storage_rbd}
-# For RBD support
-Requires: ceph
-%endif
 %if %{with_storage_sheepdog}
 # For Sheepdog support
 Requires: sheepdog
