@@ -110,8 +110,14 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     gl_WARN_ADD([-Wjump-misses-init])
 
     # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
-    # so we need to manually re-exclude it.
+    # so we need to manually re-exclude it.  Also, older gcc 4.2
+    # added an implied ATTRIBUTE_NONNULL on any parameter marked
+    # ATTRIBUTE_FMT_PRINT, which causes -Wformat failure on our
+    # intentional use of virReportError(code, NULL).
     gl_WARN_ADD([-Wno-format-nonliteral])
+    if test $lv_cv_gcc_pragma_push_works = no; then
+      gl_WARN_ADD([-Wno-format])
+    fi
 
     # This should be < 256 really. Currently we're down to 4096,
     # but using 1024 bytes sized buffers (mostly for virStrerror)

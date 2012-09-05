@@ -151,9 +151,11 @@
  */
 #  ifndef ATTRIBUTE_FMT_PRINTF
 #   if __GNUC_PREREQ (4, 4)
-#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (gnu_printf, fmtpos,argpos)))
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) \
+    __attribute__((__format__ (__gnu_printf__, fmtpos, argpos)))
 #   else
-#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (printf, fmtpos,argpos)))
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) \
+    __attribute__((__format__ (__printf__, fmtpos, argpos)))
 #   endif
 #  endif
 
