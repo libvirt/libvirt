@@ -35,9 +35,7 @@
 #include "util.h"
 
 #include <sys/ioctl.h>
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
+#include <net/if.h>
 #include <fcntl.h>
 #ifdef __linux__
 # include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */

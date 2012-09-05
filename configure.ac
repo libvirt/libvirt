@@ -186,8 +186,7 @@ LIBS=$old_libs
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
-  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h \
-  net/if.h execinfo.h])
+  sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h])
 
 dnl We need to decide at configure time if libvirt will use real atomic
 dnl operations ("lock free") or emulated ones with a mutex.
@@ -245,20 +244,12 @@ AM_CONDITIONAL([WITH_ATOMIC_OPS_PTHREAD],[test "$atomic_ops" = "pthread"])
 AC_MSG_RESULT([$atomic_ops])
 
 
-
-AC_MSG_CHECKING([for struct ifreq in net/if.h])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-   [[
-     #include <net/if.h>
-   ]],
-   [[
-     struct ifreq ifr;
-   ]])],[
-     AC_DEFINE([HAVE_STRUCT_IFREQ],[],[Defined if struct ifreq existsin net/if.h])
-     AC_MSG_RESULT([yes])
-   ],[
-     AC_MSG_RESULT([yes])
-   ])
+AC_CHECK_TYPE([struct ifreq],
+  [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
+    [Defined if struct ifreq exists in net/if.h])],
+  [], [[#include <sys/socket.h>
+        #include <net/if.h>
+  ]])
 
 dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
 dnl if the header is not present.  Assume -ltasn1 is present if the

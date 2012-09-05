@@ -31,11 +31,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <execinfo.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
-#endif
-#ifdef HAVE_EXECINFO_H
-# include <execinfo.h>
 #endif
 
 #include "virterror_internal.h"
@@ -792,23 +790,21 @@ cleanup:
 
 static void virLogStackTraceToFd(int fd)
 {
-#ifdef HAVE_EXECINFO_H
     void *array[100];
     int size;
-
-# define STRIP_DEPTH 3
-
-    size = backtrace(array, ARRAY_CARDINALITY(array));
-    backtrace_symbols_fd(array +  STRIP_DEPTH, size - STRIP_DEPTH, fd);
-    ignore_value(safewrite(fd, "\n", 1));
-#else
     static bool doneWarning = false;
     const char *msg = "Stack trace not available on this platform\n";
-    if (!doneWarning) {
+
+#define STRIP_DEPTH 3
+    size = backtrace(array, ARRAY_CARDINALITY(array));
+    if (size) {
+        backtrace_symbols_fd(array +  STRIP_DEPTH, size - STRIP_DEPTH, fd);
+        ignore_value(safewrite(fd, "\n", 1));
+    } else if (!doneWarning) {
         ignore_value(safewrite(fd, msg, strlen(msg)));
         doneWarning = true;
     }
-#endif
+#undef STRIP_DEPTH
 }
 
 static int virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,

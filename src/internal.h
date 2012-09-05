@@ -58,10 +58,6 @@
 #  define HOST_NAME_MAX 256
 # endif
 
-# ifndef IF_NAMESIZE
-#  define IF_NAMESIZE 16
-# endif
-
 # ifndef INET_ADDRSTRLEN
 #  define INET_ADDRSTRLEN 16
 # endif

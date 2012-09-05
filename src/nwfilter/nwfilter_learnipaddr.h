@@ -2,6 +2,7 @@
  * nwfilter_learnipaddr.h: support for learning IP address used by a VM
  *                         on an interface
  *
+ * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corp.
  * Copyright (C) 2010 Stefan Berger
  *
@@ -26,6 +27,7 @@
 # define __NWFILTER_LEARNIPADDR_H
 
 # include "conf/nwfilter_params.h"
+# include <net/if.h>
 
 enum howDetect {
   DETECT_DHCP = 1,

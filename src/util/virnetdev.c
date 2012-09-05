@@ -32,9 +32,7 @@
 #include "logging.h"
 
 #include <sys/ioctl.h>
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
+#include <net/if.h>
 #include <fcntl.h>
 
 #ifdef __linux__
