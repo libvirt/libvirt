@@ -2599,6 +2599,16 @@ struct remote_connect_list_all_interfaces_ret {
     unsigned int ret;
 };
 
+struct remote_connect_list_all_node_devices_args {
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_list_all_node_devices_ret {
+    remote_nonnull_node_device devices<>;
+    unsigned int ret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2933,7 +2943,8 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281, /* skipgen skipgen priority:high */
     REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282, /* skipgen skipgen priority:high */
     REMOTE_PROC_CONNECT_LIST_ALL_NETWORKS = 283, /* skipgen skipgen priority:high */
-    REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284 /* skipgen skipgen priority:high */
+    REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284, /* skipgen skipgen priority:high */
+    REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES = 285 /* skipgen skipgen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

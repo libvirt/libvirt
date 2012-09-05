@@ -2056,6 +2056,17 @@ struct remote_connect_list_all_interfaces_ret {
         } ifaces;
         u_int                      ret;
 };
+struct remote_connect_list_all_node_devices_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_list_all_node_devices_ret {
+        struct {
+                u_int              devices_len;
+                remote_nonnull_node_device * devices_val;
+        } devices;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2341,4 +2352,5 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282,
         REMOTE_PROC_CONNECT_LIST_ALL_NETWORKS = 283,
         REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284,
+        REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES = 285,
 };

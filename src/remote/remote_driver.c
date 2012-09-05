@@ -2844,6 +2844,69 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllNodeDevices(virConnectPtr conn,
+                                virNodeDevicePtr **devices,
+                                unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virNodeDevicePtr *tmp_devices = NULL;
+    remote_connect_list_all_node_devices_args args;
+    remote_connect_list_all_node_devices_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!devices;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES,
+             (xdrproc_t) xdr_remote_connect_list_all_node_devices_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_node_devices_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (devices) {
+        if (VIR_ALLOC_N(tmp_devices, ret.devices.devices_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.devices.devices_len; i++) {
+            tmp_devices[i] = get_nonnull_node_device(conn, ret.devices.devices_val[i]);
+            if (!tmp_devices[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *devices = tmp_devices;
+        tmp_devices = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (tmp_devices) {
+        for (i = 0; i < ret.devices.devices_len; i++)
+            if (tmp_devices[i])
+                virNodeDeviceFree(tmp_devices[i]);
+        VIR_FREE(tmp_devices);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_node_devices_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -5937,6 +6000,7 @@ static virDeviceMonitor dev_monitor = {
     .close = remoteDevMonClose, /* 0.5.0 */
     .numOfDevices = remoteNodeNumOfDevices, /* 0.5.0 */
     .listDevices = remoteNodeListDevices, /* 0.5.0 */
+    .listAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = remoteNodeDeviceLookupByName, /* 0.5.0 */
     .deviceGetXMLDesc = remoteNodeDeviceGetXMLDesc, /* 0.5.0 */
     .deviceGetParent = remoteNodeDeviceGetParent, /* 0.5.0 */

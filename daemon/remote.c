@@ -4321,6 +4321,59 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllNodeDevices(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                        virNetServerClientPtr client,
+                                        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                        virNetMessageErrorPtr rerr,
+                                        remote_connect_list_all_node_devices_args *args,
+                                        remote_connect_list_all_node_devices_ret *ret)
+{
+    virNodeDevicePtr *devices = NULL;
+    int ndevices = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((ndevices = virConnectListAllNodeDevices(priv->conn,
+                                                 args->need_results ? &devices : NULL,
+                                                 args->flags)) < 0)
+        goto cleanup;
+
+    if (devices && ndevices) {
+        if (VIR_ALLOC_N(ret->devices.devices_val, ndevices) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->devices.devices_len = ndevices;
+
+        for (i = 0; i < ndevices; i++)
+            make_nonnull_node_device(ret->devices.devices_val + i, devices[i]);
+    } else {
+        ret->devices.devices_len = 0;
+        ret->devices.devices_val = NULL;
+    }
+
+    ret->ret = ndevices;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (devices) {
+        for (i = 0; i < ndevices; i++)
+            virNodeDeviceFree(devices[i]);
+        VIR_FREE(devices);
+    }
+    return rv;
+}
 
 /*----- Helpers. -----*/
 
