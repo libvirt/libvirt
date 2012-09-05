@@ -120,6 +120,13 @@ testCorrupt(const void *opaque)
         goto cleanup;
     }
 
+#if !HAVE_SASL
+    if (strstr(err->message, "unsupported auth sasl")) {
+        VIR_DEBUG("sasl unsupported, skipping this config");
+        goto cleanup;
+    }
+#endif
+
     switch (type) {
     case VIR_CONF_LONG:
         if (!strstr(err->message, "invalid type: got string; expected long")) {
