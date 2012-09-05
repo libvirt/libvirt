@@ -190,6 +190,134 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+static int
+vshNWFilterSorter(const void *a, const void *b)
+{
+    virNWFilterPtr *fa = (virNWFilterPtr *) a;
+    virNWFilterPtr *fb = (virNWFilterPtr *) b;
+
+    if (*fa && !*fb)
+        return -1;
+
+    if (!*fa)
+        return *fb != NULL;
+
+    return vshStrcasecmp(virNWFilterGetName(*fa),
+                         virNWFilterGetName(*fb));
+}
+
+struct vshNWFilterList {
+    virNWFilterPtr *filters;
+    size_t nfilters;
+};
+typedef struct vshNWFilterList *vshNWFilterListPtr;
+
+static void
+vshNWFilterListFree(vshNWFilterListPtr list)
+{
+    int i;
+
+    if (list && list->nfilters) {
+        for (i = 0; i < list->nfilters; i++) {
+            if (list->filters[i])
+                virNWFilterFree(list->filters[i]);
+        }
+        VIR_FREE(list->filters);
+    }
+    VIR_FREE(list);
+}
+
+static vshNWFilterListPtr
+vshNWFilterListCollect(vshControl *ctl,
+                       unsigned int flags)
+{
+    vshNWFilterListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    int ret;
+    virNWFilterPtr filter;
+    bool success = false;
+    size_t deleted = 0;
+    int nfilters = 0;
+    char **names = NULL;
+
+    /* try the list with flags support (0.10.2 and later) */
+    if ((ret = virConnectListAllNWFilters(ctl->conn,
+                                          &list->filters,
+                                          flags)) >= 0) {
+        list->nfilters = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
+        vshResetLibvirtError();
+        goto fallback;
+    }
+
+    /* there was an error during the call */
+    vshError(ctl, "%s", _("Failed to list node filters"));
+    goto cleanup;
+
+
+fallback:
+    /* fall back to old method (0.9.13 and older) */
+    vshResetLibvirtError();
+
+    nfilters = virConnectNumOfNWFilters(ctl->conn);
+    if (nfilters < 0) {
+        vshError(ctl, "%s", _("Failed to count network filters"));
+        goto cleanup;
+    }
+
+    if (nfilters == 0)
+        return list;
+
+    names = vshMalloc(ctl, sizeof(char *) * nfilters);
+
+    nfilters = virConnectListNWFilters(ctl->conn, names, nfilters);
+    if (nfilters < 0) {
+        vshError(ctl, "%s", _("Failed to list network filters"));
+        goto cleanup;
+    }
+
+    list->filters = vshMalloc(ctl, sizeof(virNWFilterPtr) * nfilters);
+    list->nfilters = 0;
+
+    /* get the network filters */
+    for (i = 0; i < nfilters ; i++) {
+        if (!(filter = virNWFilterLookupByName(ctl->conn, names[i])))
+            continue;
+        list->filters[list->nfilters++] = filter;
+    }
+
+    /* truncate network filters that weren't found */
+    deleted = nfilters - list->nfilters;
+
+finished:
+    /* sort the list */
+    if (list->filters && list->nfilters)
+        qsort(list->filters, list->nfilters,
+              sizeof(*list->filters), vshNWFilterSorter);
+
+    /* truncate the list for not found filter objects */
+    if (deleted)
+        VIR_SHRINK_N(list->filters, list->nfilters, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nfilters; i++)
+        VIR_FREE(names[i]);
+    VIR_FREE(names);
+
+    if (!success) {
+        vshNWFilterListFree(list);
+        list = NULL;
+    }
+
+    return list;
+}
+
 /*
  * "nwfilter-list" command
  */
@@ -206,50 +334,27 @@ static const vshCmdOptDef opts_nwfilter_list[] = {
 static bool
 cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int numfilters, i;
-    char **names;
+    int i;
     char uuid[VIR_UUID_STRING_BUFLEN];
+    vshNWFilterListPtr list = NULL;
 
-    numfilters = virConnectNumOfNWFilters(ctl->conn);
-    if (numfilters < 0) {
-        vshError(ctl, "%s", _("Failed to list network filters"));
+    if (!(list = vshNWFilterListCollect(ctl, 0)))
         return false;
-    }
-
-    names = vshMalloc(ctl, sizeof(char *) * numfilters);
-
-    if ((numfilters = virConnectListNWFilters(ctl->conn, names,
-                                              numfilters)) < 0) {
-        vshError(ctl, "%s", _("Failed to list network filters"));
-        VIR_FREE(names);
-        return false;
-    }
-
-    qsort(&names[0], numfilters, sizeof(char *), vshNameSorter);
 
     vshPrintExtra(ctl, "%-36s  %-20s \n", _("UUID"), _("Name"));
     vshPrintExtra(ctl,
        "----------------------------------------------------------------\n");
 
-    for (i = 0; i < numfilters; i++) {
-        virNWFilterPtr nwfilter =
-            virNWFilterLookupByName(ctl->conn, names[i]);
-
-        /* this kind of work with networks is not atomic operation */
-        if (!nwfilter) {
-            VIR_FREE(names[i]);
-            continue;
-        }
+    for (i = 0; i < list->nfilters; i++) {
+        virNWFilterPtr nwfilter = list->filters[i];
 
         virNWFilterGetUUIDString(nwfilter, uuid);
         vshPrint(ctl, "%-36s  %-20s\n",
                  uuid,
                  virNWFilterGetName(nwfilter));
-        virNWFilterFree(nwfilter);
-        VIR_FREE(names[i]);
     }
 
-    VIR_FREE(names);
+    vshNWFilterListFree(list);
     return true;
 }
 
