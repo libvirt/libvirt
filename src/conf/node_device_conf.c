@@ -1432,3 +1432,106 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
+static bool
+virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
+                      int type)
+{
+    virNodeDevCapsDefPtr cap = NULL;
+
+    for (cap = devobj->def->caps; cap; cap = cap->next) {
+        if (type == cap->type)
+            return true;
+    }
+
+    return false;
+}
+
+#define MATCH(FLAG) (flags & (FLAG))
+static bool
+virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
+                   unsigned int flags)
+{
+    /* filter by cap type */
+    if (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP)) {
+        if (!((MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SYSTEM))        ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_PCI_DEV))       ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_USB_DEV))       ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_USB_INTERFACE)) ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_NET))           ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_HOST))     ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_TARGET))   ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI))          ||
+              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE) &&
+               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_STORAGE))))
+            return false;
+    }
+
+    return true;
+}
+#undef MATCH
+
+int
+virNodeDeviceList(virConnectPtr conn,
+                  virNodeDeviceObjList devobjs,
+                  virNodeDevicePtr **devices,
+                  unsigned int flags)
+{
+    virNodeDevicePtr *tmp_devices = NULL;
+    virNodeDevicePtr device = NULL;
+    int ndevices = 0;
+    int ret = -1;
+    int i;
+
+    if (devices) {
+        if (VIR_ALLOC_N(tmp_devices, devobjs.count + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    for (i = 0; i < devobjs.count; i++) {
+        virNodeDeviceObjPtr devobj = devobjs.objs[i];
+        virNodeDeviceObjLock(devobj);
+        if (virNodeDeviceMatch(devobj, flags)) {
+            if (devices) {
+                if (!(device = virGetNodeDevice(conn,
+                                                devobj->def->name))) {
+                    virNodeDeviceObjUnlock(devobj);
+                    goto cleanup;
+                }
+                tmp_devices[ndevices] = device;
+            }
+            ndevices++;
+        }
+        virNodeDeviceObjUnlock(devobj);
+    }
+
+    if (tmp_devices) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(tmp_devices, ndevices + 1));
+        *devices = tmp_devices;
+        tmp_devices = NULL;
+    }
+
+    ret = ndevices;
+
+cleanup:
+    if (tmp_devices) {
+        for (i = 0; i < ndevices; i++) {
+            if (tmp_devices[i])
+                virNodeDeviceFree(tmp_devices[i]);
+        }
+    }
+
+    VIR_FREE(tmp_devices);
+    return ret;
+}

@@ -261,4 +261,20 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 void virNodeDeviceObjLock(virNodeDeviceObjPtr obj);
 void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
 
+# define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP \
+                (VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET           | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST     | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET   | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE)
+
+int virNodeDeviceList(virConnectPtr conn,
+                      virNodeDeviceObjList devobjs,
+                      virNodeDevicePtr **devices,
+                      unsigned int flags);
+
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */
