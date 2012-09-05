@@ -396,6 +396,12 @@
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <return type='str *' info='the list of network filter IDs or None in case of error'/>
     </function>
+    <function name='virConnectListAllNWFilters' file='python'>
+      <info>returns list of all network fitlers</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='nwfilter *' info='the list of network filters or None in case of error'/>
+    </function>
     <function name='virNWFilterLookupByUUID' file='python'>
       <info>Try to lookup a network filter on the given hypervisor based on its UUID.</info>
       <return type='virNWFilterPtr' info='a new network filter object or NULL in case of failure'/>

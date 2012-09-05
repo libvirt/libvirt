@@ -254,3 +254,15 @@
             retlist.append(virNodeDevice(self, _obj=devptr))
 
         return retlist
+
+    def listAllNWFilters(self, flags):
+        """Returns a list of network filter objects"""
+        ret = libvirtmod.virConnectListAllNWFilters(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllNWFilters() failed", conn=self)
+
+        retlist = list()
+        for filter_ptr in ret:
+            retlist.append(virNWFilter(self, _obj=filter_ptr))
+
+        return retlist

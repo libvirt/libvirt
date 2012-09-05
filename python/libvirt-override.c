@@ -3768,6 +3768,53 @@ libvirt_virConnectListNWFilters(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virConnectListAllNWFilters(PyObject *self ATTRIBUTE_UNUSED,
+                                   PyObject *args)
+{
+    PyObject *pyobj_conn;
+    PyObject *py_retval = NULL;
+    PyObject *tmp = NULL;
+    virConnectPtr conn;
+    virNWFilterPtr *filters = NULL;
+    int c_retval = 0;
+    int i;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virConnectListAllNWFilters",
+                          &pyobj_conn, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virConnectListAllNWFilters(conn, &filters, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (!(py_retval = PyList_New(c_retval)))
+        goto cleanup;
+
+    for (i = 0; i < c_retval; i++) {
+        if (!(tmp = libvirt_virNWFilterPtrWrap(filters[i])) ||
+            PyList_SetItem(py_retval, i, tmp) < 0) {
+            Py_XDECREF(tmp);
+            Py_DECREF(py_retval);
+            py_retval = NULL;
+            goto cleanup;
+        }
+        /* python steals the pointer */
+        filters[i] = NULL;
+    }
+
+cleanup:
+    for (i = 0; i < c_retval; i++)
+        if (filters[i])
+            virNWFilterFree(filters[i]);
+    VIR_FREE(filters);
+    return py_retval;
+}
+
+static PyObject *
 libvirt_virConnectListInterfaces(PyObject *self ATTRIBUTE_UNUSED,
                                  PyObject *args) {
     PyObject *py_retval;
@@ -6146,6 +6193,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNWFilterGetUUIDString", libvirt_virNWFilterGetUUIDString, METH_VARARGS, NULL},
     {(char *) "virNWFilterLookupByUUID", libvirt_virNWFilterLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virConnectListNWFilters", libvirt_virConnectListNWFilters, METH_VARARGS, NULL},
+    {(char *) "virConnectListAllNWFilters", libvirt_virConnectListAllNWFilters, METH_VARARGS, NULL},
     {(char *) "virConnectListInterfaces", libvirt_virConnectListInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedInterfaces", libvirt_virConnectListDefinedInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectListAllInterfaces", libvirt_virConnectListAllInterfaces, METH_VARARGS, NULL},
