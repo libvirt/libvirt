@@ -4375,6 +4375,60 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllNWFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                      virNetServerClientPtr client,
+                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                      virNetMessageErrorPtr rerr,
+                                      remote_connect_list_all_nwfilters_args *args,
+                                      remote_connect_list_all_nwfilters_ret *ret)
+{
+    virNWFilterPtr *filters = NULL;
+    int nfilters = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((nfilters = virConnectListAllNWFilters(priv->conn,
+                                               args->need_results ? &filters : NULL,
+                                               args->flags)) < 0)
+        goto cleanup;
+
+    if (filters && nfilters) {
+        if (VIR_ALLOC_N(ret->filters.filters_val, nfilters) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->filters.filters_len = nfilters;
+
+        for (i = 0; i < nfilters; i++)
+            make_nonnull_nwfilter(ret->filters.filters_val + i, filters[i]);
+    } else {
+        ret->filters.filters_len = 0;
+        ret->filters.filters_val = NULL;
+    }
+
+    ret->ret = nfilters;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (filters) {
+        for (i = 0; i < nfilters; i++)
+            virNWFilterFree(filters[i]);
+        VIR_FREE(filters);
+    }
+    return rv;
+}
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

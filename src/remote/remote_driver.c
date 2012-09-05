@@ -2907,6 +2907,68 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllNWFilters(virConnectPtr conn,
+                              virNWFilterPtr **filters,
+                              unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virNWFilterPtr *tmp_filters = NULL;
+    remote_connect_list_all_nwfilters_args args;
+    remote_connect_list_all_nwfilters_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!filters;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_NWFILTERS,
+             (xdrproc_t) xdr_remote_connect_list_all_nwfilters_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_nwfilters_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (filters) {
+        if (VIR_ALLOC_N(tmp_filters, ret.filters.filters_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.filters.filters_len; i++) {
+            tmp_filters[i] = get_nonnull_nwfilter(conn, ret.filters.filters_val[i]);
+            if (!tmp_filters[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *filters = tmp_filters;
+        tmp_filters = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (tmp_filters) {
+        for (i = 0; i < ret.filters.filters_len; i++)
+            if (tmp_filters[i])
+                virNWFilterFree(tmp_filters[i]);
+        VIR_FREE(tmp_filters);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_nwfilters_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /*----------------------------------------------------------------------*/
 
@@ -6021,6 +6083,7 @@ static virNWFilterDriver nwfilter_driver = {
     .undefine             = remoteNWFilterUndefine, /* 0.8.0 */
     .numOfNWFilters       = remoteNumOfNWFilters, /* 0.8.0 */
     .listNWFilters        = remoteListNWFilters, /* 0.8.0 */
+    .listAllNWFilters     = remoteConnectListAllNWFilters, /* 0.10.2 */
 };
 
 
