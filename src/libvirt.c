@@ -16165,6 +16165,56 @@ error:
     return -1;
 }
 
+/**
+ * virConnectListAllNWFilters:
+ * @conn: Pointer to the hypervisor connection.
+ * @filters: Pointer to a variable to store the array containing the network
+ *           filter objects or NULL if the list is not required (just returns
+ *           number of network filters).
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect the list of network filters, and allocate an array to store those
+ * objects.
+ *
+ * Returns the number of network filters found or -1 and sets @filters to  NULL
+ * in case of error.  On success, the array stored into @filters is guaranteed to
+ * have an extra allocated element set to NULL but not included in the return count,
+ * to make iteration easier.  The caller is responsible for calling
+ * virNWFilterFree() on each array element, then calling free() on @filters.
+ */
+int
+virConnectListAllNWFilters(virConnectPtr conn,
+                           virNWFilterPtr **filters,
+                           unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, filters=%p, flags=%x", conn, filters, flags);
+
+    virResetLastError();
+
+    if (filters)
+        *filters = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->nwfilterDriver &&
+        conn->nwfilterDriver->listAllNWFilters) {
+        int ret;
+        ret = conn->nwfilterDriver->listAllNWFilters(conn, filters, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
 
 /**
  * virConnectListNWFilters:

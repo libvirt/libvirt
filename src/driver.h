@@ -1638,6 +1638,10 @@ typedef int
     (*virDrvConnectListNWFilters)         (virConnectPtr conn,
                                            char **const names,
                                            int maxnames);
+typedef int
+    (*virDrvConnectListAllNWFilters)      (virConnectPtr conn,
+                                           virNWFilterPtr **filters,
+                                           unsigned int flags);
 typedef virNWFilterPtr
     (*virDrvNWFilterLookupByName)         (virConnectPtr conn,
                                            const char *name);
@@ -1675,6 +1679,7 @@ struct _virNWFilterDriver {
 
     virDrvConnectNumOfNWFilters numOfNWFilters;
     virDrvConnectListNWFilters  listNWFilters;
+    virDrvConnectListAllNWFilters  listAllNWFilters;
     virDrvNWFilterLookupByName  nwfilterLookupByName;
     virDrvNWFilterLookupByUUID  nwfilterLookupByUUID;
     virDrvNWFilterDefineXML     defineXML;

@@ -4126,7 +4126,9 @@ int                     virConnectNumOfNWFilters (virConnectPtr conn);
 int                     virConnectListNWFilters  (virConnectPtr conn,
                                                   char **const names,
                                                   int maxnames);
-
+int                     virConnectListAllNWFilters(virConnectPtr conn,
+                                                   virNWFilterPtr **filters,
+                                                   unsigned int flags);
 /*
  * Lookup nwfilter by name or uuid
  */
