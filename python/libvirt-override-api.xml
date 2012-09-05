@@ -346,6 +346,12 @@
       <arg name='flags' type='unsigned int' info='flags (unused; pass 0)'/>
       <return type='str *' info='the list of Names or None in case of error'/>
     </function>
+    <function name='virConnectListAllNodeDevices' file='python'>
+      <info>returns list of all host node devices</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='device *' info='the list of host node device or None in case of error'/>
+    </function>
     <function name='virNodeDeviceListCaps' file='python'>
       <info>list the node device's capabilities</info>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>

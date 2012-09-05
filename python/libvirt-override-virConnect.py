@@ -242,3 +242,15 @@
             retlist.append(virInterface(self, _obj=ifaceptr))
 
         return retlist
+
+    def listAllDevices(self, flags):
+        """Returns a list of host node device objects"""
+        ret = libvirtmod.virConnectListAllNodeDevices(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllNodeDevices() failed", conn=self)
+
+        retlist = list()
+        for devptr in ret:
+            retlist.append(virNodeDevice(self, _obj=devptr))
+
+        return retlist
