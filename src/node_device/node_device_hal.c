@@ -770,6 +770,7 @@ static virDeviceMonitor halDeviceMonitor = {
     .close = halNodeDrvClose, /* 0.5.0 */
     .numOfDevices = nodeNumOfDevices, /* 0.5.0 */
     .listDevices = nodeListDevices, /* 0.5.0 */
+    .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
     .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
     .deviceGetParent = nodeDeviceGetParent, /* 0.5.0 */

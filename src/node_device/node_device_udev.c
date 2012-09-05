@@ -1757,6 +1757,7 @@ static virDeviceMonitor udevDeviceMonitor = {
     .close = udevNodeDrvClose, /* 0.7.3 */
     .numOfDevices = nodeNumOfDevices, /* 0.7.3 */
     .listDevices = nodeListDevices, /* 0.7.3 */
+    .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
     .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
     .deviceGetParent = nodeDeviceGetParent, /* 0.7.3 */

@@ -73,6 +73,9 @@ int read_wwn_linux(int host, const char *file, char **wwn);
 int nodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags);
 int nodeListDevices(virConnectPtr conn, const char *cap, char **const names,
                     int maxnames, unsigned int flags);
+int nodeListAllNodeDevices(virConnectPtr conn,
+                           virNodeDevicePtr **devices,
+                           unsigned int flags);
 virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn, const char *name);
 char *nodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags);
 char *nodeDeviceGetParent(virNodeDevicePtr dev);
