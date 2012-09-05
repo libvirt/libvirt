@@ -186,10 +186,11 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	    || { rm $@ && exit 1; }; fi
 
 %.php: %.php.tmp %.php.code.in
-	@echo "Scripting $@"; \
-	  sed -e '/<a id="php_placeholder"><\/a>/r '"$(srcdir)/$@.code.in" \
-	  -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
-	  || { rm $(srcdir)/$@ && exit 1; }
+	@if [ -x $(XSLTPROC) ] ; then \
+	  echo "Scripting $@"; \
+	    sed -e '/<a id="php_placeholder"><\/a>/r '"$(srcdir)/$@.code.in" \
+	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
+	    || { rm $(srcdir)/$@ && exit 1; }; fi
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
