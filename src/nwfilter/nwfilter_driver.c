@@ -492,6 +492,61 @@ nwfilterListNWFilters(virConnectPtr conn,
 }
 
 
+static int
+nwfilterListAllNWFilters(virConnectPtr conn,
+                         virNWFilterPtr **filters,
+                         unsigned int flags) {
+    virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
+    virNWFilterPtr *tmp_filters = NULL;
+    int nfilters = 0;
+    virNWFilterPtr filter = NULL;
+    virNWFilterObjPtr obj = NULL;
+    int i;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    nwfilterDriverLock(driver);
+
+    if (!filters) {
+        ret = driver->nwfilters.count;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(tmp_filters, driver->nwfilters.count + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < driver->nwfilters.count; i++) {
+        obj = driver->nwfilters.objs[i];
+        virNWFilterObjLock(obj);
+        if (!(filter = virGetNWFilter(conn, obj->def->name,
+                                      obj->def->uuid))) {
+            virNWFilterObjUnlock(obj);
+            goto cleanup;
+        }
+        virNWFilterObjUnlock(obj);
+        tmp_filters[nfilters++] = filter;
+    }
+
+    *filters = tmp_filters;
+    tmp_filters = NULL;
+    ret = nfilters;
+
+ cleanup:
+    nwfilterDriverUnlock(driver);
+    if (tmp_filters) {
+        for (i = 0; i < nfilters; i ++) {
+            if (tmp_filters[i])
+                virNWFilterFree(tmp_filters[i]);
+        }
+    }
+    VIR_FREE(tmp_filters);
+
+    return ret;
+}
+
 static virNWFilterPtr
 nwfilterDefine(virConnectPtr conn,
                const char *xml)
@@ -627,6 +682,7 @@ static virNWFilterDriver nwfilterDriver = {
     .close = nwfilterClose, /* 0.8.0 */
     .numOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
     .listNWFilters = nwfilterListNWFilters, /* 0.8.0 */
+    .listAllNWFilters = nwfilterListAllNWFilters, /* 0.10.2 */
     .nwfilterLookupByName = nwfilterLookupByName, /* 0.8.0 */
     .nwfilterLookupByUUID = nwfilterLookupByUUID, /* 0.8.0 */
     .defineXML = nwfilterDefine, /* 0.8.0 */
