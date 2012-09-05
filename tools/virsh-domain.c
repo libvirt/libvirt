@@ -3277,95 +3277,79 @@ static const vshCmdOptDef opts_schedinfo[] = {
 
 static int
 cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
-                   virTypedParameterPtr param)
+                   virTypedParameterPtr src_params, int nsrc_params,
+                   virTypedParameterPtr *update_params)
 {
-    const char *data = NULL;
+    const char *set_arg;
+    char *set_field = NULL;
+    char *set_val = NULL;
 
-    /* Legacy 'weight' parameter */
-    if (STREQ(param->field, "weight") &&
-        param->type == VIR_TYPED_PARAM_UINT &&
-        vshCommandOptBool(cmd, "weight")) {
-        int val;
-        if (vshCommandOptInt(cmd, "weight", &val) <= 0) {
-            vshError(ctl, "%s", _("Invalid value of weight"));
-            return -1;
-        } else {
-            param->value.ui = val;
-        }
-        return 1;
-    }
+    virTypedParameterPtr param;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    size_t params_size = 0;
+    int ret = -1;
+    int rv;
+    int val;
+    int i;
 
-    /* Legacy 'cap' parameter */
-    if (STREQ(param->field, "cap") &&
-        param->type == VIR_TYPED_PARAM_UINT &&
-        vshCommandOptBool(cmd, "cap")) {
-        int val;
-        if (vshCommandOptInt(cmd, "cap", &val) <= 0) {
-            vshError(ctl, "%s", _("Invalid value of cap"));
-            return -1;
-        } else {
-            param->value.ui = val;
-        }
-        return 1;
-    }
-
-    if (vshCommandOptString(cmd, "set", &data) > 0) {
-        char *val = strchr(data, '=');
-        int match = 0;
-        if (!val) {
+    if (vshCommandOptString(cmd, "set", &set_arg) > 0) {
+        set_field = vshStrdup(ctl, set_arg);
+        if (!(set_val = strchr(set_field, '='))) {
             vshError(ctl, "%s", _("Invalid syntax for --set, expecting name=value"));
-            return -1;
+            goto cleanup;
         }
-        *val = '\0';
-        match = STREQ(data, param->field);
-        *val = '=';
-        val++;
 
-        if (!match)
-            return 0;
-
-        switch (param->type) {
-        case VIR_TYPED_PARAM_INT:
-            if (virStrToLong_i(val, NULL, 10, &param->value.i) < 0) {
-                vshError(ctl, "%s",
-                         _("Invalid value for parameter, expecting an int"));
-                return -1;
-            }
-            break;
-        case VIR_TYPED_PARAM_UINT:
-            if (virStrToLong_ui(val, NULL, 10, &param->value.ui) < 0) {
-                vshError(ctl, "%s",
-                         _("Invalid value for parameter, expecting an unsigned int"));
-                return -1;
-            }
-            break;
-        case VIR_TYPED_PARAM_LLONG:
-            if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
-                vshError(ctl, "%s",
-                         _("Invalid value for parameter, expecting a long long"));
-                return -1;
-            }
-            break;
-        case VIR_TYPED_PARAM_ULLONG:
-            if (virStrToLong_ull(val, NULL, 10, &param->value.ul) < 0) {
-                vshError(ctl, "%s",
-                         _("Invalid value for parameter, expecting an unsigned long long"));
-                return -1;
-            }
-            break;
-        case VIR_TYPED_PARAM_DOUBLE:
-            if (virStrToDouble(val, NULL, &param->value.d) < 0) {
-                vshError(ctl, "%s", _("Invalid value for parameter, expecting a double"));
-                return -1;
-            }
-            break;
-        case VIR_TYPED_PARAM_BOOLEAN:
-            param->value.b = STREQ(val, "0") ? 0 : 1;
-        }
-        return 1;
+        *set_val = '\0';
+        set_val++;
     }
 
-    return 0;
+    for (i = 0; i < nsrc_params; i++) {
+        param = &(src_params[i]);
+        if (VIR_RESIZE_N(params, params_size, nparams, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Legacy 'weight' and 'cap'  parameter */
+        if (param->type == VIR_TYPED_PARAM_UINT &&
+            (STREQ(param->field, "weight") || STREQ(param->field, "cap")) &&
+            (rv = vshCommandOptInt(cmd, param->field, &val)) != 0) {
+            if (rv < 0) {
+                vshError(ctl, _("Invalid value of %s"), param->field);
+                goto cleanup;
+            }
+
+            if (virTypedParameterAssign(&(params[nparams++]),
+                                        param->field,
+                                        param->type,
+                                        val) < 0)
+                goto cleanup;
+
+            continue;
+        }
+
+
+        if (set_field && STREQ(set_field, param->field)) {
+            if (virTypedParameterAssignFromStr(&(params[nparams++]),
+                                               param->field,
+                                               param->type,
+                                               set_val) < 0)
+                goto cleanup;
+
+            continue;
+        }
+    }
+
+    *update_params = params;
+    ret = nparams;
+    params = NULL;
+
+cleanup:
+    VIR_FREE(set_field);
+    virTypedParameterArrayClear(params, nparams);
+    VIR_FREE(params);
+    return ret;
 }
 
 static bool
@@ -3374,8 +3358,9 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     char *schedulertype;
     virDomainPtr dom;
     virTypedParameterPtr params = NULL;
+    virTypedParameterPtr updates = NULL;
     int nparams = 0;
-    int update = 0;
+    int nupdates = 0;
     int i, ret;
     bool ret_val = false;
     unsigned int flags = 0;
@@ -3429,22 +3414,18 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         /* See if any params are being set */
-        for (i = 0; i < nparams; i++) {
-            ret = cmdSchedInfoUpdate(ctl, cmd, &(params[i]));
-            if (ret == -1)
-                goto cleanup;
-
-            if (ret == 1)
-                update = 1;
-        }
+        if ((nupdates = cmdSchedInfoUpdate(ctl, cmd, params, nparams,
+                                           &updates)) < 0)
+            goto cleanup;
 
         /* Update parameters & refresh data */
-        if (update) {
+        if (nupdates > 0) {
             if (flags || current)
-                ret = virDomainSetSchedulerParametersFlags(dom, params,
-                                                           nparams, flags);
+                ret = virDomainSetSchedulerParametersFlags(dom, updates,
+                                                           nupdates, flags);
             else
-                ret = virDomainSetSchedulerParameters(dom, params, nparams);
+                ret = virDomainSetSchedulerParameters(dom, updates, nupdates);
+
             if (ret == -1)
                 goto cleanup;
 
@@ -3484,7 +3465,10 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
+    virTypedParameterArrayClear(params, nparams);
+    virTypedParameterArrayClear(updates, nupdates);
     VIR_FREE(params);
+    VIR_FREE(updates);
     virDomainFree(dom);
     return ret_val;
 }
