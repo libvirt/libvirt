@@ -8,11 +8,6 @@ my @elflibs = @ARGV;
 my @wantsyms;
 my %gotsyms;
 
-# Skip on non-linux
-if ($^O ne "linux") {
-    return 77; # Automake's skip code
-}
-
 open SYMFILE, $symfile or die "cannot read $symfile: $!";
 
 while (<SYMFILE>) {

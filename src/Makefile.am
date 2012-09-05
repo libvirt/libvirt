@@ -312,10 +312,14 @@ PDWTAGS = \
 	fi
 
 # .libs/libvirt.so is built by libtool as a side-effect of the Makefile
-# rule for libvirt.la
+# rule for libvirt.la.  However, checking symbols relies on Linux ELF layout
+if WITH_LINUX
 check-symfile: libvirt.syms libvirt.la
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms \
 	  .libs/libvirt.so
+else
+check-symfile:
+endif
 
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
