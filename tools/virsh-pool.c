@@ -36,6 +36,7 @@
 #include "memory.h"
 #include "util.h"
 #include "xml.h"
+#include "conf/storage_conf.h"
 
 virStoragePoolPtr
 vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
@@ -551,6 +552,232 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+static int
+vshStoragePoolSorter(const void *a, const void *b)
+{
+    virStoragePoolPtr *pa = (virStoragePoolPtr *) a;
+    virStoragePoolPtr *pb = (virStoragePoolPtr *) b;
+
+    if (*pa && !*pb)
+        return -1;
+
+    if (!*pa)
+        return *pb != NULL;
+
+    return vshStrcasecmp(virStoragePoolGetName(*pa),
+                         virStoragePoolGetName(*pb));
+}
+
+struct vshStoragePoolList {
+    virStoragePoolPtr *pools;
+    size_t npools;
+};
+typedef struct vshStoragePoolList *vshStoragePoolListPtr;
+
+static void
+vshStoragePoolListFree(vshStoragePoolListPtr list)
+{
+    int i;
+
+    if (list && list->pools) {
+        for (i = 0; i < list->npools; i++) {
+            if (list->pools[i])
+                virStoragePoolFree(list->pools[i]);
+        }
+        VIR_FREE(list->pools);
+    }
+    VIR_FREE(list);
+}
+
+static vshStoragePoolListPtr
+vshStoragePoolListCollect(vshControl *ctl,
+                          unsigned int flags)
+{
+    vshStoragePoolListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    int ret;
+    char **names = NULL;
+    virStoragePoolPtr pool;
+    bool success = false;
+    size_t deleted = 0;
+    int persistent;
+    int autostart;
+    int nActivePools = 0;
+    int nInactivePools = 0;
+    int nAllPools = 0;
+
+    /* try the list with flags support (0.10.0 and later) */
+    if ((ret = virConnectListAllStoragePools(ctl->conn,
+                                             &list->pools,
+                                             flags)) >= 0) {
+        list->npools = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
+        vshResetLibvirtError();
+        goto fallback;
+    }
+
+    if (last_error && last_error->code ==  VIR_ERR_INVALID_ARG) {
+        /* try the new API again but mask non-guaranteed flags */
+        unsigned int newflags = flags & (VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
+                                         VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE);
+        vshResetLibvirtError();
+        if ((ret = virConnectListAllStoragePools(ctl->conn, &list->pools,
+                                                 newflags)) >= 0) {
+            list->npools = ret;
+            goto filter;
+        }
+    }
+
+    /* there was an error during the first or second call */
+    vshError(ctl, "%s", _("Failed to list pools"));
+    goto cleanup;
+
+
+fallback:
+    /* fall back to old method (0.9.13 and older) */
+    vshResetLibvirtError();
+
+    /* There is no way to get the pool type */
+    if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)) {
+        vshError(ctl, "%s", _("Filtering using --type is not supported "
+                              "by this libvirt"));
+        goto cleanup;
+    }
+
+    /* Get the number of active pools */
+    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+        if ((nActivePools = virConnectNumOfStoragePools(ctl->conn)) < 0) {
+            vshError(ctl, "%s", _("Failed to get the number of active pools "));
+            goto cleanup;
+        }
+    }
+
+    /* Get the number of inactive pools */
+    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)) {
+        if ((nInactivePools = virConnectNumOfDefinedStoragePools(ctl->conn)) < 0) {
+            vshError(ctl, "%s", _("Failed to get the number of inactive pools"));
+            goto cleanup;
+        }
+    }
+
+    nAllPools = nActivePools + nInactivePools;
+
+    if (nAllPools == 0)
+        return list;
+
+    names = vshMalloc(ctl, sizeof(char *) * nAllPools);
+
+    /* Retrieve a list of active storage pool names */
+    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+        if (virConnectListStoragePools(ctl->conn,
+                                       names, nActivePools) < 0) {
+            vshError(ctl, "%s", _("Failed to list active pools"));
+            goto cleanup;
+        }
+    }
+
+    /* Add the inactive storage pools to the end of the name list */
+    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+        if (virConnectListDefinedStoragePools(ctl->conn,
+                                              &names[nActivePools],
+                                              nInactivePools) < 0) {
+            vshError(ctl, "%s", _("Failed to list inactive pools"));
+            goto cleanup;
+        }
+    }
+
+    list->pools = vshMalloc(ctl, sizeof(virStoragePoolPtr) * (nAllPools));
+    list->npools = 0;
+
+    /* get active pools */
+    for (i = 0; i < nActivePools; i++) {
+        if (!(pool = virStoragePoolLookupByName(ctl->conn, names[i])))
+            continue;
+        list->pools[list->npools++] = pool;
+    }
+
+    /* get inactive pools */
+    for (i = 0; i < nInactivePools; i++) {
+        if (!(pool = virStoragePoolLookupByName(ctl->conn, names[i])))
+            continue;
+        list->pools[list->npools++] = pool;
+    }
+
+    /* truncate pools that weren't found */
+    deleted = nAllPools - list->npools;
+
+filter:
+    /* filter list the list if the list was acquired by fallback means */
+    for (i = 0; i < list->npools; i++) {
+        pool = list->pools[i];
+
+        /* persistence filter */
+        if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT)) {
+            if ((persistent = virStoragePoolIsPersistent(pool)) < 0) {
+                vshError(ctl, "%s", _("Failed to get pool persistence info"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT) && persistent) ||
+                  (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT) && !persistent)))
+                goto remove_entry;
+        }
+
+        /* autostart filter */
+        if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART)) {
+            if (virStoragePoolGetAutostart(pool, &autostart) < 0) {
+                vshError(ctl, "%s", _("Failed to get pool autostart state"));
+                goto cleanup;
+            }
+
+            if (!((MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART) && autostart) ||
+                  (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART) && !autostart)))
+                goto remove_entry;
+        }
+
+        /* the pool matched all filters, it may stay */
+        continue;
+
+remove_entry:
+        /* the pool has to be removed as it failed one of the filters */
+        virStoragePoolFree(list->pools[i]);
+        list->pools[i] = NULL;
+        deleted++;
+    }
+
+finished:
+    /* sort the list */
+    if (list->pools && list->npools)
+        qsort(list->pools, list->npools,
+              sizeof(*list->pools), vshStoragePoolSorter);
+
+    /* truncate the list if filter simulation deleted entries */
+    if (deleted)
+        VIR_SHRINK_N(list->pools, list->npools, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nAllPools; i++)
+        VIR_FREE(names[i]);
+
+    if (!success) {
+        vshStoragePoolListFree(list);
+        list = NULL;
+    }
+
+    VIR_FREE(names);
+    return list;
+}
+
 /*
  * "pool-list" command
  */
@@ -563,6 +790,11 @@ static const vshCmdInfo info_pool_list[] = {
 static const vshCmdOptDef opts_pool_list[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("list inactive pools")},
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active pools")},
+    {"transient", VSH_OT_BOOL, 0, N_("list transient pools")},
+    {"persistent", VSH_OT_BOOL, 0, N_("list persistent pools")},
+    {"autostart", VSH_OT_BOOL, 0, N_("list pools with autostart enabled")},
+    {"no-autostart", VSH_OT_BOOL, 0, N_("list pools with autostart disabled")},
+    {"type", VSH_OT_STRING, 0, N_("only list pool of specified type(s) (if supported)")},
     {"details", VSH_OT_BOOL, 0, N_("display extended details for pools")},
     {NULL, 0, 0, NULL}
 };
@@ -571,10 +803,8 @@ static bool
 cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     virStoragePoolInfo info;
-    char **poolNames = NULL;
     int i, ret;
-    bool functionReturn;
-    int numActivePools = 0, numInactivePools = 0, numAllPools = 0;
+    bool functionReturn = false;
     size_t stringLength = 0, nameStrLength = 0;
     size_t autostartStrLength = 0, persistStrLength = 0;
     size_t stateStrLength = 0, capStrLength = 0;
@@ -588,80 +818,99 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         char *available;
     };
     struct poolInfoText *poolInfoTexts = NULL;
-
-    /* Determine the options passed by the user */
-    bool all = vshCommandOptBool(cmd, "all");
+    unsigned int flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE;
+    vshStoragePoolListPtr list = NULL;
+    const char *type = NULL;
     bool details = vshCommandOptBool(cmd, "details");
-    bool inactive = vshCommandOptBool(cmd, "inactive");
-    bool active = !inactive || all;
-    inactive |= all;
+    bool inactive, all;
 
-    /* Retrieve the number of active storage pools */
-    if (active) {
-        numActivePools = virConnectNumOfStoragePools(ctl->conn);
-        if (numActivePools < 0) {
-            vshError(ctl, "%s", _("Failed to list active pools"));
-            return false;
-        }
+    inactive = vshCommandOptBool(cmd, "inactive");
+    all = vshCommandOptBool(cmd, "all");
+
+    if (inactive)
+        flags = VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE;
+
+    if (all)
+        flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
+                VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE;
+
+    if (vshCommandOptBool(cmd, "autostart"))
+        flags |= VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART;
+
+    if (vshCommandOptBool(cmd, "no-autostart"))
+        flags |= VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART;
+
+    if (vshCommandOptBool(cmd, "persistent"))
+        flags |= VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT;
+
+    if (vshCommandOptBool(cmd, "transient"))
+        flags |= VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT;
+
+    if (vshCommandOptString(cmd, "type", &type) < 0) {
+        vshError(ctl, "%s", _("Invalid argument for 'type'"));
+        return false;
     }
 
-    /* Retrieve the number of inactive storage pools */
-    if (inactive) {
-        numInactivePools = virConnectNumOfDefinedStoragePools(ctl->conn);
-        if (numInactivePools < 0) {
-            vshError(ctl, "%s", _("Failed to list inactive pools"));
-            return false;
+    if (type) {
+        int poolType = -1;
+        char **poolTypes = NULL;
+        int npoolTypes = 0;
+
+        npoolTypes = vshStringToArray((char *)type, &poolTypes);
+
+        for (i = 0; i < npoolTypes; i++) {
+            if ((poolType = virStoragePoolTypeFromString(poolTypes[i])) < 0) {
+                vshError(ctl, "%s", _("Invalid pool type"));
+                VIR_FREE(poolTypes);
+                return false;
+            }
+
+            switch(poolType) {
+            case VIR_STORAGE_POOL_DIR:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_DIR;
+                break;
+            case VIR_STORAGE_POOL_FS:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_FS;
+                break;
+            case VIR_STORAGE_POOL_NETFS:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_NETFS;
+                break;
+            case VIR_STORAGE_POOL_LOGICAL:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL;
+                break;
+            case VIR_STORAGE_POOL_DISK:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_DISK;
+                break;
+            case VIR_STORAGE_POOL_ISCSI:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI;
+                break;
+            case VIR_STORAGE_POOL_SCSI:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_SCSI;
+                break;
+            case VIR_STORAGE_POOL_MPATH:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_MPATH;
+                break;
+            case VIR_STORAGE_POOL_RBD:
+                flags |= VIR_CONNECT_LIST_STORAGE_POOLS_RBD;
+                break;
+            default:
+                break;
+            }
         }
+        VIR_FREE(poolTypes);
     }
 
-    /* Determine the total number of pools to list */
-    numAllPools = numActivePools + numInactivePools;
+    if (!(list = vshStoragePoolListCollect(ctl, flags)))
+        goto cleanup;
 
-    /* Allocate memory for arrays of storage pool names and info */
-    poolNames = vshCalloc(ctl, numAllPools, sizeof(*poolNames));
-    poolInfoTexts =
-        vshCalloc(ctl, numAllPools, sizeof(*poolInfoTexts));
-
-    /* Retrieve a list of active storage pool names */
-    if (active) {
-        if (virConnectListStoragePools(ctl->conn,
-                                       poolNames, numActivePools) < 0) {
-            vshError(ctl, "%s", _("Failed to list active pools"));
-            VIR_FREE(poolInfoTexts);
-            VIR_FREE(poolNames);
-            return false;
-        }
-    }
-
-    /* Add the inactive storage pools to the end of the name list */
-    if (inactive) {
-        if (virConnectListDefinedStoragePools(ctl->conn,
-                                              &poolNames[numActivePools],
-                                              numInactivePools) < 0) {
-            vshError(ctl, "%s", _("Failed to list inactive pools"));
-            VIR_FREE(poolInfoTexts);
-            VIR_FREE(poolNames);
-            return false;
-        }
-    }
-
-    /* Sort the storage pool names */
-    qsort(poolNames, numAllPools, sizeof(*poolNames), vshNameSorter);
+    poolInfoTexts = vshCalloc(ctl, list->npools, sizeof(*poolInfoTexts));
 
     /* Collect the storage pool information for display */
-    for (i = 0; i < numAllPools; i++) {
+    for (i = 0; i < list->npools; i++) {
         int autostart = 0, persistent = 0;
 
-        /* Retrieve a pool object, looking it up by name */
-        virStoragePoolPtr pool = virStoragePoolLookupByName(ctl->conn,
-                                                            poolNames[i]);
-        if (!pool) {
-            VIR_FREE(poolNames[i]);
-            continue;
-        }
-
         /* Retrieve the autostart status of the pool */
-        if (virStoragePoolGetAutostart(pool, &autostart) < 0)
+        if (virStoragePoolGetAutostart(list->pools[i], &autostart) < 0)
             poolInfoTexts[i].autostart = vshStrdup(ctl, _("no autostart"));
         else
             poolInfoTexts[i].autostart = vshStrdup(ctl, autostart ?
@@ -669,7 +918,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* Retrieve the persistence status of the pool */
         if (details) {
-            persistent = virStoragePoolIsPersistent(pool);
+            persistent = virStoragePoolIsPersistent(list->pools[i]);
             vshDebug(ctl, VSH_ERR_DEBUG, "Persistent flag value: %d\n",
                      persistent);
             if (persistent < 0)
@@ -685,7 +934,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
 
         /* Collect further extended information about the pool */
-        if (virStoragePoolGetInfo(pool, &info) != 0) {
+        if (virStoragePoolGetInfo(list->pools[i], &info) != 0) {
             /* Something went wrong retrieving pool info, cope with it */
             vshError(ctl, "%s", _("Could not retrieve pool information"));
             poolInfoTexts[i].state = vshStrdup(ctl, _("unknown"));
@@ -727,28 +976,25 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     val = vshPrettyCapacity(info.capacity, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].capacity,
                                       "%.2lf %s", val, unit);
-                    if (ret < 0) {
+                    if (ret < 0)
                         /* An error occurred creating the string, return */
                         goto asprintf_failure;
-                    }
 
                     /* Create the allocation output string */
                     val = vshPrettyCapacity(info.allocation, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].allocation,
                                       "%.2lf %s", val, unit);
-                    if (ret < 0) {
+                    if (ret < 0)
                         /* An error occurred creating the string, return */
                         goto asprintf_failure;
-                    }
 
                     /* Create the available space output string */
                     val = vshPrettyCapacity(info.available, &unit);
                     ret = virAsprintf(&poolInfoTexts[i].available,
                                       "%.2lf %s", val, unit);
-                    if (ret < 0) {
+                    if (ret < 0)
                         /* An error occurred creating the string, return */
                         goto asprintf_failure;
-                    }
                 } else {
                     /* Capacity related information isn't available */
                     poolInfoTexts[i].capacity = vshStrdup(ctl, _("-"));
@@ -772,16 +1018,16 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                     availStrLength = stringLength;
             } else {
                 /* --details option was not specified, only active/inactive
-                * state strings are used */
-                if (info.state == VIR_STORAGE_POOL_INACTIVE)
-                    poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
-                else
+                 * state strings are used */
+                if (virStoragePoolIsActive(list->pools[i]))
                     poolInfoTexts[i].state = vshStrdup(ctl, _("active"));
-            }
+                else
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
+           }
         }
 
         /* Keep the length of name string if longest so far */
-        stringLength = strlen(poolNames[i]);
+        stringLength = strlen(virStoragePoolGetName(list->pools[i]));
         if (stringLength > nameStrLength)
             nameStrLength = stringLength;
 
@@ -794,9 +1040,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         stringLength = strlen(poolInfoTexts[i].autostart);
         if (stringLength > autostartStrLength)
             autostartStrLength = stringLength;
-
-        /* Free the pool object */
-        virStoragePoolFree(pool);
     }
 
     /* If the --details option wasn't selected, we output the pool
@@ -812,9 +1055,10 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         vshPrintExtra(ctl, "-----------------------------------------\n");
 
         /* Output old style pool info */
-        for (i = 0; i < numAllPools; i++) {
+        for (i = 0; i < list->npools; i++) {
+            const char *name = virStoragePoolGetName(list->pools[i]);
             vshPrint(ctl, "%-20s %-10s %-10s\n",
-                 poolNames[i],
+                 name,
                  poolInfoTexts[i].state,
                  poolInfoTexts[i].autostart);
         }
@@ -906,9 +1150,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrintExtra(ctl, "\n");
 
     /* Display the pool info rows */
-    for (i = 0; i < numAllPools; i++) {
+    for (i = 0; i < list->npools; i++) {
         vshPrint(ctl, outputStr,
-                 poolNames[i],
+                 virStoragePoolGetName(list->pools[i]),
                  poolInfoTexts[i].state,
                  poolInfoTexts[i].autostart,
                  poolInfoTexts[i].persistent,
@@ -922,7 +1166,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     goto cleanup;
 
 asprintf_failure:
-
     /* Display an appropriate error message then cleanup and return */
     switch (errno) {
     case ENOMEM:
@@ -936,24 +1179,19 @@ asprintf_failure:
     functionReturn = false;
 
 cleanup:
-
-    /* Safely free the memory allocated in this function */
-    for (i = 0; i < numAllPools; i++) {
-        /* Cleanup the memory for one pool info structure */
-        VIR_FREE(poolInfoTexts[i].state);
-        VIR_FREE(poolInfoTexts[i].autostart);
-        VIR_FREE(poolInfoTexts[i].persistent);
-        VIR_FREE(poolInfoTexts[i].capacity);
-        VIR_FREE(poolInfoTexts[i].allocation);
-        VIR_FREE(poolInfoTexts[i].available);
-        VIR_FREE(poolNames[i]);
+    if (list && list->npools) {
+        for (i = 0; i < list->npools; i++) {
+            VIR_FREE(poolInfoTexts[i].state);
+            VIR_FREE(poolInfoTexts[i].autostart);
+            VIR_FREE(poolInfoTexts[i].persistent);
+            VIR_FREE(poolInfoTexts[i].capacity);
+            VIR_FREE(poolInfoTexts[i].allocation);
+            VIR_FREE(poolInfoTexts[i].available);
+        }
     }
-
-    /* Cleanup the memory for the initial arrays*/
     VIR_FREE(poolInfoTexts);
-    VIR_FREE(poolNames);
 
-    /* Return the desired value */
+    vshStoragePoolListFree(list);
     return functionReturn;
 }
 
