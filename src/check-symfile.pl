@@ -5,8 +5,10 @@ die "syntax: $0 SYMFILE ELFLIB(S)" unless int(@ARGV) >= 2;
 my $symfile = shift @ARGV;
 my @elflibs = @ARGV;
 
-my @wantsyms;
+my %wantsyms;
 my %gotsyms;
+
+my $ret = 0;
 
 open SYMFILE, $symfile or die "cannot read $symfile: $!";
 
@@ -21,7 +23,12 @@ while (<SYMFILE>) {
 
     die "malformed line $_" unless /^\s*(\S+);$/;
 
-    push @wantsyms, $1;
+    if (exists $wantsyms{$1}) {
+	print STDERR "Symbol $1 is listed twice\n";
+	$ret = 1;
+    } else {
+	$wantsyms{$1} = 1;
+    }
 }
 close SYMFILE;
 
@@ -36,8 +43,6 @@ foreach my $elflib (@elflibs) {
 
     close NM;
 }
-
-my $ret = 0;
 
 foreach my $sym (@wantsyms) {
     next if exists $gotsyms{$sym};

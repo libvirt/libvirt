@@ -1178,8 +1178,6 @@ virDirCreate;
 virDoubleToStr;
 virEnumFromString;
 virEnumToString;
-virEventAddHandle;
-virEventRemoveHandle;
 virFileAbsPath;
 virFileAccessibleAs;
 virFileBuildPath;
