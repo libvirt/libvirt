@@ -642,15 +642,15 @@ fallback:
     vshResetLibvirtError();
 
     /* There is no way to get the pool type */
-    if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)) {
+    if (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)) {
         vshError(ctl, "%s", _("Filtering using --type is not supported "
                               "by this libvirt"));
         goto cleanup;
     }
 
     /* Get the number of active pools */
-    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
         if ((nActivePools = virConnectNumOfStoragePools(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of active pools "));
             goto cleanup;
@@ -658,8 +658,8 @@ fallback:
     }
 
     /* Get the number of inactive pools */
-    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)) {
         if ((nInactivePools = virConnectNumOfDefinedStoragePools(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of inactive pools"));
             goto cleanup;
@@ -674,8 +674,8 @@ fallback:
     names = vshMalloc(ctl, sizeof(char *) * nAllPools);
 
     /* Retrieve a list of active storage pool names */
-    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
         if (virConnectListStoragePools(ctl->conn,
                                        names, nActivePools) < 0) {
             vshError(ctl, "%s", _("Failed to list active pools"));
@@ -684,8 +684,8 @@ fallback:
     }
 
     /* Add the inactive storage pools to the end of the name list */
-    if (!MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
         if (virConnectListDefinedStoragePools(ctl->conn,
                                               &names[nActivePools],
                                               nInactivePools) < 0) {
@@ -720,26 +720,26 @@ filter:
         pool = list->pools[i];
 
         /* persistence filter */
-        if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT)) {
             if ((persistent = virStoragePoolIsPersistent(pool)) < 0) {
                 vshError(ctl, "%s", _("Failed to get pool persistence info"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT) && persistent) ||
-                  (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT) && !persistent)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT) && persistent) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT) && !persistent)))
                 goto remove_entry;
         }
 
         /* autostart filter */
-        if (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART)) {
             if (virStoragePoolGetAutostart(pool, &autostart) < 0) {
                 vshError(ctl, "%s", _("Failed to get pool autostart state"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART) && autostart) ||
-                  (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART) && !autostart)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART) && autostart) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART) && !autostart)))
                 goto remove_entry;
         }
 
