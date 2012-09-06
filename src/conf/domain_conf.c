@@ -1732,12 +1732,14 @@ virDomainObjPtr virDomainObjNew(virCapsPtr caps)
         return NULL;
     }
 
-    if (caps->privateDataAllocFunc &&
-        !(domain->privateData = (caps->privateDataAllocFunc)())) {
-        virReportOOMError();
-        goto error;
+    if (caps &&
+        caps->privateDataAllocFunc) {
+        if (!(domain->privateData = (caps->privateDataAllocFunc)())) {
+            virReportOOMError();
+            goto error;
+        }
+        domain->privateDataFreeFunc = caps->privateDataFreeFunc;
     }
-    domain->privateDataFreeFunc = caps->privateDataFreeFunc;
 
     if (!(domain->snapshots = virDomainSnapshotObjListNew()))
         goto error;
