@@ -919,6 +919,7 @@
   &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
   &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
   &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;on_lockfailure&gt;poweroff&lt;/on_lockfailure&gt;
   ...</pre>
 
     <p>
@@ -972,6 +973,27 @@
       <dt><code>coredump-restart</code></dt>
       <dd>The crashed domain's core will be dumped, and then the
         domain will be restarted with the same configuration</dd>
+    </dl>
+
+    <p>
+      The <code>on_lockfailure</code> element (<span class="since">since
+      0.10.3</span>) may be used to configure what action should be
+      taken when a lock manager loses resource locks. The following
+      actions are recognized by libvirt, although not all of them need
+      to be supported by individual lock managers. When no action is
+      specified, each lock manager will take its default action.
+    </p>
+    <dl>
+      <dt><code>poweroff</code></dt>
+      <dd>The domain will be forcefully powered off.</dd>
+      <dt><code>restart</code></dt>
+      <dd>The domain will be powered off and started up again to
+        reacquire its locks.</dd>
+      <dt><code>pause</code></dt>
+      <dd>The domain will be paused so that it can be manually resumed
+        when lock issues are solved.</dd>
+      <dt><code>ignore</code></dt>
+      <dd>Keep the domain running as if nothing happened.</dd>
     </dl>
 
     <h3><a name="elementsPowerManagement">Power Management</a></h3>

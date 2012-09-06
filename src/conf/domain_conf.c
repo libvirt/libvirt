@@ -134,6 +134,13 @@ VIR_ENUM_IMPL(virDomainLifecycleCrash, VIR_DOMAIN_LIFECYCLE_CRASH_LAST,
               "coredump-destroy",
               "coredump-restart")
 
+VIR_ENUM_IMPL(virDomainLockFailure, VIR_DOMAIN_LOCK_FAILURE_LAST,
+              "default",
+              "poweroff",
+              "restart",
+              "pause",
+              "ignore")
+
 VIR_ENUM_IMPL(virDomainPMState, VIR_DOMAIN_PM_STATE_LAST,
               "default",
               "yes",
@@ -8963,6 +8970,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                      virDomainLifecycleCrashTypeFromString) < 0)
         goto error;
 
+    if (virDomainEventActionParseXML(ctxt, "on_lockfailure",
+                                     "string(./on_lockfailure[1])",
+                                     &def->onLockFailure,
+                                     VIR_DOMAIN_LOCK_FAILURE_DEFAULT,
+                                     virDomainLockFailureTypeFromString) < 0)
+        goto error;
+
     if (virDomainPMStateParseXML(ctxt,
                                  "string(./pm/suspend-to-mem/@enabled)",
                                  &def->pm.s3) < 0)
@@ -13691,6 +13705,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (virDomainEventActionDefFormat(buf, def->onCrash,
                                       "on_crash",
                                       virDomainLifecycleCrashTypeToString) < 0)
+        goto cleanup;
+    if (def->onLockFailure != VIR_DOMAIN_LOCK_FAILURE_DEFAULT &&
+        virDomainEventActionDefFormat(buf, def->onLockFailure,
+                                      "on_lockfailure",
+                                      virDomainLockFailureTypeToString) < 0)
         goto cleanup;
 
     if (def->pm.s3 || def->pm.s4) {

@@ -1413,6 +1413,18 @@ enum virDomainLifecycleCrashAction {
     VIR_DOMAIN_LIFECYCLE_CRASH_LAST
 };
 
+typedef enum {
+    VIR_DOMAIN_LOCK_FAILURE_DEFAULT,
+    VIR_DOMAIN_LOCK_FAILURE_POWEROFF,
+    VIR_DOMAIN_LOCK_FAILURE_RESTART,
+    VIR_DOMAIN_LOCK_FAILURE_PAUSE,
+    VIR_DOMAIN_LOCK_FAILURE_IGNORE,
+
+    VIR_DOMAIN_LOCK_FAILURE_LAST
+} virDomainLockFailureAction;
+
+VIR_ENUM_DECL(virDomainLockFailure)
+
 enum virDomainPMState {
     VIR_DOMAIN_PM_STATE_DEFAULT = 0,
     VIR_DOMAIN_PM_STATE_ENABLED,
@@ -1680,6 +1692,8 @@ struct _virDomainDef {
     int onReboot;
     int onPoweroff;
     int onCrash;
+
+    int onLockFailure; /* enum virDomainLockFailureAction */
 
     struct {
         /* These options are actually type of enum virDomainPMState */

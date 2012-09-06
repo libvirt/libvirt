@@ -2246,6 +2246,11 @@
           <ref name="crashOptions"/>
         </element>
       </optional>
+      <optional>
+        <element name="on_lockfailure">
+          <ref name="lockfailureOptions"/>
+        </element>
+      </optional>
     </interleave>
   </define>
   <!--
@@ -2285,6 +2290,23 @@
       <value>rename-restart</value>
       <value>coredump-destroy</value>
       <value>coredump-restart</value>
+    </choice>
+  </define>
+  <!--
+      Options when resource locks are lost:
+      poweroff: power off the domain
+      restart: power off the domain and start it up again to reacquire the
+               locks
+      pause: pause the execution of the domain so that it can be manually
+             resumed when lock issues are solved
+      ignore: keep the domain running
+  -->
+  <define name="lockfailureOptions">
+    <choice>
+      <value>poweroff</value>
+      <value>restart</value>
+      <value>pause</value>
+      <value>ignore</value>
     </choice>
   </define>
   <!--

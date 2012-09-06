@@ -421,6 +421,8 @@ virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
 virDomainLiveConfigHelperMethod;
 virDomainLoadAllConfigs;
+virDomainLockFailureTypeFromString;
+virDomainLockFailureTypeToString;
 virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
 virDomainMemDumpTypeFromString;
