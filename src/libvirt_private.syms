@@ -1733,6 +1733,7 @@ virTimeStringThenRaw;
 virTypedParameterArrayClear;
 virTypedParameterArrayValidate;
 virTypedParameterAssign;
+virTypedParameterAssignFromStr;
 
 
 # viruri.h
