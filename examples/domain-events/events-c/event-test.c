@@ -90,6 +90,9 @@ const char *eventToString(int event) {
         case VIR_DOMAIN_EVENT_SHUTDOWN:
             ret = "Shutdown";
             break;
+        case VIR_DOMAIN_EVENT_PMSUSPENDED:
+            ret = "PMSuspended";
+            break;
     }
     return ret;
 }
@@ -190,6 +193,13 @@ static const char *eventDetailToString(int event, int detail) {
             switch ((virDomainEventShutdownDetailType) detail) {
             case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
                 ret = "Finished";
+                break;
+            }
+            break;
+        case VIR_DOMAIN_EVENT_PMSUSPENDED:
+            switch ((virDomainEventPMSuspendedDetailType) detail) {
+            case VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY:
+                ret = "Memory";
                 break;
             }
             break;

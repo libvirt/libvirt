@@ -2845,6 +2845,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_RESUMED = 4,
     VIR_DOMAIN_EVENT_STOPPED = 5,
     VIR_DOMAIN_EVENT_SHUTDOWN = 6,
+    VIR_DOMAIN_EVENT_PMSUSPENDED = 7,
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_LAST
@@ -2960,6 +2961,19 @@ typedef enum {
     VIR_DOMAIN_EVENT_SHUTDOWN_LAST
 #endif
 } virDomainEventShutdownDetailType;
+
+/**
+ * virDomainEventPMSuspendedDetailType:
+ *
+ * Details about the 'pmsuspended' lifecycle event
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY = 0, /* Guest was PM suspended to memory */
+
+#ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_PMSUSPENDED_LAST
+#endif
+} virDomainEventPMSuspendedDetailType;
 
 /**
  * virConnectDomainEventCallback:

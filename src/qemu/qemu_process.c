@@ -1120,6 +1120,7 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
+    virDomainEventPtr lifecycleEvent = NULL;
 
     virDomainObjLock(vm);
     event = virDomainEventPMSuspendNewFromObj(vm);
@@ -1131,6 +1132,10 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
         virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED,
                              VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+        lifecycleEvent =
+            virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_PMSUSPENDED,
+                                     VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY);
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after suspend event",
@@ -1143,9 +1148,12 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virDomainObjUnlock(vm);
 
-    if (event) {
+    if (event || lifecycleEvent) {
         qemuDriverLock(driver);
-        qemuDomainEventQueue(driver, event);
+        if (event)
+            qemuDomainEventQueue(driver, event);
+        if (lifecycleEvent)
+            qemuDomainEventQueue(driver, lifecycleEvent);
         qemuDriverUnlock(driver);
     }
 
