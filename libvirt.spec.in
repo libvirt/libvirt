@@ -1222,6 +1222,15 @@ of recent versions of Linux (and other OSes).
 %if 0%{?enable_autotools}
 autoreconf -if
 %endif
+
+%if %{with_selinux}
+%if %{?fedora} >= 17 || %{?rhel} >= 7
+%define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
+%else
+%define with_selinux_mount --with-selinux-mount="/selinux"
+%endif
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -1254,6 +1263,7 @@ autoreconf -if
            %{?_without_capng} \
            %{?_without_netcf} \
            %{?_without_selinux} \
+           %{?_with_selinux_mount} \
            %{?_without_hal} \
            %{?_without_udev} \
            %{?_without_yajl} \
