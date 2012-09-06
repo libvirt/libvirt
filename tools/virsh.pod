@@ -2195,10 +2195,10 @@ List pool objects known to libvirt.  By default, only active pools
 are listed; I<--inactive> lists just the inactive pools, and I<--all>
 lists all pools.
 
-Except the default, I<--inactive>, and I<--all>, you may want to specify more
-filtering flags. I<--persistent> is to list the persistent pools, I<--transient>
-is to list the transient pools. I<--autostart> is to list the autostarting pools,
-I<--no-autostart> is to list the pools with autostarting disabled.
+In addition, there are several sets of filtering flags. I<--persistent> is to
+list the persistent pools, I<--transient> is to list the transient pools.
+I<--autostart> lists the autostarting pools, I<--no-autostart> lists the pools
+with autostarting disabled.
 
 You may also want to list pools with specified types using I<type>, the
 pool types must be separated by comma, e.g. --type dir,disk. The valid pool
