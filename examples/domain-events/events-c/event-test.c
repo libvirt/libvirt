@@ -377,7 +377,7 @@ static int myDomainEventPMWakeupCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                          int reason ATTRIBUTE_UNUSED,
                                          void *opaque ATTRIBUTE_UNUSED)
 {
-    printf("%s EVENT: Domain %s(%d) system pmwakeup",
+    printf("%s EVENT: Domain %s(%d) system pmwakeup\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
     return 0;
 }
@@ -387,7 +387,7 @@ static int myDomainEventPMSuspendCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                           int reason ATTRIBUTE_UNUSED,
                                           void *opaque ATTRIBUTE_UNUSED)
 {
-    printf("%s EVENT: Domain %s(%d) system pmsuspend",
+    printf("%s EVENT: Domain %s(%d) system pmsuspend\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
     return 0;
 }

@@ -536,6 +536,7 @@ static int remoteRelayDomainEventTrayChange(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
                                           virDomainPtr dom,
+                                          int reason ATTRIBUTE_UNUSED,
                                           void *opaque) {
     virNetServerClientPtr client = opaque;
     remote_domain_event_pmwakeup_msg data;
@@ -558,6 +559,7 @@ static int remoteRelayDomainEventPMWakeup(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int remoteRelayDomainEventPMSuspend(virConnectPtr conn ATTRIBUTE_UNUSED,
                                            virDomainPtr dom,
+                                           int reason ATTRIBUTE_UNUSED,
                                            void *opaque) {
     virNetServerClientPtr client = opaque;
     remote_domain_event_pmsuspend_msg data;

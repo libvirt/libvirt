@@ -5331,7 +5331,7 @@ libvirt_virConnectDomainEventPMWakeupCallback(virConnectPtr conn ATTRIBUTE_UNUSE
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
                                     (char*)"_dispatchDomainEventPMWakeupCallback",
-                                    (char*)"OO",
+                                    (char*)"OiO",
                                     pyobj_dom,
                                     reason,
                                     pyobj_cbData);
@@ -5378,7 +5378,7 @@ libvirt_virConnectDomainEventPMSuspendCallback(virConnectPtr conn ATTRIBUTE_UNUS
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
                                     (char*)"_dispatchDomainEventPMSuspendCallback",
-                                    (char*)"OO",
+                                    (char*)"OiO",
                                     pyobj_dom,
                                     reason,
                                     pyobj_cbData);
