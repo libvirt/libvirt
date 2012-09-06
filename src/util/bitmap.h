@@ -42,6 +42,12 @@ virBitmapPtr virBitmapAlloc(size_t size) ATTRIBUTE_RETURN_CHECK;
 void virBitmapFree(virBitmapPtr bitmap);
 
 /*
+ * Copy all bits from @src to @dst. The bitmap sizes
+ * must be the same
+ */
+int virBitmapCopy(virBitmapPtr dst, virBitmapPtr src);
+
+/*
  * Set bit position @b in @bitmap
  */
 int virBitmapSetBit(virBitmapPtr bitmap, size_t b)

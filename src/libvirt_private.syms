@@ -8,6 +8,7 @@
 # bitmap.h
 virBitmapAlloc;
 virBitmapClearBit;
+virBitmapCopy;
 virBitmapFree;
 virBitmapGetBit;
 virBitmapSetBit;

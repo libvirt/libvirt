@@ -93,6 +93,25 @@ void virBitmapFree(virBitmapPtr bitmap)
     }
 }
 
+
+int virBitmapCopy(virBitmapPtr dst, virBitmapPtr src)
+{
+    size_t sz;
+
+    if (dst->size != src->size) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    sz = (src->size + VIR_BITMAP_BITS_PER_UNIT - 1) /
+        VIR_BITMAP_BITS_PER_UNIT;
+
+    memcpy(dst->map, src->map, sz * sizeof(src->map[0]));
+
+    return 0;
+}
+
+
 /**
  * virBitmapSetBit:
  * @bitmap: Pointer to bitmap
