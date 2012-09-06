@@ -31,11 +31,16 @@
 <pre>
   git pull --rebase
   (fix any conflicts)
-  git send-email --cover-letter --no-chain-reply-to --annotate --to=libvir-list@redhat.com master
+  git send-email --cover-letter --no-chain-reply-to --annotate \
+                 --to=libvir-list@redhat.com master
 </pre>
-        <p>For a single patch you can omit <code>--cover-letter</code>, but
-        series of a two or more patches needs a cover letter. If you get tired
-        of typing <code>--to=libvir-list@redhat.com</code> designation you can
+        <p>(Note that the "git send-email" subcommand may not be in
+        the main git package and using it may require installion of a
+        separate package, for example the "git-email" package in
+        Fedora.)  For a single patch you can omit
+        <code>--cover-letter</code>, but a series of two or more
+        patches needs a cover letter. If you get tired of typing
+        <code>--to=libvir-list@redhat.com</code> designation you can
         set it in git config:</p>
 <pre>
   git config sendemail.to libvir-list@redhat.com
@@ -55,12 +60,15 @@
       </li>
 
       <li><p>Split large changes into a series of smaller patches,
-        self-contained if possible, with an explanation of each patch and an
-        explanation of how the sequence of patches fits together. Moreover,
-        please keep in mind that it's required to be able to compile cleanly
-        after each patch.  A feature does not have to work until the end of a
-        series, as long as intermediate patches don't cause test-suite
-        failures.</p>
+        self-contained if possible, with an explanation of each patch
+        and an explanation of how the sequence of patches fits
+        together. Moreover, please keep in mind that it's required to
+        be able to compile cleanly (<b>including</b> <code>make
+        check</code> and <code>make syntax-check</code>) after each
+        patch.  A feature does not have to work until the end of a
+        series, but intermediate patches must compile and not cause
+        test-suite failures (this is to preserve the usefulness
+        of <code>git bisect</code>, among other things).</p>
       </li>
 
       <li>Make sure your patches apply against libvirt GIT.  Developers
