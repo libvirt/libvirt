@@ -2144,8 +2144,8 @@ virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model);
 virSecurityLabelDefPtr
 virDomainDefAddSecurityLabelDef(virDomainDefPtr def, const char *model);
 
-typedef const char* (*virLifecycleToStringFunc)(int type);
-typedef int (*virLifecycleFromStringFunc)(const char *type);
+typedef const char* (*virEventActionToStringFunc)(int type);
+typedef int (*virEventActionFromStringFunc)(const char *type);
 
 VIR_ENUM_DECL(virDomainTaint)
 

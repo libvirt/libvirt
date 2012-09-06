@@ -51,7 +51,7 @@
         <ref name="clock"/>
         <ref name="resources"/>
         <ref name="features"/>
-        <ref name="termination"/>
+        <ref name="events"/>
         <optional>
           <ref name="pm"/>
         </optional>
@@ -2226,10 +2226,10 @@
     </element>
   </define>
   <!--
-      When a domain terminates multiple policies can be applied depending
-      on how it ended:
+      When a certain event happens, multiple policies can be applied
+      depends on what happened:
     -->
-  <define name="termination">
+  <define name="events">
     <interleave>
       <optional>
         <element name="on_reboot">

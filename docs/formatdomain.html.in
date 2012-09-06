@@ -907,15 +907,11 @@
       This guest NUMA specification is currently available only for QEMU/KVM.
     </p>
 
-    <h3><a name="elementsLifecycle">Lifecycle control</a></h3>
+    <h3><a name="elementsEvents">Events configuration</a></h3>
 
     <p>
       It is sometimes necessary to override the default actions taken
-      when a guest OS triggers a lifecycle operation. The following
-      collections of elements allow the actions to be specified. A
-      common use case is to force a reboot to be treated as a poweroff
-      when doing the initial OS installation. This allows the VM to be
-      re-configured for the first post-install bootup.
+      on various events.
     </p>
 
 <pre>
@@ -925,6 +921,13 @@
   &lt;on_crash&gt;restart&lt;/on_crash&gt;
   ...</pre>
 
+    <p>
+      The following collections of elements allow the actions to be
+      specified when a guest OS triggers a lifecycle operation. A
+      common use case is to force a reboot to be treated as a poweroff
+      when doing the initial OS installation. This allows the VM to be
+      re-configured for the first post-install bootup.
+    </p>
     <dl>
       <dt><code>on_poweroff</code></dt>
       <dd>The content of this element specifies the action to take when
