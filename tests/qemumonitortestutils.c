@@ -418,6 +418,9 @@ static qemuMonitorCallbacks qemuCallbacks = {
     .errorNotify = qemuMonitorTestErrorNotify,
 };
 
+#define QEMU_JSON_GREETING "{\"QMP\": {\"version\": {\"qemu\": {\"micro\": 1, \"minor\": 0, \"major\": 1}, \"package\": \" (qemu-kvm-1.0.1)\"}, \"capabilities\": []}}"
+#define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
+
 qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
 {
     qemuMonitorTestPtr test;
@@ -458,7 +461,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
 
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
-                                      true,
+                                      json ? 1 : 0,
                                       &qemuCallbacks)))
         goto error;
     qemuMonitorLock(test->mon);
@@ -468,8 +471,13 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
     if (!test->client)
         goto error;
 
+    if (qemuMonitorTestAddReponse(test, json ?
+                                  QEMU_JSON_GREETING :
+                                  QEMU_TEXT_GREETING) < 0)
+        goto error;
+
     if (virNetSocketAddIOCallback(test->client,
-                                  VIR_EVENT_HANDLE_READABLE,
+                                  VIR_EVENT_HANDLE_WRITABLE,
                                   qemuMonitorTestIO,
                                   test,
                                   NULL) < 0)

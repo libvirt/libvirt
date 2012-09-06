@@ -79,6 +79,7 @@ struct _qemuMonitor {
 
     unsigned json: 1;
     unsigned json_hmp: 1;
+    unsigned wait_greeting: 1;
 };
 
 static virClassPtr qemuMonitorClass;
@@ -365,6 +366,9 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
     if (len < 0)
         return -1;
 
+    if (len && mon->wait_greeting)
+        mon->wait_greeting = 0;
+
     if (len < mon->bufferOffset) {
         memmove(mon->buffer, mon->buffer + len, mon->bufferOffset - len);
         mon->bufferOffset -= len;
@@ -538,7 +542,8 @@ static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
     if (mon->lastError.code == VIR_ERR_OK) {
         events |= VIR_EVENT_HANDLE_READABLE;
 
-        if (mon->msg && mon->msg->txOffset < mon->msg->txLength)
+        if ((mon->msg && mon->msg->txOffset < mon->msg->txLength) &&
+            !mon->wait_greeting)
             events |= VIR_EVENT_HANDLE_WRITABLE;
     }
 
@@ -718,6 +723,8 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     mon->hasSendFD = hasSendFD;
     mon->vm = vm;
     mon->json = json;
+    if (json)
+        mon->wait_greeting = 1;
     mon->cb = cb;
     qemuMonitorLock(mon);
 
