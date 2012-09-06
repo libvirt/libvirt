@@ -147,6 +147,11 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                int json,
                                qemuMonitorCallbacksPtr cb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
+                                 int sockfd,
+                                 int json,
+                                 qemuMonitorCallbacksPtr cb)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 void qemuMonitorClose(qemuMonitorPtr mon);
 
