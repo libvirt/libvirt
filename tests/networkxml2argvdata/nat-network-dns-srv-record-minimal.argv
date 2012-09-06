@@ -1,7 +1,7 @@
 @DNSMASQ@ \
 --strict-order \
 --bind-interfaces \
---local=// --domain-needed --filterwin2k --conf-file= \
+--local=// --domain-needed --conf-file= \
 --except-interface lo \
 --srv-host=name.tcp.,,,, \
 --listen-address 192.168.122.1 \
