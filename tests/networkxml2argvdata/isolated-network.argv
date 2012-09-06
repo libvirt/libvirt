@@ -1,5 +1,5 @@
 @DNSMASQ@ --strict-order --bind-interfaces \
---local=// --domain-needed --filterwin2k --conf-file= \
+--local=// --domain-needed --conf-file= \
 --except-interface lo --dhcp-option=3 --no-resolv \
 --listen-address 192.168.152.1 \
 --dhcp-range 192.168.152.2,192.168.152.254 \

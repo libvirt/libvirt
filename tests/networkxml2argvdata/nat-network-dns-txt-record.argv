@@ -1,5 +1,5 @@
 @DNSMASQ@ --strict-order --bind-interfaces \
---local=// --domain-needed --filterwin2k --conf-file= \
+--local=// --domain-needed --conf-file= \
 --except-interface lo '--txt-record=example,example value' \
 --listen-address 192.168.122.1 --listen-address 192.168.123.1 \
 --listen-address 2001:db8:ac10:fe01::1 \
