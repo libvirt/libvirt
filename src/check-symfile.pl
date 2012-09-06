@@ -24,10 +24,10 @@ while (<SYMFILE>) {
     die "malformed line $_" unless /^\s*(\S+);$/;
 
     if (exists $wantsyms{$1}) {
-	print STDERR "Symbol $1 is listed twice\n";
-	$ret = 1;
+        print STDERR "Symbol $1 is listed twice\n";
+        $ret = 1;
     } else {
-	$wantsyms{$1} = 1;
+        $wantsyms{$1} = 1;
     }
 }
 close SYMFILE;

@@ -14,4 +14,7 @@
  (nxml-mode . (
 	       (indent-tabs-mode . nil)
 	       ))
+ (perl-mode . (
+	       (indent-tabs-mode . nil)
+	       ))
  )
