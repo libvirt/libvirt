@@ -525,13 +525,13 @@ void virDomainEventFree(virDomainEventPtr event)
 }
 
 /**
- * virDomainEventQueueFree:
+ * virDomainEventQueueClear:
  * @queue: pointer to the queue
  *
- * Free the memory in the queue. We process this like a list here
+ * Removes all elements from the queue
  */
 static void
-virDomainEventQueueFree(virDomainEventQueuePtr queue)
+virDomainEventQueueClear(virDomainEventQueuePtr queue)
 {
     int i;
     if (!queue)
@@ -541,6 +541,22 @@ virDomainEventQueueFree(virDomainEventQueuePtr queue)
         virDomainEventFree(queue->events[i]);
     }
     VIR_FREE(queue->events);
+    queue->count = 0;
+}
+
+/**
+ * virDomainEventQueueFree:
+ * @queue: pointer to the queue
+ *
+ * Free the memory in the queue. We process this like a list here
+ */
+static void
+virDomainEventQueueFree(virDomainEventQueuePtr queue)
+{
+    if (!queue)
+        return;
+
+    virDomainEventQueueClear(queue);
     VIR_FREE(queue);
 }
 
@@ -1559,6 +1575,7 @@ virDomainEventStateDeregister(virConnectPtr conn,
         state->timer != -1) {
         virEventRemoveTimeout(state->timer);
         state->timer = -1;
+        virDomainEventQueueClear(state->queue);
     }
 
     virDomainEventStateUnlock(state);
@@ -1596,6 +1613,7 @@ virDomainEventStateDeregisterID(virConnectPtr conn,
         state->timer != -1) {
         virEventRemoveTimeout(state->timer);
         state->timer = -1;
+        virDomainEventQueueClear(state->queue);
     }
 
     virDomainEventStateUnlock(state);
