@@ -691,13 +691,17 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
     }
 
     if (def->cputune.emulatorpin &&
-        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET) &&
-        qemuSetupCgroupEmulatorPin(cgroup_emulator, def->cputune.emulatorpin) < 0)
-        goto cleanup;
+        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
+        rc = qemuSetupCgroupEmulatorPin(cgroup_emulator,
+                                        def->cputune.emulatorpin);
+        if (rc < 0)
+            goto cleanup;
+    }
 
     if (period || quota) {
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
-            if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
+            if ((rc = qemuSetupCgroupVcpuBW(cgroup_emulator, period,
+                                            quota)) < 0)
                 goto cleanup;
         }
     }
