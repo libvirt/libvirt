@@ -78,7 +78,6 @@ struct _qemuMonitor {
     int nextSerial;
 
     unsigned json: 1;
-    unsigned json_hmp: 1;
     unsigned wait_greeting: 1;
 };
 
@@ -1131,7 +1130,6 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
                                qemuCapsPtr caps)
 {
     int ret;
-    int json_hmp;
     VIR_DEBUG("mon=%p", mon);
 
     if (!mon) {
@@ -1145,10 +1143,9 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
         if (ret < 0)
             goto cleanup;
 
-        ret = qemuMonitorJSONCheckCommands(mon, caps, &json_hmp);
+        ret = qemuMonitorJSONCheckCommands(mon, caps);
         if (ret < 0)
             goto cleanup;
-        mon->json_hmp = json_hmp > 0;
 
         ret = qemuMonitorJSONCheckEvents(mon, caps);
         if (ret < 0)
@@ -1159,21 +1156,6 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
 
 cleanup:
     return ret;
-}
-
-
-int
-qemuMonitorCheckHMP(qemuMonitorPtr mon, const char *cmd)
-{
-    if (!mon->json || mon->json_hmp)
-        return 1;
-
-    if (cmd) {
-        VIR_DEBUG("HMP passthrough not supported by qemu process;"
-                  " not trying HMP for command %s", cmd);
-    }
-
-    return 0;
 }
 
 
