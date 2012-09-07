@@ -3738,8 +3738,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef;
-    const char * type;
-    int max;
     int ret = -1;
     bool maximum;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -3779,27 +3777,11 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown virt type in domain definition '%d'"),
-                       vm->def->virtType);
-        goto endjob;
-    }
-
-    if ((max = qemuGetMaxVCPUs(NULL, type)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not determine max vcpus for the domain"));
-        goto endjob;
-    }
-
-    if (!maximum && vm->def->maxvcpus < max) {
-        max = vm->def->maxvcpus;
-    }
-
-    if (nvcpus > max) {
+    if (!maximum && nvcpus > vm->def->maxvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
-                         " vcpus for the domain: %d > %d"), nvcpus, max);
+                         " vcpus for the domain: %d > %d"),
+                       nvcpus, vm->def->maxvcpus);
         goto endjob;
     }
 
