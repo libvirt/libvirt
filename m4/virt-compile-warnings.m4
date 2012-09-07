@@ -57,6 +57,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wformat-nonliteral"
     # Gnulib's stat-time.h violates this
     dontwarn="$dontwarn -Waggregate-return"
+    # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
+    dontwarn="$dontwarn -Wenum-compare"
 
     # Gnulib uses '#pragma GCC diagnostic push' to silence some
     # warnings, but older gcc doesn't support this.
