@@ -1224,7 +1224,7 @@ autoreconf -if
 %endif
 
 %if %{with_selinux}
-%if %{?fedora} >= 17 || %{?rhel} >= 7
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
 %define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
 %else
 %define with_selinux_mount --with-selinux-mount="/selinux"
