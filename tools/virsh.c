@@ -2698,9 +2698,6 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_REMOTE
     vshPrint(ctl, " Remote");
 #endif
-#ifdef WITH_LIBVIRTD
-    vshPrint(ctl, " Daemon");
-#endif
 #ifdef WITH_NETWORK
     vshPrint(ctl, " Network");
 #endif
@@ -2752,6 +2749,9 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));
+#ifdef WITH_LIBVIRTD
+    vshPrint(ctl, " Daemon");
+#endif
 #ifdef WITH_NODE_DEVICES
     vshPrint(ctl, " Nodedev");
 #endif
