@@ -2654,7 +2654,7 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, "%s", _("Compiled with support for:\n"));
     vshPrint(ctl, "%s", _(" Hypervisors:"));
 #ifdef WITH_QEMU
-    vshPrint(ctl, " QEmu/KVM");
+    vshPrint(ctl, " QEMU/KVM");
 #endif
 #ifdef WITH_LXC
     vshPrint(ctl, " LXC");
