@@ -1302,13 +1302,14 @@ hypervListAllDomains(virConnectPtr conn,
     virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_VIRTUAL);
 
     /* construct query with filter depending on flags */
-    if (!(flags & VIR_CONNECT_LIST_DOMAINS_ACTIVE &&
-          flags & VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
-        if (flags & VIR_CONNECT_LIST_DOMAINS_ACTIVE) {
+    if (!(MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
+          MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE))) {
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE)) {
             virBufferAddLit(&query, "and ");
             virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_ACTIVE);
         }
-        if (flags & VIR_CONNECT_LIST_DOMAINS_INACTIVE) {
+
+        if (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE)) {
             virBufferAddLit(&query, "and ");
             virBufferAddLit(&query, MSVM_COMPUTERSYSTEM_WQL_INACTIVE);
         }
@@ -1358,14 +1359,16 @@ hypervListAllDomains(virConnectPtr conn,
             continue;
         }
 
-        if (VIR_RESIZE_N(doms, ndoms, count,  2) < 0)
+        if (VIR_RESIZE_N(doms, ndoms, count, 2) < 0)
             goto no_memory;
+
+        domain = NULL;
 
         if (hypervMsvmComputerSystemToDomain(conn, computerSystem,
                                              &domain) < 0)
             goto cleanup;
 
-       doms[count++] = domain;
+        doms[count++] = domain;
     }
 
     if (doms)
@@ -1376,13 +1379,14 @@ hypervListAllDomains(virConnectPtr conn,
 cleanup:
     if (doms) {
         for (i = 0; i < count; ++i) {
-            if (doms[i])
-                virDomainFree(doms[i]);
+            virDomainFree(doms[i]);
         }
+
+        VIR_FREE(doms);
     }
 
-    VIR_FREE(doms);
     hypervFreeObject(priv, (hypervObject *)computerSystemList);
+
     return ret;
 
 no_memory:
