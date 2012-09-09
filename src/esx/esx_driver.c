@@ -3363,7 +3363,6 @@ esxDomainGetAutostart(virDomainPtr domain, int *autostart)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_AutoStartDefaults *defaults = NULL;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *hostAutoStartManager = NULL;
     esxVI_AutoStartPowerInfo *powerInfo = NULL;
     esxVI_AutoStartPowerInfo *powerInfoList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -3417,7 +3416,6 @@ esxDomainGetAutostart(virDomainPtr domain, int *autostart)
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&hostAutoStartManager);
     esxVI_AutoStartDefaults_Free(&defaults);
     esxVI_AutoStartPowerInfo_Free(&powerInfoList);
     esxVI_ObjectContent_Free(&virtualMachine);
