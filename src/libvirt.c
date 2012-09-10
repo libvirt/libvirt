@@ -1329,6 +1329,7 @@ virConnectOpen (const char *name)
             goto error;
 
     VIR_DEBUG("name=%s", name);
+    virResetLastError();
     ret = do_open (name, NULL, 0);
     if (!ret)
         goto error;
@@ -1363,6 +1364,7 @@ virConnectOpenReadOnly(const char *name)
             goto error;
 
     VIR_DEBUG("name=%s", name);
+    virResetLastError();
     ret = do_open (name, NULL, VIR_CONNECT_RO);
     if (!ret)
         goto error;
@@ -1401,6 +1403,7 @@ virConnectOpenAuth(const char *name,
             goto error;
 
     VIR_DEBUG("name=%s, auth=%p, flags=%x", NULLSTR(name), auth, flags);
+    virResetLastError();
     ret = do_open (name, auth, flags);
     if (!ret)
         goto error;
