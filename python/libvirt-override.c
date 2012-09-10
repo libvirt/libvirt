@@ -1840,7 +1840,8 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
             auth.credtype[i] = (int)PyLong_AsLong(val);
         }
     }
-    auth.cb = pycredcb ? virConnectCredCallbackWrapper : NULL;
+    if (pycredcb && pycredcb != Py_None)
+        auth.cb = virConnectCredCallbackWrapper;
     auth.cbdata = pyauth;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
