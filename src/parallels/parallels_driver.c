@@ -468,12 +468,29 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
-    if (virJSONValueObjectGetNumberUint(jobj3, "cpus", &x) < 0) {
+    if (virJSONValueObjectGetNumberUint(jobj3, "cpus", &x) == 0) {
+        def->vcpus = x;
+        def->maxvcpus = x;
+    } else if ((tmp = virJSONValueObjectGetString(jobj3, "cpus"))) {
+        if (STREQ(tmp, "unlimited")) {
+            virNodeInfo nodeinfo;
+
+            if (nodeGetInfo(NULL, &nodeinfo) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Can't get node info"));
+                goto cleanup;
+            }
+
+            def->vcpus = nodeinfo.cpus;
+            def->maxvcpus = def->vcpus;
+        } else {
+            parallelsParseError();
+            goto cleanup;
+        }
+    } else {
         parallelsParseError();
         goto cleanup;
     }
-    def->vcpus = x;
-    def->maxvcpus = x;
 
     if (!(jobj3 = virJSONValueObjectGet(jobj2, "memory"))) {
         parallelsParseError();
