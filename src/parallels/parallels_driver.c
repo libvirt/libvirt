@@ -1185,7 +1185,7 @@ parallelsApplyGraphicsParams(virDomainGraphicsDefPtr *oldgraphics, int nold,
     new = newgraphics[0];
 
     if (old->data.vnc.port != new->data.vnc.port &&
-        (old->data.vnc.port != 0 && new->data.vnc.port != -1)) {
+        (old->data.vnc.port != 0 && new->data.vnc.port != 0)) {
 
         goto error;
     } else if (old->data.vnc.autoport != new->data.vnc.autoport ||
