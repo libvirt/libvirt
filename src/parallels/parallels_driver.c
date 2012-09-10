@@ -1484,24 +1484,46 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         return -1;
     }
 
-    /* we fill only type and arch fields in parallelsLoadDomain, so
-     * we can check that all other paramenters are null */
+    /* we fill only type and arch fields in parallelsLoadDomain for
+     * hvm type and also init for containers, so we can check that all
+     * other paramenters are null and boot devices config is default */
+
     if (!STREQ_NULLABLE(old->os.type, new->os.type) ||
         !STREQ_NULLABLE(old->os.arch, new->os.arch) ||
-        new->os.machine != NULL || new->os.nBootDevs != 1 ||
-        new->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
-        new->os.bootmenu != 0 || new->os.init != NULL ||
-        new->os.initargv != NULL || new->os.kernel != NULL ||
-        new->os.initrd != NULL || new->os.cmdline != NULL ||
-        new->os.root != NULL || new->os.loader != NULL ||
-        new->os.bootloader != NULL || new->os.bootloaderArgs != NULL ||
-        new->os.smbios_mode != 0 || new->os.bios.useserial != 0) {
+        new->os.machine != NULL || new->os.bootmenu != 0 ||
+        new->os.kernel != NULL || new->os.initrd != NULL ||
+        new->os.cmdline != NULL || new->os.root != NULL ||
+        new->os.loader != NULL || new->os.bootloader != NULL ||
+        new->os.bootloaderArgs != NULL || new->os.smbios_mode != 0 ||
+        new->os.bios.useserial != 0) {
 
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("changing OS parameters is not supported "
                          "by parallels driver"));
         return -1;
     }
+    if (STREQ(new->os.type, "hvm")) {
+        if (new->os.nBootDevs != 1 ||
+            new->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
+            new->os.init != NULL || new->os.initargv != NULL) {
+
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("changing OS parameters is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
+    } else {
+        if (new->os.nBootDevs != 0 ||
+            !STREQ_NULLABLE(old->os.init, new->os.init) ||
+            (new->os.initargv != NULL && new->os.initargv[0] != NULL)) {
+
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("changing OS parameters is not supported "
+                             "by parallels driver"));
+            return -1;
+        }
+    }
+
 
     if (!STREQ_NULLABLE(old->emulator, new->emulator)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
