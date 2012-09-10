@@ -1820,6 +1820,7 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *pycredtype;
     virConnectAuth auth;
 
+    memset(&auth, 0, sizeof(auth));
     if (!PyArg_ParseTuple(args, (char *)"zOi:virConnectOpenAuth", &name, &pyauth, &flags))
         return NULL;
 
