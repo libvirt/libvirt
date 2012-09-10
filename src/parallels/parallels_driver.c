@@ -130,6 +130,15 @@ parallelsBuildCapabilities(void)
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto no_memory;
 
+    if ((guest = virCapabilitiesAddGuest(caps, "exe", PARALLELS_DEFAULT_ARCH,
+                                         64, "parallels",
+                                         NULL, 0, NULL)) == NULL)
+        goto no_memory;
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      "parallels", NULL, NULL, 0, NULL) == NULL)
+        goto no_memory;
+
     caps->defaultConsoleTargetType = parallelsDefaultConsoleType;
     return caps;
 
@@ -490,8 +499,20 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     def->mem.max_balloon <<= 10;
     def->mem.cur_balloon = def->mem.max_balloon;
 
-    if (!(def->os.type = strdup("hvm")))
-        goto no_memory;
+    if (!(tmp = virJSONValueObjectGetString(jobj, "Type"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (STREQ(tmp, "CT")) {
+        if (!(def->os.type = strdup("exe")))
+            goto no_memory;
+        if (!(def->os.init = strdup("/sbin/init")))
+            goto no_memory;
+    } else if (STREQ(tmp, "VM")) {
+        if (!(def->os.type = strdup("hvm")))
+            goto no_memory;
+    }
 
     if (!(def->os.arch = strdup(PARALLELS_DEFAULT_ARCH)))
         goto no_memory;
@@ -577,7 +598,7 @@ parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
     int ret = -1;
 
     jobj = parallelsParseOutput(PRLCTL, "list", "-j", "-a", "-i", "-H",
-                                "--vmtype", "vm", domain_name, NULL);
+                                "--vmtype", "all", domain_name, NULL);
     if (!jobj) {
         parallelsParseError();
         goto cleanup;
