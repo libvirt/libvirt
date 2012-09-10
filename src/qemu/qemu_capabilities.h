@@ -151,6 +151,7 @@ typedef qemuCaps *qemuCapsPtr;
 
 qemuCapsPtr qemuCapsNew(void);
 qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
+qemuCapsPtr qemuCapsNewForBinary(const char *binary);
 
 void qemuCapsSet(qemuCapsPtr caps,
                  enum qemuCapsFlags flag) ATTRIBUTE_NONNULL(1);
@@ -174,6 +175,8 @@ size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,
                                char ***names);
 const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
                                         const char *name);
+
+bool qemuCapsIsValid(qemuCapsPtr caps);
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
 

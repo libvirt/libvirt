@@ -182,6 +182,9 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 struct _qemuCaps {
     virObject object;
 
+    char *binary;
+    time_t mtime;
+
     virBitmapPtr flags;
 
     unsigned int version;
@@ -1794,6 +1797,8 @@ void qemuCapsDispose(void *obj)
     VIR_FREE(caps->cpuDefinitions);
 
     virBitmapFree(caps->flags);
+
+    VIR_FREE(caps->binary);
 }
 
 void
@@ -1892,4 +1897,135 @@ const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
     }
 
     return name;
+}
+
+
+#define QEMU_SYSTEM_PREFIX "qemu-system-"
+
+qemuCapsPtr qemuCapsNewForBinary(const char *binary)
+{
+    qemuCapsPtr caps = qemuCapsNew();
+    const char *tmp;
+    struct utsname ut;
+    unsigned int is_kvm;
+    char *help = NULL;
+    virCommandPtr cmd = NULL;
+    virCapsGuestMachinePtr *machines = NULL;
+    size_t nmachines;
+    size_t i;
+    struct stat sb;
+
+    if (!(caps->binary = strdup(binary)))
+        goto no_memory;
+
+    tmp = strstr(binary, QEMU_SYSTEM_PREFIX);
+    if (tmp) {
+        tmp += strlen(QEMU_SYSTEM_PREFIX);
+    } else {
+        uname_normalize(&ut);
+        tmp = ut.machine;
+    }
+    if (!(caps->arch = strdup(tmp)))
+        goto no_memory;
+
+    /* We would also want to check faccessat if we cared about ACLs,
+     * but we don't.  */
+    if (stat(binary, &sb) < 0) {
+        virReportSystemError(errno, _("Cannot check QEMU binary %s"),
+                             binary);
+        goto error;
+    }
+    caps->mtime = sb.st_mtime;
+
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so it's hard to feed back a useful error.
+     */
+    if (!virFileIsExecutable(binary)) {
+        goto error;
+    }
+
+    cmd = qemuCapsProbeCommand(binary, NULL);
+    virCommandAddArgList(cmd, "-help", NULL);
+    virCommandSetOutputBuffer(cmd, &help);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto error;
+
+    if (qemuCapsParseHelpStr(binary, help, caps,
+                             &caps->version,
+                             &is_kvm,
+                             &caps->kvmVersion,
+                             false) < 0)
+        goto error;
+
+    /* Currently only x86_64 and i686 support PCI-multibus. */
+    if (STREQLEN(caps->arch, "x86_64", 6) ||
+        STREQLEN(caps->arch, "i686", 4)) {
+        qemuCapsSet(caps, QEMU_CAPS_PCI_MULTIBUS);
+    }
+
+    /* S390 and probably other archs do not support no-acpi -
+       maybe the qemu option parsing should be re-thought. */
+    if (STRPREFIX(caps->arch, "s390"))
+        qemuCapsClear(caps, QEMU_CAPS_NO_ACPI);
+
+    /* qemuCapsExtractDeviceStr will only set additional caps if qemu
+     * understands the 0.13.0+ notion of "-device driver,".  */
+    if (qemuCapsGet(caps, QEMU_CAPS_DEVICE) &&
+        strstr(help, "-device driver,?") &&
+        qemuCapsExtractDeviceStr(binary, caps) < 0)
+        goto error;
+
+    if (qemuCapsProbeCPUModels(binary, caps, caps->arch,
+                               &caps->ncpuDefinitions,
+                               (const char ***)&caps->cpuDefinitions) < 0)
+        goto error;
+
+    if (qemuCapsProbeMachineTypes(binary, caps,
+                                  &machines, &nmachines) < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(caps->machineTypes, nmachines) < 0)
+        goto no_memory;
+    if (VIR_ALLOC_N(caps->machineAliases, nmachines) < 0)
+        goto no_memory;
+    caps->nmachineTypes = nmachines;
+
+    for (i = 0 ; i < caps->nmachineTypes ; i++) {
+        if (machines[i]->canonical) {
+            caps->machineTypes[i] = machines[i]->canonical;
+            caps->machineAliases[i] = machines[i]->name;
+        } else {
+            caps->machineTypes[i] = machines[i]->name;
+        }
+    }
+    VIR_FREE(machines);
+
+cleanup:
+    VIR_FREE(help);
+    virCommandFree(cmd);
+    return caps;
+
+no_memory:
+    virReportOOMError();
+error:
+    virCapabilitiesFreeMachines(machines, nmachines);
+    virObjectUnref(caps);
+    caps = NULL;
+    goto cleanup;
+}
+
+
+bool qemuCapsIsValid(qemuCapsPtr caps)
+{
+    struct stat sb;
+
+    if (!caps->binary)
+        return true;
+
+    if (stat(caps->binary, &sb) < 0)
+        return false;
+
+    return sb.st_mtime == caps->mtime;
 }
