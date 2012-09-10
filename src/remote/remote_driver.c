@@ -3517,29 +3517,38 @@ static int remoteAuthInteract(virConnectPtr conn,
     VIR_DEBUG("Starting SASL interaction");
     remoteAuthInteractStateClear(state, false);
 
+    /* Fills state->interact with any values from the auth config file */
     if (remoteAuthFillFromConfig(conn, state) < 0)
         goto cleanup;
 
+    /* Populates state->cred for anything not found in the auth config */
     if (remoteAuthMakeCredentials(state->interact, &state->cred, &state->ncred) < 0) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
                        _("Failed to make auth credentials"));
         goto cleanup;
     }
 
-    /* Run the authentication callback */
-    if (!auth || !auth->cb) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("No authentication callback available"));
-        goto cleanup;
+    /* If there was anything not in the auth config, we need to
+     * run the interactive callback
+     */
+    if (state->ncred) {
+        /* Run the authentication callback */
+        if (!auth || !auth->cb) {
+            virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                           _("No authentication callback available"));
+            goto cleanup;
+        }
+
+        if ((*(auth->cb))(state->cred, state->ncred, auth->cbdata) < 0) {
+            virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                           _("Failed to collect auth credentials"));
+            goto cleanup;
+        }
+
+        /* Copy user's responses from cred into interact */
+        remoteAuthFillInteract(state->cred, state->interact);
     }
 
-    if ((*(auth->cb))(state->cred, state->ncred, auth->cbdata) < 0) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("Failed to collect auth credentials"));
-        goto cleanup;
-    }
-
-    remoteAuthFillInteract(state->cred, state->interact);
     /*
      * 'interact' now has pointers to strings in 'state->cred'
      * so we must not free state->cred until the *next*
