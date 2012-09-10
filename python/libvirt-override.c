@@ -1776,8 +1776,10 @@ static int virConnectCredCallbackWrapper(virConnectCredentialPtr cred,
 
     PyErr_Clear();
     pyret = PyEval_CallObject(pycb, list);
-    if (PyErr_Occurred())
+    if (PyErr_Occurred()) {
+        PyErr_Print();
         goto cleanup;
+    }
 
     ret = PyLong_AsLong(pyret);
     if (ret == 0) {
