@@ -3742,15 +3742,15 @@ error:
 /* Helper function called to validate incoming client array on any
  * interface that sets typed parameters in the hypervisor.  */
 static int
-virTypedParameterValidateSet(virDomainPtr domain,
+virTypedParameterValidateSet(virConnectPtr conn,
                              virTypedParameterPtr params,
                              int nparams)
 {
     bool string_okay;
     int i;
 
-    string_okay = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver,
-                                           domain->conn,
+    string_okay = VIR_DRV_SUPPORTS_FEATURE(conn->driver,
+                                           conn,
                                            VIR_DRV_FEATURE_TYPED_PARAM_STRING);
     for (i = 0; i < nparams; i++) {
         if (strnlen(params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH) ==
@@ -3817,7 +3817,7 @@ virDomainSetMemoryParameters(virDomainPtr domain,
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
 
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -3958,7 +3958,7 @@ virDomainSetNumaParameters(virDomainPtr domain,
     }
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -4086,7 +4086,7 @@ virDomainSetBlkioParameters(virDomainPtr domain,
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -6941,7 +6941,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -7005,7 +7005,7 @@ virDomainSetSchedulerParametersFlags(virDomainPtr domain,
     virCheckNonNullArgGoto(params, error);
     virCheckNonNegativeArgGoto(nparams, error);
 
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -7286,7 +7286,7 @@ virDomainSetInterfaceParameters(virDomainPtr domain,
     virCheckNonNullArgGoto(params, error);
     virCheckPositiveArgGoto(nparams, error);
 
-    if (virTypedParameterValidateSet(domain, params, nparams) < 0)
+    if (virTypedParameterValidateSet(domain->conn, params, nparams) < 0)
         goto error;
 
     conn = domain->conn;
@@ -19246,7 +19246,7 @@ int virDomainSetBlockIoTune(virDomainPtr dom,
     virCheckPositiveArgGoto(nparams, error);
     virCheckNonNullArgGoto(params, error);
 
-    if (virTypedParameterValidateSet(dom, params, nparams) < 0)
+    if (virTypedParameterValidateSet(dom->conn, params, nparams) < 0)
         goto error;
 
     conn = dom->conn;
