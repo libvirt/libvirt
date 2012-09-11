@@ -212,6 +212,14 @@
         modular Web Services architecture.
       </dd>
 
+      <dt><a href="http://www.eucalyptus.com">Eucalyptus</a></dt>
+      <dd>
+        Eucalyptus is an on-premise Infrastructure as a Service cloud
+        software platform that is open source and
+        AWS-compatible. Eucalyptus uses libivrt virtualization API to
+        directly interact with Xen and KVM hypervisors.
+      </dd>
+
       <dt><a href="http://www.nimbusproject.org">Nimbus</a></dt>
       <dd>
         Nimbus is an open-source toolkit focused on providing
