@@ -2034,11 +2034,11 @@ struct remote_storage_pool_list_all_volumes_ret {
         } vols;
         u_int                      ret;
 };
-struct remote_list_all_networks_args {
+struct remote_connect_list_all_networks_args {
         int                        need_results;
         u_int                      flags;
 };
-struct remote_list_all_networks_ret {
+struct remote_connect_list_all_networks_ret {
         struct {
                 u_int              nets_len;
                 remote_nonnull_network * nets_val;
