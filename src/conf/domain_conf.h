@@ -584,6 +584,7 @@ struct _virDomainDiskDef {
     virDomainBlockIoTuneInfo blkdeviotune;
 
     char *serial;
+    char *wwn;
     int cachemode;
     int error_policy;  /* enum virDomainDiskErrorPolicy */
     int rerror_policy; /* enum virDomainDiskErrorPolicy */

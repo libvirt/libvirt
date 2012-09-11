@@ -960,6 +960,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->mirror);
     VIR_FREE(def->mirrorFormat);
     VIR_FREE(def->auth.username);
+    VIR_FREE(def->wwn);
     if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
         VIR_FREE(def->auth.secret.usage);
     virStorageEncryptionFree(def->encryption);
@@ -3463,6 +3464,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *tray = NULL;
     char *logical_block_size = NULL;
     char *physical_block_size = NULL;
+    char *wwn = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -3789,6 +3791,12 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             } else if (!serial &&
                        xmlStrEqual(cur->name, BAD_CAST "serial")) {
                 serial = (char *)xmlNodeGetContent(cur);
+            } else if (!wwn &&
+                       xmlStrEqual(cur->name, BAD_CAST "wwn")) {
+                wwn = (char *)xmlNodeGetContent(cur);
+
+                if (!virValidateWWN(wwn))
+                    goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 /* boot is parsed as part of virDomainDeviceInfoParseXML */
             }
@@ -4085,6 +4093,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     encryption = NULL;
     def->serial = serial;
     serial = NULL;
+    def->wwn = wwn;
+    wwn = NULL;
 
     if (!def->driverType &&
         caps->defaultDiskDriverType &&
@@ -4143,6 +4153,7 @@ cleanup:
     VIR_FREE(startupPolicy);
     VIR_FREE(logical_block_size);
     VIR_FREE(physical_block_size);
+    VIR_FREE(wwn);
 
     ctxt->node = save_ctxt;
     return def;
@@ -11742,6 +11753,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->transient)
         virBufferAddLit(buf, "      <transient/>\n");
     virBufferEscapeString(buf, "      <serial>%s</serial>\n", def->serial);
+    virBufferEscapeString(buf, "      <wwn>%s</wwn>\n", def->wwn);
     if (def->encryption) {
         virBufferAdjustIndent(buf, 6);
         if (virStorageEncryptionFormat(buf, def->encryption) < 0)
