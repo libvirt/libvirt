@@ -434,8 +434,8 @@ fallback:
     vshResetLibvirtError();
 
     /* Get the number of active networks */
-    if (!MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
         if ((nActiveNets = virConnectNumOfNetworks(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of active networks"));
             goto cleanup;
@@ -443,8 +443,8 @@ fallback:
     }
 
     /* Get the number of inactive networks */
-    if (!MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_NETWORKS_INACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_INACTIVE)) {
         if ((nInactiveNets = virConnectNumOfDefinedNetworks(ctl->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of inactive networks"));
             goto cleanup;
@@ -459,8 +459,8 @@ fallback:
     names = vshMalloc(ctl, sizeof(char *) * nAllNets);
 
     /* Retrieve a list of active network names */
-    if (!MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
         if (virConnectListNetworks(ctl->conn,
                                    names, nActiveNets) < 0) {
             vshError(ctl, "%s", _("Failed to list active networks"));
@@ -469,8 +469,8 @@ fallback:
     }
 
     /* Add the inactive networks to the end of the name list */
-    if (!MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
-        MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
+    if (!VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) ||
+        VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_ACTIVE)) {
         if (virConnectListDefinedNetworks(ctl->conn,
                                           &names[nActiveNets],
                                           nInactiveNets) < 0) {
@@ -505,26 +505,26 @@ filter:
         net = list->nets[i];
 
         /* persistence filter */
-        if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT)) {
             if ((persistent = virNetworkIsPersistent(net)) < 0) {
                 vshError(ctl, "%s", _("Failed to get network persistence info"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_NETWORKS_PERSISTENT) && persistent) ||
-                  (MATCH(VIR_CONNECT_LIST_NETWORKS_TRANSIENT) && !persistent)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_PERSISTENT) && persistent) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_TRANSIENT) && !persistent)))
                 goto remove_entry;
         }
 
         /* autostart filter */
-        if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)) {
+        if (VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)) {
             if (virNetworkGetAutostart(net, &autostart) < 0) {
                 vshError(ctl, "%s", _("Failed to get network autostart state"));
                 goto cleanup;
             }
 
-            if (!((MATCH(VIR_CONNECT_LIST_NETWORKS_AUTOSTART) && autostart) ||
-                  (MATCH(VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART) && !autostart)))
+            if (!((VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_AUTOSTART) && autostart) ||
+                  (VSH_MATCH(VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART) && !autostart)))
                 goto remove_entry;
         }
         /* the pool matched all filters, it may stay */
