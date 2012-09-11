@@ -2453,6 +2453,15 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         goto error;
     }
 
+    if (disk->wwn) {
+        if ((disk->bus != VIR_DOMAIN_DISK_BUS_IDE) &&
+            (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only ide and scsi disk support wwn"));
+            goto error;
+        }
+    }
+
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         /* make sure that both the bus and the qemu binary support
          *  type='lun' (SG_IO).
@@ -2475,6 +2484,11 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                            _("disk device='lun' is not supported by this QEMU"));
             goto error;
         }
+        if (disk->wwn) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn is not supported for lun device"));
+            goto error;
+        }
     }
 
     switch (disk->bus) {
@@ -2482,6 +2496,14 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if (disk->info.addr.drive.target != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("target must be 0 for ide controller"));
+            goto error;
+        }
+
+        if (disk->wwn &&
+            !qemuCapsGet(caps, QEMU_CAPS_IDE_DRIVE_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn for ide disk is not supported "
+                             "by this QEMU"));
             goto error;
         }
 
@@ -2506,6 +2528,14 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                                  "lun passthrough"));
                 goto error;
             }
+        }
+
+        if (disk->wwn &&
+            !qemuCapsGet(caps, QEMU_CAPS_SCSI_DISK_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting wwn for scsi disk is not supported "
+                             "by this QEMU"));
+            goto error;
         }
 
         controllerModel =
@@ -2646,6 +2676,9 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             virBufferAsprintf(&opt, ",physical_block_size=%u",
                               disk->blockio.physical_block_size);
     }
+
+    if (disk->wwn)
+        virBufferAsprintf(&opt, ",wwn=%s", disk->wwn);
 
     if (virBufferError(&opt)) {
         virReportOOMError();
