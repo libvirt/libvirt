@@ -700,7 +700,7 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
     int i_retval;
     int nparams = 0;
     Py_ssize_t size = 0;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args, (char *)"OO:virDomainSetScedulerParameters",
                           &pyobj_domain, &info))
