@@ -1727,6 +1727,53 @@ no_memory:
 }
 
 
+qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps)
+{
+    qemuCapsPtr ret = qemuCapsNew();
+    size_t i;
+
+    if (!ret)
+        return NULL;
+
+    virBitmapCopy(ret->flags, caps->flags);
+
+    ret->version = caps->version;
+    ret->kvmVersion = caps->kvmVersion;
+
+    if (caps->arch &&
+        !(ret->arch = strdup(caps->arch)))
+        goto no_memory;
+
+    if (VIR_ALLOC_N(ret->cpuDefinitions, caps->ncpuDefinitions) < 0)
+        goto no_memory;
+    ret->ncpuDefinitions = caps->ncpuDefinitions;
+    for (i = 0 ; i < caps->ncpuDefinitions ; i++) {
+        if (!(ret->cpuDefinitions[i] = strdup(caps->cpuDefinitions[i])))
+            goto no_memory;
+    }
+
+    if (VIR_ALLOC_N(ret->machineTypes, caps->nmachineTypes) < 0)
+        goto no_memory;
+    if (VIR_ALLOC_N(ret->machineAliases, caps->nmachineTypes) < 0)
+        goto no_memory;
+    ret->nmachineTypes = caps->nmachineTypes;
+    for (i = 0 ; i < caps->nmachineTypes ; i++) {
+        if (!(ret->machineTypes[i] = strdup(caps->machineTypes[i])))
+            goto no_memory;
+        if (caps->machineAliases[i] &&
+            !(ret->machineAliases[i] = strdup(caps->machineAliases[i])))
+            goto no_memory;
+    }
+
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    virObjectUnref(ret);
+    return NULL;
+}
+
+
 void qemuCapsDispose(void *obj)
 {
     qemuCapsPtr caps = obj;

@@ -150,6 +150,7 @@ typedef struct _qemuCaps qemuCaps;
 typedef qemuCaps *qemuCapsPtr;
 
 qemuCapsPtr qemuCapsNew(void);
+qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
 
 void qemuCapsSet(qemuCapsPtr caps,
                  enum qemuCapsFlags flag) ATTRIBUTE_NONNULL(1);
