@@ -1582,6 +1582,12 @@
           like <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
           <span class="since">Since 0.7.1</span>
       </dd>
+      <dt><code>wwn</code></dt>
+      <dd>If present, this element specifies the WWN (World Wide Name)
+        of a virtual hard disk or CD-ROM drive. It must be composed
+        of 16 hexadecimal digits.
+        <span class='since'>Since 0.10.1</span>
+      </dd>
       <dt><code>host</code></dt>
       <dd>The <code>host</code> element has two attributes "name" and "port",
         which specify the hostname and the port number. The meaning of this

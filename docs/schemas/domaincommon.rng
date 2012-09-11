@@ -892,6 +892,11 @@
       <optional>
         <ref name="diskBlockIo"/>
       </optional>
+      <optional>
+        <element name="wwn">
+          <ref name="wwn"/>
+        </element>
+      </optional>
     </interleave>
   </define>
   <define name="snapshot">
