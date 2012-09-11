@@ -4449,6 +4449,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("the QEMU binary %s does not support kqemu"),
                            emulator);
+            goto error;
         }
         break;
 
@@ -4462,6 +4463,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("the QEMU binary %s does not support kvm"),
                            emulator);
+            goto error;
         }
         break;
 
