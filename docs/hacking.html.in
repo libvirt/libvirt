@@ -350,7 +350,7 @@
   }
 </pre>
 
-    <h2><a href="types">Preprocessor</a></h2>
+    <h2><a name="preprocessor">Preprocessor</a></h2>
 
     <p>
       For variadic macros, stick with C99 syntax:
@@ -368,7 +368,7 @@
   #endif
 </pre>
 
-    <h2><a href="types">C types</a></h2>
+    <h2><a name="types">C types</a></h2>
 
     <p>
       Use the right type.
