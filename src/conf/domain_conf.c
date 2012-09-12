@@ -110,6 +110,11 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "viridian",
               "privnet")
 
+VIR_ENUM_IMPL(virDomainApicEoi, VIR_DOMAIN_APIC_EOI_LAST,
+              "default",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "destroy",
               "restart",
@@ -8840,6 +8845,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 goto error;
             }
             def->features |= (1 << val);
+            if (val == VIR_DOMAIN_FEATURE_APIC) {
+                tmp = virXPathString("string(./features/apic/@eoi)", ctxt);
+                if (tmp) {
+                    int eoi;
+                    if ((eoi = virDomainApicEoiTypeFromString(tmp)) <= 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unknown value for attribute eoi: %s"),
+                                       tmp);
+                        VIR_FREE(tmp);
+                        goto error;
+                    }
+                    def->apic_eoi = eoi;
+                    VIR_FREE(tmp);
+                }
+            }
         }
         VIR_FREE(nodes);
     }
@@ -13751,7 +13771,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                    _("unexpected feature %d"), i);
                     goto cleanup;
                 }
-                virBufferAsprintf(buf, "    <%s/>\n", name);
+                virBufferAsprintf(buf, "    <%s", name);
+                if (i == VIR_DOMAIN_FEATURE_APIC && def->apic_eoi) {
+                    virBufferAsprintf(buf,
+                                      " eoi='%s'",
+                                      virDomainApicEoiTypeToString(def->apic_eoi));
+                }
+                virBufferAsprintf(buf, "/>\n");
             }
         }
         virBufferAddLit(buf, "  </features>\n");

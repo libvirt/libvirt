@@ -2910,7 +2910,14 @@
           </optional>
           <optional>
             <element name="apic">
-              <empty/>
+              <optional>
+                <attribute name="eoi">
+                  <choice>
+                    <value>on</value>
+                    <value>off</value>
+                  </choice>
+                </attribute>
+              </optional>
             </element>
           </optional>
           <optional>

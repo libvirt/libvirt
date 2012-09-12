@@ -1018,6 +1018,13 @@
       <dd>ACPI is useful for power management, for example, with
         KVM guests it is required for graceful shutdown to work.
       </dd>
+      <dt><code>apic</code></dt>
+      <dd>APIC allows the use of programmable IRQ
+      management. <span class="since">Since 0.10.2 (QEMU only)</span>
+      there is an optional attribute <code>eoi</code> with values "on"
+      and "off" which toggles the availability of EOI (End of
+      Interrupt) for the guest.
+      </dd>
       <dt><code>hap</code></dt>
       <dd>Enable use of Hardware Assisted Paging if available in
         the hardware.
