@@ -1,0 +1,27 @@
+<domain type='parallels'>
+  <name>1010</name>
+  <uuid>88576506-d611-41c2-b6b6-c9043704a0dd</uuid>
+  <description></description>
+  <memory unit='KiB'>262144</memory>
+  <currentMemory unit='KiB'>262144</currentMemory>
+  <vcpu placement='static'>8</vcpu>
+  <os>
+      <type arch='x86_64'>exe</type>
+      <init>/sbin/init</init>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <filesystem type='template'>
+        <source name='centos-6-x86_64'/>
+        <target dir='/'/>
+    </filesystem>
+    <video>
+      <model type='vga' vram='16777216' heads='1'>
+        <acceleration accel3d='no' accel2d='no'/>
+      </model>
+    </video>
+  </devices>
+</domain>
