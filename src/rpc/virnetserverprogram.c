@@ -1,7 +1,7 @@
 /*
  * virnetserverprogram.c: generic network RPC server program
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -101,12 +101,19 @@ int virNetServerProgramMatches(virNetServerProgramPtr prog,
 static virNetServerProgramProcPtr virNetServerProgramGetProc(virNetServerProgramPtr prog,
                                                              int procedure)
 {
+    virNetServerProgramProcPtr proc;
+
     if (procedure < 0)
         return NULL;
     if (procedure >= prog->nprocs)
         return NULL;
 
-    return &prog->procs[procedure];
+    proc = &prog->procs[procedure];
+
+    if (!proc->func)
+        return NULL;
+
+    return proc;
 }
 
 unsigned int
