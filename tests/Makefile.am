@@ -178,12 +178,13 @@ test_scripts +=				\
 	read-bufsiz			\
 	read-non-seekable		\
 	start				\
-	undefine			\
 	vcpupin				\
 	virsh-all			\
 	virsh-optparse			\
 	virsh-schedinfo			\
-	virsh-synopsis
+	virsh-synopsis			\
+	virsh-undefine			\
+	$(NULL)
 
 test_programs += eventtest
 else
@@ -198,12 +199,13 @@ EXTRA_DIST += 				\
 	read-bufsiz			\
 	read-non-seekable		\
 	start				\
-	undefine			\
 	vcpupin				\
 	virsh-all			\
 	virsh-optparse			\
 	virsh-schedinfo			\
-	virsh-synopsis
+	virsh-synopsis			\
+	virsh-undefine			\
+	$(NULL)
 endif
 
 if WITH_SECDRIVER_APPARMOR
