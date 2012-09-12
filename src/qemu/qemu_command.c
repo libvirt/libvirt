@@ -1044,8 +1044,9 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
             if (virHashLookup(addrs->used, addr)) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("Attempted double use of PCI Address '%s'"
-                                 "(need \"multifunction='off'\" for device on function 0)"),
+                               _("Attempted double use of PCI Address '%s' "
+                                 "(need \"multifunction='off'\" for device "
+                                 "on function 0)"),
                                addr);
                 goto cleanup;
             }

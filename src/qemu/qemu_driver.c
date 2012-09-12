@@ -13271,7 +13271,7 @@ qemuDomainSetMetadata(virDomainPtr dom,
             break;
         case VIR_DOMAIN_METADATA_ELEMENT:
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEmu driver does not support modifying"
+                           _("QEmu driver does not support modifying "
                              "<metadata> element"));
             goto cleanup;
             break;
@@ -13299,7 +13299,7 @@ qemuDomainSetMetadata(virDomainPtr dom,
             break;
         case VIR_DOMAIN_METADATA_ELEMENT:
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU driver does not support"
+                           _("QEMU driver does not support "
                              "<metadata> element"));
             goto cleanup;
          default:
@@ -13367,7 +13367,7 @@ qemuDomainGetMetadata(virDomainPtr dom,
         break;
     case VIR_DOMAIN_METADATA_ELEMENT:
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("QEMU driver does not support"
+                       _("QEMU driver does not support "
                          "<metadata> element"));
         goto cleanup;
         break;

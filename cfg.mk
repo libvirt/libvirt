@@ -597,6 +597,15 @@ sc_prohibit_useless_translation:
 	halt='no translations in tests or examples'			\
 	  $(_sc_search_regexp)
 
+# When splitting a diagnostic across lines, ensure that there is a space
+# or \n on one side of the split.
+sc_require_whitespace_in_translation:
+	@grep -n -A1 '"$$' $$($(VC_LIST_EXCEPT))   			\
+	   | sed -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g'	\
+		-e '/_(.*[^\ ]""[^\ ]/p' | grep . &&			\
+	  { echo '$(ME): missing whitespace at line split' 1>&2;	\
+	    exit 1; } || :
+
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\

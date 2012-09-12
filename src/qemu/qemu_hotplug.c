@@ -1278,7 +1278,7 @@ int qemuDomainChangeNetBridge(virDomainObjPtr vm,
         virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
         if (ret < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("unable to recover former state by adding port"
+                           _("unable to recover former state by adding port "
                              "to bridge %s"), oldbridge);
         }
         return -1;

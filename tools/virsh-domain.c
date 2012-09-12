@@ -2945,8 +2945,8 @@ cleanup:
  */
 static const vshCmdInfo info_save_image_dumpxml[] = {
     {"help", N_("saved state domain information in XML")},
-    {"desc", N_("Output the domain information for a saved state file,\n"
-                "as an XML dump to stdout.")},
+    {"desc",
+     N_("Dump XML of domain information for a saved state file to stdout.")},
     {NULL, NULL}
 };
 

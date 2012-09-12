@@ -2,7 +2,7 @@
 /*
  * esx_util.c: utility functions for the VMware ESX driver
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2009-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -159,8 +159,9 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
                     (*parsedUri)->proxy_port < 1 ||
                     (*parsedUri)->proxy_port > 65535) {
                     virReportError(VIR_ERR_INVALID_ARG,
-                                   _("Query parameter 'proxy' has unexpected port"
-                                     "value '%s' (should be [1..65535])"), tmp);
+                                   _("Query parameter 'proxy' has unexpected "
+                                     "port value '%s' (should be [1..65535])"),
+                                   tmp);
                     goto cleanup;
                 }
             }

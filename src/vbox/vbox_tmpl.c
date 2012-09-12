@@ -3752,8 +3752,9 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
                     ret = vboxStartMachine(dom, i, machine, &iid);
                 } else {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                                   _("machine is not in poweroff|saved|"
-                                     "aborted state, so couldn't start it"));
+                                   _("machine is not in "
+                                     "poweroff|saved|aborted state, so "
+                                     "couldn't start it"));
                     ret = -1;
                 }
             }
@@ -4280,8 +4281,9 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                       &devicePort,
                                       &deviceSlot)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("can't get the port/slot number of harddisk/"
-                                 "dvd/floppy to be attached: %s, rc=%08x"),
+                               _("can't get the port/slot number of "
+                                 "harddisk/dvd/floppy to be attached: "
+                                 "%s, rc=%08x"),
                                def->disks[i]->src, (unsigned)rc);
                 VBOX_RELEASE(medium);
                 VBOX_UTF16_FREE(mediumUUID);
@@ -4303,8 +4305,8 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
             if (NS_FAILED(rc)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not attach the file as harddisk/"
-                                 "dvd/floppy: %s, rc=%08x"),
+                               _("could not attach the file as "
+                                 "harddisk/dvd/floppy: %s, rc=%08x"),
                                def->disks[i]->src, (unsigned)rc);
             } else {
                 DEBUGIID("Attached HDD/DVD/Floppy with UUID", mediumUUID);

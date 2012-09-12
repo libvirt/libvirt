@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright 2010, diateam (www.diateam.net)
  *
  * This library is free software; you can redistribute it and/or
@@ -484,7 +484,7 @@ vmwareDomainResume(virDomainPtr dom)
 
     if (driver->type == TYPE_PLAYER) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vmplayer does not support libvirt suspend/resume"
+                       _("vmplayer does not support libvirt suspend/resume "
                          "(vmware pause/unpause) operation "));
         return ret;
     }

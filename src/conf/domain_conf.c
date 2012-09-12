@@ -9846,7 +9846,8 @@ static bool virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
             src->addr.pci.slot != dst->addr.pci.slot ||
             src->addr.pci.function != dst->addr.pci.function) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:%02x:%02x.%02x"),
+                           _("Target device PCI address %04x:%02x:%02x.%02x "
+                             "does not match source %04x:%02x:%02x.%02x"),
                            dst->addr.pci.domain, dst->addr.pci.bus,
                            dst->addr.pci.slot, dst->addr.pci.function,
                            src->addr.pci.domain, src->addr.pci.bus,
@@ -10044,7 +10045,7 @@ static bool virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
     if (virMacAddrCmp(&src->mac, &dst->mac) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target network card mac %02x:%02x:%02x:%02x:%02x:%02x"
-                         "does not match source %02x:%02x:%02x:%02x:%02x:%02x"),
+                         " does not match source %02x:%02x:%02x:%02x:%02x:%02x"),
                        dst->mac.addr[0], dst->mac.addr[1], dst->mac.addr[2],
                        dst->mac.addr[3], dst->mac.addr[4], dst->mac.addr[5],
                        src->mac.addr[0], src->mac.addr[1], src->mac.addr[2],

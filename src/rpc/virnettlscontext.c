@@ -1,7 +1,7 @@
 /*
  * virnettlscontext.c: TLS encryption/x509 handling
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -393,8 +393,8 @@ virNetTLSContextCheckCertDNWhitelist(const char *dname,
     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                    _("Client's Distinguished Name is not on the list "
                      "of allowed clients (tls_allowed_dn_list).  Use "
-                     "'certtool -i --infile clientcert.pem' to view the"
-                     "Distinguished Name field in the client certificate,"
+                     "'certtool -i --infile clientcert.pem' to view the "
+                     "Distinguished Name field in the client certificate, "
                      "or run this daemon with --verbose option."));
     return 0;
 }
