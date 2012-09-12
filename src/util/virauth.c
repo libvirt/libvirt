@@ -130,7 +130,7 @@ virAuthGetCredential(virConnectPtr conn,
 
     if (virAuthConfigLookup(config,
                             servicename,
-                            conn->uri->server,
+                            VIR_URI_SERVER(conn->uri),
                             credname,
                             &tmp) < 0)
         goto cleanup;

@@ -3726,7 +3726,7 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
 
         if (virAuthConfigLookup(state->config,
                                 "libvirt",
-                                conn->uri->server,
+                                VIR_URI_SERVER(conn->uri),
                                 credname,
                                 &value) < 0)
             goto cleanup;

@@ -60,4 +60,6 @@ char *virURIFormatParams(virURIPtr uri);
 
 void virURIFree(virURIPtr uri);
 
+# define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")
+
 #endif /* __VIR_URI_H__ */
