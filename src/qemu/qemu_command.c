@@ -4234,6 +4234,18 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         }
     }
 
+    if (def->apic_eoi) {
+        char sign;
+        if (def->apic_eoi == VIR_DOMAIN_APIC_EOI_ON)
+            sign = '+';
+        else
+            sign = '-';
+
+        virBufferAsprintf(&buf, "%s,%ckvm_pv_eoi",
+                          have_cpu ? "" : default_model,
+                          sign);
+    }
+
     if (virBufferError(&buf))
         goto no_memory;
 
@@ -7691,6 +7703,11 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 }
                 dom->clock.timers[i]->present = present;
                 ret = 0;
+            } else if (STREQ(feature, "kvm_pv_eoi")) {
+                if (policy == VIR_CPU_FEATURE_REQUIRE)
+                    dom->apic_eoi = VIR_DOMAIN_APIC_EOI_ON;
+                else
+                    dom->apic_eoi = VIR_DOMAIN_APIC_EOI_OFF;
             } else {
                 if (!cpu) {
                     if (!(cpu = qemuInitGuestCPU(dom)))

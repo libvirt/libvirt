@@ -138,6 +138,12 @@ mymain(void)
     DO_TEST("cpu-kvmclock");
     DO_TEST("cpu-host-kvmclock");
     DO_TEST("kvmclock");
+
+    DO_TEST("cpu-eoi-disabled");
+    DO_TEST("cpu-eoi-enabled");
+    DO_TEST("eoi-disabled");
+    DO_TEST("eoi-enabled");
+
     DO_TEST("hugepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");

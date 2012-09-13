@@ -385,6 +385,11 @@ mymain(void)
     DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM, QEMU_CAPS_CPU_HOST);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
 
+    DO_TEST("cpu-eoi-disabled", QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("cpu-eoi-enabled", QEMU_CAPS_ENABLE_KVM);
+    DO_TEST("eoi-disabled", NONE);
+    DO_TEST("eoi-enabled", NONE);
+
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-cdrom-empty", QEMU_CAPS_DRIVE);
