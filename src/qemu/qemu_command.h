@@ -139,8 +139,9 @@ char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                                  virBitmapPtr qemuCaps);
 
 char * qemuBuildHubDevStr(virDomainHubDefPtr dev, virBitmapPtr qemuCaps);
-char * qemuBuildRedirdevDevStr(virDomainRedirdevDefPtr dev, virBitmapPtr qemuCaps);
-
+char * qemuBuildRedirdevDevStr(virDomainDefPtr def,
+                               virDomainRedirdevDefPtr dev,
+                               virBitmapPtr qemuCaps);
 
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virConnectPtr conn,

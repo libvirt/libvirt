@@ -1022,12 +1022,13 @@ int qemuDomainAttachRedirdevDevice(struct qemud_driver *driver,
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
     char *devstr = NULL;
 
     if (qemuCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
             goto error;
-        if (!(devstr = qemuBuildRedirdevDevStr(redirdev, priv->qemuCaps)))
+        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
             goto error;
     }
 

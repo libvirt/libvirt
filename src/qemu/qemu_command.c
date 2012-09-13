@@ -3438,10 +3438,13 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
 
 
 char *
-qemuBuildRedirdevDevStr(virDomainRedirdevDefPtr dev,
+qemuBuildRedirdevDevStr(virDomainDefPtr def,
+                        virDomainRedirdevDefPtr dev,
                         virBitmapPtr qemuCaps)
 {
+    size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainRedirFilterDefPtr redirfilter = def->redirfilter;
 
     if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3460,6 +3463,44 @@ qemuBuildRedirdevDevStr(virDomainRedirdevDefPtr dev,
     virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
                       dev->info.alias,
                       dev->info.alias);
+
+    if (redirfilter && redirfilter->nusbdevs) {
+        if (!qemuCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("USB redirection filter is not "
+                             "supported by this version of QEMU"));
+            goto error;
+        }
+
+        virBufferAsprintf(&buf, ",filter=");
+
+        for (i = 0; i < redirfilter->nusbdevs; i++) {
+            virDomainRedirFilterUsbDevDefPtr usbdev = redirfilter->usbdevs[i];
+            if (usbdev->usbClass >= 0)
+                virBufferAsprintf(&buf, "0x%02X:", usbdev->usbClass);
+            else
+                virBufferAsprintf(&buf, "-1:");
+
+            if (usbdev->vendor >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->vendor);
+            else
+                virBufferAsprintf(&buf, "-1:");
+
+            if (usbdev->product >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->product);
+            else
+                virBufferAsprintf(&buf, "-1:");
+
+            if (usbdev->version >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->version);
+            else
+                virBufferAsprintf(&buf, "-1:");
+
+            virBufferAsprintf(&buf, "%u", usbdev->allow);
+            if (i < redirfilter->nusbdevs -1)
+                virBufferAsprintf(&buf, "|");
+        }
+    }
 
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto error;
@@ -6275,7 +6316,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
 
         virCommandAddArg(cmd, "-device");
-        if (!(devstr = qemuBuildRedirdevDevStr(redirdev, qemuCaps)))
+        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, qemuCaps)))
             goto error;
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
