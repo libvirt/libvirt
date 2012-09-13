@@ -1017,7 +1017,7 @@ vshStorageVolListCollect(vshControl *ctl,
     int nvols = 0;
     int ret = -1;
 
-    /* try the list with flags support (0.10.0 and later) */
+    /* try the list with flags support (0.10.2 and later) */
     if ((ret = virStoragePoolListAllVolumes(pool,
                                             &list->vols,
                                             flags)) >= 0) {
@@ -1026,17 +1026,15 @@ vshStorageVolListCollect(vshControl *ctl,
     }
 
     /* check if the command is actually supported */
-    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
-        vshResetLibvirtError();
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT)
         goto fallback;
-    }
 
     /* there was an error during the call */
     vshError(ctl, "%s", _("Failed to list volumes"));
     goto cleanup;
 
 fallback:
-    /* fall back to old method (0.9.13 and older) */
+    /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
     /* Determine the number of volumes in the pool */

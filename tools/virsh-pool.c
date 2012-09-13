@@ -606,7 +606,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     int nInactivePools = 0;
     int nAllPools = 0;
 
-    /* try the list with flags support (0.10.0 and later) */
+    /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllStoragePools(ctl->conn,
                                              &list->pools,
                                              flags)) >= 0) {
@@ -615,10 +615,8 @@ vshStoragePoolListCollect(vshControl *ctl,
     }
 
     /* check if the command is actually supported */
-    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
-        vshResetLibvirtError();
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT)
         goto fallback;
-    }
 
     if (last_error && last_error->code ==  VIR_ERR_INVALID_ARG) {
         /* try the new API again but mask non-guaranteed flags */
@@ -638,7 +636,7 @@ vshStoragePoolListCollect(vshControl *ctl,
 
 
 fallback:
-    /* fall back to old method (0.9.13 and older) */
+    /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
     /* There is no way to get the pool type */

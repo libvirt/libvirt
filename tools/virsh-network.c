@@ -397,7 +397,7 @@ vshNetworkListCollect(vshControl *ctl,
     int nInactiveNets = 0;
     int nAllNets = 0;
 
-    /* try the list with flags support (0.10.0 and later) */
+    /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllNetworks(ctl->conn,
                                          &list->nets,
                                          flags)) >= 0) {
@@ -406,10 +406,8 @@ vshNetworkListCollect(vshControl *ctl,
     }
 
     /* check if the command is actually supported */
-    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT) {
-        vshResetLibvirtError();
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT)
         goto fallback;
-    }
 
     if (last_error && last_error->code ==  VIR_ERR_INVALID_ARG) {
         /* try the new API again but mask non-guaranteed flags */
@@ -430,7 +428,7 @@ vshNetworkListCollect(vshControl *ctl,
 
 
 fallback:
-    /* fall back to old method (0.9.13 and older) */
+    /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
     /* Get the number of active networks */
