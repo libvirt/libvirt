@@ -1126,8 +1126,7 @@ int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
-                               qemuCapsPtr caps)
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1140,14 +1139,6 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
 
     if (mon->json) {
         ret = qemuMonitorJSONSetCapabilities(mon);
-        if (ret < 0)
-            goto cleanup;
-
-        ret = qemuMonitorJSONCheckCommands(mon, caps);
-        if (ret < 0)
-            goto cleanup;
-
-        ret = qemuMonitorJSONCheckEvents(mon, caps);
         if (ret < 0)
             goto cleanup;
     } else {

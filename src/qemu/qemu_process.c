@@ -1250,7 +1250,10 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorSetCapabilities(priv->mon, priv->caps);
+    ret = qemuMonitorSetCapabilities(priv->mon);
+    if (ret == 0 &&
+        qemuCapsGet(priv->caps, QEMU_CAPS_MONITOR_JSON))
+        ret = qemuCapsProbeQMP(priv->caps, priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 error:

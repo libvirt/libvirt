@@ -968,65 +968,6 @@ qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
 }
 
 
-/*
- * Returns: 0 if human-monitor-command is not supported, +1 if
- * human-monitor-command worked or -1 on failure
- */
-int
-qemuMonitorJSONCheckCommands(qemuMonitorPtr mon,
-                             qemuCapsPtr caps)
-{
-    char **commands = NULL;
-    int ncommands;
-    size_t i;
-
-    if ((ncommands = qemuMonitorJSONGetCommands(mon, &commands)) < 0)
-        return -1;
-
-    for (i = 0 ; i < ncommands ; i++) {
-        char *name = commands[i];
-        if (STREQ(name, "system_wakeup"))
-            qemuCapsSet(caps, QEMU_CAPS_WAKEUP);
-        else if (STREQ(name, "transaction"))
-            qemuCapsSet(caps, QEMU_CAPS_TRANSACTION);
-        else if (STREQ(name, "block_job_cancel"))
-            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_SYNC);
-        else if (STREQ(name, "block-job-cancel"))
-            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_ASYNC);
-        else if (STREQ(name, "dump-guest-memory"))
-            qemuCapsSet(caps, QEMU_CAPS_DUMP_GUEST_MEMORY);
-        VIR_FREE(name);
-    }
-    VIR_FREE(commands);
-
-    return 0;
-}
-
-
-int
-qemuMonitorJSONCheckEvents(qemuMonitorPtr mon,
-                           qemuCapsPtr caps)
-{
-    char **events = NULL;
-    int nevents;
-    size_t i;
-
-    if ((nevents = qemuMonitorJSONGetEvents(mon, &events)) < 0)
-        return -1;
-
-    for (i = 0 ; i < nevents ; i++) {
-        char *name = events[i];
-
-        if (STREQ(name, "BALLOON_CHANGE"))
-            qemuCapsSet(caps, QEMU_CAPS_BALLOON_EVENT);
-        VIR_FREE(name);
-    }
-    VIR_FREE(events);
-
-    return 0;
-}
-
-
 int
 qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn ATTRIBUTE_UNUSED)

@@ -1688,6 +1688,76 @@ const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
 }
 
 
+static int
+qemuCapsProbeQMPCommands(qemuCapsPtr caps,
+                         qemuMonitorPtr mon)
+{
+    char **commands = NULL;
+    int ncommands;
+    size_t i;
+
+    if ((ncommands = qemuMonitorGetCommands(mon, &commands)) < 0)
+        return -1;
+
+    for (i = 0 ; i < ncommands ; i++) {
+        char *name = commands[i];
+        if (STREQ(name, "system_wakeup"))
+            qemuCapsSet(caps, QEMU_CAPS_WAKEUP);
+        else if (STREQ(name, "transaction"))
+            qemuCapsSet(caps, QEMU_CAPS_TRANSACTION);
+        else if (STREQ(name, "block_job_cancel"))
+            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_SYNC);
+        else if (STREQ(name, "block-job-cancel"))
+            qemuCapsSet(caps, QEMU_CAPS_BLOCKJOB_ASYNC);
+        else if (STREQ(name, "dump-guest-memory"))
+            qemuCapsSet(caps, QEMU_CAPS_DUMP_GUEST_MEMORY);
+        VIR_FREE(name);
+    }
+    VIR_FREE(commands);
+
+    return 0;
+}
+
+
+static int
+qemuCapsProbeQMPEvents(qemuCapsPtr caps,
+                       qemuMonitorPtr mon)
+{
+    char **events = NULL;
+    int nevents;
+    size_t i;
+
+    if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
+        return -1;
+
+    for (i = 0 ; i < nevents ; i++) {
+        char *name = events[i];
+
+        if (STREQ(name, "BALLOON_CHANGE"))
+            qemuCapsSet(caps, QEMU_CAPS_BALLOON_EVENT);
+        VIR_FREE(name);
+    }
+    VIR_FREE(events);
+
+    return 0;
+}
+
+
+int qemuCapsProbeQMP(qemuCapsPtr caps,
+                     qemuMonitorPtr mon)
+{
+    VIR_DEBUG("caps=%p mon=%p", caps, mon);
+
+    if (qemuCapsProbeQMPCommands(caps, mon) < 0)
+        return -1;
+
+    if (qemuCapsProbeQMPEvents(caps, mon) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 #define QEMU_SYSTEM_PREFIX "qemu-system-"
 
 qemuCapsPtr qemuCapsNewForBinary(const char *binary)

@@ -28,6 +28,7 @@
 # include "capabilities.h"
 # include "command.h"
 # include "virobject.h"
+# include "qemu_monitor.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemuCapsFlags {
@@ -162,6 +163,9 @@ typedef qemuCapsCache *qemuCapsCachePtr;
 qemuCapsPtr qemuCapsNew(void);
 qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
 qemuCapsPtr qemuCapsNewForBinary(const char *binary);
+
+int qemuCapsProbeQMP(qemuCapsPtr caps,
+                     qemuMonitorPtr mon);
 
 void qemuCapsSet(qemuCapsPtr caps,
                  enum qemuCapsFlags flag) ATTRIBUTE_NONNULL(1);

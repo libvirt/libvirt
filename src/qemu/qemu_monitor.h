@@ -27,7 +27,6 @@
 
 # include "internal.h"
 
-# include "qemu_capabilities.h"
 # include "domain_conf.h"
 # include "bitmap.h"
 # include "virhash.h"
@@ -155,8 +154,7 @@ qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
 
 void qemuMonitorClose(qemuMonitorPtr mon);
 
-int qemuMonitorSetCapabilities(qemuMonitorPtr mon,
-                               qemuCapsPtr caps);
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
 void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
