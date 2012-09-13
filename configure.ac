@@ -2915,7 +2915,7 @@ if test "$with_linux" = "yes"; then
         fi
     done
     case $libnl_ldd:${LIBNL_CFLAGS+set} in
-        *libnl.so.1*) ;;
+        *libnl.so.1*:) ;;
         *)
         PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
             have_libnl=yes
@@ -2924,7 +2924,7 @@ if test "$with_linux" = "yes"; then
             PKG_CHECK_MODULES([LIBNL_ROUTE3], [libnl-route-3.0])
             LIBNL_CFLAGS="$LIBNL_CFLAGS $LIBNL_ROUTE3_CFLAGS"
             LIBNL_LIBS="$LIBNL_LIBS $LIBNL_ROUTE3_LIBS"
-        ], []) ;;
+        ], [:]) ;;
     esac
     if test "$have_libnl" = no; then
         PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
