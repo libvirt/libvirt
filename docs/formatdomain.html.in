@@ -2136,6 +2136,10 @@
     &lt;redirdev bus='usb' type='tcp'&gt;
       &lt;source mode='connect' host='localhost' service='4000'/&gt;
     &lt;/redirdev&gt;
+    &lt;redirfilter&gt;
+      &lt;usbdev class='0x08' vendor='0x1234' product='0xbeef' version='2.00' allow='yes'/&gt;
+      &lt;usbdev allow='no'/&gt;
+    &lt;/redirfilter&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -2152,21 +2156,27 @@
         tunnel; <code>type='tcp'</code>
         or <code>type='spicevmc'</code> (which uses the usbredir
         channel of a <a href="#elementsGraphics">SPICE graphics
-        device</a>) are typical.</dd>
-
+        device</a>) are typical.The redirdev element has an optional
+        sub-element<code>&lt;address&gt;</code> which can tie the
+        device to a particular controller. Further sub-elements,
+        such as <code>&lt;source&gt;</code>, may be required according
+        to the given type, although a <code>&lt;target&gt;</code> sub-element
+        is not required (since the consumer of the character device is
+        the hypervisor itself,rather than a device visible in the guest).
+      </dd>
+      <dt><code>redirfilter</code></dt>
+      <dd>The<code> redirfilter </code>element is used for creating the
+        filter rule to filter out certain devices from redirection.
+        It uses sub-element <code>&lt;usbdev&gt;</code>to define each filter rule.
+        <code>class</code>attribute is the USB Class code, for example,
+        0x08 represents mass storage devices. The USB device can be addressed by
+        vendor / product id using the<code>vendor</code> and <code>product</code> attributes.
+        <code>version</code> is the bcdDevice value of USB device, such as 1.00, 1.10 and 2.00.
+        These four attributes are optional and <code>-1</code> can be used to allow
+        any value for them. <code>allow</code>attribute is mandatory,
+        'yes' means allow, 'no' for deny.
+      </dd>
     </dl>
-    <p>
-      The redirdev element has an optional sub-element
-      <code>&lt;address&gt;</code> which can tie the device to a
-      particular controller.
-    </p>
-    <p>
-      Further sub-elements, such as <code>&lt;source&gt;</code>, may
-      be required according to the given type, although
-      a <code>&lt;target&gt;</code> sub-element is not required (since
-      the consumer of the character device is the hypervisor itself,
-      rather than a device visible in the guest).
-    </p>
 
     <h4><a name="elementsSmartcard">Smartcard devices</a></h4>
 
