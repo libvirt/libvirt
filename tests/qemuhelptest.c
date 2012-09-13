@@ -71,7 +71,7 @@ static int testHelpStrParsing(const void *data)
         if (virtTestLoadFile(path, &help) < 0)
             goto cleanup;
 
-        if (qemuCapsParseDeviceStr(help, flags) < 0)
+        if (qemuCapsParseDeviceStr(flags, help) < 0)
             goto cleanup;
     }
 

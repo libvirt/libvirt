@@ -1237,6 +1237,267 @@ cleanup:
     return -1;
 }
 
+
+struct qemuCapsStringFlags {
+    const char *value;
+    int flag;
+};
+
+
+struct qemuCapsStringFlags qemuCapsObjectTypes[] = {
+    { "hda-duplex", QEMU_CAPS_HDA_DUPLEX },
+    { "hda-micro", QEMU_CAPS_HDA_MICRO },
+    { "ccid-card-emulated", QEMU_CAPS_CCID_EMULATED },
+    { "ccid-card-passthru", QEMU_CAPS_CCID_PASSTHRU },
+    { "piix3-usb-uhci", QEMU_CAPS_PIIX3_USB_UHCI },
+    { "piix4-usb-uhci", QEMU_CAPS_PIIX4_USB_UHCI },
+    { "usb-ehci", QEMU_CAPS_USB_EHCI },
+    { "ich9-usb-ehci1", QEMU_CAPS_ICH9_USB_EHCI1 },
+    { "vt82c686b-usb-uhci", QEMU_CAPS_VT82C686B_USB_UHCI },
+    { "pci-ohci", QEMU_CAPS_PCI_OHCI },
+    { "nec-usb-xhci", QEMU_CAPS_NEC_USB_XHCI },
+    { "usb-redir", QEMU_CAPS_USB_REDIR },
+    { "usb-hub", QEMU_CAPS_USB_HUB },
+    { "ich9-ahci", QEMU_CAPS_ICH9_AHCI },
+    { "virtio-blk-s390", QEMU_CAPS_VIRTIO_S390 },
+    { "lsi53c895a", QEMU_CAPS_SCSI_LSI },
+    { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI_PCI },
+    { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
+    { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
+    { "sga", QEMU_CAPS_SGA },
+    { "scsi-block", QEMU_CAPS_SCSI_BLOCK },
+    { "scsi-cd", QEMU_CAPS_SCSI_CD },
+    { "ide-cd", QEMU_CAPS_IDE_CD },
+};
+
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsVirtioBlk[] = {
+    { "multifunction", QEMU_CAPS_PCI_MULTIFUNCTION },
+    { "bootindex", QEMU_CAPS_BOOTINDEX },
+    { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD },
+    { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX },
+    { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI },
+    { "logical_block_size", QEMU_CAPS_BLOCKIO },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsVirtioNet[] = {
+    { "tx", QEMU_CAPS_VIRTIO_TX_ALG },
+    { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsPciAssign[] = {
+    { "configfd", QEMU_CAPS_PCI_CONFIGFD },
+    { "bootindex", QEMU_CAPS_PCI_BOOTINDEX },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsScsiDisk[] = {
+    { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL },
+    { "wwn", QEMU_CAPS_SCSI_DISK_WWN },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsIDEDrive[] = {
+    { "wwn", QEMU_CAPS_IDE_DRIVE_WWN },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsPixx4PM[] = {
+    { "disable_s3", QEMU_CAPS_DISABLE_S3 },
+    { "disable_s4", QEMU_CAPS_DISABLE_S4 },
+};
+
+static struct qemuCapsStringFlags qemuCapsObjectPropsUsbRedir[] = {
+    { "filter", QEMU_CAPS_USB_REDIR_FILTER },
+};
+
+struct qemuCapsObjectTypeProps {
+    const char *type;
+    struct qemuCapsStringFlags *props;
+    size_t nprops;
+};
+
+static struct qemuCapsObjectTypeProps qemuCapsObjectProps[] = {
+    { "virtio-blk-pci", qemuCapsObjectPropsVirtioBlk,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsVirtioBlk) },
+    { "virtio-net-pci", qemuCapsObjectPropsVirtioNet,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsVirtioNet) },
+    { "pci-assign", qemuCapsObjectPropsPciAssign,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsPciAssign) },
+    { "scsi-disk", qemuCapsObjectPropsScsiDisk,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsScsiDisk) },
+    { "ide-drive", qemuCapsObjectPropsIDEDrive,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsIDEDrive) },
+    { "PIIX4_PM", qemuCapsObjectPropsPixx4PM,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsPixx4PM) },
+    { "usb-redir", qemuCapsObjectPropsUsbRedir,
+      ARRAY_CARDINALITY(qemuCapsObjectPropsUsbRedir) },
+};
+
+
+static void
+qemuCapsProcessStringFlags(qemuCapsPtr caps,
+                           size_t nflags,
+                           struct qemuCapsStringFlags *flags,
+                           size_t nvalues,
+                           char *const*values)
+{
+    size_t i, j;
+    for (i = 0 ; i < nflags ; i++) {
+        for (j = 0 ; j < nvalues ; j++) {
+            if (STREQ(values[j], flags[i].value)) {
+                qemuCapsSet(caps, flags[i].flag);
+                break;
+            }
+        }
+    }
+}
+
+
+static void
+qemuCapsFreeStringList(size_t len,
+                       char **values)
+{
+    size_t i;
+    for (i = 0 ; i < len ; i++)
+        VIR_FREE(values[i]);
+    VIR_FREE(values);
+}
+
+
+#define OBJECT_TYPE_PREFIX "name \""
+
+static int
+qemuCapsParseDeviceStrObjectTypes(const char *str,
+                                  char ***types)
+{
+    const char *tmp = str;
+    int ret = -1;
+    size_t ntypelist = 0;
+    char **typelist = NULL;
+
+    *types = NULL;
+
+    while ((tmp = strstr(tmp, OBJECT_TYPE_PREFIX))) {
+        char *end;
+        tmp += strlen(OBJECT_TYPE_PREFIX);
+        end = strstr(tmp, "\"");
+        if (!end) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed QEMU device list string, missing quote"));
+            goto cleanup;
+        }
+
+        if (VIR_EXPAND_N(typelist, ntypelist, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (!(typelist[ntypelist-1] = strndup(tmp, end-tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    *types = typelist;
+    ret = ntypelist;
+
+cleanup:
+    if (ret < 0)
+        qemuCapsFreeStringList(ntypelist, typelist);
+    return ret;
+}
+
+
+static int
+qemuCapsParseDeviceStrObjectProps(const char *str,
+                                  const char *type,
+                                  char ***props)
+{
+    const char *tmp = str;
+    int ret = -1;
+    size_t nproplist = 0;
+    char **proplist = NULL;
+
+    VIR_DEBUG("Extract type %s", type);
+    *props = NULL;
+
+    while ((tmp = strchr(tmp, '\n'))) {
+        char *end;
+        tmp += 1;
+
+        if (*tmp == '\0')
+            break;
+
+        if (STRPREFIX(tmp, OBJECT_TYPE_PREFIX))
+            continue;
+
+        if (!STRPREFIX(tmp, type))
+            continue;
+
+        tmp += strlen(type);
+        if (*tmp != '.')
+            continue;
+        tmp++;
+
+        end = strstr(tmp, "=");
+        if (!end) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed QEMU device list string, missing '='"));
+            goto cleanup;
+        }
+        if (VIR_EXPAND_N(proplist, nproplist, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (!(proplist[nproplist-1] = strndup(tmp, end-tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    *props = proplist;
+    ret = nproplist;
+
+cleanup:
+    if (ret < 0)
+        qemuCapsFreeStringList(nproplist, proplist);
+    return ret;
+}
+
+
+int
+qemuCapsParseDeviceStr(qemuCapsPtr caps, const char *str)
+{
+    int nvalues;
+    char **values;
+    size_t i;
+
+    if ((nvalues = qemuCapsParseDeviceStrObjectTypes(str, &values)) < 0)
+        return -1;
+    qemuCapsProcessStringFlags(caps,
+                               ARRAY_CARDINALITY(qemuCapsObjectTypes),
+                               qemuCapsObjectTypes,
+                               nvalues, values);
+    qemuCapsFreeStringList(nvalues, values);
+
+    for (i = 0 ; i < ARRAY_CARDINALITY(qemuCapsObjectProps); i++) {
+        const char *type = qemuCapsObjectProps[i].type;
+        if ((nvalues = qemuCapsParseDeviceStrObjectProps(str,
+                                                         type,
+                                                         &values)) < 0)
+            return -1;
+        qemuCapsProcessStringFlags(caps,
+                                   qemuCapsObjectProps[i].nprops,
+                                   qemuCapsObjectProps[i].props,
+                                   nvalues, values);
+        qemuCapsFreeStringList(nvalues, values);
+    }
+
+    /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
+    if (qemuCapsGet(caps, QEMU_CAPS_CHARDEV_SPICEVMC))
+        qemuCapsClear(caps, QEMU_CAPS_DEVICE_SPICEVMC);
+
+    return 0;
+}
+
+
 static int
 qemuCapsExtractDeviceStr(const char *qemu,
                          qemuCapsPtr caps)
@@ -1270,118 +1531,12 @@ qemuCapsExtractDeviceStr(const char *qemu,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    ret = qemuCapsParseDeviceStr(output, caps);
+    ret = qemuCapsParseDeviceStr(caps, output);
 
 cleanup:
     VIR_FREE(output);
     virCommandFree(cmd);
     return ret;
-}
-
-
-int
-qemuCapsParseDeviceStr(const char *str, qemuCapsPtr caps)
-{
-    /* Which devices exist. */
-    if (strstr(str, "name \"hda-duplex\""))
-        qemuCapsSet(caps, QEMU_CAPS_HDA_DUPLEX);
-    if (strstr(str, "name \"hda-micro\""))
-        qemuCapsSet(caps, QEMU_CAPS_HDA_MICRO);
-    if (strstr(str, "name \"ccid-card-emulated\""))
-        qemuCapsSet(caps, QEMU_CAPS_CCID_EMULATED);
-    if (strstr(str, "name \"ccid-card-passthru\""))
-        qemuCapsSet(caps, QEMU_CAPS_CCID_PASSTHRU);
-
-    if (strstr(str, "name \"piix3-usb-uhci\""))
-        qemuCapsSet(caps, QEMU_CAPS_PIIX3_USB_UHCI);
-    if (strstr(str, "name \"piix4-usb-uhci\""))
-        qemuCapsSet(caps, QEMU_CAPS_PIIX4_USB_UHCI);
-    if (strstr(str, "name \"usb-ehci\""))
-        qemuCapsSet(caps, QEMU_CAPS_USB_EHCI);
-    if (strstr(str, "name \"ich9-usb-ehci1\""))
-        qemuCapsSet(caps, QEMU_CAPS_ICH9_USB_EHCI1);
-    if (strstr(str, "name \"vt82c686b-usb-uhci\""))
-        qemuCapsSet(caps, QEMU_CAPS_VT82C686B_USB_UHCI);
-    if (strstr(str, "name \"pci-ohci\""))
-        qemuCapsSet(caps, QEMU_CAPS_PCI_OHCI);
-    if (strstr(str, "name \"nec-usb-xhci\""))
-        qemuCapsSet(caps, QEMU_CAPS_NEC_USB_XHCI);
-    if (strstr(str, "name \"usb-redir\""))
-        qemuCapsSet(caps, QEMU_CAPS_USB_REDIR);
-    if (strstr(str, "usb-redir.filter"))
-        qemuCapsSet(caps, QEMU_CAPS_USB_REDIR_FILTER);
-    if (strstr(str, "name \"usb-hub\""))
-        qemuCapsSet(caps, QEMU_CAPS_USB_HUB);
-    if (strstr(str, "name \"ich9-ahci\""))
-        qemuCapsSet(caps, QEMU_CAPS_ICH9_AHCI);
-    if (strstr(str, "name \"virtio-blk-s390\"") ||
-        strstr(str, "name \"virtio-net-s390\"") ||
-        strstr(str, "name \"virtio-serial-s390\""))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_S390);
-
-    if (strstr(str, "name \"lsi53c895a\""))
-        qemuCapsSet(caps, QEMU_CAPS_SCSI_LSI);
-    if (strstr(str, "name \"virtio-scsi-pci\""))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_SCSI_PCI);
-
-    /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
-    if (!qemuCapsGet(caps, QEMU_CAPS_CHARDEV_SPICEVMC) &&
-        strstr(str, "name \"spicevmc\""))
-        qemuCapsSet(caps, QEMU_CAPS_DEVICE_SPICEVMC);
-
-    /* Features of given devices. */
-    if (strstr(str, "pci-assign.configfd"))
-        qemuCapsSet(caps, QEMU_CAPS_PCI_CONFIGFD);
-    if (strstr(str, "virtio-blk-pci.multifunction"))
-        qemuCapsSet(caps, QEMU_CAPS_PCI_MULTIFUNCTION);
-    if (strstr(str, "virtio-blk-pci.bootindex")) {
-        qemuCapsSet(caps, QEMU_CAPS_BOOTINDEX);
-        if (strstr(str, "pci-assign.bootindex"))
-            qemuCapsSet(caps, QEMU_CAPS_PCI_BOOTINDEX);
-    }
-    if (strstr(str, "virtio-net-pci.tx="))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_TX_ALG);
-    if (strstr(str, "name \"qxl-vga\""))
-        qemuCapsSet(caps, QEMU_CAPS_DEVICE_QXL_VGA);
-    if (strstr(str, "virtio-blk-pci.ioeventfd"))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_IOEVENTFD);
-    if (strstr(str, "name \"sga\""))
-        qemuCapsSet(caps, QEMU_CAPS_SGA);
-    if (strstr(str, "virtio-blk-pci.event_idx"))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX);
-    if (strstr(str, "virtio-net-pci.event_idx"))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_NET_EVENT_IDX);
-    if (strstr(str, "virtio-blk-pci.scsi"))
-        qemuCapsSet(caps, QEMU_CAPS_VIRTIO_BLK_SCSI);
-    if (strstr(str, "scsi-disk.channel"))
-        qemuCapsSet(caps, QEMU_CAPS_SCSI_DISK_CHANNEL);
-    if (strstr(str, "scsi-disk.wwn"))
-        qemuCapsSet(caps, QEMU_CAPS_SCSI_DISK_WWN);
-    if (strstr(str, "scsi-block"))
-        qemuCapsSet(caps, QEMU_CAPS_SCSI_BLOCK);
-    if (strstr(str, "scsi-cd"))
-        qemuCapsSet(caps, QEMU_CAPS_SCSI_CD);
-    if (strstr(str, "ide-cd"))
-        qemuCapsSet(caps, QEMU_CAPS_IDE_CD);
-    if (strstr(str, "ide-drive.wwn"))
-        qemuCapsSet(caps, QEMU_CAPS_IDE_DRIVE_WWN);
-
-    /*
-     * the iolimit detection is not really straight forward:
-     * in qemu this is a capability of the block layer, if
-     * present any of -device scsi-disk, virtio-blk-*, ...
-     * will offer to specify logical and physical block size
-     * and other properties...
-     */
-    if (strstr(str, ".logical_block_size") &&
-        strstr(str, ".physical_block_size"))
-        qemuCapsSet(caps, QEMU_CAPS_BLOCKIO);
-    if (strstr(str, "PIIX4_PM.disable_s3="))
-        qemuCapsSet(caps, QEMU_CAPS_DISABLE_S3);
-    if (strstr(str, "PIIX4_PM.disable_s4="))
-        qemuCapsSet(caps, QEMU_CAPS_DISABLE_S4);
-
-    return 0;
 }
 
 

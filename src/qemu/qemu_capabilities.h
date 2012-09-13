@@ -220,8 +220,7 @@ int qemuCapsParseHelpStr(const char *qemu,
                          unsigned int *kvm_version,
                          bool check_yajl);
 /* Only for use by test suite */
-int qemuCapsParseDeviceStr(const char *str,
-                           qemuCapsPtr caps);
+int qemuCapsParseDeviceStr(qemuCapsPtr caps, const char *str);
 
 VIR_ENUM_DECL(qemuCaps);
 
