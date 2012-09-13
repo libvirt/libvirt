@@ -10833,7 +10833,7 @@ qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
         VIR_WARN("Unable to release lock on %s", disk->src);
     if (need_unlink && stat(disk->src, &st) == 0 &&
-        st.st_size == 0 && S_ISREG(st.st_mode) && unlink(disk->src) < 0)
+        S_ISREG(st.st_mode) && unlink(disk->src) < 0)
         VIR_WARN("Unable to remove just-created %s", disk->src);
 
     /* Update vm in place to match changes.  */
