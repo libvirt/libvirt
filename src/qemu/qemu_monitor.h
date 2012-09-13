@@ -29,7 +29,6 @@
 
 # include "qemu_capabilities.h"
 # include "domain_conf.h"
-# include "qemu_conf.h"
 # include "bitmap.h"
 # include "virhash.h"
 # include "json.h"

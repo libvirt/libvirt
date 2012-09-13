@@ -32,8 +32,8 @@
 #include "nodeinfo.h"
 #include "cpu/cpu.h"
 #include "domain_conf.h"
-#include "qemu_conf.h"
 #include "command.h"
+#include "bitmap.h"
 #include "virnodesuspend.h"
 
 #include <sys/stat.h>
