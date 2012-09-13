@@ -2375,6 +2375,49 @@
     </choice>
   </define>
 
+  <define name="usbdevfilter">
+    <element name="usbdev">
+      <attribute name="allow">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="class">
+          <choice>
+            <ref name="usbClass"/>
+            <ref name="usbIdDefault"/>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="vendor">
+          <choice>
+            <ref name="usbId"/>
+            <ref name="usbIdDefault"/>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="product">
+          <choice>
+            <ref name="usbId"/>
+            <ref name="usbIdDefault"/>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="version">
+          <choice>
+            <ref name="usbVersion"/>
+            <ref name="usbIdDefault"/>
+          </choice>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name="qemucdevSrcType">
     <attribute name="type">
       <ref name="qemucdevSrcTypeChoice"/>
@@ -2671,6 +2714,13 @@
       </optional>
     </element>
   </define>
+  <define name="redirfilter">
+    <element name="redirfilter">
+      <zeroOrMore>
+        <ref name="usbdevfilter"/>
+      </zeroOrMore>
+    </element>
+  </define>
   <define name="hostdev">
     <element name="hostdev">
       <optional>
@@ -2834,6 +2884,7 @@
             <ref name="smartcard"/>
             <ref name="hub"/>
             <ref name="redirdev"/>
+            <ref name="redirfilter"/>
           </choice>
         </zeroOrMore>
         <optional>
@@ -3447,14 +3498,29 @@
       <param name="pattern">(([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9])|(([0-9a-fA-F]+|:)+[0-9a-fA-F]+)|([a-zA-Z0-9_\.\+\-]*)</param>
     </data>
   </define>
+  <define name="usbIdDefault">
+    <data type="string">
+      <param name="pattern">-1</param>
+    </data>
+  </define>
   <define name="usbId">
     <data type="string">
       <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
     </data>
   </define>
+  <define name="usbVersion">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}.[0-9]{1,2}</param>
+    </data>
+  </define>
   <define name="usbAddr">
     <data type="string">
       <param name="pattern">(0x)?[0-9a-fA-F]{1,3}</param>
+    </data>
+  </define>
+  <define name="usbClass">
+    <data type="string">
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,2}</param>
     </data>
   </define>
   <define name="usbPort">
