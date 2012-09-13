@@ -1438,6 +1438,20 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    for (i = 0; i < def->nusbdevs; i++)
+        VIR_FREE(def->usbdevs[i]);
+
+    VIR_FREE(def->usbdevs);
+    VIR_FREE(def);
+}
+
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
 {
     if (!def)
@@ -1673,6 +1687,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->numatune.memory.nodemask);
 
     virSysinfoDefFree(def->sysinfo);
+
+    virDomainRedirFilterDefFree(def->redirfilter);
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
@@ -7225,6 +7241,207 @@ error:
     goto cleanup;
 }
 
+/*
+ * This is the helper function to convert USB version from a
+ * format of JJ.MN to a format of 0xJJMN where JJ is the major
+ * version number, M is the minor version number and N is the
+ * sub minor version number.
+ * e.g. USB 2.0 is reported as 0x0200,
+ *      USB 1.1 as 0x0110 and USB 1.0 as 0x0100.
+ */
+static int
+virDomainRedirFilterUsbVersionHelper(const char *version,
+                                     virDomainRedirFilterUsbDevDefPtr def)
+{
+    char *version_copy = NULL;
+    char *temp = NULL;
+    int ret = -1;
+    size_t len;
+    size_t fraction_len;
+    unsigned int major;
+    unsigned int minor;
+    unsigned int hex;
+
+    if (!(version_copy = strdup(version))) {
+        virReportOOMError();
+        return -1;
+    }
+
+    len = strlen(version_copy);
+    /*
+     * The valid format of version is like 01.10, 1.10, 1.1, etc.
+     */
+    if (len > 5 ||
+        !(temp = strchr(version_copy, '.')) ||
+        temp - version_copy < 1 ||
+        temp - version_copy > 2 ||
+        !(fraction_len = strlen(temp + 1)) ||
+        fraction_len > 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Incorrect USB version format %s"), version);
+        goto cleanup;
+    }
+
+    *temp = '\0';
+    temp++;
+
+    if ((virStrToLong_ui(version_copy, NULL, 0, &major)) < 0 ||
+        (virStrToLong_ui(temp, NULL, 0, &minor)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Cannot parse USB version %s"), version);
+        goto cleanup;
+    }
+
+    hex = (major / 10) << 12 | (major % 10) << 8;
+    if (fraction_len == 1)
+        hex |= (minor % 10) << 4;
+    else
+        hex |= (minor / 10) << 4 | (minor % 10) << 0;
+
+    def->version = hex;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(version_copy);
+    return ret;
+}
+
+static virDomainRedirFilterUsbDevDefPtr
+virDomainRedirFilterUsbDevDefParseXML(const xmlNodePtr node)
+{
+    char *class;
+    char *vendor = NULL, *product = NULL;
+    char *version = NULL, *allow = NULL;
+    virDomainRedirFilterUsbDevDefPtr def;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    class = virXMLPropString(node, "class");
+    if (class) {
+        if ((virStrToLong_i(class, NULL, 0, &def->usbClass)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Cannot parse USB Class code %s"), class);
+            goto error;
+        }
+
+        if (def->usbClass != -1 && def->usbClass &~ 0xFF) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid USB Class code %s"), class);
+            goto error;
+        }
+    } else {
+        def->usbClass = -1;
+    }
+
+    vendor = virXMLPropString(node, "vendor");
+    if (vendor) {
+        if ((virStrToLong_i(vendor, NULL, 0, &def->vendor)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Cannot parse USB vendor ID %s"), vendor);
+            goto error;
+        }
+    } else {
+        def->vendor = -1;
+    }
+
+    product = virXMLPropString(node, "product");
+    if (product) {
+        if ((virStrToLong_i(product, NULL, 0, &def->product)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Cannot parse USB product ID %s"), product);
+            goto error;
+        }
+    } else {
+        def->product = -1;
+    }
+
+    version = virXMLPropString(node, "version");
+    if (version) {
+        if (STREQ(version, "-1"))
+            def->version = -1;
+        else if ((virDomainRedirFilterUsbVersionHelper(version, def)) < 0)
+            goto error;
+    } else {
+        def->version = -1;
+    }
+
+    allow = virXMLPropString(node, "allow");
+    if (allow) {
+        if (STREQ(allow, "yes"))
+            def->allow = 1;
+        else if (STREQ(allow, "no"))
+            def->allow = 0;
+        else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Invalid allow value, either 'yes' or 'no'"));
+            goto error;
+        }
+    } else {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing allow attribute for USB redirection filter"));
+        goto error;
+    }
+
+cleanup:
+    VIR_FREE(class);
+    VIR_FREE(vendor);
+    VIR_FREE(product);
+    VIR_FREE(version);
+    VIR_FREE(allow);
+    return def;
+
+error:
+    VIR_FREE(def);
+    def = NULL;
+    goto cleanup;
+}
+
+static virDomainRedirFilterDefPtr
+virDomainRedirFilterDefParseXML(const xmlNodePtr node,
+                                xmlXPathContextPtr ctxt)
+{
+    int n;
+    size_t i;
+    xmlNodePtr *nodes = NULL;
+    xmlNodePtr save = ctxt->node;
+    virDomainRedirFilterDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        goto no_memory;
+
+    ctxt->node = node;
+    if ((n = virXPathNodeSet("./usbdev", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+
+    if (n && VIR_ALLOC_N(def->usbdevs, n) < 0)
+        goto no_memory;
+
+    for (i = 0; i < n; i++) {
+        virDomainRedirFilterUsbDevDefPtr usbdev =
+            virDomainRedirFilterUsbDevDefParseXML(nodes[i]);
+
+        if (!usbdev)
+            goto error;
+        def->usbdevs[def->nusbdevs++] = usbdev;
+    }
+    VIR_FREE(nodes);
+
+    ctxt->node = save;
+    return def;
+
+no_memory:
+    virReportOOMError();
+
+error:
+    VIR_FREE(nodes);
+    virDomainRedirFilterDefFree(def);
+    return NULL;
+}
+
 static int virDomainLifecycleParseXML(xmlXPathContextPtr ctxt,
                                       const char *xpath,
                                       int *val,
@@ -9457,6 +9674,26 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
+    /* analysis of the redirection filter rules */
+    if ((n = virXPathNodeSet("./devices/redirfilter", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+    if (n > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only one set of redirection filter rule is supported"));
+        goto error;
+    }
+
+    if (n) {
+        virDomainRedirFilterDefPtr redirfilter =
+            virDomainRedirFilterDefParseXML(nodes[0], ctxt);
+        if (!redirfilter)
+            goto error;
+
+        def->redirfilter = redirfilter;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of cpu handling */
     if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
         xmlNodePtr oldnode = ctxt->node;
@@ -10423,6 +10660,61 @@ cleanup:
     return identical;
 }
 
+static bool
+virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
+                                         virDomainRedirFilterDefPtr dst)
+{
+    int i;
+    bool identical = false;
+
+    if (src->nusbdevs != dst->nusbdevs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target USB redirection filter rule "
+                         "count %zu does not match source %zu"),
+                         dst->nusbdevs, src->nusbdevs);
+        goto cleanup;
+    }
+
+    for (i = 0; i < src->nusbdevs; i++) {
+        virDomainRedirFilterUsbDevDefPtr srcUsbDev = src->usbdevs[i];
+        virDomainRedirFilterUsbDevDefPtr dstUsbDev = dst->usbdevs[i];
+        if (srcUsbDev->usbClass != dstUsbDev->usbClass) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("Target USB Class code does not match source"));
+            goto cleanup;
+        }
+
+        if (srcUsbDev->vendor != dstUsbDev->vendor) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("Target USB vendor ID does not match source"));
+            goto cleanup;
+        }
+
+        if (srcUsbDev->product != dstUsbDev->product) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("Target USB product ID does not match source"));
+            goto cleanup;
+        }
+
+        if (srcUsbDev->version != dstUsbDev->version) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("Target USB version does not match source"));
+            goto cleanup;
+        }
+
+        if (srcUsbDev->allow != dstUsbDev->allow) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target USB allow '%s' does not match source '%s'"),
+                             dstUsbDev->allow ? "yes" : "no",
+                             srcUsbDev->allow ? "yes" : "no");
+            goto cleanup;
+        }
+    }
+    identical = true;
+
+cleanup:
+    return identical;
+}
 
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
@@ -10691,6 +10983,17 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
         if (!virDomainHubDefCheckABIStability(src->hubs[i], dst->hubs[i]))
             goto cleanup;
 
+    if ((!src->redirfilter && dst->redirfilter) ||
+        (src->redirfilter && !dst->redirfilter)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain USB redirection filter count %d does not match source %d"),
+                       dst->redirfilter ? 1 : 0, src->redirfilter ? 1 : 0);
+        goto cleanup;
+    }
+
+    if (src->redirfilter &&
+        !virDomainRedirFilterDefCheckABIStability(src->redirfilter, dst->redirfilter))
+        goto cleanup;
 
     if ((!src->watchdog && dst->watchdog) ||
         (src->watchdog && !dst->watchdog)) {
@@ -13023,6 +13326,39 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainRedirFilterDefFormat(virBufferPtr buf,
+                              virDomainRedirFilterDefPtr filter)
+{
+    size_t i;
+
+    virBufferAddLit(buf, "    <redirfilter>\n");
+    for (i = 0; i < filter->nusbdevs; i++) {
+        virDomainRedirFilterUsbDevDefPtr usbdev = filter->usbdevs[i];
+        virBufferAddLit(buf, "      <usbdev");
+        if (usbdev->usbClass >= 0)
+            virBufferAsprintf(buf, " class='0x%02X'", usbdev->usbClass);
+
+        if (usbdev->vendor >= 0)
+            virBufferAsprintf(buf, " vendor='0x%04X'", usbdev->vendor);
+
+        if (usbdev->product >= 0)
+            virBufferAsprintf(buf, " product='0x%04X'", usbdev->product);
+
+        if (usbdev->version >= 0)
+            virBufferAsprintf(buf, " version='%d.%d'",
+                                 ((usbdev->version & 0xf000) >> 12) * 10 +
+                                 ((usbdev->version & 0x0f00) >>  8),
+                                 ((usbdev->version & 0x00f0) >>  4) * 10 +
+                                 ((usbdev->version & 0x000f) >>  0));
+
+        virBufferAsprintf(buf, " allow='%s'/>\n", usbdev->allow ? "yes" : "no");
+
+    }
+    virBufferAddLit(buf, "    </redirfilter>\n");
+    return 0;
+}
+
+static int
 virDomainHubDefFormat(virBufferPtr buf,
                       virDomainHubDefPtr def,
                       unsigned int flags)
@@ -13590,6 +13926,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (n = 0 ; n < def->nredirdevs ; n++)
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)
             goto cleanup;
+
+    if (def->redirfilter)
+        virDomainRedirFilterDefFormat(buf, def->redirfilter);
 
     for (n = 0 ; n < def->nhubs ; n++)
         if (virDomainHubDefFormat(buf, def->hubs[n], flags) < 0)

@@ -92,6 +92,12 @@ typedef virDomainHubDef *virDomainHubDefPtr;
 typedef struct _virDomainRedirdevDef virDomainRedirdevDef;
 typedef virDomainRedirdevDef *virDomainRedirdevDefPtr;
 
+typedef struct _virDomainRedirFilterUsbDevDef virDomainRedirFilterUsbDevDef;
+typedef virDomainRedirFilterUsbDevDef *virDomainRedirFilterUsbDevDefPtr;
+
+typedef struct _virDomainRedirFilterDef virDomainRedirFilterDef;
+typedef virDomainRedirFilterDef *virDomainRedirFilterDefPtr;
+
 typedef struct _virDomainSmartcardDef virDomainSmartcardDef;
 typedef virDomainSmartcardDef *virDomainSmartcardDefPtr;
 
@@ -1299,6 +1305,19 @@ struct _virDomainRedirdevDef {
     virDomainDeviceInfo info; /* Guest address */
 };
 
+struct _virDomainRedirFilterUsbDevDef {
+    int usbClass;
+    int vendor;
+    int product;
+    int version;
+    unsigned int allow :1;
+};
+
+struct _virDomainRedirFilterDef {
+    size_t nusbdevs;
+    virDomainRedirFilterUsbDevDefPtr *usbdevs;
+};
+
 enum {
     VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO,
     VIR_DOMAIN_MEMBALLOON_MODEL_XEN,
@@ -1704,6 +1723,7 @@ struct _virDomainDef {
     virDomainMemballoonDefPtr memballoon;
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
+    virDomainRedirFilterDefPtr redirfilter;
 
     void *namespaceData;
     virDomainXMLNamespace ns;
@@ -1815,6 +1835,7 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
+void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virCapsPtr caps,
                                              const virDomainDefPtr def,
