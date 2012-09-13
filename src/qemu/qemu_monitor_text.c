@@ -387,14 +387,11 @@ qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
 int
 qemuMonitorTextStopCPUs(qemuMonitorPtr mon) {
     char *info;
+    int ret;
 
-    if (qemuMonitorHMPCommand(mon, "stop", &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot stop CPU execution"));
-        return -1;
-    }
+    ret = qemuMonitorHMPCommand(mon, "stop", &info);
     VIR_FREE(info);
-    return 0;
+    return ret;
 }
 
 
@@ -409,11 +406,8 @@ qemuMonitorTextGetStatus(qemuMonitorPtr mon,
     if (reason)
         *reason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
-    if (qemuMonitorHMPCommand(mon, "info status", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot get status info"));
+    if (qemuMonitorHMPCommand(mon, "info status", &reply) < 0)
         return -1;
-    }
 
     if (strstr(reply, "running")) {
         *running = true;
@@ -448,14 +442,12 @@ cleanup:
 
 int qemuMonitorTextSystemPowerdown(qemuMonitorPtr mon) {
     char *info;
+    int ret;
 
-    if (qemuMonitorHMPCommand(mon, "system_powerdown", &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("system shutdown operation failed"));
-        return -1;
-    }
+    ret = qemuMonitorHMPCommand(mon, "system_powerdown", &info);
+
     VIR_FREE(info);
-    return 0;
+    return ret;
 }
 
 int qemuMonitorTextSetLink(qemuMonitorPtr mon, const char *name, enum virDomainNetInterfaceLinkState state) {
@@ -473,11 +465,8 @@ int qemuMonitorTextSetLink(qemuMonitorPtr mon, const char *name, enum virDomainN
         virReportOOMError();
         goto error;
     }
-    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("set_link operation failed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0)
         goto error;
-    }
 
     /* check if set_link command is supported */
     if (strstr(info, "\nunknown ")) {
@@ -507,14 +496,12 @@ error:
 
 int qemuMonitorTextSystemReset(qemuMonitorPtr mon) {
     char *info;
+    int ret;
 
-    if (qemuMonitorHMPCommand(mon, "system_reset", &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("system reset operation failed"));
-        return -1;
-    }
+    ret = qemuMonitorHMPCommand(mon, "system_reset", &info);
+
     VIR_FREE(info);
-    return 0;
+    return ret;
 }
 
 
@@ -527,11 +514,8 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
     pid_t *cpupids = NULL;
     size_t ncpupids = 0;
 
-    if (qemuMonitorHMPCommand(mon, "info cpus", &qemucpus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command to fetch CPU thread info"));
+    if (qemuMonitorHMPCommand(mon, "info cpus", &qemucpus) < 0)
         return -1;
-    }
 
     /*
      * This is the gross format we're about to parse :-{
@@ -608,11 +592,8 @@ int qemuMonitorTextGetVirtType(qemuMonitorPtr mon,
 
     *virtType = VIR_DOMAIN_VIRT_QEMU;
 
-    if (qemuMonitorHMPCommand(mon, "info kvm", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not query kvm status"));
+    if (qemuMonitorHMPCommand(mon, "info kvm", &reply) < 0)
         return -1;
-    }
 
     if (strstr(reply, "enabled"))
         *virtType = VIR_DOMAIN_VIRT_KVM;
@@ -715,11 +696,8 @@ int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
     int ret = -1;
     char *offset;
 
-    if (qemuMonitorHMPCommand(mon, "info balloon", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not query memory balloon allocation"));
+    if (qemuMonitorHMPCommand(mon, "info balloon", &reply) < 0)
         return -1;
-    }
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
         offset += strlen(BALLOON_PREFIX);
@@ -759,11 +737,8 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
     int ret = 0;
     char *offset;
 
-    if (qemuMonitorHMPCommand(mon, "info balloon", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not query memory balloon statistics"));
+    if (qemuMonitorHMPCommand(mon, "info balloon", &reply) < 0)
         return -1;
-    }
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
         offset += strlen(BALLOON_PREFIX);
@@ -786,11 +761,8 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
     char *dev;
     int tmp;
 
-    if (qemuMonitorHMPCommand(mon, "info block", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("info block command failed"));
+    if (qemuMonitorHMPCommand(mon, "info block", &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "\ninfo ")) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -905,11 +877,8 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
     const char *p, *eol;
     int devnamelen = strlen(dev_name);
 
-    if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("'info blockstats' command failed"));
+    if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0)
         goto cleanup;
-    }
 
     /* If the command isn't supported then qemu prints the supported
      * info commands, so the output starts "info ".  Since this is
@@ -1032,11 +1001,8 @@ int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
     int num = 0;
     const char *p, *eol;
 
-    if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("'info blockstats' command failed"));
+    if (qemuMonitorHMPCommand (mon, "info blockstats", &info) < 0)
         goto cleanup;
-    }
 
     /* If the command isn't supported then qemu prints the supported
      * info commands, so the output starts "info ".  Since this is
@@ -1116,11 +1082,8 @@ int qemuMonitorTextBlockResize(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("failed to resize block"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         ret = -2;
@@ -1197,11 +1160,8 @@ int qemuMonitorTextSetPassword(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("setting password failed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         ret = -2;
@@ -1231,11 +1191,8 @@ int qemuMonitorTextExpirePassword(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("expiring password failed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         ret = -2;
@@ -1271,8 +1228,6 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
     }
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not balloon memory allocation"));
         VIR_FREE(cmd);
         return -1;
     }
@@ -1308,8 +1263,6 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
     }
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not change CPU online status"));
         VIR_FREE(cmd);
         return -1;
     }
@@ -1342,11 +1295,8 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("could not eject media on %s"), dev_name);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the command failed qemu prints:
      * device not found, device is locked ...
@@ -1386,11 +1336,8 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("could not change media on %s"), dev_name);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the command failed qemu prints:
      * device not found, device is locked ...
@@ -1438,11 +1385,8 @@ static int qemuMonitorTextSaveMemory(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("could not save memory region to '%s'"), path);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* XXX what is printed on failure ? */
 
@@ -1485,11 +1429,8 @@ int qemuMonitorTextSetMigrationSpeed(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not restrict migration speed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -1512,11 +1453,8 @@ int qemuMonitorTextSetMigrationDowntime(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("could not set maximum migration downtime"));
+    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -1553,11 +1491,8 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
     *remaining = 0;
     *total = 0;
 
-    if (qemuMonitorHMPCommand(mon, "info migrate", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot query migration status"));
+    if (qemuMonitorHMPCommand(mon, "info migrate", &reply) < 0)
         return -1;
-    }
 
     if ((tmp = strstr(reply, MIGRATION_PREFIX)) != NULL) {
         tmp += strlen(MIGRATION_PREFIX);
@@ -1704,11 +1639,8 @@ int qemuMonitorTextMigrate(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to start migration to %s"), dest);
+    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0)
         goto cleanup;
-    }
 
     /* Now check for "fail" in the output string */
     if (strstr(info, "fail") != NULL) {
@@ -1738,15 +1670,12 @@ cleanup:
 int qemuMonitorTextMigrateCancel(qemuMonitorPtr mon)
 {
     char *info = NULL;
+    int ret;
 
-    if (qemuMonitorHMPCommand(mon, "migrate_cancel", &info) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command to cancel migration"));
-        return -1;
-    }
+    ret = qemuMonitorHMPCommand(mon, "migrate_cancel", &info);
+
     VIR_FREE(info);
-
-    return 0;
+    return ret;
 }
 
 
@@ -1769,8 +1698,6 @@ int qemuMonitorTextGraphicsRelocate(qemuMonitorPtr mon,
 
     if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
         VIR_FREE(cmd);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command to relocate graphics client"));
         return -1;
     }
     VIR_FREE(cmd);
@@ -1799,11 +1726,8 @@ int qemuMonitorTextAddUSBDisk(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command to add usb disk"));
+    if (qemuMonitorHMPCommand(mon, cmd, &info) < 0)
         goto cleanup;
-    }
 
     /* If the command failed qemu prints:
      * Could not add ... */
@@ -1835,11 +1759,8 @@ static int qemuMonitorTextAddUSBDevice(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot attach usb device"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the command failed qemu prints:
      * Could not add ... */
@@ -1976,11 +1897,8 @@ int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot attach host pci device"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "invalid type: host")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2027,11 +1945,8 @@ try_command:
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot attach %s disk %s"), bus, path);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
@@ -2069,11 +1984,8 @@ int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to add NIC with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -2113,11 +2025,8 @@ try_command:
         }
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("failed to remove PCI device"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* Syntax changed when KVM merged PCI hotplug upstream to QEMU,
      * so check for an error message from old KVM indicating the
@@ -2161,11 +2070,8 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommandWithFd(mon, cmd, fd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to pass fd to qemu with '%s'"), cmd);
+    if (qemuMonitorHMPCommandWithFd(mon, cmd, fd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
@@ -2204,11 +2110,8 @@ int qemuMonitorTextCloseFileHandle(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to close fd in qemu with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
@@ -2240,11 +2143,8 @@ int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to add host net with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (STRNEQ(reply, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2275,11 +2175,8 @@ int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to remove host network in qemu with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* XXX error messages here ? */
 
@@ -2304,11 +2201,8 @@ int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to add netdev with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* XXX error messages here ? */
 
@@ -2333,11 +2227,8 @@ int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to remove netdev in qemu with '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* XXX error messages here ? */
 
@@ -2368,11 +2259,8 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
     char *reply = NULL;
     int ret = -1;
 
-    if (qemuMonitorHMPCommand(mon, "info chardev", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("failed to retrieve chardev info in qemu with 'info chardev'"));
+    if (qemuMonitorHMPCommand(mon, "info chardev", &reply) < 0)
         return -1;
-    }
 
     char *pos;                          /* The current start of searching */
     char *next = reply;                 /* The start of the next line */
@@ -2453,11 +2341,8 @@ try_command:
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot attach %s disk controller"), bus);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
@@ -2552,11 +2437,8 @@ try_command:
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to attach drive '%s'"), drivestr);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2643,11 +2525,8 @@ int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
 
     *retaddrs = NULL;
 
-    if (qemuMonitorHMPCommand(mon, "info pci", &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot query PCI addresses"));
+    if (qemuMonitorHMPCommand(mon, "info pci", &reply) < 0)
         return -1;
-    }
 
     p = reply;
 
@@ -2736,11 +2615,8 @@ int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
     }
 
     VIR_DEBUG("TextDelDevice devalias=%s", devalias);
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot detach %s device"), devalias);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (STRNEQ(reply, "")) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -2776,11 +2652,8 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot attach %s device"), devicestr);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     /* If the host device is hotpluged first time, qemu will output
      * husb: using %s file-system with %s if the command succeeds.
@@ -2829,11 +2702,8 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to add drive '%s'"), drivestr);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2877,11 +2747,8 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot delete %s drive"), drivestr);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         VIR_ERROR(_("deleting drive is not supported.  "
@@ -2930,11 +2797,8 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("failed to set disk password"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2968,11 +2832,8 @@ int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name)
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to take snapshot using command '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
-    }
 
     if (strstr(reply, "Error while creating snapshot") != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -3016,12 +2877,8 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to restore snapshot using command '%s'"),
-                       cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
-    }
 
     if (strstr(reply, "No block device supports snapshots") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3074,12 +2931,8 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
         virReportOOMError();
         goto cleanup;
     }
-    if (qemuMonitorHMPCommand(mon, cmd, &reply)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to delete snapshot using command '%s'"),
-                       cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
-    }
 
     if (strstr(reply, "No block device supports snapshots") != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3120,11 +2973,8 @@ qemuMonitorTextDiskSnapshot(qemuMonitorPtr mon, const char *device,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to take snapshot using command '%s'"), cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
-    }
 
     if (strstr(reply, "error while creating qcow2") != NULL ||
         strstr(reply, "unknown command:") != NULL) {
@@ -3158,9 +3008,6 @@ int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
     }
 
     ret = qemuMonitorHMPCommand(mon, safecmd, reply);
-    if (ret != 0)
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to run cmd '%s'"), safecmd);
 
     VIR_FREE(safecmd);
 
@@ -3169,30 +3016,21 @@ int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
 
 int qemuMonitorTextInjectNMI(qemuMonitorPtr mon)
 {
-    const char *cmd = "inject-nmi";
     char *reply = NULL;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
-       goto fail;
+    if (qemuMonitorHMPCommand(mon, "inject-nmi", &reply) < 0)
+        return -1;
 
     if (strstr(reply, "unknown command") != NULL) {
         VIR_FREE(reply);
 
         /* fallback to 'nmi' if qemu has not supported "inject-nmi" yet. */
-        cmd = "nmi 0";
-        reply = NULL;
-        if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
-            goto fail;
+        if (qemuMonitorHMPCommand(mon, "nmi 0", &reply) < 0)
+            return -1;
     }
 
     VIR_FREE(reply);
     return 0;
-
-fail:
-    virReportError(VIR_ERR_OPERATION_FAILED,
-                   _("failed to inject NMI using command '%s'"),
-                   cmd);
-    return -1;
 }
 
 int qemuMonitorTextSendKey(qemuMonitorPtr mon,
@@ -3232,12 +3070,8 @@ int qemuMonitorTextSendKey(qemuMonitorPtr mon,
     }
 
     cmd = virBufferContentAndReset(&buf);
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to send key using command '%s'"),
-                       cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (STRNEQ(reply, "")) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -3265,11 +3099,8 @@ int qemuMonitorTextScreendump(qemuMonitorPtr mon, const char *file)
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("taking screenshot failed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (strstr(reply, "unknown command:")) {
         ret = -2;
@@ -3299,11 +3130,8 @@ int qemuMonitorTextOpenGraphics(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("adding graphics client failed"));
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
         goto cleanup;
-    }
 
     if (STRNEQ(reply, ""))
         goto cleanup;
@@ -3323,34 +3151,28 @@ int qemuMonitorTextSetBlockIoThrottle(qemuMonitorPtr mon,
 {
     char *cmd = NULL;
     char *result = NULL;
-    int ret = 0;
+    int ret = -1;
     const char *cmd_name = NULL;
 
     /* For the not specified fields, 0 by default */
     cmd_name = "block_set_io_throttle";
-    ret = virAsprintf(&cmd, "%s %s %llu %llu %llu %llu %llu %llu", cmd_name,
-                      device, info->total_bytes_sec, info->read_bytes_sec,
-                      info->write_bytes_sec, info->total_iops_sec,
-                      info->read_iops_sec, info->write_iops_sec);
-
-    if (ret < 0) {
+    if (virAsprintf(&cmd, "%s %s %llu %llu %llu %llu %llu %llu", cmd_name,
+                    device, info->total_bytes_sec, info->read_bytes_sec,
+                    info->write_bytes_sec, info->total_iops_sec,
+                    info->read_iops_sec, info->write_iops_sec) < 0) {
         virReportOOMError();
-        return -1;
-    }
-
-    if (qemuMonitorHMPCommand(mon, cmd, &result) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command"));
-        ret = -1;
         goto cleanup;
     }
+
+    if (qemuMonitorHMPCommand(mon, cmd, &result) < 0)
+        goto cleanup;
 
     if (qemuMonitorTextCommandNotFound(cmd_name, result)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Command '%s' is not found"), cmd_name);
-        ret = -1;
         goto cleanup;
     }
+    ret = 0;
 
 cleanup:
     VIR_FREE(cmd);
@@ -3441,20 +3263,15 @@ int qemuMonitorTextGetBlockIoThrottle(qemuMonitorPtr mon,
                                       virDomainBlockIoTuneInfoPtr reply)
 {
     char *result = NULL;
-    int ret = 0;
+    int ret = -1;
     const char *cmd_name = "info block";
 
-    if (qemuMonitorHMPCommand(mon, cmd_name, &result) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot run monitor command"));
-        ret = -1;
+    if (qemuMonitorHMPCommand(mon, cmd_name, &result) < 0)
         goto cleanup;
-    }
 
     if (qemuMonitorTextCommandNotFound(cmd_name, result)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Command '%s' is not found"), cmd_name);
-        ret = -1;
         goto cleanup;
     }
 
