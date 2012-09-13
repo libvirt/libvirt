@@ -5231,15 +5231,15 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
             addrStr = virXMLPropString(cur, "address");
             portStr = virXMLPropString(cur, "port");
 
+            if (VIR_ALLOC(def->target.addr) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
             if (addrStr == NULL) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("guestfwd channel does not "
                                  "define a target address"));
-                goto error;
-            }
-
-            if (VIR_ALLOC(def->target.addr) < 0) {
-                virReportOOMError();
                 goto error;
             }
 
