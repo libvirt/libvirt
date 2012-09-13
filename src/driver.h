@@ -1483,6 +1483,9 @@ typedef int (*virDevMonListDevices)(virConnectPtr conn,
                                     char **const names,
                                     int maxnames,
                                     unsigned int flags);
+typedef int (*virDevMonListAllNodeDevices)(virConnectPtr conn,
+                                           virNodeDevicePtr **devices,
+                                           unsigned int flags);
 
 typedef virNodeDevicePtr (*virDevMonDeviceLookupByName)(virConnectPtr conn,
                                                         const char *name);
@@ -1516,6 +1519,7 @@ struct _virDeviceMonitor {
     virDrvClose                 close;
     virDevMonNumOfDevices       numOfDevices;
     virDevMonListDevices        listDevices;
+    virDevMonListAllNodeDevices listAllNodeDevices;
     virDevMonDeviceLookupByName deviceLookupByName;
     virDevMonDeviceGetXMLDesc   deviceGetXMLDesc;
     virDevMonDeviceGetParent    deviceGetParent;

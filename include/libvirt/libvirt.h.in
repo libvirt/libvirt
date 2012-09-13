@@ -2834,6 +2834,28 @@ int                     virNodeListDevices      (virConnectPtr conn,
                                                  char **const names,
                                                  int maxnames,
                                                  unsigned int flags);
+/*
+ * virConnectListAllNodeDevices:
+ *
+ * Flags used to filter the returned node devices. Flags in each group
+ * are exclusive. Currently only one group to filter the devices by cap
+ * type.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0, /* System capability */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       = 1 << 1, /* PCI device */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       = 1 << 2, /* USB device */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE = 1 << 3, /* USB interface */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET           = 1 << 4, /* Network device */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST     = 1 << 5, /* SCSI Host Bus Adapter */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET   = 1 << 6, /* SCSI Target */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          = 1 << 7, /* SCSI device */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       = 1 << 8, /* Storage device */
+} virConnectListAllNodeDeviceFlags;
+
+int                     virConnectListAllNodeDevices (virConnectPtr conn,
+                                                      virNodeDevicePtr **devices,
+                                                      unsigned int flags);
 
 virNodeDevicePtr        virNodeDeviceLookupByName (virConnectPtr conn,
                                                    const char *name);

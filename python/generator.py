@@ -464,6 +464,7 @@ skip_function = (
     'virStoragePoolListAllVolumes', # overridden in virStoragePool.py
     'virConnectListAllNetworks', # overridden in virConnect.py
     'virConnectListAllInterfaces', # overridden in virConnect.py
+    'virConnectListAllNodeDevices', # overridden in virConnect.py
 
     'virStreamRecvAll', # Pure python libvirt-override-virStream.py
     'virStreamSendAll', # Pure python libvirt-override-virStream.py

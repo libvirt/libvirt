@@ -13796,6 +13796,75 @@ error:
     return -1;
 }
 
+/**
+ * virConnectListAllNodeDevices:
+ * @conn: Pointer to the hypervisor connection.
+ * @devices: Pointer to a variable to store the array containing the node
+ *           device objects or NULL if the list is not required (just returns
+ *           number of node devices).
+ * @flags: bitwise-OR of virConnectListAllNodeDevices.
+ *
+ * Collect the list of node devices, and allocate an array to store those
+ * objects.
+ *
+ * Normally, all node devices are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted node devices.  The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a node device, and where all bits
+ * within a group describe all possible node devices.
+ *
+ * Only one group of the @flags is provided to filter the node devices by
+ * capability type, flags include:
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE
+ *
+ * Returns the number of node devices found or -1 and sets @devices to NULL in
+ * case of error.  On success, the array stored into @devices is guaranteed to
+ * have an extra allocated element set to NULL but not included in the return
+ * count, to make iteration easier.  The caller is responsible for calling
+ * virNodeDeviceFree() on each array element, then calling free() on
+ * @devices.
+ */
+int
+virConnectListAllNodeDevices(virConnectPtr conn,
+                             virNodeDevicePtr **devices,
+                             unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, devices=%p, flags=%x", conn, devices, flags);
+
+    virResetLastError();
+
+    if (devices)
+        *devices = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->deviceMonitor &&
+        conn->deviceMonitor->listAllNodeDevices) {
+        int ret;
+        ret = conn->deviceMonitor->listAllNodeDevices(conn, devices, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
 
 /**
  * virNodeListDevices:
@@ -13806,6 +13875,8 @@ error:
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Collect the list of node devices, and store their names in @names
+ *
+ * For more control over the results, see virConnectListAllNodeDevices().
  *
  * If the optional 'cap'  argument is non-NULL, then the count
  * will be restricted to devices with the specified capability
