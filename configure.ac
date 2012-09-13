@@ -2908,7 +2908,7 @@ if test "$with_linux" = "yes"; then
     # (Setting LIBNL_CFLAGS is already used by PKG_CHECK_MODULES to
     # override any probing, so if it set, you know which libnl is in use.)
     libnl_ldd=
-    for dir in /usr/lib64 /usr/lib; do
+    for dir in /usr/lib64 /usr/lib /usr/lib/*-linux-gnu*; do
         if test -f $dir/libnetcf.so; then
             libnl_ldd=`(ldd $dir/libnetcf.so) 2>&1`
             break
