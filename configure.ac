@@ -2915,7 +2915,7 @@ if test "$with_linux" = "yes"; then
         fi
     done
     case $libnl_ldd:${LIBNL_CFLAGS+set} in
-        *libnl.so.1*:) ;;
+        *libnl.so.1*) ;;
         *)
         PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
             have_libnl=yes
