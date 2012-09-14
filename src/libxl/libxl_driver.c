@@ -869,7 +869,7 @@ libxlStartup(int privileged) {
 
     /* Allocate bitmap for vnc port reservation */
     if ((libxl_driver->reservedVNCPorts =
-         virBitmapAlloc(LIBXL_VNC_PORT_MAX - LIBXL_VNC_PORT_MIN)) == NULL)
+         virBitmapNew(LIBXL_VNC_PORT_MAX - LIBXL_VNC_PORT_MIN)) == NULL)
         goto out_of_memory;
 
     if (virDomainObjListInit(&libxl_driver->domains) < 0)

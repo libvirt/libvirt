@@ -357,7 +357,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         goto cleanup;
     }
 
-    if (!(map = virBitmapAlloc(def->dom->ndisks))) {
+    if (!(map = virBitmapNew(def->dom->ndisks))) {
         virReportOOMError();
         goto cleanup;
     }

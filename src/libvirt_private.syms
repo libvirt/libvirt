@@ -6,11 +6,11 @@
 #
 
 # bitmap.h
-virBitmapAlloc;
 virBitmapClearBit;
 virBitmapCopy;
 virBitmapFree;
 virBitmapGetBit;
+virBitmapNew;
 virBitmapSetBit;
 virBitmapString;
 

@@ -1718,7 +1718,7 @@ qemuCapsNew(void)
     if (!(caps = virObjectNew(qemuCapsClass)))
         return NULL;
 
-    if (!(caps->flags = virBitmapAlloc(QEMU_CAPS_LAST)))
+    if (!(caps->flags = virBitmapNew(QEMU_CAPS_LAST)))
         goto no_memory;
 
     return caps;

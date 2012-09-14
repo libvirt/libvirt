@@ -9110,7 +9110,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (STREQ(def->os.type, "hvm")) {
         if (virDomainDefParseBootXML(ctxt, def, &bootMapSize) < 0)
             goto error;
-        if (bootMapSize && !(bootMap = virBitmapAlloc(bootMapSize)))
+        if (bootMapSize && !(bootMap = virBitmapNew(bootMapSize)))
             goto no_memory;
     }
 

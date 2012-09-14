@@ -696,7 +696,7 @@ qemudStartup(int privileged) {
      * do this before the config is loaded properly, since the port
      * numbers are configurable now */
     if ((qemu_driver->reservedRemotePorts =
-         virBitmapAlloc(qemu_driver->remotePortMax - qemu_driver->remotePortMin)) == NULL)
+         virBitmapNew(qemu_driver->remotePortMax - qemu_driver->remotePortMin)) == NULL)
         goto out_of_memory;
 
     /* We should always at least have the 'nop' manager, so

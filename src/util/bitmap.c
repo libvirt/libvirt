@@ -36,7 +36,8 @@
 
 
 struct _virBitmap {
-    size_t size;
+    size_t max_bit;
+    size_t map_len;
     unsigned long *map;
 };
 
@@ -48,7 +49,7 @@ struct _virBitmap {
 
 
 /**
- * virBitmapAlloc:
+ * virBitmapNew:
  * @size: number of bits
  *
  * Allocate a bitmap capable of containing @size bits.
@@ -56,7 +57,7 @@ struct _virBitmap {
  * Returns a pointer to the allocated bitmap or NULL if
  * memory cannot be allocated.
  */
-virBitmapPtr virBitmapAlloc(size_t size)
+virBitmapPtr virBitmapNew(size_t size)
 {
     virBitmapPtr bitmap;
     size_t sz;
@@ -75,7 +76,8 @@ virBitmapPtr virBitmapAlloc(size_t size)
         return NULL;
     }
 
-    bitmap->size = size;
+    bitmap->max_bit = size;
+    bitmap->map_len = sz;
     return bitmap;
 }
 
@@ -83,7 +85,7 @@ virBitmapPtr virBitmapAlloc(size_t size)
  * virBitmapFree:
  * @bitmap: previously allocated bitmap
  *
- * Free @bitmap previously allocated by virBitmapAlloc.
+ * Free @bitmap previously allocated by virBitmapNew.
  */
 void virBitmapFree(virBitmapPtr bitmap)
 {
@@ -96,17 +98,12 @@ void virBitmapFree(virBitmapPtr bitmap)
 
 int virBitmapCopy(virBitmapPtr dst, virBitmapPtr src)
 {
-    size_t sz;
-
-    if (dst->size != src->size) {
+    if (dst->max_bit != src->max_bit) {
         errno = EINVAL;
         return -1;
     }
 
-    sz = (src->size + VIR_BITMAP_BITS_PER_UNIT - 1) /
-        VIR_BITMAP_BITS_PER_UNIT;
-
-    memcpy(dst->map, src->map, sz * sizeof(src->map[0]));
+    memcpy(dst->map, src->map, src->map_len * sizeof(src->map[0]));
 
     return 0;
 }
@@ -123,7 +120,7 @@ int virBitmapCopy(virBitmapPtr dst, virBitmapPtr src)
  */
 int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
 {
-    if (bitmap->size <= b)
+    if (bitmap->max_bit <= b)
         return -1;
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= VIR_BITMAP_BIT(b);
@@ -141,7 +138,7 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
  */
 int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
 {
-    if (bitmap->size <= b)
+    if (bitmap->max_bit <= b)
         return -1;
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
@@ -161,7 +158,7 @@ int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
  */
 int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 {
-    if (bitmap->size <= b)
+    if (bitmap->max_bit <= b)
         return -1;
 
     *result = !!(bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] & VIR_BITMAP_BIT(b));
@@ -183,8 +180,7 @@ char *virBitmapString(virBitmapPtr bitmap)
 
     virBufferAddLit(&buf, "0x");
 
-    sz = (bitmap->size + VIR_BITMAP_BITS_PER_UNIT - 1) /
-          VIR_BITMAP_BITS_PER_UNIT;
+    sz = bitmap->map_len;
 
     while (sz--) {
         virBufferAsprintf(&buf, "%0*lx",
