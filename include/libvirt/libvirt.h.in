@@ -4350,6 +4350,69 @@ typedef struct _virTypedParameter virMemoryParameter;
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
+/*
+ * VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN:
+ *
+ * Macro for typed parameter that represents how many present pages
+ * to scan before the shared memory service goes to sleep.
+ */
+# define VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN      "shm_pages_to_scan"
+
+/*
+ * VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS:
+ *
+ * Macro for typed parameter that represents how many milliseconds
+ * the shared memory service should sleep before next scan.
+ */
+# define VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS    "shm_sleep_millisecs"
+
+/*
+ * VIR_NODE_MEMORY_SHARED_PAGES_SHARED:
+ *
+ * Macro for typed parameter that represents how many the shared
+ * mmeory pages are being used.
+ */
+# define VIR_NODE_MEMORY_SHARED_PAGES_SHARED       "shm_pages_shared"
+
+/*
+ * VIR_NODE_MEMORY_SHARED_PAGES_SHARING:
+ *
+ * Macro for typed parameter that represents how many sites are
+ * sharing the pages i.e. how much saved.
+ */
+# define VIR_NODE_MEMORY_SHARED_PAGES_SHARING      "shm_pages_sharing"
+
+/* VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED:
+ *
+ * Macro for typed parameter that represents how many pages unique
+ * but repeatedly checked for merging.
+ */
+# define VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED     "shm_pages_unshared"
+
+/* VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE:
+ *
+ * Macro for typed parameter that represents how many pages changing
+ * too fast to be placed in a tree.
+ */
+# define VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE     "shm_pages_volatile"
+
+/* VIR_NODE_MEMORY_SHARED_FULL_SCAN:
+ *
+ * Macro for typed parameter that represents how many times all
+ * mergeable areas have been scanned.
+ */
+# define VIR_NODE_MEMORY_SHARED_FULL_SCANS         "shm_full_scans"
+
+int virNodeGetMemoryParameters(virConnectPtr conn,
+                               virTypedParameterPtr params,
+                               int *nparams,
+                               unsigned int flags);
+
+int virNodeSetMemoryParameters(virConnectPtr conn,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               unsigned int flags);
+
 #ifdef __cplusplus
 }
 #endif

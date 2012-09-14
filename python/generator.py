@@ -427,6 +427,8 @@ skip_impl = (
     'virDomainGetDiskErrors',
     'virConnectUnregisterCloseCallback',
     'virConnectRegisterCloseCallback',
+    'virNodeGetMemoryParameters',
+    'virNodeSetMemoryParameters',
 )
 
 qemu_skip_impl = (

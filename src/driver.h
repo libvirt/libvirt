@@ -882,6 +882,18 @@ typedef char *
                                const char *uri,
                                unsigned int flags);
 
+typedef int
+    (*virDrvNodeGetMemoryParameters)(virConnectPtr conn,
+                                     virTypedParameterPtr params,
+                                     int *nparams,
+                                     unsigned int flags);
+
+typedef int
+    (*virDrvNodeSetMemoryParameters)(virConnectPtr conn,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -1068,6 +1080,8 @@ struct _virDriver {
     virDrvDomainGetDiskErrors           domainGetDiskErrors;
     virDrvDomainSetMetadata             domainSetMetadata;
     virDrvDomainGetMetadata             domainGetMetadata;
+    virDrvNodeGetMemoryParameters       nodeGetMemoryParameters;
+    virDrvNodeSetMemoryParameters       nodeSetMemoryParameters;
 };
 
 typedef int

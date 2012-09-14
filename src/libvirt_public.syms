@@ -562,6 +562,8 @@ LIBVIRT_0.10.2 {
         virConnectListAllNWFilters;
         virConnectListAllSecrets;
         virConnectListAllStoragePools;
+        virNodeGetMemoryParameters;
+        virNodeSetMemoryParameters;
         virStoragePoolListAllVolumes;
 } LIBVIRT_0.10.0;
 

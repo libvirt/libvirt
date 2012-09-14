@@ -6720,6 +6720,127 @@ error:
     return -1;
 }
 
+/*
+ * virNodeGetMemoryParameters:
+ * @conn: pointer to the hypervisor connection
+ * @params: pointer to memory parameter object
+ *          (return value, allocated by the caller)
+ * @nparams: pointer to number of memory parameters; input and output
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Get all node memory parameters.  On input, @nparams gives the size
+ * of the @params array; on output, @nparams gives how many slots were
+ * filled with parameter information, which might be less but will
+ * not exceed the input value.
+ *
+ * As a special case, calling with @params as NULL and @nparams as 0 on
+ * input will cause @nparams on output to contain the number of parameters
+ * supported by the hypervisor. The caller should then allocate @params
+ * array, i.e. (sizeof(@virTypedParameter) * @nparams) bytes and call the API
+ * again.  See virDomainGetMemoryParameters() for an equivalent usage
+ * example.
+ *
+ * Returns 0 in case of success, and -1 in case of failure.
+ */
+int
+virNodeGetMemoryParameters(virConnectPtr conn,
+                           virTypedParameterPtr params,
+                           int *nparams,
+                           unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=%x",
+              conn, params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    virCheckNonNullArgGoto(nparams, error);
+    virCheckNonNegativeArgGoto(*nparams, error);
+    if (*nparams != 0)
+        virCheckNonNullArgGoto(params, error);
+
+    if (VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (conn->driver->nodeGetMemoryParameters) {
+        int ret;
+        ret = conn->driver->nodeGetMemoryParameters(conn, params,
+                                                    nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/*
+ * virNodeSetMemoryParameters:
+ * @conn: pointer to the hypervisor connection
+ * @params: pointer to scheduler parameter objects
+ * @nparams: number of scheduler parameter objects
+ *          (this value can be the same or less than the returned
+ *           value nparams of virDomainGetSchedulerType)
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Change all or a subset of the node memory tunables.
+ * This function may require privileged access to the hypervisor.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virNodeSetMemoryParameters(virConnectPtr conn,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=%x",
+              conn, params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNegativeArgGoto(nparams, error);
+
+    if (virTypedParameterValidateSet(conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->nodeSetMemoryParameters) {
+        int ret;
+        ret = conn->driver->nodeSetMemoryParameters(conn, params,
+                                                          nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
 
 /**
  * virDomainGetSchedulerType:
