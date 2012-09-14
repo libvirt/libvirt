@@ -346,7 +346,7 @@ mymain(void)
     DO_TEST("minimal", QEMU_CAPS_NAME);
     DO_TEST("minimal-s390", QEMU_CAPS_NAME);
     DO_TEST("machine-aliases1", NONE);
-    DO_TEST_ERROR("machine-aliases2", NONE);
+    DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);
@@ -372,7 +372,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
-    DO_TEST_ERROR("bootloader", QEMU_CAPS_DOMID);
+    DO_TEST("bootloader", QEMU_CAPS_DOMID, QEMU_CAPS_KVM);
     DO_TEST("bios", QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
     DO_TEST("clock-utc", NONE);
     DO_TEST("clock-localtime", NONE);
@@ -557,7 +557,7 @@ mymain(void)
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
-    DO_TEST_ERROR("input-xen", QEMU_CAPS_DOMID);
+    DO_TEST("input-xen", QEMU_CAPS_DOMID, QEMU_CAPS_KVM);
     DO_TEST("misc-acpi", NONE);
     DO_TEST("misc-disable-s3", QEMU_CAPS_DISABLE_S3);
     DO_TEST("misc-disable-suspends", QEMU_CAPS_DISABLE_S3, QEMU_CAPS_DISABLE_S4);
