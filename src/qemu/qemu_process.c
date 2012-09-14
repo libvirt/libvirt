@@ -116,7 +116,7 @@ extern struct qemud_driver *qemu_driver;
  * performed
  */
 static void
-qemuProcessHandleAgentEOF(qemuAgentPtr agent ATTRIBUTE_UNUSED,
+qemuProcessHandleAgentEOF(qemuAgentPtr agent,
                           virDomainObjPtr vm)
 {
     struct qemud_driver *driver = qemu_driver;
@@ -128,12 +128,12 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent ATTRIBUTE_UNUSED,
     virDomainObjLock(vm);
 
     priv = vm->privateData;
-
-    qemuAgentClose(agent);
     priv->agent = NULL;
 
     virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
+
+    qemuAgentClose(agent);
 }
 
 
