@@ -326,6 +326,14 @@ int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
 
 void virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 
+int
+virNetworkObjUpdate(virNetworkObjPtr obj,
+                    unsigned int command, /* virNetworkUpdateCommand */
+                    unsigned int section, /* virNetworkUpdateSection */
+                    int parentIndex,
+                    const char *xml,
+                    unsigned int flags);  /* virNetworkUpdateFlags */
+
 int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                              virNetworkDefPtr def,
                              unsigned int check_active);

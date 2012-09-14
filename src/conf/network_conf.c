@@ -2251,6 +2251,314 @@ void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
     }
 }
 
+/* NetworkObj backend of the virNetworkUpdate API */
+
+static void
+virNetworkDefUpdateNoSupport(virNetworkDefPtr def, const char *section)
+{
+    virReportError(VIR_ERR_NO_SUPPORT,
+                   _("can't update '%s' section of network '%s'"),
+                   section, def->name);
+}
+
+#if 0
+static int
+virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
+                                    xmlNodePtr node,
+                                    const char *section)
+{
+    if (!xmlStrEqual(node->name, BAD_CAST section)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unexpected element <%s>, expecting <%s>, "
+                         "while updating network '%s'"),
+                       node->name, section, def->name);
+        return -1;
+    }
+    return 0;
+}
+#endif
+
+static int
+virNetworkDefUpdateBridge(virNetworkDefPtr def,
+                          unsigned int command ATTRIBUTE_UNUSED,
+                          int parentIndex ATTRIBUTE_UNUSED,
+                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          /* virNetworkUpdateFlags */
+                          unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "bridge");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateDomain(virNetworkDefPtr def,
+                          unsigned int command ATTRIBUTE_UNUSED,
+                          int parentIndex ATTRIBUTE_UNUSED,
+                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          /* virNetworkUpdateFlags */
+                          unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "domain");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateIP(virNetworkDefPtr def,
+                      unsigned int command ATTRIBUTE_UNUSED,
+                      int parentIndex ATTRIBUTE_UNUSED,
+                      xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                      /* virNetworkUpdateFlags */
+                      unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "ip");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
+                              unsigned int command ATTRIBUTE_UNUSED,
+                              int parentIndex ATTRIBUTE_UNUSED,
+                              xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                              /* virNetworkUpdateFlags */
+                              unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "ip dhcp host");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
+                               unsigned int command ATTRIBUTE_UNUSED,
+                               int parentIndex ATTRIBUTE_UNUSED,
+                               xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                               /* virNetworkUpdateFlags */
+                               unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "ip dhcp range");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateForward(virNetworkDefPtr def,
+                           unsigned int command ATTRIBUTE_UNUSED,
+                           int parentIndex ATTRIBUTE_UNUSED,
+                           xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                           /* virNetworkUpdateFlags */
+                           unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "forward");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
+                                    unsigned int command ATTRIBUTE_UNUSED,
+                                    int parentIndex ATTRIBUTE_UNUSED,
+                                    xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                                    /* virNetworkUpdateFlags */
+                                    unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "forward interface");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
+                             unsigned int command ATTRIBUTE_UNUSED,
+                             int parentIndex ATTRIBUTE_UNUSED,
+                             xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                             /* virNetworkUpdateFlags */
+                             unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "forward pf");
+    return -1;
+}
+
+static int
+virNetworkDefUpdatePortgroup(virNetworkDefPtr def,
+                             unsigned int command ATTRIBUTE_UNUSED,
+                             int parentIndex ATTRIBUTE_UNUSED,
+                             xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                             /* virNetworkUpdateFlags */
+                             unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "portgroup");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
+                           unsigned int command ATTRIBUTE_UNUSED,
+                           int parentIndex ATTRIBUTE_UNUSED,
+                           xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                           /* virNetworkUpdateFlags */
+                           unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "dns host");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
+                          unsigned int command ATTRIBUTE_UNUSED,
+                          int parentIndex ATTRIBUTE_UNUSED,
+                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          /* virNetworkUpdateFlags */
+                          unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "dns txt");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
+                          unsigned int command ATTRIBUTE_UNUSED,
+                          int parentIndex ATTRIBUTE_UNUSED,
+                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          /* virNetworkUpdateFlags */
+                          unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    virNetworkDefUpdateNoSupport(def, "dns txt");
+    return -1;
+}
+
+static int
+virNetworkDefUpdateSection(virNetworkDefPtr def,
+                           unsigned int command, /* virNetworkUpdateCommand */
+                           unsigned int section, /* virNetworkUpdateSection */
+                           int parentIndex,
+                           const char *xml,
+                           unsigned int flags)  /* virNetworkUpdateFlags */
+{
+    int ret = -1;
+    xmlDocPtr doc;
+    xmlXPathContextPtr ctxt = NULL;
+
+    if (!(doc = virXMLParseStringCtxt(xml, _("network_update_xml"), &ctxt)))
+        goto cleanup;
+
+    switch (section) {
+    case VIR_NETWORK_SECTION_BRIDGE:
+       ret = virNetworkDefUpdateBridge(def, command, parentIndex, ctxt, flags);
+        break;
+
+    case VIR_NETWORK_SECTION_DOMAIN:
+        ret = virNetworkDefUpdateDomain(def, command, parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_IP:
+        ret = virNetworkDefUpdateIP(def, command, parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_IP_DHCP_HOST:
+        ret = virNetworkDefUpdateIPDHCPHost(def, command,
+                                            parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_IP_DHCP_RANGE:
+        ret = virNetworkDefUpdateIPDHCPRange(def, command,
+                                             parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_FORWARD:
+        ret = virNetworkDefUpdateForward(def, command,
+                                         parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
+        ret = virNetworkDefUpdateForwardInterface(def, command,
+                                                  parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_FORWARD_PF:
+        ret = virNetworkDefUpdateForwardPF(def, command,
+                                           parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_PORTGROUP:
+        ret = virNetworkDefUpdatePortgroup(def, command,
+                                           parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_DNS_HOST:
+        ret = virNetworkDefUpdateDNSHost(def, command,
+                                         parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_DNS_TXT:
+        ret = virNetworkDefUpdateDNSTxt(def, command, parentIndex, ctxt, flags);
+        break;
+    case VIR_NETWORK_SECTION_DNS_SRV:
+        ret = virNetworkDefUpdateDNSSrv(def, command, parentIndex, ctxt, flags);
+        break;
+    default:
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("can't update unrecognized section of network"));
+        break;
+    }
+
+cleanup:
+    xmlFreeDoc(doc);
+    xmlXPathFreeContext(ctxt);
+    return ret;
+}
+
+/*
+ * virNetworkObjUpdate:
+ *
+ * Apply the supplied update to the given virNetworkObj. Except for
+ * @network pointing to an actual network object rather than the
+ * opaque virNetworkPtr, parameters are identical to the public API
+ * virNetworkUpdate.
+ *
+ * The original virNetworkDefs are copied, and all modifications made
+ * to these copies. The originals are replaced with the copies only
+ * after success has been guaranteed.
+ *
+ * Returns: -1 on error, 0 on success.
+ */
+int
+virNetworkObjUpdate(virNetworkObjPtr network,
+                    unsigned int command, /* virNetworkUpdateCommand */
+                    unsigned int section, /* virNetworkUpdateSection */
+                    int parentIndex,
+                    const char *xml,
+                    unsigned int flags)  /* virNetworkUpdateFlags */
+{
+    int ret = -1;
+    virNetworkDefPtr def = NULL;
+
+    /* normalize config data, and check for common invalid requests. */
+    if (virNetworkConfigChangeSetup(network, flags) < 0)
+       goto cleanup;
+
+    if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {
+        /* work on a copy of the def */
+        if (!(def = virNetworkDefCopy(network->def, 0)))
+            goto cleanup;
+        if (virNetworkDefUpdateSection(def, command, section,
+                                       parentIndex, xml, flags) < 0) {
+            goto cleanup;
+        }
+        /* successfully modified copy, now replace original */
+        virNetworkDefFree(network->def);
+        network->def = def;
+        def = NULL;
+    }
+
+    if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
+        /* work on a copy of the def */
+        if (!(def = virNetworkDefCopy(virNetworkObjGetPersistentDef(network),
+                                      VIR_NETWORK_XML_INACTIVE))) {
+            goto cleanup;
+        }
+        if (virNetworkDefUpdateSection(def, command, section,
+                                       parentIndex, xml, flags) < 0) {
+            goto cleanup;
+        }
+        /* successfully modified copy, now replace original */
+        if (virNetworkObjReplacePersistentDef(network, def) < 0)
+           goto cleanup;
+        def = NULL;
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkDefFree(def);
+    return ret;
+}
+
 /*
  * virNetworkObjIsDuplicate:
  * @doms : virNetworkObjListPtr to search
