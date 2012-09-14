@@ -2078,6 +2078,17 @@ struct remote_connect_list_all_nwfilters_ret {
         } filters;
         u_int                      ret;
 };
+struct remote_list_all_secrets_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_list_all_secrets_ret {
+        struct {
+                u_int              secrets_len;
+                remote_nonnull_secret * secrets_val;
+        } secrets;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2365,4 +2376,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284,
         REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES = 285,
         REMOTE_PROC_CONNECT_LIST_ALL_NWFILTERS = 286,
+        REMOTE_PROC_CONNECT_LIST_ALL_SECRETS = 287,
 };

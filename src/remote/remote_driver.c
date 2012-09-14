@@ -2970,6 +2970,69 @@ done:
     return rv;
 }
 
+static int
+remoteConnectListAllSecrets(virConnectPtr conn,
+                            virSecretPtr **secrets,
+                            unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    virSecretPtr *tmp_secrets = NULL;
+    remote_connect_list_all_secrets_args args;
+    remote_connect_list_all_secrets_ret ret;
+
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!secrets;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn,
+             priv,
+             0,
+             REMOTE_PROC_CONNECT_LIST_ALL_SECRETS,
+             (xdrproc_t) xdr_remote_connect_list_all_secrets_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_connect_list_all_secrets_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (secrets) {
+        if (VIR_ALLOC_N(tmp_secrets, ret.secrets.secrets_len + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (i = 0; i < ret.secrets.secrets_len; i++) {
+            tmp_secrets[i] = get_nonnull_secret (conn, ret.secrets.secrets_val[i]);
+            if (!tmp_secrets[i]) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+        *secrets = tmp_secrets;
+        tmp_secrets = NULL;
+    }
+
+    rv = ret.ret;
+
+cleanup:
+    if (tmp_secrets) {
+        for (i = 0; i < ret.secrets.secrets_len; i++)
+            if (tmp_secrets[i])
+                virSecretFree(tmp_secrets[i]);
+        VIR_FREE(tmp_secrets);
+    }
+
+    xdr_free((xdrproc_t) xdr_remote_connect_list_all_secrets_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -6047,6 +6110,7 @@ static virSecretDriver secret_driver = {
     .close = remoteSecretClose, /* 0.7.1 */
     .numOfSecrets = remoteNumOfSecrets, /* 0.7.1 */
     .listSecrets = remoteListSecrets, /* 0.7.1 */
+    .listAllSecrets = remoteConnectListAllSecrets, /* 0.10.2 */
     .lookupByUUID = remoteSecretLookupByUUID, /* 0.7.1 */
     .lookupByUsage = remoteSecretLookupByUsage, /* 0.7.1 */
     .defineXML = remoteSecretDefineXML, /* 0.7.1 */

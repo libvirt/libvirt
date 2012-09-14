@@ -4429,6 +4429,60 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchConnectListAllSecrets(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                    virNetServerClientPtr client,
+                                    virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                    virNetMessageErrorPtr rerr,
+                                    remote_connect_list_all_secrets_args *args,
+                                    remote_connect_list_all_secrets_ret *ret)
+{
+    virSecretPtr *secrets = NULL;
+    int nsecrets = 0;
+    int i;
+    int rv = -1;
+    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if ((nsecrets = virConnectListAllSecrets(priv->conn,
+                                             args->need_results ? &secrets : NULL,
+                                             args->flags)) < 0)
+        goto cleanup;
+
+    if (secrets && nsecrets) {
+        if (VIR_ALLOC_N(ret->secrets.secrets_val, nsecrets) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        ret->secrets.secrets_len = nsecrets;
+
+        for (i = 0; i < nsecrets; i++)
+            make_nonnull_secret(ret->secrets.secrets_val + i, secrets[i]);
+    } else {
+        ret->secrets.secrets_len = 0;
+        ret->secrets.secrets_val = NULL;
+    }
+
+    ret->ret = nsecrets;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (secrets) {
+        for (i = 0; i < nsecrets; i++)
+            virSecretFree(secrets[i]);
+        VIR_FREE(secrets);
+    }
+    return rv;
+}
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
