@@ -529,5 +529,18 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='unsigned int' info='unused, always pass 0'/>
     </function>
+    <function name='virNodeSetMemoryParameters' file='python'>
+      <info>Change the node memory tunables</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='params' type='virTypedParameterPtr' info='pointer to the memory tunable objects'/>
+      <arg name='flags'  type='int' info='unused, always pass 0'/>
+    </function>
+    <function name='virNodeGetMemoryParameters' file='python'>
+      <info>Get the node memory parameters</info>
+      <return type='str *' info='None in case of error, returns a dictionary of params'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='int' info='unused, always pass 0'/>
+    </function>
   </symbols>
 </api>
