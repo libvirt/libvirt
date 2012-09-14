@@ -101,18 +101,11 @@
 
     <p>
       It is also possible to run virsh directly from the source tree
+      using the ./run script (which sets some environment variables):
     </p>
 
     <pre>
-      $ ./tools/virsh ....
+      $ ./run ./tools/virsh ....
     </pre>
-
-    <p>
-      A normal configuration of libvirt will build hypervisor drivers
-      as loadable modules. When running from a non-installed source
-      tree, libvirtd will attempt to find the modules from the same
-      source tree. If this is not possible though, you can explicitly
-      set <code>LIBVIRT_DRIVER_DIR=/path/to/source/tree/src/.libs</code>
-    </p>
   </body>
 </html>

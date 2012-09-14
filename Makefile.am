@@ -27,6 +27,7 @@ EXTRA_DIST = \
   autogen.sh \
   cfg.mk \
   examples/domain-events/events-python \
+  run.in \
   $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig

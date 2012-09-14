@@ -94,6 +94,7 @@
 /python/libvirt.[ch]
 /python/libvirt.py
 /python/libvirt_qemu.py
+/run
 /sc_*
 /src/.*.stamp
 /src/esx/*.generated.*
