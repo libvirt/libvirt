@@ -3790,7 +3790,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
         if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update vcpupin"));
-            virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+            virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
             goto cleanup;
         }
 
@@ -3823,7 +3823,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             }
         } else {
             if (vm->def->cputune.vcpupin)
-                virDomainVcpuPinDefFree(vm->def->cputune.vcpupin, vm->def->cputune.nvcpupin);
+                virDomainVcpuPinDefArrayFree(vm->def->cputune.vcpupin, vm->def->cputune.nvcpupin);
 
             vm->def->cputune.vcpupin = newVcpuPin;
             vm->def->cputune.nvcpupin = newVcpuPinNum;
@@ -3831,7 +3831,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
         }
 
         if (newVcpuPin)
-            virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+            virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
 
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
             goto cleanup;
@@ -3906,8 +3906,9 @@ qemudDomainGetVcpuPinInfo(virDomainPtr dom,
     int maxcpu, hostcpus, vcpu, pcpu;
     int n;
     virDomainVcpuPinDefPtr *vcpupin_list;
-    char *cpumask = NULL;
+    virBitmapPtr cpumask = NULL;
     unsigned char *cpumap;
+    bool pinned;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3966,7 +3967,9 @@ qemudDomainGetVcpuPinInfo(virDomainPtr dom,
         cpumask = vcpupin_list[n]->cpumask;
         cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
         for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-            if (cpumask[pcpu] == 0)
+            if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
+                goto cleanup;
+            if (!pinned)
                 VIR_UNUSE_CPU(cpumap, pcpu);
         }
     }
@@ -4050,7 +4053,7 @@ qemudDomainPinEmulator(virDomainPtr dom,
             if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to update vcpupin"));
-                virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+                virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
                 goto cleanup;
             }
 
@@ -4088,16 +4091,13 @@ qemudDomainPinEmulator(virDomainPtr dom,
                     goto cleanup;
                 }
             } else {
-                if (vm->def->cputune.emulatorpin) {
-                    VIR_FREE(vm->def->cputune.emulatorpin->cpumask);
-                    VIR_FREE(vm->def->cputune.emulatorpin);
-                }
+                virDomainVcpuPinDefFree(vm->def->cputune.emulatorpin);
                 vm->def->cputune.emulatorpin = newVcpuPin[0];
                 VIR_FREE(newVcpuPin);
             }
 
             if (newVcpuPin)
-                virDomainVcpuPinDefFree(newVcpuPin, newVcpuPinNum);
+                virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
         } else {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
@@ -4156,7 +4156,8 @@ qemudDomainGetEmulatorPinInfo(virDomainPtr dom,
     int ret = -1;
     int maxcpu, hostcpus, pcpu;
     virDomainVcpuPinDefPtr emulatorpin = NULL;
-    char *cpumask = NULL;
+    virBitmapPtr cpumask = NULL;
+    bool pinned;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4205,7 +4206,9 @@ qemudDomainGetEmulatorPinInfo(virDomainPtr dom,
 
     cpumask = emulatorpin->cpumask;
     for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-        if (cpumask[pcpu] == 0)
+        if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
+            goto cleanup;
+        if (!pinned)
             VIR_UNUSE_CPU(cpumaps, pcpu);
     }
 

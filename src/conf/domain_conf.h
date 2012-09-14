@@ -46,6 +46,7 @@
 # include "virnetdevvlan.h"
 # include "virobject.h"
 # include "device_conf.h"
+# include "bitmap.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -1565,10 +1566,11 @@ typedef struct _virDomainVcpuPinDef virDomainVcpuPinDef;
 typedef virDomainVcpuPinDef *virDomainVcpuPinDefPtr;
 struct _virDomainVcpuPinDef {
     int vcpuid;
-    char *cpumask;
+    virBitmapPtr cpumask;
 };
 
-void virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def, int nvcpupin);
+void virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr def);
+void virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def, int nvcpupin);
 
 virDomainVcpuPinDefPtr *virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src,
                                                 int nvcpupin);

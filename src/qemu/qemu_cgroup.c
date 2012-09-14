@@ -513,8 +513,7 @@ int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
     int rc = 0;
     char *new_cpus = NULL;
 
-    new_cpus = virDomainCpuSetFormat(vcpupin->cpumask,
-                                     VIR_DOMAIN_CPUMASK_LEN);
+    new_cpus = virBitmapFormat(vcpupin->cpumask);
     if (!new_cpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to convert cpu mask"));

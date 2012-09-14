@@ -1959,7 +1959,7 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
     virDomainDefPtr def = vm->def;
     virNodeInfo nodeinfo;
     pid_t vcpupid;
-    unsigned char *cpumask;
+    virBitmapPtr cpumask;
     int vcpu, cpumaplen, hostcpus, maxcpu, n;
     unsigned char *cpumap = NULL;
     int ret = -1;
@@ -1994,13 +1994,12 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
         vcpu = def->cputune.vcpupin[n]->vcpuid;
 
         memset(cpumap, 0, cpumaplen);
-        cpumask = (unsigned char *)def->cputune.vcpupin[n]->cpumask;
+        cpumask = def->cputune.vcpupin[n]->cpumask;
         vcpupid = priv->vcpupids[vcpu];
 
-        for (i = 0 ; i < VIR_DOMAIN_CPUMASK_LEN ; i++) {
-            if (cpumask[i])
-                VIR_USE_CPU(cpumap, i);
-        }
+        i = -1;
+        while ((i = virBitmapNextSetBit(cpumask, i)) >= 0)
+            VIR_USE_CPU(cpumap, i);
 
         if (virProcessInfoSetAffinity(vcpupid,
                                       cpumap,
@@ -2023,11 +2022,12 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
 {
     virDomainDefPtr def = vm->def;
     pid_t pid = vm->pid;
-    unsigned char *cpumask = NULL;
+    virBitmapPtr cpumask = NULL;
     unsigned char *cpumap = NULL;
     virNodeInfo nodeinfo;
     int cpumaplen, hostcpus, maxcpu, i;
     int ret = -1;
+    bool result;
 
     if (virNodeGetInfo(conn, &nodeinfo) != 0)
         return -1;
@@ -2047,9 +2047,11 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
         return -1;
     }
 
-    cpumask = (unsigned char *)def->cputune.emulatorpin->cpumask;
+    cpumask = def->cputune.emulatorpin->cpumask;
     for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (cpumask[i])
+        if (virBitmapGetBit(cpumask, i, &result) < 0)
+            goto cleanup;
+        if (result)
             VIR_USE_CPU(cpumap, i);
     }
 

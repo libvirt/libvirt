@@ -52,6 +52,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
 #include "device_conf.h"
+#include "bitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -1529,10 +1530,9 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
     for (i = 0; i < nvcpupin; i++) {
         if (VIR_ALLOC(ret[i]) < 0)
             goto no_memory;
-        if (VIR_ALLOC_N(ret[i]->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto no_memory;
         ret[i]->vcpuid = src[i]->vcpuid;
-        memcpy(ret[i]->cpumask, src[i]->cpumask, VIR_DOMAIN_CPUMASK_LEN);
+        if ((ret[i]->cpumask = virBitmapNewCopy(src[i]->cpumask)) == NULL)
+            goto no_memory;
     }
 
     return ret;
@@ -1541,7 +1541,7 @@ no_memory:
     if (ret) {
         for ( ; i >= 0; --i) {
             if (ret[i]) {
-                VIR_FREE(ret[i]->cpumask);
+                virBitmapFree(ret[i]->cpumask);
                 VIR_FREE(ret[i]);
             }
         }
@@ -1553,8 +1553,17 @@ no_memory:
 }
 
 void
-virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def,
-                        int nvcpupin)
+virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr def)
+{
+    if (def) {
+        virBitmapFree(def->cpumask);
+        VIR_FREE(def);
+    }
+}
+
+void
+virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
+                             int nvcpupin)
 {
     int i;
 
@@ -1562,8 +1571,7 @@ virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr *def,
         return;
 
     for(i = 0; i < nvcpupin; i++) {
-        VIR_FREE(def[i]->cpumask);
-        VIR_FREE(def[i]);
+        virDomainVcpuPinDefFree(def[i]);
     }
 
     VIR_FREE(def);
@@ -1687,7 +1695,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virCPUDefFree(def->cpu);
 
-    virDomainVcpuPinDefFree(def->cputune.vcpupin, def->cputune.nvcpupin);
+    virDomainVcpuPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
+
+    virDomainVcpuPinDefFree(def->cputune.emulatorpin);
 
     VIR_FREE(def->numatune.memory.nodemask);
 
@@ -8252,12 +8262,8 @@ virDomainVcpuPinDefParseXML(const xmlNodePtr node,
         char *set = tmp;
         int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
 
-        if (VIR_ALLOC_N(def->cpumask, cpumasklen) < 0) {
-            virReportOOMError();
-            goto error;
-        }
-        if (virDomainCpuSetParse(set, 0, def->cpumask,
-                                 cpumasklen) < 0)
+        if (virBitmapParse(set, 0, &def->cpumask,
+                           cpumasklen) < 0)
            goto error;
         VIR_FREE(tmp);
     } else {
@@ -8692,18 +8698,11 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
         }
 
-        if (VIR_ALLOC(def->cputune.emulatorpin) < 0) {
-            goto no_memory;
-        }
+        def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
+                                                               def->maxvcpus, 1);
 
-        virDomainVcpuPinDefPtr emulatorpin = NULL;
-        emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
-                                                  def->maxvcpus, 1);
-
-        if (!emulatorpin)
+        if (!def->cputune.emulatorpin)
             goto error;
-
-        def->cputune.emulatorpin = emulatorpin;
     }
     VIR_FREE(nodes);
 
@@ -11422,34 +11421,6 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
     return NULL;
 }
 
-static char *bitmapFromBytemap(unsigned char *bytemap, int maplen)
-{
-    char *bitmap = NULL;
-    int i;
-
-    if (VIR_ALLOC_N(bitmap, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* Reset bitmap to all 0s. */
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++)
-        bitmap[i] = 0;
-
-    /* Convert bitmap (bytemap) to bitmap, which is byte map? */
-    for (i = 0; i < maplen; i++) {
-        int cur;
-
-        for (cur = 0; cur < 8; cur++) {
-            if (bytemap[i] & (1 << cur))
-                bitmap[i * 8 + cur] = 1;
-        }
-    }
-
-cleanup:
-    return bitmap;
-}
-
 int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         int *nvcpupin,
                         unsigned char *cpumap,
@@ -11457,12 +11428,8 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         int vcpu)
 {
     virDomainVcpuPinDefPtr vcpupin = NULL;
-    char *cpumask = NULL;
 
     if (!vcpupin_list)
-        return -1;
-
-    if ((cpumask = bitmapFromBytemap(cpumap, maplen)) == NULL)
         return -1;
 
     vcpupin = virDomainVcpuPinFindByVcpu(*vcpupin_list,
@@ -11470,7 +11437,12 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                                          vcpu);
     if (vcpupin) {
         vcpupin->vcpuid = vcpu;
-        vcpupin->cpumask = cpumask;
+        virBitmapFree(vcpupin->cpumask);
+        vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
+        if (!vcpupin->cpumask) {
+            virReportOOMError();
+            return -1;
+        }
 
         return 0;
     }
@@ -11479,16 +11451,17 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
 
     if (VIR_ALLOC(vcpupin) < 0) {
         virReportOOMError();
-        VIR_FREE(cpumask);
         return -1;
     }
     vcpupin->vcpuid = vcpu;
-    vcpupin->cpumask = cpumask;
-
+    vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
+    if (!vcpupin->cpumask) {
+        virReportOOMError();
+        return -1;
+    }
 
     if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0) {
         virReportOOMError();
-        VIR_FREE(cpumask);
         VIR_FREE(vcpupin);
         return -1;
     }
@@ -11543,67 +11516,42 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
                         int maplen)
 {
     virDomainVcpuPinDefPtr emulatorpin = NULL;
-    char *cpumask = NULL;
-    int i;
-
-    if (VIR_ALLOC_N(cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* Convert bitmap (cpumap) to cpumask, which is byte map. */
-    for (i = 0; i < maplen; i++) {
-        int cur;
-
-        for (cur = 0; cur < 8; cur++) {
-            if (cpumap[i] & (1 << cur))
-                cpumask[i * 8 + cur] = 1;
-        }
-    }
 
     if (!def->cputune.emulatorpin) {
         /* No emulatorpin exists yet. */
         if (VIR_ALLOC(emulatorpin) < 0) {
             virReportOOMError();
-            goto cleanup;
+            return -1;
         }
 
         emulatorpin->vcpuid = -1;
-        emulatorpin->cpumask = cpumask;
+        emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
+        if (!emulatorpin->cpumask)
+            return -1;
+
         def->cputune.emulatorpin = emulatorpin;
     } else {
         /* Since there is only 1 emulatorpin for each vm,
          * juest replace the old one.
          */
-        VIR_FREE(def->cputune.emulatorpin->cpumask);
-        def->cputune.emulatorpin->cpumask = cpumask;
+        virBitmapFree(def->cputune.emulatorpin->cpumask);
+        def->cputune.emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
+        if (!def->cputune.emulatorpin->cpumask)
+            return -1;
     }
 
     return 0;
-
-cleanup:
-    VIR_FREE(cpumask);
-    return -1;
 }
 
 int
 virDomainEmulatorPinDel(virDomainDefPtr def)
 {
-    virDomainVcpuPinDefPtr emulatorpin = NULL;
-
-    /* No emulatorpin exists yet */
     if (!def->cputune.emulatorpin) {
         return 0;
     }
 
-    emulatorpin = def->cputune.emulatorpin;
-
-    VIR_FREE(emulatorpin->cpumask);
-    VIR_FREE(emulatorpin);
+    virDomainVcpuPinDefFree(def->cputune.emulatorpin);
     def->cputune.emulatorpin = NULL;
-
-    if (def->cputune.emulatorpin)
-        return -1;
 
     return 0;
 }
@@ -13610,8 +13558,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                               def->cputune.vcpupin[i]->vcpuid);
 
             char *cpumask = NULL;
-            cpumask = virDomainCpuSetFormat(def->cputune.vcpupin[i]->cpumask,
-                                            VIR_DOMAIN_CPUMASK_LEN);
+            cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask);
 
             if (cpumask == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -13628,8 +13575,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "    <emulatorpin ");
 
         char *cpumask = NULL;
-        cpumask = virDomainCpuSetFormat(def->cputune.emulatorpin->cpumask,
-                                        VIR_DOMAIN_CPUMASK_LEN);
+        cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask);
         if (cpumask == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("failed to format cpuset for emulator"));
