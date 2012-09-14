@@ -1641,8 +1641,7 @@ struct _virDomainDef {
     unsigned short vcpus;
     unsigned short maxvcpus;
     int placement_mode;
-    int cpumasklen;
-    char *cpumask;
+    virBitmapPtr cpumask;
 
     struct {
         unsigned long shares;

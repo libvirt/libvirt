@@ -1445,8 +1445,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         return -1;
     }
 
-    if (old->cpumasklen != new->cpumasklen ||
-        (memcmp(old->cpumask, new->cpumask, old->cpumasklen))) {
+    if (!virBitmapEqual(old->cpumask, new->cpumask)) {
 
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("changing cpu mask is not supported "

@@ -1235,6 +1235,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     int unit;
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
+    int cpumasklen;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1417,9 +1418,10 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
         const char *current = sched_cpu_affinity;
         int number, count = 0;
 
-        def->cpumasklen = 0;
+        cpumasklen = 0;
 
-        if (VIR_ALLOC_N(def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
+        def->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
+        if (!def->cpumask) {
             virReportOOMError();
             goto cleanup;
         }
@@ -1444,11 +1446,11 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
                 goto cleanup;
             }
 
-            if (number + 1 > def->cpumasklen) {
-                def->cpumasklen = number + 1;
+            if (number + 1 > cpumasklen) {
+                cpumasklen = number + 1;
             }
 
-            def->cpumask[number] = 1;
+            ignore_value(virBitmapSetBit(def->cpumask, number));
             ++count;
 
             virSkipSpaces(&current);
@@ -3165,15 +3167,14 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     virBufferAsprintf(&buffer, "numvcpus = \"%d\"\n", def->maxvcpus);
 
     /* def:cpumask -> vmx:sched.cpu.affinity */
-    if (def->cpumasklen > 0) {
+    if (def->cpumask && virBitmapSize(def->cpumask) > 0) {
         virBufferAddLit(&buffer, "sched.cpu.affinity = \"");
 
         sched_cpu_affinity_length = 0;
 
-        for (i = 0; i < def->cpumasklen; ++i) {
-            if (def->cpumask[i]) {
-                ++sched_cpu_affinity_length;
-            }
+        i = -1;
+        while ((i = virBitmapNextSetBit(def->cpumask, i)) >= 0) {
+            ++sched_cpu_affinity_length;
         }
 
         if (sched_cpu_affinity_length < def->maxvcpus) {
@@ -3184,16 +3185,15 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
             goto cleanup;
         }
 
-        for (i = 0; i < def->cpumasklen; ++i) {
-            if (def->cpumask[i]) {
-                virBufferAsprintf(&buffer, "%d", i);
+        i = -1;
+        while ((i = virBitmapNextSetBit(def->cpumask, i)) >= 0) {
+            virBufferAsprintf(&buffer, "%d", i);
 
-                if (sched_cpu_affinity_length > 1) {
-                    virBufferAddChar(&buffer, ',');
-                }
-
-                --sched_cpu_affinity_length;
+            if (sched_cpu_affinity_length > 1) {
+                virBufferAddChar(&buffer, ',');
             }
+
+            --sched_cpu_affinity_length;
         }
 
         virBufferAddLit(&buffer, "\"\n");

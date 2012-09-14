@@ -1197,14 +1197,8 @@ xenParseSxpr(const struct sexpr *root,
         def->mem.cur_balloon = def->mem.max_balloon;
 
     if (cpus != NULL) {
-        def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
-        if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            virReportOOMError();
-            goto error;
-        }
-
-        if (virDomainCpuSetParse(cpus, 0, def->cpumask,
-                                 def->cpumasklen) < 0) {
+        if (virBitmapParse(cpus, 0, &def->cpumask,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("invalid CPU mask %s"), cpus);
             goto error;
@@ -2246,7 +2240,7 @@ xenFormatSxpr(virConnectPtr conn,
         virBufferAsprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
 
     if (def->cpumask) {
-        char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
+        char *ranges = virBitmapFormat(def->cpumask);
         if (ranges == NULL)
             goto error;
         virBufferEscapeSexpr(&buf, "(cpus '%s')", ranges);

@@ -8618,14 +8618,12 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
         if (tmp) {
-            char *set = tmp;
-            def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
-            if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-                goto no_memory;
-            }
-            if (virDomainCpuSetParse(set, 0, def->cpumask,
-                                     def->cpumasklen) < 0)
+            if (virBitmapParse(tmp, 0, &def->cpumask,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               "%s", _("topology cpuset syntax error"));
                 goto error;
+            }
             VIR_FREE(tmp);
         }
     }
@@ -13369,7 +13367,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     const char *type = NULL;
-    int n, allones = 1;
+    int n;
     int i;
     bool blkio = false;
 
@@ -13498,17 +13496,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         "  </memoryBacking>\n", NULL);
     }
 
-    for (n = 0 ; n < def->cpumasklen ; n++)
-        if (def->cpumask[n] != 1)
-            allones = 0;
-
     virBufferAddLit(buf, "  <vcpu");
     virBufferAsprintf(buf, " placement='%s'",
                       virDomainCpuPlacementModeTypeToString(def->placement_mode));
-    if (!allones) {
+
+    if (def->cpumask && !virBitmapIsAllSet(def->cpumask)) {
         char *cpumask = NULL;
-        if ((cpumask =
-             virDomainCpuSetFormat(def->cpumask, def->cpumasklen)) == NULL)
+        if ((cpumask = virBitmapFormat(def->cpumask)) == NULL)
             goto cleanup;
         virBufferAsprintf(buf, " cpuset='%s'", cpumask);
         VIR_FREE(cpumask);

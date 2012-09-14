@@ -1853,7 +1853,7 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     int ret = -1;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
-    virBitmapPtr cpumap;
+    virBitmapPtr cpumap, cpumapToSet;
 
     VIR_DEBUG("Setting CPU affinity");
 
@@ -1871,6 +1871,8 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
         virReportOOMError();
         return -1;
     }
+
+    cpumapToSet = cpumap;
 
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         VIR_DEBUG("Set CPU affinity with advisory nodeset from numad");
@@ -1890,11 +1892,7 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     } else {
         VIR_DEBUG("Set CPU affinity with specified cpuset");
         if (vm->def->cpumask) {
-            /* XXX why don't we keep 'cpumask' in the libvirt cpumap
-             * format to start with ?!?! */
-            for (i = 0 ; i < maxcpu && i < vm->def->cpumasklen ; i++)
-                if (vm->def->cpumask[i])
-                    ignore_value(virBitmapSetBit(cpumap, i));
+            cpumapToSet = vm->def->cpumask;
         } else {
             /* You may think this is redundant, but we can't assume libvirtd
              * itself is running on all pCPUs, so we need to explicitly set
@@ -1908,7 +1906,7 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0 /* Self */, cpumap) < 0)
+    if (virProcessInfoSetAffinity(0 /* Self */, cpumapToSet) < 0)
         goto cleanup;
 
     ret = 0;

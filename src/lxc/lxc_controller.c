@@ -490,9 +490,9 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
  */
 static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 {
-    int i, hostcpus, maxcpu = CPU_SETSIZE;
+    int hostcpus, maxcpu = CPU_SETSIZE;
     virNodeInfo nodeinfo;
-    virBitmapPtr cpumap;
+    virBitmapPtr cpumap, cpumapToSet;
 
     VIR_DEBUG("Setting CPU affinity");
 
@@ -509,12 +509,10 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
     if (!cpumap)
         return -1;
 
+    cpumapToSet = cpumap;
+
     if (ctrl->def->cpumask) {
-        /* XXX why don't we keep 'cpumask' in the libvirt cpumap
-         * format to start with ?!?! */
-        for (i = 0 ; i < maxcpu && i < ctrl->def->cpumasklen ; i++)
-            if (ctrl->def->cpumask[i])
-                ignore_value(virBitmapSetBit(cpumap, i));
+        cpumapToSet = ctrl->def->cpumask;
     } else {
         /* You may think this is redundant, but we can't assume libvirtd
          * itself is running on all pCPUs, so we need to explicitly set
@@ -527,7 +525,7 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0 /* Self */, cpumap) < 0) {
+    if (virProcessInfoSetAffinity(0 /* Self */, cpumapToSet) < 0) {
         virBitmapFree(cpumap);
         return -1;
     }

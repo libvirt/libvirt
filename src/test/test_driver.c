@@ -383,6 +383,7 @@ testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
     virVcpuInfoPtr info = &privdata->vcpu_infos[vcpu];
     unsigned char *cpumap = VIR_GET_CPUMAP(privdata->cpumaps, maplen, vcpu);
     int j;
+    bool cpu;
 
     memset(info, 0, sizeof(virVcpuInfo));
     memset(cpumap, 0, maplen);
@@ -394,7 +395,9 @@ testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (dom->def->cpumask) {
         for (j = 0; j < maxcpu && j < VIR_DOMAIN_CPUMASK_LEN; ++j) {
-            if (dom->def->cpumask[j]) {
+            if (virBitmapGetBit(dom->def->cpumask, j, &cpu) < 0)
+                return -1;
+            if (cpu) {
                 VIR_USE_CPU(cpumap, j);
                 info->cpu = j;
             }

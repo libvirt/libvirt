@@ -831,7 +831,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     char *mapstr = NULL, *mapsave = NULL;
     int i, j, n, comma = 0;
     int ret = -1;
-    char *cpuset = NULL;
+    virBitmapPtr cpuset = NULL;
     int maxcpu = XEN_MAX_PHYSICAL_CPU;
 
     if (domain == NULL || domain->conn == NULL || domain->name == NULL
@@ -885,16 +885,11 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     mapstr = virBufferContentAndReset(&mapbuf);
     mapsave = mapstr;
 
-    if (VIR_ALLOC_N(cpuset, maxcpu) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    if (virDomainCpuSetParse(mapstr, 0, cpuset, maxcpu) < 0)
+    if (virBitmapParse(mapstr, 0, &cpuset, maxcpu) < 0)
         goto cleanup;
 
-    VIR_FREE(entry->def->cpumask);
+    virBitmapFree(entry->def->cpumask);
     entry->def->cpumask = cpuset;
-    entry->def->cpumasklen = maxcpu;
     cpuset = NULL;
 
     if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
