@@ -662,8 +662,11 @@ doRemoteOpen(virConnectPtr conn,
         }
 
         if (!(daemonPath = remoteFindDaemonPath())) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to locate libvirtd daemon in $PATH"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to locate libvirtd daemon in %s "
+                             "(to override, set $LIBVIRTD_PATH to the "
+                             "name of the libvirtd binary)"),
+                           SBINDIR);
             goto failed;
         }
         if (!(priv->client = virNetClientNewUNIX(sockname,
