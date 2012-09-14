@@ -247,7 +247,18 @@ void virNetworkObjFree(virNetworkObjPtr net);
 void virNetworkObjListFree(virNetworkObjListPtr vms);
 
 virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
-                                     const virNetworkDefPtr def);
+                                     const virNetworkDefPtr def,
+                                     bool live);
+int virNetworkObjAssignDef(virNetworkObjPtr network,
+                           const virNetworkDefPtr def,
+                           bool live);
+int virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live);
+virNetworkDefPtr virNetworkObjGetPersistentDef(virNetworkObjPtr network);
+int virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
+                                      virNetworkDefPtr def);
+virNetworkDefPtr virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags);
+int virNetworkConfigChangeSetup(virNetworkObjPtr dom, unsigned int flags);
+
 void virNetworkRemoveInactive(virNetworkObjListPtr nets,
                               const virNetworkObjPtr net);
 
@@ -282,6 +293,9 @@ int virNetworkSaveXML(const char *configDir,
 
 int virNetworkSaveConfig(const char *configDir,
                          virNetworkDefPtr def);
+
+int virNetworkSaveStatus(const char *statusDir,
+                         virNetworkObjPtr net) ATTRIBUTE_RETURN_CHECK;
 
 virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *configDir,

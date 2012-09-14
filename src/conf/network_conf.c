@@ -228,20 +228,74 @@ void virNetworkObjListFree(virNetworkObjListPtr nets)
     nets->count = 0;
 }
 
-virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
-                                     const virNetworkDefPtr def)
+/*
+ * virNetworkObjAssignDef:
+ * @network: the network object to update
+ * @def: the new NetworkDef (will be consumed by this function iff successful)
+ * @live: is this new def the "live" version, or the "persistent" version
+ *
+ * Replace the appropriate copy of the given network's NetworkDef
+ * with def. Use "live" and current state of the network to determine
+ * which to replace.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virNetworkObjAssignDef(virNetworkObjPtr network,
+                       const virNetworkDefPtr def,
+                       bool live)
+{
+    if (virNetworkObjIsActive(network)) {
+        if (live) {
+            virNetworkDefFree(network->def);
+            network->def = def;
+        } else if (network->persistent) {
+            /* save current configuration to be restored on network shutdown */
+            virNetworkDefFree(network->newDef);
+            network->newDef = def;
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("cannot save persistent config of transient "
+                             "network '%s'"), network->def->name);
+            return -1;
+        }
+    } else if (!live) {
+        virNetworkDefFree(network->newDef); /* should be unnecessary */
+        virNetworkDefFree(network->def);
+        network->def = def;
+    } else {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("cannot save live config of inactive "
+                         "network '%s'"), network->def->name);
+        return -1;
+    }
+    return 0;
+}
+
+/*
+ * virNetworkAssignDef:
+ * @nets: list of all networks
+ * @def: the new NetworkDef (will be consumed by this function iff successful)
+ * @live: is this new def the "live" version, or the "persistent" version
+ *
+ * Either replace the appropriate copy of the NetworkDef with name
+ * matching def->name or, if not found, create a new NetworkObj with
+ * def. For an existing network, use "live" and current state of the
+ * network to determine which to replace.
+ *
+ * Returns -1 on failure, 0 on success.
+ */
+virNetworkObjPtr
+virNetworkAssignDef(virNetworkObjListPtr nets,
+                    const virNetworkDefPtr def,
+                    bool live)
 {
     virNetworkObjPtr network;
 
     if ((network = virNetworkFindByName(nets, def->name))) {
-        if (!virNetworkObjIsActive(network)) {
-            virNetworkDefFree(network->def);
-            network->def = def;
-        } else {
-            virNetworkDefFree(network->newDef);
-            network->newDef = def;
+        if (virNetworkObjAssignDef(network, def, live) < 0) {
+            return NULL;
         }
-
         return network;
     }
 
@@ -268,6 +322,150 @@ virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
 
     return network;
 
+}
+
+/*
+ * virNetworkObjSetDefTransient:
+ * @network: network object pointer
+ * @live: if true, run this operation even for an inactive network.
+ *   this allows freely updated network->def with runtime defaults
+ *   before starting the network, which will be discarded on network
+ *   shutdown. Any cleanup paths need to be sure to handle newDef if
+ *   the network is never started.
+ *
+ * Mark the active network config as transient. Ensures live-only update
+ * operations do not persist past network destroy.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live)
+{
+    if (!virNetworkObjIsActive(network) && !live)
+        return 0;
+
+    if (!network->persistent || network->newDef)
+        return 0;
+
+    network->newDef = virNetworkDefCopy(network->def, VIR_NETWORK_XML_INACTIVE);
+    return network->newDef ? 0 : -1;
+}
+
+/*
+ * virNetworkObjGetPersistentDef:
+ * @network: network object pointer
+ *
+ * Return the persistent network configuration. If network is transient,
+ * return the running config.
+ *
+ * Returns NULL on error, virNetworkDefPtr on success.
+ */
+virNetworkDefPtr
+virNetworkObjGetPersistentDef(virNetworkObjPtr network)
+{
+    if (network->newDef)
+        return network->newDef;
+    else
+        return network->def;
+}
+
+/*
+ * virNetworkObjReplacePersistentDef:
+ * @network: network object pointer
+ * @def: new virNetworkDef to replace current persistent config
+ *
+ * Replace the "persistent" network configuration with the given new
+ * virNetworkDef. This pays attention to whether or not the network
+ * is active.
+ *
+ * Returns -1 on error, 0 on success
+ */
+int
+virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
+                                  virNetworkDefPtr def)
+{
+    if (virNetworkObjIsActive(network)) {
+        virNetworkDefFree(network->newDef);
+        network->newDef = def;
+    } else {
+        virNetworkDefFree(network->def);
+        network->def = def;
+    }
+    return 0;
+}
+
+/*
+ * virNetworkDefCopy:
+ * @def: NetworkDef to copy
+ * @flags: VIR_NETWORK_XML_INACTIVE if appropriate
+ *
+ * make a deep copy of the given NetworkDef
+ *
+ * Returns a new NetworkDef on success, or NULL on failure.
+ */
+virNetworkDefPtr
+virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags)
+{
+    char *xml = NULL;
+    virNetworkDefPtr newDef = NULL;
+
+    if (!def) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("NULL NetworkDef"));
+        return NULL;
+    }
+
+    /* deep copy with a format/parse cycle */
+    if (!(xml = virNetworkDefFormat(def, flags)))
+        goto cleanup;
+    newDef = virNetworkDefParseString(xml);
+cleanup:
+    VIR_FREE(xml);
+    return newDef;
+}
+
+/*
+ * virNetworkConfigChangeSetup:
+ *
+ * 1) checks whether network state is consistent with the requested
+ *    type of modification.
+ *
+ * 3) make sure there are separate "def" and "newDef" copies of
+ *    networkDef if appropriate.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virNetworkConfigChangeSetup(virNetworkObjPtr network, unsigned int flags)
+{
+    bool isActive;
+    int ret = -1;
+
+    isActive = virNetworkObjIsActive(network);
+
+    if (!isActive && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("network is not running"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
+        if (!network->persistent) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot change persistent config of a "
+                             "transient network"));
+            goto cleanup;
+        }
+        /* this should already have been done by the driver, but do it
+         * anyway just in case.
+         */
+        if (isActive && (virNetworkObjSetDefTransient(network, false) < 0))
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
 }
 
 void virNetworkRemoveInactive(virNetworkObjListPtr nets,
@@ -1791,7 +1989,7 @@ int virNetworkSaveConfig(const char *configDir,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virNetworkDefFormat(def, 0)))
+    if (!(xml = virNetworkDefFormat(def, VIR_NETWORK_XML_INACTIVE)))
         goto cleanup;
 
     if (virNetworkSaveXML(configDir, def, xml))
@@ -1803,6 +2001,24 @@ cleanup:
     return ret;
 }
 
+
+int virNetworkSaveStatus(const char *statusDir,
+                         virNetworkObjPtr network)
+{
+    int ret = -1;
+    char *xml;
+
+    if (!(xml = virNetworkDefFormat(network->def, 0)))
+        goto cleanup;
+
+    if (virNetworkSaveXML(statusDir, network->def, xml))
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
 
 virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *configDir,
@@ -1844,7 +2060,7 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
             goto error;
     }
 
-    if (!(net = virNetworkAssignDef(nets, def)))
+    if (!(net = virNetworkAssignDef(nets, def, false)))
         goto error;
 
     net->autostart = autostart;

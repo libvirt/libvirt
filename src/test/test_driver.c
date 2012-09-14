@@ -579,7 +579,7 @@ static int testOpenDefault(virConnectPtr conn) {
 
     if (!(netdef = virNetworkDefParseString(defaultNetworkXML)))
         goto error;
-    if (!(netobj = virNetworkAssignDef(&privconn->networks, netdef))) {
+    if (!(netobj = virNetworkAssignDef(&privconn->networks, netdef, false))) {
         virNetworkDefFree(netdef);
         goto error;
     }
@@ -948,8 +948,7 @@ static int testOpenFromFile(virConnectPtr conn,
             if ((def = virNetworkDefParseNode(xml, networks[i])) == NULL)
                 goto error;
         }
-        if (!(net = virNetworkAssignDef(&privconn->networks,
-                                        def))) {
+        if (!(net = virNetworkAssignDef(&privconn->networks, def, false))) {
             virNetworkDefFree(def);
             goto error;
         }
@@ -3112,7 +3111,7 @@ static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(&privconn->networks, def)) == NULL)
+    if (!(net = virNetworkAssignDef(&privconn->networks, def, false)))
         goto cleanup;
     def = NULL;
     net->active = 1;
@@ -3137,7 +3136,7 @@ static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(&privconn->networks, def)) == NULL)
+    if (!(net = virNetworkAssignDef(&privconn->networks, def, false)))
         goto cleanup;
     def = NULL;
     net->persistent = 1;

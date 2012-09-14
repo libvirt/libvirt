@@ -839,6 +839,8 @@ virNetDevVPortTypeToString;
 # network_conf.h
 virNetworkAssignDef;
 virNetworkConfigFile;
+virNetworkConfigChangeSetup;
+virNetworkDefCopy;
 virNetworkDefFormat;
 virNetworkDefFree;
 virNetworkDefGetIpByIndex;
@@ -852,15 +854,21 @@ virNetworkIpDefNetmask;
 virNetworkIpDefPrefix;
 virNetworkList;
 virNetworkLoadAllConfigs;
+virNetworkObjAssignDef;
+virNetworkObjFree;
+virNetworkObjGetPersistentDef;
 virNetworkObjIsDuplicate;
 virNetworkObjListFree;
 virNetworkObjLock;
+virNetworkObjReplacePersistentDef;
+virNetworkObjSetDefTransient;
 virNetworkObjUnlock;
-virNetworkObjFree;
 virNetworkRemoveInactive;
 virNetworkSaveConfig;
+virNetworkSaveStatus;
 virNetworkSetBridgeMacAddr;
 virNetworkSetBridgeName;
+virNetworkSetDefTransient;
 virPortGroupFindByName;
 
 
