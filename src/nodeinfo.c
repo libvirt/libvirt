@@ -48,6 +48,7 @@
 #include "count-one-bits.h"
 #include "intprops.h"
 #include "virfile.h"
+#include "virtypedparam.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -57,6 +58,7 @@
 # define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define PROCSTAT_PATH "/proc/stat"
 # define MEMINFO_PATH "/proc/meminfo"
+# define SYSFS_MEMORY_SHARED_PATH "/sys/kernel/mm/ksm"
 
 # define LINUX_NB_CPU_STATS 4
 # define LINUX_NB_MEMORY_STATS_ALL 4
@@ -930,6 +932,253 @@ nodeGetCPUmap(virConnectPtr conn ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node cpumap not implemented on this platform"));
     return NULL;
+#endif
+}
+
+static int
+nodeSetMemoryParameterValue(const char *field,
+                            virTypedParameterPtr param)
+{
+    char *path = NULL;
+    char *strval = NULL;
+    int ret = -1;
+    int rc = -1;
+
+    if (virAsprintf(&path, "%s/%s",
+                    SYSFS_MEMORY_SHARED_PATH, field) < 0) {
+        virReportOOMError();
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (virAsprintf(&strval, "%u", param->value.ui) == -1) {
+        virReportOOMError();
+        ret = -2;
+        goto cleanup;
+    }
+
+    if ((rc = virFileWriteStr(path, strval, 0)) < 0) {
+        virReportSystemError(-rc, _("failed to set %s"), field);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    VIR_FREE(strval);
+    return ret;
+}
+
+int
+nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virTypedParameterPtr params,
+                        int nparams,
+                        unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+#ifdef __linux__
+    int ret = 0;
+    int i;
+
+    if (virTypedParameterArrayValidate(params, nparams,
+                                       VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
+                                       VIR_TYPED_PARAM_UINT,
+                                       VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
+                                       VIR_TYPED_PARAM_UINT,
+                                       NULL) < 0)
+        return -1;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field,
+                  VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN)) {
+            ret = nodeSetMemoryParameterValue("pages_to_scan", param);
+
+            /* Out of memory */
+            if (ret == -2)
+                return -1;
+        } else if (STREQ(param->field,
+                         VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS)) {
+            ret = nodeSetMemoryParameterValue("sleep_millisecs", param);
+
+            /* Out of memory */
+            if (ret == -2)
+                return -1;
+        }
+    }
+
+    return ret;
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node set memory parameters not implemented"
+                     " on this platform"));
+    return -1;
+#endif
+}
+
+static int
+nodeGetMemoryParameterValue(const char *field,
+                            void *value)
+{
+    char *path = NULL;
+    char *buf = NULL;
+    char *tmp = NULL;
+    int ret = -1;
+    int rc = -1;
+
+    if (virAsprintf(&path, "%s/%s",
+                    SYSFS_MEMORY_SHARED_PATH, field) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, 1024, &buf) < 0)
+        goto cleanup;
+
+    if ((tmp = strchr(buf, '\n')))
+        *tmp = '\0';
+
+    if (STREQ(field, "pages_to_scan") ||
+        STREQ(field, "sleep_millisecs"))
+        rc = virStrToLong_ui(buf, NULL, 10, (unsigned int *)value);
+    else if (STREQ(field, "pages_shared")    ||
+             STREQ(field, "pages_sharing")   ||
+             STREQ(field, "pages_unshared")  ||
+             STREQ(field, "pages_volatile")  ||
+             STREQ(field, "full_scans"))
+        rc = virStrToLong_ull(buf, NULL, 10, (unsigned long long *)value);
+
+    if (rc < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse %s"), field);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(path);
+    VIR_FREE(buf);
+    return ret;
+}
+
+#define NODE_MEMORY_PARAMETERS_NUM 7
+int
+nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virTypedParameterPtr params,
+                        int *nparams,
+                        unsigned int flags)
+{
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+#ifdef __linux__
+    unsigned int pages_to_scan;
+    unsigned int sleep_millisecs;
+    unsigned long long pages_shared;
+    unsigned long long pages_sharing;
+    unsigned long long pages_unshared;
+    unsigned long long pages_volatile;
+    unsigned long long full_scans = 0;
+    int i;
+
+    if ((*nparams) == 0) {
+        *nparams = NODE_MEMORY_PARAMETERS_NUM;
+        return 0;
+    }
+
+    for (i = 0; i < *nparams && i < NODE_MEMORY_PARAMETERS_NUM; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        switch(i) {
+        case 0:
+            if (nodeGetMemoryParameterValue("pages_to_scan",
+                                            &pages_to_scan) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
+                                        VIR_TYPED_PARAM_UINT, pages_to_scan) < 0)
+                return -1;
+
+            break;
+
+        case 1:
+            if (nodeGetMemoryParameterValue("sleep_millisecs",
+                                            &sleep_millisecs) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
+                                        VIR_TYPED_PARAM_UINT, sleep_millisecs) < 0)
+                return -1;
+
+            break;
+
+        case 2:
+            if (nodeGetMemoryParameterValue("pages_shared",
+                                            &pages_shared) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_SHARED,
+                                        VIR_TYPED_PARAM_ULLONG, pages_shared) < 0)
+                return -1;
+
+            break;
+
+        case 3:
+            if (nodeGetMemoryParameterValue("pages_sharing",
+                                            &pages_sharing) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_SHARING,
+                                        VIR_TYPED_PARAM_ULLONG, pages_sharing) < 0)
+                return -1;
+
+            break;
+
+        case 4:
+            if (nodeGetMemoryParameterValue("pages_unshared",
+                                            &pages_unshared) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED,
+                                        VIR_TYPED_PARAM_ULLONG, pages_unshared) < 0)
+                return -1;
+
+            break;
+
+        case 5:
+            if (nodeGetMemoryParameterValue("pages_volatile",
+                                            &pages_volatile) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE,
+                                        VIR_TYPED_PARAM_ULLONG, pages_volatile) < 0)
+                return -1;
+
+            break;
+
+        case 6:
+            if (nodeGetMemoryParameterValue("full_scans",
+                                            &full_scans) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_FULL_SCANS,
+                                        VIR_TYPED_PARAM_ULLONG, full_scans) < 0)
+                return -1;
+
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return 0;
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node get memory parameters not implemented"
+                     " on this platform"));
+    return -1;
 #endif
 }
 

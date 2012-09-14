@@ -49,4 +49,14 @@ unsigned long long nodeGetFreeMemory(virConnectPtr conn);
 char *nodeGetCPUmap(virConnectPtr conn,
                     int *max_id,
                     const char *mapname);
+
+int nodeGetMemoryParameters(virConnectPtr conn,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags);
+
+int nodeSetMemoryParameters(virConnectPtr conn,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags);
 #endif /* __VIR_NODEINFO_H__*/

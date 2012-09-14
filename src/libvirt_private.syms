@@ -883,7 +883,9 @@ nodeGetCPUStats;
 nodeGetCellsFreeMemory;
 nodeGetFreeMemory;
 nodeGetInfo;
+nodeGetMemoryParameters;
 nodeGetMemoryStats;
+nodeSetMemoryParameters;
 
 
 # nwfilter_conf.h
