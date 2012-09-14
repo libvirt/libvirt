@@ -2623,6 +2623,8 @@ static virDriver umlDriver = {
     .domainOpenConsole = umlDomainOpenConsole, /* 0.8.6 */
     .isAlive = umlIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
+    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
 };
 
 static virStateDriver umlStateDriver = {

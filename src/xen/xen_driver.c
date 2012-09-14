@@ -64,6 +64,7 @@
 #include "viruri.h"
 #include "command.h"
 #include "virnodesuspend.h"
+#include "nodeinfo.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -2269,6 +2270,8 @@ static virDriver xenUnifiedDriver = {
     .domainOpenConsole = xenUnifiedDomainOpenConsole, /* 0.8.6 */
     .isAlive = xenUnifiedIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
+    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
 };
 
 /**
