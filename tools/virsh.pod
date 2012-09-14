@@ -293,6 +293,14 @@ Real-Time-Clock interrupt to fire (to wake up the node) after a time delay
 specified by the 'duration' parameter. The duration time should be
 at least 60 seconds.
 
+=item B<node-memory-tune> [I<shm-pages-to-scan>] [I<shm-sleep-millisecs>]
+
+Allows you to display or set the node memory parameters.
+I<shm-pages-to-scan> can be used to set the number of pages to scan
+before the shared memory service goes to sleep; I<shm-sleep-millisecs>
+can be used to set the number of millisecs the shared memory service should
+sleep before next scan.
+
 =item B<capabilities>
 
 Print an XML document describing the capabilities of the hypervisor
