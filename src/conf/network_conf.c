@@ -245,6 +245,11 @@ virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
         return network;
     }
 
+    if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
     if (VIR_ALLOC(network) < 0) {
         virReportOOMError();
         return NULL;
@@ -257,12 +262,6 @@ virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
     }
     virNetworkObjLock(network);
     network->def = def;
-
-    if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
-        virReportOOMError();
-        VIR_FREE(network);
-        return NULL;
-    }
 
     nets->objs[nets->count] = network;
     nets->count++;
