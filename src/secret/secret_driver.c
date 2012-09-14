@@ -601,7 +601,6 @@ cleanup:
     return -1;
 }
 
-
 static const char *
 secretUsageIDForDef(virSecretDefPtr def)
 {
@@ -619,6 +618,86 @@ secretUsageIDForDef(virSecretDefPtr def)
         return NULL;
     }
 }
+
+#define MATCH(FLAG) (flags & (FLAG))
+static int
+secretListAllSecrets(virConnectPtr conn,
+                     virSecretPtr **secrets,
+                     unsigned int flags) {
+    virSecretDriverStatePtr driver = conn->secretPrivateData;
+    virSecretPtr *tmp_secrets = NULL;
+    int nsecrets = 0;
+    int ret_nsecrets = 0;
+    virSecretPtr secret = NULL;
+    virSecretEntryPtr entry = NULL;
+    int i = 0;
+    int ret = -1;
+
+    virCheckFlags(VIR_CONNECT_LIST_SECRETS_FILTERS_ALL, -1);
+
+    secretDriverLock(driver);
+
+    for (entry = driver->secrets; entry != NULL; entry = entry->next)
+        nsecrets++;
+
+    if (secrets) {
+        if (VIR_ALLOC_N(tmp_secrets, nsecrets + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    for (entry = driver->secrets; entry != NULL; entry = entry->next) {
+        /* filter by whether it's ephemeral */
+        if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
+            !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
+               entry->def->ephemeral) ||
+              (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
+               !entry->def->ephemeral)))
+            continue;
+
+        /* filter by whether it's private */
+        if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
+            !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
+               entry->def->private) ||
+              (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
+               !entry->def->private)))
+            continue;
+
+        if (secrets) {
+            if (!(secret = virGetSecret(conn,
+                                        entry->def->uuid,
+                                        entry->def->usage_type,
+                                        secretUsageIDForDef(entry->def))))
+                goto cleanup;
+            tmp_secrets[ret_nsecrets] = secret;
+        }
+        ret_nsecrets++;
+    }
+
+    if (tmp_secrets) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(tmp_secrets, ret_nsecrets + 1));
+        *secrets = tmp_secrets;
+        tmp_secrets = NULL;
+    }
+
+    ret = ret_nsecrets;
+
+ cleanup:
+    secretDriverUnlock(driver);
+    if (tmp_secrets) {
+        for (i = 0; i < ret_nsecrets; i ++) {
+            if (tmp_secrets[i])
+                virSecretFree(tmp_secrets[i]);
+        }
+    }
+    VIR_FREE(tmp_secrets);
+
+    return ret;
+}
+#undef MATCH
+
 
 static virSecretPtr
 secretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -1072,6 +1151,7 @@ static virSecretDriver secretDriver = {
     .close = secretClose, /* 0.7.1 */
     .numOfSecrets = secretNumOfSecrets, /* 0.7.1 */
     .listSecrets = secretListSecrets, /* 0.7.1 */
+    .listAllSecrets = secretListAllSecrets, /* 0.10.2 */
     .lookupByUUID = secretLookupByUUID, /* 0.7.1 */
     .lookupByUsage = secretLookupByUsage, /* 0.7.1 */
     .defineXML = secretDefineXML, /* 0.7.1 */
