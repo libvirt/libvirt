@@ -13502,8 +13502,8 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
                          int start_cpu,
                          unsigned int ncpus)
 {
-    char *map = NULL;
-    char *map2 = NULL;
+    virBitmapPtr map = NULL;
+    virBitmapPtr map2 = NULL;
     int rv = -1;
     int i, id, max_id;
     char *pos;
@@ -13515,6 +13515,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
+    bool result;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0)
@@ -13553,7 +13554,9 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
         id = start_cpu + ncpus - 1;
 
     for (i = 0; i <= id; i++) {
-        if (!map[i]) {
+        if (virBitmapGetBit(map, i, &result) < 0)
+            goto cleanup;
+        if (!result) {
             cpu_time = 0;
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -13585,7 +13588,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
 
     /* Check that the mapping of online cpus didn't change mid-parse.  */
     map2 = nodeGetCPUmap(domain->conn, &max_id, "present");
-    if (!map2 || memcmp(map, map2, VIR_DOMAIN_CPUMASK_LEN) != 0) {
+    if (!map2 || !virBitmapEqual(map, map2)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("the set of online cpus changed while reading"));
         goto cleanup;
@@ -13593,7 +13596,9 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
 
     sum_cpu_pos = sum_cpu_time;
     for (i = 0; i <= id; i++) {
-        if (!map[i])
+        if (virBitmapGetBit(map, i, &result) < 0)
+            goto cleanup;
+        if (!result)
             cpu_time = 0;
         else
             cpu_time = *(sum_cpu_pos++);
@@ -13611,8 +13616,8 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
 cleanup:
     VIR_FREE(sum_cpu_time);
     VIR_FREE(buf);
-    VIR_FREE(map);
-    VIR_FREE(map2);
+    virBitmapFree(map);
+    virBitmapFree(map2);
     return rv;
 }
 

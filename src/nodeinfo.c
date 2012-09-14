@@ -739,10 +739,10 @@ cleanup:
  * and max cpu is 7. The map file shows 0-4,6-7. This function parses
  * it and returns cpumap.
  */
-static char *
+static virBitmapPtr
 linuxParseCPUmap(int *max_cpuid, const char *path)
 {
-    char *map = NULL;
+    virBitmapPtr map = NULL;
     char *str = NULL;
     int max_id = 0, i;
 
@@ -751,20 +751,16 @@ linuxParseCPUmap(int *max_cpuid, const char *path)
         goto error;
     }
 
-    if (VIR_ALLOC_N(map, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-        virReportOOMError();
-        goto error;
-    }
-    if (virDomainCpuSetParse(str, 0, map,
-                             VIR_DOMAIN_CPUMASK_LEN) < 0) {
+    if (virBitmapParse(str, 0, &map,
+                       VIR_DOMAIN_CPUMASK_LEN) < 0) {
         goto error;
     }
 
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (map[i]) {
-            max_id = i;
-        }
+    i = -1;
+    while ((i = virBitmapNextSetBit(map, i)) >= 0) {
+        max_id = i;
     }
+
     *max_cpuid = max_id;
 
     VIR_FREE(str);
@@ -772,7 +768,7 @@ linuxParseCPUmap(int *max_cpuid, const char *path)
 
 error:
     VIR_FREE(str);
-    VIR_FREE(map);
+    virBitmapFree(map);
     return NULL;
 }
 #endif
@@ -911,14 +907,14 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
-char *
+virBitmapPtr
 nodeGetCPUmap(virConnectPtr conn ATTRIBUTE_UNUSED,
               int *max_id ATTRIBUTE_UNUSED,
               const char *mapname ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
     char *path;
-    char *cpumap;
+    virBitmapPtr cpumap;
 
     if (virAsprintf(&path, SYSFS_SYSTEM_PATH "/cpu/%s", mapname) < 0) {
         virReportOOMError();
