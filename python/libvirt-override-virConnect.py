@@ -266,3 +266,15 @@
             retlist.append(virNWFilter(self, _obj=filter_ptr))
 
         return retlist
+
+    def listAllSecrets(self, flags):
+        """Returns a list of secret objects"""
+        ret = libvirtmod.virConnectListAllSecrets(self._o, flags)
+        if ret is None:
+            raise libvirtError("virConnectListAllSecrets() failed", conn=self)
+
+        retlist = list()
+        for secret_ptr in ret:
+            retlist.append(virSecret(self, _obj=secret_ptr))
+
+        return retlist

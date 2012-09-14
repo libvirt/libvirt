@@ -368,6 +368,12 @@
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <return type='str *' info='the list of secret IDs or None in case of error'/>
     </function>
+    <function name='virConnectListAllSecrets' file='python'>
+      <info>returns list of all interfaces</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='unsigned int' info='optional flags'/>
+      <return type='secret *' info='the list of secrets or None in case of error'/>
+    </function>
     <function name='virSecretSetValue' file='libvirt' module='libvirt'>
       <info>Associates a value with a secret.</info>
       <return type='int' info='0 on success, -1 on failure.'/>
