@@ -7655,7 +7655,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
         else if (*p == '+' || *p == '-') {
             char *feature;
             int policy;
-            int ret;
+            int ret = 0;
 
             if (*p == '+')
                 policy = VIR_CPU_FEATURE_REQUIRE;
@@ -7702,7 +7702,6 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                     goto error;
                 }
                 dom->clock.timers[i]->present = present;
-                ret = 0;
             } else if (STREQ(feature, "kvm_pv_eoi")) {
                 if (policy == VIR_CPU_FEATURE_REQUIRE)
                     dom->apic_eoi = VIR_DOMAIN_APIC_EOI_ON;
