@@ -111,6 +111,13 @@ virNetworkForwardPfDefClear(virNetworkForwardPfDefPtr def)
     VIR_FREE(def->dev);
 }
 
+static void
+virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
+{
+    VIR_FREE(def->mac);
+    VIR_FREE(def->name);
+}
+
 static void virNetworkIpDefClear(virNetworkIpDefPtr def)
 {
     int ii;
@@ -118,10 +125,8 @@ static void virNetworkIpDefClear(virNetworkIpDefPtr def)
     VIR_FREE(def->family);
     VIR_FREE(def->ranges);
 
-    for (ii = 0 ; ii < def->nhosts && def->hosts ; ii++) {
-        VIR_FREE(def->hosts[ii].mac);
-        VIR_FREE(def->hosts[ii].name);
-    }
+    for (ii = 0 ; ii < def->nhosts && def->hosts ; ii++)
+        virNetworkDHCPHostDefClear(&def->hosts[ii]);
 
     VIR_FREE(def->hosts);
     VIR_FREE(def->tftproot);
@@ -370,9 +375,140 @@ int virNetworkIpDefNetmask(const virNetworkIpDefPtr def,
 
 
 static int
-virNetworkDHCPRangeDefParseXML(const char *networkName,
-                               virNetworkIpDefPtr def,
-                               xmlNodePtr node)
+virNetworkDHCPRangeDefParse(const char *networkName,
+                            xmlNodePtr node,
+                            virNetworkDHCPRangeDefPtr range)
+{
+
+
+    char *start = NULL, *end = NULL;
+    int ret = -1;
+
+    if (!(start = virXMLPropString(node, "start"))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing 'start' attribute in dhcp range for network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+    if (virSocketAddrParse(&range->start, start, AF_UNSPEC) < 0)
+        goto cleanup;
+
+    if (!(end = virXMLPropString(node, "end"))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing 'end' attribute in dhcp range for network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+    if (virSocketAddrParse(&range->end, end, AF_UNSPEC) < 0)
+        goto cleanup;
+
+    /* do a sanity check of the range */
+    if (virSocketAddrGetRange(&range->start, &range->end) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid dhcp range '%s' to '%s' in network '%s'"),
+                       start, end, networkName);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(start);
+    VIR_FREE(end);
+    return ret;
+}
+
+static int
+virNetworkDHCPHostDefParse(const char *networkName,
+                           xmlNodePtr node,
+                           virNetworkDHCPHostDefPtr host,
+                           bool partialOkay)
+{
+    char *mac = NULL, *name = NULL, *ip = NULL;
+    virMacAddr addr;
+    virSocketAddr inaddr;
+    int ret = -1;
+
+    mac = virXMLPropString(node, "mac");
+    if (mac != NULL) {
+        if (virMacAddrParse(mac, &addr) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Cannot parse MAC address '%s' in network '%s'"),
+                           mac, networkName);
+            goto cleanup;
+        }
+        if (virMacAddrIsMulticast(&addr)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("expected unicast mac address, found "
+                             "multicast '%s' in network '%s'"),
+                           (const char *)mac, networkName);
+            goto cleanup;
+        }
+    }
+
+    name = virXMLPropString(node, "name");
+    if (name && (!c_isalpha(name[0]))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Cannot use name address '%s' in network '%s'"),
+                       name, networkName);
+        goto cleanup;
+    }
+
+    ip = virXMLPropString(node, "ip");
+    if (ip && (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid IP address in static host definition "
+                         "for network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+
+    if (partialOkay) {
+        /* for search/match, you just need one of the three */
+        if (!(mac || name || ip)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("At least one of name, mac, or ip attribute "
+                             "must be specified for static host definition "
+                             "in network '%s' "),
+                           networkName);
+        }
+    } else {
+        /* normal usage - you need at least one MAC address or one host name */
+        if (!(mac || name)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Static host definition in network '%s' "
+                             "must have mac or name attribute"),
+                           networkName);
+            goto cleanup;
+        }
+        if (!ip) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing IP address in static host definition "
+                             "for network '%s'"),
+                           networkName);
+            goto cleanup;
+        }
+    }
+
+    host->mac = mac;
+    mac = NULL;
+    host->name = name;
+    name = NULL;
+    if (ip)
+        host->ip = inaddr;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(mac);
+    VIR_FREE(name);
+    VIR_FREE(ip);
+    return ret;
+}
+
+static int
+virNetworkDHCPDefParse(const char *networkName,
+                       virNetworkIpDefPtr def,
+                       xmlNodePtr node)
 {
 
     xmlNodePtr cur;
@@ -381,112 +517,29 @@ virNetworkDHCPRangeDefParseXML(const char *networkName,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "range")) {
-            char *start, *end;
-            virSocketAddr saddr, eaddr;
-            int range;
-
-            if (!(start = virXMLPropString(cur, "start"))) {
-                cur = cur->next;
-                continue;
-            }
-            if (!(end = virXMLPropString(cur, "end"))) {
-                VIR_FREE(start);
-                cur = cur->next;
-                continue;
-            }
-
-            if (virSocketAddrParse(&saddr, start, AF_UNSPEC) < 0) {
-                VIR_FREE(start);
-                VIR_FREE(end);
-                return -1;
-            }
-            if (virSocketAddrParse(&eaddr, end, AF_UNSPEC) < 0) {
-                VIR_FREE(start);
-                VIR_FREE(end);
-                return -1;
-            }
-
-            range = virSocketAddrGetRange(&saddr, &eaddr);
-            if (range < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid dhcp range '%s' to '%s' in network '%s'"),
-                               start, end, networkName);
-                VIR_FREE(start);
-                VIR_FREE(end);
-                return -1;
-            }
-            VIR_FREE(start);
-            VIR_FREE(end);
 
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
                 virReportOOMError();
                 return -1;
             }
-            def->ranges[def->nranges].start = saddr;
-            def->ranges[def->nranges].end = eaddr;
+            if (virNetworkDHCPRangeDefParse(networkName, cur,
+                                            &def->ranges[def->nranges]) < 0) {
+                return -1;
+            }
             def->nranges++;
+
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
-            char *mac = NULL, *name = NULL, *ip;
-            virMacAddr addr;
-            virSocketAddr inaddr;
 
-            mac = virXMLPropString(cur, "mac");
-            if (mac != NULL) {
-                if (virMacAddrParse(mac, &addr) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("Cannot parse MAC address '%s' in network '%s'"),
-                                   mac, networkName);
-                    VIR_FREE(mac);
-                    return -1;
-                }
-                if (virMacAddrIsMulticast(&addr)) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("expected unicast mac address, found multicast '%s' in network '%s'"),
-                                   (const char *)mac, networkName);
-                    VIR_FREE(mac);
-                    return -1;
-                }
-            }
-            name = virXMLPropString(cur, "name");
-            if ((name != NULL) && (!c_isalpha(name[0]))) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Cannot use name address '%s' in network '%s'"),
-                               name, networkName);
-                VIR_FREE(mac);
-                VIR_FREE(name);
-                return -1;
-            }
-            /*
-             * You need at least one MAC address or one host name
-             */
-            if ((mac == NULL) && (name == NULL)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Static host definition in network '%s' must have mac or name attribute"),
-                               networkName);
-                return -1;
-            }
-            ip = virXMLPropString(cur, "ip");
-            if ((ip == NULL) ||
-                (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Missing IP address in static host definition for network '%s'"),
-                               networkName);
-                VIR_FREE(ip);
-                VIR_FREE(mac);
-                VIR_FREE(name);
-                return -1;
-            }
-            VIR_FREE(ip);
             if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
-                VIR_FREE(mac);
-                VIR_FREE(name);
                 virReportOOMError();
                 return -1;
             }
-            def->hosts[def->nhosts].mac = mac;
-            def->hosts[def->nhosts].name = name;
-            def->hosts[def->nhosts].ip = inaddr;
+            if (virNetworkDHCPHostDefParse(networkName, cur,
+                                           &def->hosts[def->nhosts],
+                                           false) < 0) {
+                return -1;
+            }
             def->nhosts++;
 
         } else if (cur->type == XML_ELEMENT_NODE &&
@@ -853,7 +906,7 @@ virNetworkIPParseXML(const char *networkName,
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE &&
                 xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
-                result = virNetworkDHCPRangeDefParseXML(networkName, def, cur);
+                result = virNetworkDHCPDefParse(networkName, def, cur);
                 if (result)
                     goto error;
 
