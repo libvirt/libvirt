@@ -854,7 +854,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         char **poolTypes = NULL;
         int npoolTypes = 0;
 
-        npoolTypes = vshStringToArray((char *)type, &poolTypes);
+        npoolTypes = vshStringToArray(type, &poolTypes);
 
         for (i = 0; i < npoolTypes; i++) {
             if ((poolType = virStoragePoolTypeFromString(poolTypes[i])) < 0) {
@@ -895,7 +895,10 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                 break;
             }
         }
-        VIR_FREE(poolTypes);
+        if (poolTypes) {
+            VIR_FREE(*poolTypes);
+            VIR_FREE(poolTypes);
+        }
     }
 
     if (!(list = vshStoragePoolListCollect(ctl, flags)))

@@ -2336,8 +2336,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     /* list of volumes to remove along with this domain */
     vshUndefineVolume *vlist = NULL;
     int nvols = 0;
-    const char *volumes_arg = NULL;
-    char *volumes = NULL;
+    const char *volumes = NULL;
     char **volume_tokens = NULL;
     char *volume_tok = NULL;
     int nvolume_tokens = 0;
@@ -2352,8 +2351,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     int nvolumes = 0;
     bool vol_not_found = false;
 
-    ignore_value(vshCommandOptString(cmd, "storage", &volumes_arg));
-    volumes = vshStrdup(ctl, volumes_arg);
+    ignore_value(vshCommandOptString(cmd, "storage", &volumes));
 
     if (managed_save) {
         flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
@@ -2605,8 +2603,10 @@ cleanup:
     }
     VIR_FREE(vlist);
 
-    VIR_FREE(volumes);
-    VIR_FREE(volume_tokens);
+    if (volume_tokens) {
+        VIR_FREE(*volume_tokens);
+        VIR_FREE(volume_tokens);
+    }
     VIR_FREE(def);
     VIR_FREE(vol_nodes);
     xmlFreeDoc(doc);

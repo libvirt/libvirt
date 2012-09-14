@@ -174,19 +174,20 @@ vshPrettyCapacity(unsigned long long val, const char **unit)
  * on error.
  */
 int
-vshStringToArray(char *str,
+vshStringToArray(const char *str,
                  char ***array)
 {
+    char *str_copied = vshStrdup(NULL, str);
     char *str_tok = NULL;
     unsigned int nstr_tokens = 0;
     char **arr = NULL;
 
     /* tokenize the string from user and save it's parts into an array */
-    if (str) {
+    if (str_copied) {
         nstr_tokens = 1;
 
         /* count the delimiters */
-        str_tok = str;
+        str_tok = str_copied;
         while (*str_tok) {
             if (*str_tok == ',')
                 nstr_tokens++;
@@ -195,12 +196,13 @@ vshStringToArray(char *str,
 
         if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
             virReportOOMError();
+            VIR_FREE(str_copied);
             return -1;
         }
 
         /* tokenize the input string */
         nstr_tokens = 0;
-        str_tok = str;
+        str_tok = str_copied;
         do {
             arr[nstr_tokens] = strsep(&str_tok, ",");
             nstr_tokens++;
