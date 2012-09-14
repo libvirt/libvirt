@@ -92,6 +92,7 @@
 #include "virnodesuspend.h"
 #include "virtime.h"
 #include "virtypedparam.h"
+#include "bitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3715,10 +3716,10 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     virNodeInfo nodeinfo;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    bool canResetting = true;
+    bool doReset = false;
     int newVcpuPinNum = 0;
     virDomainVcpuPinDefPtr *newVcpuPin = NULL;
-    int pcpu;
+    virBitmapPtr pcpumap = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -3754,15 +3755,16 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
+
+    pcpumap = virBitmapNewData(cpumap, maplen);
+    if (!pcpumap)
+        goto cleanup;
+
     /* pinning to all physical cpus means resetting,
      * so check if we can reset setting.
      */
-    for (pcpu = 0; pcpu < hostcpus; pcpu++) {
-        if ((cpumap[pcpu/8] & (1 << (pcpu % 8))) == 0) {
-            canResetting = false;
-            break;
-        }
-    }
+    if (virBitmapIsAllSet(pcpumap))
+        doReset = true;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
@@ -3805,8 +3807,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
                 goto cleanup;
             }
         } else {
-            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
-                                          cpumap, maplen, maxcpu) < 0) {
+            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu], pcpumap) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("failed to set cpu affinity for vcpu %d"),
                                vcpu);
@@ -3814,7 +3815,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
             }
         }
 
-        if (canResetting) {
+        if (doReset) {
             if (virDomainVcpuPinDel(vm->def, vcpu) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to delete vcpupin xml of "
@@ -3839,7 +3840,7 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
-        if (canResetting) {
+        if (doReset) {
             if (virDomainVcpuPinDel(persistentDef, vcpu) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to delete vcpupin xml of "
@@ -3879,6 +3880,7 @@ cleanup:
         virCgroupFree(&cgroup_dom);
     if (vm)
         virDomainObjUnlock(vm);
+    virBitmapFree(pcpumap);
     return ret;
 }
 
@@ -3997,10 +3999,10 @@ qemudDomainPinEmulator(virDomainPtr dom,
     virNodeInfo nodeinfo;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    bool canResetting = true;
-    int pcpu;
+    bool doReset = false;
     int newVcpuPinNum = 0;
     virDomainVcpuPinDefPtr *newVcpuPin = NULL;
+    virBitmapPtr pcpumap = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -4029,15 +4031,16 @@ qemudDomainPinEmulator(virDomainPtr dom,
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
+
+    pcpumap = virBitmapNewData(cpumap, maplen);
+    if (!pcpumap)
+        goto cleanup;
+
     /* pinning to all physical cpus means resetting,
      * so check if we can reset setting.
      */
-    for (pcpu = 0; pcpu < hostcpus; pcpu++) {
-        if ((cpumap[pcpu/8] & (1 << (pcpu % 8))) == 0) {
-            canResetting = false;
-            break;
-        }
-    }
+    if (virBitmapIsAllSet(pcpumap))
+        doReset = true;
 
     pid = vm->pid;
 
@@ -4075,7 +4078,7 @@ qemudDomainPinEmulator(virDomainPtr dom,
                     }
                 }
             } else {
-                if (virProcessInfoSetAffinity(pid, cpumap, maplen, maxcpu) < 0) {
+                if (virProcessInfoSetAffinity(pid, pcpumap) < 0) {
                     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                                    _("failed to set cpu affinity for "
                                      "emulator threads"));
@@ -4083,7 +4086,7 @@ qemudDomainPinEmulator(virDomainPtr dom,
                 }
             }
 
-            if (canResetting) {
+            if (doReset) {
                 if (virDomainEmulatorPinDel(vm->def) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("failed to delete emulatorpin xml of "
@@ -4110,7 +4113,7 @@ qemudDomainPinEmulator(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
-        if (canResetting) {
+        if (doReset) {
             if (virDomainEmulatorPinDel(persistentDef) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to delete emulatorpin xml of "
@@ -4137,6 +4140,7 @@ cleanup:
         virCgroupFree(&cgroup_emulator);
     if (cgroup_dom)
         virCgroupFree(&cgroup_dom);
+    virBitmapFree(pcpumap);
 
     if (vm)
         virDomainObjUnlock(vm);
@@ -4291,10 +4295,20 @@ qemudDomainGetVcpus(virDomainPtr dom,
             if (priv->vcpupids != NULL) {
                 for (v = 0 ; v < maxinfo ; v++) {
                     unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+                    virBitmapPtr map = NULL;
+                    unsigned char *tmpmap = NULL;
+                    int tmpmapLen = 0;
 
                     if (virProcessInfoGetAffinity(priv->vcpupids[v],
-                                                  cpumap, maplen, maxcpu) < 0)
+                                                  &map, maxcpu) < 0)
                         goto cleanup;
+                    virBitmapToData(map, &tmpmap, &tmpmapLen);
+                    if (tmpmapLen > maplen)
+                        tmpmapLen = maplen;
+                    memcpy(cpumap, tmpmap, tmpmapLen);
+
+                    VIR_FREE(tmpmap);
+                    virBitmapFree(map);
                 }
             } else {
                 virReportError(VIR_ERR_OPERATION_INVALID,

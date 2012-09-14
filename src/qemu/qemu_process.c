@@ -1853,8 +1853,7 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     int ret = -1;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
-    unsigned char *cpumap;
-    int cpumaplen;
+    virBitmapPtr cpumap;
 
     VIR_DEBUG("Setting CPU affinity");
 
@@ -1867,8 +1866,8 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
-    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+    cpumap = virBitmapNew(maxcpu);
+    if (!cpumap) {
         virReportOOMError();
         return -1;
     }
@@ -1881,7 +1880,8 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
             int cur_ncpus = driver->caps->host.numaCell[i]->ncpus;
             if (nodemask[i]) {
                 for (j = 0; j < cur_ncpus; j++)
-                    VIR_USE_CPU(cpumap, driver->caps->host.numaCell[i]->cpus[j]);
+                    ignore_value(virBitmapSetBit(cpumap,
+                                                 driver->caps->host.numaCell[i]->cpus[j]));
             }
         }
     } else {
@@ -1891,14 +1891,13 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
              * format to start with ?!?! */
             for (i = 0 ; i < maxcpu && i < vm->def->cpumasklen ; i++)
                 if (vm->def->cpumask[i])
-                    VIR_USE_CPU(cpumap, i);
+                    ignore_value(virBitmapSetBit(cpumap, i));
         } else {
             /* You may think this is redundant, but we can't assume libvirtd
              * itself is running on all pCPUs, so we need to explicitly set
              * the spawned QEMU instance to all pCPUs if no map is given in
              * its config file */
-            for (i = 0 ; i < maxcpu ; i++)
-                VIR_USE_CPU(cpumap, i);
+            virBitmapSetAll(cpumap);
         }
     }
 
@@ -1906,14 +1905,13 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0, /* Self */
-                                  cpumap, cpumaplen, maxcpu) < 0)
+    if (virProcessInfoSetAffinity(0 /* Self */, cpumap) < 0)
         goto cleanup;
 
     ret = 0;
 
 cleanup:
-    VIR_FREE(cpumap);
+    virBitmapFree(cpumap);
     return ret;
 }
 
@@ -1958,10 +1956,7 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     virNodeInfo nodeinfo;
-    pid_t vcpupid;
-    virBitmapPtr cpumask;
-    int vcpu, cpumaplen, hostcpus, maxcpu, n;
-    unsigned char *cpumap = NULL;
+    int vcpu, n;
     int ret = -1;
 
     if (virNodeGetInfo(conn, &nodeinfo) != 0) {
@@ -1977,41 +1972,17 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
         return -1;
     }
 
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    cpumaplen = VIR_CPU_MAPLEN(hostcpus);
-    maxcpu = cpumaplen * 8;
-
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
     for (n = 0; n < def->cputune.nvcpupin; n++) {
-        int i;
         vcpu = def->cputune.vcpupin[n]->vcpuid;
 
-        memset(cpumap, 0, cpumaplen);
-        cpumask = def->cputune.vcpupin[n]->cpumask;
-        vcpupid = priv->vcpupids[vcpu];
-
-        i = -1;
-        while ((i = virBitmapNextSetBit(cpumask, i)) >= 0)
-            VIR_USE_CPU(cpumap, i);
-
-        if (virProcessInfoSetAffinity(vcpupid,
-                                      cpumap,
-                                      cpumaplen,
-                                      maxcpu) < 0) {
+        if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
+                                      def->cputune.vcpupin[n]->cpumask) < 0) {
             goto cleanup;
         }
     }
 
     ret = 0;
 cleanup:
-    VIR_FREE(cpumap);
     return ret;
 }
 
@@ -2021,13 +1992,8 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
                                 virDomainObjPtr vm)
 {
     virDomainDefPtr def = vm->def;
-    pid_t pid = vm->pid;
-    virBitmapPtr cpumask = NULL;
-    unsigned char *cpumap = NULL;
     virNodeInfo nodeinfo;
-    int cpumaplen, hostcpus, maxcpu, i;
     int ret = -1;
-    bool result;
 
     if (virNodeGetInfo(conn, &nodeinfo) != 0)
         return -1;
@@ -2035,36 +2001,13 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
     if (!def->cputune.emulatorpin)
         return 0;
 
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    cpumaplen = VIR_CPU_MAPLEN(hostcpus);
-    maxcpu = cpumaplen * CHAR_BIT;
-
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cpumask = def->cputune.emulatorpin->cpumask;
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (virBitmapGetBit(cpumask, i, &result) < 0)
-            goto cleanup;
-        if (result)
-            VIR_USE_CPU(cpumap, i);
-    }
-
-    if (virProcessInfoSetAffinity(pid,
-                                  cpumap,
-                                  cpumaplen,
-                                  maxcpu) < 0) {
+    if (virProcessInfoSetAffinity(vm->pid,
+                                  def->cputune.emulatorpin->cpumask) < 0) {
         goto cleanup;
     }
 
     ret = 0;
 cleanup:
-    VIR_FREE(cpumap);
     return ret;
 }
 

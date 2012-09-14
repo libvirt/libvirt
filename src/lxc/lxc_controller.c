@@ -493,8 +493,7 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 {
     int i, hostcpus, maxcpu = CPU_SETSIZE;
     virNodeInfo nodeinfo;
-    unsigned char *cpumap;
-    int cpumaplen;
+    virBitmapPtr cpumap;
 
     VIR_DEBUG("Setting CPU affinity");
 
@@ -507,37 +506,33 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
-    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-        virReportOOMError();
+    cpumap = virBitmapNew(maxcpu);
+    if (!cpumap)
         return -1;
-    }
 
     if (ctrl->def->cpumask) {
         /* XXX why don't we keep 'cpumask' in the libvirt cpumap
          * format to start with ?!?! */
         for (i = 0 ; i < maxcpu && i < ctrl->def->cpumasklen ; i++)
             if (ctrl->def->cpumask[i])
-                VIR_USE_CPU(cpumap, i);
+                ignore_value(virBitmapSetBit(cpumap, i));
     } else {
         /* You may think this is redundant, but we can't assume libvirtd
          * itself is running on all pCPUs, so we need to explicitly set
          * the spawned LXC instance to all pCPUs if no map is given in
          * its config file */
-        for (i = 0 ; i < maxcpu ; i++)
-            VIR_USE_CPU(cpumap, i);
+        virBitmapSetAll(cpumap);
     }
 
-    /* We are pressuming we are running between fork/exec of LXC
+    /* We are presuming we are running between fork/exec of LXC
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0, /* Self */
-                                  cpumap, cpumaplen, maxcpu) < 0) {
-        VIR_FREE(cpumap);
+    if (virProcessInfoSetAffinity(0 /* Self */, cpumap) < 0) {
+        virBitmapFree(cpumap);
         return -1;
     }
-    VIR_FREE(cpumap);
+    virBitmapFree(cpumap);
 
     return 0;
 }
