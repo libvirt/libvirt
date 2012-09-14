@@ -1587,7 +1587,7 @@ typedef struct _virDomainNumatuneDef virDomainNumatuneDef;
 typedef virDomainNumatuneDef *virDomainNumatuneDefPtr;
 struct _virDomainNumatuneDef {
     struct {
-        char *nodemask;
+        virBitmapPtr nodemask;
         int mode;
         int placement_mode; /* enum virDomainNumatuneMemPlacementMode */
     } memory;

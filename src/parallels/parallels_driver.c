@@ -1466,7 +1466,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
     if (old->numatune.memory.mode != new->numatune.memory.mode ||
         old->numatune.memory.placement_mode != new->numatune.memory.placement_mode ||
-        !STREQ_NULLABLE(old->numatune.memory.nodemask, new->numatune.memory.nodemask)) {
+        !virBitmapEqual(old->numatune.memory.nodemask, new->numatune.memory.nodemask)) {
 
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "

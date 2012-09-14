@@ -7517,18 +7517,12 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
             int rc;
-            char *nodeset = NULL;
+            virBitmapPtr nodeset = NULL;
             char *nodeset_str = NULL;
 
-            if (VIR_ALLOC_N(nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                virReportOOMError();
-                ret = -1;
-                goto cleanup;
-            };
-
-            if (virDomainCpuSetParse(params[i].value.s,
-                                     0, nodeset,
-                                     VIR_DOMAIN_CPUMASK_LEN) < 0) {
+            if (virBitmapParse(params[i].value.s,
+                               0, &nodeset,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Failed to parse nodeset"));
                 ret = -1;
@@ -7541,17 +7535,16 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                    _("change of nodeset for running domain "
                                      "requires strict numa mode"));
-                    VIR_FREE(nodeset);
+                    virBitmapFree(nodeset);
                     ret = -1;
                     continue;
                 }
 
                 /* Ensure the cpuset string is formated before passing to cgroup */
-                if (!(nodeset_str = virDomainCpuSetFormat(nodeset,
-                                                          VIR_DOMAIN_CPUMASK_LEN))) {
+                if (!(nodeset_str = virBitmapFormat(nodeset))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Failed to format nodeset"));
-                    VIR_FREE(nodeset);
+                    virBitmapFree(nodeset);
                     ret = -1;
                     continue;
                 }
@@ -7559,7 +7552,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                 if ((rc = virCgroupSetCpusetMems(group, nodeset_str) != 0)) {
                     virReportSystemError(-rc, "%s",
                                          _("unable to set numa tunable"));
-                    VIR_FREE(nodeset);
+                    virBitmapFree(nodeset);
                     VIR_FREE(nodeset_str);
                     ret = -1;
                     continue;
@@ -7568,40 +7561,22 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
                 /* update vm->def here so that dumpxml can read the new
                  * values from vm->def. */
-                if (!vm->def->numatune.memory.nodemask) {
-                    if (VIR_ALLOC_N(vm->def->numatune.memory.nodemask,
-                                    VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                        virReportOOMError();
-                        VIR_FREE(nodeset);
-                        ret = -1;
-                        goto cleanup;
-                    }
-                } else {
-                    VIR_FREE(vm->def->numatune.memory.nodemask);
-                }
+                virBitmapFree(vm->def->numatune.memory.nodemask);
 
-                vm->def->numatune.memory.nodemask = nodeset;
                 vm->def->numatune.memory.placement_mode =
                     VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
+                vm->def->numatune.memory.nodemask = virBitmapNewCopy(nodeset);
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                if (!persistentDef->numatune.memory.nodemask) {
-                    if (VIR_ALLOC_N(persistentDef->numatune.memory.nodemask,
-                                    VIR_DOMAIN_CPUMASK_LEN) < 0) {
-                        virReportOOMError();
-                        VIR_FREE(nodeset);
-                        ret = -1;
-                        goto cleanup;
-                    }
-                } else {
-                    VIR_FREE(persistentDef->numatune.memory.nodemask);
-                }
+                virBitmapFree(persistentDef->numatune.memory.nodemask);
 
                 persistentDef->numatune.memory.nodemask = nodeset;
                 persistentDef->numatune.memory.placement_mode =
                     VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
+                nodeset = NULL;
             }
+            virBitmapFree(nodeset);
         }
     }
 
@@ -7696,11 +7671,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 
         case 1: /* fill numa nodeset here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                char *mask = persistentDef->numatune.memory.nodemask;
-                if (mask)
-                    nodeset = virDomainCpuSetFormat(mask,
-                                                    VIR_DOMAIN_CPUMASK_LEN);
-                else
+                nodeset = virBitmapFormat(persistentDef->numatune.memory.nodemask);
+                if (!nodeset)
                     nodeset = strdup("");
             } else {
                 rc = virCgroupGetCpusetMems(group, &nodeset);

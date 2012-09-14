@@ -1699,7 +1699,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpuPinDefFree(def->cputune.emulatorpin);
 
-    VIR_FREE(def->numatune.memory.nodemask);
+    virBitmapFree(def->numatune.memory.nodemask);
 
     virSysinfoDefFree(def->sysinfo);
 
@@ -8747,19 +8747,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
                     nodeset = virXMLPropString(cur, "nodeset");
                     if (nodeset) {
-                        char *set = nodeset;
-                        int nodemasklen = VIR_DOMAIN_CPUMASK_LEN;
-
-                        if (VIR_ALLOC_N(def->numatune.memory.nodemask,
-                                        nodemasklen) < 0) {
-                            virReportOOMError();
-                            goto error;
-                        }
-
-                        /* "nodeset" uses the same syntax as "cpuset". */
-                        if (virDomainCpuSetParse(set, 0,
-                                                 def->numatune.memory.nodemask,
-                                                 nodemasklen) < 0) {
+                        if (virBitmapParse(nodeset,
+                                           0,
+                                           &def->numatune.memory.nodemask,
+                                           VIR_DOMAIN_CPUMASK_LEN) < 0) {
                             VIR_FREE(nodeset);
                             goto error;
                         }
@@ -8801,7 +8792,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
                     /* Ignore 'nodeset' if 'placement' is 'auto' finally */
                     if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)
-                        VIR_FREE(def->numatune.memory.nodemask);
+                        virBitmapFree(def->numatune.memory.nodemask);
 
                     /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
                      * is not specified and 'placement' of <numatune> is specified.
@@ -13604,8 +13595,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         if (def->numatune.memory.placement_mode ==
             VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
-            nodemask = virDomainCpuSetFormat(def->numatune.memory.nodemask,
-                                         VIR_DOMAIN_CPUMASK_LEN);
+            nodemask = virBitmapFormat(def->numatune.memory.nodemask);
             if (nodemask == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to format nodeset for "

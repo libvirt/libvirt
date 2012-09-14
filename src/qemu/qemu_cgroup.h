@@ -49,7 +49,7 @@ int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,
                                  void *opaque);
 int qemuSetupCgroup(struct qemud_driver *driver,
                     virDomainObjPtr vm,
-                    char *nodemask);
+                    virBitmapPtr nodemask);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);

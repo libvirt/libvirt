@@ -63,6 +63,7 @@
 #include "uuid.h"
 #include "virtime.h"
 #include "virnetdevtap.h"
+#include "bitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1704,7 +1705,7 @@ qemuProcessDetectVcpuPIDs(struct qemud_driver *driver,
 #if HAVE_NUMACTL
 static int
 qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
-                                const char *nodemask)
+                                virBitmapPtr nodemask)
 {
     nodemask_t mask;
     int mode = -1;
@@ -1714,7 +1715,7 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
     int maxnode = 0;
     bool warned = false;
     virDomainNumatuneDef numatune = vm->def->numatune;
-    const char *tmp_nodemask = NULL;
+    virBitmapPtr tmp_nodemask = NULL;
 
     if (numatune.memory.placement_mode ==
         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
@@ -1739,20 +1740,19 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
     maxnode = numa_max_node() + 1;
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (tmp_nodemask[i]) {
-            if (i > NUMA_NUM_NODES) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Host cannot support NUMA node %d"), i);
-                return -1;
-            }
-            if (i > maxnode && !warned) {
-                VIR_WARN("nodeset is out of range, there is only %d NUMA "
-                         "nodes on host", maxnode);
-                warned = true;
-            }
-            nodemask_set(&mask, i);
+    i = -1;
+    while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
+        if (i > NUMA_NUM_NODES) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Host cannot support NUMA node %d"), i);
+            return -1;
         }
+        if (i > maxnode && !warned) {
+            VIR_WARN("nodeset is out of range, there is only %d NUMA "
+                     "nodes on host", maxnode);
+            warned = true;
+        }
+        nodemask_set(&mask, i);
     }
 
     mode = numatune.memory.mode;
@@ -1848,7 +1848,7 @@ qemuGetNumadAdvice(virDomainDefPtr def ATTRIBUTE_UNUSED)
 static int
 qemuProcessInitCpuAffinity(struct qemud_driver *driver,
                            virDomainObjPtr vm,
-                           const char *nodemask)
+                           virBitmapPtr nodemask)
 {
     int ret = -1;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
@@ -1878,7 +1878,10 @@ qemuProcessInitCpuAffinity(struct qemud_driver *driver,
         for (i = 0; i < driver->caps->host.nnumaCell; i++) {
             int j;
             int cur_ncpus = driver->caps->host.numaCell[i]->ncpus;
-            if (nodemask[i]) {
+            bool result;
+            if (virBitmapGetBit(nodemask, i, &result) < 0)
+                goto cleanup;
+            if (result) {
                 for (j = 0; j < cur_ncpus; j++)
                     ignore_value(virBitmapSetBit(cpumap,
                                                  driver->caps->host.numaCell[i]->cpus[j]));
@@ -2583,7 +2586,7 @@ struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
     struct qemud_driver *driver;
-    char *nodemask;
+    virBitmapPtr nodemask;
 };
 
 static int qemuProcessHook(void *data)
@@ -3340,7 +3343,7 @@ int qemuProcessStart(virConnectPtr conn,
     unsigned long cur_balloon;
     int i;
     char *nodeset = NULL;
-    char *nodemask = NULL;
+    virBitmapPtr nodemask = NULL;
     unsigned int stop_flags;
 
     /* Okay, these are just internal flags,
@@ -3537,13 +3540,8 @@ int qemuProcessStart(virConnectPtr conn,
 
         VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-        if (VIR_ALLOC_N(nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (virDomainCpuSetParse(nodeset, 0, nodemask,
-                                 VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(nodeset, 0, &nodemask,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
     }
     hookData.nodemask = nodemask;
@@ -3872,7 +3870,7 @@ cleanup:
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
     VIR_FREE(nodeset);
-    VIR_FREE(nodemask);
+    virBitmapFree(nodemask);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);

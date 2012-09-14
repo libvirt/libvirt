@@ -418,20 +418,19 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (ctrl->def->numatune.memory.nodemask[i]) {
-            if (i > NUMA_NUM_NODES) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Host cannot support NUMA node %d"), i);
-                return -1;
-            }
-            if (i > maxnode && !warned) {
-                VIR_WARN("nodeset is out of range, there is only %d NUMA "
-                         "nodes on host", maxnode);
-                warned = true;
-            }
-            nodemask_set(&mask, i);
+    i = -1;
+    while ((i = virBitmapNextSetBit(ctrl->def->numatune.memory.nodemask, i)) >= 0) {
+        if (i > NUMA_NUM_NODES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Host cannot support NUMA node %d"), i);
+            return -1;
         }
+        if (i > maxnode && !warned) {
+            VIR_WARN("nodeset is out of range, there is only %d NUMA "
+                     "nodes on host", maxnode);
+            warned = true;
+        }
+        nodemask_set(&mask, i);
     }
 
     mode = ctrl->def->numatune.memory.mode;
