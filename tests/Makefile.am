@@ -92,7 +92,8 @@ test_programs = virshtest sockettest \
 	viratomictest \
 	utiltest virnettlscontexttest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
-	virauthconfigtest
+	virauthconfigtest \
+	virbitmaptest
 
 if WITH_SECDRIVER_SELINUX
 test_programs += securityselinuxtest
@@ -588,6 +589,10 @@ virhashtest_LDADD = $(LDADDS)
 viratomictest_SOURCES = \
 	viratomictest.c testutils.h testutils.c
 viratomictest_LDADD = $(LDADDS)
+
+virbitmaptest_SOURCES = \
+	virbitmaptest.c testutils.h testutils.c
+virbitmaptest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

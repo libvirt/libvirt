@@ -6,13 +6,24 @@
 #
 
 # bitmap.h
+virBitmapClearAll;
 virBitmapClearBit;
 virBitmapCopy;
+virBitmapEqual;
+virBitmapFormat;
 virBitmapFree;
 virBitmapGetBit;
+virBitmapIsAllSet;
 virBitmapNew;
+virBitmapNewCopy;
+virBitmapNewData;
+virBitmapNextSetBit;
+virBitmapParse;
+virBitmapSetAll;
 virBitmapSetBit;
+virBitmapSize;
 virBitmapString;
+virBitmapToData;
 
 
 # buf.h

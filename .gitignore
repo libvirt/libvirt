@@ -157,6 +157,7 @@
 /tests/utiltest
 /tests/viratomictest
 /tests/virauthconfigtest
+/tests/virbitmaptest
 /tests/virbuftest
 /tests/virdrivermoduletest
 /tests/virhashtest
