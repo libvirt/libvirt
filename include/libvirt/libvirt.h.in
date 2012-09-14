@@ -3249,6 +3249,27 @@ int                     virConnectNumOfSecrets  (virConnectPtr conn);
 int                     virConnectListSecrets   (virConnectPtr conn,
                                                  char **uuids,
                                                  int maxuuids);
+
+/*
+ * virConnectListAllSecrets:
+ *
+ * Flags used to filter the returned secrets. Flags in each group
+ * are exclusive attributes of a secret.
+ */
+typedef enum {
+    VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
+                                                      stored persistently */
+    VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 1 << 1,
+
+    VIR_CONNECT_LIST_SECRETS_PRIVATE      = 1 << 2, /* not revealed to any caller
+                                                      of libvirt, nor to any other
+                                                      node */
+    VIR_CONNECT_LIST_SECRETS_NO_PRIVATE   = 1 << 3,
+} virConnectListAllSecretsFlags;
+
+int                     virConnectListAllSecrets(virConnectPtr conn,
+                                                 virSecretPtr **secrets,
+                                                 unsigned int flags);
 virSecretPtr            virSecretLookupByUUID(virConnectPtr conn,
                                               const unsigned char *uuid);
 virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,

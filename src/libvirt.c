@@ -14594,6 +14594,73 @@ error:
 }
 
 /**
+ * virConnectListAllSecrets:
+ * @conn: Pointer to the hypervisor connection.
+ * @secrets: Pointer to a variable to store the array containing the secret
+ *           objects or NULL if the list is not required (just returns the
+ *           number of secrets).
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect the list of secrets, and allocate an array to store those
+ * objects.
+ *
+ * Normally, all secrets are returned; however, @flags can be used to
+ * filter the results for a smaller list of targeted secrets. The valid
+ * flags are divided into groups, where each group contains bits that
+ * describe mutually exclusive attributes of a secret, and where all bits
+ * within a group describe all possible secrets.
+ *
+ * The first group of @flags is used to filter secrets by its storage
+ * location. Flag VIR_CONNECT_LIST_SECRETS_EPHEMERAL selects secrets that
+ * are kept only in memory. Flag VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL
+ * selects secrets that are kept in persistent storage.
+ *
+ * The second group of @flags is used to filter secrets by privacy. Flag
+ * VIR_CONNECT_LIST_SECRETS_PRIVATE seclets secrets that are never revealed
+ * to any caller of libvirt nor to any other node. Flag
+ * VIR_CONNECT_LIST_SECRETS_NO_PRIVATE selects non-private secrets.
+ *
+ * Returns the number of secrets found or -1 and sets @secrets to NULL in case
+ * of error.  On success, the array stored into @secrets is guaranteed to
+ * have an extra allocated element set to NULL but not included in the return count,
+ * to make iteration easier.  The caller is responsible for calling
+ * virSecretFree() on each array element, then calling free() on @secrets.
+ */
+int
+virConnectListAllSecrets(virConnectPtr conn,
+                         virSecretPtr **secrets,
+                         unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, secrets=%p, flags=%x", conn, secrets, flags);
+
+    virResetLastError();
+
+    if (secrets)
+        *secrets = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->secretDriver &&
+        conn->secretDriver->listAllSecrets) {
+        int ret;
+        ret = conn->secretDriver->listAllSecrets(conn, secrets, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virConnectListSecrets:
  * @conn: virConnect connection
  * @uuids: Pointer to an array to store the UUIDs

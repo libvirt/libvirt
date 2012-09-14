@@ -466,6 +466,7 @@ skip_function = (
     'virConnectListAllInterfaces', # overridden in virConnect.py
     'virConnectListAllNodeDevices', # overridden in virConnect.py
     'virConnectListAllNWFilters', # overridden in virConnect.py
+    'virConnectListAllSecrets', # overridden in virConnect.py
 
     'virStreamRecvAll', # Pure python libvirt-override-virStream.py
     'virStreamSendAll', # Pure python libvirt-override-virStream.py

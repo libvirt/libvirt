@@ -1567,6 +1567,10 @@ typedef int
     (*virDrvListSecrets)               (virConnectPtr conn,
                                         char **uuids,
                                         int maxuuids);
+typedef int
+    (*virDrvListAllSecrets)            (virConnectPtr conn,
+                                        virSecretPtr **secrets,
+                                        unsigned int flags);
 
 typedef struct _virSecretDriver virSecretDriver;
 typedef virSecretDriver *virSecretDriverPtr;
@@ -1588,6 +1592,7 @@ struct _virSecretDriver {
 
     virDrvNumOfSecrets          numOfSecrets;
     virDrvListSecrets           listSecrets;
+    virDrvListAllSecrets        listAllSecrets;
     virDrvSecretLookupByUUID    lookupByUUID;
     virDrvSecretLookupByUsage   lookupByUsage;
     virDrvSecretDefineXML       defineXML;

@@ -560,6 +560,7 @@ LIBVIRT_0.10.2 {
         virConnectListAllNetworks;
         virConnectListAllNodeDevices;
         virConnectListAllNWFilters;
+        virConnectListAllSecrets;
         virConnectListAllStoragePools;
         virStoragePoolListAllVolumes;
 } LIBVIRT_0.10.0;
