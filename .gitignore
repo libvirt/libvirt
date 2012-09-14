@@ -18,6 +18,7 @@
 *.s
 *~
 .deps
+.gdb_history
 .git
 .git-module-status
 .libs
