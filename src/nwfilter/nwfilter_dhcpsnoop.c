@@ -47,6 +47,7 @@
 #endif
 
 #include <fcntl.h>
+#include <poll.h>
 
 #include <arpa/inet.h>
 #include <netinet/ip.h>
