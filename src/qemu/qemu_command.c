@@ -4407,11 +4407,17 @@ qemuBuildCommandLine(virConnectPtr conn,
     char *smp;
     int last_good_net = -1;
     bool hasHwVirt = false;
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     bool emitBootindex = false;
     int usbcontroller = 0;
     bool usblegacy = false;
     uname_normalize(&ut);
+
+    VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
+              "caps=%p migrateFrom=%s migrateFD=%d "
+              "snapshot=%p vmop=%d",
+              conn, driver, def, monitor_chr, monitor_json,
+              caps, migrateFrom, migrateFd, snapshot, vmop);
 
     virUUIDFormat(def->uuid, uuid);
 
