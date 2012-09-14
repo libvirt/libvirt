@@ -309,8 +309,6 @@ virDomainControllerRemove;
 virDomainControllerTypeToString;
 virDomainCpuPlacementModeTypeFromString;
 virDomainCpuPlacementModeTypeToString;
-virDomainCpuSetFormat;
-virDomainCpuSetParse;
 virDomainDefAddImplicitControllers;
 virDomainDefCheckABIStability;
 virDomainDefClearDeviceAliases;

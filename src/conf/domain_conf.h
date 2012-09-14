@@ -1930,13 +1930,6 @@ int virDomainDefFormatInternal(virDomainDefPtr def,
 int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev);
 
-int virDomainCpuSetParse(const char *str,
-                         char sep,
-                         char *cpuset,
-                         int maxcpu);
-char *virDomainCpuSetFormat(char *cpuset,
-                            int maxcpu);
-
 int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
                         int *nvcpupin,
                         unsigned char *cpumap,
