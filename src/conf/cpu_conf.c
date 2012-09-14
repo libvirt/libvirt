@@ -83,7 +83,7 @@ virCPUDefFree(virCPUDefPtr def)
     virCPUDefFreeModel(def);
 
     for (i = 0 ; i < def->ncells ; i++) {
-        VIR_FREE(def->cells[i].cpumask);
+        virBitmapFree(def->cells[i].cpumask);
         VIR_FREE(def->cells[i].cpustr);
     }
     VIR_FREE(def->cells);
@@ -164,11 +164,10 @@ virCPUDefCopy(const virCPUDefPtr cpu)
             copy->cells[i].cellid = cpu->cells[i].cellid;
             copy->cells[i].mem = cpu->cells[i].mem;
 
-            if (VIR_ALLOC_N(copy->cells[i].cpumask,
-                            VIR_DOMAIN_CPUMASK_LEN) < 0)
+            copy->cells[i].cpumask = virBitmapNewCopy(cpu->cells[i].cpumask);
+
+            if (!copy->cells[i].cpumask)
                 goto no_memory;
-            memcpy(copy->cells[i].cpumask, cpu->cells[i].cpumask,
-                   VIR_DOMAIN_CPUMASK_LEN);
 
             if (!(copy->cells[i].cpustr = strdup(cpu->cells[i].cpustr)))
                 goto no_memory;
@@ -454,7 +453,6 @@ virCPUDefParseXML(const xmlNodePtr node,
 
         for (i = 0 ; i < n ; i++) {
             char *cpus, *memory;
-            int cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
             int ret, ncpus = 0;
 
             def->cells[i].cellid = i;
@@ -466,11 +464,8 @@ virCPUDefParseXML(const xmlNodePtr node,
             }
             def->cells[i].cpustr = cpus;
 
-            if (VIR_ALLOC_N(def->cells[i].cpumask, cpumasklen) < 0)
-                goto no_memory;
-
-            ncpus = virDomainCpuSetParse(cpus, 0, def->cells[i].cpumask,
-                                         cpumasklen);
+            ncpus = virBitmapParse(cpus, 0, &def->cells[i].cpumask,
+                                   VIR_DOMAIN_CPUMASK_LEN);
             if (ncpus <= 0)
                 goto error;
             def->cells_cpus += ncpus;

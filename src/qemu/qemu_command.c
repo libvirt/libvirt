@@ -4314,54 +4314,25 @@ qemuBuildSmpArgStr(const virDomainDefPtr def,
     return virBufferContentAndReset(&buf);
 }
 
-static void
-qemuBuildNumaCPUArgStr(char *cpumask, virBufferPtr buf)
-{
-    int i, first, last;
-    int cpuSet = 0;
-
-    first = last = 0;
-    for (i = 0; i < VIR_DOMAIN_CPUMASK_LEN; i++) {
-        if (cpumask[i]) {
-            if (cpuSet) {
-                last = i;
-            } else {
-                first = last = i;
-                cpuSet = 1;
-            }
-        } else {
-            if (!cpuSet)
-                continue;
-            if (first == last)
-                virBufferAsprintf(buf, "%d,", first);
-            else
-                virBufferAsprintf(buf, "%d-%d,", first, last);
-            cpuSet = 0;
-        }
-    }
-
-    if (cpuSet) {
-        if (first == last)
-            virBufferAsprintf(buf, "%d,", first);
-        else
-            virBufferAsprintf(buf, "%d-%d,", first, last);
-    }
-}
-
 static int
 qemuBuildNumaArgStr(const virDomainDefPtr def, virCommandPtr cmd)
 {
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *cpumask;
 
     for (i = 0; i < def->cpu->ncells; i++) {
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%d", def->cpu->cells[i].cellid);
         virBufferAddLit(&buf, ",cpus=");
-        qemuBuildNumaCPUArgStr(def->cpu->cells[i].cpumask, &buf);
+        cpumask = virBitmapFormat(def->cpu->cells[i].cpumask);
+        if (cpumask) {
+            virBufferAsprintf(&buf, "%s", cpumask);
+            VIR_FREE(cpumask);
+        }
         def->cpu->cells[i].mem = VIR_DIV_UP(def->cpu->cells[i].mem,
                                             1024) * 1024;
-        virBufferAsprintf(&buf, "mem=%d", def->cpu->cells[i].mem / 1024);
+        virBufferAsprintf(&buf, ",mem=%d", def->cpu->cells[i].mem / 1024);
 
         if (virBufferError(&buf))
             goto error;
