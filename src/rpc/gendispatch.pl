@@ -478,6 +478,9 @@ elsif ($opt_b) {
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
                     push(@vars_list, "int n$1");
+                    if ($call->{ProcName} eq "NodeSetMemoryParameters") {
+                        push(@args_list, "priv->conn");
+                    }
                     push(@args_list, "$1");
                     push(@args_list, "n$1");
                     push(@getters_list, "    if (($1 = remoteDeserializeTypedParameters(args->$1.$1_val,\n" .

@@ -5698,6 +5698,54 @@ done:
     return rv;
 }
 
+static int
+remoteNodeGetMemoryParameters(virConnectPtr conn,
+                              virTypedParameterPtr params,
+                              int *nparams,
+                              unsigned int flags)
+{
+    int rv = -1;
+    remote_node_get_memory_parameters_args args;
+    remote_node_get_memory_parameters_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.nparams = *nparams;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof(ret));
+    if (call (conn, priv, 0, REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS,
+              (xdrproc_t) xdr_remote_node_get_memory_parameters_args, (char *) &args,
+              (xdrproc_t) xdr_remote_node_get_memory_parameters_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Handle the case when the caller does not know the number of parameters
+     * and is asking for the number of parameters supported
+     */
+    if (*nparams == 0) {
+        *nparams = ret.nparams;
+        rv = 0;
+        goto cleanup;
+    }
+
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
+                                         REMOTE_NODE_MEMORY_PARAMETERS_MAX,
+                                         params,
+                                         nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_node_get_memory_parameters_ret,
+              (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -6009,6 +6057,8 @@ static virDriver remote_driver = {
     .domainSetMetadata = remoteDomainSetMetadata, /* 0.9.10 */
     .domainGetMetadata = remoteDomainGetMetadata, /* 0.9.10 */
     .domainGetHostname = remoteDomainGetHostname, /* 0.10.0 */
+    .nodeSetMemoryParameters = remoteNodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetMemoryParameters = remoteNodeGetMemoryParameters, /* 0.10.2 */
 };
 
 static virNetworkDriver network_driver = {

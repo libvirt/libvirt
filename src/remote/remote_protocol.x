@@ -229,6 +229,11 @@ const REMOTE_DOMAIN_GET_CPU_STATS_MAX = 2048;
  */
 const REMOTE_DOMAIN_DISK_ERRORS_MAX = 256;
 
+/*
+ * Upper limit on number of memory parameters
+ */
+const REMOTE_NODE_MEMORY_PARAMETERS_MAX = 64;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -2629,6 +2634,21 @@ struct remote_connect_list_all_secrets_ret {
     unsigned int ret;
 };
 
+struct remote_node_set_memory_parameters_args {
+    remote_typed_param params<REMOTE_NODE_MEMORY_PARAMETERS_MAX>;
+    unsigned int flags;
+};
+
+struct remote_node_get_memory_parameters_args {
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_node_get_memory_parameters_ret {
+    remote_typed_param params<REMOTE_NODE_MEMORY_PARAMETERS_MAX>;
+    int nparams;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -2966,7 +2986,9 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284, /* skipgen skipgen priority:high */
     REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES = 285, /* skipgen skipgen priority:high */
     REMOTE_PROC_CONNECT_LIST_ALL_NWFILTERS = 286, /* skipgen skipgen priority:high */
-    REMOTE_PROC_CONNECT_LIST_ALL_SECRETS = 287 /* skipgen skipgen priority:high */
+    REMOTE_PROC_CONNECT_LIST_ALL_SECRETS = 287, /* skipgen skipgen priority:high */
+    REMOTE_PROC_NODE_SET_MEMORY_PARAMETERS = 288, /* autogen autogen */
+    REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
