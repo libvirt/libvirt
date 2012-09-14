@@ -2469,9 +2469,13 @@ encoded using Base64.
 Delete a I<secret> (specified by its UUID), including the associated value, if
 any.
 
-=item B<secret-list>
+=item B<secret-list> [I<--ephemeral>] [I<--no-ephemeral>]
+                     [I<--private>] [I<--no-private>]
 
-Output a list of UUIDs of known secrets to stdout.
+Returns the list of secrets. You may also want to filter the returned secrets
+by I<--ephemeral> to list the ephemeral ones, I<--no-ephemeral> to list the
+non-ephemeral ones, I<--private> to list the private ones, and
+I<--no-private> to list the non-private ones.
 
 =back
 

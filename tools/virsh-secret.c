@@ -290,6 +290,141 @@ cleanup:
     return ret;
 }
 
+static int
+vshSecretSorter(const void *a, const void *b)
+{
+    virSecretPtr *sa = (virSecretPtr *) a;
+    virSecretPtr *sb = (virSecretPtr *) b;
+    char uuid_sa[VIR_UUID_STRING_BUFLEN];
+    char uuid_sb[VIR_UUID_STRING_BUFLEN];
+
+    if (*sa && !*sb)
+        return -1;
+
+    if (!*sa)
+        return *sb != NULL;
+
+    virSecretGetUUIDString(*sa, uuid_sa);
+    virSecretGetUUIDString(*sb, uuid_sb);
+
+    return vshStrcasecmp(uuid_sa, uuid_sb);
+}
+
+struct vshSecretList {
+    virSecretPtr *secrets;
+    size_t nsecrets;
+};
+typedef struct vshSecretList *vshSecretListPtr;
+
+static void
+vshSecretListFree(vshSecretListPtr list)
+{
+    int i;
+
+    if (list && list->nsecrets) {
+        for (i = 0; i < list->nsecrets; i++) {
+            if (list->secrets[i])
+                virSecretFree(list->secrets[i]);
+        }
+        VIR_FREE(list->secrets);
+    }
+    VIR_FREE(list);
+}
+
+static vshSecretListPtr
+vshSecretListCollect(vshControl *ctl,
+                     unsigned int flags)
+{
+    vshSecretListPtr list = vshMalloc(ctl, sizeof(*list));
+    int i;
+    int ret;
+    virSecretPtr secret;
+    bool success = false;
+    size_t deleted = 0;
+    int nsecrets = 0;
+    char **uuids = NULL;
+
+    /* try the list with flags support (0.10.2 and later) */
+    if ((ret = virConnectListAllSecrets(ctl->conn,
+                                        &list->secrets,
+                                        flags)) >= 0) {
+        list->nsecrets = ret;
+        goto finished;
+    }
+
+    /* check if the command is actually supported */
+    if (last_error && last_error->code == VIR_ERR_NO_SUPPORT)
+        goto fallback;
+
+    /* there was an error during the call */
+    vshError(ctl, "%s", _("Failed to list node secrets"));
+    goto cleanup;
+
+
+fallback:
+    /* fall back to old method (0.10.1 and older) */
+    vshResetLibvirtError();
+
+    if (flags) {
+        vshError(ctl, "%s", _("Filtering is not supported by this libvirt"));
+        goto cleanup;
+    }
+
+    nsecrets = virConnectNumOfSecrets(ctl->conn);
+    if (nsecrets < 0) {
+        vshError(ctl, "%s", _("Failed to count secrets"));
+        goto cleanup;
+    }
+
+    if (nsecrets == 0)
+        return list;
+
+    uuids = vshMalloc(ctl, sizeof(char *) * nsecrets);
+
+    nsecrets = virConnectListSecrets(ctl->conn, uuids, nsecrets);
+    if (nsecrets < 0) {
+        vshError(ctl, "%s", _("Failed to list secrets"));
+        goto cleanup;
+    }
+
+    list->secrets = vshMalloc(ctl, sizeof(virSecretPtr) * (nsecrets));
+    list->nsecrets = 0;
+
+    /* get the secrets */
+    for (i = 0; i < nsecrets ; i++) {
+        if (!(secret = virSecretLookupByUUIDString(ctl->conn, uuids[i])))
+            continue;
+        list->secrets[list->nsecrets++] = secret;
+    }
+
+    /* truncate secrets that weren't found */
+    deleted = nsecrets - list->nsecrets;
+
+finished:
+    /* sort the list */
+    if (list->secrets && list->nsecrets)
+        qsort(list->secrets, list->nsecrets,
+              sizeof(*list->secrets), vshSecretSorter);
+
+    /* truncate the list for not found secret objects */
+    if (deleted)
+        VIR_SHRINK_N(list->secrets, list->nsecrets, deleted);
+
+    success = true;
+
+cleanup:
+    for (i = 0; i < nsecrets; i++)
+        VIR_FREE(uuids[i]);
+    VIR_FREE(uuids);
+
+    if (!success) {
+        vshSecretListFree(list);
+        list = NULL;
+    }
+
+    return list;
+}
+
 /*
  * "secret-list" command
  */
@@ -299,39 +434,43 @@ static const vshCmdInfo info_secret_list[] = {
     {NULL, NULL}
 };
 
+static const vshCmdOptDef opts_secret_list[] = {
+    {"ephemeral", VSH_OT_BOOL, 0, N_("list ephemeral secrets")},
+    {"no-ephemeral", VSH_OT_BOOL, 0, N_("list non-ephemeral secrets")},
+    {"private", VSH_OT_BOOL, 0, N_("list private secrets")},
+    {"no-private", VSH_OT_BOOL, 0, N_("list non-private secrets")},
+    {NULL, 0, 0, NULL}
+};
+
 static bool
 cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int maxuuids = 0, i;
-    char **uuids = NULL;
+    int i;
+    vshSecretListPtr list = NULL;
+    bool ret = false;
+    unsigned int flags = 0;
 
-    maxuuids = virConnectNumOfSecrets(ctl->conn);
-    if (maxuuids < 0) {
-        vshError(ctl, "%s", _("Failed to list secrets"));
+    if (vshCommandOptBool(cmd, "ephemeral"))
+        flags |= VIR_CONNECT_LIST_SECRETS_EPHEMERAL;
+
+    if (vshCommandOptBool(cmd, "no-ephemeral"))
+        flags |= VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL;
+
+    if (vshCommandOptBool(cmd, "private"))
+        flags |= VIR_CONNECT_LIST_SECRETS_PRIVATE;
+
+    if (vshCommandOptBool(cmd, "no-private"))
+        flags |= VIR_CONNECT_LIST_SECRETS_NO_PRIVATE;
+
+    if (!(list = vshSecretListCollect(ctl, flags)))
         return false;
-    }
-    uuids = vshMalloc(ctl, sizeof(*uuids) * maxuuids);
-
-    maxuuids = virConnectListSecrets(ctl->conn, uuids, maxuuids);
-    if (maxuuids < 0) {
-        vshError(ctl, "%s", _("Failed to list secrets"));
-        VIR_FREE(uuids);
-        return false;
-    }
-
-    qsort(uuids, maxuuids, sizeof(char *), vshNameSorter);
 
     vshPrintExtra(ctl, "%-36s %s\n", _("UUID"), _("Usage"));
     vshPrintExtra(ctl, "-----------------------------------------------------------\n");
 
-    for (i = 0; i < maxuuids; i++) {
-        virSecretPtr sec = virSecretLookupByUUIDString(ctl->conn, uuids[i]);
+    for (i = 0; i < list->nsecrets; i++) {
+        virSecretPtr sec = list->secrets[i];
         const char *usageType = NULL;
-
-        if (!sec) {
-            VIR_FREE(uuids[i]);
-            continue;
-        }
 
         switch (virSecretGetUsageType(sec)) {
         case VIR_SECRET_USAGE_TYPE_VOLUME:
@@ -339,19 +478,27 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             break;
         }
 
+        char uuid[VIR_UUID_STRING_BUFLEN];
+        if (virSecretGetUUIDString(list->secrets[i], uuid) < 0) {
+            vshError(ctl, "%s", _("Failed to get uuid of secret"));
+            goto cleanup;
+        }
+
         if (usageType) {
             vshPrint(ctl, "%-36s %s %s\n",
-                     uuids[i], usageType,
+                     uuid, usageType,
                      virSecretGetUsageID(sec));
         } else {
             vshPrint(ctl, "%-36s %s\n",
-                     uuids[i], _("Unused"));
+                     uuid, _("Unused"));
         }
-        virSecretFree(sec);
-        VIR_FREE(uuids[i]);
     }
-    VIR_FREE(uuids);
-    return true;
+
+    ret = true;
+
+cleanup:
+    vshSecretListFree(list);
+    return ret;
 }
 
 const vshCmdDef secretCmds[] = {
@@ -361,7 +508,7 @@ const vshCmdDef secretCmds[] = {
      info_secret_dumpxml, 0},
     {"secret-get-value", cmdSecretGetValue, opts_secret_get_value,
      info_secret_get_value, 0},
-    {"secret-list", cmdSecretList, NULL, info_secret_list, 0},
+    {"secret-list", cmdSecretList, opts_secret_list, info_secret_list, 0},
     {"secret-set-value", cmdSecretSetValue, opts_secret_set_value,
      info_secret_set_value, 0},
     {"secret-undefine", cmdSecretUndefine, opts_secret_undefine,
