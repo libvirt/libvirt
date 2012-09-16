@@ -468,8 +468,6 @@ networkShutdown(void) {
 }
 
 
-#if 0
-/* currently unused, so it causes a build error unless we #if it out */
 /* networkKillDaemon:
  *
  * kill the specified pid/name, and wait a bit to make sure it's dead.
@@ -528,7 +526,6 @@ networkKillDaemon(pid_t pid, const char *daemonName, const char *networkName)
 cleanup:
     return ret;
 }
-#endif /* #if 0 */
 
 static int
 networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
@@ -908,8 +905,6 @@ cleanup:
     return ret;
 }
 
-#if 0
-/* currently unused, so they cause a build error unless we #if them out */
 /* networkRefreshDhcpDaemon:
  *  Update dnsmasq config files, then send a SIGHUP so that it rereads
  *  them.
@@ -978,7 +973,6 @@ networkRestartDhcpDaemon(virNetworkObjPtr network)
     /* now start dnsmasq if it should be started */
     return networkStartDhcpDaemon(network);
 }
-#endif /* #if 0 */
 
 static int
 networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
@@ -1171,8 +1165,6 @@ cleanup:
     return ret;
 }
 
-#if 0
-/* currently unused, so they cause a build error unless we #if them out */
 static int
 networkRefreshRadvd(virNetworkObjPtr network)
 {
@@ -1191,6 +1183,8 @@ networkRefreshRadvd(virNetworkObjPtr network)
     return kill(network->radvdPid, SIGHUP);
 }
 
+#if 0
+/* currently unused, so it causes a build error unless we #if it out */
 static int
 networkRestartRadvd(virNetworkObjPtr network)
 {
@@ -2830,6 +2824,115 @@ cleanup:
     return ret;
 }
 
+static int
+networkUpdate(virNetworkPtr net,
+              unsigned int command,
+              unsigned int section,
+              int parentIndex,
+              const char *xml,
+              unsigned int flags)
+{
+    struct network_driver *driver = net->conn->networkPrivateData;
+    virNetworkObjPtr network = NULL;
+    int isActive, ret = -1;
+
+    virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG,
+                  -1);
+
+    networkDriverLock(driver);
+
+    network = virNetworkFindByUUID(&driver->networks, net->uuid);
+    if (!network) {
+        virReportError(VIR_ERR_NO_NETWORK,
+                       "%s", _("no network with matching uuid"));
+        goto cleanup;
+    }
+
+    /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
+     * is active, else change CONFIG
+    */
+    isActive = virNetworkObjIsActive(network);
+    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE
+                   | VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
+        VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
+        if (isActive)
+            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
+        else
+            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
+    }
+
+    /* update the network config in memory/on disk */
+    if (virNetworkObjUpdate(network, command, section, parentIndex, xml, flags) < 0)
+        goto cleanup;
+
+    if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
+        /* save updated persistent config to disk */
+        if (virNetworkSaveConfig(driver->networkConfigDir,
+                                 virNetworkObjGetPersistentDef(network)) < 0) {
+            goto cleanup;
+        }
+    }
+
+    if (isActive && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE)) {
+        /* rewrite dnsmasq host files, restart dnsmasq, update iptables
+         * rules, etc, according to which section was modified. Note that
+         * some sections require multiple actions, so a single switch
+         * statement is inadequate.
+         */
+        if (section == VIR_NETWORK_SECTION_BRIDGE ||
+            section == VIR_NETWORK_SECTION_DOMAIN ||
+            section == VIR_NETWORK_SECTION_IP ||
+            section == VIR_NETWORK_SECTION_IP_DHCP_RANGE) {
+            /* these sections all change things on the dnsmasq commandline,
+             * so we need to kill and restart dnsmasq.
+             */
+            if (networkRestartDhcpDaemon(network) < 0)
+                goto cleanup;
+
+        } else if (section == VIR_NETWORK_SECTION_IP_DHCP_HOST ||
+                   section == VIR_NETWORK_SECTION_DNS_HOST ||
+                   section == VIR_NETWORK_SECTION_DNS_TXT ||
+                   section == VIR_NETWORK_SECTION_DNS_SRV) {
+            /* these sections only change things in config files, so we
+             * can just update the config files and send SIGHUP to
+             * dnsmasq.
+             */
+            if (networkRefreshDhcpDaemon(network) < 0)
+                goto cleanup;
+
+        }
+
+        if (section == VIR_NETWORK_SECTION_IP) {
+            /* only a change in IP addresses will affect radvd, and all of radvd's
+             * config is stored in the conf file which will be re-read with a SIGHUP.
+             */
+            if (networkRefreshRadvd(network) < 0)
+                goto cleanup;
+        }
+
+        if (section == VIR_NETWORK_SECTION_IP ||
+            section == VIR_NETWORK_SECTION_FORWARD ||
+            section == VIR_NETWORK_SECTION_FORWARD_INTERFACE) {
+            /* these could affect the iptables rules */
+            networkRemoveIptablesRules(driver, network);
+            if (networkAddIptablesRules(driver, network) < 0)
+                goto cleanup;
+
+        }
+
+        /* save current network state to disk */
+        if ((ret = virNetworkSaveStatus(NETWORK_STATE_DIR, network)) < 0)
+            goto cleanup;
+    }
+    ret = 0;
+cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
+    networkDriverUnlock(driver);
+    return ret;
+}
+
 static int networkStart(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
@@ -3057,6 +3160,7 @@ static virNetworkDriver networkDriver = {
     .networkCreateXML = networkCreate, /* 0.2.0 */
     .networkDefineXML = networkDefine, /* 0.2.0 */
     .networkUndefine = networkUndefine, /* 0.2.0 */
+    .networkUpdate = networkUpdate, /* 0.10.2 */
     .networkCreate = networkStart, /* 0.2.0 */
     .networkDestroy = networkDestroy, /* 0.2.0 */
     .networkGetXMLDesc = networkGetXMLDesc, /* 0.2.0 */
