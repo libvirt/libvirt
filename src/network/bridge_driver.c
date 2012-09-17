@@ -117,6 +117,7 @@ static int networkShutdownNetworkExternal(struct network_driver *driver,
                                         virNetworkObjPtr network);
 
 static void networkReloadIptablesRules(struct network_driver *driver);
+static void networkRefreshDaemons(struct network_driver *driver);
 
 static struct network_driver *driverState = NULL;
 
@@ -344,6 +345,7 @@ networkStartup(int privileged) {
 
     networkFindActiveConfigs(driverState);
     networkReloadIptablesRules(driverState);
+    networkRefreshDaemons(driverState);
     networkAutostartConfigs(driverState);
 
     networkDriverUnlock(driverState);
@@ -404,6 +406,7 @@ networkReload(void) {
                              driverState->networkConfigDir,
                              driverState->networkAutostartDir);
     networkReloadIptablesRules(driverState);
+    networkRefreshDaemons(driverState);
     networkAutostartConfigs(driverState);
     networkDriverUnlock(driverState);
     return 0;
@@ -1209,6 +1212,37 @@ networkRestartRadvd(virNetworkObjPtr network)
     return networkStartRadvd(network);
 }
 #endif /* #if 0 */
+
+/* SIGHUP/restart any dnsmasq or radvd daemons.
+ * This should be called when libvirtd is restarted.
+ */
+static void
+networkRefreshDaemons(struct network_driver *driver)
+{
+    unsigned int i;
+
+    VIR_INFO("Refreshing network daemons");
+
+    for (i = 0 ; i < driver->networks.count ; i++) {
+        virNetworkObjPtr network = driver->networks.objs[i];
+
+        virNetworkObjLock(network);
+        if (virNetworkObjIsActive(network) &&
+            ((network->def->forwardType == VIR_NETWORK_FORWARD_NONE) ||
+             (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) ||
+             (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE))) {
+            /* Only the three L3 network types that are configured by
+             * libvirt will have a dnsmasq or radvd daemon associated
+             * with them.  Here we send a SIGHUP to an existing
+             * dnsmasq and/or radvd, or restart them if they've
+             * disappeared.
+             */
+            networkRefreshDhcpDaemon(network);
+            networkRefreshRadvd(network);
+        }
+        virNetworkObjUnlock(network);
+    }
+}
 
 static int
 networkAddMasqueradingIptablesRules(struct network_driver *driver,
