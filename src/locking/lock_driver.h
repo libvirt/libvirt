@@ -66,6 +66,7 @@ typedef enum {
 
 enum {
     VIR_LOCK_MANAGER_PARAM_TYPE_STRING,
+    VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING,
     VIR_LOCK_MANAGER_PARAM_TYPE_INT,
     VIR_LOCK_MANAGER_PARAM_TYPE_LONG,
     VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
@@ -84,6 +85,7 @@ struct _virLockManagerParam {
         unsigned long long ul;
         double d;
         char *str;
+        const char *cstr;
         unsigned char uuid[16];
     } value;
 };

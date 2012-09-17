@@ -99,6 +99,9 @@ static void virLockManagerLogParams(size_t nparams,
         case VIR_LOCK_MANAGER_PARAM_TYPE_STRING:
             VIR_DEBUG("  key=%s type=string value=%s", params[i].key, params[i].value.str);
             break;
+        case VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING:
+            VIR_DEBUG("  key=%s type=cstring value=%s", params[i].key, params[i].value.cstr);
+            break;
         case VIR_LOCK_MANAGER_PARAM_TYPE_UUID:
             virUUIDFormat(params[i].value.uuid, uuidstr);
             VIR_DEBUG("  key=%s type=uuid value=%s", params[i].key, uuidstr);
