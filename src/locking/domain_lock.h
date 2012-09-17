@@ -27,6 +27,7 @@
 # include "lock_manager.h"
 
 int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
+                              const char *uri,
                               virDomainObjPtr dom,
                               bool paused,
                               int *fd);
@@ -34,6 +35,7 @@ int virDomainLockProcessPause(virLockManagerPluginPtr plugin,
                               virDomainObjPtr dom,
                               char **state);
 int virDomainLockProcessResume(virLockManagerPluginPtr plugin,
+                               const char *uri,
                                virDomainObjPtr dom,
                                const char *state);
 int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
@@ -41,6 +43,7 @@ int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
                                 char **state);
 
 int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
+                            const char *uri,
                             virDomainObjPtr dom,
                             virDomainDiskDefPtr disk);
 int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
@@ -48,6 +51,7 @@ int virDomainLockDiskDetach(virLockManagerPluginPtr plugin,
                             virDomainDiskDefPtr disk);
 
 int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
+                             const char *uri,
                              virDomainObjPtr dom,
                              virDomainLeaseDefPtr lease);
 int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,

@@ -88,7 +88,8 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
         return -1;
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                vm, disk) < 0)
         return -1;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
@@ -217,7 +218,8 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                vm, disk) < 0)
         return -1;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
@@ -449,7 +451,8 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                vm, disk) < 0)
         return -1;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
@@ -572,7 +575,8 @@ int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         }
     }
 
-    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                vm, disk) < 0)
         return -1;
 
     if (virSecurityManagerSetImageLabel(driver->securityManager,
@@ -2389,7 +2393,8 @@ int qemuDomainAttachLease(struct qemud_driver *driver,
     if (virDomainLeaseInsertPreAlloc(vm->def) < 0)
         return -1;
 
-    if (virDomainLockLeaseAttach(driver->lockManager, vm, lease) < 0) {
+    if (virDomainLockLeaseAttach(driver->lockManager, driver->uri,
+                                 vm, lease) < 0) {
         virDomainLeaseInsertPreAlloced(vm->def, NULL);
         return -1;
     }

@@ -611,7 +611,9 @@ qemudStartup(int privileged) {
         return -1;
     }
     qemuDriverLock(qemu_driver);
+
     qemu_driver->privileged = privileged;
+    qemu_driver->uri = privileged ? "qemu:///system" : "qemu:///session";
 
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
@@ -860,9 +862,7 @@ qemudStartup(int privileged) {
 
     virHashForEach(qemu_driver->domains.objs, qemuDomainNetsRestart, NULL);
 
-    conn = virConnectOpen(qemu_driver->privileged ?
-                          "qemu:///system" :
-                          "qemu:///session");
+    conn = virConnectOpen(qemu_driver->uri);
 
     qemuProcessReconnectAll(conn, qemu_driver);
 
@@ -10695,7 +10695,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     origdriver = disk->driverType;
     disk->driverType = (char *) "raw"; /* Don't want to probe backing files */
 
-    if (virDomainLockDiskAttach(driver->lockManager, vm, disk) < 0)
+    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                vm, disk) < 0)
         goto cleanup;
     if (cgroup && qemuSetupDiskCgroup(driver, vm, cgroup, disk) < 0) {
         if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)

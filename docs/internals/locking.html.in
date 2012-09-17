@@ -183,6 +183,10 @@
           .key = "pid",
           .value = { .i = dom->pid },
         },
+        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING,
+          .key = "uri",
+          .value = { .cstr = driver->uri },
+        },
       };
       mgr = virLockManagerNew(lockPlugin,
                               VIR_LOCK_MANAGER_TYPE_DOMAIN,
@@ -224,6 +228,10 @@
         { .type = VIR_LOCK_MANAGER_PARAM_TYPE_UINT,
           .key = "pid",
           .value = { .i = dom->pid },
+        },
+        { .type = VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING,
+          .key = "uri",
+          .value = { .cstr = driver->uri },
         },
       };
       mgr = virLockManagerNew(lockPlugin,

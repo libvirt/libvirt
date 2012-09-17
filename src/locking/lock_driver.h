@@ -155,6 +155,7 @@ typedef int (*virLockDriverDeinit)(void);
  * - uuid: the domain uuid (uuid)
  * - name: the domain name (string)
  * - pid: process ID to own/owning the lock (unsigned int)
+ * - uri: URI for connecting to the driver the domain belongs to (string)
  *
  * Returns 0 if successful initialized a new context, -1 on error
  */
