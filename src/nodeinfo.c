@@ -967,8 +967,8 @@ cleanup:
 
 int
 nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        virTypedParameterPtr params,
-                        int nparams,
+                        virTypedParameterPtr params ATTRIBUTE_UNUSED,
+                        int nparams ATTRIBUTE_UNUSED,
                         unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -1062,8 +1062,8 @@ cleanup:
 #define NODE_MEMORY_PARAMETERS_NUM 7
 int
 nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        virTypedParameterPtr params,
-                        int *nparams,
+                        virTypedParameterPtr params ATTRIBUTE_UNUSED,
+                        int *nparams ATTRIBUTE_UNUSED,
                         unsigned int flags)
 {
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
