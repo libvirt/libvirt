@@ -50,6 +50,7 @@ module Libvirtd_qemu =
                  | bool_entry "dynamic_ownership"
                  | str_array_entry "cgroup_controllers"
                  | str_array_entry "cgroup_device_acl"
+                 | int_entry "seccomp_sandbox"
 
    let save_entry =  str_entry "save_image_format"
                  | str_entry "dump_image_format"

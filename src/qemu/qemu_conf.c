@@ -129,6 +129,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
     driver->keepAliveInterval = 5;
     driver->keepAliveCount = 5;
+    driver->seccompSandbox = -1;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -569,6 +570,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue(conf, "keepalive_count");
     CHECK_TYPE("keepalive_count", VIR_CONF_LONG);
     if (p) driver->keepAliveCount = p->l;
+
+    p = virConfGetValue(conf, "seccomp_sandbox");
+    CHECK_TYPE("seccomp_sandbox", VIR_CONF_LONG);
+    if (p) driver->seccompSandbox = p->l;
 
     virConfFree (conf);
     return 0;

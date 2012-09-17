@@ -152,6 +152,7 @@ struct qemud_driver {
 
     int keepAliveInterval;
     unsigned int keepAliveCount;
+    int seccompSandbox;
 };
 
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
