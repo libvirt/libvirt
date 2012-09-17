@@ -1856,10 +1856,12 @@ libvirt (such as whether device reset is supported).
 =item B<nodedev-list> I<cap> I<--tree>
 
 List all of the devices available on the node that are known by libvirt.
-If I<cap> is used, the list is filtered to show only the nodes that
-include the given capability.  If I<--tree> is used, the output is
-formatted in a tree representing parents of each node.
-
+I<cap> is used to filter the list by capability types, the types must be
+separated by comma, e.g. --cap pci,scsi, valid capability types include
+'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
+'scsi', 'storage'. If I<--tree> is used, the output is formatted in a tree
+representing parents of each node. I<cap> and I<--tree> are mutually
+exclusive.
 =item B<nodedev-reattach> I<nodedev>
 
 Declare that I<nodedev> is no longer in use by any guests, and that

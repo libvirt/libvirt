@@ -855,6 +855,7 @@ virPortGroupFindByName;
 
 
 # node_device_conf.h
+virNodeDevCapTypeFromString;
 virNodeDevCapTypeToString;
 virNodeDevCapsDefFree;
 virNodeDeviceAssignDef;
