@@ -387,17 +387,8 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
-typedef enum {
-  QEMU_MONITOR_DUMP_HAVE_FILTER  = 1 << 0,
-  QEMU_MONITOR_DUMP_PAGING       = 1 << 1,
-  QEMU_MONITOR_DUMP_FLAGS_LAST
-} QEMU_MONITOR_DUMP;
-
 int qemuMonitorDumpToFd(qemuMonitorPtr mon,
-                        unsigned int flags,
-                        int fd,
-                        unsigned long long begin,
-                        unsigned long long length);
+                        int fd);
 
 int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int type,

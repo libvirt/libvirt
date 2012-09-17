@@ -2045,15 +2045,11 @@ int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
-int qemuMonitorDumpToFd(qemuMonitorPtr mon,
-                        unsigned int flags,
-                        int fd,
-                        unsigned long long begin,
-                        unsigned long long length)
+int
+qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd)
 {
     int ret;
-    VIR_DEBUG("mon=%p fd=%d flags=%x begin=%llx length=%llx",
-              mon, fd, flags, begin, length);
+    VIR_DEBUG("mon=%p fd=%d", mon, fd);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2073,7 +2069,7 @@ int qemuMonitorDumpToFd(qemuMonitorPtr mon,
     if (qemuMonitorSendFileHandle(mon, "dump", fd) < 0)
         return -1;
 
-    ret = qemuMonitorJSONDump(mon, flags, "fd:dump", begin, length);
+    ret = qemuMonitorJSONDump(mon, "fd:dump");
 
     if (ret < 0) {
         if (qemuMonitorCloseFileHandle(mon, "dump") < 0)

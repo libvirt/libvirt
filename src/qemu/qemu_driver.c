@@ -3132,7 +3132,7 @@ static int qemuDumpToFd(struct qemud_driver *driver, virDomainObjPtr vm,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    ret = qemuMonitorDumpToFd(priv->mon, 0, fd, 0, 0);
+    ret = qemuMonitorDumpToFd(priv->mon, fd);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     return ret;
