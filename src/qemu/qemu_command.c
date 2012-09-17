@@ -6528,6 +6528,17 @@ qemuBuildCommandLine(virConnectPtr conn,
                                  ? qemucmd->env_value[i] : "");
     }
 
+    if (qemuCapsGet(caps, QEMU_CAPS_SECCOMP_SANDBOX)) {
+        if (driver->seccompSandbox == 0)
+            virCommandAddArgList(cmd, "-sandbox", "off", NULL);
+        else if (driver->seccompSandbox > 0)
+            virCommandAddArgList(cmd, "-sandbox", "on", NULL);
+    } else if (driver->seccompSandbox > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("QEMU does not support seccomp sandboxes"));
+        goto error;
+    }
+
     return cmd;
 
  no_memory:
