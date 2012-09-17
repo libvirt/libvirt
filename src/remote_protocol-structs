@@ -2078,11 +2078,11 @@ struct remote_connect_list_all_nwfilters_ret {
         } filters;
         u_int                      ret;
 };
-struct remote_list_all_secrets_args {
+struct remote_connect_list_all_secrets_args {
         int                        need_results;
         u_int                      flags;
 };
-struct remote_list_all_secrets_ret {
+struct remote_connect_list_all_secrets_ret {
         struct {
                 u_int              secrets_len;
                 remote_nonnull_secret * secrets_val;
