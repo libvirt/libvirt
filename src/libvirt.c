@@ -19027,7 +19027,8 @@ error:
  * image.  This function pulls data for the entire device in the background.
  * Progress of the operation can be checked with virDomainGetBlockJobInfo() and
  * the operation can be aborted with virDomainBlockJobAbort().  When finished,
- * an asynchronous event is raised to indicate the final status.
+ * an asynchronous event is raised to indicate the final status.  To move
+ * data in the opposite direction, see virDomainBlockCommit().
  *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
@@ -19170,7 +19171,7 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(dom, "disk=%s, base=%s bandwidth=%lu, flags=%x",
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, base=%s, bandwidth=%lu, flags=%x",
                      disk, NULLSTR(base), bandwidth, flags);
 
     virResetLastError();
@@ -19203,6 +19204,115 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
     if (conn->driver->domainBlockRebase) {
         int ret;
         ret = conn->driver->domainBlockRebase(dom, disk, base, bandwidth,
+                                              flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibDomainError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainBlockCommit:
+ * @dom: pointer to domain object
+ * @disk: path to the block device, or device shorthand
+ * @base: path to backing file to merge into, or NULL for default
+ * @top: path to file within backing chain that contains data to be merged,
+ *       or NULL to merge all possible data
+ * @bandwidth: (optional) specify commit bandwidth limit in MiB/s
+ * @flags: bitwise-OR of virDomainBlockCommitFlags
+ *
+ * Commit changes that were made to temporary top-level files within a disk
+ * image backing file chain into a lower-level base file.  In other words,
+ * take all the difference between @base and @top, and update @base to contain
+ * that difference; after the commit, any portion of the chain that previously
+ * depended on @top will now depend on @base, and all files after @base up
+ * to and including @top will now be invalidated.  A typical use of this
+ * command is to reduce the length of a backing file chain after taking an
+ * external disk snapshot.  To move data in the opposite direction, see
+ * virDomainBlockPull().
+ *
+ * This command starts a long-running commit block job, whose status may
+ * be tracked by virDomainBlockJobInfo() with a job type of
+ * VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT, and the operation can be aborted with
+ * virDomainBlockJobAbort().  When finished, an asynchronous event is
+ * raised to indicate the final status, and the job no longer exists.  If
+ * the job is aborted, it is up to the hypervisor whether starting a new
+ * job will resume from the same point, or start over.
+ *
+ * Be aware that this command may invalidate files even if it is aborted;
+ * the user is cautioned against relying on the contents of invalidated
+ * intermediate files such as @top without manually rebasing those files
+ * to use a backing file of a read-only copy of @base prior to the point
+ * where the commit operation was started (although such a rebase cannot
+ * be safely done until the commit has successfully completed).  However,
+ * the domain itself will not have any issues; the active layer remains
+ * valid throughout the entire commit operation.  As a convenience,
+ * if @flags contains VIR_DOMAIN_BLOCK_COMMIT_DELETE, this command will
+ * unlink all files that were invalidated, after the commit successfully
+ * completes.
+ *
+ * By default, if @base is NULL, the commit target will be the bottom of
+ * the backing chain; if @flags contains VIR_DOMAIN_BLOCK_COMMIT_SHALLOW,
+ * then the immediate backing file of @top will be used instead.  If @top
+ * is NULL, the active image at the top of the chain will be used.  Some
+ * hypervisors place restrictions on how much can be committed, and might
+ * fail if @base is not the immediate backing file of @top, or if @top is
+ * the active layer in use by a running domain, or if @top is not the
+ * top-most file; restrictions may differ for online vs. offline domains.
+ *
+ * The @disk parameter is either an unambiguous source name of the
+ * block device (the <source file='...'/> sub-element, such as
+ * "/path/to/image"), or the device target shorthand (the
+ * <target dev='...'/> sub-element, such as "xvda").  Valid names
+ * can be found by calling virDomainGetXMLDesc() and inspecting
+ * elements within //domain/devices/disk.
+ *
+ * The maximum bandwidth (in MiB/s) that will be used to do the commit can be
+ * specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+ * suitable default.  Some hypervisors do not support this feature and will
+ * return an error if bandwidth is not 0; in this case, it might still be
+ * possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+ * The actual speed can be determined with virDomainGetBlockJobInfo().
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int virDomainBlockCommit(virDomainPtr dom, const char *disk,
+                         const char *base, const char *top,
+                         unsigned long bandwidth, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "disk=%s, base=%s, top=%s, bandwidth=%lu, flags=%x",
+                     disk, NULLSTR(base), NULLSTR(top), bandwidth, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    virCheckNonNullArgGoto(disk, error);
+    if (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW)
+        virCheckNullArgGoto(base, error);
+
+    if (conn->driver->domainBlockCommit) {
+        int ret;
+        ret = conn->driver->domainBlockCommit(dom, disk, base, top, bandwidth,
                                               flags);
         if (ret < 0)
             goto error;

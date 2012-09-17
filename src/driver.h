@@ -832,6 +832,10 @@ typedef int
     (*virDrvDomainBlockRebase)(virDomainPtr dom, const char *path,
                                const char *base, unsigned long bandwidth,
                                unsigned int flags);
+typedef int
+    (*virDrvDomainBlockCommit)(virDomainPtr dom, const char *disk,
+                               const char *base, const char *top,
+                               unsigned long bandwidth, unsigned int flags);
 
 typedef int
     (*virDrvSetKeepAlive)(virConnectPtr conn,
@@ -1071,6 +1075,7 @@ struct _virDriver {
     virDrvDomainBlockJobSetSpeed        domainBlockJobSetSpeed;
     virDrvDomainBlockPull               domainBlockPull;
     virDrvDomainBlockRebase             domainBlockRebase;
+    virDrvDomainBlockCommit             domainBlockCommit;
     virDrvSetKeepAlive                  setKeepAlive;
     virDrvConnectIsAlive                isAlive;
     virDrvNodeSuspendForDuration        nodeSuspendForDuration;

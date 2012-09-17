@@ -1759,6 +1759,7 @@ class CParser:
         "virDomainSetMaxMemory"          : (False, ("memory")),
         "virDomainSetMemory"             : (False, ("memory")),
         "virDomainSetMemoryFlags"        : (False, ("memory")),
+        "virDomainBlockCommit"           : (False, ("bandwidth")),
         "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
         "virDomainBlockPull"             : (False, ("bandwidth")),
         "virDomainBlockRebase"           : (False, ("bandwidth")),
