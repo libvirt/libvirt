@@ -1224,6 +1224,14 @@ struct remote_domain_block_rebase_args {
     unsigned hyper bandwidth;
     unsigned int flags;
 };
+struct remote_domain_block_commit_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string disk;
+    remote_string base;
+    remote_string top;
+    unsigned hyper bandwidth;
+    unsigned int flags;
+};
 
 struct remote_domain_set_block_io_tune_args {
     remote_nonnull_domain dom;
@@ -2988,7 +2996,9 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_NWFILTERS = 286, /* skipgen skipgen priority:high */
     REMOTE_PROC_CONNECT_LIST_ALL_SECRETS = 287, /* skipgen skipgen priority:high */
     REMOTE_PROC_NODE_SET_MEMORY_PARAMETERS = 288, /* autogen autogen */
-    REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289 /* skipgen skipgen */
+    REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290 /* autogen autogen */
+
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
