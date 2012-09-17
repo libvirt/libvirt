@@ -694,6 +694,36 @@ currently in use by a running domain. Other contexts that require a MAC
 address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
+=item B<blockcommit> I<domain> I<path> [I<bandwidth>]
+{[I<base>] | [I<--shallow>]} [I<top>] [I<--delete>]
+[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>]]
+
+Reduce the length of a backing image chain, by committing changes at the
+top of the chain (snapshot or delta files) into backing images.  By
+default, this command attempts to flatten the entire chain.  If I<base>
+and/or I<top> are specified as files within the backing chain, then the
+operation is constrained to committing just that portion of the chain;
+I<--shallow> can be used instead of I<base> to specify the immediate
+backing file of the resulting top image to be committed.  The files
+being committed are rendered invalid, possibly as soon as the operation
+starts; using the I<--delete> flag will remove these files at the successful
+completion of the commit operation.
+
+By default, this command returns as soon as possible, and data for
+the entire disk is committed in the background; the progress of the
+operation can be checked with B<blockjob>.  However, if I<--wait> is
+specified, then this command will block until the operation completes,
+or cancel the operation if the optional I<timeout> in seconds elapses
+or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
+with I<--wait> will produce periodic status updates.
+
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
+qemu, it may be non-zero only for an online domain.
+
 =item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
 [I<--reuse-external>] [I<--raw>] [I<--wait> [I<--verbose]
 [{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>] [I<--async>]]

@@ -1154,6 +1154,7 @@ typedef enum {
     VSH_CMD_BLOCK_JOB_SPEED = 2,
     VSH_CMD_BLOCK_JOB_PULL = 3,
     VSH_CMD_BLOCK_JOB_COPY = 4,
+    VSH_CMD_BLOCK_JOB_COMMIT = 5,
 } vshCmdBlockJobMode;
 
 static int
@@ -1166,6 +1167,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     unsigned long bandwidth = 0;
     int ret = -1;
     const char *base = NULL;
+    const char *top = NULL;
     unsigned int flags = 0;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
@@ -1180,7 +1182,7 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
     }
 
     switch ((vshCmdBlockJobMode) mode) {
-    case  VSH_CMD_BLOCK_JOB_ABORT:
+    case VSH_CMD_BLOCK_JOB_ABORT:
         if (vshCommandOptBool(cmd, "async"))
             flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
         if (vshCommandOptBool(cmd, "pivot"))
@@ -1200,6 +1202,16 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
             ret = virDomainBlockRebase(dom, path, base, bandwidth, 0);
         else
             ret = virDomainBlockPull(dom, path, bandwidth, 0);
+        break;
+    case VSH_CMD_BLOCK_JOB_COMMIT:
+        if (vshCommandOptString(cmd, "base", &base) < 0 ||
+            vshCommandOptString(cmd, "top", &top) < 0)
+            goto cleanup;
+        if (vshCommandOptBool(cmd, "shallow"))
+            flags |= VIR_DOMAIN_BLOCK_COMMIT_SHALLOW;
+        if (vshCommandOptBool(cmd, "delete"))
+            flags |= VIR_DOMAIN_BLOCK_COMMIT_DELETE;
+        ret = virDomainBlockCommit(dom, path, base, top, bandwidth, flags);
         break;
     case VSH_CMD_BLOCK_JOB_COPY:
         flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
@@ -1257,6 +1269,145 @@ static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
                         void *context ATTRIBUTE_UNUSED)
 {
     intCaught = 1;
+}
+
+/*
+ * "blockcommit" command
+ */
+static const vshCmdInfo info_block_commit[] = {
+    {"help", N_("Start a block commit operation.")},
+    {"desc", N_("Commit changes from a snapshot down to its backing image.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_block_commit[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"path", VSH_OT_DATA, VSH_OFLAG_REQ, N_("fully-qualified path of disk")},
+    {"bandwidth", VSH_OT_DATA, VSH_OFLAG_NONE, N_("bandwidth limit in MiB/s")},
+    {"base", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("path of base file to commit into (default bottom of chain)")},
+    {"shallow", VSH_OT_BOOL, 0, N_("use backing file of top as base")},
+    {"top", VSH_OT_DATA, VSH_OFLAG_NONE,
+     N_("path of top file to commit from (default top of chain)")},
+    {"delete", VSH_OT_BOOL, 0,
+     N_("delete files that were successfully committed")},
+    {"wait", VSH_OT_BOOL, 0, N_("wait for job to complete")},
+    {"verbose", VSH_OT_BOOL, 0, N_("with --wait, display the progress")},
+    {"timeout", VSH_OT_INT, VSH_OFLAG_NONE,
+     N_("with --wait, abort if copy exceeds timeout (in seconds)")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    bool blocking = vshCommandOptBool(cmd, "wait");
+    bool verbose = vshCommandOptBool(cmd, "verbose");
+    int timeout = 0;
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    sigset_t sigmask;
+    struct timeval start;
+    struct timeval curr;
+    const char *path = NULL;
+    bool quit = false;
+    int abort_flags = 0;
+
+    if (blocking) {
+        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
+            if (timeout < 1) {
+                vshError(ctl, "%s", _("invalid timeout"));
+                return false;
+            }
+
+            /* Ensure that we can multiply by 1000 without overflowing. */
+            if (timeout > INT_MAX / 1000) {
+                vshError(ctl, "%s", _("timeout is too big"));
+                return false;
+            }
+            timeout *= 1000;
+        }
+        if (vshCommandOptString(cmd, "path", &path) < 0)
+            return false;
+        if (vshCommandOptBool(cmd, "async"))
+            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+
+        sigemptyset(&sigmask);
+        sigaddset(&sigmask, SIGINT);
+
+        intCaught = 0;
+        sig_action.sa_sigaction = vshCatchInt;
+        sig_action.sa_flags = SA_SIGINFO;
+        sigemptyset(&sig_action.sa_mask);
+        sigaction(SIGINT, &sig_action, &old_sig_action);
+
+        GETTIMEOFDAY(&start);
+    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
+               vshCommandOptBool(cmd, "async")) {
+        vshError(ctl, "%s", _("missing --wait option"));
+        return false;
+    }
+
+    if (blockJobImpl(ctl, cmd, NULL, VSH_CMD_BLOCK_JOB_COMMIT, &dom) < 0)
+        goto cleanup;
+
+    if (!blocking) {
+        vshPrint(ctl, "%s", _("Block Commit started"));
+        ret = true;
+        goto cleanup;
+    }
+
+    while (blocking) {
+        virDomainBlockJobInfo info;
+        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+
+        if (result < 0) {
+            vshError(ctl, _("failed to query job for disk %s"), path);
+            goto cleanup;
+        }
+        if (result == 0)
+            break;
+
+        if (verbose)
+            print_job_progress(_("Block Commit"),
+                               info.end - info.cur, info.end);
+
+        GETTIMEOFDAY(&curr);
+        if (intCaught || (timeout &&
+                          (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
+                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
+                           timeout))) {
+            vshDebug(ctl, VSH_ERR_DEBUG,
+                     intCaught ? "interrupted" : "timeout");
+            intCaught = 0;
+            timeout = 0;
+            quit = true;
+            if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+                vshError(ctl, _("failed to abort job for disk %s"), path);
+                goto cleanup;
+            }
+            if (abort_flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)
+                break;
+        } else {
+            usleep(500 * 1000);
+        }
+    }
+
+    if (verbose && !quit) {
+        /* printf [100 %] */
+        print_job_progress(_("Block Commit"), 0, 1);
+    }
+    vshPrint(ctl, "\n%s", quit ? _("Commit aborted") : _("Commit complete"));
+
+    ret = true;
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (blocking)
+        sigaction(SIGINT, &old_sig_action, NULL);
+    return ret;
 }
 
 /*
@@ -1322,6 +1473,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
                 vshError(ctl, "%s", _("migrate: Timeout is too big"));
                 return false;
             }
+            timeout *= 1000;
         }
         if (vshCommandOptString(cmd, "path", &path) < 0)
             return false;
@@ -1340,7 +1492,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         GETTIMEOFDAY(&start);
     } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
                vshCommandOptBool(cmd, "async") || pivot || finish) {
-        vshError(ctl, "%s", _("blocking control options require --wait"));
+        vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
 
@@ -1370,7 +1522,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         if (intCaught || (timeout &&
                           (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
                             (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                           timeout * 1000))) {
+                           timeout))) {
             vshDebug(ctl, VSH_ERR_DEBUG,
                      intCaught ? "interrupted" : "timeout");
             intCaught = 0;
@@ -1541,6 +1693,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
                 vshError(ctl, "%s", _("timeout is too big"));
                 return false;
             }
+            timeout *= 1000;
         }
         if (vshCommandOptString(cmd, "path", &path) < 0)
             return false;
@@ -1559,7 +1712,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         GETTIMEOFDAY(&start);
     } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
                vshCommandOptBool(cmd, "async")) {
-        vshError(ctl, "%s", _("blocking control options require --wait"));
+        vshError(ctl, "%s", _("missing --wait option"));
         return false;
     }
 
@@ -1590,7 +1743,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         if (intCaught || (timeout &&
                           (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
                             (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                           timeout * 1000))) {
+                           timeout))) {
             vshDebug(ctl, VSH_ERR_DEBUG,
                      intCaught ? "interrupted" : "timeout");
             intCaught = 0;
@@ -8112,6 +8265,7 @@ const vshCmdDef domManagementCmds[] = {
     {"autostart", cmdAutostart, opts_autostart, info_autostart, 0},
     {"blkdeviotune", cmdBlkdeviotune, opts_blkdeviotune, info_blkdeviotune, 0},
     {"blkiotune", cmdBlkiotune, opts_blkiotune, info_blkiotune, 0},
+    {"blockcommit", cmdBlockCommit, opts_block_commit, info_block_commit, 0},
     {"blockcopy", cmdBlockCopy, opts_block_copy, info_block_copy, 0},
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
