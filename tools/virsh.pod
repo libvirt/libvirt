@@ -395,10 +395,11 @@ into s3 state.
 Normally only active domains are listed. To list inactive domains specify
 I<--inactive> or I<--all> to list both active and inactive domains.
 
-To filter the list of domains present on the hypervisor you may specify one or
-more of filtering flags supported by the B<list> command.  These flags are
-grouped by function. Specifying one or more flags from a group enables the
-filter group. Supported filtering flags and groups:
+To further filter the list of domains you may specify one or more of filtering
+flags supported by the B<list> command. These flags are grouped by function.
+Specifying one or more flags from a group enables the filter group. Note that
+some combinations of flags may yield no results. Supported filtering flags and
+groups:
 
 =over 4
 
