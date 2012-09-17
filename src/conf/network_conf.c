@@ -2261,7 +2261,6 @@ virNetworkDefUpdateNoSupport(virNetworkDefPtr def, const char *section)
                    section, def->name);
 }
 
-#if 0
 static int
 virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
                                     xmlNodePtr node,
@@ -2276,7 +2275,6 @@ virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
     }
     return 0;
 }
-#endif
 
 static int
 virNetworkDefUpdateBridge(virNetworkDefPtr def,
@@ -2314,16 +2312,184 @@ virNetworkDefUpdateIP(virNetworkDefPtr def,
     return -1;
 }
 
+static virNetworkIpDefPtr
+virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
+{
+    virNetworkIpDefPtr ipdef = NULL;
+    int ii;
+
+    /* first find which ip element's dhcp host list to work on */
+    if (parentIndex >= 0) {
+        ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, parentIndex);
+        if (!(ipdef &&
+              VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't update dhcp host entry - "
+                             "no <ip family='ipv4'> "
+                             "element found at index %d in network '%s'"),
+                           parentIndex, def->name);
+        }
+        return ipdef;
+    }
+
+    /* -1 means "find the most appropriate", which in this case
+     * means the one and only <ip> that has <dhcp> element
+     */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
+         ii++) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET) &&
+            (ipdef->nranges || ipdef->nhosts)) {
+            break;
+        }
+    }
+    if (!ipdef)
+        ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
+    if (!ipdef) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("couldn't update dhcp host entry - "
+                         "no <ip family='ipv4'> "
+                         "element found in network '%s'"), def->name);
+    }
+    return ipdef;
+}
+
 static int
 virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
-                              unsigned int command ATTRIBUTE_UNUSED,
-                              int parentIndex ATTRIBUTE_UNUSED,
-                              xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                              unsigned int command,
+                              int parentIndex,
+                              xmlXPathContextPtr ctxt,
                               /* virNetworkUpdateFlags */
                               unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    virNetworkDefUpdateNoSupport(def, "ip dhcp host");
-    return -1;
+    int ii, ret = -1;
+    virNetworkIpDefPtr ipdef = virNetworkIpDefByIndex(def, parentIndex);
+    virNetworkDHCPHostDef host;
+
+    memset(&host, 0, sizeof(host));
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "host") < 0)
+        goto cleanup;
+
+    /* ipdef is the ip element that needs its host array updated */
+    if (!ipdef)
+        goto cleanup;
+
+    /* parse the xml into a virNetworkDHCPHostDef */
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+
+        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, false) < 0)
+            goto cleanup;
+
+        /* search for the entry with this (mac|name),
+         * and update the IP+(mac|name) */
+        for (ii = 0; ii < ipdef->nhosts; ii++) {
+            if ((host.mac &&
+                 !virMacAddrCompare(host.mac, ipdef->hosts[ii].mac)) ||
+                (host.name &&
+                 STREQ_NULLABLE(host.name, ipdef->hosts[ii].name))) {
+                break;
+            }
+        }
+
+        if (ii == ipdef->nhosts) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate an existing dhcp host entry with "
+                             "\"mac='%s'\" in network '%s'"),
+                           host.mac, def->name);
+            goto cleanup;
+        }
+
+        /* clear the existing hosts entry, move the new one in its place,
+         * then clear out the extra copy to get rid of the duplicate pointers
+         * to its data (mac and name strings).
+         */
+        virNetworkDHCPHostDefClear(&ipdef->hosts[ii]);
+        ipdef->hosts[ii] = host;
+        memset(&host, 0, sizeof(host));
+
+    } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
+               (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
+
+        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, true) < 0)
+            goto cleanup;
+
+        /* log error if an entry with same name/address/ip already exists */
+        for (ii = 0; ii < ipdef->nhosts; ii++) {
+            if ((host.mac &&
+                 !virMacAddrCompare(host.mac, ipdef->hosts[ii].mac)) ||
+                (host.name &&
+                 STREQ_NULLABLE(host.name, ipdef->hosts[ii].name)) ||
+                (VIR_SOCKET_ADDR_VALID(&host.ip) &&
+                 virSocketAddrEqual(&host.ip, &ipdef->hosts[ii].ip))) {
+                char *ip = virSocketAddrFormat(&host.ip);
+
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("there is an existing dhcp host entry in "
+                                 "network '%s' that matches "
+                                 "\"<host mac='%s' name='%s' ip='%s'/>\""),
+                               def->name, host.mac, host.name,
+                               ip ? ip : "unknown");
+                VIR_FREE(ip);
+                goto cleanup;
+            }
+        }
+        /* add to beginning/end of list */
+        if (VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts +1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
+
+            ipdef->hosts[ipdef->nhosts] = host;
+            ipdef->nhosts++;
+            memset(&host, 0, sizeof(host));
+
+        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
+
+            memmove(ipdef->hosts + 1, ipdef->hosts,
+                    sizeof(ipdef->hosts) * ipdef->nhosts);
+            ipdef->hosts[0] = host;
+            ipdef->nhosts++;
+            memset(&host, 0, sizeof(host));
+        }
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, false) < 0)
+            goto cleanup;
+
+        /* find matching entry - all specified attributes must match */
+        for (ii = 0; ii < ipdef->nhosts; ii++) {
+            if ((!host.mac ||
+                 !virMacAddrCompare(host.mac, ipdef->hosts[ii].mac)) &&
+                (!host.name ||
+                 STREQ_NULLABLE(host.name, ipdef->hosts[ii].name)) &&
+                (!VIR_SOCKET_ADDR_VALID(&host.ip) ||
+                 virSocketAddrEqual(&host.ip, &ipdef->hosts[ii].ip))) {
+                break;
+            }
+        }
+        if (ii == ipdef->nhosts) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate a matching dhcp host entry "
+                             "in network '%s'"), def->name);
+            goto cleanup;
+        }
+
+        /* remove it */
+        virNetworkDHCPHostDefClear(&ipdef->hosts[ii]);
+        memmove(ipdef->hosts + ii, ipdef->hosts + ii + 1,
+                sizeof(ipdef->hosts) * ipdef->nhosts - ii - 1);
+        ipdef->nhosts--;
+        ignore_value(VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts));
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkDHCPHostDefClear(&host);
+    return ret;
 }
 
 static int
