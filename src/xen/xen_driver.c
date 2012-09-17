@@ -134,7 +134,7 @@ xenDomainUsedCpus(virDomainPtr dom)
     char *res = NULL;
     int ncpus;
     int nb_vcpu;
-    char *cpulist = NULL;
+    virBitmapPtr cpulist = NULL;
     unsigned char *cpumap = NULL;
     size_t cpumaplen;
     int nb = 0;
@@ -156,7 +156,7 @@ xenDomainUsedCpus(virDomainPtr dom)
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
         return NULL;
 
-    if (VIR_ALLOC_N(cpulist, priv->nbNodeCpus) < 0) {
+    if (!(cpulist = virBitmapNew(priv->nbNodeCpus))) {
         virReportOOMError();
         goto done;
     }
@@ -175,9 +175,11 @@ xenDomainUsedCpus(virDomainPtr dom)
                                           cpumap, cpumaplen)) >= 0) {
         for (n = 0 ; n < ncpus ; n++) {
             for (m = 0 ; m < priv->nbNodeCpus; m++) {
-                if ((cpulist[m] == 0) &&
+                bool used;
+                ignore_value(virBitmapGetBit(cpulist, m, &used));
+                if ((!used) &&
                     (VIR_CPU_USABLE(cpumap, cpumaplen, n, m))) {
-                    cpulist[m] = 1;
+                    ignore_value(virBitmapSetBit(cpulist, m));
                     nb++;
                     /* if all CPU are used just return NULL */
                     if (nb == priv->nbNodeCpus)
@@ -186,11 +188,11 @@ xenDomainUsedCpus(virDomainPtr dom)
                 }
             }
         }
-        res = virDomainCpuSetFormat(cpulist, priv->nbNodeCpus);
+        res = virBitmapFormat(cpulist);
     }
 
 done:
-    VIR_FREE(cpulist);
+    virBitmapFree(cpulist);
     VIR_FREE(cpumap);
     VIR_FREE(cpuinfo);
     return res;

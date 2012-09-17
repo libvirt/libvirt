@@ -1113,7 +1113,7 @@ sexpr_to_xend_topology(const struct sexpr *root,
 {
     const char *nodeToCpu;
     const char *cur;
-    char *cpuset = NULL;
+    virBitmapPtr cpuset = NULL;
     int *cpuNums = NULL;
     int cell, cpu, nb_cpus;
     int n = 0;
@@ -1126,8 +1126,6 @@ sexpr_to_xend_topology(const struct sexpr *root,
     numCpus = sexpr_int(root, "node/nr_cpus");
 
 
-    if (VIR_ALLOC_N(cpuset, numCpus) < 0)
-        goto memory_error;
     if (VIR_ALLOC_N(cpuNums, numCpus) < 0)
         goto memory_error;
 
@@ -1150,17 +1148,21 @@ sexpr_to_xend_topology(const struct sexpr *root,
         virSkipSpacesAndBackslash(&cur);
         if (STRPREFIX(cur, "no cpus")) {
             nb_cpus = 0;
-            for (cpu = 0; cpu < numCpus; cpu++)
-                cpuset[cpu] = 0;
+            if (!(cpuset = virBitmapNew(numCpus)))
+                goto memory_error;
         } else {
-            nb_cpus = virDomainCpuSetParse(cur, 'n', cpuset, numCpus);
+            nb_cpus = virBitmapParse(cur, 'n', &cpuset, numCpus);
             if (nb_cpus < 0)
                 goto error;
         }
 
-        for (n = 0, cpu = 0; cpu < numCpus; cpu++)
-            if (cpuset[cpu] == 1)
+        for (n = 0, cpu = 0; cpu < numCpus; cpu++) {
+            bool used;
+
+            ignore_value(virBitmapGetBit(cpuset, cpu, &used));
+            if (used)
                 cpuNums[n++] = cpu;
+        }
 
         if (virCapabilitiesAddHostNUMACell(caps,
                                            cell,
@@ -1169,20 +1171,20 @@ sexpr_to_xend_topology(const struct sexpr *root,
             goto memory_error;
     }
     VIR_FREE(cpuNums);
-    VIR_FREE(cpuset);
+    virBitmapFree(cpuset);
     return 0;
 
   parse_error:
     virReportError(VIR_ERR_XEN_CALL, "%s", _("topology syntax error"));
   error:
     VIR_FREE(cpuNums);
-    VIR_FREE(cpuset);
+    virBitmapFree(cpuset);
 
     return -1;
 
   memory_error:
     VIR_FREE(cpuNums);
-    VIR_FREE(cpuset);
+    virBitmapFree(cpuset);
     virReportOOMError();
     return -1;
 }
