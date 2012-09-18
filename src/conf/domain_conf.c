@@ -8136,7 +8136,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr *nodes = NULL;
     int i, n;
-    char *bootstr;
+    char *bootstr, *tmp;
     char *useserial = NULL;
     int ret = -1;
     unsigned long deviceBoot, serialPorts;
@@ -8214,10 +8214,25 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         }
     }
 
+    tmp = virXPathString("string(./os/bios[1]/@rebootTimeout)", ctxt);
+    if (tmp) {
+        /* that was really just for the check if it is there */
+
+        if (virStrToLong_i(tmp, NULL, 0, &def->os.bios.rt_delay) < 0 ||
+            def->os.bios.rt_delay < -1 || def->os.bios.rt_delay > 65535) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("invalid value for rebootTimeout, "
+                             "must be in range [-1,65535]"));
+            goto cleanup;
+        }
+        def->os.bios.rt_set = true;
+    }
+
     *bootCount = deviceBoot;
     ret = 0;
 
 cleanup:
+    VIR_FREE(tmp);
     VIR_FREE(useserial);
     VIR_FREE(nodes);
     return ret;
@@ -13494,11 +13509,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAsprintf(buf, "    <bootmenu enable='%s'/>\n", enabled);
         }
 
-        if (def->os.bios.useserial) {
-            const char *useserial = (def->os.bios.useserial ==
-                                     VIR_DOMAIN_BIOS_USESERIAL_YES ? "yes"
-                                                                   : "no");
-            virBufferAsprintf(buf, "    <bios useserial='%s'/>\n", useserial);
+        if (def->os.bios.useserial || def->os.bios.rt_set) {
+            virBufferAddLit(buf, "    <bios");
+            if (def->os.bios.useserial)
+                virBufferAsprintf(buf, " useserial='%s'",
+                                  (def->os.bios.useserial ==
+                                   VIR_DOMAIN_BIOS_USESERIAL_YES ? "yes"
+                                                                   : "no"));
+            if (def->os.bios.rt_set)
+                virBufferAsprintf(buf, " rebootTimeout='%d'", def->os.bios.rt_delay);
+
+            virBufferAddLit(buf, "/>\n");
         }
     }
 

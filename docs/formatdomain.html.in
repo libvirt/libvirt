@@ -105,7 +105,7 @@
     &lt;boot dev='cdrom'/&gt;
     &lt;bootmenu enable='yes'/&gt;
     &lt;smbios mode='sysinfo'/&gt;
-    &lt;bios useserial='yes'/&gt;
+    &lt;bios useserial='yes' rebootTimeout='0'/&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -175,8 +175,13 @@
         Serial Graphics Adapter which allows users to see BIOS messages
         on a serial port. Therefore, one needs to have
         <a href="#elementCharSerial">serial port</a> defined.
-        <span class="since">Since 0.9.4</span>
-      </dd>
+        <span class="since">Since 0.9.4</span>.
+        <span class="since">Since 0.10.2 (QEMU only)</span> there is
+        another attribute, <code>rebootTimeout</code> that controls
+        whether and after how long the guest should start booting
+        again in case the boot fails (according to BIOS). The value is
+        in milliseconds with maximum of <code>65535</code> and special
+        value <code>-1</code> disables the reboot.
     </dl>
 
     <h4><a name="elementsOSBootloader">Host bootloader</a></h4>

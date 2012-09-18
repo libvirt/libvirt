@@ -3190,12 +3190,19 @@
 
   <define name="bios">
     <element name="bios">
-      <attribute name="useserial">
-        <choice>
-          <value>yes</value>
-          <value>no</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="useserial">
+          <choice>
+            <value>yes</value>
+            <value>no</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="rebootTimeout">
+          <ref name="rebootTimeoutDelay"/>
+        </attribute>
+      </optional>
     </element>
   </define>
 
@@ -3467,6 +3474,11 @@
       <param name="pattern">-?[0-9]+</param>
       <param name="maxInclusive">18446744073709551</param>
       <param name='minInclusive'>-1</param>
+    </data>
+  </define>
+  <define name="rebootTimeoutDelay">
+    <data type="short">
+      <param name="minInclusive">-1</param>
     </data>
   </define>
   <define name="PortNumber">

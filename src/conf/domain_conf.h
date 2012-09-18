@@ -1420,6 +1420,9 @@ typedef struct _virDomainBIOSDef virDomainBIOSDef;
 typedef virDomainBIOSDef *virDomainBIOSDefPtr;
 struct _virDomainBIOSDef {
     int useserial;
+    /* reboot-timeout parameters */
+    bool rt_set;
+    int rt_delay;
 };
 
 /* Operating system configuration data & machine / arch */
