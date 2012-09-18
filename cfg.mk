@@ -789,7 +789,7 @@ exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
-  ^((po|tests)/|docs/.*py$$)
+  ^((po|tests)/|docs/.*py|run.in$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(src/util/memory\.[ch]|examples/.*)$$
