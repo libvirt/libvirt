@@ -179,6 +179,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "usb-redir.filter",
               "ide-drive.wwn",
               "scsi-disk.wwn",
+              "seccomp-sandbox",
     );
 
 struct _qemuCaps {
@@ -1199,6 +1200,8 @@ qemuCapsComputeCmdFlags(const char *help,
     }
     if (strstr(help, "-smbios type"))
         qemuCapsSet(caps, QEMU_CAPS_SMBIOS_TYPE);
+    if (strstr(help, "-sandbox"))
+        qemuCapsSet(caps, QEMU_CAPS_SECCOMP_SANDBOX);
 
     if ((netdev = strstr(help, "-netdev"))) {
         /* Disable -netdev on 0.12 since although it exists,
