@@ -556,8 +556,9 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
                   srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
         if (mount(srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to mount %s on %s type %s"),
-                                 mnts[i].src, mnts[i].dst, NULLSTR(mnts[i].type));
+                                 _("Failed to mount %s on %s type %s flags=%x opts=%s"),
+                                 srcpath, mnts[i].dst, NULLSTR(mnts[i].type),
+                                 mnts[i].mflags, NULLSTR(mnts[i].opts));
             goto cleanup;
         }
     }
@@ -579,8 +580,8 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
                   MS_NOSUID, opts);
         if (mount("devfs", "/dev", "tmpfs", MS_NOSUID, opts) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to mount %s on %s type %s"),
-                                 "devfs", "/dev", "tmpfs");
+                                 _("Failed to mount %s on %s type %s (%s)"),
+                                 "devfs", "/dev", "tmpfs", opts);
             goto cleanup;
         }
     }
