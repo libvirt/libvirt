@@ -4945,7 +4945,22 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_WARN("bootmenu is enabled but not "
                          "supported by this QEMU binary");
             }
+        }
 
+        if (def->os.bios.rt_set) {
+            if (!qemuCapsGet(caps, QEMU_CAPS_REBOOT_TIMEOUT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("reboot timeout is not supported "
+                                 "by this QEMU binary"));
+                goto error;
+            }
+
+            if (boot_nparams++)
+                virBufferAddChar(&boot_buf, ',');
+
+            virBufferAsprintf(&boot_buf,
+                              "reboot-timeout=%d",
+                              def->os.bios.rt_delay);
         }
 
         if (boot_nparams > 0) {
@@ -8271,6 +8286,22 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                         qemuParseCommandLineBootDevs(def, token);
                     } else if (STRPREFIX(token, "menu=on")) {
                         def->os.bootmenu = 1;
+                    } else if (STRPREFIX(token, "reboot-timeout=")) {
+                        int num;
+                        char *endptr;
+                        if (virStrToLong_i(token + strlen("reboot-timeout="),
+                                           &endptr, 10, &num) < 0 ||
+                            (*endptr != '\0' && endptr != strchr(token, ','))) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                           _("cannot parse reboot-timeout value"));
+                            goto error;
+                        }
+                        if (num > 65535)
+                            num = 65535;
+                        else if (num < -1)
+                            num = -1;
+                        def->os.bios.rt_delay = num;
+                        def->os.bios.rt_set = true;
                     }
                     token = strchr(token, ',');
                     /* This incrementation has to be done here in order to make it

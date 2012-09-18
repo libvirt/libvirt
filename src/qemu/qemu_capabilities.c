@@ -180,6 +180,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "ide-drive.wwn",
               "scsi-disk.wwn",
               "seccomp-sandbox",
+
+              "reboot-timeout", /* 110 */
     );
 
 struct _qemuCaps {
@@ -1191,6 +1193,8 @@ qemuCapsComputeCmdFlags(const char *help,
         qemuCapsSet(caps, QEMU_CAPS_NESTING);
     if (strstr(help, ",menu=on"))
         qemuCapsSet(caps, QEMU_CAPS_BOOT_MENU);
+    if (strstr(help, ",reboot-timeout=rb_time"))
+        qemuCapsSet(caps, QEMU_CAPS_REBOOT_TIMEOUT);
     if ((fsdev = strstr(help, "-fsdev"))) {
         qemuCapsSet(caps, QEMU_CAPS_FSDEV);
         if (strstr(fsdev, "readonly"))

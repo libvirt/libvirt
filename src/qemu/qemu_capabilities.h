@@ -145,6 +145,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_IDE_DRIVE_WWN      = 107, /* Is ide-drive.wwn available? */
     QEMU_CAPS_SCSI_DISK_WWN      = 108, /* Is scsi-disk.wwn available? */
     QEMU_CAPS_SECCOMP_SANDBOX    = 109, /* -sandbox */
+    QEMU_CAPS_REBOOT_TIMEOUT     = 110, /* -boot reboot-timeout */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
