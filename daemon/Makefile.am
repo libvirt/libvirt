@@ -151,7 +151,7 @@ if WITH_NETWORK
     libvirtd_LDADD += ../src/libvirt_driver_network.la
 endif
 
-if WITH_NETCF
+if WITH_INTERFACE
     libvirtd_LDADD += ../src/libvirt_driver_interface.la
 endif
 

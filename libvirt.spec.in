@@ -70,6 +70,7 @@
 %define with_parallels     0%{!?_without_parallels:1}
 
 # Then the secondary host drivers, which run inside libvirtd
+%define with_interface        0%{!?_without_interface:%{server_drivers}}
 %define with_network          0%{!?_without_network:%{server_drivers}}
 %define with_storage_fs       0%{!?_without_storage_fs:%{server_drivers}}
 %define with_storage_lvm      0%{!?_without_storage_lvm:%{server_drivers}}
@@ -207,6 +208,11 @@
 %define with_hal       0%{!?_without_hal:%{server_drivers}}
 %endif
 
+# interface requires netcf
+%if ! 0%{?with_netcf}
+%define with_interface     0
+%endif
+
 # Enable yajl library for JSON mode with QEMU
 %if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
 %define with_yajl     0%{!?_without_yajl:%{server_drivers}}
@@ -226,6 +232,7 @@
 # Disable some drivers when building without libvirt daemon.
 # The logic is the same as in configure.ac
 %if ! %{with_libvirtd}
+%define with_interface 0
 %define with_network 0
 %define with_qemu 0
 %define with_lxc 0
@@ -279,12 +286,6 @@
 %define with_nodedev 1
 %else
 %define with_nodedev 0
-%endif
-
-%if %{with_netcf}
-%define with_interface 1
-%else
-%define with_interface 0
 %endif
 
 %if %{with_storage_fs} || %{with_storage_mpath} || %{with_storage_iscsi} || %{with_storage_lvm} || %{with_storage_disk}
@@ -1113,6 +1114,10 @@ of recent versions of Linux (and other OSes).
 %define _with_rhel5_api --with-rhel5-api
 %endif
 
+%if ! %{with_interface}
+%define _without_interface --without-interface
+%endif
+
 %if ! %{with_network}
 %define _without_network --without-network
 %endif
@@ -1249,6 +1254,7 @@ autoreconf -if
            %{?_without_hyperv} \
            %{?_without_vmware} \
            %{?_without_parallels} \
+           %{?_without_interface} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \

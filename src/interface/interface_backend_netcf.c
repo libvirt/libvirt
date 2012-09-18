@@ -27,7 +27,7 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "netcf_driver.h"
+#include "interface_driver.h"
 #include "interface_conf.h"
 #include "memory.h"
 #include "logging.h"

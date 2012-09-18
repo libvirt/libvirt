@@ -2787,6 +2787,36 @@ if test "$with_nwfilter" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
+dnl check if the interface driver should be compiled
+AC_ARG_WITH([interface],
+  AC_HELP_STRING([--with-interface],
+    [with host interface driver @<:@default=check@:>@]), [],
+    [with_interface=check])
+
+dnl Don't compile the interface driver without libvirtd
+if test "$with_libvirtd" = "no" ; then
+  with_interface=no
+fi
+
+dnl The interface driver depends on the netcf library
+if test "$with_interface:$with_netcf" = "check:yes" ; then
+  with_interface=yes
+fi
+
+if test "$with_interface:$with_netcf" = "check:no" ; then
+  with_interface=no
+fi
+
+if test "$with_interface:$with_netcf" = "yes:no" ; then
+  AC_MSG_ERROR([Requested the Interface driver without netcf support])
+fi
+
+if test "$with_interface" = "yes" ; then
+  AC_DEFINE_UNQUOTED([WITH_INTERFACE], [1],
+    [whether the interface driver is enabled])
+fi
+AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
+
 dnl libblkid is used by several storage drivers; therefore we probe
 dnl for it unconditionally.
 AC_ARG_WITH([libblkid],
@@ -3018,7 +3048,7 @@ AC_MSG_NOTICE([     Test: $with_test])
 AC_MSG_NOTICE([   Remote: $with_remote])
 AC_MSG_NOTICE([  Network: $with_network])
 AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
-AC_MSG_NOTICE([    netcf: $with_netcf])
+AC_MSG_NOTICE([Interface: $with_interface])
 AC_MSG_NOTICE([  macvtap: $with_macvtap])
 AC_MSG_NOTICE([ virtport: $with_virtualport])
 AC_MSG_NOTICE([])

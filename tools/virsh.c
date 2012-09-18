@@ -2707,8 +2707,11 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_BRIDGE
     vshPrint(ctl, " Bridging");
 #endif
-#ifdef WITH_NETCF
+#if defined(WITH_INTERFACE)
     vshPrint(ctl, " Interface");
+# if defined(WITH_NETCF)
+    vshPrint(ctl, " netcf");
+# endif
 #endif
 #ifdef WITH_NWFILTER
     vshPrint(ctl, " Nwfilter");
