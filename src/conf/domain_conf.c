@@ -102,6 +102,11 @@ VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "hd",
               "network")
 
+VIR_ENUM_IMPL(virDomainBootMenu, VIR_DOMAIN_BOOT_MENU_LAST,
+              "default",
+              "yes",
+              "no")
+
 VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "acpi",
               "apic",
@@ -8181,10 +8186,15 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     bootstr = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
     if (bootstr) {
-        if (STREQ(bootstr, "yes"))
-            def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_ENABLED;
-        else
+        def->os.bootmenu = virDomainBootMenuTypeFromString(bootstr);
+        if (def->os.bootmenu <= 0) {
+            /* In order not to break misconfigured machines, this
+             * should not emit an error, but rather set the bootmenu
+             * to disabled */
+            VIR_WARN("disabling bootmenu due to unknown option '%s'",
+                     bootstr);
             def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
+        }
         VIR_FREE(bootstr);
     }
 

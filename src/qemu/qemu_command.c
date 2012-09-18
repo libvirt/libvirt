@@ -4879,6 +4879,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (!def->os.bootloader) {
+        int boot_nparams = 0;
+        virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
         /*
          * We prefer using explicit bootindex=N parameters for predictable
          * results even though domain XML doesn't use per device boot elements.
@@ -4901,7 +4903,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
 
         if (!emitBootindex) {
-            virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
             char boot[VIR_DOMAIN_BOOT_LAST+1];
 
             for (i = 0 ; i < def->os.nBootDevs ; i++) {
@@ -4925,19 +4926,38 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             boot[def->os.nBootDevs] = '\0';
 
-            virCommandAddArg(cmd, "-boot");
+            virBufferAsprintf(&boot_buf, "%s", boot);
+            boot_nparams++;
+        }
 
-            if (qemuCapsGet(caps, QEMU_CAPS_BOOT_MENU) &&
-                def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
+        if (def->os.bootmenu) {
+            if (qemuCapsGet(caps, QEMU_CAPS_BOOT_MENU)) {
+                if (boot_nparams++)
+                    virBufferAddChar(&boot_buf, ',');
+
                 if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_ENABLED)
-                    virBufferAsprintf(&boot_buf, "order=%s,menu=on", boot);
-                else if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_DISABLED)
-                    virBufferAsprintf(&boot_buf, "order=%s,menu=off", boot);
+                    virBufferAsprintf(&boot_buf, "menu=on");
+                else
+                    virBufferAsprintf(&boot_buf, "menu=off");
             } else {
-                virBufferAdd(&boot_buf, boot, -1);
+                /* We cannot emit an error when bootmenu is enabled but
+                 * unsupported because of backward compatibility */
+                VIR_WARN("bootmenu is enabled but not "
+                         "supported by this QEMU binary");
             }
 
-            virCommandAddArgBuffer(cmd, &boot_buf);
+        }
+
+        if (boot_nparams > 0) {
+            virCommandAddArg(cmd, "-boot");
+
+            if (boot_nparams < 2 || emitBootindex) {
+                virCommandAddArgBuffer(cmd, &boot_buf);
+            } else {
+                virCommandAddArgFormat(cmd,
+                                       "order=%s",
+                                       virBufferContentAndReset(&boot_buf));
+            }
         }
 
         if (def->os.kernel)
@@ -7861,6 +7881,26 @@ error:
 }
 
 
+static void
+qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str) {
+    int n, b = 0;
+
+    for (n = 0 ; str[n] && b < VIR_DOMAIN_BOOT_LAST ; n++) {
+        if (str[n] == 'a')
+            def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_FLOPPY;
+        else if (str[n] == 'c')
+            def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_DISK;
+        else if (str[n] == 'd')
+            def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_CDROM;
+        else if (str[n] == 'n')
+            def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_NET;
+        else if (str[n] == ',')
+            break;
+    }
+    def->os.nBootDevs = b;
+}
+
+
 /*
  * Analyse the env and argv settings and reconstruct a
  * virDomainDefPtr representing these settings as closely
@@ -8218,24 +8258,27 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             if (!(def->os.cmdline = strdup(val)))
                 goto no_memory;
         } else if (STREQ(arg, "-boot")) {
-            int n, b = 0;
+            const char *token = NULL;
             WANT_VALUE();
-            for (n = 0 ; val[n] && b < VIR_DOMAIN_BOOT_LAST ; n++) {
-                if (val[n] == 'a')
-                    def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_FLOPPY;
-                else if (val[n] == 'c')
-                    def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_DISK;
-                else if (val[n] == 'd')
-                    def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_CDROM;
-                else if (val[n] == 'n')
-                    def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_NET;
-                else if (val[n] == ',')
-                    break;
-            }
-            def->os.nBootDevs = b;
 
-            if (strstr(val, "menu=on"))
-                def->os.bootmenu = 1;
+            if (!strchr(val, ','))
+                qemuParseCommandLineBootDevs(def, val);
+            else {
+                token = val;
+                while (token && *token) {
+                    if (STRPREFIX(token, "order=")) {
+                        token += strlen("order=");
+                        qemuParseCommandLineBootDevs(def, token);
+                    } else if (STRPREFIX(token, "menu=on")) {
+                        def->os.bootmenu = 1;
+                    }
+                    token = strchr(token, ',');
+                    /* This incrementation has to be done here in order to make it
+                     * possible to pass the token pointer properly into the loop */
+                    if (token)
+                        token++;
+                }
+            }
         } else if (STREQ(arg, "-name")) {
             char *process;
             WANT_VALUE();

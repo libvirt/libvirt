@@ -1359,6 +1359,8 @@ enum virDomainBootMenu {
     VIR_DOMAIN_BOOT_MENU_DEFAULT = 0,
     VIR_DOMAIN_BOOT_MENU_ENABLED,
     VIR_DOMAIN_BOOT_MENU_DISABLED,
+
+    VIR_DOMAIN_BOOT_MENU_LAST
 };
 
 enum virDomainFeature {
@@ -1429,6 +1431,7 @@ struct _virDomainOSDef {
     char *machine;
     int nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
+    /* enum virDomainBootMenu */
     int bootmenu;
     char *init;
     char **initargv;
@@ -1440,6 +1443,7 @@ struct _virDomainOSDef {
     char *bootloader;
     char *bootloaderArgs;
     int smbios_mode;
+
     virDomainBIOSDef bios;
 };
 
@@ -2129,6 +2133,7 @@ VIR_ENUM_DECL(virDomainTaint)
 
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
+VIR_ENUM_DECL(virDomainBootMenu)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainApicEoi)
 VIR_ENUM_DECL(virDomainLifecycle)

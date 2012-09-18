@@ -7,6 +7,7 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu \
 -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
+-boot menu=off \
 -drive file=/dev/cdrom,if=none,media=cdrom,id=drive-ide0-1-0 \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -usb \
