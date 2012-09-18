@@ -1,7 +1,7 @@
 /*
  * secret_driver.c: local driver for secret manipulation API
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -990,7 +990,7 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
 
     if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
         secret->def->private) {
-        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+        virReportError(VIR_ERR_INVALID_SECRET, "%s",
                        _("secret is private"));
         goto cleanup;
     }
