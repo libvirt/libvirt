@@ -1,7 +1,7 @@
 /*
  * bitmap.h: Simple bitmap operations
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -418,15 +419,23 @@ virBitmapPtr virBitmapNewCopy(virBitmapPtr src)
 virBitmapPtr virBitmapNewData(void *data, int len)
 {
     virBitmapPtr bitmap;
-    int i;
+    int i, j;
+    unsigned long *p;
+    unsigned char *bytes = data;
 
     bitmap = virBitmapNew(len * CHAR_BIT);
     if (!bitmap)
         return NULL;
 
-    memcpy(bitmap->map, data, len);
-    for (i = 0; i < bitmap->map_len; i++)
-        bitmap->map[i] = le64toh(bitmap->map[i]);
+    /* le64toh is not provided by gnulib, so we do the conversion by hand */
+    p = bitmap->map;
+    for (i = j = 0; i < len; i++, j++) {
+        if (j == sizeof(*p)) {
+            j = 0;
+            p++;
+        }
+        *p |= bytes[i] << (j * CHAR_BIT);
+    }
 
     return bitmap;
 }
@@ -446,19 +455,26 @@ int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
 {
     int len;
     unsigned long *l;
-    int i;
+    int i, j;
+    unsigned char *bytes;
 
-    len = bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT);
+    len = (bitmap->max_bit + CHAR_BIT - 1) / CHAR_BIT;
 
     if (VIR_ALLOC_N(*data, len) < 0)
         return -1;
 
-    memcpy(*data, bitmap->map, len);
+    bytes = *data;
     *dataLen = len;
 
-    l = (unsigned long *)*data;
-    for (i = 0; i < bitmap->map_len; i++, l++)
-        *l = htole64(*l);
+    /* htole64 is not provided by gnulib, so we do the conversion by hand */
+    l = bitmap->map;
+    for (i = j = 0; i < len; i++, j++) {
+        if (j == sizeof(*l)) {
+            j = 0;
+            l++;
+        }
+        bytes[i] = *l >> (j * CHAR_BIT);
+    }
 
     return 0;
 }
