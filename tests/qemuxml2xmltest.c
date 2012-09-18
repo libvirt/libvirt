@@ -133,6 +133,10 @@ mymain(void)
     DO_TEST("boot-menu-disable");
     DO_TEST("boot-order");
     DO_TEST("bootloader");
+
+    DO_TEST("reboot-timeout-enabled");
+    DO_TEST("reboot-timeout-disabled");
+
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
     DO_TEST("cpu-kvmclock");
