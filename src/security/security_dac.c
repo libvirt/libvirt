@@ -90,6 +90,7 @@ int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
     return 0;
 }
 
+/* returns 1 if label isn't found, 0 on success, -1 on error */
 static
 int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
 {
@@ -98,20 +99,18 @@ int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
     virSecurityLabelDefPtr seclabel;
 
     if (def == NULL)
-        return -1;
+        return 1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
     if (seclabel == NULL || seclabel->label == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security label for DAC not found in domain %s"),
-                       def->name);
-        return -1;
+        VIR_DEBUG("DAC seclabel for domain '%s' wasn't found", def->name);
+        return 1;
     }
 
     if (seclabel->label && parseIds(seclabel->label, &uid, &gid)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse uid and gid for DAC "
-                         "security driver: %s"), seclabel->label);
+       virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to parse DAC seclabel '%s' for domain '%s'"),
+                       seclabel->label, def->name);
         return -1;
     }
 
@@ -127,19 +126,35 @@ static
 int virSecurityDACGetIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
                          uid_t *uidPtr, gid_t *gidPtr)
 {
-    if (virSecurityDACParseIds(def, uidPtr, gidPtr) == 0)
-        return 0;
+    int ret;
 
-    if (priv) {
-        if (uidPtr)
-            *uidPtr = priv->user;
-        if (gidPtr)
-            *gidPtr = priv->group;
-        return 0;
+    if (!def && !priv) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to determine default DAC seclabel "
+                         "for an unknown object"));
+        return -1;
     }
-    return -1;
+
+    if ((ret = virSecurityDACParseIds(def, uidPtr, gidPtr)) <= 0)
+        return ret;
+
+    if (!priv) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("DAC seclabel couldn't be determined "
+                         "for domain '%s'"), def->name);
+        return -1;
+    }
+
+    if (uidPtr)
+        *uidPtr = priv->user;
+    if (gidPtr)
+        *gidPtr = priv->group;
+
+    return 0;
 }
 
+
+/* returns 1 if label isn't found, 0 on success, -1 on error */
 static
 int virSecurityDACParseImageIds(virDomainDefPtr def,
                                 uid_t *uidPtr, gid_t *gidPtr)
@@ -149,21 +164,19 @@ int virSecurityDACParseImageIds(virDomainDefPtr def,
     virSecurityLabelDefPtr seclabel;
 
     if (def == NULL)
-        return -1;
+        return 1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
     if (seclabel == NULL || seclabel->imagelabel == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("security label for DAC not found in domain %s"),
-                       def->name);
-        return -1;
+        VIR_DEBUG("DAC imagelabel for domain '%s' wasn't found", def->name);
+        return 1;
     }
 
     if (seclabel->imagelabel
         && parseIds(seclabel->imagelabel, &uid, &gid)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse uid and gid for DAC "
-                         "security driver: %s"), seclabel->label);
+       virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to parse DAC imagelabel '%s' for domain '%s'"),
+                       seclabel->imagelabel, def->name);
         return -1;
     }
 
@@ -179,17 +192,31 @@ static
 int virSecurityDACGetImageIds(virDomainDefPtr def, virSecurityDACDataPtr priv,
                          uid_t *uidPtr, gid_t *gidPtr)
 {
-    if (virSecurityDACParseImageIds(def, uidPtr, gidPtr) == 0)
-        return 0;
+    int ret;
 
-    if (priv) {
-        if (uidPtr)
-            *uidPtr = priv->user;
-        if (gidPtr)
-            *gidPtr = priv->group;
-        return 0;
+    if (!def && !priv) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to determine default DAC imagelabel "
+                         "for an unknown object"));
+        return -1;
     }
-    return -1;
+
+    if ((ret = virSecurityDACParseImageIds(def, uidPtr, gidPtr)) <= 0)
+        return ret;
+
+    if (!priv) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("DAC imagelabel couldn't be determined "
+                         "for domain '%s'"), def->name);
+        return -1;
+    }
+
+    if (uidPtr)
+        *uidPtr = priv->user;
+    if (gidPtr)
+        *gidPtr = priv->group;
+
+    return 0;
 }
 
 
