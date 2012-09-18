@@ -8617,7 +8617,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
              virReportError(VIR_ERR_XML_ERROR,
                             _("Unsupported CPU placement mode '%s'"),
                             tmp);
-             VIR_FREE(tmp);
              goto error;
         }
         VIR_FREE(tmp);
@@ -8851,7 +8850,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown value for attribute eoi: %s"),
                                        tmp);
-                        VIR_FREE(tmp);
                         goto error;
                     }
                     def->apic_eoi = eoi;
@@ -13433,6 +13431,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     virBufferAddLit(buf, "  <os>\n");
+
     virBufferAddLit(buf, "    <type");
     if (def->os.arch)
         virBufferAsprintf(buf, " arch='%s'", def->os.arch);
@@ -13523,7 +13522,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                       " eoi='%s'",
                                       virDomainApicEoiTypeToString(def->apic_eoi));
                 }
-                virBufferAsprintf(buf, "/>\n");
+                virBufferAddLit(buf, "/>\n");
             }
         }
         virBufferAddLit(buf, "  </features>\n");
