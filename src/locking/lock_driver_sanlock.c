@@ -50,6 +50,7 @@
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
 #define VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE "__LIBVIRT__DISKS__"
+#define VIR_LOCK_MANAGER_SANLOCK_KILLPATH LIBEXECDIR "/libvirt_sanlock_helper"
 
 /*
  * temporary fix for the case where the sanlock devel package is
@@ -75,8 +76,9 @@ struct _virLockManagerSanlockDriver {
 static virLockManagerSanlockDriver *driver = NULL;
 
 struct _virLockManagerSanlockPrivate {
+    const char *vm_uri;
     char vm_name[SANLK_NAME_LEN];
-    char vm_uuid[VIR_UUID_BUFLEN];
+    unsigned char vm_uuid[VIR_UUID_BUFLEN];
     unsigned int vm_id;
     unsigned int vm_pid;
     unsigned int flags;
@@ -383,6 +385,8 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
             priv->vm_pid = param->value.ui;
         } else if (STREQ(param->key, "id")) {
             priv->vm_id = param->value.ui;
+        } else if (STREQ(param->key, "uri")) {
+            priv->vm_uri = param->value.cstr;
         }
     }
 
@@ -683,10 +687,86 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
     return 0;
 }
 
+static int
+virLockManagerSanlockRegisterKillscript(int sock,
+                                        const char *vmuri,
+                                        const char *uuidstr,
+                                        virDomainLockFailureAction action)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *path;
+    char *args = NULL;
+    int ret = -1;
+    int rv;
+
+    if (action > VIR_DOMAIN_LOCK_FAILURE_IGNORE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Failure action %s is not supported by sanlock"),
+                       virDomainLockFailureTypeToString(action));
+        goto cleanup;
+    }
+
+    virBufferEscape(&buf, '\\', "\\ ", "%s", vmuri);
+    virBufferAddLit(&buf, " ");
+    virBufferEscape(&buf, '\\', "\\ ", "%s", uuidstr);
+    virBufferAddLit(&buf, " ");
+    virBufferEscape(&buf, '\\', "\\ ", "%s",
+                    virDomainLockFailureTypeToString(action));
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Unfortunately, sanlock_killpath() does not use const for either
+     * path or args even though it will just copy them into its own
+     * buffers.
+     */
+    path = (char *) VIR_LOCK_MANAGER_SANLOCK_KILLPATH;
+    args = virBufferContentAndReset(&buf);
+
+    VIR_DEBUG("Register sanlock killpath: %s %s", path, args);
+
+    /* sanlock_killpath() would just crop the strings */
+    if (strlen(path) >= SANLK_HELPER_PATH_LEN) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Sanlock helper path is longer than %d: '%s'"),
+                       SANLK_HELPER_PATH_LEN - 1, path);
+        goto cleanup;
+    }
+    if (strlen(args) >= SANLK_HELPER_ARGS_LEN) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Sanlock helper arguments are longer than %d:"
+                         " '%s'"),
+                       SANLK_HELPER_ARGS_LEN - 1, args);
+        goto cleanup;
+    }
+
+    if ((rv = sanlock_killpath(sock, 0, path, args)) < 0) {
+        if (rv <= -200) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to register lock failure action:"
+                             " error %d"), rv);
+        } else {
+            virReportSystemError(-rv, "%s",
+                                 _("Failed to register lock failure"
+                                   " action"));
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(args);
+    return ret;
+}
+
 static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         const char *state,
                                         unsigned int flags,
-                                        virDomainLockFailureAction action ATTRIBUTE_UNUSED,
+                                        virDomainLockFailureAction action,
                                         int *fd)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
@@ -741,23 +821,32 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
         res_count = priv->res_count;
     }
 
-    VIR_DEBUG("Register sanlock %d", flags);
     /* We only initialize 'sock' if we are in the real
      * child process and we need it to be inherited
      *
      * If sock==-1, then sanlock auto-open/closes a
      * temporary sock
      */
-    if (priv->vm_pid == getpid() &&
-        (sock = sanlock_register()) < 0) {
-        if (sock <= -200)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to open socket to sanlock daemon: error %d"),
-                           sock);
-        else
-            virReportSystemError(-sock, "%s",
-                                 _("Failed to open socket to sanlock daemon"));
-        goto error;
+    if (priv->vm_pid == getpid()) {
+        VIR_DEBUG("Register sanlock %d", flags);
+        if ((sock = sanlock_register()) < 0) {
+            if (sock <= -200)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to open socket to sanlock daemon: error %d"),
+                               sock);
+            else
+                virReportSystemError(-sock, "%s",
+                                     _("Failed to open socket to sanlock daemon"));
+            goto error;
+        }
+
+        if (action != VIR_DOMAIN_LOCK_FAILURE_DEFAULT) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(priv->vm_uuid, uuidstr);
+            if (virLockManagerSanlockRegisterKillscript(sock, priv->vm_uri,
+                                                        uuidstr, action) < 0)
+                goto error;
+        }
     }
 
     if (!(flags & VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY)) {

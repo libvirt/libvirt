@@ -142,6 +142,8 @@ DRIVER_SOURCES =							\
 LOCK_DRIVER_SANLOCK_SOURCES = \
 		locking/lock_driver_sanlock.c
 
+LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
+		locking/sanlock_helper.c
 
 NETDEV_CONF_SOURCES =						\
 		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
@@ -1648,6 +1650,15 @@ endif
 endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
 
+
+if HAVE_SANLOCK
+libexec_PROGRAMS += libvirt_sanlock_helper
+
+libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
+libvirt_sanlock_helper_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
+libvirt_sanlock_helper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+libvirt_sanlock_helper_LDADD = libvirt.la
+endif
 
 if WITH_LXC
 if WITH_LIBVIRTD

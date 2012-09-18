@@ -208,5 +208,29 @@
 &lt;/pool&gt;
     </pre>
 
+    <h2><a name="domainconfig">Domain configuration</a></h2>
+
+    <p>
+      In case sanlock loses access to disk locks for some reason, it will
+      kill all domains that lost their locks. This default behavior may
+      be changed using
+      <a href="formatdomain.html#elementsEvents">on_lockfailure
+      element</a> in domain XML. When this element is present, sanlock
+      will call <code>sanlock_helper</code> (provided by libvirt) with
+      the specified action. This helper binary will connect to libvirtd
+      and thus it may need to authenticate if libvirtd was configured to
+      require that on the read-write UNIX socket. To provide the
+      appropriate credentials to sanlock_helper, a
+      <a href="auth.html#Auth_client_config">client authentication
+      file</a> needs to contain something like the following:
+    </p>
+    <pre>
+[auth-libvirt-localhost]
+credentials=sanlock
+
+[credentials-sanlock]
+authname=login
+password=password
+    </pre>
   </body>
 </html>

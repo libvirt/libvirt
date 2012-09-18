@@ -1788,6 +1788,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/sanlock
 %{_sbindir}/virt-sanlock-cleanup
 %{_mandir}/man8/virt-sanlock-cleanup.8*
+%attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
 %endif
 
 %files client -f %{name}.lang
