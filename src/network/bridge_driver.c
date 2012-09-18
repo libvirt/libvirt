@@ -2161,7 +2161,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     return 0;
 
  err5:
-    ignore_value(virNetDevBandwidthClear(network->def->bridge));
+    virNetDevBandwidthClear(network->def->bridge);
 
  err4:
     if (!save_err)
@@ -2206,7 +2206,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
 static int networkShutdownNetworkVirtual(struct network_driver *driver,
                                         virNetworkObjPtr network)
 {
-    ignore_value(virNetDevBandwidthClear(network->def->bridge));
+    virNetDevBandwidthClear(network->def->bridge);
 
     if (network->radvdPid > 0) {
         char *radvdpidbase;

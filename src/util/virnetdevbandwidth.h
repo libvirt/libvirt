@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 int virNetDevBandwidthSet(const char *ifname, virNetDevBandwidthPtr bandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthClear(const char *ifname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1);
 int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest, const virNetDevBandwidthPtr src)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
