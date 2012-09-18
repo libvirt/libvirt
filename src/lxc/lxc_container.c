@@ -1523,6 +1523,14 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
+#if HAVE_SELINUX
+    /* Some versions of Linux kernel don't let you overmount
+     * the selinux filesystem, so make sure we kill it first
+     */
+    if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
+        goto cleanup;
+#endif
+
     /* If we have the root source being '/', then we need to
      * get rid of any existing stuff under /proc, /sys & /tmp.
      * We need new namespace aware versions of those. We must
@@ -1607,6 +1615,14 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
         return -1;
+
+#if HAVE_SELINUX
+    /* Some versions of Linux kernel don't let you overmount
+     * the selinux filesystem, so make sure we kill it first
+     */
+    if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
+        goto cleanup;
+#endif
 
     /* Gets rid of any existing stuff under /proc, since we need new
      * namespace aware versions of those. We must do /proc second
