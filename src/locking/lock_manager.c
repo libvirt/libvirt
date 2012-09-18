@@ -347,17 +347,18 @@ int virLockManagerAddResource(virLockManagerPtr lock,
 int virLockManagerAcquire(virLockManagerPtr lock,
                           const char *state,
                           unsigned int flags,
+                          virDomainLockFailureAction action,
                           int *fd)
 {
-    VIR_DEBUG("lock=%p state='%s' flags=%x fd=%p",
-              lock, NULLSTR(state), flags, fd);
+    VIR_DEBUG("lock=%p state='%s' flags=%x action=%d fd=%p",
+              lock, NULLSTR(state), flags, action, fd);
 
     CHECK_MANAGER(drvAcquire, -1);
 
     if (fd)
         *fd = -1;
 
-    return lock->driver->drvAcquire(lock, state, flags, fd);
+    return lock->driver->drvAcquire(lock, state, flags, action, fd);
 }
 
 

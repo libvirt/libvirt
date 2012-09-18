@@ -686,6 +686,7 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
 static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         const char *state,
                                         unsigned int flags,
+                                        virDomainLockFailureAction action ATTRIBUTE_UNUSED,
                                         int *fd)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;

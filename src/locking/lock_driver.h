@@ -23,6 +23,7 @@
 # define __VIR_PLUGINS_LOCK_DRIVER_H__
 
 # include "internal.h"
+# include "domain_conf.h"
 
 typedef struct _virLockManager virLockManager;
 typedef virLockManager *virLockManagerPtr;
@@ -218,12 +219,13 @@ typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
  * @manager: the lock manager context
  * @state: the current lock state
  * @flags: optional flags, currently unused
+ * @action: action to take when lock is lost
  * @fd: optional return the leaked FD
  *
  * Start managing resources for the object. This
  * must be called from the PID that represents the
  * object to be managed. If the lock is lost at any
- * time, the PID will be killed off by the lock manager.
+ * time, the specified action will be taken.
  * The optional state contains information about the
  * locks previously held for the object.
  *
@@ -237,6 +239,7 @@ typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
 typedef int (*virLockDriverAcquire)(virLockManagerPtr man,
                                     const char *state,
                                     unsigned int flags,
+                                    virDomainLockFailureAction action,
                                     int *fd);
 
 /**

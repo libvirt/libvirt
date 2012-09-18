@@ -175,7 +175,8 @@ int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
     if (paused)
         flags |= VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY;
 
-    ret = virLockManagerAcquire(lock, NULL, flags, fd);
+    ret = virLockManagerAcquire(lock, NULL, flags,
+                                dom->def->onLockFailure, fd);
 
     virLockManagerFree(lock);
 
@@ -215,7 +216,7 @@ int virDomainLockProcessResume(virLockManagerPluginPtr plugin,
     if (!(lock = virDomainLockManagerNew(plugin, uri, dom, true)))
         return -1;
 
-    ret = virLockManagerAcquire(lock, state, 0, NULL);
+    ret = virLockManagerAcquire(lock, state, 0, dom->def->onLockFailure, NULL);
     virLockManagerFree(lock);
 
     return ret;
@@ -258,7 +259,8 @@ int virDomainLockDiskAttach(virLockManagerPluginPtr plugin,
     if (virDomainLockManagerAddDisk(lock, disk) < 0)
         goto cleanup;
 
-    if (virLockManagerAcquire(lock, NULL, 0, NULL) < 0)
+    if (virLockManagerAcquire(lock, NULL, 0,
+                              dom->def->onLockFailure, NULL) < 0)
         goto cleanup;
 
     ret = 0;
@@ -314,7 +316,8 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
     if (virDomainLockManagerAddLease(lock, lease) < 0)
         goto cleanup;
 
-    if (virLockManagerAcquire(lock, NULL, 0, NULL) < 0)
+    if (virLockManagerAcquire(lock, NULL, 0,
+                              dom->def->onLockFailure, NULL) < 0)
         goto cleanup;
 
     ret = 0;

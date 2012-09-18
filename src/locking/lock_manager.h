@@ -56,6 +56,7 @@ int virLockManagerAddResource(virLockManagerPtr manager,
 int virLockManagerAcquire(virLockManagerPtr manager,
                           const char *state,
                           unsigned int flags,
+                          virDomainLockFailureAction action,
                           int *fd);
 int virLockManagerRelease(virLockManagerPtr manager,
                           char **state,
