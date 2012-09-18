@@ -931,6 +931,7 @@ nodeGetCPUmap(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
+#ifdef __linux__
 static int
 nodeSetMemoryParameterValue(const char *field,
                             virTypedParameterPtr param)
@@ -964,6 +965,7 @@ cleanup:
     VIR_FREE(strval);
     return ret;
 }
+#endif
 
 int
 nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -1014,6 +1016,7 @@ nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
+#ifdef __linux__
 static int
 nodeGetMemoryParameterValue(const char *field,
                             void *value)
@@ -1058,6 +1061,7 @@ cleanup:
     VIR_FREE(buf);
     return ret;
 }
+#endif
 
 #define NODE_MEMORY_PARAMETERS_NUM 7
 int
