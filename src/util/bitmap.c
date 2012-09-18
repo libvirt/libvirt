@@ -27,7 +27,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <strings.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -434,7 +433,7 @@ virBitmapPtr virBitmapNewData(void *data, int len)
             j = 0;
             p++;
         }
-        *p |= bytes[i] << (j * CHAR_BIT);
+        *p |= (unsigned long) bytes[i] << (j * CHAR_BIT);
     }
 
     return bitmap;

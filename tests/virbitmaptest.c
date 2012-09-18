@@ -214,15 +214,15 @@ error:
 /* test for virBitmapNewData/ToData */
 static int test5(const void *v ATTRIBUTE_UNUSED)
 {
-    char data[] = {0x01, 0x02, 0x00, 0x00};
+    char data[] = {0x01, 0x02, 0x00, 0x00, 0x04};
     unsigned char *data2 = NULL;
     int len2;
-    int bits[] = {0, 9};
+    int bits[] = {0, 9, 34};
     virBitmapPtr bitmap;
     int i, j;
     int ret = -1;
 
-    bitmap = virBitmapNewData(data, 4);
+    bitmap = virBitmapNewData(data, sizeof(data));
     if (!bitmap)
         goto error;
 
@@ -242,10 +242,12 @@ static int test5(const void *v ATTRIBUTE_UNUSED)
     if (virBitmapToData(bitmap, &data2, &len2) < 0)
         goto error;
 
-    if (data2[0] != 0x05 ||
+    if (len2 != sizeof(data) ||
+        data2[0] != 0x05 ||
         data2[1] != 0x82 ||
         data2[2] != 0x00 ||
-        data2[3] != 0x00)
+        data2[3] != 0x00 ||
+        data2[4] != 0x04)
         goto error;
 
     ret = 0;
