@@ -177,6 +177,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "disable-s4", /* 105 */
               "usb-redir.filter",
+              "ide-drive.wwn",
+              "scsi-disk.wwn",
     );
 
 struct _qemuCaps {
@@ -1466,6 +1468,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
                          "-device", "scsi-disk,?",
                          "-device", "PIIX4_PM,?",
                          "-device", "usb-redir,?",
+                         "-device", "ide-drive,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
@@ -1558,12 +1561,17 @@ qemuCapsParseDeviceStr(const char *str, qemuCapsPtr caps)
         qemuCapsSet(caps, QEMU_CAPS_VIRTIO_BLK_SCSI);
     if (strstr(str, "scsi-disk.channel"))
         qemuCapsSet(caps, QEMU_CAPS_SCSI_DISK_CHANNEL);
+    if (strstr(str, "scsi-disk.wwn"))
+        qemuCapsSet(caps, QEMU_CAPS_SCSI_DISK_WWN);
     if (strstr(str, "scsi-block"))
         qemuCapsSet(caps, QEMU_CAPS_SCSI_BLOCK);
     if (strstr(str, "scsi-cd"))
         qemuCapsSet(caps, QEMU_CAPS_SCSI_CD);
     if (strstr(str, "ide-cd"))
         qemuCapsSet(caps, QEMU_CAPS_IDE_CD);
+    if (strstr(str, "ide-drive.wwn"))
+        qemuCapsSet(caps, QEMU_CAPS_IDE_DRIVE_WWN);
+
     /*
      * the iolimit detection is not really straight forward:
      * in qemu this is a capability of the block layer, if

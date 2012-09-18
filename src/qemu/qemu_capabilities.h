@@ -142,6 +142,8 @@ enum qemuCapsFlags {
     QEMU_CAPS_DISABLE_S3         = 104, /* S3 BIOS Advertisement on/off */
     QEMU_CAPS_DISABLE_S4         = 105, /* S4 BIOS Advertisement on/off */
     QEMU_CAPS_USB_REDIR_FILTER   = 106, /* usb-redir.filter */
+    QEMU_CAPS_IDE_DRIVE_WWN      = 107, /* Is ide-drive.wwn available? */
+    QEMU_CAPS_SCSI_DISK_WWN      = 108, /* Is scsi-disk.wwn available? */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
