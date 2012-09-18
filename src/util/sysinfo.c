@@ -767,12 +767,8 @@ virSysinfoRead(void) {
     cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4,17", NULL);
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
-    if (virCommandRun(cmd, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to execute command %s"),
-                       path);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    }
 
     if (VIR_ALLOC(ret) < 0)
         goto no_memory;
