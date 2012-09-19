@@ -68,6 +68,7 @@ do {
     char *doc_edited = NULL;
     char *doc_reread = NULL;
     const char *msg = NULL;
+    bool edit_success = false;
 
     /* Get the XML configuration of the object. */
     doc = (EDIT_GET_XML);
@@ -139,7 +140,7 @@ redefine:
         }
     }
 
-    break;
+    edit_success = true;
 
 edit_cleanup:
     VIR_FREE(doc);
@@ -149,7 +150,9 @@ edit_cleanup:
         unlink (tmp);
         VIR_FREE(tmp);
     }
-    goto cleanup;
+
+    if (!edit_success)
+        goto cleanup;
 
 } while (0);
 
