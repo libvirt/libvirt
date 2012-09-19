@@ -2449,7 +2449,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
 
             memmove(ipdef->hosts + 1, ipdef->hosts,
-                    sizeof(ipdef->hosts) * ipdef->nhosts);
+                    sizeof(*ipdef->hosts) * ipdef->nhosts);
             ipdef->hosts[0] = host;
             ipdef->nhosts++;
             memset(&host, 0, sizeof(host));
@@ -2481,7 +2481,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         /* remove it */
         virNetworkDHCPHostDefClear(&ipdef->hosts[ii]);
         memmove(ipdef->hosts + ii, ipdef->hosts + ii + 1,
-                sizeof(ipdef->hosts) * ipdef->nhosts - ii - 1);
+                sizeof(*ipdef->hosts) * (ipdef->nhosts - ii - 1));
         ipdef->nhosts--;
         ignore_value(VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts));
     }
