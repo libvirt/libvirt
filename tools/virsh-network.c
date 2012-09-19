@@ -737,6 +737,160 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "net-update" command
+ */
+static const vshCmdInfo info_network_update[] = {
+    {"help", N_("update parts of an existing network's configuration")},
+    {"desc", ""},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_network_update[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
+    {"command", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("type of update (add-first, add-last (add), delete, or modify)")},
+    {"section", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("which section of network configuration to update")},
+    {"xml", VSH_OT_DATA, VSH_OFLAG_REQ,
+     N_("name of file containing xml (or, if it starts with '<', the complete "
+        "xml element itself) to add/modify, or to be matched for search")},
+    {"parent-index", VSH_OT_INT, 0, N_("which parent object to search through")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
+    {NULL, 0, 0, NULL}
+};
+
+VIR_ENUM_DECL(virNetworkUpdateCommand)
+VIR_ENUM_IMPL(virNetworkUpdateCommand, VIR_NETWORK_UPDATE_COMMAND_LAST,
+              "none", "modify", "delete", "add-last", "add-first");
+
+VIR_ENUM_DECL(virNetworkSection)
+VIR_ENUM_IMPL(virNetworkSection, VIR_NETWORK_SECTION_LAST,
+              "none", "bridge", "domain", "ip", "ip-dhcp-host",
+              "ip-dhcp-range", "forward", "forward-interface",
+              "forward-pf", "portgroup", "dns-host", "dns-txt",
+              "dns-srv");
+
+static bool
+cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virNetworkPtr network;
+    const char *commandStr = NULL;
+    const char *sectionStr = NULL;
+    int command, section, parentIndex = -1;
+    const char *xml = NULL;
+    char *xmlFromFile = NULL;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    unsigned int flags = 0;
+    const char *affected;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (vshCommandOptString(cmd, "command", &commandStr) < 0) {
+        vshError(ctl, "%s", _("missing or malformed command argument"));
+        goto cleanup;
+    }
+
+    if (STREQ(commandStr, "add")) {
+        /* "add" is a synonym for "add-last" */
+        command = VIR_NETWORK_UPDATE_COMMAND_ADD_LAST;
+    } else {
+        command = virNetworkUpdateCommandTypeFromString(commandStr);
+        if (command <= 0 || command >= VIR_NETWORK_UPDATE_COMMAND_LAST) {
+            vshError(ctl, _("unrecognized command name '%s'"), commandStr);
+            goto cleanup;
+        }
+    }
+
+    if (vshCommandOptString(cmd, "section", &sectionStr) < 0) {
+        vshError(ctl, "%s", _("missing or malformed section argument"));
+        goto cleanup;
+    }
+    section = virNetworkSectionTypeFromString(sectionStr);
+    if (section <= 0 || section >= VIR_NETWORK_SECTION_LAST) {
+        vshError(ctl, _("unrecognized section name '%s'"), sectionStr);
+        goto cleanup;
+    }
+
+    if (vshCommandOptInt(cmd, "parent-index", &parentIndex) < 0) {
+        vshError(ctl, "%s", _("malformed parent-index argument"));
+        goto cleanup;
+    }
+
+    /* The goal is to have a full xml element in the "xml"
+     * string. This is provided in the --xml option, either directly
+     * (detected by the first character being "<"), or indirectly by
+     * supplying a filename (first character isn't "<") that contains
+     * the desired xml.
+     */
+
+    if (vshCommandOptString(cmd, "xml", &xml) < 0) {
+        vshError(ctl, "%s", _("malformed or missing xml argument"));
+        goto cleanup;
+    }
+
+    if (*xml != '<') {
+        /* contents of xmldata is actually the name of a file that
+         * contains the xml.
+         */
+        if (virFileReadAll(xml, VSH_MAX_XML_FILE, &xmlFromFile) < 0)
+            goto cleanup;
+        /* NB: the original xml is just a const char * that points
+         * to a string owned by the vshCmd object, and will be freed
+         * by vshCommandFree, so it's safe to lose its pointer here.
+         */
+        xml = xmlFromFile;
+    }
+
+    if (current) {
+        if (live || config) {
+            vshError(ctl, "%s", _("--current must be specified exclusively"));
+            return false;
+        }
+        flags |= VIR_NETWORK_UPDATE_AFFECT_CURRENT;
+    } else {
+        if (config)
+            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
+        if (live)
+            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
+    }
+
+    if (virNetworkUpdate(network, command,
+                         section, parentIndex, xml, flags) < 0) {
+        vshError(ctl, _("Failed to update network %s"),
+                 virNetworkGetName(network));
+        goto cleanup;
+    }
+
+    if (config) {
+        if (live)
+            affected = _("persistent config and live state");
+        else
+            affected = _("persistent config");
+    } else if (live) {
+            affected = _("live state");
+    } else if (virNetworkIsActive(network)) {
+        affected = _("live state");
+    } else {
+        affected = _("persistent config");
+    }
+
+    vshPrint(ctl, _("Updated network %s %s"),
+             virNetworkGetName(network), affected);
+    ret = true;
+cleanup:
+    vshReportError(ctl);
+    virNetworkFree(network);
+    VIR_FREE(xmlFromFile);
+    return ret;
+}
+
+/*
  * "net-uuid" command
  */
 static const vshCmdInfo info_network_uuid[] = {
@@ -854,6 +1008,7 @@ const vshCmdDef networkCmds[] = {
     {"net-start", cmdNetworkStart, opts_network_start, info_network_start, 0},
     {"net-undefine", cmdNetworkUndefine, opts_network_undefine,
      info_network_undefine, 0},
+    {"net-update", cmdNetworkUpdate, opts_network_update, info_network_update, 0},
     {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid, 0},
     {NULL, NULL, NULL, NULL, 0}
 };

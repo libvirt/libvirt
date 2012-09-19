@@ -2006,6 +2006,45 @@ Undefine the configuration for an inactive network.
 
 Convert a network name to network UUID.
 
+=item B<net-update> I<network> I<command> I<section> I<xml>
+ [I<--parent-index> I<index>] [[I<--live>] [I<--config>] | [I<--current>]]
+
+Update the given section of an existing network definition, with the
+changes optionally taking effect immediately, without needing to
+destroy and re-start the network.
+
+I<command> is one of "add-first", "add-last", "add" (a synonym for
+add-last), "delete", or "modify".
+
+I<section> is one of ""bridge", "domain", "ip", "ip-dhcp-host",
+"ip-dhcp-range", "forward", "forward-interface", "forward-pf",
+"portgroup", "dns-host", "dns-txt", or "dns-srv", each section being
+named by a concatenation of the xml element hierarchy leading to the
+element being changed. For example, "ip-dhcp-host" will change a
+<host> element that is contained inside a <dhcp> element inside an
+<ip> element of the network.
+
+I<xml> is either the text of a complete xml element of the type being
+changed (e.g. "<host mac="00:11:22:33:44:55' ip='1.2.3.4'/>", or the
+name of a file that contains a complete xml element. Disambiguation is
+done by looking at the first character of the provided text - if the
+first character is "<", it is xml text, if the first character is not
+"<", it is the name of a file that contains the xml text to be used.
+
+The I<--parent-index> option is used to specify which of several
+parent elements the requested element is in (0-based). For example, a
+dhcp <host> element could be in any one of multiple <ip> elements in
+the network; if a parent-index isn't provided, the "most appropriate"
+<ip> element will be selected (usually the only one that already has a
+<dhcp> element), but if I<--parent-index> is given, that particular
+instance of <ip> will get the modification.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. Not specifying any flag is the same as specifying I<--current>.
+
 =back
 
 =head1 INTERFACE COMMANDS
