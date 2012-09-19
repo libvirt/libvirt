@@ -1,0 +1,2 @@
+/vmlinuz.raw;system_u:object_r:virt_content_t:s0
+/initrd.raw;system_u:object_r:virt_content_t:s0

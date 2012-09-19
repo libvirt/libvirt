@@ -1,0 +1,7 @@
+/plain.txt;system_u:object_r:svirt_image_t:s0:c41,c264
+/plain.dev;system_u:object_r:svirt_image_t:s0:c41,c264
+/plain.fifo;system_u:object_r:svirt_image_t:s0:c41,c264
+/nolabel.sock;
+/plain.sock;
+/yeslabel.sock;system_u:object_r:svirt_image_t:s0:c41,c264
+/altlabel.sock;system_u:object_r:svirt_image_custom_t:s0:c41,c264

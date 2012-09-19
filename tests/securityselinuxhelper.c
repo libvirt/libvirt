@@ -24,6 +24,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <attr/xattr.h>
+
+
 /*
  * The kernel policy will not allow us to arbitrarily change
  * test process context. This helper is used as an LD_PRELOAD
@@ -64,3 +67,33 @@ int setcon_raw(security_context_t context)
 {
     return setenv("FAKE_CONTEXT", context, 1);
 }
+
+
+#if WITH_ATTR
+int setfilecon(const char *path, security_context_t con)
+{
+    const char *constr = con;
+    return setxattr(path, "user.libvirt.selinux",
+                    constr, strlen(constr), 0);
+}
+
+
+int getfilecon(const char *path, security_context_t *con)
+{
+    char *constr = NULL;
+    ssize_t len = getxattr(path, "user.libvirt.selinux",
+                           NULL, 0);
+    if (len < 0)
+        return -1;
+    if (!(constr = malloc(len+1)))
+        return -1;
+    memset(constr, 0, len);
+    if (getxattr(path, "user.libvirt.selinux", constr, len) < 0) {
+        free(constr);
+        return -1;
+    }
+    *con = constr;
+    constr[len] = '\0';
+    return 0;
+}
+#endif

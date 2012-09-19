@@ -689,7 +689,7 @@ stick to the following general plan for all *.c source files:
   #include <string.h>
   #include <limits.h>
 
-  #if HAVE_NUMACTL                Some system includes aren't supported
+  #if WITH_NUMACTL                Some system includes aren't supported
   # include <numa.h>              everywhere so need these #if guards.
   #endif
 

@@ -68,6 +68,7 @@ EXTRA_DIST =		\
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
+	securityselinuxlabeldata \
 	schematestutils.sh \
 	sexpr2xmldata \
 	storagepoolschematest \
@@ -106,6 +107,9 @@ endif
 
 if WITH_SECDRIVER_SELINUX
 test_programs += securityselinuxtest
+if WITH_ATTR
+test_programs += securityselinuxlabeltest
+endif
 endif
 
 if WITH_DRIVER_MODULES
@@ -597,10 +601,20 @@ securityselinuxtest_SOURCES = \
 	securityselinuxtest.c testutils.h testutils.c
 securityselinuxtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 securityselinuxtest_LDADD = $(LDADDS)
-securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la
-else
-EXTRA_DIST += securityselinuxtest.c securityselinuxhelper.c
+securityselinuxtest_DEPENDENCIES = libsecurityselinuxhelper.la ../src/libvirt.la
+
+if WITH_QEMU
+if WITH_ATTR
+securityselinuxlabeltest_SOURCES = \
+	securityselinuxlabeltest.c testutils.h testutils.c \
+        testutilsqemu.h testutilsqemu.c
+securityselinuxlabeltest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+securityselinuxlabeltest_LDADD = $(qemu_LDADDS)
+securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la ../src/libvirt.la
 endif
+endif
+endif
+EXTRA_DIST += securityselinuxtest.c securityselinuxlabeltest.c securityselinuxhelper.c
 
 virbuftest_SOURCES = \
 	virbuftest.c testutils.h testutils.c

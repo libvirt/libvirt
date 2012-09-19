@@ -158,6 +158,7 @@
 /tests/secaatest
 /tests/seclabeltest
 /tests/securityselinuxtest
+/tests/securityselinuxlabeltest
 /tests/sexpr2xmltest
 /tests/shunloadtest
 /tests/sockettest

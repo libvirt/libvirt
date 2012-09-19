@@ -1,0 +1,5 @@
+/plain.raw;system_u:object_r:svirt_image_t:s0:c41,c264
+/shared.raw;system_u:object_r:svirt_image_t:s0
+/readonly.raw;system_u:object_r:virt_content_t:s0
+/nolabel.raw;
+/altlabel.raw;system_u:object_r:svirt_image_custom_t:s0:c41,c264
