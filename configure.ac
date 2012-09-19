@@ -2647,10 +2647,6 @@ AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
 
 dnl netlink library
 
-LIBNL_ROUTE3_CFLAGS=""
-LIBNL_ROUTE3_LIBS=""
-LIBNL_CFLAGS=""
-LIBNL_LIBS=""
 have_libnl=no
 
 if test "$with_linux" = "yes"; then
