@@ -2708,13 +2708,9 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
                         enum qemuDomainAsyncJob asyncJob)
 {
     int ret;
-    int oldState;
-    int oldReason;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_FREE(priv->lockState);
-    oldState = virDomainObjGetState(vm, &oldReason);
-    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
 
     ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
     if (ret == 0) {
@@ -2723,11 +2719,10 @@ int qemuProcessStopCPUs(struct qemud_driver *driver, virDomainObjPtr vm,
     }
 
     if (ret == 0) {
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
         if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-    } else {
-        virDomainObjSetState(vm, oldState, oldReason);
     }
 
     return ret;
