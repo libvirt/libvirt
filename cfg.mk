@@ -831,3 +831,5 @@ exclude_file_name_regexp--sc_size_of_brackets = cfg.mk
 
 exclude_file_name_regexp--sc_correct_id_types = \
   (^src/locking/lock_protocol.x$$)
+
+exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
