@@ -134,7 +134,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_CHR,
     VIR_DOMAIN_DEVICE_MEMBALLOON,
 
-    VIR_DOMAIN_DEVICE_LAST,
+    VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
 
 typedef struct _virDomainDeviceDef virDomainDeviceDef;
@@ -178,7 +178,7 @@ enum virDomainVirtType {
     VIR_DOMAIN_VIRT_PHYP,
     VIR_DOMAIN_VIRT_PARALLELS,
 
-    VIR_DOMAIN_VIRT_LAST,
+    VIR_DOMAIN_VIRT_LAST
 };
 
 enum virDomainDeviceAddressType {
@@ -289,7 +289,7 @@ enum virDomainSeclabelType {
     VIR_DOMAIN_SECLABEL_DYNAMIC,
     VIR_DOMAIN_SECLABEL_STATIC,
 
-    VIR_DOMAIN_SECLABEL_LAST,
+    VIR_DOMAIN_SECLABEL_LAST
 };
 
 /* Security configuration for domain */
@@ -353,7 +353,7 @@ enum virDomainHostdevMode {
     VIR_DOMAIN_HOSTDEV_MODE_SUBSYS,
     VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES,
 
-    VIR_DOMAIN_HOSTDEV_MODE_LAST,
+    VIR_DOMAIN_HOSTDEV_MODE_LAST
 };
 
 enum virDomainHostdevSubsysType {
@@ -736,7 +736,7 @@ enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_DIRECT,
     VIR_DOMAIN_NET_TYPE_HOSTDEV,
 
-    VIR_DOMAIN_NET_TYPE_LAST,
+    VIR_DOMAIN_NET_TYPE_LAST
 };
 
 /* the backend driver used for virtio interfaces */
@@ -745,7 +745,7 @@ enum virDomainNetBackendType {
     VIR_DOMAIN_NET_BACKEND_TYPE_QEMU,    /* userland */
     VIR_DOMAIN_NET_BACKEND_TYPE_VHOST,   /* kernel */
 
-    VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
+    VIR_DOMAIN_NET_BACKEND_TYPE_LAST
 };
 
 /* the TX algorithm used for virtio interfaces */
@@ -754,7 +754,7 @@ enum virDomainNetVirtioTxModeType {
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD,
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER,
 
-    VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST,
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST
 };
 
 /* link interface states */
@@ -868,7 +868,7 @@ enum virDomainChrDeviceType {
     VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE,
     VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL,
 
-    VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
+    VIR_DOMAIN_CHR_DEVICE_TYPE_LAST
 };
 
 enum virDomainChrChannelTargetType {
@@ -876,7 +876,7 @@ enum virDomainChrChannelTargetType {
     VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD,
     VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO,
 
-    VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
+    VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST
 };
 
 enum virDomainChrConsoleTargetType {
@@ -887,7 +887,7 @@ enum virDomainChrConsoleTargetType {
     VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC,
     VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ,
 
-    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
+    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST
 };
 
 enum virDomainChrType {
@@ -903,7 +903,7 @@ enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_UNIX,
     VIR_DOMAIN_CHR_TYPE_SPICEVMC,
 
-    VIR_DOMAIN_CHR_TYPE_LAST,
+    VIR_DOMAIN_CHR_TYPE_LAST
 };
 
 enum virDomainChrTcpProtocol {
@@ -912,7 +912,7 @@ enum virDomainChrTcpProtocol {
     VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNETS, /* secure telnet */
     VIR_DOMAIN_CHR_TCP_PROTOCOL_TLS,
 
-    VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST,
+    VIR_DOMAIN_CHR_TCP_PROTOCOL_LAST
 };
 
 enum virDomainChrSpicevmcName {
@@ -920,7 +920,7 @@ enum virDomainChrSpicevmcName {
     VIR_DOMAIN_CHR_SPICEVMC_SMARTCARD,
     VIR_DOMAIN_CHR_SPICEVMC_USBREDIR,
 
-    VIR_DOMAIN_CHR_SPICEVMC_LAST,
+    VIR_DOMAIN_CHR_SPICEVMC_LAST
 };
 
 /* The host side information for a character device.  */
@@ -973,7 +973,7 @@ enum virDomainSmartcardType {
     VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES,
     VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH,
 
-    VIR_DOMAIN_SMARTCARD_TYPE_LAST,
+    VIR_DOMAIN_SMARTCARD_TYPE_LAST
 };
 
 # define VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES 3
@@ -1002,7 +1002,7 @@ enum virDomainInputType {
     VIR_DOMAIN_INPUT_TYPE_MOUSE,
     VIR_DOMAIN_INPUT_TYPE_TABLET,
 
-    VIR_DOMAIN_INPUT_TYPE_LAST,
+    VIR_DOMAIN_INPUT_TYPE_LAST
 };
 
 enum virDomainInputBus {
@@ -1110,7 +1110,7 @@ enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP,
     VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
 
-    VIR_DOMAIN_GRAPHICS_TYPE_LAST,
+    VIR_DOMAIN_GRAPHICS_TYPE_LAST
 };
 
 enum virDomainGraphicsAuthConnectedType {
@@ -1220,13 +1220,13 @@ enum virDomainGraphicsListenType {
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS,
     VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK,
 
-    VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST,
+    VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST
 };
 
 enum virDomainHubType {
     VIR_DOMAIN_HUB_TYPE_USB,
 
-    VIR_DOMAIN_HUB_TYPE_LAST,
+    VIR_DOMAIN_HUB_TYPE_LAST
 };
 
 typedef struct _virDomainGraphicsListenDef virDomainGraphicsListenDef;
@@ -1352,7 +1352,7 @@ enum virDomainBootOrder {
     VIR_DOMAIN_BOOT_DISK,
     VIR_DOMAIN_BOOT_NET,
 
-    VIR_DOMAIN_BOOT_LAST,
+    VIR_DOMAIN_BOOT_LAST
 };
 
 enum virDomainBootMenu {
@@ -1379,7 +1379,7 @@ enum virDomainApicEoi {
     VIR_DOMAIN_APIC_EOI_ON,
     VIR_DOMAIN_APIC_EOI_OFF,
 
-    VIR_DOMAIN_APIC_EOI_LAST,
+    VIR_DOMAIN_APIC_EOI_LAST
 };
 
 enum virDomainLifecycleAction {
@@ -1407,7 +1407,7 @@ enum virDomainPMState {
     VIR_DOMAIN_PM_STATE_ENABLED,
     VIR_DOMAIN_PM_STATE_DISABLED,
 
-    VIR_DOMAIN_PM_STATE_LAST,
+    VIR_DOMAIN_PM_STATE_LAST
 };
 
 enum virDomainBIOSUseserial {
@@ -1455,7 +1455,7 @@ enum virDomainTimerNameType {
     VIR_DOMAIN_TIMER_NAME_TSC,
     VIR_DOMAIN_TIMER_NAME_KVMCLOCK,
 
-    VIR_DOMAIN_TIMER_NAME_LAST,
+    VIR_DOMAIN_TIMER_NAME_LAST
 };
 
 enum virDomainTimerTrackType {
@@ -1463,7 +1463,7 @@ enum virDomainTimerTrackType {
     VIR_DOMAIN_TIMER_TRACK_GUEST,
     VIR_DOMAIN_TIMER_TRACK_WALL,
 
-    VIR_DOMAIN_TIMER_TRACK_LAST,
+    VIR_DOMAIN_TIMER_TRACK_LAST
 };
 
 enum virDomainTimerTickpolicyType {
@@ -1472,7 +1472,7 @@ enum virDomainTimerTickpolicyType {
     VIR_DOMAIN_TIMER_TICKPOLICY_MERGE,
     VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD,
 
-    VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
+    VIR_DOMAIN_TIMER_TICKPOLICY_LAST
 };
 
 enum virDomainTimerModeType {
@@ -1482,14 +1482,14 @@ enum virDomainTimerModeType {
     VIR_DOMAIN_TIMER_MODE_PARAVIRT,
     VIR_DOMAIN_TIMER_MODE_SMPSAFE,
 
-    VIR_DOMAIN_TIMER_MODE_LAST,
+    VIR_DOMAIN_TIMER_MODE_LAST
 };
 
 enum virDomainCpuPlacementMode {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC = 0,
     VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO,
 
-    VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
+    VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST
 };
 
 enum virDomainNumatuneMemPlacementMode {
@@ -1497,7 +1497,7 @@ enum virDomainNumatuneMemPlacementMode {
     VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC,
     VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO,
 
-    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_LAST,
+    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_LAST
 };
 
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
@@ -1531,14 +1531,14 @@ enum virDomainClockOffsetType {
     VIR_DOMAIN_CLOCK_OFFSET_VARIABLE = 2,
     VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE = 3,
 
-    VIR_DOMAIN_CLOCK_OFFSET_LAST,
+    VIR_DOMAIN_CLOCK_OFFSET_LAST
 };
 
 enum virDomainClockBasis {
     VIR_DOMAIN_CLOCK_BASIS_UTC = 0,
     VIR_DOMAIN_CLOCK_BASIS_LOCALTIME = 1,
 
-    VIR_DOMAIN_CLOCK_BASIS_LAST,
+    VIR_DOMAIN_CLOCK_BASIS_LAST
 };
 
 typedef struct _virDomainClockDef virDomainClockDef;
