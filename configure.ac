@@ -100,8 +100,6 @@ LIBXML_REQUIRED="2.6.0"
 GNUTLS_REQUIRED="1.0.25"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
-UDEV_REQUIRED=145
-PCIACCESS_REQUIRED=0.10.0
 XMLRPC_REQUIRED=1.14.0
 HAL_REQUIRED=0.5.0
 DEVMAPPER_REQUIRED=1.0.0
@@ -159,9 +157,11 @@ LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
+LIBVIRT_CHECK_PCIACCESS
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_SELINUX
+LIBVIRT_CHECK_UDEV
 LIBVIRT_CHECK_YAJL
 
 AC_MSG_CHECKING([for CPUID instruction])
@@ -2300,52 +2300,6 @@ AC_SUBST([HAL_CFLAGS])
 AC_SUBST([HAL_LIBS])
 
 
-dnl udev/libpciaccess library check for alternate host device enumeration
-UDEV_CFLAGS=
-UDEV_LIBS=
-PCIACCESS_CFLAGS=
-PCIACCESS_LIBS=
-AC_ARG_WITH([udev],
-  AC_HELP_STRING([--with-udev], [use libudev for host device enumeration @<:@default=check@:>@]),
-  [],
-  [with_udev=check])
-
-if test "$with_libvirtd" = "no" ; then
-  with_udev=no
-fi
-if test "x$with_udev" = "xyes" || test "x$with_udev" = "xcheck"; then
-  PKG_CHECK_MODULES(UDEV, libudev >= $UDEV_REQUIRED,
-    [], [
-    if test "x$with_udev" = "xcheck" ; then
-       with_udev=no
-    else
-       AC_MSG_ERROR(
-         [You must install libudev-devel >= $UDEV_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "x$with_udev" != "xno"; then
-    PKG_CHECK_MODULES(PCIACCESS, pciaccess >= $PCIACCESS_REQUIRED,
-      [with_udev=yes],
-      [
-        if test "x$with_udev" = "xcheck" ; then
-          with_udev=no
-        else
-          AC_MSG_ERROR(
-           [You must install libpciaccess-devel >= $PCIACCESS_REQUIRED to compile libvirt])
-        fi
-      ])
-  fi
-  if test "x$with_udev" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_UDEV], 1,
-      [use UDEV for host device enumeration])
-  fi
-fi
-AM_CONDITIONAL([WITH_UDEV], [test "x$with_udev" = "xyes"])
-AC_SUBST([UDEV_CFLAGS])
-AC_SUBST([UDEV_LIBS])
-AC_SUBST([PCIACCESS_CFLAGS])
-AC_SUBST([PCIACCESS_LIBS])
-
 with_nodedev=no;
 if test "$with_hal" = "yes" || test "$with_udev" = "yes";
 then
@@ -2666,9 +2620,11 @@ LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
+LIBVIRT_RESULT_PCIACCESS
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_SELINUX
+LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
@@ -2726,11 +2682,6 @@ if test "$with_hal" = "yes" ; then
 AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
 else
 AC_MSG_NOTICE([     hal: no])
-fi
-if test "$with_udev" = "yes" ; then
-AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS $PCIACCESS_CFLAGS $PCIACCESS_LIBS])
-else
-AC_MSG_NOTICE([    udev: no])
 fi
 if test "$with_qemu" = "yes" && test "$LIBPCAP_FOUND" != "no"; then
 AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
