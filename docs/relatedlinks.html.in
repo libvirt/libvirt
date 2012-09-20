@@ -59,6 +59,9 @@
       <li>
         <a href="http://en.wikipedia.org/wiki/Virtualization">Wikipedia Virtualization</a>
       </li>
+      <li>
+        <a href="http://www.ibm.com/developerworks/linux/library/l-kvm-libvirt-audit/index.html">IBM developerworks article about libvirt and audit.</a>
+      </li>
     </ul>
 
     <h2>Blogs and Podcasts</h2>
