@@ -1189,7 +1189,7 @@ if test "x$with_sanlock" != "xno"; then
   CPPFLAGS="$old_cppflags"
   LIBS="$old_libs"
   if test "x$with_sanlock" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_SANLOCK], 1,
+    AC_DEFINE_UNQUOTED([WITH_SANLOCK], 1,
       [whether Sanlock plugin for lock management is available])
 
     AC_CHECK_LIB([sanlock_client], [sanlock_killpath],
@@ -1208,7 +1208,7 @@ if test "x$with_sanlock" != "xno"; then
     fi
   fi
 fi
-AM_CONDITIONAL([HAVE_SANLOCK], [test "x$with_sanlock" = "xyes"])
+AM_CONDITIONAL([WITH_SANLOCK], [test "x$with_sanlock" = "xyes"])
 AC_SUBST([SANLOCK_CFLAGS])
 AC_SUBST([SANLOCK_LIBS])
 

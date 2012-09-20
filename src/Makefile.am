@@ -1353,7 +1353,7 @@ else
 check-augeas-lxc:
 endif
 
-if HAVE_SANLOCK
+if WITH_SANLOCK
 test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
 		locking/qemu-sanlock.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
@@ -1717,7 +1717,7 @@ virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
 	    mv $@-t $@
 
 
-if HAVE_SANLOCK
+if WITH_SANLOCK
 lockdriver_LTLIBRARIES += sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
@@ -1881,7 +1881,7 @@ endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
 
 
-if HAVE_SANLOCK
+if WITH_SANLOCK
 libexec_PROGRAMS += libvirt_sanlock_helper
 
 libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
@@ -1968,7 +1968,7 @@ endif
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
-if HAVE_SANLOCK
+if WITH_SANLOCK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
 endif
 if WITH_QEMU
@@ -2022,7 +2022,7 @@ endif
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
-if HAVE_SANLOCK
+if WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
 endif
 if WITH_QEMU

@@ -43,7 +43,7 @@ bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-host-validate
 libexec_SCRIPTS = libvirt-guests.sh
 
-if HAVE_SANLOCK
+if WITH_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
 DISTCLEANFILES += virt-sanlock-cleanup
 endif
@@ -53,7 +53,7 @@ dist_man1_MANS = \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
 		virsh.1
-if HAVE_SANLOCK
+if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
 endif
 
