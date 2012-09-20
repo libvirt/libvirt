@@ -827,12 +827,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     xenUnifiedPrivatePtr priv;
     const char *filename;
     xenXMConfCachePtr entry;
-    virBuffer mapbuf = VIR_BUFFER_INITIALIZER;
-    char *mapstr = NULL, *mapsave = NULL;
-    int i, j, n, comma = 0;
     int ret = -1;
-    virBitmapPtr cpuset = NULL;
-    int maxcpu = XEN_MAX_PHYSICAL_CPU;
 
     if (domain == NULL || domain->conn == NULL || domain->name == NULL
         || cpumap == NULL || maplen < 1 || maplen > (int)sizeof(cpumap_t)) {
@@ -863,43 +858,16 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
         goto cleanup;
     }
 
-    /* from bit map, build character string of mapped CPU numbers */
-    for (i = 0; i < maplen; i++)
-        for (j = 0; j < 8; j++)
-            if ((cpumap[i] & (1 << j))) {
-                n = i*8 + j;
-
-                if (comma)
-                    virBufferAddLit (&mapbuf, ",");
-                comma = 1;
-
-                virBufferAsprintf (&mapbuf, "%d", n);
-            }
-
-    if (virBufferError(&mapbuf)) {
-        virBufferFreeAndReset(&mapbuf);
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    mapstr = virBufferContentAndReset(&mapbuf);
-    mapsave = mapstr;
-
-    if (virBitmapParse(mapstr, 0, &cpuset, maxcpu) < 0)
-        goto cleanup;
-
     virBitmapFree(entry->def->cpumask);
-    entry->def->cpumask = cpuset;
-    cpuset = NULL;
-
+    entry->def->cpumask = virBitmapNewData(cpumap, maplen);
+    if (!entry->def->cpumask)
+        goto cleanup;
     if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(mapsave);
-    VIR_FREE(cpuset);
     xenUnifiedUnlock(priv);
     return ret;
 }
