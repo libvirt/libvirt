@@ -113,7 +113,6 @@ LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
 LIBSSH2_TRANSPORT_REQUIRED="1.3"
 LIBBLKID_REQUIRED="2.17"
-DBUS_REQUIRED="1.0.0"
 FUSE_REQUIRED="2.8.6"
 
 dnl Checks for C compiler.
@@ -157,6 +156,7 @@ LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_CAPNG
+LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_SANLOCK
@@ -1092,37 +1092,6 @@ fi
 AM_CONDITIONAL([HAVE_GNUTLS], [test "x$with_gnutls" = "xyes"])
 AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
-
-
-dnl DBus library
-DBUS_CFLAGS=
-DBUS_LIBS=
-AC_ARG_WITH([dbus],
-  AC_HELP_STRING([--with-dbus], [enable communication with DBus @<:@default=check@:>@]),
-  [],
-  [with_dbus=check])
-if test "$with_dbus" = "yes" || test "$with_dbus" = "check" ; then
-  PKG_CHECK_MODULES(DBUS, dbus-1 >= $DBUS_REQUIRED,
-    [with_dbus=yes], [
-     if test "$with_dbus" = "check" ; then
-       with_dbus=no
-     else
-       AC_MSG_ERROR([You must install DBus >= $DBUS_REQUIRED to compile libvirt])
-     fi])
-fi
-
-if test "$with_dbus" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_DBUS], 1, [enable communication with DBus])
-
-  save_LIBS="$LIBS"
-  save_CFLAGS="$CFLAGS"
-  LIBS="$LIBS $DBUS_LIBS"
-  CFLAGS="$CFLAGS $DBUS_CFLAGS"
-  AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
-  LIBS="$save_LIBS"
-  CFLAGS="$save_CFLAGS"
-fi
-AM_CONDITIONAL([WITH_DBUS], [test "$with_dbus" = "yes"])
 
 
 dnl PolicyKit library
@@ -2719,6 +2688,7 @@ AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_CAPNG
+LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_SANLOCK
