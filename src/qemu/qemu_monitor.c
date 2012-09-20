@@ -1828,6 +1828,30 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
+                                       bool *spice_migrated)
+{
+    int ret;
+    VIR_DEBUG("mon=%p", mon);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (mon->json) {
+        ret = qemuMonitorJSONGetSpiceMigrationStatus(mon, spice_migrated);
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return ret;
+}
+
+
 int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
                            unsigned int flags,
                            int fd)

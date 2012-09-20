@@ -2490,6 +2490,58 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorJSONSpiceGetMigrationStatusReply(virJSONValuePtr reply,
+                                            bool *spice_migrated)
+{
+    virJSONValuePtr ret;
+    const char *migrated_str;
+
+    if (!(ret = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-spice reply was missing return data"));
+        return -1;
+    }
+
+    if (!(migrated_str = virJSONValueObjectGetString(ret, "migrated"))) {
+        /* Deliberately don't report error here as we are
+         * probably dealing with older qemu which doesn't
+         * report this yet. Pretend spice is migrated. */
+        *spice_migrated = true;
+    } else {
+        *spice_migrated = STREQ(migrated_str, "true");
+    }
+
+    return 0;
+}
+
+
+int qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitorPtr mon,
+                                           bool *spice_migrated)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-spice",
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONSpiceGetMigrationStatusReply(reply,
+                                                          spice_migrated);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
                            unsigned int flags,
                            const char *uri)

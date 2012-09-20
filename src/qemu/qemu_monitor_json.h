@@ -134,6 +134,9 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
 int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
                            unsigned int flags,
                            const char *uri);
+int qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitorPtr mon,
+                                           bool *spice_migrated);
+
 
 int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon);
 

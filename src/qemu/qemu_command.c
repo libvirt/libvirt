@@ -6150,6 +6150,14 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (def->graphics[0]->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
             virBufferAddLit(&opt, ",disable-copy-paste");
 
+        if (qemuCapsGet(caps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
+            /* If qemu supports seamless migration turn it
+             * unconditionally on. If migration destination
+             * doesn't support it, it fallbacks to previous
+             * migration algorithm silently. */
+            virBufferAddLit(&opt, ",seamless-migration=on");
+        }
+
         virCommandAddArg(cmd, "-spice");
         virCommandAddArgBuffer(cmd, &opt);
         if (def->graphics[0]->data.spice.keymap)

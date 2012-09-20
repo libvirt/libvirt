@@ -183,6 +183,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "reboot-timeout", /* 110 */
               "dump-guest-core",
+              "seamless-migration",
     );
 
 struct _qemuCaps {
@@ -1149,6 +1150,8 @@ qemuCapsComputeCmdFlags(const char *help,
     }
     if (strstr(help, "-spice"))
         qemuCapsSet(caps, QEMU_CAPS_SPICE);
+    if (strstr(help, "seamless-migration="))
+        qemuCapsSet(caps, QEMU_CAPS_SEAMLESS_MIGRATION);
     if (strstr(help, "boot=on"))
         qemuCapsSet(caps, QEMU_CAPS_DRIVE_BOOT);
     if (strstr(help, "serial=s"))
