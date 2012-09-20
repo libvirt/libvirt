@@ -156,6 +156,7 @@ AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 LIBVIRT_COMPILE_WARNINGS
 
 LIBVIRT_CHECK_SANLOCK
+LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_YAJL
 
 AC_MSG_CHECKING([for CPUID instruction])
@@ -1086,61 +1087,6 @@ fi
 AM_CONDITIONAL([HAVE_GNUTLS], [test "x$with_gnutls" = "xyes"])
 AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
-
-
-dnl Cyrus SASL
-AC_ARG_WITH([sasl],
-  AC_HELP_STRING([--with-sasl], [use cyrus SASL for authentication @<:@default=check@:>@]),
-  [],
-  [with_sasl=check])
-
-SASL_CFLAGS=
-SASL_LIBS=
-if test "x$with_sasl" != "xno"; then
-  if test "x$with_sasl" != "xyes" && test "x$with_sasl" != "xcheck"; then
-    SASL_CFLAGS="-I$with_sasl"
-    SASL_LIBS="-L$with_sasl"
-  fi
-  fail=0
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  CFLAGS="$CFLAGS $SASL_CFLAGS"
-  LIBS="$LIBS $SASL_LIBS"
-  AC_CHECK_HEADER([sasl/sasl.h],[],[
-    if test "x$with_sasl" = "xcheck" ; then
-        with_sasl=no
-    else
-        fail=1
-    fi])
-  if test "x$with_sasl" != "xno" ; then
-    AC_CHECK_LIB([sasl2], [sasl_client_init],[
-      SASL_LIBS="$SASL_LIBS -lsasl2"
-      with_sasl=yes
-    ],[
-      AC_CHECK_LIB([sasl], [sasl_client_init],[
-        SASL_LIBS="$SASL_LIBS -lsasl"
-        with_sasl=yes
-      ],[
-        if test "x$with_sasl" = "xcheck" ; then
-          with_sasl=no
-        else
-          fail=1
-        fi
-      ])
-    ])
-  fi
-  test $fail = 1 &&
-    AC_MSG_ERROR([You must install the Cyrus SASL development package in order to compile libvirt])
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-  if test "x$with_sasl" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_SASL], 1,
-      [whether Cyrus SASL is available for authentication])
-  fi
-fi
-AM_CONDITIONAL([WITH_SASL], [test "x$with_sasl" = "xyes"])
-AC_SUBST([SASL_CFLAGS])
-AC_SUBST([SASL_LIBS])
 
 
 dnl DBus library
@@ -3039,6 +2985,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT_SANLOCK
+LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
@@ -3061,11 +3008,6 @@ if test "$with_gnutls" != "no" ; then
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
 else
 AC_MSG_NOTICE([  gnutls: no])
-fi
-if test "$with_sasl" != "no" ; then
-AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
-else
-AC_MSG_NOTICE([    sasl: no])
 fi
 AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_avahi" = "yes" ; then
