@@ -1515,9 +1515,9 @@ if test "$with_qemu" = "yes" && test "$with_capng" != "no"; then
 fi
 if test "$with_capng" = "yes"; then
   CAPNG_LIBS="-lcap-ng"
-  AC_DEFINE_UNQUOTED([HAVE_CAPNG], 1, [whether capng is available for privilege reduction])
+  AC_DEFINE_UNQUOTED([WITH_CAPNG], 1, [whether capng is available for privilege reduction])
 fi
-AM_CONDITIONAL([HAVE_CAPNG], [test "$with_capng" != "no"])
+AM_CONDITIONAL([WITH_CAPNG], [test "$with_capng" != "no"])
 AC_SUBST([CAPNG_CFLAGS])
 AC_SUBST([CAPNG_LIBS])
 

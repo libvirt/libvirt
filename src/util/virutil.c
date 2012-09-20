@@ -58,7 +58,7 @@
 # include <pwd.h>
 # include <grp.h>
 #endif
-#if HAVE_CAPNG
+#if WITH_CAPNG
 # include <cap-ng.h>
 #endif
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R

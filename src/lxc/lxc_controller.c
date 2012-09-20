@@ -42,7 +42,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#if HAVE_CAPNG
+#if WITH_CAPNG
 # include <cap-ng.h>
 #endif
 
@@ -664,7 +664,7 @@ error:
 
 static int lxcControllerClearCapabilities(void)
 {
-#if HAVE_CAPNG
+#if WITH_CAPNG
     int ret;
 
     capng_clear(CAPNG_SELECT_BOTH);

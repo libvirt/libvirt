@@ -29,7 +29,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-#if HAVE_CAPNG
+#if WITH_CAPNG
 # include <cap-ng.h>
 #endif
 
@@ -162,7 +162,7 @@ virCommandFDSet(int fd,
 
 static int virClearCapabilities(void) ATTRIBUTE_UNUSED;
 
-# if HAVE_CAPNG
+# if WITH_CAPNG
 static int virClearCapabilities(void)
 {
     int ret;

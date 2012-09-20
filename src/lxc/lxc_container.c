@@ -45,7 +45,7 @@
 /* For MS_MOVE */
 #include <linux/fs.h>
 
-#if HAVE_CAPNG
+#if WITH_CAPNG
 # include <cap-ng.h>
 #endif
 
@@ -2126,7 +2126,7 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
  */
 static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
 {
-#if HAVE_CAPNG
+#if WITH_CAPNG
     int ret;
 
     capng_get_caps_process();
