@@ -157,6 +157,7 @@ LIBVIRT_COMPILE_WARNINGS
 
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
+LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_SELINUX
@@ -1330,34 +1331,6 @@ fi
 AM_CONDITIONAL([WITH_DTRACE_PROBES], [test "$with_dtrace" != "no"])
 
 
-dnl NUMA lib
-AC_ARG_WITH([numactl],
-  AC_HELP_STRING([--with-numactl], [use numactl for host topology info @<:@default=check@:>@]),
-  [],
-  [with_numactl=check])
-
-NUMACTL_CFLAGS=
-NUMACTL_LIBS=
-if test "$with_qemu" = "yes" && test "$with_numactl" != "no"; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  if test "$with_numactl" = "check"; then
-    AC_CHECK_HEADER([numa.h],[],[with_numactl=no])
-    AC_CHECK_LIB([numa], [numa_available],[],[with_numactl=no])
-    if test "$with_numactl" != "no"; then
-      with_numactl="yes"
-    fi
-  else
-    fail=0
-    AC_CHECK_HEADER([numa.h],[],[fail=1])
-    AC_CHECK_LIB([numa], [numa_available],[],[fail=1])
-    test $fail = 1 &&
-      AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])
-  fi
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-fi
-
 dnl numad
 AC_ARG_WITH([numad],
   AC_HELP_STRING([--with-numad], [use numad to manage CPU placement dynamically @<:@default=check@:>@]),
@@ -1365,15 +1338,12 @@ AC_ARG_WITH([numad],
   [with_numad=check])
 
 if test "$with_numad" != "no" ; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
   fail=0
 
   AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin])
 
   if test "$with_numad" = "check"; then
-    AC_CHECK_HEADER([numa.h], [], [fail=1])
-    AC_CHECK_LIB([numa], [numa_available], [], [fail=1])
+    test "$with_numactl" = "yes" || fail=1
     if test -z "$NUMAD" || test $fail = 1; then
       with_numad="no"
     else
@@ -1383,27 +1353,16 @@ if test "$with_numad" != "no" ; then
     test -z  "$NUMAD" &&
       AC_MSG_ERROR([You must install numad package to manage CPU and memory placement dynamically])
 
-    AC_CHECK_HEADER([numa.h], [], [fail=1])
-    AC_CHECK_LIB([numa], [numa_available], [], [fail=1])
+    test "$with_numactl" = "yes" || fail=1
     test $fail = 1 &&
       AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])
   fi
-
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
 fi
 if test "$with_numad" = "yes"; then
   AC_DEFINE_UNQUOTED([HAVE_NUMAD], 1, [whether numad is available])
   AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
 fi
-if test "$with_numactl" = "yes" || test "$with_numad" = "yes"; then
-  NUMACTL_LIBS="-lnuma"
-  AC_DEFINE_UNQUOTED([WITH_NUMACTL], 1, [whether numactl-devel is available])
-fi
 AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
-AM_CONDITIONAL([WITH_NUMACTL], [test "$with_numad" != "no" || test "$with_numactl" != "no"])
-AC_SUBST([NUMACTL_CFLAGS])
-AC_SUBST([NUMACTL_LIBS])
 
 dnl pcap lib
 LIBPCAP_CONFIG="pcap-config"
@@ -2831,6 +2790,7 @@ AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
+LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_SELINUX
@@ -2871,11 +2831,6 @@ AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
 fi
 else
 AC_MSG_NOTICE([  polkit: no])
-fi
-if test "$with_numactl" = "yes" ; then
-AC_MSG_NOTICE([ numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
-else
-AC_MSG_NOTICE([ numactl: no])
 fi
 if test "$with_capng" = "yes" ; then
 AC_MSG_NOTICE([   capng: $CAPNG_CFLAGS $CAPNG_LIBS])
