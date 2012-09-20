@@ -172,9 +172,9 @@ nwfilterDriverStartup(bool privileged ATTRIBUTE_UNUSED,
     char *base = NULL;
     DBusConnection *sysbus = NULL;
 
-#if HAVE_DBUS
+#if WITH_DBUS
     sysbus = virDBusGetSystemBus();
-#endif /* HAVE_DBUS */
+#endif /* WITH_DBUS */
 
     if (VIR_ALLOC(driverState) < 0) {
         virReportOOMError();

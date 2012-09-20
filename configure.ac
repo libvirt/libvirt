@@ -1112,7 +1112,7 @@ if test "$with_dbus" = "yes" || test "$with_dbus" = "check" ; then
 fi
 
 if test "$with_dbus" = "yes" ; then
-  AC_DEFINE_UNQUOTED([HAVE_DBUS], 1, [enable communication with DBus])
+  AC_DEFINE_UNQUOTED([WITH_DBUS], 1, [enable communication with DBus])
 
   save_LIBS="$LIBS"
   save_CFLAGS="$CFLAGS"
@@ -1122,7 +1122,7 @@ if test "$with_dbus" = "yes" ; then
   LIBS="$save_LIBS"
   CFLAGS="$save_CFLAGS"
 fi
-AM_CONDITIONAL([HAVE_DBUS], [test "$with_dbus" = "yes"])
+AM_CONDITIONAL([WITH_DBUS], [test "$with_dbus" = "yes"])
 
 
 dnl PolicyKit library
