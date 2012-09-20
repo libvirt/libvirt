@@ -98,7 +98,6 @@ fi
 dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.6.0"
 GNUTLS_REQUIRED="1.0.25"
-AVAHI_REQUIRED="0.6.0"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 UDEV_REQUIRED=145
@@ -155,6 +154,7 @@ LIBVIRT_COMPILE_WARNINGS
 
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
+LIBVIRT_CHECK_AVAHI
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_NETCF
@@ -1170,32 +1170,6 @@ if test "x$with_firewalld" == "xyes" ; then
   AC_DEFINE_UNQUOTED([HAVE_FIREWALLD], [1], [whether firewalld support is enabled])
 fi
 AM_CONDITIONAL([HAVE_FIREWALLD], [test "x$with_firewalld" != "xno"])
-
-dnl Avahi library
-AC_ARG_WITH([avahi],
-  AC_HELP_STRING([--with-avahi], [use avahi to advertise remote daemon @<:@default=check@:>@]),
-  [],
-  [with_avahi=check])
-
-AVAHI_CFLAGS=
-AVAHI_LIBS=
-if test "x$with_avahi" = "xyes" || test "x$with_avahi" = "xcheck"; then
-  PKG_CHECK_MODULES(AVAHI, avahi-client >= $AVAHI_REQUIRED,
-    [with_avahi=yes], [
-    if test "x$with_avahi" = "xcheck" ; then
-       with_avahi=no
-    else
-       AC_MSG_ERROR(
-         [You must install Avahi >= $AVAHI_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "x$with_avahi" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_AVAHI], 1,
-      [whether Avahi is used to broadcast server presence])
-  fi
-fi
-AC_SUBST([AVAHI_CFLAGS])
-AC_SUBST([AVAHI_LIBS])
 
 
 dnl UUCP style file locks for character devices
@@ -2687,6 +2661,7 @@ AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
+LIBVIRT_RESULT_AVAHI
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_NETCF
@@ -2718,11 +2693,6 @@ else
 AC_MSG_NOTICE([  gnutls: no])
 fi
 AC_MSG_NOTICE([firewalld: $with_firewalld])
-if test "$with_avahi" = "yes" ; then
-AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])
-else
-AC_MSG_NOTICE([   avahi: no])
-fi
 if test "$with_polkit" = "yes" ; then
 if test "$with_polkit0" = "yes" ; then
 AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS (version 0)])
