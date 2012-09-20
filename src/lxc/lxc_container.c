@@ -49,7 +49,7 @@
 # include <cap-ng.h>
 #endif
 
-#if HAVE_LIBBLKID
+#if WITH_BLKID
 # include <blkid/blkid.h>
 #endif
 
@@ -826,7 +826,7 @@ cleanup:
 }
 
 
-#ifdef HAVE_LIBBLKID
+#ifdef WITH_BLKID
 static int
 lxcContainerMountDetectFilesystem(const char *src, char **type)
 {
@@ -897,7 +897,7 @@ cleanup:
         blkid_free_probe(blkid);
     return ret;
 }
-#else /* ! HAVE_LIBBLKID */
+#else /* ! WITH_BLKID */
 static int
 lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
                                   char **type)
@@ -906,7 +906,7 @@ lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
     *type = NULL;
     return 0;
 }
-#endif /* ! HAVE_LIBBLKID */
+#endif /* ! WITH_BLKID */
 
 /*
  * This functions attempts to do automatic detection of filesystem

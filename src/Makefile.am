@@ -967,7 +967,7 @@ libvirt_driver_lxc_impl_la_CFLAGS = \
 		$(FUSE_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS) $(FUSE_LIBS)
-if HAVE_LIBBLKID
+if WITH_BLKID
 libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)
 endif
@@ -1149,7 +1149,7 @@ endif
 if WITH_SECDRIVER_APPARMOR
 libvirt_driver_storage_impl_la_LIBADD += $(APPARMOR_LIBS)
 endif
-if HAVE_LIBBLKID
+if WITH_BLKID
 libvirt_driver_storage_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_storage_impl_la_LIBADD += $(BLKID_LIBS)
 endif
@@ -1922,7 +1922,7 @@ libvirt_lxc_CFLAGS =				\
 		$(AM_CFLAGS)                    \
 		$(LIBNL_CFLAGS)			\
 		$(FUSE_CFLAGS)
-if HAVE_LIBBLKID
+if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
 endif

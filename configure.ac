@@ -108,7 +108,7 @@ LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
 LIBSSH2_TRANSPORT_REQUIRED="1.3"
-LIBBLKID_REQUIRED="2.17"
+BLKID_REQUIRED="2.17"
 FUSE_REQUIRED="2.8.6"
 
 dnl Checks for C compiler.
@@ -2315,15 +2315,15 @@ AC_ARG_WITH([libblkid],
 
 if test "x$with_libblkid" = "xyes" || test "x$with_libblkid" = "xcheck"; then
    PKG_CHECK_MODULES([BLKID],
-     [blkid >= $LIBBLKID_REQUIRED],
+     [blkid >= $BLKID_REQUIRED],
      [with_libblkid="yes"],
      [with_libblkid="no"])
 fi
 
 if test "x$with_libblkid" = "xyes"; then
-  AC_DEFINE([HAVE_LIBBLKID], [1], [libblkid is present])
+  AC_DEFINE([WITH_BLKID], [1], [libblkid is present])
 fi
-AM_CONDITIONAL([HAVE_LIBBLKID], [test "x$with_libblkid" = "xyes"])
+AM_CONDITIONAL([WITH_BLKID], [test "x$with_libblkid" = "xyes"])
 
 if test $with_freebsd = yes; then
   default_qemu_user=root

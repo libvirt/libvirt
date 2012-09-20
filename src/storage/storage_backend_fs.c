@@ -37,7 +37,7 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#if HAVE_LIBBLKID
+#if WITH_BLKID
 # include <blkid/blkid.h>
 #endif
 
@@ -540,7 +540,7 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 #endif /* WITH_STORAGE_FS */
 
-#if HAVE_LIBBLKID
+#if WITH_BLKID
 static virStoragePoolProbeResult
 virStorageBackendFileSystemProbe(const char *device,
                                  const char *format) {
@@ -611,7 +611,7 @@ error:
     return ret;
 }
 
-#else /* #if HAVE_LIBBLKID */
+#else /* #if WITH_BLKID */
 
 static virStoragePoolProbeResult
 virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
@@ -624,7 +624,7 @@ virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
     return FILESYSTEM_PROBE_ERROR;
 }
 
-#endif /* #if HAVE_LIBBLKID */
+#endif /* #if WITH_BLKID */
 
 /* some platforms don't support mkfs */
 #ifdef MKFS
