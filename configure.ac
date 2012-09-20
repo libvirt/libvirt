@@ -101,7 +101,6 @@ GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
-NETCF_REQUIRED="0.1.4"
 UDEV_REQUIRED=145
 PCIACCESS_REQUIRED=0.10.0
 XMLRPC_REQUIRED=1.14.0
@@ -158,6 +157,7 @@ LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_CAPNG
+LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
@@ -1574,40 +1574,6 @@ if test "$with_qemu:$with_lxc:$with_network" != "no:no:no"; then
 fi
 AM_CONDITIONAL([WITH_BRIDGE], [test "$with_bridge" = "yes"])
 
-dnl netcf library
-AC_ARG_WITH([netcf],
-  AC_HELP_STRING([--with-netcf], [libnetcf support to configure physical host network interfaces @<:@default=check@:>@]),
-[], [with_netcf=check])
-
-NETCF_CFLAGS=
-NETCF_LIBS=
-if test "$with_libvirtd" = "no" ; then
-  with_netcf=no
-fi
-if test "$with_netcf" = "yes" || test "$with_netcf" = "check"; then
-  PKG_CHECK_MODULES(NETCF, netcf >= $NETCF_REQUIRED,
-    [with_netcf=yes], [
-    if test "$with_netcf" = "check" ; then
-       with_netcf=no
-    else
-       AC_MSG_ERROR(
-         [You must install libnetcf >= $NETCF_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "$with_netcf" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_NETCF], 1,
-      [whether libnetcf is available to configure physical host network interfaces])
-    AC_CHECK_LIB([netcf], [ncf_change_begin], [netcf_transactions=1], [netcf_transactions=0])
-    if test "$netcf_transactions" = "1" ; then
-        AC_DEFINE_UNQUOTED([HAVE_NETCF_TRANSACTIONS], 1,
-          [we have sufficiently new version of netcf for transaction network API])
-    fi
-  fi
-fi
-AM_CONDITIONAL([WITH_NETCF], [test "$with_netcf" = "yes"])
-AC_SUBST([NETCF_CFLAGS])
-AC_SUBST([NETCF_LIBS])
-
 
 AC_ARG_WITH([secrets],
   AC_HELP_STRING([--with-secrets], [with local secrets management driver @<:@default=yes@:>@]),[],[with_secrets=yes])
@@ -2753,6 +2719,7 @@ AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_CAPNG
+LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
@@ -2824,11 +2791,6 @@ if test "$with_udev" = "yes" ; then
 AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS $PCIACCESS_CFLAGS $PCIACCESS_LIBS])
 else
 AC_MSG_NOTICE([    udev: no])
-fi
-if test "$with_netcf" = "yes" ; then
-AC_MSG_NOTICE([   netcf: $NETCF_CFLAGS $NETCF_LIBS])
-else
-AC_MSG_NOTICE([   netcf: no])
 fi
 if test "$with_qemu" = "yes" && test "$LIBPCAP_FOUND" != "no"; then
 AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
