@@ -108,7 +108,6 @@ LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
 LIBSSH2_TRANSPORT_REQUIRED="1.3"
-BLKID_REQUIRED="2.17"
 FUSE_REQUIRED="2.8.6"
 
 dnl Checks for C compiler.
@@ -152,6 +151,7 @@ LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_AVAHI
+LIBVIRT_CHECK_BLKID
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_HAL
@@ -2305,25 +2305,6 @@ if test "$with_interface" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
 
-dnl libblkid is used by several storage drivers; therefore we probe
-dnl for it unconditionally.
-AC_ARG_WITH([libblkid],
-  [AS_HELP_STRING([--with-libblkid],
-    [use libblkid to scan for filesystems and partitions @<:@default=check@:>@])],
-  [],
-  [with_libblkid=check])
-
-if test "x$with_libblkid" = "xyes" || test "x$with_libblkid" = "xcheck"; then
-   PKG_CHECK_MODULES([BLKID],
-     [blkid >= $BLKID_REQUIRED],
-     [with_libblkid="yes"],
-     [with_libblkid="no"])
-fi
-
-if test "x$with_libblkid" = "xyes"; then
-  AC_DEFINE([WITH_BLKID], [1], [libblkid is present])
-fi
-AM_CONDITIONAL([WITH_BLKID], [test "x$with_libblkid" = "xyes"])
 
 if test $with_freebsd = yes; then
   default_qemu_user=root
@@ -2577,6 +2558,7 @@ AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_AVAHI
+LIBVIRT_RESULT_BLKID
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_HAL
