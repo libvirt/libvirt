@@ -155,6 +155,7 @@ AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
 LIBVIRT_COMPILE_WARNINGS
 
+LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_YAJL
@@ -1223,50 +1224,6 @@ fi
 AC_SUBST([AVAHI_CFLAGS])
 AC_SUBST([AVAHI_LIBS])
 
-dnl Audit library
-AC_ARG_WITH([audit],
-  AC_HELP_STRING([--with-audit], [use audit library @<:@default=check@:>@]),
-  [],
-  [with_audit=check])
-
-AUDIT_CFLAGS=
-AUDIT_LIBS=
-if test "$with_audit" != "no" ; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  if test "$with_audit" != "check" && test "$with_audit" != "yes" ; then
-    AUDIT_CFLAGS="-I$with_audit/include"
-    AUDIT_LIBS="-L$with_audit/lib"
-  fi
-  CFLAGS="$CFLAGS $AUDIT_CFLAGS"
-  LIBS="$LIBS $AUDIT_LIBS"
-  fail=0
-  AC_CHECK_HEADER([libaudit.h], [], [fail=1])
-  AC_CHECK_LIB([audit], [audit_encode_nv_string], [], [fail=1])
-
-  if test $fail = 1 ; then
-    if test "$with_audit" = "yes" ; then
-      AC_MSG_ERROR([You must install the Audit library in order to compile and run libvirt])
-    else
-      with_audit=no
-      AUDIT_CFLAGS=
-      AUDIT_LIBS=
-    fi
-  else
-    with_audit=yes
-  fi
-
-  if test "$with_audit" = "yes" ; then
-    AUDIT_LIBS="$AUDIT_LIBS -laudit"
-    AC_DEFINE_UNQUOTED([WITH_AUDIT], 1, [whether libaudit is available])
-  fi
-
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-fi
-AM_CONDITIONAL([WITH_AUDIT], [test "$with_audit" = "yes"])
-AC_SUBST([AUDIT_CFLAGS])
-AC_SUBST([AUDIT_LIBS])
 
 dnl UUCP style file locks for character devices
 if test "$with_chrdev_lock_files" != "no"; then
@@ -2984,6 +2941,7 @@ fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
+LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_YAJL
@@ -3023,11 +2981,6 @@ AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
 fi
 else
 AC_MSG_NOTICE([  polkit: no])
-fi
-if test "$with_audit" = "yes" ; then
-AC_MSG_NOTICE([   audit: $AUDIT_CFLAGS $AUDIT_LIBS])
-else
-AC_MSG_NOTICE([   audit: no])
 fi
 if test "$with_selinux" = "yes" ; then
 AC_MSG_NOTICE([ selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
