@@ -41,7 +41,7 @@
 # include <linux/fs.h>
 #endif
 
-#if HAVE_SELINUX
+#if WITH_SELINUX
 # include <selinux/selinux.h>
 #endif
 
@@ -1177,7 +1177,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                        unsigned long long *capacity)
 {
     struct stat sb;
-#if HAVE_SELINUX
+#if WITH_SELINUX
     security_context_t filecon = NULL;
 #endif
 
@@ -1241,7 +1241,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
 
     VIR_FREE(target->perms.label);
 
-#if HAVE_SELINUX
+#if WITH_SELINUX
     /* XXX: make this a security driver call */
     if (fgetfilecon_raw(fd, &filecon) == -1) {
         if (errno != ENODATA && errno != ENOTSUP) {
