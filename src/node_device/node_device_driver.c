@@ -58,7 +58,7 @@ static int update_caps(virNodeDeviceObjPtr dev)
 }
 
 
-#if defined (__linux__) && defined (HAVE_HAL)
+#if defined (__linux__) && defined (WITH_HAL)
 /* Under libudev changes to the driver name should be picked up as
  * "change" events, so we don't call update driver name unless we're
  * using the HAL backend. */
@@ -681,13 +681,13 @@ out:
 }
 
 int nodedevRegister(void) {
-#if defined(HAVE_HAL) && defined(WITH_UDEV)
+#if defined(WITH_HAL) && defined(WITH_UDEV)
     /* Register only one of these two - they conflict */
     if (udevNodeRegister() == -1)
         return halNodeRegister();
     return 0;
 #else
-# ifdef HAVE_HAL
+# ifdef WITH_HAL
     return halNodeRegister();
 # endif
 # ifdef WITH_UDEV

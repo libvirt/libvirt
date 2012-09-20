@@ -2291,11 +2291,11 @@ if test "x$with_hal" = "xyes" || test "x$with_hal" = "xcheck"; then
     LIBS="$old_LIBS"
   fi
   if test "x$with_hal" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_HAL], 1,
+    AC_DEFINE_UNQUOTED([WITH_HAL], 1,
       [use HAL for host device enumeration])
   fi
 fi
-AM_CONDITIONAL([HAVE_HAL], [test "x$with_hal" = "xyes"])
+AM_CONDITIONAL([WITH_HAL], [test "x$with_hal" = "xyes"])
 AC_SUBST([HAL_CFLAGS])
 AC_SUBST([HAL_LIBS])
 

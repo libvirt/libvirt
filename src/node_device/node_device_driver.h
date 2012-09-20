@@ -39,7 +39,7 @@
 
 # define LINUX_NEW_DEVICE_WAIT_TIME 60
 
-# ifdef HAVE_HAL
+# ifdef WITH_HAL
 int halNodeRegister(void);
 # endif
 # ifdef WITH_UDEV
