@@ -155,6 +155,7 @@ AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
 LIBVIRT_COMPILE_WARNINGS
 
+LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_YAJL
 
 AC_MSG_CHECKING([for CPUID instruction])
@@ -1140,77 +1141,6 @@ fi
 AM_CONDITIONAL([HAVE_SASL], [test "x$with_sasl" = "xyes"])
 AC_SUBST([SASL_CFLAGS])
 AC_SUBST([SASL_LIBS])
-
-
-dnl SANLOCK https://fedorahosted.org/sanlock/
-AC_ARG_WITH([sanlock],
-  AC_HELP_STRING([--with-sanlock], [build Sanlock plugin for lock management @<:@default=check@:>@]),
-  [],
-  [with_sanlock=check])
-
-SANLOCK_CFLAGS=
-SANLOCK_LIBS=
-if test "x$with_sanlock" != "xno"; then
-  if test "x$with_sanlock" != "xyes" && test "x$with_sanlock" != "xcheck"; then
-    SANLOCK_CFLAGS="-I$with_sanlock/include"
-    SANLOCK_LIBS="-L$with_sanlock/lib"
-  fi
-  fail=0
-  old_cppflags="$CPPFLAGS"
-  old_libs="$LIBS"
-  CPPFLAGS="$CPPFLAGS $SANLOCK_CFLAGS"
-  LIBS="$LIBS $SANLOCK_LIBS"
-  AC_CHECK_HEADER([sanlock.h],[],[
-    if test "x$with_sanlock" = "xcheck" ; then
-        with_sanlock=no
-    else
-        fail=1
-    fi])
-  if test "x$with_sanlock" != "xno" ; then
-    AC_CHECK_LIB([sanlock_client], [sanlock_init],[
-      SANLOCK_LIBS="$SANLOCK_LIBS -lsanlock_client"
-      with_sanlock=yes
-    ],[
-      if test "x$with_sanlock" = "xcheck" ; then
-        with_sanlock=no
-      else
-        fail=1
-      fi
-    ])
-  fi
-  if test $fail = 1; then
-    AC_MSG_ERROR([You must install the Sanlock development package in order to compile libvirt])
-  else
-    AC_CHECK_DECLS([SANLK_INQ_WAIT], [sanlock_inq_wait=1], [sanlock_inq_wait=0], [[
-      #include <stdint.h>
-      #include <sanlock_admin.h>
-    ]])
-  fi
-  CPPFLAGS="$old_cppflags"
-  LIBS="$old_libs"
-  if test "x$with_sanlock" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_SANLOCK], 1,
-      [whether Sanlock plugin for lock management is available])
-
-    AC_CHECK_LIB([sanlock_client], [sanlock_killpath],
-                 [sanlock_killpath=yes], [sanlock_killpath=no])
-    if test "x$sanlock_killpath" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
-        [whether Sanlock supports sanlock_killpath])
-    fi
-
-    AC_CHECK_LIB([sanlock_client], [sanlock_inq_lockspace],
-                 [sanlock_inq_lockspace=yes], [sanlock_inq_lockspace=no])
-    if test "x$sanlock_inq_lockspace" = "xyes" && \
-       test $sanlock_inq_wait = 1; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_INQ_LOCKSPACE], 1,
-        [whether sanlock supports sanlock_inq_lockspace])
-    fi
-  fi
-fi
-AM_CONDITIONAL([WITH_SANLOCK], [test "x$with_sanlock" = "xyes"])
-AC_SUBST([SANLOCK_CFLAGS])
-AC_SUBST([SANLOCK_LIBS])
 
 
 dnl DBus library
@@ -3108,6 +3038,7 @@ fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
+LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
@@ -3135,11 +3066,6 @@ if test "$with_sasl" != "no" ; then
 AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
 else
 AC_MSG_NOTICE([    sasl: no])
-fi
-if test "$with_sanlock" != "no" ; then
-AC_MSG_NOTICE([ sanlock: $SANLOCK_CFLAGS $SANLOCK_LIBS])
-else
-AC_MSG_NOTICE([ sanlock: no])
 fi
 AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_avahi" = "yes" ; then
