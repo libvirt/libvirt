@@ -252,10 +252,16 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
             if (ret < 0) {
-                VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
-                         drivestr, devstr);
-                /* XXX should call 'drive_del' on error but this does not
-                   exist yet */
+                virErrorPtr orig_err = virSaveLastError();
+                if (qemuMonitorDriveDel(priv->mon, drivestr) < 0) {
+                    VIR_WARN("Unable to remove drive %s (%s) after failed "
+                             "qemuMonitorAddDevice",
+                             drivestr, devstr);
+                }
+                if (orig_err) {
+                    virSetError(orig_err);
+                    virFreeError(orig_err);
+                }
             }
         }
     } else {
