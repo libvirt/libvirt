@@ -158,6 +158,7 @@ LIBVIRT_COMPILE_WARNINGS
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
+LIBVIRT_CHECK_SELINUX
 LIBVIRT_CHECK_YAJL
 
 AC_MSG_CHECKING([for CPUID instruction])
@@ -1244,61 +1245,6 @@ platform])
                       [path to directory containing UUCP device lock files])
 fi
 AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "no"])
-
-
-dnl SELinux
-AC_ARG_WITH([selinux],
-  AC_HELP_STRING([--with-selinux], [use SELinux to manage security @<:@default=check@:>@]),
-  [],
-  [with_selinux=check])
-AC_ARG_WITH([selinux_mount],
-  AC_HELP_STRING([--with-selinux-mount], [set SELinux mount point @<:@default=check@:>@]),
-  [],
-  [with_selinux_mount=check])
-
-SELINUX_CFLAGS=
-SELINUX_LIBS=
-if test "$with_selinux" != "no"; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  if test "$with_selinux" = "check"; then
-    AC_CHECK_HEADER([selinux/selinux.h],[],[with_selinux=no])
-    AC_CHECK_LIB([selinux], [fgetfilecon_raw],[],[with_selinux=no])
-    if test "$with_selinux" != "no"; then
-      with_selinux="yes"
-    fi
-  else
-    fail=0
-    AC_CHECK_HEADER([selinux/selinux.h],[],[fail=1])
-    AC_CHECK_LIB([selinux], [fgetfilecon_raw],[],[fail=1])
-    test $fail = 1 &&
-      AC_MSG_ERROR([You must install the libselinux development package in order to compile libvirt with basic SELinux support])
-  fi
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-fi
-if test "$with_selinux" = "yes"; then
-  AC_MSG_CHECKING([SELinux mount point])
-  if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
-    SELINUX_MOUNT=/sys/fs/selinux
-    if ! test -d ${SELINUX_MOUNT} && test -d /selinux ; then
-      SELINUX_MOUNT=/selinux
-    fi
-  else
-    SELINUX_MOUNT=$with_selinux_mount
-  fi
-  AC_MSG_RESULT([$SELINUX_MOUNT])
-
-  SELINUX_LIBS="-lselinux"
-  AC_DEFINE_UNQUOTED([SELINUX_MOUNT], ["$SELINUX_MOUNT"], [SELinux mount point])
-  AC_DEFINE_UNQUOTED([WITH_SELINUX], 1, [whether basic SELinux functionality is available])
-  dnl We prefer to use <selinux/label.h> and selabel_open, but can fall
-  dnl back to matchpathcon for the sake of RHEL 5's version of libselinux.
-  AC_CHECK_HEADERS([selinux/label.h])
-fi
-AM_CONDITIONAL([WITH_SELINUX], [test "$with_selinux" != "no"])
-AC_SUBST([SELINUX_CFLAGS])
-AC_SUBST([SELINUX_LIBS])
 
 
 AC_ARG_WITH([secdriver-selinux],
@@ -2944,6 +2890,7 @@ AC_MSG_NOTICE([])
 LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
+LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
@@ -2981,11 +2928,6 @@ AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
 fi
 else
 AC_MSG_NOTICE([  polkit: no])
-fi
-if test "$with_selinux" = "yes" ; then
-AC_MSG_NOTICE([ selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
-else
-AC_MSG_NOTICE([ selinux: no])
 fi
 if test "$with_apparmor" = "yes" ; then
 AC_MSG_NOTICE([apparmor: $APPARMOR_CFLAGS $APPARMOR_LIBS])
