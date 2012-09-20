@@ -101,7 +101,6 @@ GNUTLS_REQUIRED="1.0.25"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 XMLRPC_REQUIRED=1.14.0
-HAL_REQUIRED=0.5.0
 DEVMAPPER_REQUIRED=1.0.0
 LIBCURL_REQUIRED="7.18.0"
 OPENWSMAN_REQUIRED="2.2.3"
@@ -155,6 +154,7 @@ LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_AVAHI
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_DBUS
+LIBVIRT_CHECK_HAL
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_PCIACCESS
@@ -2260,45 +2260,6 @@ test "$enable_shared" = no && lt_cv_objdir=.
 LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
-dnl HAL library check for host device enumeration
-HAL_CFLAGS=
-HAL_LIBS=
-AC_ARG_WITH([hal],
-  AC_HELP_STRING([--with-hal], [use HAL for host device enumeration @<:@default=check@:>@]),
-  [],
-  [with_hal=check])
-
-if test "$with_libvirtd" = "no" ; then
-  with_hal=no
-fi
-if test "x$with_hal" = "xyes" || test "x$with_hal" = "xcheck"; then
-  PKG_CHECK_MODULES(HAL, hal >= $HAL_REQUIRED,
-    [with_hal=yes], [
-    if test "x$with_hal" = "xcheck" ; then
-       with_hal=no
-    else
-       AC_MSG_ERROR(
-         [You must install hal-devel >= $HAL_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "x$with_hal" = "xyes" ; then
-    old_CFLAGS=$CFLAGS
-    old_LIBS=$LIBS
-    CFLAGS="$CFLAGS $HAL_CFLAGS"
-    LIBS="$LIBS $HAL_LIBS"
-    AC_CHECK_FUNCS([libhal_get_all_devices],,[with_hal=no])
-    CFLAGS="$old_CFLAGS"
-    LIBS="$old_LIBS"
-  fi
-  if test "x$with_hal" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_HAL], 1,
-      [use HAL for host device enumeration])
-  fi
-fi
-AM_CONDITIONAL([WITH_HAL], [test "x$with_hal" = "xyes"])
-AC_SUBST([HAL_CFLAGS])
-AC_SUBST([HAL_LIBS])
-
 
 with_nodedev=no;
 if test "$with_hal" = "yes" || test "$with_udev" = "yes";
@@ -2618,6 +2579,7 @@ LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_AVAHI
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_DBUS
+LIBVIRT_RESULT_HAL
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_PCIACCESS
@@ -2677,11 +2639,6 @@ if test "$with_libxl" = "yes" ; then
 AC_MSG_NOTICE([xenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
 else
 AC_MSG_NOTICE([xenlight: no])
-fi
-if test "$with_hal" = "yes" ; then
-AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
-else
-AC_MSG_NOTICE([     hal: no])
 fi
 if test "$with_qemu" = "yes" && test "$LIBPCAP_FOUND" != "no"; then
 AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
