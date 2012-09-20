@@ -45,7 +45,7 @@
 #include "qemu_bridge_filter.h"
 #include "qemu_migration.h"
 
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
 #endif
@@ -1839,7 +1839,7 @@ qemuProcessDetectVcpuPIDs(virQEMUDriverPtr driver,
  * Set NUMA memory policy for qemu process, to be run between
  * fork/exec of QEMU only.
  */
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 static int
 qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
                                 virBitmapPtr nodemask)

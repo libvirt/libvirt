@@ -1398,10 +1398,10 @@ if test "$with_numad" = "yes"; then
 fi
 if test "$with_numactl" = "yes" || test "$with_numad" = "yes"; then
   NUMACTL_LIBS="-lnuma"
-  AC_DEFINE_UNQUOTED([HAVE_NUMACTL], 1, [whether numactl-devel is available])
+  AC_DEFINE_UNQUOTED([WITH_NUMACTL], 1, [whether numactl-devel is available])
 fi
 AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
-AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numad" != "no" || test "$with_numactl" != "no"])
+AM_CONDITIONAL([WITH_NUMACTL], [test "$with_numad" != "no" || test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
 

@@ -823,7 +823,7 @@
   #include &lt;string.h&gt;
   #include &lt;limits.h&gt;
 
-  #if HAVE_NUMACTL                Some system includes aren't supported
+  #if WITH_NUMACTL                Some system includes aren't supported
   # include &lt;numa.h&gt;              everywhere so need these #if guards.
   #endif
 

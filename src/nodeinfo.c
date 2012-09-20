@@ -33,7 +33,7 @@
 #include <sched.h>
 #include "conf/domain_conf.h"
 
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
 #endif
@@ -986,17 +986,17 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                 return -1;
             }
         } else {
-# if HAVE_NUMACTL
+# if WITH_NUMACTL
             if (numa_available() < 0) {
 # endif
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("NUMA not supported on this host"));
                 return -1;
-# if HAVE_NUMACTL
+# if WITH_NUMACTL
             }
 # endif
 
-# if HAVE_NUMACTL
+# if WITH_NUMACTL
             if (cellNum > numa_max_node()) {
                 virReportInvalidArg(cellNum,
                                     _("cellNum in %s must be less than or equal to %d"),
@@ -1459,7 +1459,7 @@ cleanup:
     return ret;
 }
 
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 # if LIBNUMA_API_VERSION <= 1
 #  define NUMA_MAX_N_CPUS 4096
 # else

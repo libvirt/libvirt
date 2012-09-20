@@ -46,7 +46,7 @@
 # include <cap-ng.h>
 #endif
 
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
 #endif
@@ -408,7 +408,7 @@ cleanup:
     return ret;
 }
 
-#if HAVE_NUMACTL
+#if WITH_NUMACTL
 static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 {
     nodemask_t mask;
