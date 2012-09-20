@@ -2454,6 +2454,9 @@
         <optional>
           <attribute name="wiremode"/>
         </optional>
+        <optional>
+          <ref name='devSeclabel'/>
+        </optional>
       </element>
     </zeroOrMore>
     <optional>

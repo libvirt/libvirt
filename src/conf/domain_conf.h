@@ -966,6 +966,9 @@ struct _virDomainChrDef {
     virDomainChrSourceDef source;
 
     virDomainDeviceInfo info;
+
+    size_t nseclabels;
+    virSecurityDeviceLabelDefPtr *seclabels;
 };
 
 enum virDomainSmartcardType {
@@ -2134,6 +2137,9 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model);
 
 virSecurityDeviceLabelDefPtr
 virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model);
+
+virSecurityDeviceLabelDefPtr
+virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model);
 
 virSecurityLabelDefPtr
 virDomainDefAddSecurityLabelDef(virDomainDefPtr def, const char *model);

@@ -3445,6 +3445,14 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
 
     <p>
+      The <code>source</code> element may contain an optional
+      <code>seclabel</code> to override the way that labelling
+      is done on the socket path.  If this element is not present,
+      the <a href="#seclabel">security label is inherited from
+        the per-domain setting</a>.
+    </p>
+
+    <p>
       Each character device element has an optional
       sub-element <code>&lt;address&gt;</code> which can tie the
       device to a

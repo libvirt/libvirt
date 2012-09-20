@@ -1213,38 +1213,61 @@ done:
 
 static int
 virSecuritySELinuxSetSecurityChardevLabel(virDomainDefPtr def,
-                                          virDomainChrSourceDefPtr dev)
+                                          virDomainChrDefPtr dev,
+                                          virDomainChrSourceDefPtr dev_source)
 
 {
-    virSecurityLabelDefPtr secdef;
+    virSecurityLabelDefPtr seclabel;
+    virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
+    char *imagelabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
         return -1;
 
-    if (secdef->norelabel)
+    if (dev)
+        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
+                                                          SECURITY_SELINUX_NAME);
+
+    if (seclabel->norelabel || (chr_seclabel && chr_seclabel->norelabel))
         return 0;
 
-    switch (dev->type) {
+    if (chr_seclabel)
+        imagelabel = chr_seclabel->label;
+    if (!imagelabel)
+        imagelabel = seclabel->imagelabel;
+
+    switch (dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecuritySELinuxSetFilecon(dev->data.file.path, secdef->imagelabel);
+        ret = virSecuritySELinuxSetFilecon(dev_source->data.file.path,
+                                           imagelabel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (!dev_source->data.nix.listen) {
+            if (virSecuritySELinuxSetFilecon(dev_source->data.file.path,
+                                             imagelabel) < 0)
+                goto done;
+        }
+        ret = 0;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
-            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+        if ((virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0)) {
             virReportOOMError();
             goto done;
         }
         if (virFileExists(in) && virFileExists(out)) {
-            if ((virSecuritySELinuxSetFilecon(in, secdef->imagelabel) < 0) ||
-                (virSecuritySELinuxSetFilecon(out, secdef->imagelabel) < 0)) {
+            if ((virSecuritySELinuxSetFilecon(in, imagelabel) < 0) ||
+                (virSecuritySELinuxSetFilecon(out, imagelabel) < 0)) {
                 goto done;
             }
-        } else if (virSecuritySELinuxSetFilecon(dev->data.file.path, secdef->imagelabel) < 0) {
+        } else if (virSecuritySELinuxSetFilecon(dev_source->data.file.path,
+                                                imagelabel) < 0) {
             goto done;
         }
         ret = 0;
@@ -1263,30 +1286,44 @@ done:
 
 static int
 virSecuritySELinuxRestoreSecurityChardevLabel(virDomainDefPtr def,
-                                              virDomainChrSourceDefPtr dev)
+                                              virDomainChrDefPtr dev,
+                                              virDomainChrSourceDefPtr dev_source)
 
 {
-    virSecurityLabelDefPtr secdef;
+    virSecurityLabelDefPtr seclabel;
+    virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
 
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
         return -1;
 
-    if (secdef->norelabel)
+    if (dev)
+        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
+                                                          SECURITY_SELINUX_NAME);
+    if (seclabel->norelabel || (chr_seclabel && chr_seclabel->norelabel))
         return 0;
 
-    switch (dev->type) {
+    switch (dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (virSecuritySELinuxRestoreSecurityFileLabel(dev->data.file.path) < 0)
+        if (virSecuritySELinuxRestoreSecurityFileLabel(dev_source->data.file.path) < 0)
             goto done;
         ret = 0;
         break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (!dev_source->data.nix.listen) {
+            if (virSecuritySELinuxRestoreSecurityFileLabel(dev_source->data.file.path) < 0)
+                goto done;
+        }
+        ret = 0;
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
-            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0)) {
+        if ((virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0) ||
+            (virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0)) {
             virReportOOMError();
             goto done;
         }
@@ -1295,7 +1332,7 @@ virSecuritySELinuxRestoreSecurityChardevLabel(virDomainDefPtr def,
                 (virSecuritySELinuxRestoreSecurityFileLabel(in) < 0)) {
                 goto done;
             }
-        } else if (virSecuritySELinuxRestoreSecurityFileLabel(dev->data.file.path) < 0) {
+        } else if (virSecuritySELinuxRestoreSecurityFileLabel(dev_source->data.file.path) < 0) {
             goto done;
         }
         ret = 0;
@@ -1323,7 +1360,8 @@ virSecuritySELinuxRestoreSecurityChardevCallback(virDomainDefPtr def,
         dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
         return 0;
 
-    return virSecuritySELinuxRestoreSecurityChardevLabel(def, &dev->source);
+    return virSecuritySELinuxRestoreSecurityChardevLabel(def, dev,
+                                                         &dev->source);
 }
 
 
@@ -1345,7 +1383,7 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
         return virSecuritySELinuxRestoreSecurityFileLabel(database);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        return virSecuritySELinuxRestoreSecurityChardevLabel(def, &dev->data.passthru);
+        return virSecuritySELinuxRestoreSecurityChardevLabel(def, NULL, &dev->data.passthru);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1703,7 +1741,7 @@ virSecuritySELinuxSetSecurityChardevCallback(virDomainDefPtr def,
         dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
         return 0;
 
-    return virSecuritySELinuxSetSecurityChardevLabel(def, &dev->source);
+    return virSecuritySELinuxSetSecurityChardevLabel(def, dev, &dev->source);
 }
 
 
@@ -1727,7 +1765,7 @@ virSecuritySELinuxSetSecuritySmartcardCallback(virDomainDefPtr def,
         return virSecuritySELinuxSetFilecon(database, data->content_context);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        return virSecuritySELinuxSetSecurityChardevLabel(def, &dev->data.passthru);
+        return virSecuritySELinuxSetSecurityChardevLabel(def, NULL, &dev->data.passthru);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

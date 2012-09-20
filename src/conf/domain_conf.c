@@ -1278,6 +1278,8 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
 
 void virDomainChrDefFree(virDomainChrDefPtr def)
 {
+    size_t i;
+
     if (!def)
         return;
 
@@ -1300,6 +1302,12 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
 
     virDomainChrSourceDefClear(&def->source);
     virDomainDeviceInfoClear(&def->info);
+
+    if (def->seclabels) {
+        for (i = 0; i < def->nseclabels; i++)
+            virSecurityDeviceLabelDefFree(def->seclabels[i]);
+        VIR_FREE(def->seclabels);
+    }
 
     VIR_FREE(def);
 }
@@ -5353,7 +5361,11 @@ error:
  * <target>, which is used by <serial> but not <smartcard>). */
 static int
 virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
-                              xmlNodePtr cur, unsigned int flags)
+                              xmlNodePtr cur, unsigned int flags,
+                              virDomainChrDefPtr chr_def,
+                              xmlXPathContextPtr ctxt,
+                              virSecurityLabelDefPtr* vmSeclabels,
+                              int nvmSeclabels)
 {
     char *bindHost = NULL;
     char *bindService = NULL;
@@ -5407,6 +5419,21 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
                     if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
                         VIR_FREE(mode);
+                }
+
+                /* Check for an optional seclabel override in <source/>. */
+                if (chr_def) {
+                    xmlNodePtr saved_node = ctxt->node;
+                    ctxt->node = cur;
+                    if (virSecurityDeviceLabelDefParseXML(&chr_def->seclabels,
+                                                          &chr_def->nseclabels,
+                                                          vmSeclabels,
+                                                          nvmSeclabels,
+                                                          ctxt) < 0) {
+                        ctxt->node = saved_node;
+                        goto error;
+                    }
+                    ctxt->node = saved_node;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
                 if (protocol == NULL)
@@ -5601,7 +5628,10 @@ virDomainChrDefNew(void) {
 static virDomainChrDefPtr
 virDomainChrDefParseXML(virCapsPtr caps,
                         virDomainDefPtr vmdef,
+                        xmlXPathContextPtr ctxt,
                         xmlNodePtr node,
+                        virSecurityLabelDefPtr* vmSeclabels,
+                        int nvmSeclabels,
                         unsigned int flags)
 {
     xmlNodePtr cur;
@@ -5632,7 +5662,9 @@ virDomainChrDefParseXML(virCapsPtr caps,
     }
 
     cur = node->children;
-    remaining = virDomainChrSourceDefParseXML(&def->source, cur, flags);
+    remaining = virDomainChrSourceDefParseXML(&def->source, cur, flags,
+                                              def, ctxt,
+                                              vmSeclabels, nvmSeclabels);
     if (remaining < 0)
         goto error;
     if (remaining) {
@@ -5769,7 +5801,8 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         }
 
         cur = node->children;
-        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur, flags) < 0)
+        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur, flags,
+                                          NULL, NULL, NULL, 0) < 0)
             goto error;
 
         if (def->data.passthru.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
@@ -7250,7 +7283,8 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
             if (xmlStrEqual(cur->name, BAD_CAST "source")) {
                 int remaining;
 
-                remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags);
+                remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags,
+                                                          NULL, NULL, NULL, 0);
                 if (remaining != 0)
                     goto error;
             }
@@ -9319,7 +9353,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
                                                          def,
+                                                         ctxt,
                                                          nodes[i],
+                                                         def->seclabels,
+                                                         def->nseclabels,
                                                          flags);
         if (!chr)
             goto error;
@@ -9346,7 +9383,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
                                                          def,
+                                                         ctxt,
                                                          nodes[i],
+                                                         def->seclabels,
+                                                         def->nseclabels,
                                                          flags);
         if (!chr)
             goto error;
@@ -9376,7 +9416,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         bool create_stub = true;
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
                                                          def,
+                                                         ctxt,
                                                          nodes[i],
+                                                         def->seclabels,
+                                                         def->nseclabels,
                                                          flags);
         if (!chr)
             goto error;
@@ -9452,7 +9495,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     for (i = 0 ; i < n ; i++) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
                                                          def,
+                                                         ctxt,
                                                          nodes[i],
+                                                         def->seclabels,
+                                                         def->nseclabels,
                                                          flags);
         if (!chr)
             goto error;
@@ -12396,6 +12442,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
                                                             def->targetType);
     bool tty_compat;
+    size_t n;
 
     int ret = 0;
 
@@ -12473,6 +12520,14 @@ virDomainChrDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoIsSet(&def->info, flags)) {
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
+    }
+
+    /* Security label overrides, if any. */
+    if (def->seclabels && def->nseclabels > 0) {
+        virBufferAdjustIndent(buf, 2);
+        for (n = 0; n < def->nseclabels; n++)
+            virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+        virBufferAdjustIndent(buf, -2);
     }
 
     virBufferAsprintf(buf, "    </%s>\n", elementName);
@@ -15297,6 +15352,21 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
 
 virSecurityDeviceLabelDefPtr
 virDomainDiskDefGetSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
+{
+    int i;
+
+    if (def == NULL)
+        return NULL;
+
+    for (i = 0; i < def->nseclabels; i++) {
+        if (STREQ_NULLABLE(def->seclabels[i]->model, model))
+            return def->seclabels[i];
+    }
+    return NULL;
+}
+
+virSecurityDeviceLabelDefPtr
+virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model)
 {
     int i;
 
