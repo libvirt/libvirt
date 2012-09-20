@@ -155,6 +155,8 @@ AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
 
 LIBVIRT_COMPILE_WARNINGS
 
+LIBVIRT_CHECK_YAJL
+
 AC_MSG_CHECKING([for CPUID instruction])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
   [[
@@ -1138,85 +1140,6 @@ fi
 AM_CONDITIONAL([HAVE_SASL], [test "x$with_sasl" = "xyes"])
 AC_SUBST([SASL_CFLAGS])
 AC_SUBST([SASL_LIBS])
-
-
-dnl YAJL JSON library http://lloyd.github.com/yajl/
-AC_ARG_WITH([yajl],
-  AC_HELP_STRING([--with-yajl], [use YAJL for JSON parsing/formatting @<:@default=check@:>@]),
-  [],
-  [with_yajl=check])
-
-if test "$with_qemu:$with_yajl" = yes:check; then
-  dnl Some versions of qemu require the use of yajl; try to detect them
-  dnl here, although we do not require qemu to exist in order to compile.
-  dnl This check mirrors src/qemu/qemu_capabilities.c
-  AC_PATH_PROGS([QEMU], [qemu-kvm qemu kvm qemu-system-x86_64],
-                [], [$PATH:/usr/bin:/usr/libexec])
-  if test -x "$QEMU"; then
-    if `$QEMU -help | grep libvirt` >/dev/null; then
-      with_yajl=yes
-    else
-      [qemu_version_sed='s/.*ersion \([0-9.,]*\).*/\1/']
-      qemu_version=`$QEMU -version | sed "$qemu_version_sed"`
-      case $qemu_version in
-        [[1-9]].* | 0.15.* ) with_yajl=yes ;;
-        0.* | '' ) ;;
-        *) AC_MSG_ERROR([Unexpected qemu version string]) ;;
-      esac
-    fi
-  fi
-fi
-
-YAJL_CFLAGS=
-YAJL_LIBS=
-with_yajl2=no
-if test "x$with_yajl" != "xno"; then
-  if test "x$with_yajl" != "xyes" && test "x$with_yajl" != "xcheck"; then
-    YAJL_CFLAGS="-I$with_yajl/include"
-    YAJL_LIBS="-L$with_yajl/lib"
-  fi
-  fail=0
-  old_cppflags="$CPPFLAGS"
-  old_libs="$LIBS"
-  CPPFLAGS="$CPPFLAGS $YAJL_CFLAGS"
-  LIBS="$LIBS $YAJL_LIBS"
-  AC_CHECK_HEADER([yajl/yajl_common.h],[],[
-    if test "x$with_yajl" = "xcheck" ; then
-        with_yajl=no
-    else
-        fail=1
-    fi])
-  if test "x$with_yajl" != "xno" ; then
-    AC_CHECK_LIB([yajl], [yajl_parse],[
-      YAJL_LIBS="$YAJL_LIBS -lyajl"
-      with_yajl=yes
-      AC_CHECK_LIB([yajl], [yajl_tree_parse],[
-        with_yajl2=yes
-      ],[])
-    ],[
-      if test "x$with_yajl" = "xcheck" ; then
-        with_yajl=no
-      else
-        fail=1
-      fi
-    ])
-  fi
-  test $fail = 1 &&
-    AC_MSG_ERROR([You must install the YAJL development package in order to compile libvirt])
-  CPPFLAGS="$old_cppflags"
-  LIBS="$old_libs"
-  if test "x$with_yajl" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_YAJL], 1,
-      [whether YAJL is available for JSON parsing/formatting])
-  fi
-  if test "x$with_yajl2" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([WITH_YAJL2], 1,
-      [whether YAJL has API version 2])
-  fi
-fi
-AM_CONDITIONAL([WITH_YAJL], [test "x$with_yajl" = "xyes"])
-AC_SUBST([YAJL_CFLAGS])
-AC_SUBST([YAJL_LIBS])
 
 
 dnl SANLOCK https://fedorahosted.org/sanlock/
@@ -3185,6 +3108,7 @@ fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
+LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
 if test "$have_curl" = "yes" ; then
@@ -3211,11 +3135,6 @@ if test "$with_sasl" != "no" ; then
 AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
 else
 AC_MSG_NOTICE([    sasl: no])
-fi
-if test "$with_yajl" != "no" ; then
-AC_MSG_NOTICE([    yajl: $YAJL_CFLAGS $YAJL_LIBS])
-else
-AC_MSG_NOTICE([    yajl: no])
 fi
 if test "$with_sanlock" != "no" ; then
 AC_MSG_NOTICE([ sanlock: $SANLOCK_CFLAGS $SANLOCK_LIBS])
