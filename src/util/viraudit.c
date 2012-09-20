@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_AUDIT
+#ifdef WITH_AUDIT
 # include <libaudit.h>
 #endif
 #include <stdio.h>
@@ -48,14 +48,14 @@
 
 #define VIR_FROM_THIS VIR_FROM_AUDIT
 
-#if HAVE_AUDIT
+#if WITH_AUDIT
 static int auditfd = -1;
 #endif
 static int auditlog = 0;
 
 int virAuditOpen(void)
 {
-#if HAVE_AUDIT
+#if WITH_AUDIT
     if ((auditfd = audit_open()) < 0) {
         virReportSystemError(errno, "%s", _("Unable to initialize audit layer"));
         return -1;
@@ -87,7 +87,7 @@ void virAuditSend(const char *filename,
 
     /* Duplicate later checks, to short circuit & avoid printf overhead
      * when nothing is enabled */
-#if HAVE_AUDIT
+#if WITH_AUDIT
     if (!auditlog && auditfd < 0)
         return;
 #else
@@ -113,7 +113,7 @@ void virAuditSend(const char *filename,
                           NULL, "success=no %s", str);
     }
 
-#if HAVE_AUDIT
+#if WITH_AUDIT
     if (auditfd < 0) {
         VIR_FREE(str);
         return;
@@ -141,14 +141,14 @@ void virAuditSend(const char *filename,
 
 void virAuditClose(void)
 {
-#if HAVE_AUDIT
+#if WITH_AUDIT
     VIR_FORCE_CLOSE(auditfd);
 #endif
 }
 
 char *virAuditEncode(const char *key, const char *value)
 {
-#if HAVE_AUDIT
+#if WITH_AUDIT
     return audit_encode_nv_string(key, value, 0);
 #else
     char *str;

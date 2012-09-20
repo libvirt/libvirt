@@ -1258,13 +1258,13 @@ if test "$with_audit" != "no" ; then
 
   if test "$with_audit" = "yes" ; then
     AUDIT_LIBS="$AUDIT_LIBS -laudit"
-    AC_DEFINE_UNQUOTED([HAVE_AUDIT], 1, [whether libaudit is available])
+    AC_DEFINE_UNQUOTED([WITH_AUDIT], 1, [whether libaudit is available])
   fi
 
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
 fi
-AM_CONDITIONAL([HAVE_AUDIT], [test "$with_audit" = "yes"])
+AM_CONDITIONAL([WITH_AUDIT], [test "$with_audit" = "yes"])
 AC_SUBST([AUDIT_CFLAGS])
 AC_SUBST([AUDIT_LIBS])
 
