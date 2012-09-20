@@ -157,6 +157,7 @@ LIBVIRT_COMPILE_WARNINGS
 
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_AUDIT
+LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
@@ -1482,45 +1483,6 @@ AM_CONDITIONAL([HAVE_LIBSSH2], [test "$with_libssh2_transport" = "yes"])
 AC_SUBST([LIBSSH2_CFLAGS])
 AC_SUBST([LIBSSH2_LIBS])
 
-dnl libcap-ng
-AC_ARG_WITH([capng],
-  AC_HELP_STRING([--with-capng], [use libcap-ng to reduce libvirtd privileges @<:@default=check@:>@]),
-  [],
-  [with_capng=check])
-
-dnl
-dnl This check looks for 'capng_updatev' since that was
-dnl introduced in 0.4.0 release which need as minimum
-dnl
-CAPNG_CFLAGS=
-CAPNG_LIBS=
-if test "$with_qemu" = "yes" && test "$with_capng" != "no"; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
-  if test "$with_capng" = "check"; then
-    AC_CHECK_HEADER([cap-ng.h],[],[with_capng=no])
-    AC_CHECK_LIB([cap-ng], [capng_updatev],[],[with_capng=no])
-    if test "$with_capng" != "no"; then
-      with_capng="yes"
-    fi
-  else
-    fail=0
-    AC_CHECK_HEADER([cap-ng.h],[],[fail=1])
-    AC_CHECK_LIB([cap-ng], [capng_updatev],[],[fail=1])
-    test $fail = 1 &&
-      AC_MSG_ERROR([You must install the capng >= 0.4.0 development package in order to compile and run libvirt])
-  fi
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
-fi
-if test "$with_capng" = "yes"; then
-  CAPNG_LIBS="-lcap-ng"
-  AC_DEFINE_UNQUOTED([WITH_CAPNG], 1, [whether capng is available for privilege reduction])
-fi
-AM_CONDITIONAL([WITH_CAPNG], [test "$with_capng" != "no"])
-AC_SUBST([CAPNG_CFLAGS])
-AC_SUBST([CAPNG_LIBS])
-
 
 dnl libfuse
 AC_ARG_WITH([fuse],
@@ -2790,6 +2752,7 @@ AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_AUDIT
+LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
@@ -2831,11 +2794,6 @@ AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
 fi
 else
 AC_MSG_NOTICE([  polkit: no])
-fi
-if test "$with_capng" = "yes" ; then
-AC_MSG_NOTICE([   capng: $CAPNG_CFLAGS $CAPNG_LIBS])
-else
-AC_MSG_NOTICE([   capng: no])
 fi
 if test "$with_fuse" = "yes" ; then
 AC_MSG_NOTICE([    fuse: $FUSE_CFLAGS $FUSE_LIBS])
