@@ -620,7 +620,7 @@ if WITH_NETCF
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_backend_netcf.c
 endif
-if HAVE_UDEV
+if WITH_UDEV
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_backend_udev.c
 endif
@@ -1108,7 +1108,7 @@ if WITH_NETCF
 libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
 else
-if HAVE_UDEV
+if WITH_UDEV
 libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
 endif
@@ -1222,7 +1222,7 @@ libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
 libvirt_driver_nodedev_la_CFLAGS += $(HAL_CFLAGS)
 libvirt_driver_nodedev_la_LIBADD += $(HAL_LIBS)
 endif
-if HAVE_UDEV
+if WITH_UDEV
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
 libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS) $(PCIACCESS_CFLAGS)
 libvirt_driver_nodedev_la_LIBADD += $(UDEV_LIBS) $(PCIACCESS_LIBS)

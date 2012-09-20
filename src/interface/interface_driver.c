@@ -28,10 +28,10 @@ interfaceRegister(void) {
     if (netcfIfaceRegister() == 0)
         return 0;
 #endif /* WITH_NETCF */
-#if HAVE_UDEV
+#if WITH_UDEV
     /* If there's no netcf or it failed to load, register the udev backend */
     if (udevIfaceRegister() == 0)
         return 0;
-#endif /* HAVE_UDEV */
+#endif /* WITH_UDEV */
     return -1;
 }

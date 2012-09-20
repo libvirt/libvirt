@@ -166,7 +166,7 @@ static char *
 virStorageBackendSCSISerial(const char *dev)
 {
     char *serial = NULL;
-#ifdef HAVE_UDEV
+#ifdef WITH_UDEV
     virCommandPtr cmd = virCommandNewArgList(
         "/lib/udev/scsi_id",
         "--replace-whitespace",
@@ -191,7 +191,7 @@ virStorageBackendSCSISerial(const char *dev)
             virReportOOMError();
     }
 
-#ifdef HAVE_UDEV
+#ifdef WITH_UDEV
 cleanup:
     virCommandFree(cmd);
 #endif

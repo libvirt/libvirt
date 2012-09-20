@@ -1282,7 +1282,7 @@ int virStorageFileGetLVMKey(const char *path,
 }
 #endif
 
-#ifdef HAVE_UDEV
+#ifdef WITH_UDEV
 int virStorageFileGetSCSIKey(const char *path,
                              char **key)
 {

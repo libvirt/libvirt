@@ -42,7 +42,7 @@
 # ifdef HAVE_HAL
 int halNodeRegister(void);
 # endif
-# ifdef HAVE_UDEV
+# ifdef WITH_UDEV
 int udevNodeRegister(void);
 # endif
 

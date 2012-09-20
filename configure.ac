@@ -2336,11 +2336,11 @@ if test "x$with_udev" = "xyes" || test "x$with_udev" = "xcheck"; then
       ])
   fi
   if test "x$with_udev" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_UDEV], 1,
+    AC_DEFINE_UNQUOTED([WITH_UDEV], 1,
       [use UDEV for host device enumeration])
   fi
 fi
-AM_CONDITIONAL([HAVE_UDEV], [test "x$with_udev" = "xyes"])
+AM_CONDITIONAL([WITH_UDEV], [test "x$with_udev" = "xyes"])
 AC_SUBST([UDEV_CFLAGS])
 AC_SUBST([UDEV_LIBS])
 AC_SUBST([PCIACCESS_CFLAGS])

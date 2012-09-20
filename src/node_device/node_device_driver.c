@@ -681,7 +681,7 @@ out:
 }
 
 int nodedevRegister(void) {
-#if defined(HAVE_HAL) && defined(HAVE_UDEV)
+#if defined(HAVE_HAL) && defined(WITH_UDEV)
     /* Register only one of these two - they conflict */
     if (udevNodeRegister() == -1)
         return halNodeRegister();
@@ -690,7 +690,7 @@ int nodedevRegister(void) {
 # ifdef HAVE_HAL
     return halNodeRegister();
 # endif
-# ifdef HAVE_UDEV
+# ifdef WITH_UDEV
     return udevNodeRegister();
 # endif
 #endif
