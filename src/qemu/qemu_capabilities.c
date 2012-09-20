@@ -1144,7 +1144,7 @@ qemuCapsComputeCmdFlags(const char *help,
      * backported for libvirt. The benefits of JSON mode now
      * outweigh the downside.
      */
-#if HAVE_YAJL
+#if WITH_YAJL
     if (version >= 13000) {
         qemuCapsSet(caps, QEMU_CAPS_MONITOR_JSON);
     } else if (version >= 12000 &&

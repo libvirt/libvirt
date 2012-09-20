@@ -1991,7 +1991,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
             goto cleanup;
         }
     } else {
-#if HAVE_YAJL
+#if WITH_YAJL
         if (qemuCapsGet(priv->caps, QEMU_CAPS_MONITOR_JSON)) {
             if (!qemuCapsGet(priv->caps, QEMU_CAPS_NO_SHUTDOWN)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2003,7 +2003,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Reboot is not supported without the JSON monitor"));
             goto cleanup;
-#if HAVE_YAJL
+#if WITH_YAJL
         }
 #endif
     }

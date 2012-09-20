@@ -1206,15 +1206,15 @@ if test "x$with_yajl" != "xno"; then
   CPPFLAGS="$old_cppflags"
   LIBS="$old_libs"
   if test "x$with_yajl" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_YAJL], 1,
+    AC_DEFINE_UNQUOTED([WITH_YAJL], 1,
       [whether YAJL is available for JSON parsing/formatting])
   fi
   if test "x$with_yajl2" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_YAJL2], 1,
+    AC_DEFINE_UNQUOTED([WITH_YAJL2], 1,
       [whether YAJL has API version 2])
   fi
 fi
-AM_CONDITIONAL([HAVE_YAJL], [test "x$with_yajl" = "xyes"])
+AM_CONDITIONAL([WITH_YAJL], [test "x$with_yajl" = "xyes"])
 AC_SUBST([YAJL_CFLAGS])
 AC_SUBST([YAJL_LIBS])
 

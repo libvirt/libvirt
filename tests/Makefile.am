@@ -146,7 +146,7 @@ if WITH_CIL
 test_programs += object-locking
 endif
 
-if HAVE_YAJL
+if WITH_YAJL
 test_programs += jsontest
 endif
 

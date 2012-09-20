@@ -29,11 +29,11 @@
 #include "virlog.h"
 #include "virutil.h"
 
-#if HAVE_YAJL
+#if WITH_YAJL
 # include <yajl/yajl_gen.h>
 # include <yajl/yajl_parse.h>
 
-# ifdef HAVE_YAJL2
+# ifdef WITH_YAJL2
 #  define yajl_size_t size_t
 # else
 #  define yajl_size_t unsigned int
@@ -659,7 +659,7 @@ int virJSONValueObjectIsNull(virJSONValuePtr object, const char *key)
 }
 
 
-#if HAVE_YAJL
+#if WITH_YAJL
 static int virJSONParserInsertValue(virJSONParserPtr parser,
                                     virJSONValuePtr value)
 {
@@ -937,13 +937,13 @@ virJSONValuePtr virJSONValueFromString(const char *jsonstring)
     yajl_handle hand;
     virJSONParser parser = { NULL, NULL, 0 };
     virJSONValuePtr ret = NULL;
-# ifndef HAVE_YAJL2
+# ifndef WITH_YAJL2
     yajl_parser_config cfg = { 1, 1 };
 # endif
 
     VIR_DEBUG("string=%s", jsonstring);
 
-# ifdef HAVE_YAJL2
+# ifdef WITH_YAJL2
     hand = yajl_alloc(&parserCallbacks, NULL, &parser);
     if (hand) {
         yajl_config(hand, yajl_allow_comments, 1);
@@ -1061,13 +1061,13 @@ char *virJSONValueToString(virJSONValuePtr object,
     const unsigned char *str;
     char *ret = NULL;
     yajl_size_t len;
-# ifndef HAVE_YAJL2
+# ifndef WITH_YAJL2
     yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "    " : " "};
 # endif
 
     VIR_DEBUG("object=%p", object);
 
-# ifdef HAVE_YAJL2
+# ifdef WITH_YAJL2
     g = yajl_gen_alloc(NULL);
     if (g) {
         yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
