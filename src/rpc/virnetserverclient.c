@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#if HAVE_SASL
+#if WITH_SASL
 # include <sasl/sasl.h>
 #endif
 
@@ -70,7 +70,7 @@ struct _virNetServerClient
     virNetTLSContextPtr tlsCtxt;
     virNetTLSSessionPtr tls;
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     virNetSASLSessionPtr sasl;
 #endif
     int sockTimer; /* Timer to be fired upon cached data,
@@ -652,7 +652,7 @@ bool virNetServerClientIsSecure(virNetServerClientPtr client)
     if (client->tls)
         secure = true;
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     if (client->sasl)
         secure = true;
 #endif
@@ -663,8 +663,7 @@ bool virNetServerClientIsSecure(virNetServerClientPtr client)
 }
 
 
-
-#if HAVE_SASL
+#if WITH_SASL
 void virNetServerClientSetSASLSession(virNetServerClientPtr client,
                                       virNetSASLSessionPtr sasl)
 {
@@ -761,7 +760,7 @@ void virNetServerClientDispose(void *obj)
         client->privateDataFreeFunc(client->privateData);
 
     VIR_FREE(client->identity);
-#if HAVE_SASL
+#if WITH_SASL
     virObjectUnref(client->sasl);
 #endif
     if (client->sockTimer > 0)
@@ -1181,7 +1180,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                 client->tx->donefds++;
             }
 
-#if HAVE_SASL
+#if WITH_SASL
             /* Completed this 'tx' operation, so now read for all
              * future rx/tx to be under a SASL SSF layer
              */

@@ -98,7 +98,7 @@
 
 #include "virdbus.h"
 
-#if HAVE_SASL
+#if WITH_SASL
 virNetSASLContextPtr saslCtxt = NULL;
 #endif
 virNetServerProgramPtr remoteProgram = NULL;
@@ -578,7 +578,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
 #endif
     }
 
-#if HAVE_SASL
+#if WITH_SASL
     if (config->auth_unix_rw == REMOTE_AUTH_SASL ||
         config->auth_unix_ro == REMOTE_AUTH_SASL ||
 # if HAVE_GNUTLS

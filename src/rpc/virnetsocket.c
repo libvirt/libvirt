@@ -82,7 +82,7 @@ struct _virNetSocket {
 #if HAVE_GNUTLS
     virNetTLSSessionPtr tlsSession;
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     virNetSASLSessionPtr saslSession;
 
     const char *saslDecoded;
@@ -1021,7 +1021,7 @@ void virNetSocketDispose(void *obj)
         virNetTLSSessionSetIOCallbacks(sock->tlsSession, NULL, NULL, NULL);
     virObjectUnref(sock->tlsSession);
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     virObjectUnref(sock->saslSession);
 #endif
 
@@ -1217,7 +1217,7 @@ void virNetSocketSetTLSSession(virNetSocketPtr sock,
 }
 #endif
 
-#if HAVE_SASL
+#if WITH_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess)
 {
@@ -1239,7 +1239,7 @@ bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
         hasCached = true;
 #endif
 
-#if HAVE_SASL
+#if WITH_SASL
     if (sock->saslDecoded)
         hasCached = true;
 #endif
@@ -1267,7 +1267,7 @@ bool virNetSocketHasPendingData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
 {
     bool hasPending = false;
     virMutexLock(&sock->lock);
-#if HAVE_SASL
+#if WITH_SASL
     if (sock->saslEncoded)
         hasPending = true;
 #endif
@@ -1378,7 +1378,7 @@ rewrite:
 }
 
 
-#if HAVE_SASL
+#if WITH_SASL
 static ssize_t virNetSocketReadSASL(virNetSocketPtr sock, char *buf, size_t len)
 {
     ssize_t got;
@@ -1481,7 +1481,7 @@ ssize_t virNetSocketRead(virNetSocketPtr sock, char *buf, size_t len)
 {
     ssize_t ret;
     virMutexLock(&sock->lock);
-#if HAVE_SASL
+#if WITH_SASL
     if (sock->saslSession)
         ret = virNetSocketReadSASL(sock, buf, len);
     else
@@ -1496,7 +1496,7 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len)
     ssize_t ret;
 
     virMutexLock(&sock->lock);
-#if HAVE_SASL
+#if WITH_SASL
     if (sock->saslSession)
         ret = virNetSocketWriteSASL(sock, buf, len);
     else

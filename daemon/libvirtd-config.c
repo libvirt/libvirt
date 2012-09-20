@@ -178,7 +178,7 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
 
     if (STREQ(p->str, "none")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
-#if HAVE_SASL
+#if WITH_SASL
     } else if (STREQ(p->str, "sasl")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_SASL;
 #endif
@@ -263,7 +263,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         !data->unix_sock_rw_perms)
         goto no_memory;
 
-#if HAVE_SASL
+#if WITH_SASL
     data->auth_tcp = REMOTE_AUTH_SASL;
 #else
     data->auth_tcp = REMOTE_AUTH_NONE;

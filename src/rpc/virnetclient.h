@@ -27,7 +27,7 @@
 #  include "virnettlscontext.h"
 # endif
 # include "virnetmessage.h"
-# ifdef HAVE_SASL
+# ifdef WITH_SASL
 #  include "virnetsaslcontext.h"
 # endif
 # include "virnetclientprogram.h"
@@ -104,7 +104,7 @@ int virNetClientSendWithReplyStream(virNetClientPtr client,
                                     virNetMessagePtr msg,
                                     virNetClientStreamPtr st);
 
-# ifdef HAVE_SASL
+# ifdef WITH_SASL
 void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl);
 # endif

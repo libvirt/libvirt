@@ -83,7 +83,7 @@ bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
 # endif
 
-# ifdef HAVE_SASL
+# ifdef WITH_SASL
 void virNetServerClientSetSASLSession(virNetServerClientPtr client,
                                       virNetSASLSessionPtr sasl);
 # endif

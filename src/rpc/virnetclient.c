@@ -81,7 +81,7 @@ struct _virNetClient {
     /* For incoming message packets */
     virNetMessage msg;
 
-#if HAVE_SASL
+#if WITH_SASL
     virNetSASLSessionPtr sasl;
 #endif
 
@@ -632,7 +632,7 @@ void virNetClientDispose(void *obj)
 #if HAVE_GNUTLS
     virObjectUnref(client->tls);
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     virObjectUnref(client->sasl);
 #endif
 
@@ -671,7 +671,7 @@ virNetClientCloseLocked(virNetClientPtr client)
     virObjectUnref(client->tls);
     client->tls = NULL;
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     virObjectUnref(client->sasl);
     client->sasl = NULL;
 #endif
@@ -739,7 +739,7 @@ void virNetClientClose(virNetClientPtr client)
 }
 
 
-#if HAVE_SASL
+#if WITH_SASL
 void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl)
 {
@@ -864,7 +864,7 @@ bool virNetClientIsEncrypted(virNetClientPtr client)
     if (client->tls)
         ret = true;
 #endif
-#if HAVE_SASL
+#if WITH_SASL
     if (client->sasl)
         ret = true;
 #endif

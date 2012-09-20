@@ -1422,7 +1422,7 @@ if WITH_XENXS
 USED_SYM_FILES += $(srcdir)/libvirt_xenxs.syms
 endif
 
-if HAVE_SASL
+if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif
 
@@ -1786,7 +1786,7 @@ else
 EXTRA_DIST += \
 	rpc/virnettlscontext.h rpc/virnettlscontext.c
 endif
-if HAVE_SASL
+if WITH_SASL
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
 else

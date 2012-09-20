@@ -118,7 +118,7 @@ static int callWithFD(virConnectPtr conn, struct private_data *priv,
                       xdrproc_t ret_filter, char *ret);
 static int remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
                               virConnectAuthPtr auth, const char *authtype);
-#if HAVE_SASL
+#if WITH_SASL
 static int remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                           virConnectAuthPtr auth, const char *mech);
 #endif
@@ -3489,7 +3489,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
     }
 
     switch (type) {
-#if HAVE_SASL
+#if WITH_SASL
     case REMOTE_AUTH_SASL: {
         const char *mech = NULL;
         if (authtype &&
@@ -3532,7 +3532,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
 
 
 
-#if HAVE_SASL
+#if WITH_SASL
 static int remoteAuthCredVir2SASL(int vircred)
 {
     switch (vircred) {
@@ -4072,7 +4072,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 
     return ret;
 }
-#endif /* HAVE_SASL */
+#endif /* WITH_SASL */
 
 
 #if HAVE_POLKIT

@@ -2432,7 +2432,7 @@ cleanup:
 }
 
 
-#ifdef HAVE_SASL
+#ifdef WITH_SASL
 /*
  * Initializes the SASL session in prepare for authentication
  * and gives the client a list of allowed mechanisms to choose

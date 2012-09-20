@@ -30,7 +30,7 @@
 #  include "virnettlscontext.h"
 # endif
 # include "virobject.h"
-# ifdef HAVE_SASL
+# ifdef WITH_SASL
 #  include "virnetsaslcontext.h"
 # endif
 # include "virjson.h"
@@ -129,7 +129,7 @@ void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                virNetTLSSessionPtr sess);
 # endif
 
-# ifdef HAVE_SASL
+# ifdef WITH_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess);
 # endif

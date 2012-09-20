@@ -1134,11 +1134,11 @@ if test "x$with_sasl" != "xno"; then
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
   if test "x$with_sasl" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_SASL], 1,
+    AC_DEFINE_UNQUOTED([WITH_SASL], 1,
       [whether Cyrus SASL is available for authentication])
   fi
 fi
-AM_CONDITIONAL([HAVE_SASL], [test "x$with_sasl" = "xyes"])
+AM_CONDITIONAL([WITH_SASL], [test "x$with_sasl" = "xyes"])
 AC_SUBST([SASL_CFLAGS])
 AC_SUBST([SASL_LIBS])
 

@@ -390,7 +390,7 @@ $(srcdir)/libvirtd.8.in: libvirtd.pod.in
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
-if HAVE_SASL
+if WITH_SASL
 install-data-sasl:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
