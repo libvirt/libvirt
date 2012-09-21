@@ -35,9 +35,9 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 struct _virLXCMonitor {
-    int refs;
+    virObject parent;
 
-    virMutex lock; /* also used to protect refs */
+    virMutex lock;
 
     virDomainObjPtr vm;
     virLXCMonitorCallbacksPtr cb;
@@ -46,7 +46,21 @@ struct _virLXCMonitor {
     virNetClientProgramPtr program;
 };
 
-static void virLXCMonitorFree(virLXCMonitorPtr mon);
+static virClassPtr virLXCMonitorClass;
+static void virLXCMonitorDispose(void *obj);
+
+static int virLXCMonitorOnceInit(void)
+{
+    if (!(virLXCMonitorClass = virClassNew("virLXCMonitor",
+                                           sizeof(virLXCMonitor),
+                                           virLXCMonitorDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virLXCMonitor)
+
 static void
 virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,
                              virNetClientPtr client,
@@ -95,9 +109,7 @@ static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
 static void virLXCMonitorCloseFreeCallback(void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
-    virLXCMonitorLock(mon);
-    if (virLXCMonitorUnref(mon) > 0)
-        virLXCMonitorUnlock(mon);
+    virObjectUnref(mon);;
 }
 
 
@@ -108,12 +120,11 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     virLXCMonitorPtr mon;
     char *sockpath = NULL;
 
-    if (VIR_ALLOC(mon) < 0) {
-        virReportOOMError();
+    if (virLXCMonitorInitialize() < 0)
         return NULL;
-    }
 
-    mon->refs = 1;
+    if (!(mon = virObjectNew(virLXCMonitorClass)))
+        return NULL;
 
     if (virMutexInit(&mon->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -146,7 +157,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     mon->vm = vm;
     mon->cb = cb;
 
-    virLXCMonitorRef(mon);
+    virObjectRef(mon);
     virNetClientSetCloseCallback(mon->client, virLXCMonitorEOFNotify, mon,
                                  virLXCMonitorCloseFreeCallback);
 
@@ -157,43 +168,21 @@ cleanup:
 no_memory:
     virReportOOMError();
 error:
-    virLXCMonitorFree(mon);
+    virObjectUnref(mon);
     mon = NULL;
     goto cleanup;
 }
 
 
-static void virLXCMonitorFree(virLXCMonitorPtr mon)
+static void virLXCMonitorDispose(void *opaque)
 {
-    VIR_DEBUG("mon=%p", mon);
-    if (mon->client)
-        virLXCMonitorClose(mon);
+    virLXCMonitorPtr mon = opaque;
 
+    VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     virMutexDestroy(&mon->lock);
     virObjectUnref(mon->program);
-    VIR_FREE(mon);
-}
-
-
-int virLXCMonitorRef(virLXCMonitorPtr mon)
-{
-    mon->refs++;
-    return mon->refs;
-}
-
-int virLXCMonitorUnref(virLXCMonitorPtr mon)
-{
-    mon->refs--;
-
-    if (mon->refs == 0) {
-        virLXCMonitorUnlock(mon);
-        virLXCMonitorFree(mon);
-        return 0;
-    }
-
-    return mon->refs;
 }
 
 
