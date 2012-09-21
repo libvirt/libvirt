@@ -238,9 +238,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 
     if (priv->monitor) {
         virLXCMonitorClose(priv->monitor);
-        virLXCMonitorLock(priv->monitor);
-        if (virLXCMonitorUnref(priv->monitor) > 0)
-            virLXCMonitorUnlock(priv->monitor);
+        virObjectUnref(priv->monitor);
         priv->monitor = NULL;
     }
 
@@ -675,8 +673,7 @@ static virLXCMonitorPtr virLXCProcessConnectMonitor(virLXCDriverPtr driver,
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
         if (monitor) {
-            virLXCMonitorLock(monitor);
-            virLXCMonitorUnref(monitor);
+            virObjectUnref(monitor);
             monitor = NULL;
         }
         goto cleanup;
@@ -1198,9 +1195,7 @@ cleanup:
     }
     if (rc != 0) {
         if (priv->monitor) {
-            virLXCMonitorLock(priv->monitor);
-            if (virLXCMonitorUnref(priv->monitor) > 0)
-                virLXCMonitorUnlock(priv->monitor);
+            virObjectUnref(priv->monitor);
             priv->monitor = NULL;
         }
         virDomainConfVMNWFilterTeardown(vm);
