@@ -1772,7 +1772,7 @@
           which gives the memory usage limit in kibibytes. Only used
           by LXC driver.
           <span class="since"> (since 0.9.13)</span></dd>
-        <dt><code>type='bind'></code></dt>
+        <dt><code>type='bind'</code></dt>
         <dd>
           A directory inside the guest will be bound to another
           directory inside the guest. Only used by LXC driver
