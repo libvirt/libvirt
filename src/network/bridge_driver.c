@@ -2945,9 +2945,12 @@ networkUpdate(virNetworkPtr net,
                 goto cleanup;
         }
 
-        if (section == VIR_NETWORK_SECTION_IP ||
-            section == VIR_NETWORK_SECTION_FORWARD ||
-            section == VIR_NETWORK_SECTION_FORWARD_INTERFACE) {
+        if ((section == VIR_NETWORK_SECTION_IP ||
+             section == VIR_NETWORK_SECTION_FORWARD ||
+             section == VIR_NETWORK_SECTION_FORWARD_INTERFACE) &&
+           (network->def->forwardType == VIR_NETWORK_FORWARD_NONE ||
+            network->def->forwardType == VIR_NETWORK_FORWARD_NAT ||
+            network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)) {
             /* these could affect the iptables rules */
             networkRemoveIptablesRules(driver, network);
             if (networkAddIptablesRules(driver, network) < 0)
