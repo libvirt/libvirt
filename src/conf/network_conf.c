@@ -2625,15 +2625,88 @@ virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
 }
 
 static int
-virNetworkDefUpdatePortgroup(virNetworkDefPtr def,
-                             unsigned int command ATTRIBUTE_UNUSED,
+virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
+                             unsigned int command,
                              int parentIndex ATTRIBUTE_UNUSED,
-                             xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                             xmlXPathContextPtr ctxt,
                              /* virNetworkUpdateFlags */
                              unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    virNetworkDefUpdateNoSupport(def, "portgroup");
-    return -1;
+    int ii, ret = -1;
+    virPortGroupDef portgroup;
+
+    memset(&portgroup, 0, sizeof(portgroup));
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "portgroup") < 0)
+        goto cleanup;
+
+    if (virNetworkPortGroupParseXML(&portgroup, ctxt->node, ctxt) < 0)
+        goto cleanup;
+
+    /* check if a portgroup with same name already exists */
+    for (ii = 0; ii < def->nPortGroups; ii++) {
+        if (STREQ(portgroup.name, def->portGroups[ii].name))
+            break;
+    }
+    if (ii == def->nPortGroups &&
+        ((command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) ||
+         (command == VIR_NETWORK_UPDATE_COMMAND_DELETE))) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("couldn't find a portgroup entry "
+                         "in network '%s' matching <portgroup name='%s'>"),
+                       def->name, portgroup.name);
+        goto cleanup;
+    } else if (ii < def->nPortGroups &&
+               ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
+                (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST))) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("there is an existing portgroup entry in "
+                         "network '%s' that matches "
+                         "\"<portgroup name='%s'>\""),
+                       def->name, portgroup.name);
+        goto cleanup;
+    }
+
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+
+        /* replace existing entry */
+        virPortGroupDefClear(&def->portGroups[ii]);
+        def->portGroups[ii] = portgroup;
+        memset(&portgroup, 0, sizeof(portgroup));
+
+    } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
+        (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
+
+        /* add to beginning/end of list */
+        if (VIR_REALLOC_N(def->portGroups, def->nPortGroups +1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
+            def->portGroups[def->nPortGroups] = portgroup;
+        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
+            memmove(def->portGroups + 1, def->portGroups,
+                    sizeof(*def->portGroups) * def->nPortGroups);
+            def->portGroups[0] = portgroup;
+        }
+        def->nPortGroups++;
+        memset(&portgroup, 0, sizeof(portgroup));
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        /* remove it */
+        virPortGroupDefClear(&def->portGroups[ii]);
+        memmove(def->portGroups + ii, def->portGroups + ii + 1,
+                sizeof(*def->portGroups) * (def->nPortGroups - ii - 1));
+        def->nPortGroups--;
+        ignore_value(VIR_REALLOC_N(def->portGroups, def->nPortGroups));
+    }
+
+    ret = 0;
+cleanup:
+    virPortGroupDefClear(&portgroup);
+    return ret;
 }
 
 static int
@@ -2719,7 +2792,7 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                                            parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_PORTGROUP:
-        ret = virNetworkDefUpdatePortgroup(def, command,
+        ret = virNetworkDefUpdatePortGroup(def, command,
                                            parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_DNS_HOST:
