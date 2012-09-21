@@ -2614,14 +2614,107 @@ virNetworkDefUpdateForward(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
-                                    unsigned int command ATTRIBUTE_UNUSED,
+                                    unsigned int command,
                                     int parentIndex ATTRIBUTE_UNUSED,
-                                    xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                                    xmlXPathContextPtr ctxt,
                                     /* virNetworkUpdateFlags */
                                     unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    virNetworkDefUpdateNoSupport(def, "forward interface");
-    return -1;
+    int ii, ret = -1;
+    virNetworkForwardIfDef iface;
+
+    memset(&iface, 0, sizeof(iface));
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "interface") < 0)
+        goto cleanup;
+
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("forward interface entries cannot be modified, "
+                         "only added or deleted"));
+        goto cleanup;
+    }
+
+    /* parsing this is so simple that it doesn't have its own function */
+    iface.type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+    if (!(iface.device.dev = virXMLPropString(ctxt->node, "dev"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing dev attribute in <interface> element"));
+        goto cleanup;
+    }
+
+    /* check if an <interface> with same dev name already exists */
+    for (ii = 0; ii < def->nForwardIfs; ii++) {
+        if (def->forwardIfs[ii].type
+            == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
+            STREQ(iface.device.dev, def->forwardIfs[ii].device.dev))
+            break;
+    }
+
+    if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
+        (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
+
+        if (ii < def->nForwardIfs) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("there is an existing interface entry "
+                             "in network '%s' that matches "
+                             "\"<interface dev='%s'>\""),
+                           def->name, iface.device.dev);
+            goto cleanup;
+        }
+
+        /* add to beginning/end of list */
+        if (VIR_REALLOC_N(def->forwardIfs, def->nForwardIfs + 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
+            def->forwardIfs[def->nForwardIfs] = iface;
+        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
+            memmove(def->forwardIfs + 1, def->forwardIfs,
+                    sizeof(*def->forwardIfs) * def->nForwardIfs);
+            def->forwardIfs[0] = iface;
+        }
+        def->nForwardIfs++;
+        memset(&iface, 0, sizeof(iface));
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        if (ii == def->nForwardIfs) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't find an interface entry "
+                             "in network '%s' matching <interface dev='%s'>"),
+                           def->name, iface.device.dev);
+            goto cleanup;
+        }
+
+        /* fail if the interface is being used */
+        if (def->forwardIfs[ii].connections > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("unable to delete interface '%s' "
+                             "in network '%s'. It is currently being used "
+                             " by %d domains."),
+                           iface.device.dev, def->name,
+                           def->forwardIfs[ii].connections);
+            goto cleanup;
+        }
+
+        /* remove it */
+        virNetworkForwardIfDefClear(&def->forwardIfs[ii]);
+        memmove(def->forwardIfs + ii, def->forwardIfs + ii + 1,
+                sizeof(*def->forwardIfs) * (def->nForwardIfs - ii - 1));
+        def->nForwardIfs--;
+        ignore_value(VIR_REALLOC_N(def->forwardIfs, def->nForwardIfs));
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkForwardIfDefClear(&iface);
+    return ret;
 }
 
 static int
