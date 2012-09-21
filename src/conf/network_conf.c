@@ -2260,6 +2260,12 @@ virNetworkDefUpdateNoSupport(virNetworkDefPtr def, const char *section)
                    _("can't update '%s' section of network '%s'"),
                    section, def->name);
 }
+static void
+virNetworkDefUpdateUnknownCommand(unsigned int command)
+{
+    virReportError(VIR_ERR_NO_SUPPORT,
+                   _("unrecognized network update command code %d"), command);
+}
 
 static int
 virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
@@ -2484,6 +2490,9 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                 sizeof(*ipdef->hosts) * (ipdef->nhosts - ii - 1));
         ipdef->nhosts--;
         ignore_value(VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts));
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
     }
 
     ret = 0;
@@ -2581,6 +2590,9 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                 sizeof(*ipdef->ranges) * (ipdef->nranges - ii - 1));
         ipdef->nranges--;
         ignore_value(VIR_REALLOC_N(ipdef->ranges, ipdef->nranges));
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
     }
 
     ret = 0;
@@ -2701,6 +2713,9 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
                 sizeof(*def->portGroups) * (def->nPortGroups - ii - 1));
         def->nPortGroups--;
         ignore_value(VIR_REALLOC_N(def->portGroups, def->nPortGroups));
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
     }
 
     ret = 0;
