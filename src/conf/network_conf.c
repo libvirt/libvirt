@@ -2840,45 +2840,66 @@ virNetworkObjUpdate(virNetworkObjPtr network,
                     unsigned int flags)  /* virNetworkUpdateFlags */
 {
     int ret = -1;
-    virNetworkDefPtr def = NULL;
+    virNetworkDefPtr livedef = NULL, configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
     if (virNetworkConfigChangeSetup(network, flags) < 0)
        goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {
+        virNetworkDefPtr checkdef;
+
         /* work on a copy of the def */
-        if (!(def = virNetworkDefCopy(network->def, 0)))
+        if (!(livedef = virNetworkDefCopy(network->def, 0)))
             goto cleanup;
-        if (virNetworkDefUpdateSection(def, command, section,
+        if (virNetworkDefUpdateSection(livedef, command, section,
                                        parentIndex, xml, flags) < 0) {
             goto cleanup;
         }
-        /* successfully modified copy, now replace original */
-        virNetworkDefFree(network->def);
-        network->def = def;
-        def = NULL;
+        /* run a final format/parse cycle to make sure we didn't
+         * add anything illegal to the def
+         */
+        if (!(checkdef = virNetworkDefCopy(livedef, 0)))
+            goto cleanup;
+        virNetworkDefFree(checkdef);
     }
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
+        virNetworkDefPtr checkdef;
+
         /* work on a copy of the def */
-        if (!(def = virNetworkDefCopy(virNetworkObjGetPersistentDef(network),
-                                      VIR_NETWORK_XML_INACTIVE))) {
+        if (!(configdef = virNetworkDefCopy(virNetworkObjGetPersistentDef(network),
+                                            VIR_NETWORK_XML_INACTIVE))) {
             goto cleanup;
         }
-        if (virNetworkDefUpdateSection(def, command, section,
+        if (virNetworkDefUpdateSection(configdef, command, section,
                                        parentIndex, xml, flags) < 0) {
             goto cleanup;
         }
+        if (!(checkdef = virNetworkDefCopy(configdef,
+                                           VIR_NETWORK_XML_INACTIVE))) {
+            goto cleanup;
+        }
+        virNetworkDefFree(checkdef);
+    }
+
+    if (configdef) {
         /* successfully modified copy, now replace original */
-        if (virNetworkObjReplacePersistentDef(network, def) < 0)
+        if (virNetworkObjReplacePersistentDef(network, configdef) < 0)
            goto cleanup;
-        def = NULL;
+        configdef = NULL;
+    }
+    if (livedef) {
+        /* successfully modified copy, now replace original */
+        virNetworkDefFree(network->def);
+        network->def = livedef;
+        livedef = NULL;
     }
 
     ret = 0;
 cleanup:
-    virNetworkDefFree(def);
+    virNetworkDefFree(livedef);
+    virNetworkDefFree(configdef);
     return ret;
 }
 
