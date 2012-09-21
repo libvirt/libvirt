@@ -769,9 +769,7 @@ of recent versions of Linux (and other OSes).
 %define with_packager_version --with-packager-version="%{release}"
 
 %if %{with_systemd}
-# We use 'systemd+redhat', so if someone installs upstart or
-# legacy init scripts, they can still start libvirtd, etc
-%define init_scripts --with-init_script=systemd+redhat
+%define init_scripts --with-init_script=systemd
 %else
 %define init_scripts --with-init_script=redhat
 %endif
