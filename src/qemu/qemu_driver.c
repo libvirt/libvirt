@@ -3712,8 +3712,6 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     virCgroupPtr cgroup_dom = NULL;
     virCgroupPtr cgroup_vcpu = NULL;
-    int maxcpu, hostcpus;
-    virNodeInfo nodeinfo;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
@@ -3748,13 +3746,6 @@ qemudDomainPinVcpuFlags(virDomainPtr dom,
                        vcpu, priv->nvcpupids);
         goto cleanup;
     }
-
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
-        goto cleanup;
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
 
     pcpumap = virBitmapNewData(cpumap, maplen);
     if (!pcpumap)
@@ -3995,8 +3986,6 @@ qemudDomainPinEmulator(virDomainPtr dom,
     virCgroupPtr cgroup_emulator = NULL;
     pid_t pid;
     virDomainDefPtr persistentDef = NULL;
-    int maxcpu, hostcpus;
-    virNodeInfo nodeinfo;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
@@ -4024,13 +4013,6 @@ qemudDomainPinEmulator(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
-        goto cleanup;
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
 
     pcpumap = virBitmapNewData(cpumap, maplen);
     if (!pcpumap)
