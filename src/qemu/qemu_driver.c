@@ -4050,7 +4050,6 @@ qemudDomainPinEmulator(virDomainPtr dom,
             if (VIR_ALLOC(newVcpuPin) < 0) {
                 virReportOOMError();
                 goto cleanup;
-                newVcpuPinNum = 0;
             }
 
             if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
