@@ -1446,10 +1446,20 @@ qemuDomainOpenLogHelper(struct qemud_driver *driver,
 {
     char *logfile;
     int fd = -1;
+    bool trunc = false;
 
     if (virAsprintf(&logfile, "%s/%s.log", driver->logDir, vm->def->name) < 0) {
         virReportOOMError();
         return -1;
+    }
+
+    /* To make SELinux happy we always need to open in append mode.
+     * So we fake O_TRUNC by calling ftruncate after open instead
+     */
+    if (oflags & O_TRUNC) {
+        oflags &= ~O_TRUNC;
+        oflags |= O_APPEND;
+        trunc = true;
     }
 
     if ((fd = open(logfile, oflags, mode)) < 0) {
@@ -1459,6 +1469,13 @@ qemuDomainOpenLogHelper(struct qemud_driver *driver,
     }
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
+                             logfile);
+        VIR_FORCE_CLOSE(fd);
+        goto cleanup;
+    }
+    if (trunc &&
+        ftruncate(fd, 0) < 0) {
+        virReportSystemError(errno, _("failed to truncate %s"),
                              logfile);
         VIR_FORCE_CLOSE(fd);
         goto cleanup;
