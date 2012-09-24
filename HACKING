@@ -73,9 +73,10 @@ things).
 and don't care much about released versions.
 
 (5) Run the automated tests on your code before submitting any changes. In
-particular, configure with compile warnings set to -Werror:
+particular, configure with compile warnings set to -Werror. This is done
+automatically for a git checkout; from a tarball, use:
 
-  ./configure --enable-compile-warnings=error
+  ./configure --enable-werror
 
 and run the tests:
 
