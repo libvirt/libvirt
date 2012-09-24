@@ -6794,6 +6794,12 @@ error:
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Change all or a subset of the node memory tunables.
+ *
+ * Note that it's not recommended to use this function while the
+ * outside tuning program is running (such as ksmtuned under Linux),
+ * as they could change the tunables in parallel, which could cause
+ * conflicts.
+ *
  * This function may require privileged access to the hypervisor.
  *
  * Returns 0 in case of success, -1 in case of failure.
