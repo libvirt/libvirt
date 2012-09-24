@@ -214,7 +214,7 @@ static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
         return;
 
     virLXCControllerCloseLoopDevices(ctrl, true);
-    virPidAbort(ctrl->initpid);
+    virProcessAbort(ctrl->initpid);
     ctrl->initpid = 0;
 }
 
