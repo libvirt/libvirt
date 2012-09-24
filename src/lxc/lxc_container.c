@@ -163,7 +163,7 @@ int lxcContainerHasReboot(void)
         virReportSystemError(errno, "%s",
                              _("Unable to clone to check reboot support"));
         return -1;
-    } else if (virPidWait(cpid, &status) < 0) {
+    } else if (virProcessWait(cpid, &status) < 0) {
         return -1;
     }
 
@@ -2001,7 +2001,7 @@ int lxcContainerAvailable(int features)
         VIR_DEBUG("clone call returned %s, container support is not enabled",
                   virStrerror(errno, ebuf, sizeof(ebuf)));
         return -1;
-    } else if (virPidWait(cpid, NULL) < 0) {
+    } else if (virProcessWait(cpid, NULL) < 0) {
         return -1;
     }
 
