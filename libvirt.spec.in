@@ -1879,6 +1879,24 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Mon Sep 24 2012 Daniel Veillard <veillard@redhat.com> - 0.10.2-1
+- network: define new API virNetworkUpdate
+- add support for QEmu sandbox support
+- blockjob: add virDomainBlockCommit
+- New APIs to get/set Node memory parameters
+- new API virConnectListAllSecrets
+- new API virConnectListAllNWFilters
+- new API virConnectListAllNodeDevices
+- parallels: add support of containers to the driver
+- new API virConnectListAllInterfaces
+- new API virConnectListAllNetworks
+- new API virStoragePoolListAllVolumes
+- Add PMSUSPENDED life cycle event
+- new API virStorageListAllStoragePools
+- Add per-guest S3/S4 state configuration
+- qemu: Support for Block Device IO Limits
+- a lot of bug fixes, improvements and portability work
+
 * Fri Aug 31 2012 Daniel Veillard <veillard@redhat.com> - 0.10.1-1
 - bugfixes and a brown paper bag
 
