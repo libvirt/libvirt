@@ -191,10 +191,7 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     if (virNetServerProcessMsg(srv, job->client, job->prog, job->msg) < 0)
         goto error;
 
-    virNetServerLock(srv);
     virObjectUnref(job->prog);
-    virNetServerUnlock(srv);
-
     virObjectUnref(job->client);
     VIR_FREE(job);
     return;
