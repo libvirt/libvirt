@@ -3556,8 +3556,8 @@ endjob:
     ignore_value(qemuDomainObjEndAsyncJob(driver, wdEvent->vm));
 
 unlock:
-    if (virObjectUnref(wdEvent->vm))
-        virDomainObjUnlock(wdEvent->vm);
+    virDomainObjUnlock(wdEvent->vm);
+    virObjectUnref(wdEvent->vm);
     qemuDriverUnlock(driver);
     VIR_FREE(wdEvent);
 }

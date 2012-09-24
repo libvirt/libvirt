@@ -741,9 +741,7 @@ static void
 virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
-    virDomainObjLock(obj);
-    if (virObjectUnref(obj))
-        virDomainObjUnlock(obj);
+    virObjectUnref(obj);
 }
 
 int virDomainObjListInit(virDomainObjListPtr doms)
