@@ -44,6 +44,7 @@
 #include "virfile.h"
 #include "event.h"
 #include "threads.h"
+#include "virprocess.h"
 
 #include "passfd.h"
 

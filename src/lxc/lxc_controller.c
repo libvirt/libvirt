@@ -70,6 +70,7 @@
 #include "processinfo.h"
 #include "nodeinfo.h"
 #include "virrandom.h"
+#include "virprocess.h"
 #include "rpc/virnetserver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
