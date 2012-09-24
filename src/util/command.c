@@ -984,6 +984,22 @@ virCommandNonblockingFDs(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_NONBLOCK;
 }
 
+/* Add an environment variable to the cmd->env list.  'env' is a
+ * string like "name=value".
+ */
+static inline void
+virCommandAddEnv(virCommandPtr cmd, char *env)
+{
+    /* Arg plus trailing NULL. */
+    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
+        VIR_FREE(env);
+        cmd->has_error = ENOMEM;
+        return;
+    }
+
+    cmd->env[cmd->nenv++] = env;
+}
+
 /**
  * virCommandAddEnvFormat:
  * @cmd: the command to modify
@@ -1009,14 +1025,7 @@ virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
     }
     va_end(list);
 
-    /* Arg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
-        VIR_FREE(env);
-        cmd->has_error = ENOMEM;
-        return;
-    }
-
-    cmd->env[cmd->nenv++] = env;
+    virCommandAddEnv(cmd, env);
 }
 
 /**
@@ -1056,14 +1065,7 @@ virCommandAddEnvString(virCommandPtr cmd, const char *str)
         return;
     }
 
-    /* env plus trailing NULL */
-    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
-        VIR_FREE(env);
-        cmd->has_error = ENOMEM;
-        return;
-    }
-
-    cmd->env[cmd->nenv++] = env;
+    virCommandAddEnv(cmd, env);
 }
 
 
@@ -1084,9 +1086,7 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
         return;
     }
 
-    /* env plus trailing NULL. */
-    if (virBufferError(buf) ||
-        VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
+    if (virBufferError(buf)) {
         cmd->has_error = ENOMEM;
         virBufferFreeAndReset(buf);
         return;
@@ -1096,7 +1096,7 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
         return;
     }
 
-    cmd->env[cmd->nenv++] = virBufferContentAndReset(buf);
+    virCommandAddEnv(cmd, virBufferContentAndReset(buf));
 }
 
 
