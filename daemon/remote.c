@@ -2832,7 +2832,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     authdismissed = (pkout && strstr(pkout, "dismissed=true"));
     if (status != 0) {
-        char *tmp = virCommandTranslateStatus(status);
+        char *tmp = virProcessTranslateStatus(status);
         VIR_ERROR(_("Policy kit denied action %s from pid %lld, uid %d: %s"),
                   action, (long long) callerPid, callerUid, NULLSTR(tmp));
         VIR_FREE(tmp);
