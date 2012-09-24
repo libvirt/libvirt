@@ -26,6 +26,17 @@
 
 # include "internal.h"
 
+char *
+virProcessTranslateStatus(int status);
+
+void
+virProcessAbort(pid_t pid);
+
+int
+virProcessWait(pid_t pid, int *exitstatus)
+    ATTRIBUTE_RETURN_CHECK;
+
 int virProcessKill(pid_t pid, int sig);
+
 
 #endif /* __VIR_PROCESS_H__ */

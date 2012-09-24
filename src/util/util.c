@@ -87,6 +87,7 @@
 #include "command.h"
 #include "nonblocking.h"
 #include "passfd.h"
+#include "virprocess.h"
 
 #ifndef NSIG
 # define NSIG 32
