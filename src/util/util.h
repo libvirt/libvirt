@@ -255,8 +255,6 @@ static inline int getgid (void) { return 0; }
 
 char *virGetHostname(virConnectPtr conn);
 
-int virProcessKill(pid_t pid, int sig);
-
 char *virGetUserDirectory(void);
 char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
