@@ -331,7 +331,9 @@ static int test8(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
+    virCommandAddEnvString(cmd, "USER=bogus");
     virCommandAddEnvString(cmd, "LANG=C");
+    virCommandAddEnvPair(cmd, "USER", "also bogus");
     virCommandAddEnvPair(cmd, "USER", "test");
 
     if (virCommandRun(cmd, NULL) < 0) {
