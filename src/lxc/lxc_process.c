@@ -554,20 +554,6 @@ cleanup:
 }
 
 
-static void virLXCProcessMonitorDestroy(virLXCMonitorPtr mon,
-                                        virDomainObjPtr vm)
-{
-    virLXCDomainObjPrivatePtr priv;
-
-    virDomainObjLock(vm);
-    priv = vm->privateData;
-    if (priv->monitor == mon)
-        priv->monitor = NULL;
-    if (virObjectUnref(vm))
-        virDomainObjUnlock(vm);
-}
-
-
 extern virLXCDriverPtr lxc_driver;
 static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
                                           virDomainObjPtr vm)
@@ -649,7 +635,6 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
 
 static virLXCMonitorCallbacks monitorCallbacks = {
     .eofNotify = virLXCProcessMonitorEOFNotify,
-    .destroy = virLXCProcessMonitorDestroy,
     .exitNotify = virLXCProcessMonitorExitNotify,
 };
 
