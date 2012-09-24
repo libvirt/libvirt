@@ -985,11 +985,26 @@ virCommandNonblockingFDs(virCommandPtr cmd)
 }
 
 /* Add an environment variable to the cmd->env list.  'env' is a
- * string like "name=value".
+ * string like "name=value".  If the named environment variable is
+ * already set, then it is replaced in the list.
  */
 static inline void
 virCommandAddEnv(virCommandPtr cmd, char *env)
 {
+    size_t namelen;
+    size_t i;
+
+    /* Search for the name in the existing environment. */
+    namelen = strcspn(env, "=");
+    for (i = 0; i < cmd->nenv; ++i) {
+        /* + 1 because we want to match the '=' character too. */
+        if (STREQLEN(cmd->env[i], env, namelen + 1)) {
+            VIR_FREE(cmd->env[i]);
+            cmd->env[i] = env;
+            return;
+        }
+    }
+
     /* Arg plus trailing NULL. */
     if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
         VIR_FREE(env);
