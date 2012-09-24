@@ -1567,9 +1567,10 @@ fi
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 
-%{_sysconfdir}/rc.d/init.d/libvirtd
 %if %{with_systemd}
 %{_unitdir}/libvirtd.service
+%else
+%{_sysconfdir}/rc.d/init.d/libvirtd
 %endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
