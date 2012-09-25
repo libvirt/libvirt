@@ -1191,6 +1191,8 @@ static int lxcContainerGetSubtree(const char *prefix,
     char **mounts = NULL;
     size_t nmounts = 0;
 
+    VIR_DEBUG("prefix=%s", prefix);
+
     *mountsret = NULL;
     *nmountsret = 0;
 
@@ -1528,7 +1530,8 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     /* Some versions of Linux kernel don't let you overmount
      * the selinux filesystem, so make sure we kill it first
      */
-    if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
+    if (STREQ(root->src, "/") &&
+        lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
         goto cleanup;
 #endif
 
