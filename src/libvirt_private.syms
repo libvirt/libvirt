@@ -1233,6 +1233,7 @@ virFileUnlock;
 virFileWaitForDevices;
 virFileWriteStr;
 virFindFileInPath;
+virFormatIntDecimal;
 virGetGroupID;
 virGetGroupName;
 virGetHostname;

@@ -80,6 +80,7 @@ typedef enum {
     VIR_LOG_TO_STDERR = 1,
     VIR_LOG_TO_SYSLOG,
     VIR_LOG_TO_FILE,
+    VIR_LOG_TO_JOURNALD,
 } virLogDestination;
 
 typedef enum {

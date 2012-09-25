@@ -35,6 +35,10 @@
 #if HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
+#include <sys/socket.h>
+#if HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -44,6 +48,7 @@
 #include "threads.h"
 #include "virfile.h"
 #include "virtime.h"
+#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -146,6 +151,8 @@ virLogOutputString(virLogDestination ldest)
         return "syslog";
     case VIR_LOG_TO_FILE:
         return "file";
+    case VIR_LOG_TO_JOURNALD:
+        return "journald";
     }
     return "unknown";
 }
@@ -1020,6 +1027,177 @@ virLogAddOutputToSyslog(virLogPriority priority,
     }
     return 0;
 }
+
+
+# ifdef __linux__
+#  define IOVEC_SET_STRING(iov, str)         \
+    do {                                     \
+        struct iovec *_i = &(iov);           \
+        _i->iov_base = (char*)str;           \
+        _i->iov_len = strlen(str);           \
+    } while (0)
+
+#  define IOVEC_SET_INT(iov, buf, val)                                  \
+    do {                                                                \
+        struct iovec *_i = &(iov);                                      \
+        _i->iov_base = virFormatIntDecimal(buf, sizeof(buf), val);      \
+        _i->iov_len = strlen(buf);                                      \
+    } while (0)
+
+static int journalfd = -1;
+
+static void
+virLogOutputToJournald(virLogSource source,
+                       virLogPriority priority,
+                       const char *filename,
+                       int linenr,
+                       const char *funcname,
+                       const char *timestamp ATTRIBUTE_UNUSED,
+                       unsigned int flags,
+                       const char *rawstr,
+                       const char *str ATTRIBUTE_UNUSED,
+                       void *data ATTRIBUTE_UNUSED)
+{
+    virCheckFlags(VIR_LOG_STACK_TRACE,);
+    int buffd = -1;
+    size_t niov = 0;
+    struct msghdr mh;
+    struct sockaddr_un sa;
+    union {
+        struct cmsghdr cmsghdr;
+        uint8_t buf[CMSG_SPACE(sizeof(int))];
+    } control;
+    struct cmsghdr *cmsg;
+    /* We use /dev/shm instead of /tmp here, since we want this to
+     * be a tmpfs, and one that is available from early boot on
+     * and where unprivileged users can create files. */
+    char path[] = "/dev/shm/journal.XXXXXX";
+    char priostr[INT_BUFSIZE_BOUND(priority)];
+    char linestr[INT_BUFSIZE_BOUND(linenr)];
+
+    /* First message takes upto 4 iovecs, and each
+     * other field needs 3, assuming they don't have
+     * newlines in them
+     */
+#  define IOV_SIZE (4 + (5 * 3))
+    struct iovec iov[IOV_SIZE];
+
+    if (strchr(rawstr, '\n')) {
+        uint64_t nstr;
+        /* If 'str' containes a newline, then we must
+         * encode the string length, since we can't
+         * rely on the newline for the field separator
+         */
+        IOVEC_SET_STRING(iov[niov++], "MESSAGE\n");
+        nstr = htole64(strlen(rawstr));
+        iov[niov].iov_base = (char*)&nstr;
+        iov[niov].iov_len = sizeof(nstr);
+        niov++;
+    } else {
+        IOVEC_SET_STRING(iov[niov++], "MESSAGE=");
+    }
+    IOVEC_SET_STRING(iov[niov++], rawstr);
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    IOVEC_SET_STRING(iov[niov++], "PRIORITY=");
+    IOVEC_SET_INT(iov[niov++], priostr, priority);
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    IOVEC_SET_STRING(iov[niov++], "LIBVIRT_SOURCE=");
+    IOVEC_SET_STRING(iov[niov++], virLogSourceTypeToString(source));
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    IOVEC_SET_STRING(iov[niov++], "CODE_FILE=");
+    IOVEC_SET_STRING(iov[niov++], filename);
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    IOVEC_SET_STRING(iov[niov++], "CODE_LINE=");
+    IOVEC_SET_INT(iov[niov++], linestr, linenr);
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    IOVEC_SET_STRING(iov[niov++], "CODE_FUNC=");
+    IOVEC_SET_STRING(iov[niov++], funcname);
+    IOVEC_SET_STRING(iov[niov++], "\n");
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sun_family = AF_UNIX;
+    if (!virStrcpy(sa.sun_path, "/run/systemd/journal/socket", sizeof(sa.sun_path)))
+        return;
+
+    memset(&mh, 0, sizeof(mh));
+    mh.msg_name = &sa;
+    mh.msg_namelen = offsetof(struct sockaddr_un, sun_path) + strlen(sa.sun_path);
+    mh.msg_iov = iov;
+    mh.msg_iovlen = niov;
+
+    if (sendmsg(journalfd, &mh, MSG_NOSIGNAL) >= 0)
+        return;
+
+    if (errno != EMSGSIZE && errno != ENOBUFS)
+        return;
+
+    /* Message was too large, so dump to temporary file
+     * and pass an FD to the journal
+     */
+
+    /* NB: mkostemp is not declared async signal safe by
+     * POSIX, but this is Linux only code and the GLibc
+     * impl is safe enough, only using open() and inline
+     * asm to read a timestamp (falling back to gettimeofday
+     * on some arches
+     */
+    if ((buffd = mkostemp(path, O_CLOEXEC|O_RDWR)) < 0)
+        return;
+
+    if (unlink(path) < 0)
+        goto cleanup;
+
+    if (writev(buffd, iov, niov) < 0)
+        goto cleanup;
+
+    mh.msg_iov = NULL;
+    mh.msg_iovlen = 0;
+
+    memset(&control, 0, sizeof(control));
+    mh.msg_control = &control;
+    mh.msg_controllen = sizeof(control);
+
+    cmsg = CMSG_FIRSTHDR(&mh);
+    cmsg->cmsg_level = SOL_SOCKET;
+    cmsg->cmsg_type = SCM_RIGHTS;
+    cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+    memcpy(CMSG_DATA(cmsg), &buffd, sizeof(int));
+
+    mh.msg_controllen = cmsg->cmsg_len;
+
+    sendmsg(journalfd, &mh, MSG_NOSIGNAL);
+
+cleanup:
+    VIR_LOG_CLOSE(buffd);
+}
+
+
+static void virLogCloseJournald(void *data ATTRIBUTE_UNUSED)
+{
+    VIR_LOG_CLOSE(journalfd);
+}
+
+
+static int virLogAddOutputToJournald(int priority)
+{
+    if ((journalfd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
+        return -1;
+    if (virSetInherit(journalfd, false) < 0) {
+        VIR_LOG_CLOSE(journalfd);
+        return -1;
+    }
+    if (virLogDefineOutput(virLogOutputToJournald, virLogCloseJournald, NULL,
+                           priority, VIR_LOG_TO_JOURNALD, NULL, 0) < 0) {
+        return -1;
+    }
+    return 0;
+}
+# endif /* __linux__ */
 #endif /* HAVE_SYSLOG_H */
 
 #define IS_SPACE(cur)                                                   \
@@ -1114,6 +1292,14 @@ virLogParseOutputs(const char *outputs)
                 count++;
             VIR_FREE(name);
             VIR_FREE(abspath);
+        } else if (STREQLEN(cur, "journald", 8)) {
+            cur += 8;
+#if HAVE_SYSLOG_H
+# ifdef __linux__
+            if (virLogAddOutputToJournald(prio) == 0)
+                count++;
+# endif /* __linux__ */
+#endif /* HAVE_SYSLOG_H */
         } else {
             goto cleanup;
         }

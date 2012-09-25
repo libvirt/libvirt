@@ -2124,6 +2124,36 @@ virDoubleToStr(char **strp, double number)
     return ret;
 }
 
+
+/**
+ * Format @val as a base-10 decimal number, in the
+ * buffer @buf of size @buflen. To allocate a suitable
+ * sized buffer, the INT_BUFLEN(int) macro should be
+ * used
+ *
+ * Returns pointer to start of the number in @buf
+ */
+char *
+virFormatIntDecimal(char *buf, size_t buflen, int val)
+{
+    char *p = buf + buflen - 1;
+    *p = '\0';
+    if (val >= 0) {
+        do {
+            *--p = '0' + (val % 10);
+            val /= 10;
+        } while (val != 0);
+    } else {
+        do {
+            *--p = '0' - (val % 10);
+            val /= 10;
+        } while (val != 0);
+        *--p = '-';
+    }
+    return p;
+}
+
+
 const char *virEnumToString(const char *const*types,
                             unsigned int ntypes,
                             int type)
