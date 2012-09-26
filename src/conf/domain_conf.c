@@ -10942,7 +10942,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->ndisks != dst->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain disk count %d does not match source %d"),
+                       _("Target domain disk count %zu does not match source %zu"),
                        dst->ndisks, src->ndisks);
         goto cleanup;
     }
@@ -10953,7 +10953,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->ncontrollers != dst->ncontrollers) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain disk controller count %d does not match source %d"),
+                       _("Target domain disk controller count %zu does not match source %zu"),
                        dst->ncontrollers, src->ncontrollers);
         goto cleanup;
     }
@@ -10964,7 +10964,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nfss != dst->nfss) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain filesystem count %d does not match source %d"),
+                       _("Target domain filesystem count %zu does not match source %zu"),
                        dst->nfss, src->nfss);
         goto cleanup;
     }
@@ -10975,7 +10975,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nnets != dst->nnets) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain net card count %d does not match source %d"),
+                       _("Target domain net card count %zu does not match source %zu"),
                        dst->nnets, src->nnets);
         goto cleanup;
     }
@@ -10986,7 +10986,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->ninputs != dst->ninputs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain input device count %d does not match source %d"),
+                       _("Target domain input device count %zu does not match source %zu"),
                        dst->ninputs, src->ninputs);
         goto cleanup;
     }
@@ -10997,7 +10997,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nsounds != dst->nsounds) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain sound card count %d does not match source %d"),
+                       _("Target domain sound card count %zu does not match source %zu"),
                        dst->nsounds, src->nsounds);
         goto cleanup;
     }
@@ -11008,7 +11008,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nvideos != dst->nvideos) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain video card count %d does not match source %d"),
+                       _("Target domain video card count %zu does not match source %zu"),
                        dst->nvideos, src->nvideos);
         goto cleanup;
     }
@@ -11019,7 +11019,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nhostdevs != dst->nhostdevs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain host device count %d does not match source %d"),
+                       _("Target domain host device count %zu does not match source %zu"),
                        dst->nhostdevs, src->nhostdevs);
         goto cleanup;
     }
@@ -11030,7 +11030,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nsmartcards != dst->nsmartcards) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain smartcard count %d does not match source %d"),
+                       _("Target domain smartcard count %zu does not match source %zu"),
                        dst->nsmartcards, src->nsmartcards);
         goto cleanup;
     }
@@ -11041,7 +11041,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nserials != dst->nserials) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain serial port count %d does not match source %d"),
+                       _("Target domain serial port count %zu does not match source %zu"),
                        dst->nserials, src->nserials);
         goto cleanup;
     }
@@ -11052,7 +11052,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nparallels != dst->nparallels) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain parallel port count %d does not match source %d"),
+                       _("Target domain parallel port count %zu does not match source %zu"),
                        dst->nparallels, src->nparallels);
         goto cleanup;
     }
@@ -11063,7 +11063,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nchannels != dst->nchannels) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain channel count %d does not match source %d"),
+                       _("Target domain channel count %zu does not match source %zu"),
                        dst->nchannels, src->nchannels);
         goto cleanup;
     }
@@ -11074,7 +11074,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nconsoles != dst->nconsoles) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain console count %d does not match source %d"),
+                       _("Target domain console count %zu does not match source %zu"),
                        dst->nconsoles, src->nconsoles);
         goto cleanup;
     }
@@ -11085,7 +11085,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->nhubs != dst->nhubs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain hub device count %d does not match source %d"),
+                       _("Target domain hub device count %zu does not match source %zu"),
                        dst->nhubs, src->nhubs);
         goto cleanup;
     }

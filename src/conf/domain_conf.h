@@ -552,7 +552,7 @@ struct _virDomainDiskDef {
     char *dst;
     int tray_status;
     int protocol;
-    int nhosts;
+    size_t nhosts;
     virDomainDiskHostDefPtr hosts;
     struct {
         char *username;
@@ -1048,7 +1048,7 @@ struct _virDomainSoundDef {
     int model;
     virDomainDeviceInfo info;
 
-    int ncodecs;
+    size_t ncodecs;
     virDomainSoundCodecDefPtr *codecs;
 };
 
@@ -1443,7 +1443,7 @@ struct _virDomainOSDef {
     char *type;
     char *arch;
     char *machine;
-    int nBootDevs;
+    size_t nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
     /* enum virDomainBootMenu */
     int bootmenu;
@@ -1575,7 +1575,7 @@ struct _virDomainClockDef {
         char *timezone;
     } data;
 
-    int ntimers;
+    size_t ntimers;
     virDomainTimerDefPtr *timers;
 };
 
@@ -1695,55 +1695,55 @@ struct _virDomainDef {
 
     virDomainClockDef clock;
 
-    int ngraphics;
+    size_t ngraphics;
     virDomainGraphicsDefPtr *graphics;
 
-    int ndisks;
+    size_t ndisks;
     virDomainDiskDefPtr *disks;
 
-    int ncontrollers;
+    size_t ncontrollers;
     virDomainControllerDefPtr *controllers;
 
-    int nfss;
+    size_t nfss;
     virDomainFSDefPtr *fss;
 
-    int nnets;
+    size_t nnets;
     virDomainNetDefPtr *nets;
 
-    int ninputs;
+    size_t ninputs;
     virDomainInputDefPtr *inputs;
 
-    int nsounds;
+    size_t nsounds;
     virDomainSoundDefPtr *sounds;
 
-    int nvideos;
+    size_t nvideos;
     virDomainVideoDefPtr *videos;
 
-    int nhostdevs;
+    size_t nhostdevs;
     virDomainHostdevDefPtr *hostdevs;
 
-    int nredirdevs;
+    size_t nredirdevs;
     virDomainRedirdevDefPtr *redirdevs;
 
-    int nsmartcards;
+    size_t nsmartcards;
     virDomainSmartcardDefPtr *smartcards;
 
-    int nserials;
+    size_t nserials;
     virDomainChrDefPtr *serials;
 
-    int nparallels;
+    size_t nparallels;
     virDomainChrDefPtr *parallels;
 
-    int nchannels;
+    size_t nchannels;
     virDomainChrDefPtr *channels;
 
-    int nconsoles;
+    size_t nconsoles;
     virDomainChrDefPtr *consoles;
 
     size_t nleases;
     virDomainLeaseDefPtr *leases;
 
-    int nhubs;
+    size_t nhubs;
     virDomainHubDefPtr *hubs;
 
     size_t nseclabels;

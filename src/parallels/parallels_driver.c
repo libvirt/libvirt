@@ -222,7 +222,7 @@ parallelsGetSerialInfo(virDomainChrDefPtr chr,
 }
 
 static int
-parallelsAddSerialInfo(virDomainChrDefPtr **serials, int *nserials,
+parallelsAddSerialInfo(virDomainChrDefPtr **serials, size_t *nserials,
                        const char *key, virJSONValuePtr value)
 {
     virDomainChrDefPtr chr = NULL;

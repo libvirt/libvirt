@@ -2090,7 +2090,7 @@ int qemuDomainDetachThisHostDevice(struct qemud_driver *driver,
         }
         if (idx >= vm->def->nhostdevs) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("device not found in hostdevs list (%d entries)"),
+                           _("device not found in hostdevs list (%zu entries)"),
                            vm->def->nhostdevs);
             return ret;
         }

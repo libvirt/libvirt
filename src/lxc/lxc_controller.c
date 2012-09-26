@@ -319,7 +319,7 @@ static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
 {
     if (ctrl->def->nnets != ctrl->nveths) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("expecting %d veths, but got %zu"),
+                       _("expecting %zu veths, but got %zu"),
                        ctrl->def->nnets, ctrl->nveths);
         return -1;
     }
@@ -332,7 +332,7 @@ static int virLXCControllerValidateConsoles(virLXCControllerPtr ctrl)
 {
     if (ctrl->def->nconsoles != ctrl->nconsoles) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("expecting %d consoles, but got %zu tty file handlers"),
+                       _("expecting %zu consoles, but got %zu tty file handlers"),
                        ctrl->def->nconsoles, ctrl->nconsoles);
         return -1;
     }

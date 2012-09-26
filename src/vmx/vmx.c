@@ -3299,7 +3299,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
     /* def:fss */
     if (def->nfss > 0) {
         virBufferAddLit(&buffer, "isolation.tools.hgfs.disable = \"false\"\n");
-        virBufferAsprintf(&buffer, "sharedFolder.maxNum = \"%d\"\n", def->nfss);
+        virBufferAsprintf(&buffer, "sharedFolder.maxNum = \"%zu\"\n", def->nfss);
     }
 
     for (i = 0; i < def->nfss; ++i) {
