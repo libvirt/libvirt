@@ -2608,7 +2608,7 @@ bswap_header(struct qemud_save_header *hdr) {
 
 /* return -errno on failure, or 0 on success */
 static int
-qemuDomainSaveHeader(int fd, const char *path, char *xml,
+qemuDomainSaveHeader(int fd, const char *path, const char *xml,
                      struct qemud_save_header *header)
 {
     int ret = 0;
@@ -2755,6 +2755,130 @@ cleanup:
     return fd;
 }
 
+/* Helper function to execute a migration to file with a correct save header
+ * the caller needs to make sure that the processors are stopped and do all other
+ * actions besides saving memory */
+static int
+qemuDomainSaveMemory(struct qemud_driver *driver,
+                     virDomainObjPtr vm,
+                     const char *path,
+                     const char *xml,
+                     int compressed,
+                     bool was_running,
+                     unsigned int flags,
+                     enum qemuDomainAsyncJob asyncJob)
+{
+    struct qemud_save_header header;
+    bool bypassSecurityDriver = false;
+    bool needUnlink = false;
+    int ret = -1;
+    int fd = -1;
+    int directFlag = 0;
+    virFileWrapperFdPtr wrapperFd = NULL;
+    unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
+    unsigned long long pad;
+    unsigned long long offset;
+    size_t len;
+
+    memset(&header, 0, sizeof(header));
+    memcpy(header.magic, QEMUD_SAVE_PARTIAL, sizeof(header.magic));
+    header.version = QEMUD_SAVE_VERSION;
+    header.was_running = was_running ? 1 : 0;
+
+    header.compressed = compressed;
+
+    len = strlen(xml) + 1;
+    offset = sizeof(header) + len;
+
+    /* Due to way we append QEMU state on our header with dd,
+     * we need to ensure there's a 512 byte boundary. Unfortunately
+     * we don't have an explicit offset in the header, so we fake
+     * it by padding the XML string with NUL bytes.  Additionally,
+     * we want to ensure that virDomainSaveImageDefineXML can supply
+     * slightly larger XML, so we add a miminum padding prior to
+     * rounding out to page boundaries.
+     */
+    pad = 1024;
+    pad += (QEMU_MONITOR_MIGRATE_TO_FILE_BS -
+            ((offset + pad) % QEMU_MONITOR_MIGRATE_TO_FILE_BS));
+    if (VIR_EXPAND_N(xml, len, pad) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    offset += pad;
+    header.xml_len = len;
+
+    /* Obtain the file handle.  */
+    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
+        wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
+        directFlag = virFileDirectFdFlag();
+        if (directFlag < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("bypass cache unsupported by this system"));
+            goto cleanup;
+        }
+    }
+    fd = qemuOpenFile(driver, path, O_WRONLY | O_TRUNC | O_CREAT | directFlag,
+                      &needUnlink, &bypassSecurityDriver);
+    if (fd < 0)
+        goto cleanup;
+
+    if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
+        goto cleanup;
+
+    /* Write header to file, followed by XML */
+    if (qemuDomainSaveHeader(fd, path, xml, &header) < 0)
+        goto cleanup;
+
+    /* Perform the migration */
+    if (qemuMigrationToFile(driver, vm, fd, offset, path,
+                            qemuCompressProgramName(compressed),
+                            bypassSecurityDriver,
+                            asyncJob) < 0)
+        goto cleanup;
+
+    /* Touch up file header to mark image complete. */
+
+    /* Reopen the file to touch up the header, since we aren't set
+     * up to seek backwards on wrapperFd.  The reopened fd will
+     * trigger a single page of file system cache pollution, but
+     * that's acceptable.  */
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("unable to close %s"), path);
+        goto cleanup;
+    }
+
+    if (virFileWrapperFdClose(wrapperFd) < 0)
+        goto cleanup;
+
+    if ((fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL)) < 0)
+        goto cleanup;
+
+    memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
+
+    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
+        virReportSystemError(errno, _("unable to write %s"), path);
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("unable to close %s"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FORCE_CLOSE(fd);
+    virFileWrapperFdCatchError(wrapperFd);
+    virFileWrapperFdFree(wrapperFd);
+
+    if (ret != 0 && needUnlink)
+        unlink(path);
+
+    return ret;
+}
+
 /* This internal function expects the driver lock to already be held on
  * entry and the vm must be active + locked. Vm will be unlocked and
  * potentially free'd after this returns (eg transient VMs are freed
@@ -2767,20 +2891,11 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        int compressed, const char *xmlin, unsigned int flags)
 {
     char *xml = NULL;
-    struct qemud_save_header header;
-    bool bypassSecurityDriver = false;
+    bool was_running = false;
     int ret = -1;
     int rc;
     virDomainEventPtr event = NULL;
-    qemuDomainObjPrivatePtr priv;
-    bool needUnlink = false;
-    size_t len;
-    unsigned long long offset;
-    unsigned long long pad;
-    int fd = -1;
-    int directFlag = 0;
-    virFileWrapperFdPtr wrapperFd = NULL;
-    unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2793,24 +2908,15 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
         goto cleanup;
     }
 
-    memset(&header, 0, sizeof(header));
-    memcpy(header.magic, QEMUD_SAVE_PARTIAL, sizeof(header.magic));
-    header.version = QEMUD_SAVE_VERSION;
-
-    header.compressed = compressed;
-
-    priv = vm->privateData;
-
     if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
                                              QEMU_ASYNC_JOB_SAVE) < 0)
-        goto cleanup;
 
     memset(&priv->job.info, 0, sizeof(priv->job.info));
     priv->job.info.type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        header.was_running = 1;
+        was_running = true;
         if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
                                 QEMU_ASYNC_JOB_SAVE) < 0)
             goto endjob;
@@ -2821,11 +2927,12 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
             goto endjob;
         }
     }
-    /* libvirt.c already guaranteed these two flags are exclusive.  */
+
+   /* libvirt.c already guaranteed these two flags are exclusive.  */
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
-        header.was_running = 1;
+        was_running = true;
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
-        header.was_running = 0;
+        was_running = false;
 
     /* Get XML for the domain.  Restore needs only the inactive xml,
      * including secure.  We should get the same result whether xmlin
@@ -2852,84 +2959,11 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
                        "%s", _("failed to get domain xml"));
         goto endjob;
     }
-    len = strlen(xml) + 1;
-    offset = sizeof(header) + len;
 
-    /* Due to way we append QEMU state on our header with dd,
-     * we need to ensure there's a 512 byte boundary. Unfortunately
-     * we don't have an explicit offset in the header, so we fake
-     * it by padding the XML string with NUL bytes.  Additionally,
-     * we want to ensure that virDomainSaveImageDefineXML can supply
-     * slightly larger XML, so we add a miminum padding prior to
-     * rounding out to page boundaries.
-     */
-    pad = 1024;
-    pad += (QEMU_MONITOR_MIGRATE_TO_FILE_BS -
-            ((offset + pad) % QEMU_MONITOR_MIGRATE_TO_FILE_BS));
-    if (VIR_EXPAND_N(xml, len, pad) < 0) {
-        virReportOOMError();
+    ret = qemuDomainSaveMemory(driver, vm, path, xml, compressed,
+                               was_running, flags, QEMU_ASYNC_JOB_SAVE);
+    if (ret < 0)
         goto endjob;
-    }
-    offset += pad;
-    header.xml_len = len;
-
-    /* Obtain the file handle.  */
-    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
-        wrapperFlags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
-        directFlag = virFileDirectFdFlag();
-        if (directFlag < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("bypass cache unsupported by this system"));
-            goto cleanup;
-        }
-    }
-    fd = qemuOpenFile(driver, path, O_WRONLY | O_TRUNC | O_CREAT | directFlag,
-                      &needUnlink, &bypassSecurityDriver);
-    if (fd < 0)
-        goto endjob;
-    if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
-        goto endjob;
-
-    /* Write header to file, followed by XML */
-    if (qemuDomainSaveHeader(fd, path, xml, &header) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        goto endjob;
-    }
-
-    /* Perform the migration */
-    if (qemuMigrationToFile(driver, vm, fd, offset, path,
-                            qemuCompressProgramName(compressed),
-                            bypassSecurityDriver,
-                            QEMU_ASYNC_JOB_SAVE) < 0)
-        goto endjob;
-
-    /* Touch up file header to mark image complete. */
-
-    /* Reopen the file to touch up the header, since we aren't set
-     * up to seek backwards on wrapperFd.  The reopened fd will
-     * trigger a single page of file system cache pollution, but
-     * that's acceptable.  */
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("unable to close %s"), path);
-        goto endjob;
-    }
-    if (virFileWrapperFdClose(wrapperFd) < 0)
-        goto endjob;
-    fd = qemuOpenFile(driver, path, O_WRONLY, NULL, NULL);
-    if (fd < 0)
-        goto endjob;
-
-    memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
-    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
-        virReportSystemError(errno, _("unable to write %s"), path);
-        goto endjob;
-    }
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("unable to close %s"), path);
-        goto endjob;
-    }
-
-    ret = 0;
 
     /* Shut it down */
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
@@ -2946,25 +2980,20 @@ qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
 endjob:
     if (vm) {
         if (ret != 0) {
-            if (header.was_running && virDomainObjIsActive(vm)) {
+            if (was_running && virDomainObjIsActive(vm)) {
                 rc = qemuProcessStartCPUs(driver, vm, dom->conn,
                                           VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                           QEMU_ASYNC_JOB_SAVE);
                 if (rc < 0)
                     VIR_WARN("Unable to resume guest CPUs after save failure");
             }
-            virFileWrapperFdCatchError(wrapperFd);
         }
         if (qemuDomainObjEndAsyncJob(driver, vm) == 0)
             vm = NULL;
     }
 
 cleanup:
-    VIR_FORCE_CLOSE(fd);
-    virFileWrapperFdFree(wrapperFd);
     VIR_FREE(xml);
-    if (ret != 0 && needUnlink)
-        unlink(path);
     if (event)
         qemuDomainEventQueue(driver, event);
     if (vm)
