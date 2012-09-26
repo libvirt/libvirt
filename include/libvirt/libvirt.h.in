@@ -4456,7 +4456,7 @@ typedef virMemoryParameter *virMemoryParameterPtr;
  * VIR_NODE_MEMORY_SHARED_PAGES_SHARED:
  *
  * Macro for typed parameter that represents how many the shared
- * mmeory pages are being used.
+ * memory pages are being used.
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_SHARED       "shm_pages_shared"
 
