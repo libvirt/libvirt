@@ -277,7 +277,7 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
     if (VIR_ALLOC(accel) < 0)
         goto no_memory;
 
-    if (VIR_REALLOC_N(def->videos, def->nvideos) < 0)
+    if (VIR_REALLOC_N(def->videos, def->nvideos + 1) < 0)
         goto no_memory;
 
     def->videos[def->nvideos++] = video;
