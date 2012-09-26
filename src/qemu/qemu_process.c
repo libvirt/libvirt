@@ -1242,12 +1242,11 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     virDomainObjLock(vm);
     priv->monStart = 0;
 
-    if (mon == NULL)
+    if (mon == NULL) {
         virObjectUnref(vm);
-
-    if (!virDomainObjIsActive(vm)) {
+    } else if (!virDomainObjIsActive(vm)) {
         qemuMonitorClose(mon);
-        goto error;
+        mon = NULL;
     }
     priv->mon = mon;
 
