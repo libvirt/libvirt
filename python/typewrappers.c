@@ -124,6 +124,11 @@ libvirt_intUnwrap(PyObject *obj, int *val)
 {
     long long_val;
 
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
     /* If obj is type of PyInt_Type, PyInt_AsLong converts it
      * to C long type directly. If it is of PyLong_Type, PyInt_AsLong
      * will call PyLong_AsLong() to deal with it automatically.
@@ -151,6 +156,11 @@ libvirt_uintUnwrap(PyObject *obj, unsigned int *val)
 {
     long long_val;
 
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
     long_val = PyInt_AsLong(obj);
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
@@ -170,6 +180,11 @@ libvirt_longUnwrap(PyObject *obj, long *val)
 {
     long long_val;
 
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
     long_val = PyInt_AsLong(obj);
     if ((long_val == -1) && PyErr_Occurred())
         return -1;
@@ -182,6 +197,11 @@ int
 libvirt_ulongUnwrap(PyObject *obj, unsigned long *val)
 {
     long long_val;
+
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
 
     long_val = PyInt_AsLong(obj);
     if ((long_val == -1) && PyErr_Occurred())
@@ -202,6 +222,11 @@ libvirt_longlongUnwrap(PyObject *obj, long long *val)
 {
     long long llong_val;
 
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
     /* If obj is of PyInt_Type, PyLong_AsLongLong
      * will call PyInt_AsLong() to handle it automatically.
      */
@@ -218,6 +243,11 @@ libvirt_ulonglongUnwrap(PyObject *obj, unsigned long long *val)
 {
     unsigned long long ullong_val = -1;
     long long llong_val;
+
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
 
     /* The PyLong_AsUnsignedLongLong doesn't check the type of
      * obj, only accept argument of PyLong_Type, so we check it instead.
@@ -247,6 +277,11 @@ libvirt_doubleUnwrap(PyObject *obj, double *val)
 {
     double double_val;
 
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
     double_val = PyFloat_AsDouble(obj);
     if ((double_val == -1) && PyErr_Occurred())
         return -1;
@@ -260,8 +295,12 @@ libvirt_boolUnwrap(PyObject *obj, bool *val)
 {
     int ret;
 
-    ret = PyObject_IsTrue(obj);
-    if (ret < 0)
+    if (!obj) {
+        PyErr_SetString(PyExc_TypeError, "unexpected type");
+        return -1;
+    }
+
+    if ((ret = PyObject_IsTrue(obj)) < 0)
         return ret;
 
     *val = ret > 0;
