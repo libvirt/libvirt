@@ -32,7 +32,11 @@
 # include <unistd.h>
 # include <regex.h>
 
-# include <xs.h>
+# if HAVE_XENSTORE_H
+#  include <xenstore.h>
+# else
+#  include <xs.h>
+# endif
 
 # include "virterror_internal.h"
 # include "datatypes.h"
