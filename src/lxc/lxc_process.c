@@ -169,6 +169,8 @@ virLXCProcessReboot(virLXCDriverPtr driver,
     int ret = -1;
     virDomainDefPtr savedDef;
 
+    VIR_DEBUG("Faking reboot");
+
     if (conn) {
         virConnectRef(conn);
         autodestroy = true;
@@ -555,12 +557,14 @@ cleanup:
 
 
 extern virLXCDriverPtr lxc_driver;
-static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
                                           virDomainObjPtr vm)
 {
     virLXCDriverPtr driver = lxc_driver;
     virDomainEventPtr event = NULL;
     virLXCDomainObjPrivatePtr priv;
+
+    VIR_DEBUG("mon=%p vm=%p", mon, vm);
 
     lxcDriverLock(driver);
     virDomainObjLock(vm);

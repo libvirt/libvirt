@@ -40,7 +40,7 @@ struct _virLXCMonitor {
     virMutex lock;
 
     virDomainObjPtr vm;
-    virLXCMonitorCallbacksPtr cb;
+    virLXCMonitorCallbacks cb;
 
     virNetClientPtr client;
     virNetClientProgramPtr program;
@@ -83,8 +83,8 @@ virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     virLXCProtocolExitEventMsg *msg = evdata;
 
     VIR_DEBUG("Event exit %d", msg->status);
-    if (mon->cb->exitNotify)
-        mon->cb->exitNotify(mon, msg->status, mon->vm);
+    if (mon->cb.exitNotify)
+        mon->cb.exitNotify(mon, msg->status, mon->vm);
 }
 
 
@@ -96,20 +96,25 @@ static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
     virLXCMonitorCallbackEOFNotify eofNotify;
     virDomainObjPtr vm;
 
-    VIR_DEBUG("EOF notify");
+    VIR_DEBUG("EOF notify mon=%p", mon);
     virLXCMonitorLock(mon);
-    eofNotify = mon->cb->eofNotify;
+    eofNotify = mon->cb.eofNotify;
     vm = mon->vm;
     virLXCMonitorUnlock(mon);
 
-    eofNotify(mon, vm);
+    if (eofNotify) {
+        VIR_DEBUG("EOF callback mon=%p vm=%p", mon, vm);
+        eofNotify(mon, vm);
+    } else {
+        VIR_DEBUG("No EOF callback");
+    }
 }
 
 
 static void virLXCMonitorCloseFreeCallback(void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
-    virObjectUnref(mon);;
+    virObjectUnref(mon);
 }
 
 
@@ -155,7 +160,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
         goto error;
 
     mon->vm = vm;
-    mon->cb = cb;
+    memcpy(&mon->cb, cb, sizeof(mon->cb));
 
     virObjectRef(mon);
     virNetClientSetCloseCallback(mon->client, virLXCMonitorEOFNotify, mon,
@@ -179,8 +184,8 @@ static void virLXCMonitorDispose(void *opaque)
     virLXCMonitorPtr mon = opaque;
 
     VIR_DEBUG("mon=%p", mon);
-    if (mon->cb && mon->cb->destroy)
-        (mon->cb->destroy)(mon, mon->vm);
+    if (mon->cb.destroy)
+        (mon->cb.destroy)(mon, mon->vm);
     virMutexDestroy(&mon->lock);
     virObjectUnref(mon->program);
 }
@@ -188,7 +193,14 @@ static void virLXCMonitorDispose(void *opaque)
 
 void virLXCMonitorClose(virLXCMonitorPtr mon)
 {
+    VIR_DEBUG("mon=%p", mon);
     if (mon->client) {
+        /* When manually closing the monitor, we don't
+         * want to have callbacks back into us, since
+         * the caller is not re-entrant safe
+         */
+        VIR_DEBUG("Clear EOF callback mon=%p", mon);
+        mon->cb.eofNotify = NULL;
         virNetClientClose(mon->client);
         virObjectUnref(mon->client);
         mon->client = NULL;
