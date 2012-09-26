@@ -43,6 +43,8 @@ typedef enum {
    VIR_NETDEV_TAP_CREATE_VNET_HDR           = 1 << 1,
    /* Set this interface's MAC as the bridge's MAC address */
    VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE = 1 << 2,
+   /* The device will persist after the file descriptor is closed */
+   VIR_NETDEV_TAP_CREATE_PERSIST            = 1 << 3,
 } virNetDevTapCreateFlags;
 
 int virNetDevTapCreateInBridgePort(const char *brname,

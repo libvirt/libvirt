@@ -112,18 +112,20 @@ virNetDevProbeVnetHdr(int tapfd)
  *
  *   VIR_NETDEV_TAP_CREATE_VNET_HDR
  *     - Enable IFF_VNET_HDR on the tap device
+ *   VIR_NETDEV_TAP_CREATE_PERSIST
+ *     - The device will persist after the file descriptor is closed
  *
  * Creates a tap interface.
- * If the @tapfd parameter is supplied, the open tap device file
- * descriptor will be returned, otherwise the TAP device will be made
- * persistent and closed. The caller must use virNetDevTapDelete to
- * remove a persistent TAP devices when it is no longer needed.
+ * If the @tapfd parameter is supplied, the open tap device file descriptor
+ * will be returned, otherwise the TAP device will be closed. The caller must
+ * use virNetDevTapDelete to remove a persistent TAP device when it is no
+ * longer needed.
  *
  * Returns 0 in case of success or -1 on failure.
  */
 int virNetDevTapCreate(char **ifname,
                        int *tapfd,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     int fd;
     struct ifreq ifr;
@@ -160,7 +162,7 @@ int virNetDevTapCreate(char **ifname,
         goto cleanup;
     }
 
-    if (!tapfd &&
+    if ((flags & VIR_NETDEV_TAP_CREATE_PERSIST) &&
         (errno = ioctl(fd, TUNSETPERSIST, 1))) {
         virReportSystemError(errno,
                              _("Unable to set tap device %s to persistent"),
@@ -261,14 +263,16 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED)
  *     - Enable IFF_VNET_HDR on the tap device
  *   VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE
  *     - Set this interface's MAC as the bridge's MAC address
+ *   VIR_NETDEV_TAP_CREATE_PERSIST
+ *     - The device will persist after the file descriptor is closed
  *
  * This function creates a new tap device on a bridge. @ifname can be either
  * a fixed name or a name template with '%d' for dynamic name allocation.
  * in either case the final name for the bridge will be stored in @ifname.
- * If the @tapfd parameter is supplied, the open tap device file
- * descriptor will be returned, otherwise the TAP device will be made
- * persistent and closed. The caller must use virNetDevTapDelete to remove
- * a persistent TAP devices when it is no longer needed.
+ * If the @tapfd parameter is supplied, the open tap device file descriptor
+ * will be returned, otherwise the TAP device will be closed. The caller must
+ * use virNetDevTapDelete to remove a persistent TAP device when it is no
+ * longer needed.
  *
  * Returns 0 in case of success or -1 on failure
  */

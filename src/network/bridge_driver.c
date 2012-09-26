@@ -65,6 +65,7 @@
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
 #include "virdbus.h"
+#include "virfile.h"
 
 #define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
@@ -987,12 +988,15 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 
     *configstr = NULL;
 
-    /* create radvd config file appropriate for this network */
+    /* create radvd config file appropriate for this network;
+     * IgnoreIfMissing allows radvd to start even when the bridge is down
+     */
     virBufferAsprintf(&configbuf, "interface %s\n"
                       "{\n"
                       "  AdvSendAdvert on;\n"
                       "  AdvManagedFlag off;\n"
                       "  AdvOtherConfigFlag off;\n"
+                      "  IgnoreIfMissing on;\n"
                       "\n",
                       network->def->bridge);
 
@@ -2061,6 +2065,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
     virErrorPtr save_err = NULL;
     virNetworkIpDefPtr ipdef;
     char *macTapIfName = NULL;
+    int tapfd = -1;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(network) < 0)
@@ -2082,10 +2087,13 @@ networkStartNetworkVirtual(struct network_driver *driver,
             virReportOOMError();
             goto err0;
         }
+        /* Keep tun fd open and interface up to allow for IPv6 DAD to happen */
         if (virNetDevTapCreateInBridgePort(network->def->bridge,
                                            &macTapIfName, &network->def->mac,
-                                           NULL, NULL, NULL, NULL,
-                                           VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE) < 0) {
+                                           NULL, &tapfd, NULL, NULL,
+                                           VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE |
+                                           VIR_NETDEV_TAP_CREATE_IFUP |
+                                           VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
             VIR_FREE(macTapIfName);
             goto err0;
         }
@@ -2149,6 +2157,15 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (v6present && networkStartRadvd(network) < 0)
         goto err4;
 
+    /* DAD has happened (dnsmasq waits for it), dnsmasq is now bound to the
+     * bridge's IPv6 address, so we can now set the dummy tun down.
+     */
+    if (tapfd >= 0) {
+        if (virNetDevSetOnline(macTapIfName, false) < 0)
+            goto err4;
+        VIR_FORCE_CLOSE(tapfd);
+    }
+
     if (virNetDevBandwidthSet(network->def->bridge, network->def->bandwidth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
@@ -2187,6 +2204,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         save_err = virSaveLastError();
 
     if (macTapIfName) {
+        VIR_FORCE_CLOSE(tapfd);
         ignore_value(virNetDevTapDelete(macTapIfName));
         VIR_FREE(macTapIfName);
     }
@@ -2887,8 +2905,8 @@ networkUpdate(virNetworkPtr net,
      * is active, else change CONFIG
     */
     isActive = virNetworkObjIsActive(network);
-    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE
-                   | VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
+    if ((flags & (VIR_NETWORK_UPDATE_AFFECT_LIVE |
+                  VIR_NETWORK_UPDATE_AFFECT_CONFIG)) ==
         VIR_NETWORK_UPDATE_AFFECT_CURRENT) {
         if (isActive)
             flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;

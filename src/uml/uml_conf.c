@@ -142,7 +142,8 @@ umlConnectTapDevice(virConnectPtr conn,
                                        vm->uuid, NULL,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        virDomainNetGetActualVlan(net),
-                                       VIR_NETDEV_TAP_CREATE_IFUP) < 0) {
+                                       VIR_NETDEV_TAP_CREATE_IFUP |
+                                       VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
         if (template_ifname)
             VIR_FREE(net->ifname);
         goto error;
