@@ -129,7 +129,8 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
     virDomainObjLock(vm);
 
     priv = vm->privateData;
-    priv->agent = NULL;
+    if (priv->agent == agent)
+        priv->agent = NULL;
 
     virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
@@ -167,16 +168,9 @@ qemuProcessHandleAgentError(qemuAgentPtr agent ATTRIBUTE_UNUSED,
 static void qemuProcessHandleAgentDestroy(qemuAgentPtr agent,
                                           virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv;
-
     VIR_DEBUG("Received destroy agent=%p vm=%p", agent, vm);
 
-    virDomainObjLock(vm);
-    priv = vm->privateData;
-    if (priv->agent == agent)
-        priv->agent = NULL;
-    if (virObjectUnref(vm))
-        virDomainObjUnlock(vm);
+    virObjectUnref(vm);
 }
 
 
