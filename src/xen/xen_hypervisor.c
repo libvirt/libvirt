@@ -2164,6 +2164,18 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         goto done;
     }
 
+    /* Xen 4.2
+     * sysctl version 9 -> xen-unstable c/s 24102:dc8e55c90604
+     * domctl version 8 -> unchanged from Xen 4.1
+     */
+    hv_versions.sys_interface = 9; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        hv_versions.dom_interface = 8; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+            VIR_DEBUG("Using hypervisor call v2, sys ver9 dom ver8");
+            goto done;
+        }
+    }
 
     /*
      * we failed to make the getdomaininfolist hypercall
