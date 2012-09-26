@@ -1943,6 +1943,10 @@ qemuCapsPtr qemuCapsNewForBinary(const char *binary)
     tmp = strstr(binary, QEMU_SYSTEM_PREFIX);
     if (tmp) {
         tmp += strlen(QEMU_SYSTEM_PREFIX);
+
+        /* For historical compat we use 'itanium' as arch name */
+        if (STREQ(tmp, "ia64"))
+            tmp = "itanium";
     } else {
         uname_normalize(&ut);
         tmp = ut.machine;
