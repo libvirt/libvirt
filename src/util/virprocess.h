@@ -38,5 +38,7 @@ virProcessWait(pid_t pid, int *exitstatus)
 
 int virProcessKill(pid_t pid, int sig);
 
+int virProcessKillPainfully(pid_t pid, bool force);
+
 
 #endif /* __VIR_PROCESS_H__ */

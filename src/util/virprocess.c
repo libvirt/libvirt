@@ -235,3 +235,60 @@ int virProcessKill(pid_t pid, int sig)
     return kill(pid, sig);
 #endif
 }
+
+
+/*
+ * Try to kill the process and verify it has exited
+ *
+ * Returns 0 if it was killed gracefully, 1 if it
+ * was killed forcably, -1 if it is still alive,
+ * or another error occurred.
+ */
+int
+virProcessKillPainfully(pid_t pid, bool force)
+{
+    int i, ret = -1;
+    const char *signame = "TERM";
+
+    VIR_DEBUG("vpid=%d force=%d", pid, force);
+
+    /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
+     * to see if it dies. If the process still hasn't exited, and
+     * @force is requested, a SIGKILL will be sent, and this will
+     * wait upto 5 seconds more for the process to exit before
+     * returning.
+     *
+     * Note that setting @force could result in dataloss for the process.
+     */
+    for (i = 0 ; i < 75; i++) {
+        int signum;
+        if (i == 0) {
+            signum = SIGTERM; /* kindly suggest it should exit */
+        } else if ((i == 50) & force) {
+            VIR_DEBUG("Timed out waiting after SIGTERM to process %d, "
+                      "sending SIGKILL", pid);
+            signum = SIGKILL; /* kill it after a grace period */
+            signame = "KILL";
+        } else {
+            signum = 0; /* Just check for existence */
+        }
+
+        if (virProcessKill(pid, signum) < 0) {
+            if (errno != ESRCH) {
+                virReportSystemError(errno,
+                                     _("Failed to terminate process %d with SIG%s"),
+                                     pid, signame);
+                goto cleanup;
+            }
+            ret = signum == SIGTERM ? 0 : 1;
+            goto cleanup; /* process is dead */
+        }
+
+        usleep(200 * 1000);
+    }
+
+    VIR_DEBUG("Timed out waiting after SIGKILL to process %d", pid);
+
+cleanup:
+    return ret;
+}

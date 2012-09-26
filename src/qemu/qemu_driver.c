@@ -2006,17 +2006,11 @@ qemuDomainDestroyFlags(virDomainPtr dom,
      * it now means the job will be released
      */
     if (flags & VIR_DOMAIN_DESTROY_GRACEFUL) {
-        if (qemuProcessKill(driver, vm, 0) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("failed to kill qemu process with SIGTERM"));
+        if (qemuProcessKill(driver, vm, 0) < 0)
             goto cleanup;
-        }
     } else {
-        if (qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("failed to kill qemu process with SIGTERM"));
+        if (qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0)
             goto cleanup;
-        }
     }
 
     /* We need to prevent monitor EOF callback from doing our work (and sending

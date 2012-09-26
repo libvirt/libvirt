@@ -3877,9 +3877,7 @@ int
 qemuProcessKill(struct qemud_driver *driver,
                 virDomainObjPtr vm, unsigned int flags)
 {
-    int i, ret = -1;
-    const char *signame = "TERM";
-    bool driver_unlocked = false;
+    int ret;
 
     VIR_DEBUG("vm=%s pid=%d flags=%x",
               vm->def->name, vm->pid, flags);
@@ -3891,78 +3889,27 @@ qemuProcessKill(struct qemud_driver *driver,
         }
     }
 
-    /* This loop sends SIGTERM (or SIGKILL if flags has
-     * VIR_QEMU_PROCESS_KILL_FORCE and VIR_QEMU_PROCESS_KILL_NOWAIT),
-     * then waits a few iterations (10 seconds) to see if it dies. If
-     * the qemu process still hasn't exited, and
-     * VIR_QEMU_PROCESS_KILL_FORCE is requested, a SIGKILL will then
-     * be sent, and qemuProcessKill will wait up to 5 seconds more for
-     * the process to exit before returning.  Note that the FORCE mode
-     * could result in lost data in the guest, so it should only be
-     * used if the guest is hung and can't be destroyed in any other
-     * manner.
-     */
-    for (i = 0 ; i < 75; i++) {
-        int signum;
-        if (i == 0) {
-            if ((flags & VIR_QEMU_PROCESS_KILL_FORCE) &&
-                (flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
-                signum = SIGKILL; /* kill it immediately */
-                signame="KILL";
-            } else {
-                signum = SIGTERM; /* kindly suggest it should exit */
-            }
-        } else if ((i == 50) & (flags & VIR_QEMU_PROCESS_KILL_FORCE)) {
-            VIR_WARN("Timed out waiting after SIG%s to process %d, "
-                     "sending SIGKILL", signame, vm->pid);
-            signum = SIGKILL; /* kill it after a grace period */
-            signame="KILL";
-        } else {
-            signum = 0; /* Just check for existence */
-        }
-
-        if (virProcessKill(vm->pid, signum) < 0) {
-            if (errno != ESRCH) {
-                char ebuf[1024];
-                VIR_WARN("Failed to terminate process %d with SIG%s: %s",
-                         vm->pid, signame,
-                         virStrerror(errno, ebuf, sizeof(ebuf)));
-                goto cleanup;
-            }
-            ret = 0;
-            goto cleanup; /* process is dead */
-        }
-
-        if (i == 0 && (flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (driver && !driver_unlocked) {
-            /* THREADS.txt says we can't hold the driver lock while sleeping */
-            qemuDriverUnlock(driver);
-            driver_unlocked = true;
-        }
-
-        usleep(200 * 1000);
+    if ((flags & VIR_QEMU_PROCESS_KILL_NOWAIT)) {
+        virProcessKill(vm->pid,
+                       (flags & VIR_QEMU_PROCESS_KILL_FORCE) ?
+                       SIGKILL : SIGTERM);
+        return 0;
     }
-    VIR_WARN("Timed out waiting after SIG%s to process %d", signame, vm->pid);
-cleanup:
-    if (driver_unlocked) {
-        /* We had unlocked the driver, so re-lock it. THREADS.txt says
-         * we can't have the domain locked when locking the driver, so
-         * we must first unlock the domain. BUT, before we can unlock
-         * the domain, we need to add a ref to it in case there aren't
-         * any active jobs (analysis of all callers didn't reveal such
-         * a case, but there are too many to maintain certainty, so we
-         * will do this as a precaution).
-         */
+
+    if (driver)
+        qemuDriverUnlock(driver);
+
+    ret = virProcessKillPainfully(vm->pid,
+                                  !!(flags & VIR_QEMU_PROCESS_KILL_FORCE));
+
+    if (driver) {
         virObjectRef(vm);
         virDomainObjUnlock(vm);
         qemuDriverLock(driver);
         virDomainObjLock(vm);
         virObjectUnref(vm);
     }
+
     return ret;
 }
 

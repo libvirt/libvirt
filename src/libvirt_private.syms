@@ -1708,6 +1708,7 @@ virPidFileDeletePath;
 # virprocess.h
 virProcessAbort;
 virProcessKill;
+virProcessKillPainfully;
 virProcessTranslateStatus;
 virProcessWait;
 
