@@ -44,7 +44,6 @@ typedef struct _parallelsConn *parallelsConnPtr;
 struct parallelsDomObj {
     int id;
     char *uuid;
-    char *os;
 };
 
 typedef struct parallelsDomObj *parallelsDomObjPtr;
