@@ -1019,17 +1019,10 @@ no_memory:
 }
 
 
-static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon,
+static void qemuProcessHandleMonitorDestroy(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                             virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv;
-
-    virDomainObjLock(vm);
-    priv = vm->privateData;
-    if (priv->mon == mon)
-        priv->mon = NULL;
-    if (virObjectUnref(vm))
-        virDomainObjUnlock(vm);
+    virObjectUnref(vm);
 }
 
 static int
@@ -4048,8 +4041,10 @@ void qemuProcessStop(struct qemud_driver *driver,
         priv->agentError = false;
     }
 
-    if (priv->mon)
+    if (priv->mon) {
         qemuMonitorClose(priv->mon);
+        priv->mon = NULL;
+    }
 
     if (priv->monConfig) {
         if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
