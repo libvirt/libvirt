@@ -37,15 +37,10 @@ static int
 parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
 {
     virCommandPtr cmd = virCommandNewVAList(binary, list);
-    char *scmd = NULL;
     int ret = -1;
 
     if (outbuf)
         virCommandSetOutputBuffer(cmd, outbuf);
-
-    scmd = virCommandToString(cmd);
-    if (!scmd)
-        goto cleanup;
 
     if (virCommandRun(cmd, NULL))
         goto cleanup;
@@ -53,7 +48,6 @@ parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
     ret = 0;
 
   cleanup:
-    VIR_FREE(scmd);
     virCommandFree(cmd);
     if (ret && outbuf)
         VIR_FREE(*outbuf);
