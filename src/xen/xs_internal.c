@@ -35,7 +35,11 @@
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
 
-#include <xs.h>
+#if HAVE_XENSTORE_H
+# include <xenstore.h>
+#else
+# include <xs.h>
+#endif
 
 #include "virterror_internal.h"
 #include "datatypes.h"

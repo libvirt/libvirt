@@ -768,6 +768,8 @@ if test "$with_xen" != "no" ; then
 fi
 
 if test "$with_xen" != "no" ; then
+    dnl In Xen 4.2, xs.h is deprecated in favor of xenstore.h.
+    AC_CHECK_HEADERS([xenstore.h])
     AC_CHECK_HEADERS([xen/xen.h xen/version.h xen/dom0_ops.h],,[
        if test "$with_xen" = "yes"; then
            fail=1
