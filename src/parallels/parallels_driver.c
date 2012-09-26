@@ -1445,7 +1445,9 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
         return -1;
     }
 
-    if (!virBitmapEqual(old->cpumask, new->cpumask)) {
+    if ((old->cpumask != NULL || new->cpumask != NULL) &&
+        (old->cpumask == NULL || new->cpumask == NULL ||
+        !virBitmapEqual(old->cpumask, new->cpumask))) {
 
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("changing cpu mask is not supported "
@@ -1465,7 +1467,9 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 
     if (old->numatune.memory.mode != new->numatune.memory.mode ||
         old->numatune.memory.placement_mode != new->numatune.memory.placement_mode ||
-        !virBitmapEqual(old->numatune.memory.nodemask, new->numatune.memory.nodemask)) {
+        ((old->numatune.memory.nodemask != NULL || new->numatune.memory.nodemask != NULL) &&
+         (old->numatune.memory.nodemask == NULL || new->numatune.memory.nodemask == NULL ||
+        !virBitmapEqual(old->numatune.memory.nodemask, new->numatune.memory.nodemask)))){
 
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
