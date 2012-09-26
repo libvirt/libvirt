@@ -9102,11 +9102,6 @@ virDomainGetEmulatorPinInfo(virDomainPtr domain, unsigned char *cpumap,
         virLibDomainError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    if (INT_MULTIPLY_OVERFLOW(1, maplen)) {
-        virLibDomainError(VIR_ERR_OVERFLOW, _("input too large: 1 * %d"),
-                          maplen);
-        goto error;
-    }
 
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
