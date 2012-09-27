@@ -4105,8 +4105,13 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
-    if (ret == 0)
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+            ret = 0;
+            goto cleanup;
+        }
         ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
 
     if (ret < 0)
         goto cleanup;
