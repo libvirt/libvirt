@@ -636,7 +636,21 @@ daemonSetupLogging(struct daemonConfig *config,
         virLogParseOutputs(config->log_outputs);
 
     /*
-     * If no defined outputs, then direct to libvirtd.log when running
+     * If no defined outputs, then first try to direct it
+     * to the systemd journal (if it exists)....
+     */
+    if (virLogGetNbOutputs() == 0) {
+        char *tmp;
+        if (access("/run/systemd/journal/socket", W_OK) >= 0) {
+            if (virAsprintf(&tmp, "%d:journald", virLogGetDefaultPriority()) < 0)
+                goto no_memory;
+            virLogParseOutputs(tmp);
+            VIR_FREE(tmp);
+        }
+    }
+
+    /*
+     * otherwise direct to libvirtd.log when running
      * as daemon. Otherwise the default output is stderr.
      */
     if (virLogGetNbOutputs() == 0) {
