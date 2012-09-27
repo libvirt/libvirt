@@ -486,6 +486,7 @@ virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
                   long long lineno ATTRIBUTE_UNUSED,
                   const char *timestamp,
                   unsigned int flags,
+                  const char *rawstr ATTRIBUTE_UNUSED,
                   const char *str,
                   void *data)
 {

@@ -102,7 +102,7 @@ static void virLogOutputToFd(const char *category, int priority,
                              const char *funcname, long long linenr,
                              const char *timestamp,
                              unsigned int flags,
-                             const char *str,
+                             const char *rawstr, const char *str,
                              void *data);
 
 /*
@@ -631,7 +631,7 @@ virLogFormatString(char **msg,
 }
 
 static int
-virLogVersionString(char **msg)
+virLogVersionString(const char **rawmsg, char **msg)
 {
 #ifdef PACKAGER_VERSION
 # ifdef PACKAGER
@@ -646,6 +646,7 @@ virLogVersionString(char **msg)
     "libvirt version: " VERSION
 #endif
 
+    *rawmsg = LOG_VERSION_STRING;
     return virLogFormatString(msg, NULL, 0, VIR_LOG_INFO, LOG_VERSION_STRING);
 }
 
@@ -725,7 +726,6 @@ void virLogVMessage(const char *category, int priority, const char *funcname,
     }
 
     ret = virLogFormatString(&msg, funcname, linenr, priority, str);
-    VIR_FREE(str);
     if (ret < 0)
         goto cleanup;
 
@@ -751,38 +751,41 @@ void virLogVMessage(const char *category, int priority, const char *funcname,
     for (i = 0; i < virLogNbOutputs; i++) {
         if (priority >= virLogOutputs[i].priority) {
             if (virLogOutputs[i].logVersion) {
+                const char *rawver;
                 char *ver = NULL;
-                if (virLogVersionString(&ver) >= 0)
+                if (virLogVersionString(&rawver, &ver) >= 0)
                     virLogOutputs[i].f(category, VIR_LOG_INFO,
                                        __func__, __LINE__,
-                                       timestamp, 0, ver,
+                                       timestamp, 0, rawver, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
             virLogOutputs[i].f(category, priority, funcname, linenr,
                                timestamp, filterflags,
-                               msg, virLogOutputs[i].data);
+                               str, msg, virLogOutputs[i].data);
         }
     }
     if ((virLogNbOutputs == 0) && (flags != 1)) {
         if (logVersionStderr) {
+            const char *rawver;
             char *ver = NULL;
-            if (virLogVersionString(&ver) >= 0)
+            if (virLogVersionString(&rawver, &ver) >= 0)
                 virLogOutputToFd(category, VIR_LOG_INFO,
                                  __func__, __LINE__,
-                                 timestamp, 0, ver,
+                                 timestamp, 0, rawver, ver,
                                  (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
         virLogOutputToFd(category, priority, funcname, linenr,
                          timestamp, filterflags,
-                         msg, (void *) STDERR_FILENO);
+                         str, msg, (void *) STDERR_FILENO);
     }
     virLogUnlock();
 
 cleanup:
+    VIR_FREE(str);
     VIR_FREE(msg);
     errno = saved_errno;
 }
@@ -813,6 +816,7 @@ static void virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                              long long linenr ATTRIBUTE_UNUSED,
                              const char *timestamp,
                              unsigned int flags,
+                             const char *rawstr ATTRIBUTE_UNUSED,
                              const char *str,
                              void *data)
 {
@@ -884,6 +888,7 @@ static void virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                  long long linenr ATTRIBUTE_UNUSED,
                                  const char *timestamp ATTRIBUTE_UNUSED,
                                  unsigned int flags,
+                                 const char *rawstr ATTRIBUTE_UNUSED,
                                  const char *str,
                                  void *data ATTRIBUTE_UNUSED)
 {

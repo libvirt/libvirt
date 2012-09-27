@@ -90,6 +90,7 @@ typedef enum {
  * @linenr: line where the message was emitted
  * @timestamp: zero terminated string with timestamp of the message
  * @flags: flags associated with the message
+ * @rawstr: the unformatted message to log, zero terminated
  * @str: the message to log, preformatted and zero terminated
  * @data: extra output logging data
  *
@@ -99,7 +100,7 @@ typedef void (*virLogOutputFunc) (const char *category, int priority,
                                   const char *funcname, long long linenr,
                                   const char *timestamp,
                                   unsigned int flags,
-                                  const char *str,
+                                  const char *rawstr, const char *str,
                                   void *data);
 
 /**
