@@ -564,7 +564,7 @@ static int virLogResetOutputs(void) {
  * Returns -1 in case of failure or the output number if successful
  */
 int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
-                       virLogPriority priority, int dest, const char *name,
+                       virLogPriority priority, virLogDestination dest, const char *name,
                        unsigned int flags)
 {
     int ret = -1;
@@ -1139,7 +1139,7 @@ char *virLogGetOutputs(void) {
 
     virLogLock();
     for (i = 0; i < virLogNbOutputs; i++) {
-        int dest = virLogOutputs[i].dest;
+        virLogDestination dest = virLogOutputs[i].dest;
         if (i)
             virBufferAsprintf(&outputbuf, " ");
         switch (dest) {

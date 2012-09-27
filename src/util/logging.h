@@ -125,7 +125,7 @@ extern void virLogSetFromEnv(void);
 extern int virLogDefineFilter(const char *match, virLogPriority priority,
                               unsigned int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
-                              virLogPriority priority, int dest, const char *name,
+                              virLogPriority priority, virLogDestination dest, const char *name,
                               unsigned int flags);
 
 /*

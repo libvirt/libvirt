@@ -610,7 +610,7 @@ int virtTestMain(int argc,
     virLogSetFromEnv();
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
-                               VIR_LOG_DEBUG, 0, NULL, 0) < 0)
+                               VIR_LOG_DEBUG, VIR_LOG_TO_STDERR, NULL, 0) < 0)
             return 1;
     }
 
