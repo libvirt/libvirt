@@ -103,10 +103,10 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
 
     if (auditlog && str) {
         if (success)
-            virLogMessage("audit", VIR_LOG_INFO, func, linenr, 0,
+            virLogMessage("audit", VIR_LOG_INFO, file, linenr, func, 0,
                           "success=yes %s", str);
         else
-            virLogMessage("audit", VIR_LOG_WARN, func, linenr, 0,
+            virLogMessage("audit", VIR_LOG_WARN, file, linenr, func, 0,
                           "success=no %s", str);
     }
 

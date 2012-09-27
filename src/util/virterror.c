@@ -676,8 +676,8 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     priority = virErrorLevelPriority(level);
     if (virErrorLogPriorityFilter)
         priority = virErrorLogPriorityFilter(to, priority);
-    virLogMessage(filename, priority,
-                  funcname, linenr,
+    virLogMessage("error", priority,
+                  filename, linenr, funcname,
                   virErrorLogPriorityFilter ? 0 : 1,
                   "%s", str);
 

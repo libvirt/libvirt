@@ -349,15 +349,15 @@
 
 #  define PROBE_EXPAND(NAME, ARGS) NAME(ARGS)
 #  define PROBE(NAME, FMT, ...)                              \
-    VIR_DEBUG_INT("trace." __FILE__ , __func__, __LINE__,    \
+    VIR_DEBUG_INT("trace", __FILE__, __LINE__, __func__,     \
                   #NAME ": " FMT, __VA_ARGS__);              \
-    if (LIBVIRT_ ## NAME ## _ENABLED()) {                   \
-        PROBE_EXPAND(LIBVIRT_ ## NAME,                      \
+    if (LIBVIRT_ ## NAME ## _ENABLED()) {                    \
+        PROBE_EXPAND(LIBVIRT_ ## NAME,                       \
                      VIR_ADD_CASTS(__VA_ARGS__));            \
     }
 # else
 #  define PROBE(NAME, FMT, ...)                              \
-    VIR_DEBUG_INT("trace." __FILE__, __func__, __LINE__,     \
+    VIR_DEBUG_INT("trace", __FILE__, __LINE__, __func__,     \
                   #NAME ": " FMT, __VA_ARGS__);
 # endif
 

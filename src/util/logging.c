@@ -100,8 +100,9 @@ static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
 static void virLogOutputToFd(const char *category,
                              virLogPriority priority,
-                             const char *funcname,
+                             const char *filename,
                              int linenr,
+                             const char *funcname,
                              const char *timestamp,
                              unsigned int flags,
                              const char *rawstr,
@@ -651,8 +652,8 @@ cleanup:
 
 static int
 virLogFormatString(char **msg,
-                   const char *funcname,
                    int linenr,
+                   const char *funcname,
                    virLogPriority priority,
                    const char *str)
 {
@@ -696,7 +697,7 @@ virLogVersionString(const char **rawmsg,
 #endif
 
     *rawmsg = LOG_VERSION_STRING;
-    return virLogFormatString(msg, NULL, 0, VIR_LOG_INFO, LOG_VERSION_STRING);
+    return virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, LOG_VERSION_STRING);
 }
 
 
@@ -716,14 +717,17 @@ virLogVersionString(const char **rawmsg,
 void
 virLogMessage(const char *category,
               virLogPriority priority,
-              const char *funcname,
+              const char *filename,
               int linenr,
+              const char *funcname,
               unsigned int flags,
               const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    virLogVMessage(category, priority, funcname, linenr, flags, fmt, ap);
+    virLogVMessage(category, priority,
+                   filename, linenr, funcname,
+                   flags, fmt, ap);
     va_end(ap);
 }
 
@@ -744,8 +748,9 @@ virLogMessage(const char *category,
 void
 virLogVMessage(const char *category,
                virLogPriority priority,
-               const char *funcname,
+               const char *filename,
                int linenr,
+               const char *funcname,
                unsigned int flags,
                const char *fmt,
                va_list vargs)
@@ -786,7 +791,7 @@ virLogVMessage(const char *category,
         goto cleanup;
     }
 
-    ret = virLogFormatString(&msg, funcname, linenr, priority, str);
+    ret = virLogFormatString(&msg, linenr, funcname, priority, str);
     if (ret < 0)
         goto cleanup;
 
@@ -816,13 +821,14 @@ virLogVMessage(const char *category,
                 char *ver = NULL;
                 if (virLogVersionString(&rawver, &ver) >= 0)
                     virLogOutputs[i].f(category, VIR_LOG_INFO,
-                                       __func__, __LINE__,
+                                       __FILE__, __LINE__, __func__,
                                        timestamp, 0, rawver, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
-            virLogOutputs[i].f(category, priority, funcname, linenr,
+            virLogOutputs[i].f(category, priority,
+                               filename, linenr, funcname,
                                timestamp, filterflags,
                                str, msg, virLogOutputs[i].data);
         }
@@ -833,13 +839,14 @@ virLogVMessage(const char *category,
             char *ver = NULL;
             if (virLogVersionString(&rawver, &ver) >= 0)
                 virLogOutputToFd(category, VIR_LOG_INFO,
-                                 __func__, __LINE__,
+                                 __FILE__, __LINE__, __func__,
                                  timestamp, 0, rawver, ver,
                                  (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
-        virLogOutputToFd(category, priority, funcname, linenr,
+        virLogOutputToFd(category, priority,
+                         filename, linenr, funcname,
                          timestamp, filterflags,
                          str, msg, (void *) STDERR_FILENO);
     }
@@ -875,8 +882,9 @@ virLogStackTraceToFd(int fd)
 static void
 virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                  virLogPriority priority ATTRIBUTE_UNUSED,
-                 const char *funcname ATTRIBUTE_UNUSED,
+                 const char *filename ATTRIBUTE_UNUSED,
                  int linenr ATTRIBUTE_UNUSED,
+                 const char *funcname ATTRIBUTE_UNUSED,
                  const char *timestamp,
                  unsigned int flags,
                  const char *rawstr ATTRIBUTE_UNUSED,
@@ -960,8 +968,9 @@ virLogPrioritySyslog(virLogPriority priority)
 static void
 virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                      virLogPriority priority,
-                     const char *funcname ATTRIBUTE_UNUSED,
+                     const char *filename ATTRIBUTE_UNUSED,
                      int linenr ATTRIBUTE_UNUSED,
+                     const char *funcname ATTRIBUTE_UNUSED,
                      const char *timestamp ATTRIBUTE_UNUSED,
                      unsigned int flags,
                      const char *rawstr ATTRIBUTE_UNUSED,

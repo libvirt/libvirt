@@ -31,8 +31,8 @@
  * defined at runtime from the libvirt daemon configuration file
  */
 # ifdef ENABLE_DEBUG
-#  define VIR_DEBUG_INT(category, f, l, ...)                            \
-    virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, __VA_ARGS__)
+#  define VIR_DEBUG_INT(category, filename, linenr, funcname, ...)                            \
+    virLogMessage(category, VIR_LOG_DEBUG, filename, linenr, funcname, 0, __VA_ARGS__)
 # else
 /**
  * virLogEatParams:
@@ -44,25 +44,25 @@ static inline void virLogEatParams(const char *unused, ...)
     /* Silence gcc */
     unused = unused;
 }
-#  define VIR_DEBUG_INT(category, f, l, ...)    \
-    virLogEatParams(category, f, l, __VA_ARGS__)
+#  define VIR_DEBUG_INT(category, filename, linenr, funcname, ...)    \
+    virLogEatParams(category, filename, linenr, funcname, __VA_ARGS__)
 # endif /* !ENABLE_DEBUG */
 
-# define VIR_INFO_INT(category, f, l, ...)                              \
-    virLogMessage(category, VIR_LOG_INFO, f, l, 0, __VA_ARGS__)
-# define VIR_WARN_INT(category, f, l, ...)                              \
-    virLogMessage(category, VIR_LOG_WARN, f, l, 0, __VA_ARGS__)
-# define VIR_ERROR_INT(category, f, l, ...)                             \
-    virLogMessage(category, VIR_LOG_ERROR, f, l, 0, __VA_ARGS__)
+# define VIR_INFO_INT(category, filename, linenr, funcname, ...)                              \
+    virLogMessage(category, VIR_LOG_INFO, filename, linenr, funcname, 0, __VA_ARGS__)
+# define VIR_WARN_INT(category, filename, linenr, funcname, ...)                              \
+    virLogMessage(category, VIR_LOG_WARN, filename, linenr, funcname, 0, __VA_ARGS__)
+# define VIR_ERROR_INT(category, filename, linenr, funcname, ...)                             \
+    virLogMessage(category, VIR_LOG_ERROR, filename, linenr, funcname, 0, __VA_ARGS__)
 
 # define VIR_DEBUG(...)                                                 \
-        VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, __VA_ARGS__)
+        VIR_DEBUG_INT("file", __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_INFO(...)                                                  \
-        VIR_INFO_INT("file." __FILE__, __func__, __LINE__, __VA_ARGS__)
+        VIR_INFO_INT("file", __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_WARN(...)                                                  \
-        VIR_WARN_INT("file." __FILE__, __func__, __LINE__, __VA_ARGS__)
+        VIR_WARN_INT("file", __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_ERROR(...)                                                 \
-        VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, __VA_ARGS__)
+        VIR_ERROR_INT("file", __FILE__, __LINE__, __func__, __VA_ARGS__)
 
 /*
  * To be made public
@@ -98,8 +98,9 @@ typedef enum {
  */
 typedef void (*virLogOutputFunc) (const char *category,
                                   virLogPriority priority,
-                                  const char *funcname,
+                                  const char *filename,
                                   int linenr,
+                                  const char *funcname,
                                   const char *timestamp,
                                   unsigned int flags,
                                   const char *rawstr,
@@ -148,17 +149,19 @@ extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category,
                           virLogPriority priority,
-                          const char *funcname,
+                          const char *filename,
                           int linenr,
+                          const char *funcname,
                           unsigned int flags,
-                          const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
+                          const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
 extern void virLogVMessage(const char *category,
                            virLogPriority priority,
-                           const char *funcname,
+                           const char *filename,
                            int linenr,
+                           const char *funcname,
                            unsigned int flags,
                            const char *fmt,
-                           va_list vargs) ATTRIBUTE_FMT_PRINTF(6, 0);
+                           va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
 extern int virLogSetBufferSize(int size);
 extern void virLogEmergencyDumpAll(int signum);
 #endif

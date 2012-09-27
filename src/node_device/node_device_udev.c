@@ -358,7 +358,7 @@ static void udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
                             const char *fmt,
                             va_list args)
 {
-    VIR_ERROR_INT(file, fn, line, fmt, args);
+    VIR_ERROR_INT("library", file, line, fn, fmt, args);
 }
 
 
