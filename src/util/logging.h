@@ -96,11 +96,14 @@ typedef enum {
  *
  * Callback function used to output messages
  */
-typedef void (*virLogOutputFunc) (const char *category, virLogPriority priority,
-                                  const char *funcname, int linenr,
+typedef void (*virLogOutputFunc) (const char *category,
+                                  virLogPriority priority,
+                                  const char *funcname,
+                                  int linenr,
                                   const char *timestamp,
                                   unsigned int flags,
-                                  const char *rawstr, const char *str,
+                                  const char *rawstr,
+                                  const char *str,
                                   void *data);
 
 /**
@@ -122,10 +125,15 @@ extern char *virLogGetOutputs(void);
 extern virLogPriority virLogGetDefaultPriority(void);
 extern int virLogSetDefaultPriority(virLogPriority priority);
 extern void virLogSetFromEnv(void);
-extern int virLogDefineFilter(const char *match, virLogPriority priority,
+extern int virLogDefineFilter(const char *match,
+                              virLogPriority priority,
                               unsigned int flags);
-extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
-                              virLogPriority priority, virLogDestination dest, const char *name,
+extern int virLogDefineOutput(virLogOutputFunc f,
+                              virLogCloseFunc c,
+                              void *data,
+                              virLogPriority priority,
+                              virLogDestination dest,
+                              const char *name,
                               unsigned int flags);
 
 /*
@@ -138,12 +146,16 @@ extern int virLogReset(void);
 extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
-extern void virLogMessage(const char *category, virLogPriority priority,
-                          const char *funcname, int linenr,
+extern void virLogMessage(const char *category,
+                          virLogPriority priority,
+                          const char *funcname,
+                          int linenr,
                           unsigned int flags,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
-extern void virLogVMessage(const char *category, virLogPriority priority,
-                           const char *funcname, int linenr,
+extern void virLogVMessage(const char *category,
+                           virLogPriority priority,
+                           const char *funcname,
+                           int linenr,
                            unsigned int flags,
                            const char *fmt,
                            va_list vargs) ATTRIBUTE_FMT_PRINTF(6, 0);
