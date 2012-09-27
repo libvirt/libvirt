@@ -47,6 +47,14 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_ENUM_DECL(virLogSource)
+VIR_ENUM_IMPL(virLogSource, VIR_LOG_FROM_LAST,
+              "file",
+              "error",
+              "audit",
+              "trace",
+              "library");
+
 /*
  * A logging buffer to keep some history over logs
  */
@@ -98,7 +106,7 @@ static virLogPriority virLogDefaultPriority = VIR_LOG_DEFAULT;
 
 static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
-static void virLogOutputToFd(const char *category,
+static void virLogOutputToFd(virLogSource src,
                              virLogPriority priority,
                              const char *filename,
                              int linenr,
@@ -703,11 +711,11 @@ virLogVersionString(const char **rawmsg,
 
 /**
  * virLogMessage:
- * @category: where is that message coming from
+ * @source: where is that message coming from
  * @priority: the priority level
- * @funcname: the function emitting the (debug) message
+ * @filename: file where the message was emitted
  * @linenr: line where the message was emitted
- * @flags: extra flags, 1 if coming from the error handler
+ * @funcname: the function emitting the (debug) message
  * @fmt: the string format
  * @...: the arguments
  *
@@ -715,30 +723,29 @@ virLogVersionString(const char **rawmsg,
  * the message may be stored, sent to output or just discarded
  */
 void
-virLogMessage(const char *category,
+virLogMessage(virLogSource source,
               virLogPriority priority,
               const char *filename,
               int linenr,
               const char *funcname,
-              unsigned int flags,
               const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    virLogVMessage(category, priority,
+    virLogVMessage(source, priority,
                    filename, linenr, funcname,
-                   flags, fmt, ap);
+                   fmt, ap);
     va_end(ap);
 }
 
 
 /**
  * virLogVMessage:
- * @category: where is that message coming from
+ * @source: where is that message coming from
  * @priority: the priority level
- * @funcname: the function emitting the (debug) message
+ * @filename: file where the message was emitted
  * @linenr: line where the message was emitted
- * @flags: extra flags, 1 if coming from the error handler
+ * @funcname: the function emitting the (debug) message
  * @fmt: the string format
  * @vargs: format args
  *
@@ -746,12 +753,11 @@ virLogMessage(const char *category,
  * the message may be stored, sent to output or just discarded
  */
 void
-virLogVMessage(const char *category,
+virLogVMessage(virLogSource source,
                virLogPriority priority,
                const char *filename,
                int linenr,
                const char *funcname,
-               unsigned int flags,
                const char *fmt,
                va_list vargs)
 {
@@ -773,7 +779,7 @@ virLogVMessage(const char *category,
     /*
      * check against list of specific logging patterns
      */
-    fprio = virLogFiltersCheck(category, &filterflags);
+    fprio = virLogFiltersCheck(filename, &filterflags);
     if (fprio == 0) {
         if (priority < virLogDefaultPriority)
             emit = 0;
@@ -820,32 +826,32 @@ virLogVMessage(const char *category,
                 const char *rawver;
                 char *ver = NULL;
                 if (virLogVersionString(&rawver, &ver) >= 0)
-                    virLogOutputs[i].f(category, VIR_LOG_INFO,
+                    virLogOutputs[i].f(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
                                        timestamp, 0, rawver, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
-            virLogOutputs[i].f(category, priority,
+            virLogOutputs[i].f(source, priority,
                                filename, linenr, funcname,
                                timestamp, filterflags,
                                str, msg, virLogOutputs[i].data);
         }
     }
-    if ((virLogNbOutputs == 0) && (flags != 1)) {
+    if ((virLogNbOutputs == 0) && (source != VIR_LOG_FROM_ERROR)) {
         if (logVersionStderr) {
             const char *rawver;
             char *ver = NULL;
             if (virLogVersionString(&rawver, &ver) >= 0)
-                virLogOutputToFd(category, VIR_LOG_INFO,
+                virLogOutputToFd(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
                                  __FILE__, __LINE__, __func__,
                                  timestamp, 0, rawver, ver,
                                  (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
-        virLogOutputToFd(category, priority,
+        virLogOutputToFd(source, priority,
                          filename, linenr, funcname,
                          timestamp, filterflags,
                          str, msg, (void *) STDERR_FILENO);
@@ -880,7 +886,7 @@ virLogStackTraceToFd(int fd)
 }
 
 static void
-virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
+virLogOutputToFd(virLogSource source ATTRIBUTE_UNUSED,
                  virLogPriority priority ATTRIBUTE_UNUSED,
                  const char *filename ATTRIBUTE_UNUSED,
                  int linenr ATTRIBUTE_UNUSED,
@@ -966,7 +972,7 @@ virLogPrioritySyslog(virLogPriority priority)
 
 
 static void
-virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
+virLogOutputToSyslog(virLogSource source ATTRIBUTE_UNUSED,
                      virLogPriority priority,
                      const char *filename ATTRIBUTE_UNUSED,
                      int linenr ATTRIBUTE_UNUSED,

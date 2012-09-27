@@ -52,9 +52,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
-#define umlLog(level, msg, ...)                                     \
-        virLogMessage(__FILE__, level, 0, msg, __VA_ARGS__)
-
 
 static int umlDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
 {

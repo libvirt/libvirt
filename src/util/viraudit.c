@@ -74,8 +74,9 @@ void virAuditLog(int logging)
 }
 
 
-void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
+void virAuditSend(const char *filename,
                   size_t linenr,
+                  const char *funcname,
                   const char *clienttty ATTRIBUTE_UNUSED,
                   const char *clientaddr ATTRIBUTE_UNUSED,
                   enum virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
@@ -103,10 +104,12 @@ void virAuditSend(const char *file ATTRIBUTE_UNUSED, const char *func,
 
     if (auditlog && str) {
         if (success)
-            virLogMessage("audit", VIR_LOG_INFO, file, linenr, func, 0,
+            virLogMessage(VIR_LOG_FROM_AUDIT, VIR_LOG_INFO,
+                          filename, linenr, funcname,
                           "success=yes %s", str);
         else
-            virLogMessage("audit", VIR_LOG_WARN, file, linenr, func, 0,
+            virLogMessage(VIR_LOG_FROM_AUDIT, VIR_LOG_WARN,
+                          filename, linenr, funcname,
                           "success=no %s", str);
     }
 

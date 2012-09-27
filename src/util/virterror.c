@@ -671,14 +671,13 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
 
     /*
      * Hook up the error or warning to the logging facility
-     * XXXX should we include filename as 'category' instead of domain name ?
      */
     priority = virErrorLevelPriority(level);
     if (virErrorLogPriorityFilter)
         priority = virErrorLogPriorityFilter(to, priority);
-    virLogMessage("error", priority,
+    virLogMessage(virErrorLogPriorityFilter ? VIR_LOG_FROM_FILE : VIR_LOG_FROM_ERROR,
+                  priority,
                   filename, linenr, funcname,
-                  virErrorLogPriorityFilter ? 0 : 1,
                   "%s", str);
 
     errno = save_errno;
