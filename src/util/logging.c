@@ -862,6 +862,22 @@ static int virLogAddOutputToFile(int priority, const char *file) {
 }
 
 #if HAVE_SYSLOG_H
+static int virLogPrioritySyslog(virLogPriority priority)
+{
+    switch (priority) {
+    case VIR_LOG_DEBUG:
+        return LOG_DEBUG;
+    case VIR_LOG_INFO:
+        return LOG_INFO;
+    case VIR_LOG_WARN:
+        return LOG_WARNING;
+    case VIR_LOG_ERROR:
+        return LOG_ERR;
+    default:
+        return LOG_ERR;
+    }
+}
+
 static void virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                  int priority,
                                  const char *funcname ATTRIBUTE_UNUSED,
@@ -871,27 +887,9 @@ static void virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                  const char *str,
                                  void *data ATTRIBUTE_UNUSED)
 {
-    int prio;
-
     virCheckFlags(VIR_LOG_STACK_TRACE,);
 
-    switch (priority) {
-        case VIR_LOG_DEBUG:
-            prio = LOG_DEBUG;
-            break;
-        case VIR_LOG_INFO:
-            prio = LOG_INFO;
-            break;
-        case VIR_LOG_WARN:
-            prio = LOG_WARNING;
-            break;
-        case VIR_LOG_ERROR:
-            prio = LOG_ERR;
-            break;
-        default:
-            prio = LOG_ERR;
-    }
-    syslog(prio, "%s", str);
+    syslog(virLogPrioritySyslog(priority), "%s", str);
 }
 
 static char *current_ident = NULL;
