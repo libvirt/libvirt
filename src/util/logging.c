@@ -99,7 +99,7 @@ static virLogPriority virLogDefaultPriority = VIR_LOG_DEFAULT;
 static int virLogResetFilters(void);
 static int virLogResetOutputs(void);
 static void virLogOutputToFd(const char *category, virLogPriority priority,
-                             const char *funcname, long long linenr,
+                             const char *funcname, int linenr,
                              const char *timestamp,
                              unsigned int flags,
                              const char *rawstr, const char *str,
@@ -605,7 +605,7 @@ cleanup:
 static int
 virLogFormatString(char **msg,
                    const char *funcname,
-                   long long linenr,
+                   int linenr,
                    virLogPriority priority,
                    const char *str)
 {
@@ -619,7 +619,7 @@ virLogFormatString(char **msg,
      * to just grep for it to find the right place.
      */
     if ((funcname != NULL)) {
-        ret = virAsprintf(msg, "%d: %s : %s:%lld : %s\n",
+        ret = virAsprintf(msg, "%d: %s : %s:%d : %s\n",
                           virThreadSelfID(), virLogPriorityString(priority),
                           funcname, linenr, str);
     } else {
@@ -664,7 +664,7 @@ virLogVersionString(const char **rawmsg, char **msg)
  * the message may be stored, sent to output or just discarded
  */
 void virLogMessage(const char *category, virLogPriority priority, const char *funcname,
-                   long long linenr, unsigned int flags, const char *fmt, ...)
+                   int linenr, unsigned int flags, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -686,7 +686,7 @@ void virLogMessage(const char *category, virLogPriority priority, const char *fu
  * the message may be stored, sent to output or just discarded
  */
 void virLogVMessage(const char *category, virLogPriority priority, const char *funcname,
-                    long long linenr, unsigned int flags, const char *fmt,
+                    int linenr, unsigned int flags, const char *fmt,
                     va_list vargs)
 {
     static bool logVersionStderr = true;
@@ -813,7 +813,7 @@ static void virLogStackTraceToFd(int fd)
 static void virLogOutputToFd(const char *category ATTRIBUTE_UNUSED,
                              virLogPriority priority ATTRIBUTE_UNUSED,
                              const char *funcname ATTRIBUTE_UNUSED,
-                             long long linenr ATTRIBUTE_UNUSED,
+                             int linenr ATTRIBUTE_UNUSED,
                              const char *timestamp,
                              unsigned int flags,
                              const char *rawstr ATTRIBUTE_UNUSED,
@@ -885,7 +885,7 @@ static int virLogPrioritySyslog(virLogPriority priority)
 static void virLogOutputToSyslog(const char *category ATTRIBUTE_UNUSED,
                                  virLogPriority priority,
                                  const char *funcname ATTRIBUTE_UNUSED,
-                                 long long linenr ATTRIBUTE_UNUSED,
+                                 int linenr ATTRIBUTE_UNUSED,
                                  const char *timestamp ATTRIBUTE_UNUSED,
                                  unsigned int flags,
                                  const char *rawstr ATTRIBUTE_UNUSED,

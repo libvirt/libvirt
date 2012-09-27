@@ -483,7 +483,7 @@ static void
 virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
                   virLogPriority priority ATTRIBUTE_UNUSED,
                   const char *funcname ATTRIBUTE_UNUSED,
-                  long long lineno ATTRIBUTE_UNUSED,
+                  int linenr ATTRIBUTE_UNUSED,
                   const char *timestamp,
                   unsigned int flags,
                   const char *rawstr ATTRIBUTE_UNUSED,

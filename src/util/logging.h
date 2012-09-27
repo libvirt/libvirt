@@ -97,7 +97,7 @@ typedef enum {
  * Callback function used to output messages
  */
 typedef void (*virLogOutputFunc) (const char *category, virLogPriority priority,
-                                  const char *funcname, long long linenr,
+                                  const char *funcname, int linenr,
                                   const char *timestamp,
                                   unsigned int flags,
                                   const char *rawstr, const char *str,
@@ -139,11 +139,11 @@ extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, virLogPriority priority,
-                          const char *funcname, long long linenr,
+                          const char *funcname, int linenr,
                           unsigned int flags,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
 extern void virLogVMessage(const char *category, virLogPriority priority,
-                           const char *funcname, long long linenr,
+                           const char *funcname, int linenr,
                            unsigned int flags,
                            const char *fmt,
                            va_list vargs) ATTRIBUTE_FMT_PRINTF(6, 0);
