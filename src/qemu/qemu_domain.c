@@ -880,8 +880,7 @@ int qemuDomainObjBeginAsyncJob(struct qemud_driver *driver,
 }
 
 /*
- * obj must be locked before calling. If qemud_driver is passed, it MUST be
- * locked; otherwise it MUST NOT be locked.
+ * obj and qemud_driver must be locked before calling.
  *
  * This must be called by anything that will change the VM state
  * in any way, or anything that will use the QEMU monitor.
