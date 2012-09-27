@@ -481,7 +481,7 @@ static struct virtTestLogData testLog = { VIR_BUFFER_INITIALIZER };
 
 static void
 virtTestLogOutput(const char *category ATTRIBUTE_UNUSED,
-                  int priority ATTRIBUTE_UNUSED,
+                  virLogPriority priority ATTRIBUTE_UNUSED,
                   const char *funcname ATTRIBUTE_UNUSED,
                   long long lineno ATTRIBUTE_UNUSED,
                   const char *timestamp,
@@ -610,7 +610,7 @@ int virtTestMain(int argc,
     virLogSetFromEnv();
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
-                               0, 0, NULL, 0) < 0)
+                               VIR_LOG_DEBUG, 0, NULL, 0) < 0)
             return 1;
     }
 

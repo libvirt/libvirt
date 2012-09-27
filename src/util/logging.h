@@ -96,7 +96,7 @@ typedef enum {
  *
  * Callback function used to output messages
  */
-typedef void (*virLogOutputFunc) (const char *category, int priority,
+typedef void (*virLogOutputFunc) (const char *category, virLogPriority priority,
                                   const char *funcname, long long linenr,
                                   const char *timestamp,
                                   unsigned int flags,
@@ -119,13 +119,13 @@ extern int virLogGetNbFilters(void);
 extern int virLogGetNbOutputs(void);
 extern char *virLogGetFilters(void);
 extern char *virLogGetOutputs(void);
-extern int virLogGetDefaultPriority(void);
-extern int virLogSetDefaultPriority(int priority);
+extern virLogPriority virLogGetDefaultPriority(void);
+extern int virLogSetDefaultPriority(virLogPriority priority);
 extern void virLogSetFromEnv(void);
-extern int virLogDefineFilter(const char *match, int priority,
+extern int virLogDefineFilter(const char *match, virLogPriority priority,
                               unsigned int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
-                              int priority, int dest, const char *name,
+                              virLogPriority priority, int dest, const char *name,
                               unsigned int flags);
 
 /*
@@ -138,11 +138,11 @@ extern int virLogReset(void);
 extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
-extern void virLogMessage(const char *category, int priority,
+extern void virLogMessage(const char *category, virLogPriority priority,
                           const char *funcname, long long linenr,
                           unsigned int flags,
                           const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
-extern void virLogVMessage(const char *category, int priority,
+extern void virLogVMessage(const char *category, virLogPriority priority,
                            const char *funcname, long long linenr,
                            unsigned int flags,
                            const char *fmt,
