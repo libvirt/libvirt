@@ -157,5 +157,15 @@ from the C API, the only points to notice are:</p>
     various <span style="color: #E50073; background-color: #FFFFFF">methods</span>
     associated to the Domain class.</li>
     </ul>
+<h2>Maven</h2>
+  <p>Up until version 0.4.7 the Java bindings were available from the central maven repository.</p>
+  <p>If you want to use 0.4.8 or higher, please add the following repository to your pom.xml</p>
+  <pre>&lt;repositories&gt;
+  &lt;repository&gt;
+    &lt;id&gt;libvirt-org&lt;/id&gt;
+    &lt;url&gt;http://libvirt.org/maven2&lt;/url&gt;
+  &lt;/repository&gt;
+&lt;/repositories&gt;</pre>
+
   </body>
 </html>
