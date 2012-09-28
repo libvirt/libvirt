@@ -3957,6 +3957,18 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 
     ret = qemuMonitorJSONCommand(mon, cmd, &reply);
 
+    if (ret == 0) {
+        /* Urgh, some QEMU architectures have the query-cpu-definitions
+         * command, but return 'GenericError' with string "Not supported",
+         * instead of simply omitting the command entirely :-(
+         */
+        if (qemuMonitorJSONHasError(reply, "GenericError")) {
+            ret = 0;
+            goto cleanup;
+        }
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
     if (ret == 0)
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
