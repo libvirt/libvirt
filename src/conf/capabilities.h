@@ -1,7 +1,7 @@
 /*
  * capabilities.h: hypervisor capabilities
  *
- * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010, 2012 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -149,7 +149,7 @@ struct _virCaps {
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     unsigned int emulatorRequired : 1;
     const char *defaultDiskDriverName;
-    const char *defaultDiskDriverType;
+    int defaultDiskDriverType; /* enum virStorageFileFormat */
     int (*defaultConsoleTargetType)(const char *ostype);
     void *(*privateDataAllocFunc)(void);
     void (*privateDataFreeFunc)(void *);

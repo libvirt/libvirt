@@ -4192,7 +4192,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
     if (!def->driverType &&
         caps->defaultDiskDriverType &&
-        !(def->driverType = strdup(caps->defaultDiskDriverType)))
+        !(def->driverType = strdup(virStorageFileFormatTypeToString(
+                                       caps->defaultDiskDriverType))))
         goto no_memory;
 
     if (!def->driverName &&
@@ -4203,7 +4204,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
     if (def->mirror && !def->mirrorFormat &&
         caps->defaultDiskDriverType &&
-        !(def->mirrorFormat = strdup(caps->defaultDiskDriverType)))
+        !(def->mirrorFormat = strdup(virStorageFileFormatTypeToString(
+                                         caps->defaultDiskDriverType))))
         goto no_memory;
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE

@@ -394,10 +394,10 @@ qemuCreateCapabilities(struct qemud_driver *driver)
 
     if (driver->allowDiskFormatProbing) {
         caps->defaultDiskDriverName = NULL;
-        caps->defaultDiskDriverType = NULL;
+        caps->defaultDiskDriverType = VIR_STORAGE_FILE_AUTO;
     } else {
         caps->defaultDiskDriverName = "qemu";
-        caps->defaultDiskDriverType = "raw";
+        caps->defaultDiskDriverType = VIR_STORAGE_FILE_RAW;
     }
 
     qemuDomainSetPrivateDataHooks(caps);
