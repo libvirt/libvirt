@@ -135,6 +135,15 @@ struct _virStoragePoolTypeInfo {
     virStorageVolOptions volOptions;
 };
 
+static int
+virStorageVolumeFormatFromString(const char *format)
+{
+    int ret = virStorageFileFormatTypeFromString(format);
+    if (ret == VIR_STORAGE_FILE_NONE)
+        return -1;
+    return ret;
+}
+
 static virStoragePoolTypeInfo poolTypeInfo[] = {
     { .poolType = VIR_STORAGE_POOL_LOGICAL,
       .poolOptions = {
@@ -148,7 +157,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
     { .poolType = VIR_STORAGE_POOL_DIR,
       .volOptions = {
             .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatFromString = virStorageVolumeFormatFromString,
             .formatToString = virStorageFileFormatTypeToString,
         },
     },
@@ -161,7 +170,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
         },
       .volOptions = {
             .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatFromString = virStorageVolumeFormatFromString,
             .formatToString = virStorageFileFormatTypeToString,
         },
     },
@@ -175,7 +184,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
         },
       .volOptions = {
             .defaultFormat = VIR_STORAGE_FILE_RAW,
-            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatFromString = virStorageVolumeFormatFromString,
             .formatToString = virStorageFileFormatTypeToString,
         },
     },

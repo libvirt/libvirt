@@ -1,7 +1,7 @@
 /*
  * storage_file.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -29,7 +29,8 @@
 enum virStorageFileFormat {
     VIR_STORAGE_FILE_AUTO_SAFE = -2,
     VIR_STORAGE_FILE_AUTO = -1,
-    VIR_STORAGE_FILE_RAW = 0,
+    VIR_STORAGE_FILE_NONE = 0,
+    VIR_STORAGE_FILE_RAW,
     VIR_STORAGE_FILE_DIR,
     VIR_STORAGE_FILE_BOCHS,
     VIR_STORAGE_FILE_CLOOP,
@@ -41,6 +42,9 @@ enum virStorageFileFormat {
     VIR_STORAGE_FILE_QED,
     VIR_STORAGE_FILE_VMDK,
     VIR_STORAGE_FILE_VPC,
+    VIR_STORAGE_FILE_FAT,
+    VIR_STORAGE_FILE_VHD,
+
     VIR_STORAGE_FILE_LAST,
 };
 

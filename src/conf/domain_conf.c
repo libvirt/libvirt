@@ -14847,7 +14847,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         if (STREQ(formatStr, "aio"))
             formatStr = "raw"; /* Xen compat */
 
-        if ((format = virStorageFileFormatTypeFromString(formatStr)) < 0) {
+        if ((format = virStorageFileFormatTypeFromString(formatStr)) <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown disk format '%s' for %s"),
                            disk->driverType, disk->src);

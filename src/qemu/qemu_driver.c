@@ -9303,7 +9303,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
 
     /* Probe for magic formats */
     if (disk->driverType) {
-        if ((format = virStorageFileFormatTypeFromString(disk->driverType)) < 0) {
+        if ((format = virStorageFileFormatTypeFromString(disk->driverType)) <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown disk format %s for %s"),
                            disk->driverType, disk->src);
