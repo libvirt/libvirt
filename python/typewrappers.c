@@ -220,7 +220,7 @@ libvirt_ulongUnwrap(PyObject *obj, unsigned long *val)
 int
 libvirt_longlongUnwrap(PyObject *obj, long long *val)
 {
-    long long llong_val;
+    long long llong_val = -1;
 
     if (!obj) {
         PyErr_SetString(PyExc_TypeError, "unexpected type");
@@ -230,7 +230,11 @@ libvirt_longlongUnwrap(PyObject *obj, long long *val)
     /* If obj is of PyInt_Type, PyLong_AsLongLong
      * will call PyInt_AsLong() to handle it automatically.
      */
-    llong_val = PyLong_AsLongLong(obj);
+    if (PyInt_Check(obj) || PyLong_Check(obj))
+        llong_val = PyLong_AsLongLong(obj);
+    else
+        PyErr_SetString(PyExc_TypeError, "an integer is required");
+
     if ((llong_val == -1) && PyErr_Occurred())
         return -1;
 
