@@ -566,6 +566,12 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                                        disk->src);
                         goto cleanup;
                     }
+                    if (STREQ(disk->driverType, "aio")) {
+                        /* In-place conversion to "raw" */
+                        disk->driverType[0] = 'r';
+                        disk->driverType[1] = 'a';
+                        disk->driverType[2] = 'w';
+                    }
 
                     /* Strip the prefix we found off the source file name */
                     memmove(disk->src, disk->src+(tmp-disk->src)+1,
@@ -1203,9 +1209,12 @@ static int xenFormatXMDisk(virConfValuePtr list,
 
     if(disk->src) {
         if (disk->driverName) {
+            const char *type = disk->driverType ? disk->driverType : "aio";
+            if (STREQ(type, "raw"))
+                type = "aio";
             virBufferAsprintf(&buf, "%s:", disk->driverName);
             if (STREQ(disk->driverName, "tap"))
-                virBufferAsprintf(&buf, "%s:", disk->driverType ? disk->driverType : "aio");
+                virBufferAsprintf(&buf, "%s:", type);
         } else {
             switch (disk->type) {
             case VIR_DOMAIN_DISK_TYPE_FILE:

@@ -3728,6 +3728,12 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                        xmlStrEqual(cur->name, BAD_CAST "driver")) {
                 driverName = virXMLPropString(cur, "name");
                 driverType = virXMLPropString(cur, "type");
+                if (STREQ_NULLABLE(driverType, "aio")) {
+                    /* In-place conversion to "raw", for Xen back-compat */
+                    driverType[0] = 'r';
+                    driverType[1] = 'a';
+                    driverType[2] = 'w';
+                }
                 cachetag = virXMLPropString(cur, "cache");
                 error_policy = virXMLPropString(cur, "error_policy");
                 rerror_policy = virXMLPropString(cur, "rerror_policy");
@@ -14844,8 +14850,6 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
 
     if (disk->driverType) {
         const char *formatStr = disk->driverType;
-        if (STREQ(formatStr, "aio"))
-            formatStr = "raw"; /* Xen compat */
 
         if ((format = virStorageFileFormatTypeFromString(formatStr)) <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

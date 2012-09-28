@@ -443,6 +443,12 @@ xenParseSxprDisks(virDomainDefPtr def,
                                        src);
                         goto error;
                     }
+                    if (STREQ(disk->driverType, "aio")) {
+                        /* In-place conversion to "raw" */
+                        disk->driverType[0] = 'r';
+                        disk->driverType[1] = 'a';
+                        disk->driverType[2] = 'w';
+                    }
 
                     src = offset + 1;
                     /* Its possible to use blktap driver for block devs
@@ -1831,9 +1837,11 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         if (def->driverName) {
             if (STREQ(def->driverName, "tap") ||
                 STREQ(def->driverName, "tap2")) {
+                const char *type = def->driverType ? def->driverType : "aio";
+                if (STREQ(type, "raw"))
+                    type = "aio";
                 virBufferEscapeSexpr(buf, "(uname '%s:", def->driverName);
-                virBufferEscapeSexpr(buf, "%s:",
-                                     def->driverType ? def->driverType : "aio");
+                virBufferEscapeSexpr(buf, "%s:", type);
                 virBufferEscapeSexpr(buf, "%s')", def->src);
             } else {
                 virBufferEscapeSexpr(buf, "(uname '%s:", def->driverName);
