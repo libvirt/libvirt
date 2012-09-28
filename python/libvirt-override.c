@@ -1333,9 +1333,11 @@ cleanup:
 
 static PyObject *
 libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
-                          PyObject *args) {
+                          PyObject *args)
+{
     virDomainPtr domain;
     PyObject *pyobj_domain, *pyretval = NULL, *pycpuinfo = NULL, *pycpumap = NULL;
+    PyObject *error = NULL;
     virNodeInfo nodeinfo;
     virDomainInfo dominfo;
     virVcpuInfoPtr cpuinfo = NULL;
@@ -1352,29 +1354,33 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
     LIBVIRT_END_ALLOW_THREADS;
     if (i_retval < 0)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetInfo(domain, &dominfo);
     LIBVIRT_END_ALLOW_THREADS;
     if (i_retval < 0)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
 
     if (VIR_ALLOC_N(cpuinfo, dominfo.nrVirtCpu) < 0)
-        return VIR_PY_NONE;
+        return PyErr_NoMemory();
 
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (xalloc_oversized(dominfo.nrVirtCpu, cpumaplen) ||
-        VIR_ALLOC_N(cpumap, dominfo.nrVirtCpu * cpumaplen) < 0)
+        VIR_ALLOC_N(cpumap, dominfo.nrVirtCpu * cpumaplen) < 0) {
+        error = PyErr_NoMemory();
         goto cleanup;
+    }
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetVcpus(domain,
                                  cpuinfo, dominfo.nrVirtCpu,
                                  cpumap, cpumaplen);
     LIBVIRT_END_ALLOW_THREADS;
-    if (i_retval < 0)
+    if (i_retval < 0) {
+        error = VIR_PY_INT_FAIL;
         goto cleanup;
+    }
 
     /* convert to a Python tuple of long objects */
     if ((pyretval = PyTuple_New(2)) == NULL)
@@ -1386,13 +1392,35 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
 
     for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
         PyObject *info = PyTuple_New(4);
+        PyObject *item = NULL;
+
         if (info == NULL)
             goto cleanup;
-        PyTuple_SetItem(info, 0, PyInt_FromLong((long)cpuinfo[i].number));
-        PyTuple_SetItem(info, 1, PyInt_FromLong((long)cpuinfo[i].state));
-        PyTuple_SetItem(info, 2, PyLong_FromLongLong((long long)cpuinfo[i].cpuTime));
-        PyTuple_SetItem(info, 3, PyInt_FromLong((long)cpuinfo[i].cpu));
-        PyList_SetItem(pycpuinfo, i, info);
+
+        if ((item = PyInt_FromLong((long)cpuinfo[i].number)) == NULL ||
+            PyTuple_SetItem(info, 0, item) < 0)
+            goto itemError;
+
+        if ((item = PyInt_FromLong((long)cpuinfo[i].state)) == NULL ||
+            PyTuple_SetItem(info, 1, item) < 0)
+            goto itemError;
+
+        if ((item = PyLong_FromLongLong((long long)cpuinfo[i].cpuTime)) == NULL ||
+            PyTuple_SetItem(info, 2, item) < 0)
+            goto itemError;
+
+        if ((item = PyInt_FromLong((long)cpuinfo[i].cpu)) == NULL ||
+            PyTuple_SetItem(info, 3, item) < 0)
+            goto itemError;
+
+        if (PyList_SetItem(pycpuinfo, i, info) < 0)
+            goto itemError;
+
+        continue;
+        itemError:
+            Py_DECREF(info);
+            Py_XDECREF(item);
+            goto cleanup;
     }
     for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
         PyObject *info = PyTuple_New(VIR_NODEINFO_MAXCPUS(nodeinfo));
@@ -1400,36 +1428,48 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
         if (info == NULL)
             goto cleanup;
         for (j = 0 ; j < VIR_NODEINFO_MAXCPUS(nodeinfo) ; j++) {
-            PyTuple_SetItem(info, j, PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen, i, j)));
+            PyObject *item = NULL;
+            if ((item = PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen, i, j))) == NULL ||
+                PyTuple_SetItem(info, j, item) < 0) {
+                Py_DECREF(info);
+                Py_XDECREF(item);
+                goto cleanup;
+            }
         }
-        PyList_SetItem(pycpumap, i, info);
+        if (PyList_SetItem(pycpumap, i, info) < 0) {
+            Py_DECREF(info);
+            goto cleanup;
+        }
     }
-    PyTuple_SetItem(pyretval, 0, pycpuinfo);
-    PyTuple_SetItem(pyretval, 1, pycpumap);
+    if (PyTuple_SetItem(pyretval, 0, pycpuinfo) < 0 ||
+        PyTuple_SetItem(pyretval, 1, pycpumap) < 0)
+        goto cleanup;
 
     VIR_FREE(cpuinfo);
     VIR_FREE(cpumap);
 
     return pyretval;
 
- cleanup:
+cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(cpumap);
     Py_XDECREF(pyretval);
     Py_XDECREF(pycpuinfo);
     Py_XDECREF(pycpumap);
-    return VIR_PY_NONE;
+    return error;
 }
 
 
 static PyObject *
 libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
-                         PyObject *args) {
+                         PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *pycpumap, *truth;
+    PyObject *pyobj_domain, *pycpumap;
+    PyObject *ret = NULL;
     virNodeInfo nodeinfo;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu;
+    int cpumaplen, i, vcpu, tuple_size;
     int i_retval;
 
     if (!PyArg_ParseTuple(args, (char *)"OiO:virDomainPinVcpu",
@@ -1443,39 +1483,60 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_INT_FAIL;
 
+    if (PyTuple_Check(pycpumap)) {
+        tuple_size = PyTuple_Size(pycpumap);
+        if (tuple_size == -1)
+            return ret;
+    } else {
+       PyErr_SetString(PyExc_TypeError, "Unexpected type, tuple is required");
+       return ret;
+    }
+
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
-    truth = PyBool_FromLong(1);
-    for (i = 0 ; i < VIR_NODEINFO_MAXCPUS(nodeinfo) ; i++) {
+    for (i = 0; i < tuple_size; i++) {
         PyObject *flag = PyTuple_GetItem(pycpumap, i);
-        if (flag == truth)
+        bool b;
+
+        if (!flag || libvirt_boolUnwrap(flag, &b) < 0)
+            goto cleanup;
+
+        if (b)
             VIR_USE_CPU(cpumap, i);
         else
             VIR_UNUSE_CPU(cpumap, i);
     }
 
+    for (; i < VIR_NODEINFO_MAXCPUS(nodeinfo); i++)
+        VIR_UNUSE_CPU(cpumap, i);
+
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainPinVcpu(domain, vcpu, cpumap, cpumaplen);
     LIBVIRT_END_ALLOW_THREADS;
-    Py_DECREF(truth);
+
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
+    }
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
     VIR_FREE(cpumap);
-
-    if (i_retval < 0)
-        return VIR_PY_INT_FAIL;
-
-    return VIR_PY_INT_SUCCESS;
+    return ret;
 }
 
 static PyObject *
 libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
-                              PyObject *args) {
+                              PyObject *args)
+{
     virDomainPtr domain;
-    PyObject *pyobj_domain, *pycpumap, *truth;
+    PyObject *pyobj_domain, *pycpumap;
+    PyObject *ret = NULL;
     virNodeInfo nodeinfo;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu;
+    int cpumaplen, i, vcpu, tuple_size;
     unsigned int flags;
     int i_retval;
 
@@ -1490,29 +1551,47 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_INT_FAIL;
 
+    if (PyTuple_Check(pycpumap)) {
+        tuple_size = PyTuple_Size(pycpumap);
+        if (tuple_size == -1)
+            return ret;
+    } else {
+       PyErr_SetString(PyExc_TypeError, "Unexpected type, tuple is required");
+       return ret;
+    }
+
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
-        return VIR_PY_INT_FAIL;
+        return PyErr_NoMemory();
 
-    truth = PyBool_FromLong(1);
-    for (i = 0 ; i < VIR_NODEINFO_MAXCPUS(nodeinfo) ; i++) {
+    for (i = 0; i < tuple_size; i++) {
         PyObject *flag = PyTuple_GetItem(pycpumap, i);
-        if (flag == truth)
+        bool b;
+
+        if (!flag || libvirt_boolUnwrap(flag, &b) < 0)
+            goto cleanup;
+
+        if (b)
             VIR_USE_CPU(cpumap, i);
         else
             VIR_UNUSE_CPU(cpumap, i);
     }
 
+    for (; i < VIR_NODEINFO_MAXCPUS(nodeinfo); i++)
+        VIR_UNUSE_CPU(cpumap, i);
+
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainPinVcpuFlags(domain, vcpu, cpumap, cpumaplen, flags);
     LIBVIRT_END_ALLOW_THREADS;
-    Py_DECREF(truth);
+    if (i_retval < 0) {
+        ret = VIR_PY_INT_FAIL;
+        goto cleanup;
+    }
+    ret = VIR_PY_INT_SUCCESS;
+
+cleanup:
     VIR_FREE(cpumap);
-
-    if (i_retval < 0)
-        return VIR_PY_INT_FAIL;
-
-    return VIR_PY_INT_SUCCESS;
+    return ret;
 }
 
 static PyObject *
