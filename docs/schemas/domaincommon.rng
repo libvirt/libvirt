@@ -1188,10 +1188,31 @@
       <ref name="genericName"/>
     </attribute>
     <optional>
-      <attribute name="type">
-        <ref name="genericName"/>
+      <attribute name='type'>
+        <choice>
+          <ref name='diskFormat'/>
+          <value>aio</value> <!-- back-compat for 'raw' -->
+        </choice>
       </attribute>
     </optional>
+  </define>
+  <define name='diskFormat'>
+    <choice>
+      <value>raw</value>
+      <value>dir</value>
+      <value>bochs</value>
+      <value>cloop</value>
+      <value>cow</value>
+      <value>dmg</value>
+      <value>iso</value>
+      <value>qcow</value>
+      <value>qcow2</value>
+      <value>qed</value>
+      <value>vmdk</value>
+      <value>vpc</value>
+      <value>fat</value>
+      <value>vhd</value>
+    </choice>
   </define>
   <define name="driverCache">
     <attribute name="cache">
@@ -3356,7 +3377,7 @@
       </attribute>
       <optional>
         <attribute name='format'>
-          <ref name="genericName"/>
+          <ref name='diskFormat'/>
         </attribute>
       </optional>
       <optional>
