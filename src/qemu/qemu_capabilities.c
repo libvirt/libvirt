@@ -189,6 +189,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "seamless-migration",
               "block-commit",
               "vnc",
+
+              "drive-mirror", /* 115 */
     );
 
 struct _qemuCaps {
@@ -1889,6 +1891,8 @@ qemuCapsProbeQMPCommands(qemuCapsPtr caps,
             qemuCapsSet(caps, QEMU_CAPS_BLOCK_COMMIT);
         else if (STREQ(name, "query-vnc"))
             qemuCapsSet(caps, QEMU_CAPS_VNC);
+        else if (STREQ(name, "drive-mirror"))
+            qemuCapsSet(caps, QEMU_CAPS_DRIVE_MIRROR);
         VIR_FREE(name);
     }
     VIR_FREE(commands);

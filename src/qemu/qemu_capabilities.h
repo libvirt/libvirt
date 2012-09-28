@@ -152,6 +152,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_SEAMLESS_MIGRATION = 112, /* seamless-migration for SPICE */
     QEMU_CAPS_BLOCK_COMMIT       = 113, /* block-commit */
     QEMU_CAPS_VNC                = 114, /* Is -vnc available? */
+    QEMU_CAPS_DRIVE_MIRROR       = 115, /* drive-mirror monitor command */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
