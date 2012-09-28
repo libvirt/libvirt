@@ -283,7 +283,7 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
             break;
 
         if ((errno == ENOENT || errno == ECONNREFUSED) &&
-            virProcessKill(cpid, 0) == 0) {
+            cpid && virProcessKill(cpid, 0) == 0) {
             /* ENOENT       : Socket may not have shown up yet
              * ECONNREFUSED : Leftover socket hasn't been removed yet */
             continue;
@@ -788,7 +788,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         hasSendFD = true;
-        if ((fd = qemuMonitorOpenUnix(config->data.nix.path, vm->pid)) < 0)
+        if ((fd = qemuMonitorOpenUnix(config->data.nix.path, vm ? vm->pid : 0)) < 0)
             return NULL;
         break;
 
