@@ -1455,9 +1455,8 @@ fi
 if test "$with_selinux" = "yes"; then
   AC_MSG_CHECKING([SELinux mount point])
   if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
-    if test -d /sys/fs/selinux ; then
-      SELINUX_MOUNT=/sys/fs/selinux
-    else
+    SELINUX_MOUNT=/sys/fs/selinux
+    if ! test -d ${SELINUX_MOUNT} && test -d /selinux ; then
       SELINUX_MOUNT=/selinux
     fi
   else
