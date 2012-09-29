@@ -330,6 +330,7 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
     }
 
     curl_easy_setopt(curl->handle, CURLOPT_USERAGENT, "libvirt-esx");
+    curl_easy_setopt(curl->handle, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(curl->handle, CURLOPT_HEADER, 0);
     curl_easy_setopt(curl->handle, CURLOPT_FOLLOWLOCATION, 0);
     curl_easy_setopt(curl->handle, CURLOPT_SSL_VERIFYPEER,
