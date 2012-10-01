@@ -50,6 +50,12 @@
 #include "virtime.h"
 #include "intprops.h"
 
+/* Journald output is only supported on Linux new enough to expose
+ * htole64.  */
+#if HAVE_SYSLOG_H && defined(__linux__) && HAVE_DECL_HTOLE64
+# define USE_JOURNALD 1
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_ENUM_DECL(virLogSource)
@@ -1029,7 +1035,7 @@ virLogAddOutputToSyslog(virLogPriority priority,
 }
 
 
-# ifdef __linux__
+# if USE_JOURNALD
 #  define IOVEC_SET_STRING(iov, str)         \
     do {                                     \
         struct iovec *_i = &(iov);           \
@@ -1197,7 +1203,7 @@ static int virLogAddOutputToJournald(int priority)
     }
     return 0;
 }
-# endif /* __linux__ */
+# endif /* USE_JOURNALD */
 #endif /* HAVE_SYSLOG_H */
 
 #define IS_SPACE(cur)                                                   \
@@ -1294,12 +1300,10 @@ virLogParseOutputs(const char *outputs)
             VIR_FREE(abspath);
         } else if (STREQLEN(cur, "journald", 8)) {
             cur += 8;
-#if HAVE_SYSLOG_H
-# ifdef __linux__
+#if USE_JOURNALD
             if (virLogAddOutputToJournald(prio) == 0)
                 count++;
-# endif /* __linux__ */
-#endif /* HAVE_SYSLOG_H */
+#endif /* USE_JOURNALD */
         } else {
             goto cleanup;
         }

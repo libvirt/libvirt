@@ -187,6 +187,8 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
   sys/un.h sys/syscall.h netinet/tcp.h ifaddrs.h libtasn1.h])
+dnl Check whether endian provides handy macros.
+AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 
 dnl We need to decide at configure time if libvirt will use real atomic
 dnl operations ("lock free") or emulated ones with a mutex.
