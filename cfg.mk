@@ -700,9 +700,16 @@ ifeq (0,$(MAKELEVEL))
   _clean_requested = $(filter %clean,$(MAKECMDGOALS))
   ifeq (1,$(_update_required)$(_clean_requested))
     $(info INFO: gnulib update required; running ./autogen.sh first)
-Makefile: _autogen
+maint.mk Makefile: _autogen
   endif
 endif
+
+# It is necessary to call autogen any time gnulib changes.  Autogen
+# reruns configure, then we regenerate all Makefiles at once.
+.PHONY: _autogen
+_autogen:
+	$(srcdir)/autogen.sh
+	./config.status
 
 # Give credit where due:
 # Ensure that each commit author email address (possibly mapped via
@@ -717,13 +724,6 @@ sc_check_author_list:
 	test $$fail = 1							\
 	  && echo '$(ME): committer(s) not listed in AUTHORS' >&2;	\
 	test $$fail = 0
-
-# It is necessary to call autogen any time gnulib changes.  Autogen
-# reruns configure, then we regenerate all Makefiles at once.
-.PHONY: _autogen
-_autogen:
-	$(srcdir)/autogen.sh
-	./config.status
 
 # regenerate HACKING as part of the syntax-check
 syntax-check: $(top_srcdir)/HACKING

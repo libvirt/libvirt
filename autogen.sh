@@ -63,11 +63,22 @@ bootstrap_hash()
 if test -d .git; then
     curr_status=.git-module-status
     t=$(bootstrap_hash; git diff .gnulib)
+    case $t:${CLEAN_SUBMODULE+set} in
+        *:set) ;;
+        *-dirty*)
+            echo "error: gnulib submodule is dirty, please investigate" 2>&1
+            echo "set env-var CLEAN_SUBMODULE to discard gnulib changes" 2>&1
+            exit 1 ;;
+    esac
     if test "$t" = "$(cat $curr_status 2>/dev/null)" \
         && test -f "po/Makevars"; then
         # good, it's up to date, all we need is autoreconf
         autoreconf -if
     else
+        if test ${CLEAN_SUBMODULE+set}; then
+            echo cleaning up submodules...
+            git submodule foreach 'git clean -dfqx && git reset --hard'
+        fi
         echo running bootstrap$no_git...
         ./bootstrap$no_git --bootstrap-sync && bootstrap_hash > $curr_status \
             || { echo "Failed to bootstrap, please investigate."; exit 1; }
