@@ -10375,6 +10375,7 @@ qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
     return true;
 }
 
+/* this function expects the driver lock to be held by the caller */
 static int
 qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
                            virDomainObjPtr vm) {
@@ -10393,9 +10394,9 @@ qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
         return -1;
     }
 
-    qemuDomainObjEnterAgent(driver, vm);
+    qemuDomainObjEnterAgentWithDriver(driver, vm);
     freezed = qemuAgentFSFreeze(priv->agent);
-    qemuDomainObjExitAgent(driver, vm);
+    qemuDomainObjExitAgentWithDriver(driver, vm);
 
     return freezed;
 }
