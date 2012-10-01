@@ -42,4 +42,10 @@ int virNetDevOpenvswitchAddPort(const char *brname,
 int virNetDevOpenvswitchRemovePort(const char *brname, const char *ifname)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
 #endif /* __VIR_NETDEV_OPENVSWITCH_H__ */

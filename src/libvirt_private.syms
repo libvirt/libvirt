@@ -1500,7 +1500,9 @@ virNetDevMacVLanVPortProfileRegisterCallback;
 
 # virnetdevopenvswitch.h
 virNetDevOpenvswitchAddPort;
+virNetDevOpenvswitchGetMigrateData;
 virNetDevOpenvswitchRemovePort;
+virNetDevOpenvswitchSetMigrateData;
 
 
 # virnetdevtap.h

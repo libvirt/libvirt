@@ -173,9 +173,74 @@ int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const ch
                              _("Unable to delete port %s from OVS"), ifname);
         goto cleanup;
     }
-    ret = 0;
 
-    cleanup:
-        virCommandFree(cmd);
-        return ret;
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
+/**
+ * virNetDevOpenvswitchGetMigrateData:
+ * @migrate: a pointer to store the data into, allocated by this function
+ * @ifname: name of the interface for which data is being migrated
+ *
+ * Allocates data to be migrated specific to Open vSwitch
+ *
+ * Returns 0 in case of success or -1 in case of failure
+ */
+int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
+{
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "get", "Interface",
+                               ifname, "external_ids:PortData", NULL);
+
+    virCommandSetOutputBuffer(cmd, migrate);
+
+    /* Run the command */
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to run command to get OVS port data for "
+                             "interface %s"), ifname);
+        goto cleanup;
+    }
+
+    /* Wipeout the newline */
+    (*migrate)[strlen(*migrate) - 1] = '\0';
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+/**
+ * virNetDevOpenvswitchSetMigrateData:
+ * @migrate: the data which was transferred during migration
+ * @ifname: the name of the interface the data is associated with
+ *
+ * Repopulates OVS per-port data on destination host
+ *
+ * Returns 0 in case of success or -1 in case of failure
+ */
+int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
+{
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "set",
+                               "Interface", ifname, NULL);
+    virCommandAddArgFormat(cmd, "external_ids:PortData=%s", migrate);
+
+    /* Run the command */
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to run command to set OVS port data for "
+                             "interface %s"), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
 }
