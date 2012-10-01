@@ -1645,7 +1645,7 @@ static bool lxcCgroupControllerActive(virLXCDriverPtr driver,
     if (driver->cgroupControllers & (1 << controller))
         return true;
 #endif
-    return false;
+    return true;
 }
 
 
