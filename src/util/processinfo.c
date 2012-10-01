@@ -161,7 +161,7 @@ realloc:
 
     for (i = 0 ; i < maxcpu ; i++)
         if (CPU_ISSET(i, &mask))
-            VIR_USE_CPU(map, i);
+            ignore_value(virBitmapSetBit(*map, i));
 # endif
 
     return 0;
