@@ -332,7 +332,16 @@ qemuMigrationCookieNetworkAlloc(struct qemud_driver *driver ATTRIBUTE_UNUSED,
             case VIR_NETDEV_VPORT_PROFILE_NONE:
             case VIR_NETDEV_VPORT_PROFILE_8021QBG:
             case VIR_NETDEV_VPORT_PROFILE_8021QBH:
+               break;
             case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+                if (virNetDevOpenvswitchGetMigrateData(&mig->net[i].portdata,
+                                                       netptr->ifname) != 0) {
+                        virReportSystemError(VIR_ERR_INTERNAL_ERROR,
+                                             _("Unable to run command to get OVS port data for "
+                                             "interface %s"), netptr->ifname);
+                        goto error;
+                }
+                break;
             default:
                 break;
             }
@@ -342,6 +351,7 @@ qemuMigrationCookieNetworkAlloc(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
 no_memory:
     virReportOOMError();
+error:
     qemuMigrationCookieNetworkFree(mig);
     return NULL;
 }
@@ -1296,8 +1306,8 @@ qemuDomainMigrateOPDRelocate(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                              virDomainObjPtr vm,
                              qemuMigrationCookiePtr cookie)
 {
-    virDomainNetDefPtr netptr ATTRIBUTE_UNUSED;
-    int ret = 0;
+    virDomainNetDefPtr netptr;
+    int ret = -1;
     int i;
 
     for (i = 0; i < cookie->network->nnets; i++) {
@@ -1307,12 +1317,23 @@ qemuDomainMigrateOPDRelocate(struct qemud_driver *driver ATTRIBUTE_UNUSED,
         case VIR_NETDEV_VPORT_PROFILE_NONE:
         case VIR_NETDEV_VPORT_PROFILE_8021QBG:
         case VIR_NETDEV_VPORT_PROFILE_8021QBH:
+           break;
         case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
+            if (virNetDevOpenvswitchSetMigrateData(cookie->network->net[i].portdata,
+                                                   netptr->ifname) != 0) {
+                virReportSystemError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Unable to run command to set OVS port data for "
+                                     "interface %s"), netptr->ifname);
+                goto cleanup;
+            }
+            break;
         default:
             break;
         }
     }
 
+    ret = 0;
+cleanup:
     return ret;
 }
 
