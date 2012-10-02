@@ -10681,17 +10681,15 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
-            if (!disk->driverType) {
-                if (!(disk->driverType = strdup("qcow2"))) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            } else if (STRNEQ(disk->driverType, "qcow2") &&
-                       STRNEQ(disk->driverType, "qed")) {
+            if (!disk->format) {
+                disk->format = VIR_STORAGE_FILE_QCOW2;
+            } else if (disk->format != VIR_STORAGE_FILE_QCOW2 &&
+                       disk->format != VIR_STORAGE_FILE_QED) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("external snapshot format for disk %s "
                                  "is unsupported: %s"),
-                               disk->name, disk->driverType);
+                               disk->name,
+                               virStorageFileFormatTypeToString(disk->format));
                 goto cleanup;
             }
             if (stat(disk->file, &st) < 0) {
@@ -10761,7 +10759,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
     char *source = NULL;
-    int format = VIR_STORAGE_FILE_NONE;
+    int format = snap->format;
+    const char *formatStr = NULL;
     char *persistSource = NULL;
     int ret = -1;
     int fd = -1;
@@ -10773,15 +10772,6 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected code path"));
         return -1;
-    }
-
-    if (snap->driverType) {
-        format = virStorageFileFormatTypeFromString(snap->driverType);
-        if (format <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown driver type %s"), snap->driverType);
-            goto cleanup;
-        }
     }
 
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
@@ -10829,8 +10819,10 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     disk->format = origdriver;
 
     /* create the actual snapshot */
+    if (snap->format)
+        formatStr = virStorageFileFormatTypeToString(snap->format);
     ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
-                                  snap->driverType, reuse);
+                                  formatStr, reuse);
     virDomainAuditDisk(vm, disk->src, source, "snapshot", ret >= 0);
     if (ret < 0)
         goto cleanup;

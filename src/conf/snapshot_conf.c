@@ -82,7 +82,6 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
 {
     VIR_FREE(disk->name);
     VIR_FREE(disk->file);
-    VIR_FREE(disk->driverType);
 }
 
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
@@ -134,15 +133,24 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
             if (!def->file &&
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
                 def->file = virXMLPropString(cur, "file");
-            } else if (!def->driverType &&
+            } else if (!def->format &&
                        xmlStrEqual(cur->name, BAD_CAST "driver")) {
-                def->driverType = virXMLPropString(cur, "type");
+                char *driver = virXMLPropString(cur, "type");
+                def->format = virStorageFileFormatTypeFromString(driver);
+                if (def->format <= 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("unknown disk snapshot driver '%s'"),
+                                   driver);
+                    VIR_FREE(driver);
+                    goto cleanup;
+                }
+                VIR_FREE(driver);
             }
         }
         cur = cur->next;
     }
 
-    if (!def->snapshot && (def->file || def->driverType))
+    if (!def->snapshot && (def->file || def->format))
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
     ret = 0;
@@ -536,11 +544,12 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
             if (disk->snapshot)
                 virBufferAsprintf(&buf, " snapshot='%s'",
                                   virDomainSnapshotLocationTypeToString(disk->snapshot));
-            if (disk->file || disk->driverType) {
+            if (disk->file || disk->format > 0) {
                 virBufferAddLit(&buf, ">\n");
-                if (disk->driverType)
+                if (disk->format > 0)
                     virBufferEscapeString(&buf, "      <driver type='%s'/>\n",
-                                          disk->driverType);
+                                          virStorageFileFormatTypeToString(
+                                              disk->format));
                 if (disk->file)
                     virBufferEscapeString(&buf, "      <source file='%s'/>\n",
                                           disk->file);
