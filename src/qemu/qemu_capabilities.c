@@ -2324,7 +2324,7 @@ cleanup:
         int rc;
 
         if ((rc = virPidFileReadPath(pidfile, &pid)) < 0) {
-            VIR_DEBUG("Failed to read pidfile %s: %d",
+            VIR_DEBUG("Failed to read pidfile %s: %s",
                       pidfile, virStrerror(-rc, ebuf, sizeof(ebuf)));
         } else {
             VIR_DEBUG("Killing QMP caps process %lld", (long long) pid);
