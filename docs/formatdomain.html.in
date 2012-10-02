@@ -4126,12 +4126,22 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>label</code></dt>
       <dd>If static labelling is used, this must specify the full
         security label to assign to the virtual domain. The format
-        of the content depends on the security driver in use
+        of the content depends on the security driver in use:
+        <ul>
+          <li>SELinux: a SELinux context.</li>
+          <li>AppArmor: an AppArmor profile.</li>
+          <li>
+            DAC: owner and group separated by colon. They can be
+            defined both as user/group names or uid/gid. The driver will first
+            try to parse these values as names, but a leading plus sign can
+            used to force the driver to parse them as uid or gid.
+          </li>
+        </ul>
       </dd>
       <dt><code>baselabel</code></dt>
       <dd>If dynamic labelling is used, this can optionally be
         used to specify the base security label. The format
-        of the content depends on the security driver in use
+        of the content depends on the security driver in use.
       </dd>
       <dt><code>imagelabel</code></dt>
       <dd>This is an output only element, which shows the
