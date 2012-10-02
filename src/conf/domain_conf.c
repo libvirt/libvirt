@@ -2701,6 +2701,20 @@ virDomainHostdevSubsysUsbDefParseXML(const xmlNodePtr node,
     int ret = -1;
     int got_product, got_vendor;
     xmlNodePtr cur;
+    char *startupPolicy = NULL;
+
+    if ((startupPolicy = virXMLPropString(node, "startupPolicy"))) {
+        def->startupPolicy =
+            virDomainStartupPolicyTypeFromString(startupPolicy);
+        if (def->startupPolicy <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Unknown startup policy '%s'"),
+                           startupPolicy);
+            VIR_FREE(startupPolicy);
+            goto out;
+        }
+        VIR_FREE(startupPolicy);
+    }
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized*/
@@ -2964,6 +2978,15 @@ virDomainHostdevPartsParse(xmlNodePtr node,
                        _("Missing <source> element in hostdev device"));
         goto error;
     }
+
+    if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+        virXPathBoolean("boolean(./source/@startupPolicy)", ctxt)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting startupPolicy is only allowed for USB"
+                         " devices"));
+        goto error;
+    }
+
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (virDomainHostdevSubsysPciDefParseXML(sourcenode, def, flags) < 0)
@@ -12063,7 +12086,14 @@ virDomainHostdevSourceFormat(virBufferPtr buf,
                              unsigned int flags,
                              bool includeTypeInAddr)
 {
-    virBufferAddLit(buf, "<source>\n");
+    virBufferAddLit(buf, "<source");
+    if (def->startupPolicy) {
+        const char *policy;
+        policy = virDomainStartupPolicyTypeToString(def->startupPolicy);
+        virBufferAsprintf(buf, " startupPolicy='%s'", policy);
+    }
+    virBufferAddLit(buf, ">\n");
+
     virBufferAdjustIndent(buf, 2);
     switch (def->source.subsys.type)
     {

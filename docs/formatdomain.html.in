@@ -2081,7 +2081,7 @@
   ...
   &lt;devices&gt;
     &lt;hostdev mode='subsystem' type='usb'&gt;
-      &lt;source&gt;
+      &lt;source startupPolicy='optional'&gt;
         &lt;vendor id='0x1234'/&gt;
         &lt;product id='0xbeef'/&gt;
       &lt;/source&gt;
@@ -2125,9 +2125,29 @@
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the
       <code>vendor</code> and <code>product</code> elements or by the device's
-      address on the hosts using the <code>address</code> element.
-      PCI devices on the other hand can only be described by their
-      <code>address</code></dd>
+      address on the hosts using the <code>address</code> element. PCI devices
+      on the other hand can only be described by their <code>address</code>.
+
+      <span class="since">Since 0.10.3</span>, the <code>source</code> element
+      of USB devices may contain <code>startupPolicy</code> attribute which can
+      be used to define policy what to do if the specified host USB device is
+      not found. The attribute accepts the following values:
+        <table class="top_table">
+          <tr>
+            <td> mandatory </td>
+            <td> fail if missing for any reason (the default) </td>
+          </tr>
+          <tr>
+            <td> requisite </td>
+            <td> fail if missing on boot up,
+                 drop if missing on migrate/restore/revert </td>
+          </tr>
+          <tr>
+            <td> optional </td>
+            <td> drop if missing at any start attempt </td>
+          </tr>
+        </table>
+      </dd>
       <dt><code>vendor</code>, <code>product</code></dt>
       <dd>The <code>vendor</code> and <code>product</code> elements each have an
       <code>id</code> attribute that specifies the USB vendor and product id.
