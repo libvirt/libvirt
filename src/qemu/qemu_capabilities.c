@@ -29,6 +29,8 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "virfile.h"
+#include "virpidfile.h"
+#include "virprocess.h"
 #include "nodeinfo.h"
 #include "cpu/cpu.h"
 #include "domain_conf.h"
@@ -214,6 +216,7 @@ struct _qemuCapsCache {
     virMutex lock;
     virHashTablePtr binaries;
     char *libDir;
+    char *runDir;
 };
 
 
@@ -2180,7 +2183,8 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
 
 static int
 qemuCapsInitQMP(qemuCapsPtr caps,
-                const char *libDir)
+                const char *libDir,
+                const char *runDir)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -2191,12 +2195,24 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     virDomainChrSourceDef config;
     char *monarg = NULL;
     char *monpath = NULL;
+    char *pidfile = NULL;
 
+    /* the ".sock" sufix is important to avoid a possible clash with a qemu
+     * domain called "capabilities"
+     */
     if (virAsprintf(&monpath, "%s/%s", libDir, "capabilities.monitor.sock") < 0) {
         virReportOOMError();
         goto cleanup;
     }
     if (virAsprintf(&monarg, "unix:%s,server,nowait", monpath) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* ".pidfile" suffix is used rather than ".pid" to avoid a possible clash
+     * with a qemu domain called "capabilities"
+     */
+    if (virAsprintf(&pidfile, "%s/%s", runDir, "capabilities.pidfile") < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -2215,6 +2231,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
                                "-nographic",
                                "-M", "none",
                                "-qmp", monarg,
+                               "-pidfile", pidfile,
                                "-daemonize",
                                NULL);
     virCommandAddEnvPassCommon(cmd);
@@ -2300,12 +2317,32 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(monarg);
     VIR_FREE(monpath);
+
+    if (pidfile) {
+        char ebuf[1024];
+        pid_t pid;
+        int rc;
+
+        if ((rc = virPidFileReadPath(pidfile, &pid)) < 0) {
+            VIR_DEBUG("Failed to read pidfile %s: %d",
+                      pidfile, virStrerror(-rc, ebuf, sizeof(ebuf)));
+        } else {
+            VIR_DEBUG("Killing QMP caps process %lld", (long long) pid);
+            if (virProcessKill(pid, SIGKILL) < 0 && errno != ESRCH)
+                VIR_ERROR(_("Failed to kill process %lld: %s"),
+                          (long long) pid,
+                          virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+        unlink(pidfile);
+        VIR_FREE(pidfile);
+    }
     return ret;
 }
 
 
 qemuCapsPtr qemuCapsNewForBinary(const char *binary,
-                                 const char *libDir)
+                                 const char *libDir,
+                                 const char *runDir)
 {
     qemuCapsPtr caps = qemuCapsNew();
     struct stat sb;
@@ -2333,7 +2370,7 @@ qemuCapsPtr qemuCapsNewForBinary(const char *binary,
         goto error;
     }
 
-    if ((rv = qemuCapsInitQMP(caps, libDir)) < 0)
+    if ((rv = qemuCapsInitQMP(caps, libDir, runDir)) < 0)
         goto error;
 
     if (!caps->usedQMP &&
@@ -2373,7 +2410,7 @@ qemuCapsHashDataFree(void *payload, const void *key ATTRIBUTE_UNUSED)
 
 
 qemuCapsCachePtr
-qemuCapsCacheNew(const char *libDir)
+qemuCapsCacheNew(const char *libDir, const char *runDir)
 {
     qemuCapsCachePtr cache;
 
@@ -2391,7 +2428,8 @@ qemuCapsCacheNew(const char *libDir)
 
     if (!(cache->binaries = virHashCreate(10, qemuCapsHashDataFree)))
         goto error;
-    if (!(cache->libDir = strdup(libDir))) {
+    if (!(cache->libDir = strdup(libDir)) ||
+        !(cache->runDir = strdup(runDir))) {
         virReportOOMError();
         goto error;
     }
@@ -2420,7 +2458,7 @@ qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary)
     if (!ret) {
         VIR_DEBUG("Creating capabilities for %s",
                   binary);
-        ret = qemuCapsNewForBinary(binary, cache->libDir);
+        ret = qemuCapsNewForBinary(binary, cache->libDir, cache->runDir);
         if (ret) {
             VIR_DEBUG("Caching capabilities %p for %s",
                       ret, binary);
@@ -2459,6 +2497,7 @@ qemuCapsCacheFree(qemuCapsCachePtr cache)
         return;
 
     VIR_FREE(cache->libDir);
+    VIR_FREE(cache->runDir);
     virHashFree(cache->binaries);
     virMutexDestroy(&cache->lock);
     VIR_FREE(cache);

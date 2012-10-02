@@ -767,7 +767,9 @@ qemudStartup(int privileged) {
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
-    if ((qemu_driver->capsCache = qemuCapsCacheNew(qemu_driver->libDir)) == NULL)
+    qemu_driver->capsCache = qemuCapsCacheNew(qemu_driver->libDir,
+                                              qemu_driver->stateDir);
+    if (!qemu_driver->capsCache)
         goto error;
 
     if ((qemu_driver->caps = qemuCreateCapabilities(qemu_driver)) == NULL)
