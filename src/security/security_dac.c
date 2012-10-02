@@ -68,26 +68,79 @@ void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
 static
 int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
 {
+    int rc = -1;
     unsigned int theuid;
     unsigned int thegid;
-    char *endptr = NULL;
+    char *tmp_label = NULL;
+    char *sep = NULL;
+    char *owner = NULL;
+    char *group = NULL;
 
-    if (label == NULL)
-        return -1;
-
-    if (virStrToLong_ui(label, &endptr, 10, &theuid) ||
-        endptr == NULL || *endptr != ':') {
-        return -1;
+    tmp_label = strdup(label);
+    if (tmp_label == NULL) {
+        virReportOOMError();
+        goto cleanup;
     }
 
-    if (virStrToLong_ui(endptr + 1, NULL, 10, &thegid))
-        return -1;
+    /* Split label */
+    sep = strchr(tmp_label, ':');
+    if (sep == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Missing separator ':' in DAC label \"%s\""),
+                       label);
+        goto cleanup;
+    }
+    *sep = '\0';
+    owner = tmp_label;
+    group = sep + 1;
+
+    /* Parse owner */
+    if (*owner == '+') {
+        if (virStrToLong_ui(++owner, NULL, 10, &theuid) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Invalid uid \"%s\" in DAC label \"%s\""),
+                           owner, label);
+            goto cleanup;
+        }
+    } else {
+        if (virGetUserID(owner, &theuid) < 0 &&
+            virStrToLong_ui(owner, NULL, 10, &theuid) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Invalid owner \"%s\" in DAC label \"%s\""),
+                           owner, label);
+            goto cleanup;
+        }
+    }
+
+    /* Parse group */
+    if (*group == '+') {
+        if (virStrToLong_ui(++group, NULL, 10, &thegid) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Invalid gid \"%s\" in DAC label \"%s\""),
+                           group, label);
+            goto cleanup;
+        }
+    } else {
+        if (virGetGroupID(group, &thegid) < 0 &&
+            virStrToLong_ui(group, NULL, 10, &thegid) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Invalid group \"%s\" in DAC label \"%s\""),
+                           group, label);
+            goto cleanup;
+        }
+    }
 
     if (uidPtr)
         *uidPtr = theuid;
     if (gidPtr)
         *gidPtr = thegid;
-    return 0;
+
+    rc = 0;
+
+cleanup:
+    VIR_FREE(tmp_label);
+
+    return rc;
 }
 
 /* returns 1 if label isn't found, 0 on success, -1 on error */
@@ -107,12 +160,8 @@ int virSecurityDACParseIds(virDomainDefPtr def, uid_t *uidPtr, gid_t *gidPtr)
         return 1;
     }
 
-    if (seclabel->label && parseIds(seclabel->label, &uid, &gid)) {
-       virReportError(VIR_ERR_INVALID_ARG,
-                       _("failed to parse DAC seclabel '%s' for domain '%s'"),
-                       seclabel->label, def->name);
+    if (parseIds(seclabel->label, &uid, &gid) < 0)
         return -1;
-    }
 
     if (uidPtr)
         *uidPtr = uid;
@@ -172,13 +221,8 @@ int virSecurityDACParseImageIds(virDomainDefPtr def,
         return 1;
     }
 
-    if (seclabel->imagelabel
-        && parseIds(seclabel->imagelabel, &uid, &gid)) {
-       virReportError(VIR_ERR_INVALID_ARG,
-                       _("failed to parse DAC imagelabel '%s' for domain '%s'"),
-                       seclabel->imagelabel, def->name);
+    if (parseIds(seclabel->imagelabel, &uid, &gid) < 0)
         return -1;
-    }
 
     if (uidPtr)
         *uidPtr = uid;
