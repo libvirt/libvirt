@@ -60,6 +60,23 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
     dontwarn="$dontwarn -Wenum-compare"
 
+    # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
+    # which triggers spurious warnings for our usage
+    AC_CACHE_CHECK([whether gcc -Wformat allows NULL strings],
+      [lv_cv_gcc_wformat_null_works], [
+      save_CFLAGS=$CFLAGS
+      CFLAGS='-Wunknown-pragmas -Werror -Wformat'
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <stddef.h>
+        static __attribute__ ((__format__ (__printf__, 1, 2))) int
+        foo (const char *fmt, ...) { return !fmt; }
+      ]], [[
+        return foo(NULL);
+      ]])],
+      [lv_cv_gcc_wformat_null_works=yes],
+      [lv_cv_gcc_wformat_null_works=no])
+      CFLAGS=$save_CFLAGS])
+
     # Gnulib uses '#pragma GCC diagnostic push' to silence some
     # warnings, but older gcc doesn't support this.
     AC_CACHE_CHECK([whether pragma GCC diagnostic push works],
@@ -117,7 +134,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # ATTRIBUTE_FMT_PRINT, which causes -Wformat failure on our
     # intentional use of virReportError(code, NULL).
     gl_WARN_ADD([-Wno-format-nonliteral])
-    if test $lv_cv_gcc_pragma_push_works = no; then
+    if test $lv_cv_gcc_wformat_null_works = no; then
       gl_WARN_ADD([-Wno-format])
     fi
 
