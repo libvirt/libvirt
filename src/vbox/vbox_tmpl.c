@@ -72,6 +72,8 @@
 # include "vbox_CAPI_v4_0.h"
 #elif VBOX_API_VERSION == 4001
 # include "vbox_CAPI_v4_1.h"
+#elif VBOX_API_VERSION == 4002
+# include "vbox_CAPI_v4_2.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif
@@ -4183,9 +4185,12 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 continue;
             }
 
-# if VBOX_API_VERSION >= 4000
+# if VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
             data->vboxObj->vtbl->FindMedium(data->vboxObj, mediumFileUtf16,
                                             deviceType, &medium);
+# elif VBOX_API_VERSION >= 4002
+            data->vboxObj->vtbl->OpenMedium(data->vboxObj, mediumFileUtf16,
+                                            deviceType, accessMode, PR_FALSE, &medium);
 # endif
 
             if (!medium) {
@@ -4925,7 +4930,11 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         machine->vtbl->GetUSBController(machine, &USBController);
         if (USBController) {
             USBController->vtbl->SetEnabled(USBController, 1);
+#if VBOX_API_VERSION < 4002
             USBController->vtbl->SetEnabledEhci(USBController, 1);
+#else
+            USBController->vtbl->SetEnabledEHCI(USBController, 1);
+#endif
 
             for (i = 0; i < def->nhostdevs; i++) {
                 if (def->hostdevs[i]->mode ==
@@ -5030,10 +5039,18 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     vboxIID mchiid = VBOX_IID_INITIALIZER;
     virDomainDefPtr def         = NULL;
     PRUnichar *machineNameUtf16 = NULL;
-#if VBOX_API_VERSION >= 3002
+#if VBOX_API_VERSION >= 3002 && VBOX_API_VERSION < 4002
     PRBool override             = PR_FALSE;
 #endif
     nsresult rc;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+#if VBOX_API_VERSION >= 4002
+    const char *flagsUUIDPrefix = "UUID=";
+    const char *flagsForceOverwrite = "forceOverwrite=0";
+    const char *flagsSeparator = ",";
+    char createFlags[strlen(flagsUUIDPrefix) + VIR_UUID_STRING_BUFLEN + strlen(flagsSeparator) + strlen(flagsForceOverwrite) + 1];
+    PRUnichar *createFlagsUtf16 = NULL;
+#endif
 
     if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_VBOX,
@@ -5043,6 +5060,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     VBOX_UTF8_TO_UTF16(def->name, &machineNameUtf16);
     vboxIIDFromUUID(&iid, def->uuid);
+    virUUIDFormat(def->uuid, uuidstr);
+
 #if VBOX_API_VERSION < 3002
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             machineNameUtf16,
@@ -5058,7 +5077,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             iid.value,
                                             override,
                                             &machine);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             NULL,
                                             machineNameUtf16,
@@ -5066,7 +5085,23 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                             iid.value,
                                             override,
                                             &machine);
-#endif /* VBOX_API_VERSION >= 4000 */
+#else /* VBOX_API_VERSION >= 4002 */
+    snprintf(createFlags, sizeof(createFlags), "%s%s%s%s",
+             flagsUUIDPrefix,
+             uuidstr,
+             flagsSeparator,
+             flagsForceOverwrite
+            );
+    VBOX_UTF8_TO_UTF16(createFlags, &createFlagsUtf16);
+    rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
+                                            NULL,
+                                            machineNameUtf16,
+                                            0,
+                                            nsnull,
+                                            nsnull,
+                                            createFlagsUtf16,
+                                            &machine);
+#endif /* VBOX_API_VERSION >= 4002 */
     VBOX_UTF16_FREE(machineNameUtf16);
 
     if (NS_FAILED(rc)) {
@@ -7850,15 +7885,26 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
              * IP and enables the interface so even if the dhcpserver is not
              * started the interface is still up and running
              */
+#if VBOX_API_VERSION < 4002
             networkInterface->vtbl->EnableStaticIpConfig(networkInterface,
                                                          ipAddressUtf16,
                                                          networkMaskUtf16);
+#else
+            networkInterface->vtbl->EnableStaticIPConfig(networkInterface,
+                                                         ipAddressUtf16,
+                                                         networkMaskUtf16);
+#endif
 
             VBOX_UTF16_FREE(ipAddressUtf16);
             VBOX_UTF16_FREE(networkMaskUtf16);
         } else {
+#if VBOX_API_VERSION < 4002
             networkInterface->vtbl->EnableDynamicIpConfig(networkInterface);
             networkInterface->vtbl->DhcpRediscover(networkInterface);
+#else
+            networkInterface->vtbl->EnableDynamicIPConfig(networkInterface);
+            networkInterface->vtbl->DHCPRediscover(networkInterface);
+#endif
         }
 
         rc = networkInterface->vtbl->GetId(networkInterface, &vboxnetiid.value);
@@ -8456,9 +8502,13 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
     vboxIIDFromUUID(&hddIID, uuid);
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
@@ -8513,9 +8563,13 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
 
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddPathUtf16, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddPathUtf16,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddPathUtf16,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
@@ -8689,9 +8743,13 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     vboxIIDFromUUID(&hddIID, uuid);
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
@@ -8857,9 +8915,13 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     vboxIIDFromUUID(&hddIID, uuid);
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
@@ -8927,9 +8989,13 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     vboxIIDFromUUID(&hddIID, uuid);
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
@@ -9032,9 +9098,13 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     vboxIIDFromUUID(&hddIID, uuid);
 #if VBOX_API_VERSION < 4000
     rc = data->vboxObj->vtbl->GetHardDisk(data->vboxObj, hddIID.value, &hardDisk);
-#else /* VBOX_API_VERSION >= 4000 */
+#elif VBOX_API_VERSION >= 4000 && VBOX_API_VERSION < 4002
     rc = data->vboxObj->vtbl->FindMedium(data->vboxObj, hddIID.value,
                                          DeviceType_HardDisk, &hardDisk);
+#else
+    rc = data->vboxObj->vtbl->OpenMedium(data->vboxObj, hddIID.value,
+                                         DeviceType_HardDisk, AccessMode_ReadWrite,
+                                         PR_FALSE, &hardDisk);
 #endif /* VBOX_API_VERSION >= 4000 */
     if (NS_SUCCEEDED(rc)) {
         PRUint32 hddstate;
