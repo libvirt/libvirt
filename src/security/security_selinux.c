@@ -1101,9 +1101,13 @@ virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device);
+        usbDevice *usb;
 
+        if (dev->missing)
+            return 0;
+
+        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
+                           dev->source.subsys.u.usb.device);
         if (!usb)
             goto done;
 
@@ -1174,9 +1178,13 @@ virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUT
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device);
+        usbDevice *usb;
 
+        if (dev->missing)
+            return 0;
+
+        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
+                           dev->source.subsys.u.usb.device);
         if (!usb)
             goto done;
 

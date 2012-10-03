@@ -186,76 +186,117 @@ cleanup:
     return ret;
 }
 
-usbDeviceList *
-usbFindDeviceByVendor(unsigned int vendor, unsigned product)
+int
+usbFindDeviceByVendor(unsigned int vendor,
+                      unsigned product,
+                      bool mandatory,
+                      usbDeviceList **devices)
 {
-
     usbDeviceList *list;
+    int count;
+
     if (!(list = usbDeviceSearch(vendor, product, 0 , 0,
                                  USB_DEVICE_FIND_BY_VENDOR)))
-        return NULL;
+        return -1;
 
     if (list->count == 0) {
+        usbDeviceListFree(list);
+        if (!mandatory) {
+            VIR_DEBUG("Did not find USB device %x:%x",
+                      vendor, product);
+            if (devices)
+                *devices = NULL;
+            return 0;
+        }
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Did not find USB device %x:%x"), vendor, product);
-        usbDeviceListFree(list);
-        return NULL;
+        return -1;
     }
 
-    return list;
+    count = list->count;
+    if (devices)
+        *devices = list;
+    else
+        usbDeviceListFree(list);
+
+    return count;
 }
 
-usbDevice *
-usbFindDeviceByBus(unsigned int bus, unsigned devno)
+int
+usbFindDeviceByBus(unsigned int bus,
+                   unsigned devno,
+                   bool mandatory,
+                   usbDevice **usb)
 {
-    usbDevice *usb;
     usbDeviceList *list;
 
     if (!(list = usbDeviceSearch(0, 0, bus, devno,
                                  USB_DEVICE_FIND_BY_BUS)))
-        return NULL;
+        return -1;
 
     if (list->count == 0) {
+        usbDeviceListFree(list);
+        if (!mandatory) {
+            VIR_DEBUG("Did not find USB device bus:%u device:%u",
+                      bus, devno);
+            if (usb)
+                *usb = NULL;
+            return 0;
+        }
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Did not find USB device bus:%u device:%u"),
                        bus, devno);
-        usbDeviceListFree(list);
-        return NULL;
+        return -1;
     }
 
-    usb = usbDeviceListGet(list, 0);
-    usbDeviceListSteal(list, usb);
+    if (usb) {
+        *usb = usbDeviceListGet(list, 0);
+        usbDeviceListSteal(list, *usb);
+    }
     usbDeviceListFree(list);
 
-    return usb;
+    return 0;
 }
 
-usbDevice *
+int
 usbFindDevice(unsigned int vendor,
               unsigned int product,
               unsigned int bus,
-              unsigned int devno)
+              unsigned int devno,
+              bool mandatory,
+              usbDevice **usb)
 {
-    usbDevice *usb;
     usbDeviceList *list;
 
     unsigned int flags = USB_DEVICE_FIND_BY_VENDOR|USB_DEVICE_FIND_BY_BUS;
     if (!(list = usbDeviceSearch(vendor, product, bus, devno, flags)))
-        return NULL;
+        return -1;
 
     if (list->count == 0) {
+        usbDeviceListFree(list);
+        if (!mandatory) {
+            VIR_DEBUG("Did not find USB device %x:%x bus:%u device:%u",
+                      vendor, product, bus, devno);
+            if (usb)
+                *usb = NULL;
+            return 0;
+        }
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Did not find USB device %x:%x bus:%u device:%u"),
                        vendor, product, bus, devno);
-        usbDeviceListFree(list);
-        return NULL;
+        return -1;
     }
 
-    usb = usbDeviceListGet(list, 0);
-    usbDeviceListSteal(list, usb);
+    if (usb) {
+        *usb = usbDeviceListGet(list, 0);
+        usbDeviceListSteal(list, *usb);
+    }
     usbDeviceListFree(list);
 
-    return usb;
+    return 0;
 }
 
 usbDevice *

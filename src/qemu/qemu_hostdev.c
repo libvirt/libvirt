@@ -641,42 +641,57 @@ error:
     return -1;
 }
 
-usbDevice *
-qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev)
+int
+qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
+                         bool mandatory,
+                         usbDevice **usb)
 {
-    usbDevice *usb = NULL;
     unsigned vendor = hostdev->source.subsys.u.usb.vendor;
     unsigned product = hostdev->source.subsys.u.usb.product;
     unsigned bus = hostdev->source.subsys.u.usb.bus;
     unsigned device = hostdev->source.subsys.u.usb.device;
+    int rc;
+
+    *usb = NULL;
 
     if (vendor && bus) {
-        usb = usbFindDevice(vendor, product, bus, device);
-
+        rc = usbFindDevice(vendor, product, bus, device, mandatory, usb);
+        if (rc < 0)
+            return -1;
     } else if (vendor && !bus) {
-        usbDeviceList *devs = usbFindDeviceByVendor(vendor, product);
-        if (!devs)
-            return NULL;
+        usbDeviceList *devs;
 
-        if (usbDeviceListCount(devs) > 1) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple USB devices for %x:%x, "
-                             "use <address> to specify one"), vendor, product);
-            usbDeviceListFree(devs);
-            return NULL;
+        rc = usbFindDeviceByVendor(vendor, product, mandatory, &devs);
+        if (rc < 0)
+            return -1;
+
+        if (rc == 1) {
+            *usb = usbDeviceListGet(devs, 0);
+            usbDeviceListSteal(devs, *usb);
         }
-        usb = usbDeviceListGet(devs, 0);
-        usbDeviceListSteal(devs, usb);
         usbDeviceListFree(devs);
 
-        hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
-        hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+        if (rc == 0) {
+            goto out;
+        } else if (rc > 1) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("multiple USB devices for %x:%x, "
+                             "use <address> to specify one"),
+                           vendor, product);
+            return -1;
+        }
 
+        hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(*usb);
+        hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(*usb);
     } else if (!vendor && bus) {
-        usb = usbFindDeviceByBus(bus, device);
+        if (usbFindDeviceByBus(bus, device, mandatory, usb) < 0)
+            return -1;
     }
 
-    return usb;
+out:
+    if (!*usb)
+        hostdev->missing = 1;
+    return 0;
 }
 
 static int
@@ -708,7 +723,7 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
             continue;
 
-        if (!(usb = qemuFindHostdevUSBDevice(hostdev)))
+        if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
             goto cleanup;
 
         if (usbDeviceListAdd(list, usb) < 0) {

@@ -31,16 +31,22 @@ typedef struct _usbDeviceList usbDeviceList;
 usbDevice *usbGetDevice(unsigned int bus,
                         unsigned int devno);
 
-usbDevice *usbFindDeviceByBus(unsigned int bus,
-                              unsigned int devno);
+int usbFindDeviceByBus(unsigned int bus,
+                       unsigned int devno,
+                       bool mandatory,
+                       usbDevice **usb);
 
-usbDeviceList *usbFindDeviceByVendor(unsigned int vendor,
-                                     unsigned int product);
+int usbFindDeviceByVendor(unsigned int vendor,
+                          unsigned int product,
+                          bool mandatory,
+                          usbDeviceList **devices);
 
-usbDevice *usbFindDevice(unsigned int vendor,
-                         unsigned int product,
-                         unsigned int bus,
-                         unsigned int devno);
+int usbFindDevice(unsigned int vendor,
+                  unsigned int product,
+                  unsigned int bus,
+                  unsigned int devno,
+                  bool mandatory,
+                  usbDevice **usb);
 
 void       usbFreeDevice (usbDevice *dev);
 void       usbDeviceSetUsedBy(usbDevice *dev, const char *name);

@@ -1153,7 +1153,7 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
         goto cleanup;
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        if (!(usb = qemuFindHostdevUSBDevice(hostdev)))
+        if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
             goto cleanup;
 
         if (usbDeviceListAdd(list, usb) < 0) {
