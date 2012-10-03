@@ -374,7 +374,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
                            orig->profileID, mods->profileID);
             return -1;
         }
-        if (virStrcpyStatic(orig->profileID, mods->profileID)) {
+        if (virStrcpyStatic(orig->profileID, mods->profileID) == NULL) {
             /* this should never happen - it indicates mods->profileID
              * isn't properly null terminated. */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
