@@ -909,12 +909,15 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (disk) {
         path = disk->src;
         event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
-        /* XXX If we completed a block pull, then recompute the cached
-         * backing chain to match.  Better would be storing the chain
-         * ourselves rather than reprobing, but this requires
-         * modifying domain_conf and our XML to fully track the chain
-         * across libvirtd restarts.  */
-        if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL &&
+        /* XXX If we completed a block pull or commit, then recompute
+         * the cached backing chain to match.  Better would be storing
+         * the chain ourselves rather than reprobing, but this
+         * requires modifying domain_conf and our XML to fully track
+         * the chain across libvirtd restarts.  For that matter, if
+         * qemu gains support for committing the active layer, we have
+         * to update disk->src.  */
+        if ((type == VIR_DOMAIN_BLOCK_JOB_TYPE_PULL ||
+             type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT) &&
             status == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
             qemuDomainDetermineDiskChain(driver, disk, true);
     }

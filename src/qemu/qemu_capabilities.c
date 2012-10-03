@@ -187,6 +187,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "reboot-timeout", /* 110 */
               "dump-guest-core",
               "seamless-migration",
+              "block-commit",
     );
 
 struct _qemuCaps {
@@ -1881,6 +1882,8 @@ qemuCapsProbeQMPCommands(qemuCapsPtr caps,
             qemuCapsSet(caps, QEMU_CAPS_SPICE);
         else if (STREQ(name, "query-kvm"))
             qemuCapsSet(caps, QEMU_CAPS_KVM);
+        else if (STREQ(name, "block-commit"))
+            qemuCapsSet(caps, QEMU_CAPS_BLOCK_COMMIT);
         VIR_FREE(name);
     }
     VIR_FREE(commands);

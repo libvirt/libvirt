@@ -524,6 +524,13 @@ int qemuMonitorDiskSnapshot(qemuMonitorPtr mon,
 int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorBlockCommit(qemuMonitorPtr mon,
+                           const char *device,
+                           const char *top,
+                           const char *base,
+                           unsigned long bandwidth)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
                                 const char *cmd,
                                 char **reply,

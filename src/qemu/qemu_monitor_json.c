@@ -805,6 +805,8 @@ qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
 
     if (STREQ(type_str, "stream"))
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+    else if (STREQ(type_str, "commit"))
+        type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
 
     switch ((virConnectDomainEventBlockJobStatus) event) {
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
@@ -3275,6 +3277,36 @@ cleanup:
     return ret;
 }
 
+/* speed is in bytes/sec */
+int
+qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
+                           const char *top, const char *base,
+                           unsigned long long speed)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("block-commit",
+                                     "s:device", device,
+                                     "U:speed", speed,
+                                     "s:top", top,
+                                     base ? "s:base" : NULL, base,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
                                     char **reply_str,
@@ -3391,6 +3423,8 @@ static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
     }
     if (STREQ(type, "stream"))
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+    else if (STREQ(type, "commit"))
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
     else
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
 

@@ -2796,6 +2796,36 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     return ret;
 }
 
+/* Start a block-commit block job.  bandwidth is in MB/sec.  */
+int
+qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
+                       const char *top, const char *base,
+                       unsigned long bandwidth)
+{
+    int ret = -1;
+    unsigned long long speed;
+
+    VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, bandwidth=%ld",
+              mon, device, NULLSTR(top), NULLSTR(base), bandwidth);
+
+    /* Convert bandwidth MiB to bytes */
+    speed = bandwidth;
+    if (speed > ULLONG_MAX / 1024 / 1024) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       ULLONG_MAX / 1024 / 1024);
+        return -1;
+    }
+    speed <<= 20;
+
+    if (mon->json)
+        ret = qemuMonitorJSONBlockCommit(mon, device, top, base, speed);
+    else
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("block-commit requires JSON monitor"));
+    return ret;
+}
+
 int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
                                 const char *cmd,
                                 char **reply,

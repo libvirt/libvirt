@@ -150,6 +150,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_REBOOT_TIMEOUT     = 110, /* -boot reboot-timeout */
     QEMU_CAPS_DUMP_GUEST_CORE    = 111, /* dump-guest-core-parameter */
     QEMU_CAPS_SEAMLESS_MIGRATION = 112, /* seamless-migration for SPICE */
+    QEMU_CAPS_BLOCK_COMMIT       = 113, /* block-commit */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
