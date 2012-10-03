@@ -12652,6 +12652,80 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
     return qemuDomainBlockRebase(dom, path, NULL, bandwidth, flags);
 }
 
+
+static int
+qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
+                      const char *top, unsigned long bandwidth,
+                      unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
+    virDomainObjPtr vm = NULL;
+    char *device = NULL;
+    int ret = -1;
+    int idx;
+    virDomainDiskDefPtr disk;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+    if (!qemuCapsGet(priv->caps, QEMU_CAPS_BLOCK_COMMIT)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("online commit not supported with this QEMU binary"));
+        goto endjob;
+    }
+
+    device = qemuDiskPathToAlias(vm, path, &idx);
+    if (!device)
+        goto endjob;
+    disk = vm->def->disks[idx];
+
+    if (!disk->src) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("disk %s has no source file to be committed"),
+                       disk->dst);
+        goto endjob;
+    }
+
+    if (!top)
+        top = disk->src;
+
+    /* XXX For now, we are relying on qemu to check that 'top' and
+     * 'base' resolve to members of the backing chain in correct
+     * order; but if we ever get more paranoid and track the backing
+     * chain ourself, we should be pre-validating the data rather than
+     * relying on qemu.  For that matter, we need to be changing the
+     * SELinux label on both 'base' and the parent of 'top', so that
+     * qemu can open(O_RDWR) those files for the duration of the
+     * commit.  */
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorBlockCommit(priv->mon, device, top, base, bandwidth);
+    qemuDomainObjExitMonitor(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(device);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static int
 qemuDomainOpenGraphics(virDomainPtr dom,
                        unsigned int idx,
@@ -13994,6 +14068,7 @@ static virDriver qemuDriver = {
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
     .domainBlockPull = qemuDomainBlockPull, /* 0.9.4 */
     .domainBlockRebase = qemuDomainBlockRebase, /* 0.9.10 */
+    .domainBlockCommit = qemuDomainBlockCommit, /* 1.0.0 */
     .isAlive = qemuIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
     .domainSetBlockIoTune = qemuDomainSetBlockIoTune, /* 0.9.8 */
