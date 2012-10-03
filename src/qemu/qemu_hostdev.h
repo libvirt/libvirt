@@ -36,6 +36,7 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
                                  const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs);
+usbDevice *qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev);
 int qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                                  const char *name,
                                  usbDeviceList *list);

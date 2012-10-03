@@ -1153,38 +1153,7 @@ int qemuDomainAttachHostDevice(struct qemud_driver *driver,
         goto cleanup;
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        unsigned vendor = hostdev->source.subsys.u.usb.vendor;
-        unsigned product = hostdev->source.subsys.u.usb.product;
-        unsigned bus = hostdev->source.subsys.u.usb.bus;
-        unsigned device = hostdev->source.subsys.u.usb.device;
-
-        if (vendor && bus) {
-            usb = usbFindDevice(vendor, product, bus, device);
-
-        } else if (vendor && !bus) {
-            usbDeviceList *devs = usbFindDeviceByVendor(vendor, product);
-            if (!devs)
-                goto cleanup;
-
-            if (usbDeviceListCount(devs) > 1) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("multiple USB devices for %x:%x, "
-                                 "use <address> to specify one"), vendor, product);
-                usbDeviceListFree(devs);
-                goto cleanup;
-            }
-            usb = usbDeviceListGet(devs, 0);
-            usbDeviceListSteal(devs, usb);
-            usbDeviceListFree(devs);
-
-            hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
-            hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
-
-        } else if (!vendor && bus) {
-            usb = usbFindDeviceByBus(bus, device);
-        }
-
-        if (!usb)
+        if (!(usb = qemuFindHostdevUSBDevice(hostdev)))
             goto cleanup;
 
         if (usbDeviceListAdd(list, usb) < 0) {
