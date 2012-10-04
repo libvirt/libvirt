@@ -38,6 +38,7 @@
 #include "virsh-domain.h"
 #include "xml.h"
 #include "virtypedparam.h"
+#include "json.h"
 
 /*
  * "capabilities" command
@@ -529,6 +530,8 @@ static const vshCmdInfo info_qemu_monitor_command[] = {
 static const vshCmdOptDef opts_qemu_monitor_command[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"hmp", VSH_OT_BOOL, 0, N_("command is in human monitor protocol")},
+    {"pretty", VSH_OT_BOOL, 0,
+     N_("pretty-print any qemu monitor protocol output")},
     {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("command")},
     {NULL, 0, 0, NULL}
 };
@@ -544,6 +547,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool pad = false;
+    virJSONValuePtr pretty = NULL;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -561,12 +565,27 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     }
     monitor_cmd = virBufferContentAndReset(&buf);
 
-    if (vshCommandOptBool(cmd, "hmp"))
+    if (vshCommandOptBool(cmd, "hmp")) {
+        if (vshCommandOptBool(cmd, "pretty")) {
+            vshError(ctl, _("--hmp and --pretty are not compatible"));
+            goto cleanup;
+        }
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
+    }
 
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         goto cleanup;
 
+    if (vshCommandOptBool(cmd, "pretty")) {
+        char *tmp;
+        pretty = virJSONValueFromString(result);
+        if (pretty && (tmp = virJSONValueToString(pretty, true))) {
+            VIR_FREE(result);
+            result = tmp;
+        } else {
+            vshResetLibvirtError();
+        }
+    }
     vshPrint(ctl, "%s\n", result);
 
     ret = true;
@@ -574,6 +593,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     VIR_FREE(result);
     VIR_FREE(monitor_cmd);
+    virJSONValueFree(pretty);
     if (dom)
         virDomainFree(dom);
 
