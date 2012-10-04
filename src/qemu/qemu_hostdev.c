@@ -696,7 +696,8 @@ out:
 
 static int
 qemuPrepareHostUSBDevices(struct qemud_driver *driver,
-                          virDomainDefPtr def)
+                          virDomainDefPtr def,
+                          bool coldBoot)
 {
     int i, ret = -1;
     usbDeviceList *list;
@@ -716,6 +717,7 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
      */
     for (i = 0 ; i < nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
+        bool required = true;
         usbDevice *usb;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -723,10 +725,15 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
             continue;
 
-        if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
+        if (hostdev->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_OPTIONAL ||
+            (hostdev->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_REQUISITE &&
+             !coldBoot))
+            required = false;
+
+        if (qemuFindHostdevUSBDevice(hostdev, required, &usb) < 0)
             goto cleanup;
 
-        if (usbDeviceListAdd(list, usb) < 0) {
+        if (usb && usbDeviceListAdd(list, usb) < 0) {
             usbFreeDevice(usb);
             goto cleanup;
         }
@@ -756,7 +763,8 @@ cleanup:
 }
 
 int qemuPrepareHostDevices(struct qemud_driver *driver,
-                           virDomainDefPtr def)
+                           virDomainDefPtr def,
+                           bool coldBoot)
 {
     if (!def->nhostdevs)
         return 0;
@@ -764,7 +772,7 @@ int qemuPrepareHostDevices(struct qemud_driver *driver,
     if (qemuPrepareHostPCIDevices(driver, def) < 0)
         return -1;
 
-    if (qemuPrepareHostUSBDevices(driver, def) < 0)
+    if (qemuPrepareHostUSBDevices(driver, def, coldBoot) < 0)
         return -1;
 
     return 0;
@@ -890,6 +898,8 @@ qemuDomainReAttachHostUsbDevices(struct qemud_driver *driver,
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+        if (hostdev->missing)
             continue;
 
         usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,

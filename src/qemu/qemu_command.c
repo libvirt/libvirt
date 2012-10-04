@@ -3507,17 +3507,21 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!dev->source.subsys.u.usb.bus &&
+    if (!dev->missing &&
+        !dev->source.subsys.u.usb.bus &&
         !dev->source.subsys.u.usb.device) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("USB host device is missing bus/device information"));
         return NULL;
     }
 
-    virBufferAsprintf(&buf, "usb-host,hostbus=%d,hostaddr=%d,id=%s",
-                      dev->source.subsys.u.usb.bus,
-                      dev->source.subsys.u.usb.device,
-                      dev->info->alias);
+    virBufferAddLit(&buf, "usb-host");
+    if (!dev->missing) {
+        virBufferAsprintf(&buf, ",hostbus=%d,hostaddr=%d",
+                          dev->source.subsys.u.usb.bus,
+                          dev->source.subsys.u.usb.device);
+    }
+    virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
 
     if (qemuBuildDeviceAddressStr(&buf, dev->info, caps) < 0)
         goto error;
@@ -3576,6 +3580,12 @@ char *
 qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
 {
     char *ret = NULL;
+
+    if (dev->missing) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("This QEMU doesn't not support missing USB devices"));
+        return NULL;
+    }
 
     if (!dev->source.subsys.u.usb.bus &&
         !dev->source.subsys.u.usb.device) {

@@ -43,7 +43,8 @@ int qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
                                  const char *name,
                                  usbDeviceList *list);
 int qemuPrepareHostDevices(struct qemud_driver *driver,
-                           virDomainDefPtr def);
+                           virDomainDefPtr def,
+                           bool coldBoot);
 void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver);
 void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
                                       const char *name,

@@ -289,6 +289,8 @@ int qemuSetupCgroup(struct qemud_driver *driver,
                 continue;
             if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
                 continue;
+            if (hostdev->missing)
+                continue;
 
             if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
                                     hostdev->source.subsys.u.usb.device)) == NULL)
