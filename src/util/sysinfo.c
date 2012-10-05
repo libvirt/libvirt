@@ -361,7 +361,7 @@ virSysinfoRead(void) {
         goto no_memory;
 
     /* Gather info from /proc/cpuinfo */
-    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+    if (virFileReadAll(CPUINFO, 8192, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
         return NULL;
@@ -376,7 +376,7 @@ virSysinfoRead(void) {
     VIR_FREE(outbuf);
 
     /* Gather info from /proc/sysinfo */
-    if (virFileReadAll(SYSINFO, 4096, &outbuf) < 0) {
+    if (virFileReadAll(SYSINFO, 8192, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), SYSINFO);
         return NULL;
