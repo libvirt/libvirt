@@ -318,13 +318,8 @@ if WITH_LINUX
 check-symfile: libvirt.syms libvirt.la
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms \
 	  .libs/libvirt.so
-
-check-private-symfile: libvirt_private.syms libvirt.la
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt_private.syms \
-	  .libs/libvirt.so
 else
 check-symfile:
-check-private-symfile:
 endif
 
 PROTOCOL_STRUCTS = \
@@ -349,7 +344,7 @@ else !WITH_REMOTE
 check-protocol:
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS) check-symfile.pl
-check-local: check-protocol check-symfile check-private-symfile
+check-local: check-protocol check-symfile
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
