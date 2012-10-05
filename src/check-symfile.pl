@@ -44,7 +44,7 @@ foreach my $elflib (@elflibs) {
     close NM;
 }
 
-foreach my $sym (@wantsyms) {
+foreach my $sym (keys(%wantsyms)) {
     next if exists $gotsyms{$sym};
 
     print STDERR "Expected symbol $sym is not in ELF library\n";
