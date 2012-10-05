@@ -1438,14 +1438,14 @@ if test "$with_selinux" != "no"; then
   old_libs="$LIBS"
   if test "$with_selinux" = "check"; then
     AC_CHECK_HEADER([selinux/selinux.h],[],[with_selinux=no])
-    AC_CHECK_LIB([selinux], [fgetfilecon],[],[with_selinux=no])
+    AC_CHECK_LIB([selinux], [fgetfilecon_raw],[],[with_selinux=no])
     if test "$with_selinux" != "no"; then
       with_selinux="yes"
     fi
   else
     fail=0
     AC_CHECK_HEADER([selinux/selinux.h],[],[fail=1])
-    AC_CHECK_LIB([selinux], [fgetfilecon],[],[fail=1])
+    AC_CHECK_LIB([selinux], [fgetfilecon_raw],[],[fail=1])
     test $fail = 1 &&
       AC_MSG_ERROR([You must install the libselinux development package in order to compile libvirt with basic SELinux support])
   fi

@@ -111,7 +111,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
     char *sens, *cat, *tmp;
     int catMin, catMax, catRange;
 
-    if (getcon(&ourSecContext) < 0) {
+    if (getcon_raw(&ourSecContext) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to get current process SELinux context"));
         goto cleanup;
@@ -252,7 +252,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
     VIR_DEBUG("basecontext=%s mcs=%s isObjectContext=%d",
               basecontext, mcs, isObjectContext);
 
-    if (getcon(&ourSecContext) < 0) {
+    if (getcon_raw(&ourSecContext) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to get current process SELinux context"));
         goto cleanup;
@@ -612,7 +612,7 @@ virSecuritySELinuxReserveSecurityLabel(virSecurityManagerPtr mgr,
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    if (getpidcon(pid, &pctx) == -1) {
+    if (getpidcon_raw(pid, &pctx) == -1) {
         virReportSystemError(errno,
                              _("unable to get PID %d security context"), pid);
         return -1;
@@ -713,7 +713,7 @@ virSecuritySELinuxGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
 {
     security_context_t ctx;
 
-    if (getpidcon(pid, &ctx) == -1) {
+    if (getpidcon_raw(pid, &ctx) == -1) {
         virReportSystemError(errno,
                              _("unable to get PID %d security context"),
                              pid);
@@ -753,10 +753,10 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon, bool optional)
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
-    if (setfilecon(path, tcon) < 0) {
+    if (setfilecon_raw(path, tcon) < 0) {
         int setfilecon_errno = errno;
 
-        if (getfilecon(path, &econ) >= 0) {
+        if (getfilecon_raw(path, &econ) >= 0) {
             if (STREQ(tcon, econ)) {
                 freecon(econ);
                 /* It's alright, there's nothing to change anyway. */
@@ -818,10 +818,10 @@ virSecuritySELinuxFSetFilecon(int fd, char *tcon)
 
     VIR_INFO("Setting SELinux context on fd %d to '%s'", fd, tcon);
 
-    if (fsetfilecon(fd, tcon) < 0) {
+    if (fsetfilecon_raw(fd, tcon) < 0) {
         int fsetfilecon_errno = errno;
 
-        if (fgetfilecon(fd, &econ) >= 0) {
+        if (fgetfilecon_raw(fd, &econ) >= 0) {
             if (STREQ(tcon, econ)) {
                 freecon(econ);
                 /* It's alright, there's nothing to change anyway. */
@@ -1569,7 +1569,7 @@ virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    if (setexeccon(secdef->label) == -1) {
+    if (setexeccon_raw(secdef->label) == -1) {
         virReportSystemError(errno,
                              _("unable to set security context '%s'"),
                              secdef->label);
@@ -1614,7 +1614,7 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
         goto done;
     }
 
-    if (getcon(&scon) == -1) {
+    if (getcon_raw(&scon) == -1) {
         virReportSystemError(errno,
                              _("unable to get current process context '%s'"),
                              secdef->label);
@@ -1637,7 +1637,7 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
 
     VIR_DEBUG("Setting VM %s socket context %s",
               def->name, context_str(proccon));
-    if (setsockcreatecon(context_str(proccon)) == -1) {
+    if (setsockcreatecon_raw(context_str(proccon)) == -1) {
         virReportSystemError(errno,
                              _("unable to set socket security context '%s'"),
                              context_str(proccon));
@@ -1680,7 +1680,7 @@ virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
 
     VIR_DEBUG("Setting VM %s socket context %s",
               vm->name, secdef->label);
-    if (setsockcreatecon(secdef->label) == -1) {
+    if (setsockcreatecon_raw(secdef->label) == -1) {
         virReportSystemError(errno,
                              _("unable to set socket security context '%s'"),
                              secdef->label);
@@ -1720,7 +1720,7 @@ virSecuritySELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    if (setsockcreatecon(NULL) == -1) {
+    if (setsockcreatecon_raw(NULL) == -1) {
         virReportSystemError(errno,
                              _("unable to clear socket security context '%s'"),
                              secdef->label);

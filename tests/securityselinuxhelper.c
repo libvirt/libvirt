@@ -31,7 +31,7 @@
  * the process context, where as in fact we're faking it all
  */
 
-int getcon(security_context_t *context)
+int getcon_raw(security_context_t *context)
 {
     if (getenv("FAKE_CONTEXT") == NULL) {
         *context = NULL;
@@ -43,7 +43,7 @@ int getcon(security_context_t *context)
     return 0;
 }
 
-int getpidcon(pid_t pid, security_context_t *context)
+int getpidcon_raw(pid_t pid, security_context_t *context)
 {
     if (pid != getpid()) {
         *context = NULL;
@@ -60,7 +60,7 @@ int getpidcon(pid_t pid, security_context_t *context)
     return 0;
 }
 
-int setcon(security_context_t context)
+int setcon_raw(security_context_t context)
 {
     return setenv("FAKE_CONTEXT", context, 1);
 }
