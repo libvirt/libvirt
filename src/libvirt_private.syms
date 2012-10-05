@@ -1246,7 +1246,6 @@ virGetUserName;
 virHexToBin;
 virIndexToDiskName;
 virIsDevMapperDevice;
-virKillProcess;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;
