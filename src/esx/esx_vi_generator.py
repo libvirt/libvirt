@@ -484,6 +484,26 @@ class Object(Type):
         return members
 
 
+    def generate_dispatch(self, suffix, is_first=True):
+        source = ""
+
+        if self.extended_by is not None:
+            if not is_first:
+                source += "\n"
+
+            source += "    /* %s */\n" % self.name
+
+            for extended_by in self.extended_by:
+                source += "    ESX_VI__TEMPLATE__DISPATCH__%s(%s)\n" \
+                          % (suffix, extended_by)
+
+            for extended_by in self.extended_by:
+                source += objects_by_name[extended_by] \
+                          .generate_dispatch(suffix, False)
+
+        return source
+
+
     def generate_free_code(self, add_banner=False):
         source = ""
 
@@ -835,9 +855,7 @@ class Object(Type):
                 source += "ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(%s,\n" % self.name
                 source += "{\n"
 
-                for extended_by in self.extended_by:
-                    source += "    ESX_VI__TEMPLATE__DISPATCH__DEEP_COPY(%s)\n" \
-                              % extended_by
+                source += self.generate_dispatch('DEEP_COPY')
 
                 source += "},\n"
                 source += "{\n"
@@ -863,9 +881,7 @@ class Object(Type):
                           % self.name
                 source += "{\n"
 
-                for extended_by in self.extended_by:
-                    source += "    ESX_VI__TEMPLATE__DISPATCH__CAST_FROM_ANY_TYPE(%s)\n" \
-                              % extended_by
+                source += self.generate_dispatch('CAST_FROM_ANY_TYPE')
 
                 source += "})\n\n"
 
@@ -895,9 +911,7 @@ class Object(Type):
                 source += "ESX_VI__TEMPLATE__DYNAMIC_SERIALIZE(%s,\n" % self.name
                 source += "{\n"
 
-                for extended_by in self.extended_by:
-                    source += "    ESX_VI__TEMPLATE__DISPATCH__SERIALIZE(%s)\n" \
-                              % extended_by
+                source += self.generate_dispatch('SERIALIZE')
 
                 source += "},\n"
                 source += "{\n"
@@ -933,9 +947,7 @@ class Object(Type):
                           % self.name
                 source += "{\n"
 
-                for extended_by in self.extended_by:
-                    source += "    ESX_VI__TEMPLATE__DISPATCH__DESERIALIZE(%s)\n" \
-                              % extended_by
+                source += self.generate_dispatch('DESERIALIZE')
 
                 source += "},\n"
                 source += "{\n"
