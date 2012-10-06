@@ -2297,9 +2297,12 @@ dnl
 
 LIBCURL_CFLAGS=""
 LIBCURL_LIBS=""
+have_curl=no
 
 if test "$with_esx" = "yes" || test "$with_esx" = "check" || test "$with_xenapi" = "yes" || test "$with_xenapi" = "check"; then
     PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [
+        have_curl=yes
+
         if test "$with_esx" = "check"; then
             with_esx=yes
         fi
@@ -2323,6 +2326,11 @@ if test "$with_esx" = "yes" || test "$with_esx" = "check" || test "$with_xenapi"
         fi
     ])
 fi
+
+if test "$have_curl" = "yes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_LIBCURL], 1, [whether libcurl is available])
+fi
+AM_CONDITIONAL([HAVE_LIBCURL], [test "$have_curl" = "yes"])
 
 
 if test "$with_esx" = "yes" ; then
@@ -3079,7 +3087,7 @@ AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
-if test "$with_esx" = "yes" ; then
+if test "$have_curl" = "yes" ; then
 AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
 else
 AC_MSG_NOTICE([ libcurl: no])

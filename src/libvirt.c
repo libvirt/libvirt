@@ -41,6 +41,10 @@
 # include <winsock2.h>
 #endif
 
+#ifdef HAVE_LIBCURL
+# include <curl/curl.h>
+#endif
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
@@ -417,6 +421,10 @@ virInitialize(void)
     virLogSetFromEnv();
 
     virNetTLSInit();
+
+#if HAVE_LIBCURL
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+#endif
 
     VIR_DEBUG("register drivers");
 
