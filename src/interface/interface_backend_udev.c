@@ -489,6 +489,35 @@ err:
     return ret;
 }
 
+static int
+udevIfaceIsActive(virInterfacePtr ifinfo)
+{
+    struct udev_iface_driver *driverState = ifinfo->conn->interfacePrivateData;
+    struct udev *udev = udev_ref(driverState->udev);
+    struct udev_device *dev;
+    int status;
+
+    dev = udev_device_new_from_subsystem_sysname(udev, "net",
+                                                 ifinfo->name);
+    if (!dev) {
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("couldn't find interface named '%s'"),
+                       ifinfo->name);
+        status = -1;
+        goto cleanup;
+    }
+
+    /* Check if it's active or not */
+    status = STREQ(udev_device_get_sysattr_value(dev, "operstate"), "up");
+
+    udev_device_unref(dev);
+
+cleanup:
+    udev_unref(udev);
+
+    return status;
+}
+
 static virInterfaceDriver udevIfaceDriver = {
     "udev",
     .open = udevIfaceOpenInterface, /* 0.10.3 */
@@ -500,6 +529,7 @@ static virInterfaceDriver udevIfaceDriver = {
     .listAllInterfaces = udevIfaceListAllInterfaces, /* 0.10.3 */
     .interfaceLookupByName = udevIfaceLookupByName, /* 0.10.3 */
     .interfaceLookupByMACString = udevIfaceLookupByMACString, /* 0.10.3 */
+    .interfaceIsActive = udevIfaceIsActive, /* 0.10.3 */
 };
 
 int
