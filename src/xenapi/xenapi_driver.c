@@ -171,7 +171,6 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
     xmlInitParser();
     xmlKeepBlanksDefault(0);
     xen_init();
-    curl_global_init(CURL_GLOBAL_ALL);
 
     privP->session = xen_session_login_with_password(call_func, privP, username,
                                                      password, xen_api_latest_version);
