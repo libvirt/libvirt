@@ -2,7 +2,7 @@
  * interface_driver.c: backend driver methods to handle physical
  *                     interface configuration using the netcf library.
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -782,7 +782,7 @@ static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 #endif /* HAVE_NETCF_TRANSACTIONS */
 
 static virInterfaceDriver interfaceDriver = {
-    "Interface",
+    "netcf",
     .open = interfaceOpenInterface, /* 0.7.0 */
     .close = interfaceCloseInterface, /* 0.7.0 */
     .numOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
@@ -806,6 +806,10 @@ static virInterfaceDriver interfaceDriver = {
 };
 
 int interfaceRegister(void) {
-    virRegisterInterfaceDriver(&interfaceDriver);
+    if (virRegisterInterfaceDriver(&interfaceDriver) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to register netcf interface driver"));
+        return -1;
+    }
     return 0;
 }
