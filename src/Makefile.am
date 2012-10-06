@@ -557,16 +557,16 @@ INTERFACE_DRIVER_SOURCES =
 
 if WITH_INTERFACE
 INTERFACE_DRIVER_SOURCES +=					\
-		interface/interface_driver.h
+		interface/interface_driver.h        \
+		interface/interface_driver.c
 
 if WITH_NETCF
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_backend_netcf.c
-else
+endif
 if HAVE_UDEV
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_backend_udev.c
-endif
 endif
 endif
 

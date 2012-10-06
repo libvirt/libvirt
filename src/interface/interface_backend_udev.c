@@ -503,7 +503,7 @@ static virInterfaceDriver udevIfaceDriver = {
 };
 
 int
-interfaceRegister(void) {
+udevIfaceRegister(void) {
     if (virRegisterInterfaceDriver(&udevIfaceDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to register udev interface driver"));

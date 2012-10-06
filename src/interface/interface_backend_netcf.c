@@ -805,7 +805,7 @@ static virInterfaceDriver interfaceDriver = {
 #endif /* HAVE_NETCF_TRANSACTIONS */
 };
 
-int interfaceRegister(void) {
+int netcfIfaceRegister(void) {
     if (virRegisterInterfaceDriver(&interfaceDriver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to register netcf interface driver"));

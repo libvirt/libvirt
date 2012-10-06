@@ -1,7 +1,7 @@
 /*
- * interface_driver.h: core driver methods for managing physical host interfaces
+ * interface_driver.c: loads the appropriate backend
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2012 Doug Goldstein <cardoe@cardoe.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,19 +14,24 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see
+ * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author:  Laine Stump <laine@redhat.com>
  */
+#include <config.h>
 
+#include "interface_driver.h"
 
-#ifndef __VIR_INTERFACE__DRIVER_H
-# define __VIR_INTERFACE__DRIVER_H
-
-int interfaceRegister(void);
-
-int netcfIfaceRegister(void);
-int udevIfaceRegister(void);
-
-#endif /* __VIR_INTERFACE__DRIVER_H */
+int
+interfaceRegister(void) {
+#ifdef WITH_NETCF
+    /* Attempt to load the netcf based backend first */
+    if (netcfIfaceRegister() == 0)
+        return 0;
+#endif /* WITH_NETCF */
+#if HAVE_UDEV
+    /* If there's no netcf or it failed to load, register the udev backend */
+    if (udevIfaceRegister() == 0)
+        return 0;
+#endif /* HAVE_UDEV */
+    return -1;
+}
