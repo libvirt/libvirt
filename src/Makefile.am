@@ -558,11 +558,16 @@ INTERFACE_DRIVER_SOURCES =
 if WITH_INTERFACE
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_driver.h
-endif
 
 if WITH_NETCF
 INTERFACE_DRIVER_SOURCES +=					\
 		interface/interface_backend_netcf.c
+else
+if HAVE_UDEV
+INTERFACE_DRIVER_SOURCES +=					\
+		interface/interface_backend_udev.c
+endif
+endif
 endif
 
 SECRET_DRIVER_SOURCES =						\
@@ -1045,6 +1050,11 @@ libvirt_driver_interface_la_LIBADD =
 if WITH_NETCF
 libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
+else
+if HAVE_UDEV
+libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
+libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
+endif
 endif
 if WITH_DRIVER_MODULES
 libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la

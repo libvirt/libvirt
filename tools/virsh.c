@@ -2708,6 +2708,8 @@ vshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, " Interface");
 # if defined(WITH_NETCF)
     vshPrint(ctl, " netcf");
+# elif defined(HAVE_UDEV)
+    vshPrint(ctl, " udev");
 # endif
 #endif
 #ifdef WITH_NWFILTER
