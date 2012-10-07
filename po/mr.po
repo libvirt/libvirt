@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:16-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2012-03-26 02:10+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Marathi (http://www.transifex.net/projects/p/libvirt/language/"
@@ -6981,7 +6981,7 @@ msgstr ""
 msgid "unable to get swap hard limit"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1832
+#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1836
 #: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8005
 #: src/util/virnetdevmacvlan.c:939
 #, c-format
@@ -7289,7 +7289,7 @@ msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%2$s' करीता '%1$s' symlink बनवण्यास अपयशी"
 
 #: src/lxc/lxc_driver.c:3522 src/libxl/libxl_driver.c:3477
-#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5919
+#: src/network/bridge_driver.c:2664 src/qemu/qemu_driver.c:5919
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2282
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -7844,253 +7844,253 @@ msgstr ""
 msgid "Failed to get version info from libxenlight"
 msgstr ""
 
-#: src/network/bridge_driver.c:730 src/network/bridge_driver.c:736
-#: src/network/bridge_driver.c:748 src/network/bridge_driver.c:815
-#: src/network/bridge_driver.c:821
+#: src/network/bridge_driver.c:734 src/network/bridge_driver.c:740
+#: src/network/bridge_driver.c:752 src/network/bridge_driver.c:819
+#: src/network/bridge_driver.c:825
 #, c-format
 msgid "cannot create directory %s"
 msgstr "डिरेक्ट्री %s बनवू शकत नाही"
 
-#: src/network/bridge_driver.c:807
+#: src/network/bridge_driver.c:811
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr ""
 
-#: src/network/bridge_driver.c:853
+#: src/network/bridge_driver.c:857
 #, c-format
 msgid "bridge  '%s' has an invalid prefix"
 msgstr ""
 
-#: src/network/bridge_driver.c:889
+#: src/network/bridge_driver.c:893
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:939 src/network/bridge_driver.c:1113
+#: src/network/bridge_driver.c:943 src/network/bridge_driver.c:1117
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:951
+#: src/network/bridge_driver.c:955
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr ""
 "'%s' पासून फॉर्वड करण्यास परवानगी देण्याकरीता iptables नियम समावेष करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:965
+#: src/network/bridge_driver.c:969
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr "'%s' करीता फॉरवर्ड करण्यास iptables नियम समावेष करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1001
+#: src/network/bridge_driver.c:1005
 #, c-format
 msgid "failed to add iptables rule to enable masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1002
+#: src/network/bridge_driver.c:1006
 msgid "failed to add iptables rule to enable masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:1015
+#: src/network/bridge_driver.c:1019
 #, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1016
+#: src/network/bridge_driver.c:1020
 msgid "failed to add iptables rule to enable UDP masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:1029
+#: src/network/bridge_driver.c:1033
 #, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1030
+#: src/network/bridge_driver.c:1034
 msgid "failed to add iptables rule to enable TCP masquerading"
 msgstr ""
 
-#: src/network/bridge_driver.c:1125
+#: src/network/bridge_driver.c:1129
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr "'%s' पासून राउटींग स्वीकारण्याकरीता iptables नियम समावेष करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1137
+#: src/network/bridge_driver.c:1141
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr "'%s' करीता राउटींग स्वीकारण्यासाठी iptables नियम समावेष करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1191
+#: src/network/bridge_driver.c:1195
 #, c-format
 msgid "failed to add ip6tables rule to block outbound traffic from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1199
+#: src/network/bridge_driver.c:1203
 #, c-format
 msgid "failed to add ip6tables rule to block inbound traffic to '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1208
+#: src/network/bridge_driver.c:1212
 #, c-format
 msgid "failed to add ip6tables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1217 src/network/bridge_driver.c:1225
+#: src/network/bridge_driver.c:1221 src/network/bridge_driver.c:1229
 #, c-format
 msgid "failed to add ip6tables rule to allow DNS requests from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1278 src/network/bridge_driver.c:1286
+#: src/network/bridge_driver.c:1282 src/network/bridge_driver.c:1290
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr "'%s' पासून DHCP विनंती स्वीकारण्याकरीता iptables नियम जोडण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1309 src/network/bridge_driver.c:1317
+#: src/network/bridge_driver.c:1313 src/network/bridge_driver.c:1321
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr "'%s' पासून DNS विनंती स्वीकारण्याकरीता iptables नियम जोडण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1327
+#: src/network/bridge_driver.c:1331
 #, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:1337
+#: src/network/bridge_driver.c:1341
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr "'%s' पासून बाहेरील ट्रॅफिक रोखण्यासकरीता iptables नियम जोडण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1345
+#: src/network/bridge_driver.c:1349
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr "'%s' करीता बाहेरील ट्रॅफिक रोखण्यासकरीता iptables नियम जोडण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1354
+#: src/network/bridge_driver.c:1358
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr "'%s' वरील क्रॉस ब्रीज् ट्रॅफिक स्वीकारण्याकरीता iptables नियम जोडण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1573
+#: src/network/bridge_driver.c:1577
 #, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1595 src/network/bridge_driver.c:1611
+#: src/network/bridge_driver.c:1599 src/network/bridge_driver.c:1615
 #, c-format
 msgid "cannot disable %s"
 msgstr "%s अकार्यक्षम करणे अशक्य"
 
-#: src/network/bridge_driver.c:1704
+#: src/network/bridge_driver.c:1708
 #, c-format
 msgid "Network is already in use by interface %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:1725
+#: src/network/bridge_driver.c:1729
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:1817
+#: src/network/bridge_driver.c:1821
 msgid "failed to enable IP forwarding"
 msgstr "IP फॉरवर्डींग कार्यान्वीत करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:1966
+#: src/network/bridge_driver.c:1970
 msgid "network is already active"
 msgstr "नेटवर्क आधिपासूनच सक्रीय आहे"
 
-#: src/network/bridge_driver.c:2068 src/network/bridge_driver.c:2396
-#: src/network/bridge_driver.c:2483 src/network/bridge_driver.c:2506
-#: src/network/bridge_driver.c:2545 src/network/bridge_driver.c:2600
-#: src/network/bridge_driver.c:2625
+#: src/network/bridge_driver.c:2072 src/network/bridge_driver.c:2400
+#: src/network/bridge_driver.c:2487 src/network/bridge_driver.c:2510
+#: src/network/bridge_driver.c:2549 src/network/bridge_driver.c:2604
+#: src/network/bridge_driver.c:2629
 msgid "no network with matching uuid"
 msgstr "जुळवणी uuid सह नेटवर्क उपलब्ध नाही"
 
-#: src/network/bridge_driver.c:2091 src/network/bridge_driver.c:2761
-#: src/network/bridge_driver.c:3018 src/network/bridge_driver.c:3119
-#: src/network/bridge_driver.c:3206
+#: src/network/bridge_driver.c:2095 src/network/bridge_driver.c:2765
+#: src/network/bridge_driver.c:3022 src/network/bridge_driver.c:3123
+#: src/network/bridge_driver.c:3210
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "जुळवणीजोगी नाव '%s' सह नेटवर्क आढळले नाही"
 
-#: src/network/bridge_driver.c:2341
+#: src/network/bridge_driver.c:2345
 msgid ""
 "Multiple dhcp sections found. dhcp is supported only for a single IPv4 "
 "address on each network"
 msgstr ""
 
-#: src/network/bridge_driver.c:2402
+#: src/network/bridge_driver.c:2406
 msgid "network is still active"
 msgstr "जाळ अजूनही सक्रीय आहे"
 
-#: src/network/bridge_driver.c:2512
+#: src/network/bridge_driver.c:2516
 msgid "network is not active"
 msgstr "नेटवर्क सक्रीय नाही"
 
-#: src/network/bridge_driver.c:2568
+#: src/network/bridge_driver.c:2572
 msgid "no network with matching id"
 msgstr "जुळवणीजोगी id रहीत नेटवर्क आढळले नाही"
 
-#: src/network/bridge_driver.c:2574 src/test/test_driver.c:3266
+#: src/network/bridge_driver.c:2578 src/test/test_driver.c:3266
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "जाळं '%s' कडे ब्रीज नाव आढळले नाही."
 
-#: src/network/bridge_driver.c:2631
+#: src/network/bridge_driver.c:2635
 msgid "cannot set autostart for transient network"
 msgstr "ट्रांजीएंट नेटवर्कसाठी autostart सेट करणे अशक्य"
 
-#: src/network/bridge_driver.c:2646
+#: src/network/bridge_driver.c:2650
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "डिरेक्ट्री '%s' स्वयं प्रारंभ करण्यास अशक्य"
 
-#: src/network/bridge_driver.c:2653 src/storage/storage_driver.c:1055
+#: src/network/bridge_driver.c:2657 src/storage/storage_driver.c:1055
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%2$s' करीता symlink '%1$s' निर्माण करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:2877 src/network/bridge_driver.c:3033
-#: src/network/bridge_driver.c:3134
+#: src/network/bridge_driver.c:2881 src/network/bridge_driver.c:3037
+#: src/network/bridge_driver.c:3138
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 
-#: src/network/bridge_driver.c:2895
+#: src/network/bridge_driver.c:2899
 #, c-format
 msgid "Could not get Virtual functions on %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:2902
+#: src/network/bridge_driver.c:2906
 #, c-format
 msgid "No Vf's present on SRIOV PF %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:2955
+#: src/network/bridge_driver.c:2959
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr ""
 
-#: src/network/bridge_driver.c:3026 src/network/bridge_driver.c:3127
+#: src/network/bridge_driver.c:3030 src/network/bridge_driver.c:3131
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr ""
 
-#: src/network/bridge_driver.c:3051 src/network/bridge_driver.c:3150
+#: src/network/bridge_driver.c:3055 src/network/bridge_driver.c:3154
 #, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr ""
 
-#: src/network/bridge_driver.c:3067
+#: src/network/bridge_driver.c:3071
 #, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr ""
 
-#: src/network/bridge_driver.c:3220
+#: src/network/bridge_driver.c:3224
 #, c-format
 msgid "network '%s' doesn't have an IPv4 address"
 msgstr ""
 
-#: src/network/bridge_driver.c:3242
+#: src/network/bridge_driver.c:3246
 #, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr ""
@@ -13754,37 +13754,37 @@ msgstr ""
 msgid "Failed to create mDNS client: %s"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:222
+#: src/rpc/virnetserverprogram.c:229
 #, c-format
 msgid "Cannot find program %d version %d"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:274
+#: src/rpc/virnetserverprogram.c:281
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:281
+#: src/rpc/virnetserverprogram.c:288
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "आवृत्ती समजुळवणी नाही (प्रत्यक्ष %x, अपेक्षीत %x)"
 
-#: src/rpc/virnetserverprogram.c:311
+#: src/rpc/virnetserverprogram.c:318
 #, c-format
 msgid "Unexpected message type %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:367
+#: src/rpc/virnetserverprogram.c:374
 #, c-format
 msgid "Unexpected message status %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:376
+#: src/rpc/virnetserverprogram.c:383
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "अपरिचीत कार्यपद्धती: %d"
 
-#: src/rpc/virnetserverprogram.c:390
+#: src/rpc/virnetserverprogram.c:397
 msgid "authentication required"
 msgstr "अधिप्रमाणन आवश्यक"
 

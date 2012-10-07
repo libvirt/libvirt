@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ta\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:16-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2009-12-09 16:10+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <trans-ta@lists.fedoraproject.org>\n"
@@ -7233,7 +7233,7 @@ msgstr "செயற்களத்திற்கான நினைவகத�
 msgid "unable to get swap hard limit"
 msgstr "cpu பகிர்வுகளை பெற முடியவில்லை"
 
-#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1832
+#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1836
 #: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8005
 #: src/util/virnetdevmacvlan.c:939
 #, fuzzy, c-format
@@ -7562,7 +7562,7 @@ msgid "Failed to create symlink '%s to '%s'"
 msgstr "%s லிருந்து %s க்கு symlinkஐ உருவாக்க முடியவில்லை"
 
 #: src/lxc/lxc_driver.c:3522 src/libxl/libxl_driver.c:3477
-#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5919
+#: src/network/bridge_driver.c:2664 src/qemu/qemu_driver.c:5919
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2282
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -8143,255 +8143,255 @@ msgstr "முனை தகவலை பெறுவதில் தோல்வ
 msgid "Failed to get version info from libxenlight"
 msgstr "வட்டு தகவலை பெற முடியவில்லை"
 
-#: src/network/bridge_driver.c:730 src/network/bridge_driver.c:736
-#: src/network/bridge_driver.c:748 src/network/bridge_driver.c:815
-#: src/network/bridge_driver.c:821
+#: src/network/bridge_driver.c:734 src/network/bridge_driver.c:740
+#: src/network/bridge_driver.c:752 src/network/bridge_driver.c:819
+#: src/network/bridge_driver.c:825
 #, c-format
 msgid "cannot create directory %s"
 msgstr "அடைவை %sஐ உருவாக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:807
+#: src/network/bridge_driver.c:811
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr ""
 
-#: src/network/bridge_driver.c:853
+#: src/network/bridge_driver.c:857
 #, fuzzy, c-format
 msgid "bridge  '%s' has an invalid prefix"
 msgstr "பாலம் பெயர் '%s' ஏற்கனவே பயனில் உள்ளது."
 
-#: src/network/bridge_driver.c:889
+#: src/network/bridge_driver.c:893
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "கட்டமைப்பு கோப்பு '%s'ஐ எழுத முடியவில்லை"
 
-#: src/network/bridge_driver.c:939 src/network/bridge_driver.c:1113
+#: src/network/bridge_driver.c:943 src/network/bridge_driver.c:1117
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "தவறான பஸ் வகை '%s' கான வட்டு"
 
-#: src/network/bridge_driver.c:951
+#: src/network/bridge_driver.c:955
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr "'%s'லிருந்து iptables விதியை முன்னோக்கிச் செல்ல அனுமதிக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:965
+#: src/network/bridge_driver.c:969
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr "iptables விதியை '%s'க்கு முன்னோக்கிச் செல்ல அனுமதிக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1001
+#: src/network/bridge_driver.c:1005
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable masquerading to %s"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1002
+#: src/network/bridge_driver.c:1006
 #, fuzzy
 msgid "failed to add iptables rule to enable masquerading"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1015
+#: src/network/bridge_driver.c:1019
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to %s"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1016
+#: src/network/bridge_driver.c:1020
 #, fuzzy
 msgid "failed to add iptables rule to enable UDP masquerading"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1029
+#: src/network/bridge_driver.c:1033
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to %s"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1030
+#: src/network/bridge_driver.c:1034
 #, fuzzy
 msgid "failed to add iptables rule to enable TCP masquerading"
 msgstr "iptables விதியை masqueradingஐ %sக்கு செயல்படுத்த சேர்க்க முடியவில்லை\n"
 
-#: src/network/bridge_driver.c:1125
+#: src/network/bridge_driver.c:1129
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr "iptables விதியை'%s'லிருந்து தடம் பதிக்கும் போது சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1137
+#: src/network/bridge_driver.c:1141
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr "iptables விதியை '%s'க்கு வழித்தடமிட சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1191
+#: src/network/bridge_driver.c:1195
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block outbound traffic from '%s'"
 msgstr "iptables விதியை '%s'லிருந்து போக்குவரத்தை தடுக்க சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1199
+#: src/network/bridge_driver.c:1203
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block inbound traffic to '%s'"
 msgstr "iptables விதியை '%s'இன் உள்ளமை போக்குவரத்தை சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1208
+#: src/network/bridge_driver.c:1212
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow cross bridge traffic on '%s'"
 msgstr "iptables விதியை '%s'ல் பாலத்தை கடப்பதை சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1217 src/network/bridge_driver.c:1225
+#: src/network/bridge_driver.c:1221 src/network/bridge_driver.c:1229
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow DNS requests from '%s'"
 msgstr "iptables விதியை DNS கோரிக்கைக்கு '%s' லிருந்து சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1278 src/network/bridge_driver.c:1286
+#: src/network/bridge_driver.c:1282 src/network/bridge_driver.c:1290
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr "iptables விதியை DHCP கோரிக்கைகளை '%s'லிருந்து சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1309 src/network/bridge_driver.c:1317
+#: src/network/bridge_driver.c:1313 src/network/bridge_driver.c:1321
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr "iptables விதியை DNS கோரிக்கைக்கு '%s' லிருந்து சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1327
+#: src/network/bridge_driver.c:1331
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr "iptables விதியை DHCP கோரிக்கைகளை '%s'லிருந்து சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1337
+#: src/network/bridge_driver.c:1341
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr "iptables விதியை '%s'லிருந்து போக்குவரத்தை தடுக்க சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1345
+#: src/network/bridge_driver.c:1349
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr "iptables விதியை '%s'இன் உள்ளமை போக்குவரத்தை சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1354
+#: src/network/bridge_driver.c:1358
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr "iptables விதியை '%s'ல் பாலத்தை கடப்பதை சேர்க்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1573
+#: src/network/bridge_driver.c:1577
 #, fuzzy, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
 msgstr "mac முகவரிகளை பாலத்தில் '%s'ஐ வடிக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1595 src/network/bridge_driver.c:1611
+#: src/network/bridge_driver.c:1599 src/network/bridge_driver.c:1615
 #, c-format
 msgid "cannot disable %s"
 msgstr "%sஐ செயல்நீக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:1704
+#: src/network/bridge_driver.c:1708
 #, fuzzy, c-format
 msgid "Network is already in use by interface %s"
 msgstr "பிணையம் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/network/bridge_driver.c:1725
+#: src/network/bridge_driver.c:1729
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:1817
+#: src/network/bridge_driver.c:1821
 msgid "failed to enable IP forwarding"
 msgstr "IP முன்னனுப்புதலை செயல்படுத்த முடியவில்லை"
 
-#: src/network/bridge_driver.c:1966
+#: src/network/bridge_driver.c:1970
 msgid "network is already active"
 msgstr "பிணையம் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/network/bridge_driver.c:2068 src/network/bridge_driver.c:2396
-#: src/network/bridge_driver.c:2483 src/network/bridge_driver.c:2506
-#: src/network/bridge_driver.c:2545 src/network/bridge_driver.c:2600
-#: src/network/bridge_driver.c:2625
+#: src/network/bridge_driver.c:2072 src/network/bridge_driver.c:2400
+#: src/network/bridge_driver.c:2487 src/network/bridge_driver.c:2510
+#: src/network/bridge_driver.c:2549 src/network/bridge_driver.c:2604
+#: src/network/bridge_driver.c:2629
 msgid "no network with matching uuid"
 msgstr "uuidஉடன் பிணைய பொருத்தம் இல்லை"
 
-#: src/network/bridge_driver.c:2091 src/network/bridge_driver.c:2761
-#: src/network/bridge_driver.c:3018 src/network/bridge_driver.c:3119
-#: src/network/bridge_driver.c:3206
+#: src/network/bridge_driver.c:2095 src/network/bridge_driver.c:2765
+#: src/network/bridge_driver.c:3022 src/network/bridge_driver.c:3123
+#: src/network/bridge_driver.c:3210
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "பொருந்தும் பெயர் '%s'உடன் பிணையம் இல்லை"
 
-#: src/network/bridge_driver.c:2341
+#: src/network/bridge_driver.c:2345
 msgid ""
 "Multiple dhcp sections found. dhcp is supported only for a single IPv4 "
 "address on each network"
 msgstr ""
 
-#: src/network/bridge_driver.c:2402
+#: src/network/bridge_driver.c:2406
 msgid "network is still active"
 msgstr "பிணையம் இன்னும் செயலில் உள்ளது"
 
-#: src/network/bridge_driver.c:2512
+#: src/network/bridge_driver.c:2516
 msgid "network is not active"
 msgstr "பிணையம் செயலில் இல்லை"
 
-#: src/network/bridge_driver.c:2568
+#: src/network/bridge_driver.c:2572
 msgid "no network with matching id"
 msgstr "பொருந்தும் idஉடன் பிணையம் இல்லை"
 
-#: src/network/bridge_driver.c:2574 src/test/test_driver.c:3266
+#: src/network/bridge_driver.c:2578 src/test/test_driver.c:3266
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "பிணையம் '%s' ஒரு பாலம் பெயர் இல்லை."
 
-#: src/network/bridge_driver.c:2631
+#: src/network/bridge_driver.c:2635
 msgid "cannot set autostart for transient network"
 msgstr "transient பிணையத்திற்கு தானியக்க துவக்கத்தை அமைக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:2646
+#: src/network/bridge_driver.c:2650
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "%s தானியக்கி துவக்க அடைவினை உருவாக்க முடியாது"
 
-#: src/network/bridge_driver.c:2653 src/storage/storage_driver.c:1055
+#: src/network/bridge_driver.c:2657 src/storage/storage_driver.c:1055
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "%s லிருந்து %s க்கு symlinkஐ உருவாக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:2877 src/network/bridge_driver.c:3033
-#: src/network/bridge_driver.c:3134
+#: src/network/bridge_driver.c:2881 src/network/bridge_driver.c:3037
+#: src/network/bridge_driver.c:3138
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 
-#: src/network/bridge_driver.c:2895
+#: src/network/bridge_driver.c:2899
 #, fuzzy, c-format
 msgid "Could not get Virtual functions on %s"
 msgstr "அதிகபட்ச vcpus செயற்களத்திற்கு வரையறுக்க முடியவில்லை"
 
-#: src/network/bridge_driver.c:2902
+#: src/network/bridge_driver.c:2906
 #, c-format
 msgid "No Vf's present on SRIOV PF %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:2955
+#: src/network/bridge_driver.c:2959
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr ""
 
-#: src/network/bridge_driver.c:3026 src/network/bridge_driver.c:3127
+#: src/network/bridge_driver.c:3030 src/network/bridge_driver.c:3131
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr ""
 
-#: src/network/bridge_driver.c:3051 src/network/bridge_driver.c:3150
+#: src/network/bridge_driver.c:3055 src/network/bridge_driver.c:3154
 #, fuzzy, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr "பிணையம் '%s' ஒரு பாலம் பெயர் இல்லை."
 
-#: src/network/bridge_driver.c:3067
+#: src/network/bridge_driver.c:3071
 #, fuzzy, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr "பிணையம் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/network/bridge_driver.c:3220
+#: src/network/bridge_driver.c:3224
 #, fuzzy, c-format
 msgid "network '%s' doesn't have an IPv4 address"
 msgstr "பிணையம் '%s' ஒரு பாலம் பெயர் இல்லை."
 
-#: src/network/bridge_driver.c:3242
+#: src/network/bridge_driver.c:3246
 #, fuzzy, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr "பிணையம் '%s' ஒரு பாலம் பெயர் இல்லை."
@@ -14406,37 +14406,37 @@ msgstr "NIC உடன் '%s'ஐ சேர்க்க முடியவில�
 msgid "Failed to create mDNS client: %s"
 msgstr "சாக்கெட்டை உருவாக்க முடியவில்லை: %s"
 
-#: src/rpc/virnetserverprogram.c:222
+#: src/rpc/virnetserverprogram.c:229
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "%s பதிப்பை இடைநிறுத்த முடியவில்லைல்லை"
 
-#: src/rpc/virnetserverprogram.c:274
+#: src/rpc/virnetserverprogram.c:281
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "நிரல் பொருந்தவில்லை (actual %x, expected %x)"
 
-#: src/rpc/virnetserverprogram.c:281
+#: src/rpc/virnetserverprogram.c:288
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "பதிப்பு முரண் (இருப்பது %x, எதிர்ப்பார்க்கப்பட்டது %x)"
 
-#: src/rpc/virnetserverprogram.c:311
+#: src/rpc/virnetserverprogram.c:318
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "எதிர்பார்க்காத இரகசிய பயன்பாட்டு வகை %d"
 
-#: src/rpc/virnetserverprogram.c:367
+#: src/rpc/virnetserverprogram.c:374
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "%sல் எதிர்பாராத இடப்பெயர்வு நிலை "
 
-#: src/rpc/virnetserverprogram.c:376
+#: src/rpc/virnetserverprogram.c:383
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "தெரியாத செயல்பாடு: %d"
 
-#: src/rpc/virnetserverprogram.c:390
+#: src/rpc/virnetserverprogram.c:397
 msgid "authentication required"
 msgstr "அங்கீகாரம் தேவைப்படுகிறது"
 
