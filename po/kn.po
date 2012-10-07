@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.kn\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2010-04-22 18:26+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kn@li.org>\n"
@@ -12988,37 +12988,37 @@ msgstr "'%s' ಯೊಂದಿಗೆ NIC ಯನ್ನು ಸೇರಿಸುವಲ�
 msgid "Failed to create mDNS client: %s"
 msgstr "ಸಾಕೆಟನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "%s ಆವೃತ್ತಿಯನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %x, ಆದರೆ %x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "ಆವೃತ್ತಿ ತಾಳೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %x, %x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಸೀಕ್ರೆಟ್‌ ಬಳಕೆಯ ಬಗೆ %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "%s ನಲ್ಲಿ ಅನಿರೀಕ್ಷಿತ ವರ್ಗಾವಣೆ ಸ್ಥಿತಿ"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "ಅಜ್ಞಾತ ವಿಧಾನ : %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ"
 

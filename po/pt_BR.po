@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2009-07-10 21:10-0300\n"
 "Last-Translator: Mario Italo Filizzola Junior <marioitalo@yahoo.com.br>\n"
 "Language-Team: Brazilian Portuguese <trans-pt_br@lists.fedoraproject.org>\n"
@@ -13160,37 +13160,37 @@ msgstr "falha ao adicionar o dispositivo %s para %s"
 msgid "Failed to create mDNS client: %s"
 msgstr "Falha ao criar socket: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "não foi possível analisar a versão %s"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "os programas não coincidem (real %x, esperado %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "as versões não coincidem (real %x, esperada %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "tipo de rede %d inesperado"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "tipo de domínio %d inesperado"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "procedimento desconhecido: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "autenticação requerida"
 

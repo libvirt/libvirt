@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2011-09-14 15:15+0000\n"
 "Last-Translator: veillard <veillard@redhat.com>\n"
 "Language-Team: French (http://www.transifex.net/projects/p/libvirt/team/"
@@ -12392,37 +12392,37 @@ msgstr ""
 msgid "Failed to create mDNS client: %s"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, c-format
 msgid "Cannot find program %d version %d"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "la version ne correspond pas (actuelle %x, attendue %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, c-format
 msgid "Unexpected message type %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, c-format
 msgid "Unexpected message status %u"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "procédure inconnue : %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "authentification requise"
 

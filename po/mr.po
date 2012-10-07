@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2010-04-07 10:51+0530\n"
 "Last-Translator: Sandeep Shedmake <sshedmak@redhat.com>\n"
 "Language-Team: Marathi <maajhe-sanganak@freelists.org>\n"
@@ -12923,37 +12923,37 @@ msgstr "'%s' NIC समावेश करण्यास अपयशी"
 msgid "Failed to create mDNS client: %s"
 msgstr "सॉकेट निर्माण करण्यास अपयशी: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "आवृत्ती %s वाचणे अशक्य"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "कार्यक्रम जुळवणी अशक्य (प्रत्यक्ष %x, अपेक्षीत %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "आवृत्ती समजुळवणी नाही (प्रत्यक्ष %x, अपेक्षीत %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "अनपेक्षीत गोपणीयता वापर प्रकार %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "%s मधील अनपेक्षीत स्थानांतरन स्थिती"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "अपरिचीत कार्यपद्धती: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "अधिप्रमाणन आवश्यक"
 

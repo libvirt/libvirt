@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2010-04-06 19:23+0530\n"
 "Last-Translator: Krishna Babu K <kkrothap@redhat.com>\n"
 "Language-Team: Telugu <te@li.org>\n"
@@ -12910,37 +12910,37 @@ msgstr "NICను '%s'తో జతచేయుటకు విఫలమైం�
 msgid "Failed to create mDNS client: %s"
 msgstr "సాకెట్ సృష్టించుటలో విఫలమైంది: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "వర్షన్ %s పార్శ్ చేయలేదు"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "ప్రోగ్రామ్ తేడా (యాధార్ధం %x, అనుకొన్నది %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "వర్షన్ తేడా (యధార్ధం %x, అనుకొన్నది %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "అనుకోని రహస్య వినియోగ రకము %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "%s నందు అనుకోని మైగ్రేషన్ స్థితి"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "తెలియని విధానము: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "ధృవీకరణ అవసరమైంది"
 

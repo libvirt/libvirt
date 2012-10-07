@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2007-07-28 23:55+0200\n"
 "Last-Translator: Arangel Angov <arangel@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
@@ -12888,37 +12888,37 @@ msgstr "не успеав да ја добијам мрежата „%s“"
 msgid "Failed to create mDNS client: %s"
 msgstr "Не успеав да прочитам од приклучникот %d\n"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "не можев да се поврзам со %s"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr ""
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "неочекуван mime-тип"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "неочекувани податоци „%s“"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, fuzzy, c-format
 msgid "unknown procedure: %d"
 msgstr "добив непознат код за HTTP-грешка %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 #, fuzzy
 msgid "authentication required"
 msgstr "операцијата не успеа"

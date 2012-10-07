@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2010-11-27 22:11+0100\n"
 "Last-Translator: Zdenek Styblik <stybla@turnovfree.net>\n"
 "Language-Team: czech <libvir-list@redhat.com>\n"
@@ -12679,37 +12679,37 @@ msgstr "Selhalo vytvoření polkit akce %s"
 msgid "Failed to create mDNS client: %s"
 msgstr "Nezdařilo se vytvořit socket: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "nelze najít cgroup pro doménu %s"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "program nesouhlasí (aktuální %x, očekávaný %x nebo %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "verze nesouhlasí (aktuální %x, očekávaná %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "neočekávaný typ systému souborů %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "neočekávaná vlastnost '%s'"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "neznámá procedura: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "je požadována autentizace"
 

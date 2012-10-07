@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2009-12-10 13:23+0530\n"
 "Last-Translator: Rajesh Ranjan <rajesh672@gmail.com>\n"
 "Language-Team: Hindi <hindi.sf.net>\n"
@@ -12999,37 +12999,37 @@ msgstr "NIC को '%s' के साथ जोड़ने में विफ�
 msgid "Failed to create mDNS client: %s"
 msgstr "सॉकेट बनाने में विफल: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "संस्करण %s का विश्लेषण नहीं कर सकता है"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "प्रोग्राम बेमेल (actual %x, expected %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "संस्करण बेमेल (actual %x, expected %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "अप्रत्याशित गुप्त प्रयोग प्रकार %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "अप्रत्याशित डोमेन स्थिति %s में"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "अज्ञात प्रक्रिया: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "सत्यापन जरूरी"
 

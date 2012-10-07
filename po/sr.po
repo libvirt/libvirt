@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:18-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2008-10-21 22:22+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian <trans-sr@lists.fedoraproject.org>\n"
@@ -13081,37 +13081,37 @@ msgstr "неуспело добављање мреже „%s“"
 msgid "Failed to create mDNS client: %s"
 msgstr "Неуспело прављење прикључка: %s"
 
-#: src/rpc/virnetserverprogram.c:221
+#: src/rpc/virnetserverprogram.c:228
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "не могу да отворим %s: %s"
 
-#: src/rpc/virnetserverprogram.c:273
+#: src/rpc/virnetserverprogram.c:280
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "неусаглашеност програма (добијено %x, очекивано %x)"
 
-#: src/rpc/virnetserverprogram.c:280
+#: src/rpc/virnetserverprogram.c:287
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "неусаглашеност верзије (добијено %x, очекивано %x)"
 
-#: src/rpc/virnetserverprogram.c:309
+#: src/rpc/virnetserverprogram.c:316
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "неочекивана врста домена %d"
 
-#: src/rpc/virnetserverprogram.c:352
+#: src/rpc/virnetserverprogram.c:359
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "неочекивана врста домена %d"
 
-#: src/rpc/virnetserverprogram.c:361
+#: src/rpc/virnetserverprogram.c:368
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "непозната процедура: %d"
 
-#: src/rpc/virnetserverprogram.c:375
+#: src/rpc/virnetserverprogram.c:382
 msgid "authentication required"
 msgstr "аутентификација неопходна"
 
