@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.kn\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-08-12 21:16-0400\n"
+"POT-Creation-Date: 2012-10-07 17:35-0400\n"
 "PO-Revision-Date: 2010-04-22 18:26+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kn@li.org>\n"
@@ -7231,7 +7231,7 @@ msgstr "ಡೊಮೈನ್‌ಗಾಗಿ ಮೆಮೊರಿ ಮಿತಿಯನ�
 msgid "unable to get swap hard limit"
 msgstr "cpu ಹಂಚಿಕೆಗಳನ್ನು ಹೊಂದಿಕೊಳ್ಳುವಂತೆ ಪಡೆಯಲಾಗಿಲ್ಲ"
 
-#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1832
+#: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1836
 #: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8005
 #: src/util/virnetdevmacvlan.c:939
 #, fuzzy, c-format
@@ -7560,7 +7560,7 @@ msgid "Failed to create symlink '%s to '%s'"
 msgstr "ಸಿಮ್‌ಲಿಂಕ್‌ '%s' ಅನ್ನು '%s' ಗಾಗಿ ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #: src/lxc/lxc_driver.c:3522 src/libxl/libxl_driver.c:3477
-#: src/network/bridge_driver.c:2660 src/qemu/qemu_driver.c:5919
+#: src/network/bridge_driver.c:2664 src/qemu/qemu_driver.c:5919
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2282
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -8141,278 +8141,278 @@ msgstr "ಜಾಲಘಟಕದ ಬಗ್ಗೆ ಮಾಹಿತಿಯನ್ನು 
 msgid "Failed to get version info from libxenlight"
 msgstr "ಡಿಸ್ಕ್‍ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:730 src/network/bridge_driver.c:736
-#: src/network/bridge_driver.c:748 src/network/bridge_driver.c:815
-#: src/network/bridge_driver.c:821
+#: src/network/bridge_driver.c:734 src/network/bridge_driver.c:740
+#: src/network/bridge_driver.c:752 src/network/bridge_driver.c:819
+#: src/network/bridge_driver.c:825
 #, c-format
 msgid "cannot create directory %s"
 msgstr "ಕೋಶ %s ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:807
+#: src/network/bridge_driver.c:811
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr ""
 
-#: src/network/bridge_driver.c:853
+#: src/network/bridge_driver.c:857
 #, fuzzy, c-format
 msgid "bridge  '%s' has an invalid prefix"
 msgstr "ಬ್ರಿಡ್ಜ್‌ ಹೆಸರು '%s' ಈಗಾಗಲೆ ಬಳಕೆಯಲ್ಲಿದೆ."
 
-#: src/network/bridge_driver.c:889
+#: src/network/bridge_driver.c:893
 #, fuzzy, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "'%s' ಸಂರಚನಾ ಕಡತಕ್ಕೆ ಬರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:939 src/network/bridge_driver.c:1113
+#: src/network/bridge_driver.c:943 src/network/bridge_driver.c:1117
 #, fuzzy, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "ಮೆಮೊರಿ ಗಾತ್ರಕ್ಕಾಗಿನ %d ನ ಅಮಾನ್ಯವಾದ ಮೌಲ್ಯ"
 
-#: src/network/bridge_driver.c:951
+#: src/network/bridge_driver.c:955
 #, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s'"
 msgstr ""
 "'%s' ಇಂದ ಫಾರ್ವಾಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:965
+#: src/network/bridge_driver.c:969
 #, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s'"
 msgstr ""
 "'%s' ಗೆ ಫಾರ್ವಾಡಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1001
+#: src/network/bridge_driver.c:1005
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable masquerading to %s"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1002
+#: src/network/bridge_driver.c:1006
 #, fuzzy
 msgid "failed to add iptables rule to enable masquerading"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1015
+#: src/network/bridge_driver.c:1019
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable UDP masquerading to %s"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1016
+#: src/network/bridge_driver.c:1020
 #, fuzzy
 msgid "failed to add iptables rule to enable UDP masquerading"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1029
+#: src/network/bridge_driver.c:1033
 #, fuzzy, c-format
 msgid "failed to add iptables rule to enable TCP masquerading to %s"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1030
+#: src/network/bridge_driver.c:1034
 #, fuzzy
 msgid "failed to add iptables rule to enable TCP masquerading"
 msgstr ""
 "'%s' ಗೆ ಛದ್ಮವೇಶಗೊಳಿಸುವಿಕೆಯನ್ನು ಶಕ್ತಗೊಳಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ\n"
 
-#: src/network/bridge_driver.c:1125
+#: src/network/bridge_driver.c:1129
 #, c-format
 msgid "failed to add iptables rule to allow routing from '%s'"
 msgstr ""
 "'%s' ಯಿಂದ ರೌಟಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1137
+#: src/network/bridge_driver.c:1141
 #, c-format
 msgid "failed to add iptables rule to allow routing to '%s'"
 msgstr "'%s' ಗೆ ರೌಟಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1191
+#: src/network/bridge_driver.c:1195
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block outbound traffic from '%s'"
 msgstr "'%s' ಯಿಂದ ಹೊರಹೋಗುವ ಟ್ರಾಫಿಕ್‌ಗೆ iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1199
+#: src/network/bridge_driver.c:1203
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to block inbound traffic to '%s'"
 msgstr "'%s' ಗೆ ಒಳಬರುವ ಟ್ರಾಫಿಕ್‌ಗೆ iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1208
+#: src/network/bridge_driver.c:1212
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 "'%s' ನಲ್ಲಿನ ಕ್ರಾಸ್ ಬ್ರಿಡ್ಜ್‌ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1217 src/network/bridge_driver.c:1225
+#: src/network/bridge_driver.c:1221 src/network/bridge_driver.c:1229
 #, fuzzy, c-format
 msgid "failed to add ip6tables rule to allow DNS requests from '%s'"
 msgstr ""
 "'%s' ಇಂದ DNS ಮನವಿಗಳನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1278 src/network/bridge_driver.c:1286
+#: src/network/bridge_driver.c:1282 src/network/bridge_driver.c:1290
 #, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s'"
 msgstr ""
 "'%s' ಇಂದ DHCP ಮನವಿಗಳನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1309 src/network/bridge_driver.c:1317
+#: src/network/bridge_driver.c:1313 src/network/bridge_driver.c:1321
 #, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s'"
 msgstr ""
 "'%s' ಇಂದ DNS ಮನವಿಗಳನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1327
+#: src/network/bridge_driver.c:1331
 #, fuzzy, c-format
 msgid "failed to add iptables rule to allow TFTP requests from '%s'"
 msgstr ""
 "'%s' ಇಂದ DHCP ಮನವಿಗಳನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1337
+#: src/network/bridge_driver.c:1341
 #, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s'"
 msgstr "'%s' ಯಿಂದ ಹೊರಹೋಗುವ ಟ್ರಾಫಿಕ್‌ಗೆ iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1345
+#: src/network/bridge_driver.c:1349
 #, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s'"
 msgstr "'%s' ಗೆ ಒಳಬರುವ ಟ್ರಾಫಿಕ್‌ಗೆ iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1354
+#: src/network/bridge_driver.c:1358
 #, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s'"
 msgstr ""
 "'%s' ನಲ್ಲಿನ ಕ್ರಾಸ್ ಬ್ರಿಡ್ಜ್‌ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಅನುಮತಿಸಲು iptables ನಿಯಮಗಳನ್ನು ಸೇರಿಸುವಲ್ಲಿ "
 "ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1573
+#: src/network/bridge_driver.c:1577
 #, fuzzy, c-format
 msgid "cannot write to %s to disable IPv6 on bridge %s"
 msgstr "ಬ್ರಿಡ್ಜ್‌ '%s' ನಲ್ಲಿ mac ವಿಳಾಸವನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:1595 src/network/bridge_driver.c:1611
+#: src/network/bridge_driver.c:1599 src/network/bridge_driver.c:1615
 #, c-format
 msgid "cannot disable %s"
 msgstr "%s ಅನ್ನು ಅಶಕ್ತಗೊಳಿಸಲಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:1704
+#: src/network/bridge_driver.c:1708
 #, fuzzy, c-format
 msgid "Network is already in use by interface %s"
 msgstr "ಜಾಲಬಂಧವು ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
 
-#: src/network/bridge_driver.c:1725
+#: src/network/bridge_driver.c:1729
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:1817
+#: src/network/bridge_driver.c:1821
 msgid "failed to enable IP forwarding"
 msgstr "IP ಫಾರ್ವಾರ್ಡಿಂಗ್ ಅನ್ನು ಶಕ್ತಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:1966
+#: src/network/bridge_driver.c:1970
 msgid "network is already active"
 msgstr "ಜಾಲಬಂಧವು ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
 
-#: src/network/bridge_driver.c:2068 src/network/bridge_driver.c:2396
-#: src/network/bridge_driver.c:2483 src/network/bridge_driver.c:2506
-#: src/network/bridge_driver.c:2545 src/network/bridge_driver.c:2600
-#: src/network/bridge_driver.c:2625
+#: src/network/bridge_driver.c:2072 src/network/bridge_driver.c:2400
+#: src/network/bridge_driver.c:2487 src/network/bridge_driver.c:2510
+#: src/network/bridge_driver.c:2549 src/network/bridge_driver.c:2604
+#: src/network/bridge_driver.c:2629
 msgid "no network with matching uuid"
 msgstr "ತಾಳೆಯಾಗುವ uuidಗೆ ಹೊಂದುವ ಯಾವುದೆ ಜಾಲಬಂಧ ಇಲ್ಲ"
 
-#: src/network/bridge_driver.c:2091 src/network/bridge_driver.c:2761
-#: src/network/bridge_driver.c:3018 src/network/bridge_driver.c:3119
-#: src/network/bridge_driver.c:3206
+#: src/network/bridge_driver.c:2095 src/network/bridge_driver.c:2765
+#: src/network/bridge_driver.c:3022 src/network/bridge_driver.c:3123
+#: src/network/bridge_driver.c:3210
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "'%s' ಹೆಸರಿಗೆ ತಾಳೆಯಾಗುವ ಯಾವುದೆ ಜಾಲಬಂಧ ಇಲ್ಲ"
 
-#: src/network/bridge_driver.c:2341
+#: src/network/bridge_driver.c:2345
 msgid ""
 "Multiple dhcp sections found. dhcp is supported only for a single IPv4 "
 "address on each network"
 msgstr ""
 
-#: src/network/bridge_driver.c:2402
+#: src/network/bridge_driver.c:2406
 msgid "network is still active"
 msgstr "ಜಾಲಬಂಧವು ಇನ್ನೂ ಸಹ ಸಕ್ರಿಯವಾಗಿದೆ"
 
-#: src/network/bridge_driver.c:2512
+#: src/network/bridge_driver.c:2516
 msgid "network is not active"
 msgstr "ಜಾಲಬಂಧವು ಸಕ್ರಿಯವಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:2568
+#: src/network/bridge_driver.c:2572
 msgid "no network with matching id"
 msgstr "ತಾಳೆಯಾಗುವ ಐಡಿಗೆ ಹೊಂದುವ ಯಾವುದೆ ಜಾಲಬಂಧ ಇಲ್ಲ"
 
-#: src/network/bridge_driver.c:2574 src/test/test_driver.c:3266
+#: src/network/bridge_driver.c:2578 src/test/test_driver.c:3266
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "ಜಾಲಬಂಧ '%s' ವು ಒಂದು ಬ್ರಿಡ್ಜ್ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ."
 
-#: src/network/bridge_driver.c:2631
+#: src/network/bridge_driver.c:2635
 msgid "cannot set autostart for transient network"
 msgstr "ಅಸ್ಥಿರ ಜಾಲಬಂಧಕ್ಕಾಗಿ ಸ್ವಯಂಆರಂಭಿಸುವಿಕೆಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:2646
+#: src/network/bridge_driver.c:2650
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "ಸ್ವಯಂಆರಂಭ ಕೋಶ %s ಅನ್ನು ನಿರ್ಮಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:2653 src/storage/storage_driver.c:1055
+#: src/network/bridge_driver.c:2657 src/storage/storage_driver.c:1055
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "ಸಿಮ್‌ಲಿಂಕ್‌ '%s' ಅನ್ನು '%s' ಗಾಗಿ ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/network/bridge_driver.c:2877 src/network/bridge_driver.c:3033
-#: src/network/bridge_driver.c:3134
+#: src/network/bridge_driver.c:2881 src/network/bridge_driver.c:3037
+#: src/network/bridge_driver.c:3138
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 
-#: src/network/bridge_driver.c:2895
+#: src/network/bridge_driver.c:2899
 #, fuzzy, c-format
 msgid "Could not get Virtual functions on %s"
 msgstr "ಡೊಮೈನ್‌ಗಾಗಿನ ಗರಿಷ್ಟ vcpus ಅನ್ನು ನಿಗದಿಸಲಾಗಿಲ್ಲ"
 
-#: src/network/bridge_driver.c:2902
+#: src/network/bridge_driver.c:2906
 #, c-format
 msgid "No Vf's present on SRIOV PF %s"
 msgstr ""
 
-#: src/network/bridge_driver.c:2955
+#: src/network/bridge_driver.c:2959
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr ""
 
-#: src/network/bridge_driver.c:3026 src/network/bridge_driver.c:3127
+#: src/network/bridge_driver.c:3030 src/network/bridge_driver.c:3131
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr ""
 
-#: src/network/bridge_driver.c:3051 src/network/bridge_driver.c:3150
+#: src/network/bridge_driver.c:3055 src/network/bridge_driver.c:3154
 #, fuzzy, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr "ಜಾಲಬಂಧ '%s' ವು ಒಂದು ಬ್ರಿಡ್ಜ್ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ."
 
-#: src/network/bridge_driver.c:3067
+#: src/network/bridge_driver.c:3071
 #, fuzzy, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr "ಜಾಲಬಂಧವು ಈಗಾಗಲೆ ಸಕ್ರಿಯವಾಗಿದೆ"
 
-#: src/network/bridge_driver.c:3220
+#: src/network/bridge_driver.c:3224
 #, fuzzy, c-format
 msgid "network '%s' doesn't have an IPv4 address"
 msgstr "ಜಾಲಬಂಧ '%s' ವು ಒಂದು ಬ್ರಿಡ್ಜ್ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ."
 
-#: src/network/bridge_driver.c:3242
+#: src/network/bridge_driver.c:3246
 #, fuzzy, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr "ಜಾಲಬಂಧ '%s' ವು ಒಂದು ಬ್ರಿಡ್ಜ್ ಹೆಸರನ್ನು ಹೊಂದಿಲ್ಲ."
@@ -14429,37 +14429,37 @@ msgstr "'%s' ಯೊಂದಿಗೆ NIC ಯನ್ನು ಸೇರಿಸುವಲ�
 msgid "Failed to create mDNS client: %s"
 msgstr "ಸಾಕೆಟನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
 
-#: src/rpc/virnetserverprogram.c:222
+#: src/rpc/virnetserverprogram.c:229
 #, fuzzy, c-format
 msgid "Cannot find program %d version %d"
 msgstr "%s ಆವೃತ್ತಿಯನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
-#: src/rpc/virnetserverprogram.c:274
+#: src/rpc/virnetserverprogram.c:281
 #, fuzzy, c-format
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "ಪ್ರೊಗ್ರಾಂ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %x, ಆದರೆ %x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
-#: src/rpc/virnetserverprogram.c:281
+#: src/rpc/virnetserverprogram.c:288
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "ಆವೃತ್ತಿ ತಾಳೆಯಾಗುತ್ತಿಲ್ಲ (ನಿಜವಾದದ್ದು %x, %x ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು)"
 
-#: src/rpc/virnetserverprogram.c:311
+#: src/rpc/virnetserverprogram.c:318
 #, fuzzy, c-format
 msgid "Unexpected message type %u"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಸೀಕ್ರೆಟ್‌ ಬಳಕೆಯ ಬಗೆ %d"
 
-#: src/rpc/virnetserverprogram.c:367
+#: src/rpc/virnetserverprogram.c:374
 #, fuzzy, c-format
 msgid "Unexpected message status %u"
 msgstr "%s ನಲ್ಲಿ ಅನಿರೀಕ್ಷಿತ ವರ್ಗಾವಣೆ ಸ್ಥಿತಿ"
 
-#: src/rpc/virnetserverprogram.c:376
+#: src/rpc/virnetserverprogram.c:383
 #, c-format
 msgid "unknown procedure: %d"
 msgstr "ಅಜ್ಞಾತ ವಿಧಾನ : %d"
 
-#: src/rpc/virnetserverprogram.c:390
+#: src/rpc/virnetserverprogram.c:397
 msgid "authentication required"
 msgstr "ದೃಢೀಕರಣದ ಅಗತ್ಯವಿದೆ"
 
