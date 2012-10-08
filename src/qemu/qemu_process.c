@@ -3025,23 +3025,27 @@ qemuProcessRecoverJob(struct qemud_driver *driver,
 
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
+    case QEMU_ASYNC_JOB_SNAPSHOT:
         qemuDomainObjEnterMonitor(driver, vm);
         ignore_value(qemuMonitorMigrateCancel(priv->mon));
         qemuDomainObjExitMonitor(driver, vm);
         /* resume the domain but only if it was paused as a result of
-         * running save/dump operation.  Although we are recovering an
-         * async job, this function is run at startup and must resume
-         * things using sync monitor connections.  */
-        if (state == VIR_DOMAIN_PAUSED &&
-            ((job->asyncJob == QEMU_ASYNC_JOB_DUMP &&
-              reason == VIR_DOMAIN_PAUSED_DUMP) ||
-             (job->asyncJob == QEMU_ASYNC_JOB_SAVE &&
-              reason == VIR_DOMAIN_PAUSED_SAVE) ||
-             reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
-            if (qemuProcessStartCPUs(driver, vm, conn,
-                                     VIR_DOMAIN_RUNNING_UNPAUSED,
-                                     QEMU_ASYNC_JOB_NONE) < 0) {
-                VIR_WARN("Could not resume domain %s after", vm->def->name);
+         * running a migration-to-file operation.  Although we are
+         * recovering an async job, this function is run at startup
+         * and must resume things using sync monitor connections.  */
+         if (state == VIR_DOMAIN_PAUSED &&
+             ((job->asyncJob == QEMU_ASYNC_JOB_DUMP &&
+               reason == VIR_DOMAIN_PAUSED_DUMP) ||
+              (job->asyncJob == QEMU_ASYNC_JOB_SAVE &&
+               reason == VIR_DOMAIN_PAUSED_SAVE) ||
+              (job->asyncJob == QEMU_ASYNC_JOB_SNAPSHOT &&
+               reason == VIR_DOMAIN_PAUSED_SNAPSHOT) ||
+              reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
+             if (qemuProcessStartCPUs(driver, vm, conn,
+                                      VIR_DOMAIN_RUNNING_UNPAUSED,
+                                      QEMU_ASYNC_JOB_NONE) < 0) {
+                 VIR_WARN("Could not resume domain '%s' after migration to file",
+                          vm->def->name);
             }
         }
         break;

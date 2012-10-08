@@ -65,6 +65,7 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
               "migration in",
               "save",
               "dump",
+              "snapshot",
 );
 
 
@@ -79,6 +80,7 @@ qemuDomainAsyncJobPhaseToString(enum qemuDomainAsyncJob job,
 
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
+    case QEMU_ASYNC_JOB_SNAPSHOT:
     case QEMU_ASYNC_JOB_NONE:
     case QEMU_ASYNC_JOB_LAST:
         ; /* fall through */
@@ -101,6 +103,7 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 
     case QEMU_ASYNC_JOB_SAVE:
     case QEMU_ASYNC_JOB_DUMP:
+    case QEMU_ASYNC_JOB_SNAPSHOT:
     case QEMU_ASYNC_JOB_NONE:
     case QEMU_ASYNC_JOB_LAST:
         ; /* fall through */
