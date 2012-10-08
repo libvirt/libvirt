@@ -129,10 +129,10 @@ struct _virNetworkIpDef {
     unsigned int prefix;        /* ipv6 - only prefix allowed */
     virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
 
-    unsigned int nranges;        /* Zero or more dhcp ranges */
+    size_t nranges;             /* Zero or more dhcp ranges */
     virNetworkDHCPRangeDefPtr ranges;
 
-    unsigned int nhosts;         /* Zero or more dhcp hosts */
+    size_t nhosts;              /* Zero or more dhcp hosts */
     virNetworkDHCPHostDefPtr hosts;
 
     char *tftproot;

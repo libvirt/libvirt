@@ -2495,27 +2495,15 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                 goto cleanup;
             }
         }
+
         /* add to beginning/end of list */
-        if (VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts +1) < 0) {
+        if (VIR_INSERT_ELEMENT(ipdef->hosts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : ipdef->nhosts,
+                               ipdef->nhosts, host) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-
-        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
-
-            ipdef->hosts[ipdef->nhosts] = host;
-            ipdef->nhosts++;
-            memset(&host, 0, sizeof(host));
-
-        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
-
-            memmove(ipdef->hosts + 1, ipdef->hosts,
-                    sizeof(*ipdef->hosts) * ipdef->nhosts);
-            ipdef->hosts[0] = host;
-            ipdef->nhosts++;
-            memset(&host, 0, sizeof(host));
-        }
-
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, false) < 0)
@@ -2541,10 +2529,8 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 
         /* remove it */
         virNetworkDHCPHostDefClear(&ipdef->hosts[ii]);
-        memmove(ipdef->hosts + ii, ipdef->hosts + ii + 1,
-                sizeof(*ipdef->hosts) * (ipdef->nhosts - ii - 1));
-        ipdef->nhosts--;
-        ignore_value(VIR_REALLOC_N(ipdef->hosts, ipdef->nhosts));
+        VIR_DELETE_ELEMENT(ipdef->hosts, ii, ipdef->nhosts);
+
     } else {
         virNetworkDefUpdateUnknownCommand(command);
         goto cleanup;
@@ -2615,20 +2601,13 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_REALLOC_N(ipdef->ranges, ipdef->nranges +1) < 0) {
+        if (VIR_INSERT_ELEMENT(ipdef->ranges,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : ipdef->nranges,
+                               ipdef->nranges, range) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-
-        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
-            ipdef->ranges[ipdef->nranges] = range;
-        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
-            memmove(ipdef->ranges + 1, ipdef->ranges,
-                    sizeof(*ipdef->ranges) * ipdef->nranges);
-            ipdef->ranges[0] = range;
-        }
-        ipdef->nranges++;
-        memset(&range, 0, sizeof(range));
 
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
@@ -2641,10 +2620,8 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 
         /* remove it */
         /* NB: nothing to clear from a RangeDef that's being freed */
-        memmove(ipdef->ranges + ii, ipdef->ranges + ii + 1,
-                sizeof(*ipdef->ranges) * (ipdef->nranges - ii - 1));
-        ipdef->nranges--;
-        ignore_value(VIR_REALLOC_N(ipdef->ranges, ipdef->nranges));
+        VIR_DELETE_ELEMENT(ipdef->ranges, ii, ipdef->nranges);
+
     } else {
         virNetworkDefUpdateUnknownCommand(command);
         goto cleanup;
@@ -2719,20 +2696,13 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
         }
 
         /* add to beginning/end of list */
-        if (VIR_REALLOC_N(def->forwardIfs, def->nForwardIfs + 1) < 0) {
+        if (VIR_INSERT_ELEMENT(def->forwardIfs,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : def->nForwardIfs,
+                               def->nForwardIfs, iface) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-
-        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
-            def->forwardIfs[def->nForwardIfs] = iface;
-        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
-            memmove(def->forwardIfs + 1, def->forwardIfs,
-                    sizeof(*def->forwardIfs) * def->nForwardIfs);
-            def->forwardIfs[0] = iface;
-        }
-        def->nForwardIfs++;
-        memset(&iface, 0, sizeof(iface));
 
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
@@ -2757,10 +2727,8 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
 
         /* remove it */
         virNetworkForwardIfDefClear(&def->forwardIfs[ii]);
-        memmove(def->forwardIfs + ii, def->forwardIfs + ii + 1,
-                sizeof(*def->forwardIfs) * (def->nForwardIfs - ii - 1));
-        def->nForwardIfs--;
-        ignore_value(VIR_REALLOC_N(def->forwardIfs, def->nForwardIfs));
+        VIR_DELETE_ELEMENT(def->forwardIfs, ii, def->nForwardIfs);
+
     } else {
         virNetworkDefUpdateUnknownCommand(command);
         goto cleanup;
@@ -2855,29 +2823,20 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
         (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
         /* add to beginning/end of list */
-        if (VIR_REALLOC_N(def->portGroups, def->nPortGroups +1) < 0) {
+        if (VIR_INSERT_ELEMENT(def->portGroups,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : def->nPortGroups,
+                               def->nPortGroups, portgroup) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-
-        if (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST) {
-            def->portGroups[def->nPortGroups] = portgroup;
-        } else { /* implied (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) */
-            memmove(def->portGroups + 1, def->portGroups,
-                    sizeof(*def->portGroups) * def->nPortGroups);
-            def->portGroups[0] = portgroup;
-        }
-        def->nPortGroups++;
-        memset(&portgroup, 0, sizeof(portgroup));
 
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         /* remove it */
         virPortGroupDefClear(&def->portGroups[foundName]);
-        memmove(def->portGroups + foundName, def->portGroups + foundName + 1,
-                sizeof(*def->portGroups) * (def->nPortGroups - foundName - 1));
-        def->nPortGroups--;
-        ignore_value(VIR_REALLOC_N(def->portGroups, def->nPortGroups));
+        VIR_DELETE_ELEMENT(def->portGroups, foundName, def->nPortGroups);
+
     } else {
         virNetworkDefUpdateUnknownCommand(command);
         goto cleanup;
