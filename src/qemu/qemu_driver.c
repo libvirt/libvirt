@@ -1673,6 +1673,9 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
         reason = VIR_DOMAIN_PAUSED_MIGRATION;
         eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+    } else if (priv->job.asyncJob == QEMU_ASYNC_JOB_SNAPSHOT) {
+        reason = VIR_DOMAIN_PAUSED_SNAPSHOT;
+        eventDetail = -1; /* don't create lifecycle events when doing snapshot */
     } else {
         reason = VIR_DOMAIN_PAUSED_USER;
         eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
@@ -1687,9 +1690,12 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0) {
             goto endjob;
         }
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_SUSPENDED,
-                                         eventDetail);
+
+        if (eventDetail >= 0) {
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_SUSPENDED,
+                                             eventDetail);
+        }
     }
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto endjob;
@@ -11003,31 +11009,24 @@ cleanup:
 
 /* The domain is expected to be locked and active. */
 static int
-qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
-                                   struct qemud_driver *driver,
-                                   virDomainObjPtr *vmptr,
+qemuDomainSnapshotCreateDiskActive(struct qemud_driver *driver,
+                                   virDomainObjPtr vm,
                                    virDomainSnapshotObjPtr snap,
-                                   unsigned int flags)
+                                   unsigned int flags,
+                                   enum qemuDomainAsyncJob asyncJob)
 {
-    virDomainObjPtr vm = *vmptr;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr actions = NULL;
-    bool resume = false;
     int ret = -1;
     int i;
     bool persist = false;
-    int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
-    bool atomic = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     virCgroupPtr cgroup = NULL;
-
-    if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
-        return -1;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto endjob;
+        goto cleanup;
     }
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES) &&
@@ -11035,46 +11034,12 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to find cgroup for %s"),
                        vm->def->name);
-        goto endjob;
+        goto cleanup;
     }
     /* 'cgroup' is still NULL if cgroups are disabled.  */
 
-    /* If quiesce was requested, then issue a freeze command, and a
-     * counterpart thaw command, no matter what.  The command will
-     * fail if the guest is paused or the guest agent is not
-     * running.  */
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
-        if (qemuDomainSnapshotFSFreeze(driver, vm) < 0) {
-            /* helper reported the error */
-            thaw = -1;
-            goto endjob;
-        } else {
-            thaw = 1;
-        }
-    }
-
-    /* For multiple disks, libvirt must pause externally to get all
-     * snapshots to be at the same point in time, unless qemu supports
-     * transactions.  For a single disk, snapshot is atomic without
-     * requiring a pause.  Thanks to qemuDomainSnapshotPrepare, if
-     * we got to this point, the atomic flag now says whether we need
-     * to pause, and a capability bit says whether to use transaction.
-     */
-    if (!atomic && virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
-                                QEMU_ASYNC_JOB_NONE) < 0)
-            goto cleanup;
-
-        resume = true;
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("guest unexpectedly quit"));
-            goto cleanup;
-        }
-    }
     if (qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
-        actions = virJSONValueNewArray();
-        if (!actions) {
+        if (!(actions = virJSONValueNewArray())) {
             virReportOOMError();
             goto cleanup;
         }
@@ -11085,7 +11050,9 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
      * Based on earlier qemuDomainSnapshotPrepare, all
      * disks in this list are now either SNAPSHOT_NO, or
      * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
     for (i = 0; i < snap->def->ndisks; i++) {
         virDomainDiskDefPtr persistDisk = NULL;
 
@@ -11139,9 +11106,116 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-    if (ret < 0)
+
+cleanup:
+    virCgroupFree(&cgroup);
+
+    if (ret == 0 || !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0 ||
+            (persist && virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
+            ret = -1;
+    }
+
+    return ret;
+}
+
+
+static int
+qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
+                                       struct qemud_driver *driver,
+                                       virDomainObjPtr *vmptr,
+                                       virDomainSnapshotObjPtr snap,
+                                       unsigned int flags)
+{
+    bool resume = false;
+    int ret = -1;
+    virDomainObjPtr vm = *vmptr;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *xml = NULL;
+    bool memory = snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+    bool atomic = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC);
+    bool transaction = qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION);
+    int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
+
+    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
+                                             QEMU_ASYNC_JOB_SNAPSHOT) < 0)
         goto cleanup;
 
+    /* If quiesce was requested, then issue a freeze command, and a
+     * counterpart thaw command, no matter what.  The command will
+     * fail if the guest is paused or the guest agent is not
+     * running.  */
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
+        if (qemuDomainSnapshotFSFreeze(driver, vm) < 0) {
+            /* helper reported the error */
+            thaw = -1;
+            goto endjob;
+        } else {
+            thaw = 1;
+        }
+    }
+
+    /* we need to resume the guest only if it was previously running */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        resume = true;
+
+        /* For external checkpoints (those with memory), the guest
+         * must pause (either by libvirt up front, or by qemu after
+         * _LIVE converges).  For disk-only snapshots with multiple
+         * disks, libvirt must pause externally to get all snapshots
+         * to be at the same point in time, unless qemu supports
+         * transactions.  For a single disk, snapshot is atomic
+         * without requiring a pause.  Thanks to
+         * qemuDomainSnapshotPrepare, if we got to this point, the
+         * atomic flag now says whether we need to pause, and a
+         * capability bit says whether to use transaction.
+         */
+        if ((memory && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)) ||
+            (!memory && atomic && !transaction)) {
+            if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SNAPSHOT,
+                                    QEMU_ASYNC_JOB_SNAPSHOT) < 0)
+                goto endjob;
+
+            if (!virDomainObjIsActive(vm)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("guest unexpectedly quit"));
+                goto endjob;
+            }
+        }
+    }
+
+    /* do the memory snapshot if necessary */
+    if (memory) {
+        /* allow the migration job to be cancelled or the domain to be paused */
+        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
+                                     JOB_MASK(QEMU_JOB_SUSPEND) |
+                                     JOB_MASK(QEMU_JOB_MIGRATION_OP));
+
+        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, false)))
+            goto endjob;
+
+        if ((ret = qemuDomainSaveMemory(driver, vm, snap->def->file,
+                                        xml, QEMUD_SAVE_FORMAT_RAW,
+                                        resume, 0,
+                                        QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+            goto endjob;
+
+        /* forbid any further manipulation */
+        qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK);
+    }
+
+    /* now the domain is now paused if:
+     * - if a memory snapshot was requested
+     * - an atomic snapshot was requested AND
+     *   qemu does not support transactions
+     *
+     * Next we snapshot the disks.
+     */
+    if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap, flags,
+                                                  QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+        goto endjob;
+
+    /* the snapshot is complete now */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         virDomainEventPtr event;
 
@@ -11151,7 +11225,7 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
         virDomainAuditStop(vm, "from-snapshot");
         /* We already filtered the _HALT flag for persistent domains
          * only, so this end job never drops the last reference.  */
-        ignore_value(qemuDomainObjEndJob(driver, vm));
+        ignore_value(qemuDomainObjEndAsyncJob(driver, vm));
         resume = false;
         thaw = 0;
         vm = NULL;
@@ -11159,44 +11233,39 @@ qemuDomainSnapshotCreateDiskActive(virConnectPtr conn,
             qemuDomainEventQueue(driver, event);
     }
 
-cleanup:
-    if (resume && virDomainObjIsActive(vm)) {
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_UNPAUSED,
-                                 QEMU_ASYNC_JOB_NONE) < 0 &&
-            virGetLastError() == NULL) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("resuming after snapshot failed"));
-            goto endjob;
-        }
-    }
-
-    if (vm && (ret == 0 ||
-               !qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION))) {
-        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0 ||
-            (persist &&
-             virDomainSaveConfig(driver->configDir, vm->newDef) < 0))
-            ret = -1;
-    }
+    ret = 0;
 
 endjob:
-    if (cgroup)
-        virCgroupFree(&cgroup);
+    if (resume && vm && virDomainObjIsActive(vm) &&
+        qemuProcessStartCPUs(driver, vm, conn,
+                             VIR_DOMAIN_RUNNING_UNPAUSED,
+                             QEMU_ASYNC_JOB_NONE) < 0 &&
+        virGetLastError() == NULL) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("resuming after snapshot failed"));
+
+        return -1;
+    }
     if (vm && thaw != 0 &&
         qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
         /* helper reported the error, if it was needed */
         if (thaw > 0)
             ret = -1;
     }
-    if (vm && (qemuDomainObjEndJob(driver, vm) == 0)) {
+    if (vm && !qemuDomainObjEndAsyncJob(driver, vm)) {
         /* Only possible if a transient vm quit while our locks were down,
-         * in which case we don't want to save snapshot metadata.  */
+         * in which case we don't want to save snapshot metadata.
+         */
         *vmptr = NULL;
         ret = -1;
     }
 
+cleanup:
+    VIR_FREE(xml);
+
     return ret;
 }
+
 
 static virDomainSnapshotPtr
 qemuDomainSnapshotCreateXML(virDomainPtr domain,
@@ -11223,7 +11292,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
                   VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT |
                   VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, NULL);
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)) {
@@ -11431,21 +11501,46 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
     }
 
+    /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
+        (!virDomainObjIsActive(vm) ||
+         snap->def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
+         flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("live snapshot creation is supported only "
+                         "with external checkpoints"));
+        goto cleanup;
+    }
+    if ((snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
+         snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL) &&
+        flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("disk-only snapshot creation is not compatible with "
+                         "memory snapshot"));
+        goto cleanup;
+    }
+
     /* actually do the snapshot */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         /* XXX Should we validate that the redefined snapshot even
          * makes sense, such as checking that qemu-img recognizes the
          * snapshot name in at least one of the domain's disks?  */
-    } else if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-        if (qemuDomainSnapshotCreateDiskActive(domain->conn, driver,
-                                               &vm, snap, flags) < 0)
-            goto cleanup;
-    } else if (!virDomainObjIsActive(vm)) {
-        if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
-            goto cleanup;
+    } else if (virDomainObjIsActive(vm)) {
+        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
+            snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            /* external checkpoint or disk snapshot */
+            if (qemuDomainSnapshotCreateActiveExternal(domain->conn, driver,
+                                                       &vm, snap, flags) < 0)
+                goto cleanup;
+        } else {
+            /* internal checkpoint */
+            if (qemuDomainSnapshotCreateActiveInternal(domain->conn, driver,
+                                                       &vm, snap, flags) < 0)
+                goto cleanup;
+        }
     } else {
-        if (qemuDomainSnapshotCreateActiveInternal(domain->conn, driver,
-                                                   &vm, snap, flags) < 0)
+        /* inactive */
+        if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
             goto cleanup;
     }
 
