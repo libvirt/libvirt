@@ -69,8 +69,8 @@ static
 int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
 {
     int rc = -1;
-    unsigned int theuid;
-    unsigned int thegid;
+    uid_t theuid;
+    gid_t thegid;
     char *tmp_label = NULL;
     char *sep = NULL;
     char *owner = NULL;
@@ -94,41 +94,12 @@ int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
     owner = tmp_label;
     group = sep + 1;
 
-    /* Parse owner */
-    if (*owner == '+') {
-        if (virStrToLong_ui(++owner, NULL, 10, &theuid) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid uid \"%s\" in DAC label \"%s\""),
-                           owner, label);
-            goto cleanup;
-        }
-    } else {
-        if (virGetUserID(owner, &theuid) < 0 &&
-            virStrToLong_ui(owner, NULL, 10, &theuid) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid owner \"%s\" in DAC label \"%s\""),
-                           owner, label);
-            goto cleanup;
-        }
-    }
-
-    /* Parse group */
-    if (*group == '+') {
-        if (virStrToLong_ui(++group, NULL, 10, &thegid) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid gid \"%s\" in DAC label \"%s\""),
-                           group, label);
-            goto cleanup;
-        }
-    } else {
-        if (virGetGroupID(group, &thegid) < 0 &&
-            virStrToLong_ui(group, NULL, 10, &thegid) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Invalid group \"%s\" in DAC label \"%s\""),
-                           group, label);
-            goto cleanup;
-        }
-    }
+    /* Parse owner and group, error message is defined by
+     * virGetUserID or virGetGroupID.
+     */
+    if (virGetUserID(owner, &theuid) < 0 ||
+        virGetGroupID(group, &thegid) < 0)
+        goto cleanup;
 
     if (uidPtr)
         *uidPtr = theuid;
