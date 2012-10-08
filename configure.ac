@@ -1251,7 +1251,7 @@ if test "$with_dbus" = "yes" ; then
   LIBS="$save_LIBS"
   CFLAGS="$save_CFLAGS"
 fi
-AM_CONDITIONAL([HAVE_DBUS], [test "$have_dbus" = "yes"])
+AM_CONDITIONAL([HAVE_DBUS], [test "$with_dbus" = "yes"])
 
 
 dnl PolicyKit library
