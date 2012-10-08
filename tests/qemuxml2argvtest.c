@@ -407,6 +407,7 @@ mymain(void)
     DO_TEST("cpu-eoi-enabled", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("eoi-disabled", NONE);
     DO_TEST("eoi-enabled", NONE);
+    DO_TEST("kvmclock+eoi-disabled", QEMU_CAPS_ENABLE_KVM);
 
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
     DO_TEST("disk-cdrom", NONE);

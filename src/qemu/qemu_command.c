@@ -4210,6 +4210,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             virBufferAsprintf(&buf, "%s,%ckvmclock",
                               have_cpu ? "" : default_model,
                               sign);
+            have_cpu = true;
             break;
         }
     }
@@ -4224,6 +4225,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         virBufferAsprintf(&buf, "%s,%ckvm_pv_eoi",
                           have_cpu ? "" : default_model,
                           sign);
+        have_cpu = true;
     }
 
     if (virBufferError(&buf))
