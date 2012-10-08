@@ -2495,16 +2495,19 @@ char *virGetGroupName(gid_t gid)
     return virGetGroupEnt(gid);
 }
 
-
-int virGetUserID(const char *name,
-                 uid_t *uid)
+/* Search in the password database for a user id that matches the user name
+ * `name`. Returns 0 on success, -1 on failure or 1 if name cannot be found.
+ */
+static int
+virGetUserIDByName(const char *name, uid_t *uid)
 {
-    char *strbuf;
+    char *strbuf = NULL;
     struct passwd pwbuf;
     struct passwd *pw = NULL;
     long val = sysconf(_SC_GETPW_R_SIZE_MAX);
     size_t strbuflen = val;
     int rc;
+    int ret = -1;
 
     /* sysconf is a hint; if it fails, fall back to a reasonable size */
     if (val < 0)
@@ -2512,48 +2515,81 @@ int virGetUserID(const char *name,
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
-    /*
-     * From the manpage (terrifying but true):
-     *
-     * ERRORS
-     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
-     *        The given name or uid was not found.
-     */
     while ((rc = getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
             virReportOOMError();
-            VIR_FREE(strbuf);
-            return -1;
+            goto cleanup;
         }
     }
-    if (rc != 0 || pw == NULL) {
-        virReportSystemError(rc,
-                             _("Failed to find user record for name '%s'"),
+
+    if (rc != 0) {
+        virReportSystemError(rc, _("Failed to get user record for name '%s'"),
                              name);
-        VIR_FREE(strbuf);
-        return -1;
+        goto cleanup;
+    }
+
+    if (!pw) {
+        VIR_DEBUG("User record for user '%s' does not exist", name);
+        ret = 1;
+        goto cleanup;
     }
 
     *uid = pw->pw_uid;
+    ret = 0;
 
+cleanup:
     VIR_FREE(strbuf);
+
+    return ret;
+}
+
+/* Try to match a user id based on `user`. The default behavior is to parse
+ * `user` first as a user name and then as a user id. However if `user`
+ * contains a leading '+', the rest of the string is always parsed as a uid.
+ *
+ * Returns 0 on success and -1 otherwise.
+ */
+int
+virGetUserID(const char *user, uid_t *uid)
+{
+    unsigned int uint_uid;
+
+    if (*user == '+') {
+        user++;
+    } else {
+        int rc = virGetUserIDByName(user, uid);
+        if (rc <= 0)
+            return rc;
+    }
+
+    if (virStrToLong_ui(user, NULL, 10, &uint_uid) < 0 ||
+        ((uid_t) uint_uid) != uint_uid) {
+        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse user '%s'"),
+                       user);
+        return -1;
+    }
+
+    *uid = uint_uid;
 
     return 0;
 }
 
-
-int virGetGroupID(const char *name,
-                  gid_t *gid)
+/* Search in the group database for a group id that matches the group name
+ * `name`. Returns 0 on success, -1 on failure or 1 if name cannot be found.
+ */
+static int
+virGetGroupIDByName(const char *name, gid_t *gid)
 {
-    char *strbuf;
+    char *strbuf = NULL;
     struct group grbuf;
     struct group *gr = NULL;
     long val = sysconf(_SC_GETGR_R_SIZE_MAX);
     size_t strbuflen = val;
     int rc;
+    int ret = -1;
 
     /* sysconf is a hint; if it fails, fall back to a reasonable size */
     if (val < 0)
@@ -2561,38 +2597,67 @@ int virGetGroupID(const char *name,
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
-    /*
-     * From the manpage (terrifying but true):
-     *
-     * ERRORS
-     *  0 or ENOENT or ESRCH or EBADF or EPERM or ...
-     *        The given name or uid was not found.
-     */
     while ((rc = getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
             virReportOOMError();
-            VIR_FREE(strbuf);
-            return -1;
+            goto cleanup;
         }
     }
-    if (rc != 0 || gr == NULL) {
-        virReportSystemError(rc,
-                             _("Failed to find group record for name '%s'"),
+
+    if (rc != 0) {
+        virReportSystemError(rc, _("Failed to get group record for name '%s'"),
                              name);
-        VIR_FREE(strbuf);
-        return -1;
+        goto cleanup;
+    }
+
+    if (!gr) {
+        VIR_DEBUG("Group record for group '%s' does not exist", name);
+        ret = 1;
+        goto cleanup;
     }
 
     *gid = gr->gr_gid;
+    ret = 0;
 
+cleanup:
     VIR_FREE(strbuf);
+
+    return ret;
+}
+
+/* Try to match a group id based on `group`. The default behavior is to parse
+ * `group` first as a group name and then as a group id. However if `group`
+ * contains a leading '+', the rest of the string is always parsed as a guid.
+ *
+ * Returns 0 on success and -1 otherwise.
+ */
+int
+virGetGroupID(const char *group, gid_t *gid)
+{
+    unsigned int uint_gid;
+
+    if (*group == '+') {
+        group++;
+    } else {
+        int rc = virGetGroupIDByName(group, gid);
+        if (rc <= 0)
+            return rc;
+    }
+
+    if (virStrToLong_ui(group, NULL, 10, &uint_gid) < 0 ||
+        ((gid_t) uint_gid) != uint_gid) {
+        virReportError(VIR_ERR_INVALID_ARG, _("Failed to parse group '%s'"),
+                       group);
+        return -1;
+    }
+
+    *gid = uint_gid;
 
     return 0;
 }
-
 
 /* Set the real and effective uid and gid to the given values, and call
  * initgroups so that the process has all the assumed group membership of
