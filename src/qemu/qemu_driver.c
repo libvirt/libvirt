@@ -10792,14 +10792,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
-            if (def->state != VIR_DOMAIN_DISK_SNAPSHOT) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("system checkpoint external snapshot for "
-                                 "disk %s not implemented yet"),
-                               disk->name);
-                goto cleanup;
-            }
-
             if (!disk->format) {
                 disk->format = VIR_STORAGE_FILE_QCOW2;
             } else if (disk->format != VIR_STORAGE_FILE_QCOW2 &&
@@ -10845,12 +10837,15 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
         }
     }
 
-    if (!found) {
+    /* external snapshot is possible without specifying a disk to snapshot */
+    if (!found &&
+        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("snapshots require at least one disk to be "
-                         "selected for snapshot"));
+                       _("internal and disk-only snapshots require at least "
+                         "one disk to be selected for snapshot"));
         goto cleanup;
     }
+
     if (def->state != VIR_DOMAIN_DISK_SNAPSHOT && active) {
         if (external == 1 ||
             qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION)) {
@@ -11436,7 +11431,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             snap = other;
         }
         if (def->dom) {
-            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT) {
+            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
+                def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
                 align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
                 align_match = false;
             }
@@ -11464,6 +11460,10 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             align_match = false;
             def->state = VIR_DOMAIN_DISK_SNAPSHOT;
             def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            def->state = virDomainObjGetState(vm, NULL);
+            align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+            align_match = false;
         } else {
             def->state = virDomainObjGetState(vm, NULL);
             def->memory = (def->state == VIR_DOMAIN_SHUTOFF ?
