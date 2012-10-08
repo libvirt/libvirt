@@ -432,8 +432,8 @@ qemuMigrationCookieXMLFormat(struct qemud_driver *driver,
         if (qemuDomainDefFormatBuf(driver,
                                    mig->persistent,
                                    VIR_DOMAIN_XML_INACTIVE |
-                                   VIR_DOMAIN_XML_SECURE,
-                                   true,
+                                   VIR_DOMAIN_XML_SECURE |
+                                   VIR_DOMAIN_XML_MIGRATABLE,
                                    buf) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
@@ -1264,7 +1264,7 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
         int hookret;
 
         if (!(xml = qemuDomainDefFormatXML(driver, def,
-                                           VIR_DOMAIN_XML_SECURE, false)))
+                                           VIR_DOMAIN_XML_SECURE)))
             goto cleanup;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
@@ -2213,9 +2213,8 @@ static int doPeer2PeerMigrate2(struct qemud_driver *driver,
      * and pass it to Prepare2.
      */
     if (!(dom_xml = qemuDomainFormatXML(driver, vm,
-                                        VIR_DOMAIN_XML_SECURE |
-                                        VIR_DOMAIN_XML_UPDATE_CPU,
-                                        true)))
+                                        QEMU_DOMAIN_FORMAT_LIVE_FLAGS |
+                                        VIR_DOMAIN_XML_MIGRATABLE)))
         return -1;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)

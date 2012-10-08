@@ -4966,7 +4966,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     if (fd < 0)
         goto cleanup;
 
-    ret = qemuDomainDefFormatXML(driver, def, flags, false);
+    ret = qemuDomainDefFormatXML(driver, def, flags);
 
 cleanup:
     virDomainDefFree(def);
@@ -5010,8 +5010,8 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
 
     xml = qemuDomainDefFormatXML(driver, def,
                                  VIR_DOMAIN_XML_INACTIVE |
-                                 VIR_DOMAIN_XML_SECURE,
-                                 true);
+                                 VIR_DOMAIN_XML_SECURE |
+                                 VIR_DOMAIN_XML_MIGRATABLE);
     if (!xml)
         goto cleanup;
     len = strlen(xml) + 1;
@@ -5161,7 +5161,10 @@ endjob:
         }
     }
 
-    ret = qemuDomainFormatXML(driver, vm, flags, false);
+    if ((flags & VIR_DOMAIN_XML_MIGRATABLE))
+        flags |= QEMU_DOMAIN_FORMAT_LIVE_FLAGS;
+
+    ret = qemuDomainFormatXML(driver, vm, flags);
 
 cleanup:
     if (vm)
@@ -5201,7 +5204,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    xml = qemuDomainDefFormatXML(driver, def, VIR_DOMAIN_XML_INACTIVE, false);
+    xml = qemuDomainDefFormatXML(driver, def, VIR_DOMAIN_XML_INACTIVE);
 
 cleanup:
     virDomainDefFree(def);
@@ -11732,8 +11735,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         if (!(xml = qemuDomainDefFormatXML(driver,
                                            snap->def->dom,
                                            VIR_DOMAIN_XML_INACTIVE |
-                                           VIR_DOMAIN_XML_SECURE,
-                                           false)))
+                                           VIR_DOMAIN_XML_SECURE)))
             goto cleanup;
         config = virDomainDefParseString(driver->caps, xml,
                                          QEMU_EXPECTED_VIRT_TYPES,

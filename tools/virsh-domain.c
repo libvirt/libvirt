@@ -6399,6 +6399,7 @@ static const vshCmdOptDef opts_dumpxml[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("show inactive defined XML")},
     {"security-info", VSH_OT_BOOL, 0, N_("include security sensitive information in XML dump")},
     {"update-cpu", VSH_OT_BOOL, 0, N_("update guest CPU according to host CPU")},
+    {"migratable", VSH_OT_BOOL, 0, N_("provide XML suitable for migrations")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6412,6 +6413,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool secure = vshCommandOptBool(cmd, "security-info");
     bool update = vshCommandOptBool(cmd, "update-cpu");
+    bool migratable = vshCommandOptBool(cmd, "migratable");
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -6419,6 +6421,8 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_XML_SECURE;
     if (update)
         flags |= VIR_DOMAIN_XML_UPDATE_CPU;
+    if (migratable)
+        flags |= VIR_DOMAIN_XML_MIGRATABLE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;

@@ -948,7 +948,7 @@ NOTE: Some hypervisors may require the user to manually ensure proper
 permissions on file and path specified by argument I<corefilepath>.
 
 =item B<dumpxml> I<domain> [I<--inactive>] [I<--security-info>]
-[I<--update-cpu>]
+[I<--update-cpu>] [I<--migratable>]
 
 Output the domain information as an XML dump to stdout, this format can be used
 by the B<create> command. Additional options affecting the XML dump may be
@@ -956,7 +956,10 @@ used. I<--inactive> tells virsh to dump domain configuration that will be used
 on next start of the domain as opposed to the current domain configuration.
 Using I<--security-info> will also include security sensitive information
 in the XML dump. I<--update-cpu> updates domain CPU requirements according to
-host CPU.
+host CPU. With I<--migratable> one can request an XML that is suitable for
+migrations, i.e., compatible with older libvirt releases and possibly amended
+with internal run-time options. This option may automatically enable other
+options (I<--update-cpu>, I<--security-info>, ...) as necessary.
 
 =item B<edit> I<domain>
 

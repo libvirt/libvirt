@@ -46,10 +46,6 @@
 
 #define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
-#define QEMU_DOMAIN_FORMAT_LIVE_FLAGS       \
-    (VIR_DOMAIN_XML_SECURE |                \
-     VIR_DOMAIN_XML_UPDATE_CPU)
-
 VIR_ENUM_IMPL(qemuDomainJob, QEMU_JOB_LAST,
               "none",
               "query",
@@ -1220,7 +1216,6 @@ int
 qemuDomainDefFormatBuf(struct qemud_driver *driver,
                        virDomainDefPtr def,
                        unsigned int flags,
-                       bool compatible,
                        virBuffer *buf)
 {
     int ret = -1;
@@ -1245,7 +1240,7 @@ qemuDomainDefFormatBuf(struct qemud_driver *driver,
         def->cpu = cpu;
     }
 
-    if (compatible) {
+    if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
         int i;
         virDomainControllerDefPtr usb = NULL;
 
@@ -1297,12 +1292,11 @@ cleanup:
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr def,
-                             unsigned int flags,
-                             bool compatible)
+                             unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuDomainDefFormatBuf(driver, def, flags, compatible, &buf) < 0) {
+    if (qemuDomainDefFormatBuf(driver, def, flags, &buf) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -1318,8 +1312,7 @@ char *qemuDomainDefFormatXML(struct qemud_driver *driver,
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          unsigned int flags,
-                          bool compatible)
+                          unsigned int flags)
 {
     virDomainDefPtr def;
 
@@ -1328,7 +1321,7 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
     else
         def = vm->def;
 
-    return qemuDomainDefFormatXML(driver, def, flags, compatible);
+    return qemuDomainDefFormatXML(driver, def, flags);
 }
 
 char *
@@ -1341,8 +1334,10 @@ qemuDomainDefFormatLive(struct qemud_driver *driver,
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
+    if (compatible)
+        flags |= VIR_DOMAIN_XML_MIGRATABLE;
 
-    return qemuDomainDefFormatXML(driver, def, flags, compatible);
+    return qemuDomainDefFormatXML(driver, def, flags);
 }
 
 

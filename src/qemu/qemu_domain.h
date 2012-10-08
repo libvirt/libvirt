@@ -39,6 +39,10 @@
      (1 << VIR_DOMAIN_VIRT_KVM) |      \
      (1 << VIR_DOMAIN_VIRT_XEN))
 
+# define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
+    (VIR_DOMAIN_XML_SECURE |                \
+     VIR_DOMAIN_XML_UPDATE_CPU)
+
 # if ULONG_MAX == 4294967295
 /* Qemu has a 64-bit limit, but we are limited by our historical choice of
  * representing bandwidth in a long instead of a 64-bit int.  */
@@ -253,18 +257,15 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 int qemuDomainDefFormatBuf(struct qemud_driver *driver,
                            virDomainDefPtr vm,
                            unsigned int flags,
-                           bool compatible,
                            virBuffer *buf);
 
 char *qemuDomainDefFormatXML(struct qemud_driver *driver,
                              virDomainDefPtr vm,
-                             unsigned int flags,
-                             bool compatible);
+                             unsigned int flags);
 
 char *qemuDomainFormatXML(struct qemud_driver *driver,
                           virDomainObjPtr vm,
-                          unsigned int flags,
-                          bool compatible);
+                          unsigned int flags);
 
 char *qemuDomainDefFormatLive(struct qemud_driver *driver,
                               virDomainDefPtr def,
