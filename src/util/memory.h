@@ -1,7 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -59,6 +59,13 @@ int virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count,
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t toremove)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+int virInsertElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
+                       size_t add, void *newelem,
+                       bool clearOriginal, bool inPlace)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
+                       size_t remove, bool inPlace)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 int virAllocVar(void *ptrptr,
                 size_t struct_size,
                 size_t element_size,
@@ -157,6 +164,163 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  */
 # define VIR_SHRINK_N(ptr, count, remove) \
     virShrinkN(&(ptr), sizeof(*(ptr)), &(count), remove)
+
+/*
+ * VIR_TYPEMATCH:
+ *
+ * The following macro seems a bit cryptic, so it needs a thorough
+ * explanation. Its purpose is to check for assignment compatibility
+ * and identical size between two values without creating any side
+ * effects (by doing something silly like actually assigning one to
+ * the other). Note that it takes advantage of the C89-guaranteed
+ * property of sizeof() - it cannot have any side effects, so anything
+ * that happens inside sizeof() will not have any effect at runtime.
+ *
+ * VIR_TYPEMATCH evaluates to "1" if the two passed values are both
+ * assignment-compatible and the same size, and otherwise generates a
+ * compile-time error. It determines the result by performing the
+ * following three operations:
+ *
+ *    * sizeof(*(a) = *(b)) assures that *a and *b are
+ *      assignment-compatible (they may still have a different size
+ *      though! e.g. longVar = intVar) (If not, there is a compile-time
+ *      error. If so, the result of that subexpression is sizeof(*(a)),
+ *      i.e. one element of the array)
+ *
+ *    * sizeof(*(a) = *(b)) == sizeof(*(b)) checks if *a and *b are also
+ *      of the same size (so that, e.g. you don't accidentally copy an
+ *      int plus the random bytes following it into an array of long). It
+ *      evaluates to 1 if they are the same, and 0 otherwise.
+ *
+ *    * sizeof(char[2 * (result of previous step) - 1]) evaluates to 1
+ *      if the previous step was successful (char [(2*1) - 1] i.e.
+ *      char[1]), or generates a compile error if it wasn't successful
+ *      (char[2*0 -1] i.e. char[-1], which isn't valid in C).
+ *
+ * So VIR_TYPECHECK(a, b) will either abort the compile with an error,
+ * or evaluate to "1", and in the meantime check that we've actually
+ * added the correct &'s and/or *'s to the arguments. (Whew!)
+*/
+# define VIR_TYPEMATCH(a, b) \
+    sizeof(char[2 * (sizeof(*(a) = *(b)) == sizeof(*(b))) - 1])
+
+/**
+ * VIR_INSERT_ELEMENT:
+ * @ptr:     pointer to array of objects (*not* ptr to ptr)
+ * @at:      index within array where new elements should be added
+ * @count:   variable tracking number of elements currently allocated
+ * @newelem: the new element to move into place (*not* a pointer to
+ *           the element, but the element itself).
+ *           (the original will be zeroed out if successful)
+ *
+ * Re-allocate an array of 'count' elements, each sizeof(*ptr) bytes
+ * long, to be 'count' + 1 elements long, then appropriately move
+ * the elements starting at ptr[at] up by 1 element, copy the
+ * item 'newelem' into ptr[at], then store the address of
+ * allocated memory in 'ptr' and the new size in 'count'.
+ *
+ * VIR_INSERT_ELEMENT_COPY is identical, but doesn't clear out the
+ *   original element to 0 on success, so there are two copies of the
+ *   element. This is useful if the "element" is actually just a
+ *   pointer to the real data, and you want to maintain a reference to
+ *   it for use after the insert is completed; but if the "element" is
+ *   an object that points to other allocated memory, having multiple
+ *   copies can cause problems (e.g. double free).
+ *
+ * VIR_INSERT_ELEMENT_*INPLACE are identical, but assume any necessary
+ *   memory re-allocation has already been done.
+ *
+ * VIR_INSERT_ELEMENT_* all need to send "1" as the "add" argument to
+ * virInsertElementsN (which has the currently-unused capability of
+ * inserting multiple items at once). We use this to our advantage by
+ * replacing it with VIR_TYPECHECK(ptr, &newelem) so that we can be
+ * assured ptr and &newelem are of compatible types.
+ *
+ * Returns -1 on failure, 0 on success
+ *
+ *
+ */
+# define VIR_INSERT_ELEMENT(ptr, at, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
+# define VIR_INSERT_ELEMENT_COPY(ptr, at, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false)
+# define VIR_INSERT_ELEMENT_INPLACE(ptr, at, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true)
+# define VIR_INSERT_ELEMENT_COPY_INPLACE(ptr, at, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true)
+
+/**
+ * VIR_APPEND_ELEMENT:
+ * @ptr:     pointer to array of objects (*not* ptr to ptr)
+ * @count:   variable tracking number of elements currently allocated
+ * @newelem: the new element to move into place (*not* a pointer to
+ *           the element, but the element itself).
+ *           (the original will be zeroed out if successful)
+ *
+ * Re-allocate an array of 'count' elements, each sizeof(*ptr) bytes
+ * long, to be 'count' + 1 elements long, then copy the item from
+ * 'newelem' into ptr[count+1], and store the address of allocated
+ * memory in 'ptr' and the new size in 'count'. If 'newelem' is NULL,
+ * the new element at ptr[at] is instead filled with zero.
+ *
+ * VIR_APPEND_ELEMENT_COPY is identical, but doesn't clear out the
+ *   original element to 0 on success, so there are two copies of the
+ *   element. This is useful if the "element" is actually just a
+ *   pointer to the real data, and you want to maintain a reference to
+ *   it for use after the append is completed; but if the "element" is
+ *   an object that points to other allocated memory, having multiple
+ *   copies can cause problems (e.g. double free).
+ *
+ * VIR_APPEND_ELEMENT_*INPLACE are identical, but assume any
+ *   necessary memory re-allocation has already been done.
+ *
+ * VIR_APPEND_ELEMENT_* all need to send "1" as the "add" argument to
+ * virInsertElementsN (which has the currently-unused capability of
+ * inserting multiple items at once). We use this to our advantage by
+ * replacing it with VIR_TYPECHECK(ptr, &newelem) so that we can be
+ * assured ptr and &newelem are of compatible types.
+ *
+ * Returns -1 on failure, 0 on success
+ *
+ *
+ */
+# define VIR_APPEND_ELEMENT(ptr, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
+# define VIR_APPEND_ELEMENT_COPY(ptr, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false)
+# define VIR_APPEND_ELEMENT_INPLACE(ptr, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true)
+# define VIR_APPEND_ELEMENT_COPY_INPLACE(ptr, count, newelem) \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), count, &(count),  \
+                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true)
+
+/**
+ * VIR_DELETE_ELEMENT:
+ * @ptr:   pointer to array of objects (*not* ptr to ptr)
+ * @at:    index within array where new elements should be deleted
+ * @count: variable tracking number of elements currently allocated
+ *
+ * Re-allocate an array of 'count' elements, each sizeof(*ptr)
+ * bytes long, to be 'count' - 1 elements long, then store the
+ * address of allocated memory in 'ptr' and the new size in 'count'.
+ * If 'count' <= 1, the entire array is freed.
+ *
+ * VIR_DELETE_ELEMENT_INPLACE is identical, but assumes any
+ *   necessary memory re-allocation will be done later.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+# define VIR_DELETE_ELEMENT(ptr, at, count) \
+    virDeleteElementsN(&(ptr), sizeof(*(ptr)), at, &(count), 1, false)
+# define VIR_DELETE_ELEMENT_INPLACE(ptr, at, count) \
+    virDeleteElementsN(&(ptr), sizeof(*(ptr)), at, &(count), 1, true)
 
 /*
  * VIR_ALLOC_VAR_OVERSIZED:

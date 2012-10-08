@@ -1,7 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 #include "memory.h"
-
+#include "logging.h"
 
 #if TEST_OOM
 static int testMallocNext = 0;
@@ -253,6 +253,116 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
     }
 }
 
+/**
+ * virInsertElementsN:
+ * @ptrptr:   pointer to hold address of allocated memory
+ * @size:     the size of one element in bytes
+ * @at:       index within array where new elements should be added
+ * @countptr: variable tracking number of elements currently allocated
+ * @add:      number of elements to add
+ * @newelems: pointer to array of one or more new elements to move into
+ *            place (the originals will be zeroed out if successful
+ *            and if clearOriginal is true)
+ * @clearOriginal: false if the new item in the array should be copied
+ *            from the original, and the original left intact.
+ *            true if the original should be 0'd out on success.
+ * @inPlace:  false if we should expand the allocated memory before
+ *            moving, true if we should assume someone else *has
+ *            already* done that.
+ *
+ * Re-allocate an array of *countptr elements, each sizeof(*ptrptr) bytes
+ * long, to be *countptr+add elements long, then appropriately move
+ * the elements starting at ptrptr[at] up by add elements, copy the
+ * items from newelems into ptrptr[at], then store the address of
+ * allocated memory in *ptrptr and the new size in *countptr.  If
+ * newelems is NULL, the new elements at ptrptr[at] are instead filled
+ * with zero.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+int
+virInsertElementsN(void *ptrptr, size_t size, size_t at,
+                   size_t *countptr,
+                   size_t add, void *newelems,
+                   bool clearOriginal, bool inPlace)
+{
+    if (at > *countptr) {
+        VIR_WARN("out of bounds index - count %zu at %zu add %zu",
+                 *countptr, at, add);
+        return -1;
+    }
+
+    if (inPlace) {
+        *countptr += add;
+    } else if (virExpandN(ptrptr, size, countptr, add) < 0) {
+        return -1;
+    }
+
+    /* memory was successfully re-allocated. Move up all elements from
+     * ptrptr[at] to the end (if we're not "inserting" at the end
+     * already), memcpy in the new elements, and clear the elements
+     * from their original location. Remember that *countptr has
+     * already been updated with new element count!
+     */
+    if (at < *countptr - add) {
+        memmove(*(char**)ptrptr + (size * (at + add)),
+                *(char**)ptrptr + (size * at),
+                size * (*countptr - add - at));
+    }
+
+    if (newelems) {
+        memcpy(*(char**)ptrptr + (size * at), newelems, size * add);
+        if (clearOriginal)
+           memset((char*)newelems, 0, size * add);
+    } else if (inPlace || (at < *countptr - add)) {
+        /* NB: if inPlace, assume memory at the end wasn't initialized */
+        memset(*(char**)ptrptr + (size * at), 0, size * add);
+    }
+
+    return 0;
+}
+
+/**
+ * virDeleteElementsN:
+ * @ptrptr:   pointer to hold address of allocated memory
+ * @size:     the size of one element in bytes
+ * @at:       index within array where new elements should be deleted
+ * @countptr: variable tracking number of elements currently allocated
+ * @remove:   number of elements to remove
+ * @inPlace:  false if we should shrink the allocated memory when done,
+ *            true if we should assume someone else will do that.
+ *
+ * Re-allocate an array of *countptr elements, each sizeof(*ptrptr)
+ * bytes long, to be *countptr-remove elements long, then store the
+ * address of allocated memory in *ptrptr and the new size in *countptr.
+ * If *countptr <= remove, the entire array is freed.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+int
+virDeleteElementsN(void *ptrptr, size_t size, size_t at,
+                   size_t *countptr, size_t remove,
+                   bool inPlace)
+{
+    if (at + remove > *countptr) {
+        VIR_WARN("out of bounds index - count %zu at %zu remove %zu",
+                 *countptr, at, remove);
+        return -1;
+    }
+
+    /* First move down the elements at the end that won't be deleted,
+     * then realloc. We assume that the items being deleted have
+     * already been cleared.
+    */
+    memmove(*(char**)ptrptr + (size * at),
+            *(char**)ptrptr + (size * (at + remove)),
+            size * (*countptr - remove - at));
+    if (inPlace)
+        *countptr -= remove;
+    else
+        virShrinkN(ptrptr, size, countptr, remove);
+    return 0;
+}
 
 /**
  * Vir_Alloc_Var:

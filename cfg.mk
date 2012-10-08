@@ -314,7 +314,7 @@ sc_flags_usage:
 
 # Avoid functions that should only be called via macro counterparts.
 sc_prohibit_internal_functions:
-	@prohibit='vir(Free|AllocN?|ReallocN|File(Close|Fclose|Fdopen)) *\(' \
+	@prohibit='vir(Free|AllocN?|ReallocN|(Insert|Delete)ElementsN|File(Close|Fclose|Fdopen)) *\(' \
 	halt='use VIR_ macros instead of internal functions'		\
 	  $(_sc_search_regexp)
 
