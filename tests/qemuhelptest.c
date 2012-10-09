@@ -467,6 +467,7 @@ mymain(void)
             QEMU_CAPS_NESTING,
             QEMU_CAPS_NAME_PROCESS,
             QEMU_CAPS_SMBIOS_TYPE,
+            QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_MIGRATE_QEMU_FD,

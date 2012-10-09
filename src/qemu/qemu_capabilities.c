@@ -1271,6 +1271,7 @@ struct qemuCapsStringFlags qemuCapsObjectTypes[] = {
     { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI_PCI },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
     { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
+    { "qxl", QEMU_CAPS_VGA_QXL },
     { "sga", QEMU_CAPS_SGA },
     { "scsi-block", QEMU_CAPS_SCSI_BLOCK },
     { "scsi-cd", QEMU_CAPS_SCSI_CD },
