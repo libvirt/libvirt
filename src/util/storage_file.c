@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #ifdef __linux__
 # if HAVE_LINUX_MAGIC_H
 #  include <linux/magic.h>
@@ -530,18 +531,22 @@ static char *
 absolutePathFromBaseFile(const char *base_file, const char *path)
 {
     char *res;
+    char *tmp;
     size_t d_len = dir_len (base_file);
 
     /* If path is already absolute, or if dirname(base_file) is ".",
        just return a copy of path.  */
     if (*path == '/' || d_len == 0)
-        return strdup(path);
+        return canonicalize_file_name(path);
 
     /* Ensure that the following cast-to-int is valid.  */
     if (d_len > INT_MAX)
         return NULL;
 
-    ignore_value(virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path));
+    if (virAsprintf(&tmp, "%.*s/%s", (int) d_len, base_file, path) < 0)
+        return NULL;
+    res = canonicalize_file_name(tmp);
+    VIR_FREE(tmp);
     return res;
 }
 
@@ -697,17 +702,23 @@ virStorageFileGetMetadataFromBuf(int format,
 
         meta->backingStoreIsFile = false;
         if (backing != NULL) {
-            if (virBackingStoreIsFile(backing)) {
-                meta->backingStoreIsFile = true;
-                meta->backingStore = absolutePathFromBaseFile(path, backing);
-            } else {
-                meta->backingStore = strdup(backing);
-            }
-            VIR_FREE(backing);
+            meta->backingStore = strdup(backing);
             if (meta->backingStore == NULL) {
                 virReportOOMError();
+                VIR_FREE(backing);
                 return -1;
             }
+            if (virBackingStoreIsFile(backing)) {
+                meta->backingStoreIsFile = true;
+                meta->backingStoreRaw = meta->backingStore;
+                meta->backingStore = absolutePathFromBaseFile(path, backing);
+                if (meta->backingStore == NULL) {
+                    virReportOOMError();
+                    VIR_FREE(backing);
+                    return -1;
+                }
+            }
+            VIR_FREE(backing);
             meta->backingStoreFormat = backingFormat;
         } else {
             meta->backingStore = NULL;
@@ -1014,6 +1025,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
 
     virStorageFileFreeMetadata(meta->backingMeta);
     VIR_FREE(meta->backingStore);
+    VIR_FREE(meta->backingStoreRaw);
     VIR_FREE(meta);
 }
 

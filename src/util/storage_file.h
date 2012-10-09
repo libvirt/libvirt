@@ -53,7 +53,8 @@ VIR_ENUM_DECL(virStorageFileFormat);
 typedef struct _virStorageFileMetadata virStorageFileMetadata;
 typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
-    char *backingStore;
+    char *backingStore; /* Canonical name (absolute file, or protocol) */
+    char *backingStoreRaw; /* If file, original name, possibly relative */
     int backingStoreFormat; /* enum virStorageFileFormat */
     bool backingStoreIsFile;
     virStorageFileMetadataPtr backingMeta;
