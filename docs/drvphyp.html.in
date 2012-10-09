@@ -43,6 +43,5 @@ phyp://user@ivm/system (IVM connection)
 <pre>
 phyp://[username@]{hmc|ivm}/managed_system
 </pre>
-    </p>
 
 </body></html>
