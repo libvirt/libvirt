@@ -929,7 +929,7 @@ int virNetDevValidateConfig(const char *ifname,
 }
 #else /* ! HAVE_STRUCT_IFREQ */
 int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
-                            const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
+                            const unsigned char *macaddr ATTRIBUTE_UNUSED,
                             int ifindex ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -1663,7 +1663,7 @@ virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
 int
 virNetDevReplaceNetConfig(char *linkdev ATTRIBUTE_UNUSED,
                           int vf ATTRIBUTE_UNUSED,
-                          const virMacAddrPtr macaddress ATTRIBUTE_UNUSED,
+                          const unsigned char *macaddress ATTRIBUTE_UNUSED,
                           int vlanid ATTRIBUTE_UNUSED,
                           char *stateDir ATTRIBUTE_UNUSED)
 {
