@@ -2012,3 +2012,29 @@ qemuDomainCleanupRun(struct qemud_driver *driver,
     priv->ncleanupCallbacks = 0;
     priv->ncleanupCallbacks_max = 0;
 }
+
+int
+qemuDomainDetermineDiskChain(struct qemud_driver *driver,
+                             virDomainDiskDefPtr disk,
+                             bool force)
+{
+    bool probe = driver->allowDiskFormatProbing;
+
+    if (!disk->src)
+        return 0;
+
+    if (disk->backingChain) {
+        if (force) {
+            virStorageFileFreeMetadata(disk->backingChain);
+            disk->backingChain = NULL;
+        } else {
+            return 0;
+        }
+    }
+    disk->backingChain = virStorageFileGetMetadata(disk->src, disk->format,
+                                                   driver->user, driver->group,
+                                                   probe);
+    if (!disk->backingChain)
+        return -1;
+    return 0;
+}

@@ -47,6 +47,7 @@
 # include "virobject.h"
 # include "device_conf.h"
 # include "bitmap.h"
+# include "storage_file.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -568,6 +569,7 @@ struct _virDomainDiskDef {
     } auth;
     char *driverName;
     int format; /* enum virStorageFileFormat */
+    virStorageFileMetadataPtr backingChain;
 
     char *mirror;
     int mirrorFormat; /* enum virStorageFileFormat */

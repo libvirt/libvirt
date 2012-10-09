@@ -343,6 +343,9 @@ bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
 int qemuDomainCheckDiskPresence(struct qemud_driver *driver,
                                 virDomainObjPtr vm,
                                 bool start_with_state);
+int qemuDomainDetermineDiskChain(struct qemud_driver *driver,
+                                 virDomainDiskDefPtr disk,
+                                 bool force);
 
 int qemuDomainCleanupAdd(virDomainObjPtr vm,
                          qemuDomainCleanupCallback cb);

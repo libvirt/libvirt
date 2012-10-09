@@ -975,6 +975,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->src);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
+    virStorageFileFreeMetadata(def->backingChain);
     VIR_FREE(def->mirror);
     VIR_FREE(def->auth.username);
     VIR_FREE(def->wwn);

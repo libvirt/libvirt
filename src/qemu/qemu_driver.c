@@ -5816,6 +5816,9 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         goto end;
     }
 
+    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+        goto end;
+
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6043,6 +6046,9 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
     virDomainDiskDefPtr disk = dev->data.disk;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
+
+    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+        goto end;
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         if (virCgroupForDomain(driver->cgroup,
@@ -10789,6 +10795,14 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     disk->src = source;
     origdriver = disk->format;
     disk->format = VIR_STORAGE_FILE_RAW; /* Don't want to probe backing files */
+    /* XXX Here, we know we are about to alter disk->backingChain if
+     * successful, so we nuke the existing chain so that future
+     * commands will recompute it.  Better would be storing the chain
+     * ourselves rather than reprobing, but this requires modifying
+     * domain_conf and our XML to fully track the chain across
+     * libvirtd restarts.  */
+    virStorageFileFreeMetadata(disk->backingChain);
+    disk->backingChain = NULL;
 
     if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
                                 vm, disk) < 0)
