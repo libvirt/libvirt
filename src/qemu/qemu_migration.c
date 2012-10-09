@@ -1264,7 +1264,8 @@ qemuMigrationPrepareAny(struct qemud_driver *driver,
         int hookret;
 
         if (!(xml = qemuDomainDefFormatXML(driver, def,
-                                           VIR_DOMAIN_XML_SECURE)))
+                                           VIR_DOMAIN_XML_SECURE |
+                                           VIR_DOMAIN_XML_MIGRATABLE)))
             goto cleanup;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,

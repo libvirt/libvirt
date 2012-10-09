@@ -370,6 +370,8 @@ struct _virDomainHostdevSubsys {
     int type; /* enum virDomainHostdevSubsysType */
     union {
         struct {
+            bool autoAddress; /* bus/device were filled automatically based
+                                 on vedor/product */
             unsigned bus;
             unsigned device;
 

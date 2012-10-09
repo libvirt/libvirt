@@ -650,15 +650,31 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
     unsigned product = hostdev->source.subsys.u.usb.product;
     unsigned bus = hostdev->source.subsys.u.usb.bus;
     unsigned device = hostdev->source.subsys.u.usb.device;
+    bool autoAddress = hostdev->source.subsys.u.usb.autoAddress;
     int rc;
 
     *usb = NULL;
 
     if (vendor && bus) {
-        rc = usbFindDevice(vendor, product, bus, device, mandatory, usb);
-        if (rc < 0)
+        rc = usbFindDevice(vendor, product, bus, device,
+                           autoAddress ? false : mandatory,
+                           usb);
+        if (rc < 0) {
             return -1;
-    } else if (vendor && !bus) {
+        } else if (!autoAddress) {
+            goto out;
+        } else {
+            VIR_INFO("USB device %x:%x could not be found at previous"
+                     " address (bus:%u device:%u)",
+                     vendor, product, bus, device);
+        }
+    }
+
+    /* When vendor is specified, its USB address is either unspecified or the
+     * device could not be found at the USB device where it had been
+     * automatically found before.
+     */
+    if (vendor) {
         usbDeviceList *devs;
 
         rc = usbFindDeviceByVendor(vendor, product, mandatory, &devs);
@@ -674,15 +690,32 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
         if (rc == 0) {
             goto out;
         } else if (rc > 1) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple USB devices for %x:%x, "
-                             "use <address> to specify one"),
-                           vendor, product);
+            if (autoAddress) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("Multiple USB devices for %x:%x were found,"
+                                 " but none of them is at bus:%u device:%u"),
+                               vendor, product, bus, device);
+            } else {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("Multiple USB devices for %x:%x, "
+                                 "use <address> to specify one"),
+                               vendor, product);
+            }
             return -1;
         }
 
         hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(*usb);
         hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(*usb);
+        hostdev->source.subsys.u.usb.autoAddress = true;
+
+        if (autoAddress) {
+            VIR_INFO("USB device %x:%x found at bus:%u device:%u (moved"
+                     " from bus:%u device:%u)",
+                     vendor, product,
+                     hostdev->source.subsys.u.usb.bus,
+                     hostdev->source.subsys.u.usb.device,
+                     bus, device);
+        }
     } else if (!vendor && bus) {
         if (usbFindDeviceByBus(bus, device, mandatory, usb) < 0)
             return -1;
