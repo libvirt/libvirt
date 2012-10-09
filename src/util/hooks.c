@@ -1,7 +1,7 @@
 /*
  * hooks.c: implementation of the synchronous hooks support
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
  *
  * This library is free software; you can redistribute it and/or
@@ -206,7 +206,6 @@ virHookCall(int driver,
             char **output)
 {
     int ret;
-    int exitstatus;
     char *path;
     virCommandPtr cmd;
     const char *drvstr;
@@ -279,12 +278,11 @@ virHookCall(int driver,
     if (output)
         virCommandSetOutputBuffer(cmd, output);
 
-    ret = virCommandRun(cmd, &exitstatus);
-    if (ret == 0 && exitstatus != 0) {
-        virReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
-                       _("Hook script %s %s failed with error code %d"),
-                       path, drvstr, exitstatus);
-        ret = -1;
+    ret = virCommandRun(cmd, NULL);
+    if (ret < 0) {
+        /* Convert INTERNAL_ERROR into known error.  */
+        virErrorPtr err = virGetLastError();
+        virReportError(VIR_ERR_HOOK_SCRIPT_FAILED, "%s", err->message);
     }
 
     virCommandFree(cmd);
