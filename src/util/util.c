@@ -275,7 +275,11 @@ int virSetInherit(int fd, bool inherit) {
 
 int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
 {
-    return -1;
+    /* FIXME: Currently creating child processes is not supported on
+     * Win32, so there is no point in failing calls that are only relevant
+     * when creating child processes. So just pretend that we changed the
+     * inheritance property of the given fd as requested. */
+    return 0;
 }
 
 #endif /* WIN32 */
