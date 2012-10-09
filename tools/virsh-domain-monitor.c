@@ -223,6 +223,8 @@ vshDomainStateReasonToString(int state, int reason)
             return N_("from snapshot");
         case VIR_DOMAIN_PAUSED_SHUTTING_DOWN:
             return N_("shutting down");
+        case VIR_DOMAIN_PAUSED_SNAPSHOT:
+            return N_("creating snapshot");
         case VIR_DOMAIN_PAUSED_UNKNOWN:
         case VIR_DOMAIN_PAUSED_LAST:
             ;

@@ -2594,7 +2594,7 @@ used to represent properties of snapshots.
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
 | [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external>]
-[I<--quiesce>] [I<--atomic>]}
+[I<--quiesce>] [I<--atomic>] [I<--live>]}
 
 Create a snapshot for domain I<domain> with the properties specified in
 I<xmlfile>.  Normally, the only properties settable for a domain snapshot
@@ -2647,6 +2647,10 @@ this.  If this flag is not specified, then some hypervisors may fail
 after partially performing the action, and B<dumpxml> must be used to
 see whether any partial changes occurred.
 
+If I<--live> is specified, libvirt takes the snapshot while the guest is
+running. This increases the size of the memory image of the external
+checkpoint. This is currently supported only for external checkpoints.
+
 Existence of snapshot metadata will prevent attempts to B<undefine>
 a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
@@ -2655,7 +2659,7 @@ by command such as B<destroy> or by internal guest action).
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 | [I<--no-metadata>] [I<--halt>] [I<--reuse-external>]} [I<name>]
 [I<description>] [I<--disk-only> [I<--quiesce>] [I<--atomic>]
-[[I<--diskspec>] B<diskspec>]...]
+[I<--live>] [[I<--diskspec>] B<diskspec>]...]
 
 Create a snapshot for domain I<domain> with the given <name> and
 <description>; if either value is omitted, libvirt will choose a
@@ -2699,6 +2703,10 @@ either succeeds, or fails with no changes; not all hypervisors support
 this.  If this flag is not specified, then some hypervisors may fail
 after partially performing the action, and B<dumpxml> must be used to
 see whether any partial changes occurred.
+
+If I<--live> is specified, libvirt takes the snapshot while the guest is
+running. This increases the size of the memory image of the external
+checkpoint. This is currently supported only for external checkpoints.
 
 =item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info>]
 | [I<snapshotname>]}

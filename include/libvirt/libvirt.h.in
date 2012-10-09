@@ -179,6 +179,7 @@ typedef enum {
     VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event */
     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot */
     VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process */
+    VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_PAUSED_LAST
@@ -3770,6 +3771,9 @@ typedef enum {
                                                           the domain */
     VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC      = (1 << 7), /* atomically avoid
                                                           partial changes */
+    VIR_DOMAIN_SNAPSHOT_CREATE_LIVE        = (1 << 8), /* create the snapshot
+                                                          while the guest is
+                                                          running */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */

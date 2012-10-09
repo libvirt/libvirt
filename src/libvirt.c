@@ -17770,6 +17770,12 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * running after the snapshot.  This flag is invalid on transient domains,
  * and is incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, then the domain
+ * is not paused while creating the snapshot. This increases the size
+ * of the memory dump file, but reduces downtime of the guest while
+ * taking the snapshot. Some hypervisors only support this flag during
+ * external checkpoints.
+ *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, then the
  * snapshot will be limited to the disks described in @xmlDesc, and no
  * VM state will be saved.  For an active guest, the disk image may be
