@@ -2150,9 +2150,7 @@ typedef int (*virDomainDiskDefPathIterator)(virDomainDiskDefPtr disk,
                                             void *opaque);
 
 int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
-                                bool allowProbing,
                                 bool ignoreOpenFailure,
-                                uid_t uid, gid_t gid,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque);
 

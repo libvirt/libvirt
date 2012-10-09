@@ -1062,12 +1062,9 @@ virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDiskDefPtr disk)
 
 {
-    bool allowDiskFormatProbing;
     virSecuritySELinuxCallbackData cbdata;
     cbdata.manager = mgr;
     cbdata.secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-
-    allowDiskFormatProbing = virSecurityManagerGetAllowDiskFormatProbing(mgr);
 
     if (cbdata.secdef == NULL)
         return -1;
@@ -1078,16 +1075,8 @@ virSecuritySELinuxSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
-    /* XXX On one hand, it would be nice to have the driver's uid:gid
-     * here so we could retry opens with it. On the other hand, it
-     * probably doesn't matter because in practice that's only useful
-     * for files on root-squashed NFS shares, and NFS doesn't properly
-     * support selinux anyway.
-     */
     return virDomainDiskDefForeachPath(disk,
-                                       allowDiskFormatProbing,
                                        true,
-                                       -1, -1, /* current process uid:gid */
                                        virSecuritySELinuxSetSecurityFileLabel,
                                        &cbdata);
 }

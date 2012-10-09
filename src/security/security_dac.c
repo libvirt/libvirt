@@ -358,8 +358,6 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDiskDefPtr disk)
 
 {
-    uid_t user;
-    gid_t group;
     void *params[2];
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
 
@@ -369,15 +367,10 @@ virSecurityDACSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
-    if (virSecurityDACGetImageIds(def, priv, &user, &group))
-        return -1;
-
     params[0] = mgr;
     params[1] = def;
     return virDomainDiskDefForeachPath(disk,
-                                       virSecurityManagerGetAllowDiskFormatProbing(mgr),
                                        false,
-                                       user, group,
                                        virSecurityDACSetSecurityFileLabel,
                                        params);
 }

@@ -14837,110 +14837,42 @@ done:
 }
 
 
+/* Call iter(disk, name, depth, opaque) for each element of disk and
+ * its backing chain in the pre-populated disk->backingChain.
+ * ignoreOpenFailure determines whether to warn about a chain that
+ * mentions a backing file without also having metadata on that
+ * file.  */
 int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
-                                bool allowProbing,
                                 bool ignoreOpenFailure,
-                                uid_t uid, gid_t gid,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque)
 {
-    virHashTablePtr paths = NULL;
-    int format;
     int ret = -1;
     size_t depth = 0;
-    char *nextpath = NULL;
-    virStorageFileMetadata *meta = NULL;
+    virStorageFileMetadata *tmp;
 
     if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
 
-    if (disk->format > 0) {
-        format = disk->format;
-    } else {
-        if (allowProbing) {
-            format = VIR_STORAGE_FILE_AUTO;
-        } else {
+    if (iter(disk, disk->src, 0, opaque) < 0)
+        goto cleanup;
+
+    tmp = disk->backingChain;
+    while (tmp && tmp->backingStoreIsFile) {
+        if (!ignoreOpenFailure && !tmp->backingMeta) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no disk format for %s and probing is disabled"),
-                           disk->src);
+                           _("unable to visit backing chain file %s"),
+                           tmp->backingStore);
             goto cleanup;
         }
+        if (iter(disk, tmp->backingStore, ++depth, opaque) < 0)
+            goto cleanup;
+        tmp = tmp->backingMeta;
     }
-
-    paths = virHashCreate(5, NULL);
-
-    do {
-        const char *path = nextpath ? nextpath : disk->src;
-        int fd;
-
-        if (iter(disk, path, depth, opaque) < 0)
-            goto cleanup;
-
-        if (virHashLookup(paths, path)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("backing store for %s is self-referential"),
-                           disk->src);
-            goto cleanup;
-        }
-
-        if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
-            if (ignoreOpenFailure) {
-                char ebuf[1024];
-                VIR_WARN("Ignoring open failure on %s: %s", path,
-                         virStrerror(-fd, ebuf, sizeof(ebuf)));
-                break;
-            } else {
-                virReportSystemError(-fd, _("unable to open disk path %s"),
-                                     path);
-                goto cleanup;
-            }
-        }
-
-        if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format))) {
-            VIR_FORCE_CLOSE(fd);
-            goto cleanup;
-        }
-
-        if (VIR_CLOSE(fd) < 0)
-            virReportSystemError(errno,
-                                 _("could not close file %s"),
-                                 path);
-
-        if (virHashAddEntry(paths, path, (void*)0x1) < 0)
-            goto cleanup;
-
-        depth++;
-        VIR_FREE(nextpath);
-        nextpath = meta->backingStore;
-        meta->backingStore = NULL;
-
-        /* Stop iterating if we reach a non-file backing store */
-        if (nextpath && !meta->backingStoreIsFile) {
-            VIR_DEBUG("Stopping iteration on non-file backing store: %s",
-                      nextpath);
-            break;
-        }
-
-        format = meta->backingStoreFormat;
-
-        if (format == VIR_STORAGE_FILE_AUTO &&
-            !allowProbing)
-            format = VIR_STORAGE_FILE_RAW; /* Stops further recursion */
-
-        /* Allow probing for image formats that are safe */
-        if (format == VIR_STORAGE_FILE_AUTO_SAFE)
-            format = VIR_STORAGE_FILE_AUTO;
-        virStorageFileFreeMetadata(meta);
-        meta = NULL;
-    } while (nextpath);
 
     ret = 0;
 
 cleanup:
-    virHashFree(paths);
-    VIR_FREE(nextpath);
-    virStorageFileFreeMetadata(meta);
-
     return ret;
 }
 

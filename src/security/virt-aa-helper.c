@@ -919,20 +919,22 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = ctl->def->disks[i];
+
+        /* XXX - if we knew the qemu user:group here we could send it in
+         *        so that the open could be re-tried as that user:group.
+         */
+        disk->chain = virStorageFileGetMetadata(disk->src, disk->format,
+                                                -1, -1,
+                                                ctl->allowDiskFormatProbing,
+                                                NULL);
+
         /* XXX passing ignoreOpenFailure = true to get back to the behavior
          * from before using virDomainDiskDefForeachPath. actually we should
          * be passing ignoreOpenFailure = false and handle open errors more
          * careful than just ignoring them.
-         * XXX2 - if we knew the qemu user:group here we could send it in
-         *        so that the open could be re-tried as that user:group.
          */
-        int ret = virDomainDiskDefForeachPath(ctl->def->disks[i],
-                                              ctl->allowDiskFormatProbing,
-                                              true,
-                                              -1, -1, /* current uid:gid */
-                                              add_file_path,
-                                              &buf);
-        if (ret != 0)
+        if (virDomainDiskDefForeachPath(disk, true, add_file_path, &buf) < 0)
             goto clean;
     }
 

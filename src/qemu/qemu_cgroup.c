@@ -87,16 +87,14 @@ qemuSetupDiskPathAllow(virDomainDiskDefPtr disk,
 }
 
 
-int qemuSetupDiskCgroup(struct qemud_driver *driver,
+int qemuSetupDiskCgroup(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm,
                         virCgroupPtr cgroup,
                         virDomainDiskDefPtr disk)
 {
     qemuCgroupData data = { vm, cgroup };
     return virDomainDiskDefForeachPath(disk,
-                                       driver->allowDiskFormatProbing,
                                        true,
-                                       driver->user, driver->group,
                                        qemuSetupDiskPathAllow,
                                        &data);
 }
@@ -129,16 +127,14 @@ qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 }
 
 
-int qemuTeardownDiskCgroup(struct qemud_driver *driver,
+int qemuTeardownDiskCgroup(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                            virDomainObjPtr vm,
                            virCgroupPtr cgroup,
                            virDomainDiskDefPtr disk)
 {
     qemuCgroupData data = { vm, cgroup };
     return virDomainDiskDefForeachPath(disk,
-                                       driver->allowDiskFormatProbing,
                                        true,
-                                       driver->user, driver->group,
                                        qemuTeardownDiskPathDeny,
                                        &data);
 }
@@ -232,7 +228,9 @@ int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuSetupDiskCgroup(driver, vm, cgroup, vm->def->disks[i]) < 0)
+            if (qemuDomainDetermineDiskChain(driver, vm->def->disks[i],
+                                             false) < 0 ||
+                qemuSetupDiskCgroup(driver, vm, cgroup, vm->def->disks[i]) < 0)
                 goto cleanup;
         }
 
