@@ -423,8 +423,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 buf++;
 
             if (*buf != ':' || !buf[1]) {
-                nodeReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("parsing cpu MHz from cpuinfo"));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("parsing cpu MHz from cpuinfo"));
                 goto cleanup;
             }
 
