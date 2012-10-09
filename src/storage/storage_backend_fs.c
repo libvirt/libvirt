@@ -108,7 +108,8 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     if (meta->backingStore) {
         *backingStore = meta->backingStore;
         meta->backingStore = NULL;
-        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
+        if (meta->backingStoreFormat == VIR_STORAGE_FILE_AUTO &&
+            meta->backingStoreIsFile) {
             if ((ret = virStorageFileProbeFormat(*backingStore)) < 0) {
                 /* If the backing file is currently unavailable, only log an error,
                  * but continue. Returning -1 here would disable the whole storage
