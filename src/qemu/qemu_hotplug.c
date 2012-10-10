@@ -33,6 +33,7 @@
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "logging.h"
+#include "datatypes.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "pci.h"
@@ -1209,27 +1210,88 @@ cleanup:
     return -1;
 }
 
-static virDomainNetDefPtr qemuDomainFindNet(virDomainObjPtr vm,
-                                            virDomainNetDefPtr dev)
+static virDomainNetDefPtr *qemuDomainFindNet(virDomainObjPtr vm,
+                                             virDomainNetDefPtr dev)
 {
     int i;
 
     for (i = 0; i < vm->def->nnets; i++) {
         if (virMacAddrCmp(&vm->def->nets[i]->mac, &dev->mac) == 0)
-            return vm->def->nets[i];
+            return &vm->def->nets[i];
     }
 
     return NULL;
 }
 
-static
-int qemuDomainChangeNetBridge(virDomainObjPtr vm,
-                              virDomainNetDefPtr olddev,
-                              virDomainNetDefPtr newdev)
+static char *
+qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
+{
+    char *brname = NULL;
+    int actualType = virDomainNetGetActualType(net);
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        const char *tmpbr = virDomainNetGetActualBridgeName(net);
+        if (!tmpbr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("interface is missing bridge name"));
+            goto cleanup;
+        }
+        /* we need a copy, not just a pointer to the original */
+        if (!(brname = strdup(tmpbr))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        int active;
+        virErrorPtr errobj;
+        virNetworkPtr network;
+
+        if (!(network = virNetworkLookupByName(conn, net->data.network.name))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Couldn't find network '%s'"),
+                           net->data.network.name);
+            goto cleanup;
+        }
+
+        active = virNetworkIsActive(network);
+        if (active == 1) {
+            brname = virNetworkGetBridgeName(network);
+        } else if (active == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Network '%s' is not active."),
+                           net->data.network.name);
+        }
+
+        /* Make sure any above failure is preserved */
+        errobj = virSaveLastError();
+        virNetworkFree(network);
+        virSetError(errobj);
+        virFreeError(errobj);
+        goto cleanup;
+
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Network type %d is not supported"),
+                   virDomainNetGetActualType(net));
+cleanup:
+    return brname;
+}
+
+static int
+qemuDomainChangeNetBridge(virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          virDomainNetDefPtr olddev,
+                          virDomainNetDefPtr newdev)
 {
     int ret = -1;
-    char *oldbridge = olddev->data.bridge.brname;
-    char *newbridge = newdev->data.bridge.brname;
+    char *oldbridge = NULL, *newbridge = NULL;
+
+    if (!(oldbridge = qemuDomainNetGetBridgeName(conn, olddev)))
+        goto cleanup;
+
+    if (!(newbridge = qemuDomainNetGetBridgeName(conn, newdev)))
+        goto cleanup;
 
     VIR_DEBUG("Change bridge for interface %s: %s -> %s",
               olddev->ifname, oldbridge, newbridge);
@@ -1237,23 +1299,19 @@ int qemuDomainChangeNetBridge(virDomainObjPtr vm,
     if (virNetDevExists(newbridge) != 1) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("bridge %s doesn't exist"), newbridge);
-        return -1;
+        goto cleanup;
     }
 
     if (oldbridge) {
         ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
         virDomainAuditNet(vm, olddev, NULL, "detach", ret == 0);
         if (ret < 0)
-            return -1;
+            goto cleanup;
     }
 
-    /* move newbridge into olddev now so Audit log is correct */
-    olddev->data.bridge.brname = newbridge;
     ret = virNetDevBridgeAddPort(newbridge, olddev->ifname);
-    virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
+    virDomainAuditNet(vm, NULL, newdev, "attach", ret == 0);
     if (ret < 0) {
-        /* restore oldbridge to olddev */
-        olddev->data.bridge.brname = oldbridge;
         ret = virNetDevBridgeAddPort(oldbridge, olddev->ifname);
         virDomainAuditNet(vm, NULL, olddev, "attach", ret == 0);
         if (ret < 0) {
@@ -1261,12 +1319,14 @@ int qemuDomainChangeNetBridge(virDomainObjPtr vm,
                            _("unable to recover former state by adding port "
                              "to bridge %s"), oldbridge);
         }
-        return -1;
+        goto cleanup;
     }
-    /* oldbridge no longer needed, and newbridge moved to olddev */
+    /* caller will replace entire olddev with newdev in domain nets list */
+    ret = 0;
+cleanup:
     VIR_FREE(oldbridge);
-    newdev->data.bridge.brname = NULL;
-    return 0;
+    VIR_FREE(newbridge);
+    return ret;
 }
 
 int qemuDomainChangeNetLinkState(struct qemud_driver *driver,
@@ -1300,123 +1360,356 @@ cleanup:
     return ret;
 }
 
-int qemuDomainChangeNet(struct qemud_driver *driver,
-                        virDomainObjPtr vm,
-                        virDomainPtr dom ATTRIBUTE_UNUSED,
-                        virDomainNetDefPtr dev)
-
+int
+qemuDomainChangeNet(struct qemud_driver *driver,
+                    virDomainObjPtr vm,
+                    virDomainPtr dom,
+                    virDomainDeviceDefPtr dev)
 {
-    virDomainNetDefPtr olddev = qemuDomainFindNet(vm, dev);
-    int ret = 0;
+    virDomainNetDefPtr newdev = dev->data.net;
+    virDomainNetDefPtr *devslot = qemuDomainFindNet(vm, newdev);
+    virDomainNetDefPtr olddev;
+    int oldType, newType;
+    bool needReconnect = false;
+    bool needBridgeChange = false;
+    bool needLinkStateChange = false;
+    bool needReplaceDevDef = false;
+    int ret = -1;
 
-    if (!olddev) {
+    if (!devslot || !(olddev = *devslot)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("cannot find existing network device to modify"));
-        return -1;
+        goto cleanup;
     }
 
-    if (olddev->type != dev->type) {
+    oldType = virDomainNetGetActualType(olddev);
+    if (oldType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* no changes are possible to a type='hostdev' interface */
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot change config of '%s' network type"),
+                       virDomainNetTypeToString(oldType));
+        goto cleanup;
+    }
+
+    /* Check individual attributes for changes that can't be done to a
+     * live netdev. These checks *mostly* go in order of the
+     * declarations in virDomainNetDef in order to assure nothing is
+     * omitted. (exceptiong where noted in comments - in particular,
+     * some things require that a new "actual device" be allocated
+     * from the network driver first, but we delay doing that until
+     * after we've made as many other checks as possible)
+     */
+
+    /* type: this can change (with some restrictions), but the actual
+     * type of the new device connection isn't known until after we
+     * allocate the "actual" device.
+     */
+
+    if (virMacAddrCmp(&olddev->mac, &newdev->mac)) {
+        char oldmac[VIR_MAC_STRING_BUFLEN], newmac[VIR_MAC_STRING_BUFLEN];
+
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot change network interface mac address "
+                         "from %s to %s"),
+                       virMacAddrFormat(&olddev->mac, oldmac),
+                       virMacAddrFormat(&newdev->mac, newmac));
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(olddev->model, newdev->model)) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot modify network device model from %s to %s"),
+                       olddev->model ? olddev->model : "(default)",
+                       newdev->model ? newdev->model : "(default)");
+        goto cleanup;
+    }
+
+    if (olddev->model && STREQ(olddev->model, "virtio") &&
+        (olddev->driver.virtio.name != newdev->driver.virtio.name ||
+         olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
+         olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
+         olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("cannot change network interface type"));
-        return -1;
+                       _("cannot modify virtio network device driver attributes"));
+        goto cleanup;
     }
 
-    if (!virNetDevVPortProfileEqual(olddev->virtPortProfile, dev->virtPortProfile)) {
+    /* data: this union will be examined later, after allocating new actualdev */
+    /* virtPortProfile: will be examined later, after allocating new actualdev */
+
+    if (olddev->tune.sndbuf_specified != newdev->tune.sndbuf_specified ||
+        olddev->tune.sndbuf != newdev->tune.sndbuf) {
+        needReconnect = true;
+    }
+
+    if (STRNEQ_NULLABLE(olddev->script, newdev->script)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("cannot change <virtualport> settings"));
+                       _("cannot modify network device script attribute"));
+        goto cleanup;
     }
 
-    switch (olddev->type) {
-    case VIR_DOMAIN_NET_TYPE_USER:
+    /* ifname: check if it's set in newdev. If not, retain the autogenerated one */
+    if (!(newdev->ifname ||
+          (newdev->ifname = strdup(olddev->ifname)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(olddev->ifname, newdev->ifname)) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network device tap name"));
+        goto cleanup;
+    }
+
+    /* info: if newdev->info is empty, fill it in from olddev,
+     * otherwise verify that it matches - nothing is allowed to
+     * change. (There is no helper function to do this, so
+     * individually check the few feidls of virDomainDeviceInfo that
+     * are relevant in this case).
+     */
+    if (!virDomainDeviceAddressIsValid(&newdev->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        virDomainDeviceInfoCopy(&newdev->info, &olddev->info) < 0) {
+        goto cleanup;
+    }
+    if (!virDevicePCIAddressEqual(&olddev->info.addr.pci,
+                                  &newdev->info.addr.pci)) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network device guest PCI address"));
+        goto cleanup;
+    }
+    /* grab alias from olddev if not set in newdev */
+    if (!(newdev->info.alias ||
+          (newdev->info.alias = strdup(olddev->info.alias)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(olddev->info.alias, newdev->info.alias)) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network device alias"));
+        goto cleanup;
+    }
+    if (olddev->info.rombar != newdev->info.rombar) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network device rom bar setting"));
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(olddev->info.romfile, newdev->info.romfile)) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network rom file"));
+        goto cleanup;
+    }
+    if (olddev->info.bootIndex != newdev->info.bootIndex) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("cannot modify network device boot index setting"));
+        goto cleanup;
+    }
+    /* (end of device info checks) */
+
+    if (STRNEQ_NULLABLE(olddev->filter, newdev->filter))
+        needReconnect = true;
+
+    /* bandwidth can be modified, and will be checked later */
+    /* vlan can be modified, and will be checked later */
+    /* linkstate can be modified */
+
+    /* allocate new actual device to compare to old - we will need to
+     * free it if we fail for any reason
+     */
+    if (newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        networkAllocateActualDevice(newdev) < 0) {
+        goto cleanup;
+    }
+
+    newType = virDomainNetGetActualType(newdev);
+
+    if (newType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* can't turn it into a type='hostdev' interface */
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot change network interface type to '%s'"),
+                       virDomainNetTypeToString(newType));
+        goto cleanup;
+    }
+
+    if (olddev->type == newdev->type && oldType == newType) {
+
+        /* if type hasn't changed, check the relevant fields for the type */
+        switch (newdev->type) {
+        case VIR_DOMAIN_NET_TYPE_USER:
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            if (STRNEQ_NULLABLE(olddev->data.ethernet.dev,
+                                newdev->data.ethernet.dev) ||
+                STRNEQ_NULLABLE(olddev->data.ethernet.ipaddr,
+                                newdev->data.ethernet.ipaddr)) {
+                needReconnect = true;
+            }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (STRNEQ_NULLABLE(olddev->data.ethernet.dev, dev->data.ethernet.dev) ||
-            STRNEQ_NULLABLE(olddev->script, dev->script) ||
-            STRNEQ_NULLABLE(olddev->data.ethernet.ipaddr, dev->data.ethernet.ipaddr)) {
-            virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                           _("cannot modify ethernet network device configuration"));
-            return -1;
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+            if (STRNEQ_NULLABLE(olddev->data.socket.address,
+                                newdev->data.socket.address) ||
+                olddev->data.socket.port != newdev->data.socket.port) {
+                needReconnect = true;
+            }
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+            if (STRNEQ(olddev->data.network.name, newdev->data.network.name)) {
+                if (virDomainNetGetActualVirtPortProfile(newdev))
+                    needReconnect = true;
+                else
+                    needBridgeChange = true;
+            }
+            /* other things handled in common code directly below this switch */
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+            /* all handled in bridge name checked in common code below */
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+            if (STRNEQ_NULLABLE(olddev->data.internal.name,
+                                newdev->data.internal.name)) {
+                needReconnect = true;
+            }
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            /* all handled in common code directly below this switch */
+            break;
+
+        default:
+            virReportError(VIR_ERR_NO_SUPPORT,
+                           _("unable to change config on '%s' network type"),
+                           virDomainNetTypeToString(newdev->type));
+            break;
+
         }
-        break;
+    } else {
+        /* interface type has changed. There are a few special cases
+         * where this can only require a minor (or even no) change,
+         * but in most cases we need to do a full reconnection.
+         *
+         * If we switch (in either direction) between type='bridge'
+         * and type='network' (for a traditional managed virtual
+         * network that uses a host bridge, i.e. forward
+         * mode='route|nat'), we just need to change the bridge.
+         */
+        if ((oldType == VIR_DOMAIN_NET_TYPE_NETWORK &&
+             newType == VIR_DOMAIN_NET_TYPE_BRIDGE) ||
+            (oldType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+             newType == VIR_DOMAIN_NET_TYPE_NETWORK)) {
 
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-        if (STRNEQ_NULLABLE(olddev->data.socket.address, dev->data.socket.address) ||
-            olddev->data.socket.port != dev->data.socket.port) {
-            virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                           _("cannot modify network socket device configuration"));
-            return -1;
+            needBridgeChange = true;
+
+        } else if (oldType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+                   newType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+
+            /* this is the case of switching from type='direct' to
+             * type='network' for a network that itself uses direct
+             * (macvtap) devices. If the physical device and mode are
+             * the same, this doesn't require any actual setup
+             * change. If the physical device or mode *does* change,
+             * that will be caught in the common section below */
+
+        } else {
+
+            /* for all other combinations, we'll need a full reconnect */
+            needReconnect = true;
+
         }
-        break;
+    }
 
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-        if (STRNEQ_NULLABLE(olddev->data.network.name, dev->data.network.name) ||
-            STRNEQ_NULLABLE(olddev->data.network.portgroup, dev->data.network.portgroup)) {
-            virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                           _("cannot modify network device configuration"));
-            return -1;
-        }
+    /* now several things that are in multiple (but not all)
+     * different types, and can be safely compared even for those
+     * cases where they don't apply to a particular type.
+     */
+    if (STRNEQ_NULLABLE(virDomainNetGetActualBridgeName(olddev),
+                        virDomainNetGetActualBridgeName(newdev))) {
+        if (virDomainNetGetActualVirtPortProfile(newdev))
+            needReconnect = true;
+        else
+            needBridgeChange = true;
+    }
 
-        break;
+    if (STRNEQ_NULLABLE(virDomainNetGetActualDirectDev(olddev),
+                        virDomainNetGetActualDirectDev(newdev)) ||
+        virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(olddev) ||
+        !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
+                                    virDomainNetGetActualVirtPortProfile(newdev)) ||
+        !virNetDevBandwidthEqual(virDomainNetGetActualBandwidth(olddev),
+                                 virDomainNetGetActualBandwidth(newdev)) ||
+        !virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
+                            virDomainNetGetActualVlan(newdev))) {
+        needReconnect = true;
+    }
 
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-       /* allow changing brname */
-       break;
+    if (olddev->linkstate != newdev->linkstate)
+        needLinkStateChange = true;
 
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        if (STRNEQ_NULLABLE(olddev->data.internal.name, dev->data.internal.name)) {
-            virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                           _("cannot modify internal network device configuration"));
-            return -1;
-        }
-        break;
+    /* FINALLY - actually perform the required actions */
 
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-        if (STRNEQ_NULLABLE(olddev->data.direct.linkdev, dev->data.direct.linkdev) ||
-            olddev->data.direct.mode != dev->data.direct.mode) {
-            virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                           _("cannot modify direct network device configuration"));
-            return -1;
-        }
-        break;
-
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+    if (needReconnect) {
+        virReportError(VIR_ERR_NO_SUPPORT,
                        _("unable to change config on '%s' network type"),
-                       virDomainNetTypeToString(dev->type));
-        break;
-
+                       virDomainNetTypeToString(newdev->type));
+        goto cleanup;
     }
 
-    /* all other unmodifiable parameters */
-    if (STRNEQ_NULLABLE(olddev->model, dev->model) ||
-        STRNEQ_NULLABLE(olddev->filter, dev->filter)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("cannot modify network device configuration"));
-        return -1;
+    if (needBridgeChange) {
+        if (qemuDomainChangeNetBridge(dom->conn, vm, olddev, newdev) < 0)
+            goto cleanup;
+        /* we successfully switched to the new bridge, and we've
+         * determined that the rest of newdev is equivalent to olddev,
+         * so move newdev into place, so that the  */
+        needReplaceDevDef = true;
     }
 
-    /* check if device name has been set, if no, retain the autogenerated one */
-    if (dev->ifname &&
-        STRNEQ_NULLABLE(olddev->ifname, dev->ifname)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("cannot modify network device configuration"));
-        return -1;
+    if (needLinkStateChange &&
+        qemuDomainChangeNetLinkState(driver, vm, olddev, newdev->linkstate) < 0) {
+        goto cleanup;
     }
 
-    if (olddev->type == VIR_DOMAIN_NET_TYPE_BRIDGE
-        && STRNEQ_NULLABLE(olddev->data.bridge.brname,
-                           dev->data.bridge.brname)) {
-        if ((ret = qemuDomainChangeNetBridge(vm, olddev, dev)) < 0)
-            return ret;
+    if (needReplaceDevDef) {
+        /* the changes above warrant replacing olddev with newdev in
+         * the domain's nets list.
+         */
+        networkReleaseActualDevice(olddev);
+        virDomainNetDefFree(olddev);
+        /* move newdev into the nets list, and NULL it out from the
+         * virDomainDeviceDef that we were given so that the caller
+         * won't delete it on return.
+         */
+        *devslot = newdev;
+        newdev = dev->data.net = NULL;
+        dev->type = VIR_DOMAIN_DEVICE_NONE;
     }
 
-    if (olddev->linkstate != dev->linkstate) {
-        if ((ret = qemuDomainChangeNetLinkState(driver, vm, olddev, dev->linkstate)) < 0)
-            return ret;
-    }
+    ret = 0;
+cleanup:
+    /* When we get here, we will be in one of these two states:
+     *
+     * 1) newdev has been moved into the domain's list of nets and
+     *    newdev set to NULL, and dev->data.net will be NULL (and
+     *    dev->type is NONE). olddev will have been completely
+     *    released and freed. (aka success) In this case no extra
+     *    cleanup is needed.
+     *
+     * 2) newdev has *not* been moved into the domain's list of nets,
+     *    and dev->data.net == newdev (and dev->type == NET). In this *
+     *    case, we need to at least release the "actual device" from *
+     *    newdev (the caller will free dev->data.net a.k.a. newdev, and
+     *    the original olddev is still in used)
+     *
+     * Note that case (2) isn't necessarily a failure. It may just be
+     * that the changes were minor enough that we didn't need to
+     * replace the entire device object.
+     */
+    if (newdev)
+        networkReleaseActualDevice(newdev);
 
     return ret;
 }

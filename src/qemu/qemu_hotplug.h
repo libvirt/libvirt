@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.h: QEMU device hotplug management
  *
- * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ int qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
 int qemuDomainChangeNet(struct qemud_driver *driver,
                         virDomainObjPtr vm,
                         virDomainPtr dom,
-                        virDomainNetDefPtr dev);
+                        virDomainDeviceDefPtr dev);
 int qemuDomainChangeNetLinkState(struct qemud_driver *driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,

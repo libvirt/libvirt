@@ -6097,7 +6097,7 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainChangeNet(driver, vm, dom, dev->data.net);
+        ret = qemuDomainChangeNet(driver, vm, dom, dev);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
