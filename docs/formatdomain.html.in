@@ -983,7 +983,7 @@
   ...
   &lt;pm&gt;
     &lt;suspend-to-disk enabled='no'/&gt;
-    &lt;suspend-to-ram enabled='yes'/&gt;
+    &lt;suspend-to-mem enabled='yes'/&gt;
   &lt;/pm&gt;
   ...</pre>
 
