@@ -59,6 +59,7 @@
 #include "command.h"
 #include "virrandom.h"
 #include "viruri.h"
+#include "threads.h"
 
 #ifdef WITH_TEST
 # include "test/test_driver.h"
@@ -119,7 +120,7 @@ static int virNWFilterDriverTabCount = 0;
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
 #endif
-static int initialized = 0;
+
 
 #if defined(POLKIT_AUTH)
 static int virConnectAuthGainPolkit(const char *privilege) {
@@ -391,29 +392,16 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
         }                                                       \
     } while (0)
 
-/**
- * virInitialize:
- *
- * Initialize the library. It's better to call this routine at startup
- * in multithreaded applications to avoid potential race when initializing
- * the library.
- *
- * Calling virInitialize is mandatory, unless your first API call is one of
- * virConnectOpen*.
- *
- * Returns 0 in case of success, -1 in case of error
- */
-int
-virInitialize(void)
+
+static bool virGlobalError = false;
+static virOnceControl virGlobalOnce = VIR_ONCE_CONTROL_INITIALIZER;
+
+static void
+virGlobalInit(void)
 {
-    if (initialized)
-        return 0;
-
-    initialized = 1;
-
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0)
-        return -1;
+        goto error;
 
     gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
     gcry_check_version(NULL);
@@ -429,47 +417,87 @@ virInitialize(void)
     VIR_DEBUG("register drivers");
 
 #if HAVE_WINSOCK2_H
-    if (winsock_init () == -1) return -1;
+    if (winsock_init () == -1)
+        goto error;
 #endif
 
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
-        return -1;
+        goto error;
 
     /*
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
 #ifdef WITH_TEST
-    if (testRegister() == -1) return -1;
+    if (testRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_OPENVZ
-    if (openvzRegister() == -1) return -1;
+    if (openvzRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_VMWARE
-    if (vmwareRegister() == -1) return -1;
+    if (vmwareRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_PHYP
-    if (phypRegister() == -1) return -1;
+    if (phypRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_VBOX
-    if (vboxRegister() == -1) return -1;
+    if (vboxRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_ESX
-    if (esxRegister() == -1) return -1;
+    if (esxRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_HYPERV
-    if (hypervRegister() == -1) return -1;
+    if (hypervRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_XENAPI
-    if (xenapiRegister() == -1) return -1;
+    if (xenapiRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_PARALLELS
-    if (parallelsRegister() == -1) return -1;
+    if (parallelsRegister() == -1)
+        goto error;
 #endif
 #ifdef WITH_REMOTE
-    if (remoteRegister () == -1) return -1;
+    if (remoteRegister () == -1)
+        goto error;
 #endif
 
+    return;
+
+error:
+    virGlobalError = true;
+}
+
+/**
+ * virInitialize:
+ *
+ * Initialize the library.
+ *
+ * This method is invoked automatically by any of the virConnectOpen API
+ * calls. Since release 1.0.0, there is no need to call this method even
+ * in a multithreaded application, since initialization is performed in
+ * a thread safe manner.
+ *
+ * The only time it would be necessary to call virInitialize is if the
+ * application did not invoke virConnectOpen as its first API call.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virInitialize(void)
+{
+    if (virOnce(&virGlobalOnce, virGlobalInit) < 0)
+        return -1;
+
+    if (virGlobalError)
+        return -1;
     return 0;
 }
 
@@ -553,9 +581,6 @@ DllMain (HINSTANCE instance ATTRIBUTE_UNUSED,
 int
 virRegisterNetworkDriver(virNetworkDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virNetworkDriverTabCount >= MAX_DRIVERS) {
@@ -583,9 +608,6 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
 int
 virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virInterfaceDriverTabCount >= MAX_DRIVERS) {
@@ -613,9 +635,6 @@ virRegisterInterfaceDriver(virInterfaceDriverPtr driver)
 int
 virRegisterStorageDriver(virStorageDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virStorageDriverTabCount >= MAX_DRIVERS) {
@@ -643,9 +662,6 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
 int
 virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virDeviceMonitorTabCount >= MAX_DRIVERS) {
@@ -673,9 +689,6 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
 int
 virRegisterSecretDriver(virSecretDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virSecretDriverTabCount >= MAX_DRIVERS) {
@@ -703,9 +716,6 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
 int
 virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virNWFilterDriverTabCount >= MAX_DRIVERS) {
@@ -736,9 +746,6 @@ virRegisterDriver(virDriverPtr driver)
 {
     VIR_DEBUG("driver=%p name=%s", driver, driver ? NULLSTR(driver->name) : "(null)");
 
-    if (virInitialize() < 0)
-        return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virDriverTabCount >= MAX_DRIVERS) {
@@ -767,9 +774,6 @@ virRegisterDriver(virDriverPtr driver)
 int
 virRegisterStateDriver(virStateDriverPtr driver)
 {
-    if (virInitialize() < 0)
-      return -1;
-
     virCheckNonNullArgReturn(driver, -1);
 
     if (virStateDriverTabCount >= MAX_DRIVERS) {
@@ -895,9 +899,8 @@ virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
 {
     VIR_DEBUG("libVir=%p, type=%s, typeVer=%p", libVer, type, typeVer);
 
-    if (!initialized)
-        if (virInitialize() < 0)
-            goto error;
+    if (virInitialize() < 0)
+        goto error;
 
     if (libVer == NULL)
         goto error;
@@ -1332,9 +1335,9 @@ virConnectPtr
 virConnectOpen (const char *name)
 {
     virConnectPtr ret = NULL;
-    if (!initialized)
-        if (virInitialize() < 0)
-            goto error;
+
+    if (virInitialize() < 0)
+        goto error;
 
     VIR_DEBUG("name=%s", name);
     virResetLastError();
@@ -1367,9 +1370,9 @@ virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
     virConnectPtr ret = NULL;
-    if (!initialized)
-        if (virInitialize() < 0)
-            goto error;
+
+    if (virInitialize() < 0)
+        goto error;
 
     VIR_DEBUG("name=%s", name);
     virResetLastError();
@@ -1406,9 +1409,9 @@ virConnectOpenAuth(const char *name,
                    unsigned int flags)
 {
     virConnectPtr ret = NULL;
-    if (!initialized)
-        if (virInitialize() < 0)
-            goto error;
+
+    if (virInitialize() < 0)
+        goto error;
 
     VIR_DEBUG("name=%s, auth=%p, flags=%x", NULLSTR(name), auth, flags);
     virResetLastError();
