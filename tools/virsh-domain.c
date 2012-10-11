@@ -1308,7 +1308,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
-    sigset_t sigmask;
+    sigset_t sigmask, oldsigmask;
     struct timeval start;
     struct timeval curr;
     const char *path = NULL;
@@ -1361,7 +1361,11 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 
     while (blocking) {
         virDomainBlockJobInfo info;
-        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        int result;
+
+        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+        result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 
         if (result < 0) {
             vshError(ctl, _("failed to query job for disk %s"), path);
@@ -1450,7 +1454,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
-    sigset_t sigmask;
+    sigset_t sigmask, oldsigmask;
     struct timeval start;
     struct timeval curr;
     const char *path = NULL;
@@ -1507,7 +1511,11 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 
     while (blocking) {
         virDomainBlockJobInfo info;
-        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        int result;
+
+        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+        result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 
         if (result <= 0) {
             vshError(ctl, _("failed to query job for disk %s"), path);
@@ -1674,7 +1682,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
-    sigset_t sigmask;
+    sigset_t sigmask, oldsigmask;
     struct timeval start;
     struct timeval curr;
     const char *path = NULL;
@@ -1727,7 +1735,11 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 
     while (blocking) {
         virDomainBlockJobInfo info;
-        int result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        int result;
+
+        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+        result = virDomainGetBlockJobInfo(dom, path, &info, 0);
+        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 
         if (result < 0) {
             vshError(ctl, _("failed to query job for disk %s"), path);
