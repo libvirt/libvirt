@@ -4668,7 +4668,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             int m;
             if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unkown mode '%s' in interface <actual> element"),
+                               _("Unknown mode '%s' in interface <actual> element"),
                                mode);
                 goto error;
             }
@@ -5036,7 +5036,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
             int m;
             if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unkown mode has been specified"));
+                               _("Unknown mode has been specified"));
                 goto error;
             }
             def->data.direct.mode = m;
@@ -7042,7 +7042,7 @@ virDomainVideoDefaultRAM(virDomainDefPtr def,
                          int type)
 {
     switch (type) {
-        /* Wierd, QEMU defaults to 9 MB ??! */
+        /* Weird, QEMU defaults to 9 MB ??! */
     case VIR_DOMAIN_VIDEO_TYPE_VGA:
     case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
     case VIR_DOMAIN_VIDEO_TYPE_VMVGA:

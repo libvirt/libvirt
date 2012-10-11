@@ -317,7 +317,7 @@ Bridge chain: PREROUTING, entries: 1, policy: ACCEPT
 
 Bridge chain: POSTROUTING, entries: 1, policy: ACCEPT
 -o vnet0 -j libvirt-O-vnet0</pre>
-    <p>To keep things managable and easy to follow, the driver will then
+    <p>To keep things manageable and easy to follow, the driver will then
        create further sub-chains for each protocol then it needs to match
        against:
     </p>

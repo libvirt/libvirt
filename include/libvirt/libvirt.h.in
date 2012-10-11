@@ -3124,7 +3124,7 @@ typedef enum {
  * virConnectDomainEventCallback:
  * @conn: virConnect connection
  * @dom: The domain on which the event occurred
- * @event: The specfic virDomainEventType which occurred
+ * @event: The specific virDomainEventType which occurred
  * @detail: event specific detail information
  * @opaque: opaque user data
  *
@@ -3417,7 +3417,7 @@ int virStreamRecv(virStreamPtr st,
  *
  * The callback will be invoked multiple times,
  * fetching data in small chunks. The application
- * should fill the 'data' array with upto 'nbytes'
+ * should fill the 'data' array with up to 'nbytes'
  * of data and then return the number actual number
  * of bytes. The callback will continue to be
  * invoked until it indicates the end of the source
@@ -3849,7 +3849,7 @@ typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
 /**
  * virDomainEventIOErrorAction:
  *
- * The action that is to be taken due to an IO error occuring
+ * The action that is to be taken due to an IO error occurring
  */
 typedef enum {
     VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored */

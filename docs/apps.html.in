@@ -188,7 +188,7 @@
         A general purpose desktop management tool, able to manage
         virtual machines across both local and remotely accessed
         hypervisors. It is targeted at home and small office usage
-        upto managing 10-20 hosts and their VMs.
+        up to managing 10-20 hosts and their VMs.
       </dd>
       <dt><a href="http://virt-manager.org/">virt-viewer</a></dt>
       <dd>

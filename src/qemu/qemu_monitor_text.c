@@ -2291,7 +2291,7 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
         if (!needle)
             continue;
 
-        /* id is everthing from the beginning of the line to the ':'
+        /* id is everything from the beginning of the line to the ':'
          * find ':' and turn it into a terminator */
         char *colon = memchr(pos, ':', needle - pos);
         if (colon == NULL)

@@ -425,7 +425,7 @@
        <dd>
          The optional <code>emulatorpin</code> element specifies which of host
          physical CPUs the "emulator", a subset of a domain not including vcpu,
-         will be pinned to. If this is ommitted, "emulator" is pinned to all
+         will be pinned to. If this is omitted, "emulator" is pinned to all
          the physical CPUs by default. It contains one required attribute
          <code>cpuset</code> specifying which physical CPUs to pin to.
        </dd>

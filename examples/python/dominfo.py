@@ -43,7 +43,7 @@ try:
     dom = conn.lookupByName(name)
     # Annoyiingly, libvirt prints its own error message here
 except libvirt.libvirtError:
-    print "Domain %s is not runing" % name
+    print "Domain %s is not running" % name
     sys.exit(0)
 
 info = dom.info()

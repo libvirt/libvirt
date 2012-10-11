@@ -129,7 +129,7 @@ Several B<virsh> commands take an optionally scaled integer; if no
 scale is provided, then the default is listed in the command (for
 historical reasons, some commands default to bytes, while other
 commands default to kibibytes).  The following case-insensitive
-suffixes can be used to select a specfic scale:
+suffixes can be used to select a specific scale:
   b, byte  byte      1
   KB       kilobyte  1,000
   k, KiB   kibibyte  1,024
@@ -607,7 +607,7 @@ Availability of these fields depends on hypervisor. Unsupported fields are
 missing from the output. Other fields may appear if communicating with a newer
 version of libvirtd.
 
-B<Explanation of fields> (fields appear in the folowing order):
+B<Explanation of fields> (fields appear in the following order):
   rd_req            - count of read operations
   rd_bytes          - count of read bytes
   wr_req            - count of write operations
@@ -2406,7 +2406,7 @@ is in.
 I<vol-name-or-key-or-path> is the name or key or path of the volume to wipe.
 I<--offset> is the position in the storage volume at which to start writing
 the data. I<--length> is an upper bound of the amount of data to be uploaded.
-An error will occurr if the I<local-file> is greater than the specified length.
+An error will occur if the I<local-file> is greater than the specified length.
 
 =item B<vol-download> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
 [I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>
@@ -2654,7 +2654,7 @@ this flag is in use, the command can also take additional I<diskspec>
 arguments to add <disk> elements to the xml.  Each <diskspec> is in the
 form B<disk[,snapshot=type][,driver=type][,file=name]>.  To include a
 literal comma in B<disk> or in B<file=name>, escape it with a second
-comma.  A literal I<--diskspec> must preceed each B<diskspec> unless
+comma.  A literal I<--diskspec> must precede each B<diskspec> unless
 all three of I<domain>, I<name>, and I<description> are also present.
 For example, a diskspec of "vda,snapshot=external,file=/path/to,,new"
 results in the following XML:

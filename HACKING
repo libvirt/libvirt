@@ -461,7 +461,7 @@ File handling
 =============
 Usage of the "fdopen()", "close()", "fclose()" APIs is deprecated in libvirt
 code base to help avoiding double-closing of files or file descriptors, which
-is particulary dangerous in a multi-threaded applications. Instead of these
+is particularly dangerous in a multi-threaded application. Instead of these
 APIs, use the macros from virfile.h
 
 - Open a file from a file descriptor:

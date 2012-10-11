@@ -2474,7 +2474,7 @@ class docBuilder:
 
 def rebuild(name):
     if name not in ["libvirt", "libvirt-qemu"]:
-        self.warning("rebuild() failed, unkown module %s") % name
+        self.warning("rebuild() failed, unknown module %s") % name
         return None
     builder = None
     srcdir = os.environ["srcdir"]

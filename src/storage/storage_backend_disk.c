@@ -533,9 +533,9 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
 }
 
 /**
- * Aligns a new partition to nearest cylinder boundry
+ * Aligns a new partition to nearest cylinder boundary
  * when having a msdos partition table type
- * to avoid any problem with all ready existing
+ * to avoid any problem with already existing
  * partitions
  */
 static int
@@ -558,7 +558,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
     int partType = virStorageBackendDiskPartTypeToCreate(pool);
 
     /* how many extra bytes we have since we allocate
-       aligned to the cylinder boundry */
+       aligned to the cylinder boundary */
     extraBytes = cylinderSize - (allocation % cylinderSize);
 
     for (i = 0 ; i < dev->nfreeExtent ; i++) {
@@ -568,7 +568,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
          unsigned long long neededSize = allocation;
 
          if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
-             /* align to cylinder boundry */
+             /* align to cylinder boundary */
              neededSize += extraBytes;
              if ((*start % cylinderSize) > extraBytes) {
                  /* add an extra cylinder if the offset can't fit within
@@ -617,7 +617,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
 
     *end = *start + alignedAllocation;
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
-        /* adjust our allocation if start is not at a cylinder boundry */
+        /* adjust our allocation if start is not at a cylinder boundary */
         *end -= (*start % cylinderSize);
     }
 

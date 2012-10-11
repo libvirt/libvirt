@@ -203,7 +203,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         size_t len;
         virConfValuePtr pp;
 
-        /* Calc lenght and check items */
+        /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
                 VIR_ERROR(_("security_driver be a list of strings"));

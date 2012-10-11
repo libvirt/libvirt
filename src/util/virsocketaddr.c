@@ -418,7 +418,7 @@ virSocketAddrMaskByPrefix(const virSocketAddrPtr addr,
  * virSocketAddrBroadcast:
  * @addr: address that needs to be turned into broadcast address (IPv4 only)
  * @netmask: the netmask address
- * @broadcast: virSocketAddr to recieve the broadcast address
+ * @broadcast: virSocketAddr to receive the broadcast address
  *
  * Mask ON the host bits of @addr according to @netmask, turning it
  * into a broadcast address.
@@ -448,7 +448,7 @@ virSocketAddrBroadcast(const virSocketAddrPtr addr,
  * virSocketAddrBroadcastByPrefix:
  * @addr: address that needs to be turned into broadcast address (IPv4 only)
  * @prefix: prefix (# of 1 bits) of netmask to apply
- * @broadcast: virSocketAddr to recieve the broadcast address
+ * @broadcast: virSocketAddr to receive the broadcast address
  *
  * Mask off the host bits of @addr according to @prefix, turning it
  * into a network address.

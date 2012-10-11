@@ -374,7 +374,7 @@ virNetTLSContextCheckCertDNWhitelist(const char *dname,
 {
     while (*wildcards) {
         int ret = fnmatch (*wildcards, dname, 0);
-        if (ret == 0) /* Succesful match */
+        if (ret == 0) /* Successful match */
             return 1;
         if (ret != FNM_NOMATCH) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -174,7 +174,7 @@ xenXMConfigSaveFile(virConnectPtr conn, const char *filename, virDomainDefPtr de
 
 /*
  * Caller must hold the lock on 'conn->privateData' before
- * calling this funtion
+ * calling this function
  */
 int
 xenXMConfigCacheRemoveFile(virConnectPtr conn,
@@ -198,7 +198,7 @@ xenXMConfigCacheRemoveFile(virConnectPtr conn,
 
 /*
  * Caller must hold the lock on 'conn->privateData' before
- * calling this funtion
+ * calling this function
  */
 int
 xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
@@ -307,7 +307,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
  * once every X seconds
  *
  * Caller must hold the lock on 'conn->privateData' before
- * calling this funtion
+ * calling this function
  */
 int xenXMConfigCacheRefresh (virConnectPtr conn) {
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -383,7 +383,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
         /* If we already have a matching entry and it is not
            modified, then carry on to next one*/
         if (xenXMConfigCacheAddFile(conn, path) < 0) {
-            /* Ignoring errors, since alot of stuff goes wrong in /etc/xen */
+            /* Ignoring errors, since a lot of stuff goes wrong in /etc/xen */
         }
 
         VIR_FREE(path);

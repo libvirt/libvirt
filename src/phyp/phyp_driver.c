@@ -2064,7 +2064,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
         goto err;
     }
 
-    /* Information not avaliable */
+    /* Information not available */
     spdef->allocation = 0;
     spdef->available = 0;
 
@@ -2287,7 +2287,7 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto cleanup;
     }
 
-    /* Information not avaliable */
+    /* Information not available */
     pool.allocation = 0;
     pool.available = 0;
 
@@ -2767,7 +2767,7 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         goto err;
     }
 
-    /* Information not avaliable */
+    /* Information not available */
     def.allocation = 0;
     def.available = 0;
 

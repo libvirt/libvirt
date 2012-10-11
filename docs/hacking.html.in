@@ -18,7 +18,7 @@
           or:
         </p>
 <pre>
-  git diff > libvirt-myfeature.patch
+  git diff &gt; libvirt-myfeature.patch
 </pre>
         <p>However, the usual workflow of libvirt developer is:</p>
 <pre>
@@ -554,8 +554,8 @@
     <p>
       Usage of the <code>fdopen()</code>, <code>close()</code>, <code>fclose()</code>
       APIs is deprecated in libvirt code base to help avoiding double-closing of files
-      or file descriptors, which is particulary dangerous in a multi-threaded
-      applications. Instead of these APIs, use the macros from virfile.h
+      or file descriptors, which is particularly dangerous in a multi-threaded
+      application. Instead of these APIs, use the macros from virfile.h
     </p>
 
    <ul>

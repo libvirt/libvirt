@@ -811,7 +811,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
         /* For Xen >= 3.0.3, don't generate a fixed port mapping
          * because it will almost certainly be wrong ! Just leave
          * it as -1 which lets caller see that the VNC server isn't
-         * present yet. Subsquent dumps of the XML will eventually
+         * present yet. Subsequent dumps of the XML will eventually
          * find the port in XenStore once VNC server has started
          */
         if (port == -1 && xendConfigVersion < XEND_CONFIG_VERSION_3_0_3)

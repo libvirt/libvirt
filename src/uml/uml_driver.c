@@ -258,7 +258,7 @@ requery:
         }
     } else if (!res || STRPREFIX(res, "pts")) {
         /* It can take a while to startup, so retry for
-           upto 5 seconds */
+           up to 5 seconds */
         /* XXX should do this in a better non-blocking
            way somehow ...perhaps register a timer */
         if (retries++ < 50) {

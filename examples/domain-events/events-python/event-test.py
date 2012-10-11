@@ -126,7 +126,7 @@ class virEventLoopPure:
         self.poll.register(self.pipetrick[0], select.POLLIN)
 
 
-    # Calculate when the next timeout is due to occurr, returning
+    # Calculate when the next timeout is due to occur, returning
     # the absolute timestamp for the next timeout, or 0 if there is
     # no timeout due
     def next_timeout(self):
@@ -169,7 +169,7 @@ class virEventLoopPure:
     #
     # Due to the coarse granularity of schedular timeslices, if
     # we ask for a sleep of 500ms in order to satisfy a timer, we
-    # may return upto 1 schedular timeslice early. So even though
+    # may return up to 1 schedular timeslice early. So even though
     # our sleep timeout was reached, the registered timer may not
     # technically be at its expiry point. This leads to us going
     # back around the loop with a crazy 5ms sleep. So when checking

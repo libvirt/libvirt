@@ -1081,7 +1081,7 @@ virLogOutputToJournald(virLogSource source,
     char priostr[INT_BUFSIZE_BOUND(priority)];
     char linestr[INT_BUFSIZE_BOUND(linenr)];
 
-    /* First message takes upto 4 iovecs, and each
+    /* First message takes up to 4 iovecs, and each
      * other field needs 3, assuming they don't have
      * newlines in them
      */
@@ -1090,7 +1090,7 @@ virLogOutputToJournald(virLogSource source,
 
     if (strchr(rawstr, '\n')) {
         uint64_t nstr;
-        /* If 'str' containes a newline, then we must
+        /* If 'str' contains a newline, then we must
          * encode the string length, since we can't
          * rely on the newline for the field separator
          */

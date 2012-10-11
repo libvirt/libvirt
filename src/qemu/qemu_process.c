@@ -2599,7 +2599,7 @@ static int qemuProcessHook(void *data)
     if (virDomainLockProcessStart(h->driver->lockManager,
                                   h->driver->uri,
                                   h->vm,
-                                  /* QEMU is always pased initially */
+                                  /* QEMU is always paused initially */
                                   true,
                                   &fd) < 0)
         goto cleanup;

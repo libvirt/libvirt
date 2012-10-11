@@ -2801,7 +2801,7 @@ _virNWFilterDefLoopDetect(virConnectPtr conn,
  * virNWFilterDefLoopDetect:
  * @conn: pointer to virConnect object
  * @nwfilters : the nwfilters to search
- * @def : the filter definiton that may add a loop and is to be tested
+ * @def : the filter definition that may add a loop and is to be tested
  *
  * Detect a loop introduced through the filters being able to
  * reference each other.

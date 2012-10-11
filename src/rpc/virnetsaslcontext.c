@@ -150,7 +150,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
         int rv = fnmatch (*wildcards, identity, 0);
         if (rv == 0) {
             ret = 1;
-            goto cleanup; /* Succesful match */
+            goto cleanup; /* Successful match */
         }
         if (rv != FNM_NOMATCH) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

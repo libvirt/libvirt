@@ -1351,7 +1351,7 @@ if test "x$with_avahi" = "xyes" || test "x$with_avahi" = "xcheck"; then
   ])
   if test "x$with_avahi" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_AVAHI], 1,
-      [whether Avahi is used to broadcast server presense])
+      [whether Avahi is used to broadcast server presence])
   fi
 fi
 AC_SUBST([AVAHI_CFLAGS])

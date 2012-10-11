@@ -3091,7 +3091,7 @@ error:
  *
  * This call sets up a stream; subsequent use of stream API is necessary
  * to transfer actual data, determine how much data is successfully
- * transfered, and detect any errors.
+ * transferred, and detect any errors.
  *
  * The screen ID is the sequential number of screen. In case of multiple
  * graphics cards, heads are enumerated before devices, e.g. having
@@ -14683,7 +14683,7 @@ error:
  * @cb: callback to the function handling domain events
  *
  * Removes a callback previously registered with the virConnectDomainEventRegister
- * funtion.
+ * function.
  *
  * Use of this method is no longer recommended. Instead applications
  * should try virConnectDomainEventUnregisterAny which has a more flexible

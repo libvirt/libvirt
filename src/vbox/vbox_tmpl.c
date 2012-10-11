@@ -7049,7 +7049,7 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
             virDomainEventPtr ev;
 
             /* CURRENT LIMITATION: we never get the VIR_DOMAIN_EVENT_UNDEFINED
-             * event becuase the when the machine is de-registered the call
+             * event because the when the machine is de-registered the call
              * to vboxDomainLookupByUUID fails and thus we don't get any
              * dom pointer which is necessary (null dom pointer doesn't work)
              * to show the VIR_DOMAIN_EVENT_UNDEFINED event
@@ -8747,7 +8747,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
              * is no 128bit width simple item type for a SafeArray to fit a
              * GUID in. The largest simple type it 64bit width and VirtualBox
              * uses two of this 64bit items to represents one GUID. Therefore,
-             * we devide the size of the SafeArray by two, to compensate for
+             * we divide the size of the SafeArray by two, to compensate for
              * this workaround in VirtualBox */
             machineIds.count /= 2;
 #endif /* VBOX_API_VERSION >= 2002 */

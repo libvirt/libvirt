@@ -356,7 +356,7 @@ Note that parameter values must be
         </td>
         <td> libssh2 </td>
         <td>
-  Path to the known_hosts file to verify the host key agains. LibSSH2
+  Path to the known_hosts file to verify the host key against. LibSSH2
   supports OpenSSH-style known_hosts files, although it does not support
   all key types, so using files created by the OpenSSH binary may result
   into truncating the known_hosts file. It's recommended to use the default

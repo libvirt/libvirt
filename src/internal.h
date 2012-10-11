@@ -107,7 +107,7 @@
 /**
  * ATTRIBUTE_UNUSED:
  *
- * Macro to flag conciously unused parameters to functions
+ * Macro to flag consciously unused parameters to functions
  */
 #  ifndef ATTRIBUTE_UNUSED
 #   define ATTRIBUTE_UNUSED __attribute__((__unused__))

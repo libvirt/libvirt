@@ -169,7 +169,7 @@ no_memory:
 /*
  * Process /proc/self/cgroup figuring out what cgroup
  * sub-path the current process is assigned to. ie not
- * neccessarily in the root
+ * necessarily in the root
  */
 static int virCgroupDetectPlacement(virCgroupPtr group)
 {
@@ -2026,7 +2026,7 @@ int virCgroupKillPainfully(virCgroupPtr group)
         else if (i == 8)
             signum = SIGKILL;
         else
-            signum = 0; /* Just check for existance */
+            signum = 0; /* Just check for existence */
 
         rc = virCgroupKillRecursive(group, signum);
         VIR_DEBUG("Iteration %d rc=%d", i, rc);

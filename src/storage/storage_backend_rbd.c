@@ -315,7 +315,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (len >= 0)
             break;
         if (len != -ERANGE) {
-            VIR_WARN("%s", _("A problem occured while listing RBD images"));
+            VIR_WARN("%s", _("A problem occurred while listing RBD images"));
             goto cleanup;
         }
     }

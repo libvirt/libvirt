@@ -607,7 +607,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     qemuCapsPtr kvmbinCaps = NULL;
     int ret = -1;
 
-    /* Check for existance of base emulator, or alternate base
+    /* Check for existence of base emulator, or alternate base
      * which can be used with magic cpu choice
      */
     binary = qemuCapsFindBinaryForArch(hostarch, guestarch);

@@ -689,7 +689,7 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
 
 /*
  * Invoked when a stream is signalled as having data
- * available to read. This reads upto one message
+ * available to read. This reads up to one message
  * worth of data, and then queues that for transmission
  * to the client.
  *
