@@ -1654,6 +1654,14 @@
           </optional>
           <interleave>
             <element name="source">
+              <optional>
+                <attribute name="missing">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+              </optional>
               <choice>
                 <group>
                   <ref name="usbproduct"/>
