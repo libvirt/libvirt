@@ -1468,13 +1468,13 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         }
         if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
             if (timeout < 1) {
-                vshError(ctl, "%s", _("migrate: Invalid timeout"));
+                vshError(ctl, "%s", _("invalid timeout"));
                 return false;
             }
 
             /* Ensure that we can multiply by 1000 without overflowing. */
             if (timeout > INT_MAX / 1000) {
-                vshError(ctl, "%s", _("migrate: Timeout is too big"));
+                vshError(ctl, "%s", _("timeout is too big"));
                 return false;
             }
             timeout *= 1000;
