@@ -2011,6 +2011,30 @@ virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info, unsigned int flags)
     return false;
 }
 
+int
+virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
+                        virDomainDeviceInfoPtr src)
+{
+    /* Assume that dst is already cleared */
+
+    /* first a shallow copy of *everything* */
+    *dst = *src;
+
+    /* then redo the two fields that are pointers */
+    dst->alias = NULL;
+    dst->romfile = NULL;
+
+    if (src->alias && !(dst->alias = strdup(src->alias))) {
+        virReportOOMError();
+        return -1;
+    }
+    if (src->romfile && !(dst->romfile = strdup(src->romfile))) {
+        virReportOOMError();
+        return -1;
+    }
+    return 0;
+}
+
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
     VIR_FREE(info->alias);
