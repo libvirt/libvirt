@@ -3820,8 +3820,8 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
             if (netdef->forwardIfs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
-                (virDevicePCIAddressEqual(hostdev->source.subsys.u.pci,
-                                          netdef->forwardIfs[ii].device.pci) == 0)) {
+                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
+                                         &netdef->forwardIfs[ii].device.pci)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }
@@ -3972,8 +3972,8 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         for (ii = 0; ii < netdef->nForwardIfs; ii++) {
             if (netdef->forwardIfs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
-                (virDevicePCIAddressEqual(hostdev->source.subsys.u.pci,
-                                          netdef->forwardIfs[ii].device.pci) == 0)) {
+                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
+                                          &netdef->forwardIfs[ii].device.pci)) {
                 dev = &netdef->forwardIfs[ii];
                 break;
             }

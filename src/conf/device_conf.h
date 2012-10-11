@@ -59,8 +59,8 @@ int virDevicePCIAddressFormat(virBufferPtr buf,
                               virDevicePCIAddress addr,
                               bool includeTypeInAddr);
 
-int virDevicePCIAddressEqual(virDevicePCIAddress addr1,
-                             virDevicePCIAddress addr2);
+bool virDevicePCIAddressEqual(virDevicePCIAddress *addr1,
+                              virDevicePCIAddress *addr2);
 
 
 VIR_ENUM_DECL(virDeviceAddressPciMulti)

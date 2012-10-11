@@ -130,18 +130,15 @@ virDevicePCIAddressFormat(virBufferPtr buf,
     return 0;
 }
 
-int
-virDevicePCIAddressEqual(virDevicePCIAddress addr1,
-                         virDevicePCIAddress addr2)
+bool
+virDevicePCIAddressEqual(virDevicePCIAddress *addr1,
+                         virDevicePCIAddress *addr2)
 {
-    int ret = -1;
-
-    if (addr1.domain == addr2.domain &&
-        addr1.bus == addr2.bus &&
-        addr1.slot == addr2.slot &&
-        addr1.function == addr2.function) {
-        ret = 0;
+    if (addr1->domain == addr2->domain &&
+        addr1->bus == addr2->bus &&
+        addr1->slot == addr2->slot &&
+        addr1->function == addr2->function) {
+        return true;
     }
-
-    return ret;
+    return false;
 }
