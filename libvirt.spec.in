@@ -108,6 +108,7 @@
 %define with_systemd       0%{!?_without_systemd:0}
 %define with_numad         0%{!?_without_numad:0}
 %define with_firewalld     0%{!?_without_firewalld:0}
+%define with_libssh2_transport 0%{!?_without_libssh2_transport:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -227,6 +228,11 @@
 %ifarch %{ix86} x86_64
 %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
 %endif
+%endif
+
+# Enable libssh2 transport for new enough distros
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
+%define with_libssh2_transport 0%{!?_without_libssh2_transport:1}
 %endif
 
 # Disable some drivers when building without libvirt daemon.
@@ -491,8 +497,12 @@ BuildRequires: numactl-devel
 %if %{with_capng}
 BuildRequires: libcap-ng-devel >= 0.5.0
 %endif
-%if %{with_phyp}
+%if %{with_phyp} || %{with_libssh2_transport}
+%if %{with_libssh2_transport}
+BuildRequires: libssh2-devel >= 1.3.0
+%else
 BuildRequires: libssh2-devel
+%endif
 %endif
 
 %if %{with_netcf}
