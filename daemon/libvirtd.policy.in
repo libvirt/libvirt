@@ -36,7 +36,7 @@ file are instantly applied.
              read-write mode for management, and we require user password -->
         <allow_any>auth_admin</allow_any>
         <allow_inactive>auth_admin</allow_inactive>
-        <allow_active>auth_admin_keep_session</allow_active>
+        <allow_active>@authaction@</allow_active>
       </defaults>
     </action>
 </policyconfig>

@@ -54,6 +54,7 @@
 /daemon/libvirtd.8.in
 /daemon/libvirtd.init
 /daemon/libvirtd.pod
+/daemon/libvirtd.policy
 /daemon/libvirtd.service
 /daemon/test_libvirtd.aug
 /docs/apibuild.py.stamp

@@ -35,8 +35,7 @@ EXTRA_DIST =						\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
-	libvirtd.policy-0				\
-	libvirtd.policy-1				\
+	libvirtd.policy.in				\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
 	libvirtd.sysctl					\
@@ -173,12 +172,19 @@ libvirtd_LDADD += ../src/libvirt.la
 if HAVE_POLKIT
 if HAVE_POLKIT0
 policydir = $(datadir)/PolicyKit/policy
-policyfile = libvirtd.policy-0
+policyauth = auth_admin_keep_session
 else
 policydir = $(datadir)/polkit-1/actions
-policyfile = libvirtd.policy-1
+policyauth = auth_admin_keep
 endif
 endif
+
+libvirtd.policy: libvirtd.policy.in $(top_builddir)/config.status
+	$(AM_V_GEN) sed \
+	    -e 's![@]authaction[@]!$(policyauth)!g' \
+	    < $< > $@-t && \
+	mv $@-t $@
+BUILT_SOURCES += libvirtd.policy
 
 install-data-local: install-init-redhat install-init-systemd install-init-upstart \
 		install-data-sasl install-data-polkit \
@@ -197,7 +203,7 @@ uninstall-local:: uninstall-init-redhat uninstall-init-systemd uninstall-init-up
 if HAVE_POLKIT
 install-data-polkit::
 	$(MKDIR_P) $(DESTDIR)$(policydir)
-	$(INSTALL_DATA) $(srcdir)/$(policyfile) $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 uninstall-data-polkit::
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 	rmdir $(DESTDIR)$(policydir) || :
