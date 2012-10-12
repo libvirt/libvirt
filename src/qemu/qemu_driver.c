@@ -12628,6 +12628,12 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
     if (ret < 0)
         goto endjob;
 
+    /* Snoop block copy operations, so future cancel operations can
+     * avoid checking if pivot is safe.  */
+    if (mode == BLOCK_JOB_INFO && ret == 1 && disk->mirror &&
+        info->cur == info->end && info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
+        disk->mirroring = true;
+
     /* With synchronous block cancel, we must synthesize an event, and
      * we silently ignore the ABORT_ASYNC flag.  With asynchronous
      * block cancel, the event will come from qemu, but without the

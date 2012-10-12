@@ -69,6 +69,7 @@ static void qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon, virJSONValuePtr da
 static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleBlockJobReady(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
 
@@ -82,6 +83,7 @@ static qemuEventHandler eventHandlers[] = {
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
     { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
     { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
+    { "BLOCK_JOB_READY", qemuMonitorJSONHandleBlockJobReady, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "RESET", qemuMonitorJSONHandleReset, },
@@ -807,6 +809,8 @@ qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
     else if (STREQ(type_str, "commit"))
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
+    else if (STREQ(type_str, "mirror"))
+        type = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
 
     switch ((virConnectDomainEventBlockJobStatus) event) {
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
@@ -815,11 +819,12 @@ qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
             event = VIR_DOMAIN_BLOCK_JOB_FAILED;
         break;
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+    case VIR_DOMAIN_BLOCK_JOB_READY:
         break;
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_LAST:
-            VIR_DEBUG("should not get here");
-            break;
+        VIR_DEBUG("should not get here");
+        break;
     }
 
 out:
@@ -880,6 +885,14 @@ qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon,
 {
     qemuMonitorJSONHandleBlockJobImpl(mon, data,
                                       VIR_DOMAIN_BLOCK_JOB_CANCELED);
+}
+
+static void
+qemuMonitorJSONHandleBlockJobReady(qemuMonitorPtr mon,
+                                   virJSONValuePtr data)
+{
+    qemuMonitorJSONHandleBlockJobImpl(mon, data,
+                                      VIR_DOMAIN_BLOCK_JOB_READY);
 }
 
 static void
@@ -3485,6 +3498,8 @@ static int qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
     else if (STREQ(type, "commit"))
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
+    else if (STREQ(type, "mirror"))
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     else
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
 

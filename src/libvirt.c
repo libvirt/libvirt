@@ -19219,9 +19219,10 @@ error:
  * mirror all further changes to both source and destination.  The user
  * must call virDomainBlockJobAbort() to end the mirroring while choosing
  * whether to revert to source or pivot to the destination.  An event is
- * issued when the job ends, and in the future, an event may be added when
- * the job transitions from pulling to mirroring.  If the job is aborted,
- * a new job will have to start over from the beginning of the first phase.
+ * issued when the job ends, and depending on the hypervisor, an event may
+ * also be issued when the job transitions from pulling to mirroring.  If
+ * the job is aborted, a new job will have to start over from the beginning
+ * of the first phase.
  *
  * Some hypervisors will restrict certain actions, such as virDomainSave()
  * or virDomainDetachDevice(), while a copy job is active; they may
