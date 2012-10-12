@@ -78,6 +78,13 @@ virStorageFileMetadataPtr virStorageFileGetMetadataFromFD(const char *path,
                                                           int fd,
                                                           int format);
 
+const char *virStorageFileChainLookup(virStorageFileMetadataPtr chain,
+                                      const char *start,
+                                      const char *name,
+                                      virStorageFileMetadataPtr *meta,
+                                      const char **parent)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 
 int virStorageFileResize(const char *path, unsigned long long capacity);

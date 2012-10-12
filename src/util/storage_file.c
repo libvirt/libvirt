@@ -1262,3 +1262,67 @@ const char *virStorageFileGetSCSIKey(const char *path)
     return NULL;
 }
 #endif
+
+/* Given a CHAIN that starts at the named file START, return a string
+ * pointing to either START or within CHAIN that gives the preferred
+ * name for the backing file NAME within that chain.  Pass NULL for
+ * NAME to find the base of the chain.  If META is not NULL, set *META
+ * to the point in the chain that describes NAME (or to NULL if the
+ * backing element is not a file).  If PARENT is not NULL, set *PARENT
+ * to the preferred name of the parent (or to NULL if NAME matches
+ * START).  Since the results point within CHAIN, they must not be
+ * independently freed.  */
+const char *
+virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
+                          const char *name, virStorageFileMetadataPtr *meta,
+                          const char **parent)
+{
+    virStorageFileMetadataPtr owner;
+    const char *tmp;
+
+    if (!parent)
+        parent = &tmp;
+
+    *parent = NULL;
+    if (name ? STREQ(start, name) || virFileLinkPointsTo(start, name) :
+        !chain->backingStore) {
+        if (meta)
+            *meta = chain;
+        return start;
+    }
+
+    owner = chain;
+    *parent = start;
+    while (owner) {
+        if (!owner->backingStore)
+            goto error;
+        if (!name) {
+            if (!owner->backingMeta ||
+                !owner->backingMeta->backingStore)
+                break;
+        } else if (STREQ_NULLABLE(name, owner->backingStoreRaw) ||
+                   STREQ(name, owner->backingStore)) {
+            break;
+        } else if (owner->backingStoreIsFile) {
+            char *absName = absolutePathFromBaseFile(*parent, name);
+            if (absName && STREQ(absName, owner->backingStore)) {
+                VIR_FREE(absName);
+                break;
+            }
+            VIR_FREE(absName);
+        }
+        *parent = owner->backingStore;
+        owner = owner->backingMeta;
+    }
+    if (!owner)
+        goto error;
+    if (meta)
+        *meta = owner->backingMeta;
+    return owner->backingStore;
+
+error:
+    *parent = NULL;
+    if (meta)
+        *meta = NULL;
+    return NULL;
+}
