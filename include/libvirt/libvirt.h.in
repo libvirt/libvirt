@@ -4490,6 +4490,18 @@ typedef virMemoryParameter *virMemoryParameterPtr;
  */
 # define VIR_NODE_MEMORY_SHARED_FULL_SCANS         "shm_full_scans"
 
+/* VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES:
+ *
+ * Macro for typed parameter that represents whether pages from
+ * different NUMA nodes can be merged. The parameter has type int,
+ * when its value is 0, only pages which physically reside in the
+ * memory area of same NUMA node are merged; When its value is 1,
+ * pages from all nodes can be merged. Other values are reserved
+ * for future use.
+ */
+# define VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES "shm_merge_across_nodes"
+
+
 int virNodeGetMemoryParameters(virConnectPtr conn,
                                virTypedParameterPtr params,
                                int *nparams,

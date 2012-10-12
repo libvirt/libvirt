@@ -920,6 +920,8 @@ static const vshCmdOptDef opts_node_memory_tune[] = {
     {"shm-sleep-millisecs", VSH_OT_INT, VSH_OFLAG_NONE,
       N_("number of millisecs the shared memory service should "
          "sleep before next scan")},
+    {"shm-merge-across-nodes", VSH_OT_INT, VSH_OFLAG_NONE,
+      N_("Specifies if pages from different numa nodes can be merged")},
     {NULL, 0, 0, NULL}
 };
 
@@ -931,6 +933,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     unsigned int shm_pages_to_scan = 0;
     unsigned int shm_sleep_millisecs = 0;
+    unsigned int shm_merge_across_nodes = 0;
     bool ret = false;
     int i = 0;
 
@@ -946,10 +949,19 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
+    if (vshCommandOptUInt(cmd, "shm-merge-across-nodes",
+                          &shm_merge_across_nodes) < 0) {
+        vshError(ctl, "%s", _("invalid shm-merge-across-nodes number"));
+        return false;
+    }
+
     if (shm_pages_to_scan)
         nparams++;
 
     if (shm_sleep_millisecs)
+        nparams++;
+
+    if (shm_merge_across_nodes)
         nparams++;
 
     if (nparams == 0) {
@@ -1000,6 +1012,14 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
                                         VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
                                         VIR_TYPED_PARAM_UINT,
                                         shm_sleep_millisecs) < 0)
+                goto error;
+        }
+
+        if (i < nparams && shm_merge_across_nodes) {
+            if (virTypedParameterAssign(&params[i++],
+                                        VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
+                                        VIR_TYPED_PARAM_UINT,
+                                        shm_merge_across_nodes) < 0)
                 goto error;
         }
 

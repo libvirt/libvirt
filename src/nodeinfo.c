@@ -1005,6 +1005,8 @@ nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
                                        VIR_TYPED_PARAM_UINT,
                                        VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
                                        VIR_TYPED_PARAM_UINT,
+                                       VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
+                                       VIR_TYPED_PARAM_UINT,
                                        NULL) < 0)
         return -1;
 
@@ -1021,6 +1023,13 @@ nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else if (STREQ(param->field,
                          VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS)) {
             ret = nodeSetMemoryParameterValue("sleep_millisecs", param);
+
+            /* Out of memory */
+            if (ret == -2)
+                return -1;
+        } else if (STREQ(param->field,
+                         VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES)) {
+            ret = nodeSetMemoryParameterValue("merge_across_nodes", param);
 
             /* Out of memory */
             if (ret == -2)
@@ -1060,8 +1069,9 @@ nodeGetMemoryParameterValue(const char *field,
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
 
-    if (STREQ(field, "pages_to_scan") ||
-        STREQ(field, "sleep_millisecs"))
+    if (STREQ(field, "pages_to_scan")   ||
+        STREQ(field, "sleep_millisecs") ||
+        STREQ(field, "merge_across_nodes"))
         rc = virStrToLong_ui(buf, NULL, 10, (unsigned int *)value);
     else if (STREQ(field, "pages_shared")    ||
              STREQ(field, "pages_sharing")   ||
@@ -1084,7 +1094,7 @@ cleanup:
 }
 #endif
 
-#define NODE_MEMORY_PARAMETERS_NUM 7
+#define NODE_MEMORY_PARAMETERS_NUM 8
 int
 nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virTypedParameterPtr params ATTRIBUTE_UNUSED,
@@ -1096,6 +1106,7 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 #ifdef __linux__
     unsigned int pages_to_scan;
     unsigned int sleep_millisecs;
+    unsigned int merge_across_nodes;
     unsigned long long pages_shared;
     unsigned long long pages_sharing;
     unsigned long long pages_unshared;
@@ -1185,6 +1196,17 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_FULL_SCANS,
                                         VIR_TYPED_PARAM_ULLONG, full_scans) < 0)
+                return -1;
+
+            break;
+
+        case 7:
+            if (nodeGetMemoryParameterValue("merge_across_nodes",
+                                            &merge_across_nodes) < 0)
+                return -1;
+
+            if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
+                                        VIR_TYPED_PARAM_UINT, merge_across_nodes) < 0)
                 return -1;
 
             break;

@@ -303,7 +303,10 @@ Allows you to display or set the node memory parameters.
 I<shm-pages-to-scan> can be used to set the number of pages to scan
 before the shared memory service goes to sleep; I<shm-sleep-millisecs>
 can be used to set the number of millisecs the shared memory service should
-sleep before next scan.
+sleep before next scan; I<shm-merge-across-nodes> specifies if pages from
+different numa nodes can be merged. When set to 0, only pages which physically
+reside in the memory area of same NUMA node can be merged. When set to 1,
+pages from all nodes can be merged. Default to 1.
 
 =item B<capabilities>
 
