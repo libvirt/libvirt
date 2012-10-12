@@ -3601,6 +3601,8 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
     int vcpus = oldvcpus;
     pid_t *cpupids = NULL;
     int ncpupids;
+    virCgroupPtr cgroup = NULL;
+    virCgroupPtr cgroup_vcpu = NULL;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -3654,6 +3656,53 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0) {
+        int rv = -1;
+
+        if (nvcpus > oldvcpus) {
+            for (i = oldvcpus; i < nvcpus; i++) {
+                /* Create cgroup for the onlined vcpu */
+                rv = virCgroupForVcpu(cgroup, i, &cgroup_vcpu, 1);
+                if (rv < 0) {
+                    virReportSystemError(-rv,
+                                         _("Unable to create vcpu cgroup for %s(vcpu:"
+                                           " %d)"),
+                                         vm->def->name, i);
+                    goto cleanup;
+                }
+
+                /* Add vcpu thread to the cgroup */
+                rv = virCgroupAddTask(cgroup_vcpu, cpupids[i]);
+                if (rv < 0) {
+                    virReportSystemError(-rv,
+                                         _("unable to add vcpu %d task %d to cgroup"),
+                                         i, cpupids[i]);
+                    virCgroupRemove(cgroup_vcpu);
+                    goto cleanup;
+                }
+
+                virCgroupFree(&cgroup_vcpu);
+            }
+        } else {
+            for (i = oldvcpus - 1; i >= nvcpus; i--) {
+                rv = virCgroupForVcpu(cgroup, i, &cgroup_vcpu, 0);
+                if (rv < 0) {
+                    virReportSystemError(-rv,
+                                         _("Unable to access vcpu cgroup for %s(vcpu:"
+                                           " %d)"),
+                                         vm->def->name, i);
+                    goto cleanup;
+                }
+
+                /* Remove cgroup for the offlined vcpu */
+                virCgroupRemove(cgroup_vcpu);
+                virCgroupFree(&cgroup_vcpu);
+            }
+        }
+
+        virCgroupFree(&cgroup);
+    }
+
     priv->nvcpupids = ncpupids;
     VIR_FREE(priv->vcpupids);
     priv->vcpupids = cpupids;
@@ -3664,6 +3713,10 @@ cleanup:
     vm->def->vcpus = vcpus;
     VIR_FREE(cpupids);
     virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
+    if (cgroup)
+        virCgroupFree(&cgroup);
+    if (cgroup_vcpu)
+        virCgroupFree(&cgroup_vcpu);
     return ret;
 
 unsupported:
