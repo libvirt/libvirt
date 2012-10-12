@@ -201,6 +201,9 @@ static const char *eventDetailToString(int event, int detail) {
             case VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY:
                 ret = "Memory";
                 break;
+            case VIR_DOMAIN_EVENT_PMSUSPENDED_DISK:
+                ret = "Disk";
+                break;
             }
             break;
     }
@@ -402,6 +405,16 @@ static int myDomainEventPMSuspendCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventPMSuspendDiskCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                              virDomainPtr dom,
+                                              int reason ATTRIBUTE_UNUSED,
+                                              void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) system pmsuspend-disk\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom));
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -440,6 +453,7 @@ int main(int argc, char **argv)
     int callback11ret = -1;
     int callback12ret = -1;
     int callback13ret = -1;
+    int callback14ret = -1;
     struct sigaction action_stop;
 
     memset(&action_stop, 0, sizeof(action_stop));
@@ -533,6 +547,11 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventBalloonChangeCallback),
                                                      strdup("callback balloonchange"), myFreeFunc);
+    callback14ret = virConnectDomainEventRegisterAny(dconn,
+                                                     NULL,
+                                                     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
+                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMSuspendDiskCallback),
+                                                     strdup("pmsuspend-disk"), myFreeFunc);
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
         (callback3ret != -1) &&
@@ -544,7 +563,8 @@ int main(int argc, char **argv)
         (callback10ret != -1) &&
         (callback11ret != -1) &&
         (callback12ret != -1) &&
-        (callback13ret != -1)) {
+        (callback13ret != -1) &&
+        (callback14ret != -1)) {
         if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
             virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to start keepalive protocol: %s\n",

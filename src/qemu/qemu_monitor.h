@@ -136,6 +136,8 @@ struct _qemuMonitorCallbacks {
     int (*domainBalloonChange)(qemuMonitorPtr mon,
                                virDomainObjPtr vm,
                                unsigned long long actual);
+    int (*domainPMSuspendDisk)(qemuMonitorPtr mon,
+                               virDomainObjPtr vm);
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -213,6 +215,7 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             int status);
 int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
+int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);

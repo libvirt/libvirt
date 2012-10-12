@@ -1,6 +1,7 @@
 /*
  * domain_event.h: domain event queue processing helpers
  *
+ * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -127,6 +128,9 @@ virDomainEventPtr virDomainEventPMSuspendNewFromDom(virDomainPtr dom);
 
 virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom, unsigned long long actual);
 virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj, unsigned long long actual);
+
+virDomainEventPtr virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj);
+virDomainEventPtr virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom);
 
 void virDomainEventFree(virDomainEventPtr event);
 

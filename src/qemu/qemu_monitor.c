@@ -1111,6 +1111,16 @@ int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon)
     return ret;
 }
 
+int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainPMSuspendDisk, mon->vm);
+
+    return ret;
+}
+
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,

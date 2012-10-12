@@ -70,6 +70,7 @@ static void qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon, virJSONValuePtr d
 static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -91,6 +92,7 @@ static qemuEventHandler eventHandlers[] = {
     { "SPICE_INITIALIZED", qemuMonitorJSONHandleSPICEInitialize, },
     { "STOP", qemuMonitorJSONHandleStop, },
     { "SUSPEND", qemuMonitorJSONHandlePMSuspend, },
+    { "SUSPEND_DISK", qemuMonitorJSONHandlePMSuspendDisk, },
     { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
     { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
     { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
@@ -889,6 +891,13 @@ qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon,
     }
     actual = VIR_DIV_UP(actual, 1024);
     qemuMonitorEmitBalloonChange(mon, actual);
+}
+
+static void
+qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon,
+                                   virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitPMSuspendDisk(mon);
 }
 
 int

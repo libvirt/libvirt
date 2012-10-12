@@ -449,7 +449,7 @@ def detailToString(event, detail):
         ( "Unpaused", "Migrated", "Snapshot" ),
         ( "Shutdown", "Destroyed", "Crashed", "Migrated", "Saved", "Failed", "Snapshot"),
         ( "Finished", ),
-        ( "Memory", )
+        ( "Memory", "Disk" )
         )
     return eventStrings[event][detail]
 
@@ -554,6 +554,7 @@ def main():
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMWAKEUP, myDomainEventPMWakeupCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMSUSPEND, myDomainEventPMSuspendCallback, None)
     vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE, myDomainEventBalloonChangeCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK, myDomainEventPMSuspendDiskCallback, None)
 
     vc.setKeepAlive(5, 3)
 

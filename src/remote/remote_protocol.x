@@ -2259,6 +2259,10 @@ struct remote_domain_event_balloon_change_msg {
     unsigned hyper actual;
 };
 
+struct remote_domain_event_pmsuspend_disk_msg {
+    remote_nonnull_domain dom;
+};
+
 struct remote_domain_managed_save_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -3008,7 +3012,8 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_MEMORY_PARAMETERS = 289, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290, /* autogen autogen */
 
-    REMOTE_PROC_NETWORK_UPDATE = 291 /* autogen autogen priority:high */
+    REMOTE_PROC_NETWORK_UPDATE = 291, /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

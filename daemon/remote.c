@@ -608,6 +608,30 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                               virDomainPtr dom,
+                                               int reason ATTRIBUTE_UNUSED,
+                                               void *opaque) {
+    virNetServerClientPtr client = opaque;
+    remote_domain_event_pmsuspend_disk_msg data;
+
+    if (!client)
+        return -1;
+
+    VIR_DEBUG("Relaying domain %s %d system pmsuspend-disk", dom->name, dom->id);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchDomainEventSend(client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK,
+                                  (xdrproc_t)xdr_remote_domain_event_pmsuspend_disk_msg, &data);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -623,6 +647,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMWakeup),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspend),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBalloonChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventPMSuspendDisk),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

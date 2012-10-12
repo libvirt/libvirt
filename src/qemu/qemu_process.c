@@ -1178,6 +1178,52 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                               virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+    virDomainEventPtr lifecycleEvent = NULL;
+
+    virDomainObjLock(vm);
+    event = virDomainEventPMSuspendDiskNewFromObj(vm);
+
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        VIR_DEBUG("Transitioned guest %s to pmsuspended state due to "
+                  "QMP suspend_disk event", vm->def->name);
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED,
+                             VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+        lifecycleEvent =
+            virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_PMSUSPENDED,
+                                     VIR_DOMAIN_EVENT_PMSUSPENDED_DISK);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after suspend event",
+                     vm->def->name);
+        }
+
+        if (priv->agent)
+            qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SUSPEND);
+    }
+
+    virDomainObjUnlock(vm);
+
+    if (event || lifecycleEvent) {
+        qemuDriverLock(driver);
+        if (event)
+            qemuDomainEventQueue(driver, event);
+        if (lifecycleEvent)
+            qemuDomainEventQueue(driver, lifecycleEvent);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
 
 static qemuMonitorCallbacks monitorCallbacks = {
     .destroy = qemuProcessHandleMonitorDestroy,
@@ -1196,6 +1242,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainPMWakeup = qemuProcessHandlePMWakeup,
     .domainPMSuspend = qemuProcessHandlePMSuspend,
     .domainBalloonChange = qemuProcessHandleBalloonChange,
+    .domainPMSuspendDisk = qemuProcessHandlePMSuspendDisk,
 };
 
 static int

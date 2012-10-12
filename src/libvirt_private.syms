@@ -587,6 +587,8 @@ virDomainEventStateRegisterID;
 virDomainEventStateFree;
 virDomainEventStateNew;
 virDomainEventStateQueue;
+virDomainEventPMSuspendDiskNewFromDom;
+virDomainEventPMSuspendDiskNewFromObj;
 virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;

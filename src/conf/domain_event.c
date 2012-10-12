@@ -1,7 +1,7 @@
 /*
  * domain_event.c: domain event queue processing helpers
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -1125,6 +1125,30 @@ virDomainEventPMSuspendNewFromDom(virDomainPtr dom)
     return virDomainEventPMSuspendNew(dom->id, dom->name, dom->uuid);
 }
 
+static virDomainEventPtr
+virDomainEventPMSuspendDiskNew(int id, const char *name,
+                               unsigned char *uuid)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
+                                  id, name, uuid);
+    return ev;
+}
+
+virDomainEventPtr
+virDomainEventPMSuspendDiskNewFromObj(virDomainObjPtr obj)
+{
+    return virDomainEventPMSuspendDiskNew(obj->def->id,
+                                          obj->def->name,
+                                          obj->def->uuid);
+}
+
+virDomainEventPtr
+virDomainEventPMSuspendDiskNewFromDom(virDomainPtr dom)
+{
+    return virDomainEventPMSuspendDiskNew(dom->id, dom->name, dom->uuid);
+}
+
 virDomainEventPtr virDomainEventBalloonChangeNewFromDom(virDomainPtr dom,
                                                         unsigned long long actual)
 {
@@ -1292,6 +1316,10 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         ((virConnectDomainEventBalloonChangeCallback)cb)(conn, dom,
                                                          event->data.balloonChange.actual,
                                                          cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
+        ((virConnectDomainEventPMSuspendDiskCallback)cb)(conn, dom, 0, cbopaque);
         break;
 
     default:
