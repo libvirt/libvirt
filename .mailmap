@@ -3,7 +3,6 @@
 # Email consolidation:
 # <Preferred address in AUTHORS> <other alias used by same author>
 
-<amy.griffis@hp.com> <aron.griffis@hp.com>
 <bozzolan@gmail.com> <redshift@gmx.com>
 <charles_duffy@messageone.com> <charles@dyfis.net>
 <dfj@redhat.com> <dfj@dfj.bne.redhat.com>
@@ -34,6 +33,9 @@
 <gerd@egidy.de> <lists@egidy.de>
 <gerd@egidy.de> <gerd.von.egidy@intra2net.com>
 <benoar@dolka.fr> <benjamin.cama@telecom-bretagne.eu>
+<zhlcindy@linux.vnet.ibm.com> <zhlcindy@gmail.com>
+<serge.hallyn@canonical.com> <serue@us.ibm.com>
+<pritesh.kothari@sun.com> <Pritesh.Kothari@Sun.COM>
 
 # Name consolidation:
 # Preferred author spelling <preferred email>
@@ -42,3 +44,15 @@ Royce Lv <lvroyce@linux.vnet.ibm.com>
 Daniel J Walsh <dwalsh@redhat.com>
 Ján Tomko <jtomko@redhat.com>
 Gerd von Egidy <gerd@egidy.de>
+MATSUDA Daiki <matsudadik@intellilink.co.jp>
+Tang Chen <tangchen@cn.fujitsu.com>
+Peng Zhou <ailvpeng25@gmail.com>
+Dirk Herrendoerfer <d.herrendoerfer@herrendoerfer.name>
+Thibault VINCENT <thibault.vincent@smartjog.com>
+Aurelien Rougemont <beorn@binaries.fr>
+Serge E. Hallyn <serge.hallyn@canonical.com>
+Henrik Persson E <henrik.e.persson@ericsson.com>
+Philipp Hahn <hahn@univention.de>
+Marco Bozzolan <bozzolan@gmail.com>
+Marco Bozzolan <redshift@gmx.com>
+Pritesh Kothari <pritesh.kothari@sun.com>

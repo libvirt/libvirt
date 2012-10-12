@@ -26,6 +26,7 @@
 .memdump
 .sc-start-sc_*
 /ABOUT-NLS
+/AUTHORS
 /COPYING
 /ChangeLog
 /GNUmakefile

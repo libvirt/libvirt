@@ -1,0 +1,90 @@
+   libvirt Authors
+   ===============
+
+The libvirt project was initiated by:
+
+Daniel Veillard <veillard@redhat.com> or <daniel@veillard.com>
+
+The primary maintainers and people with commit access rights:
+
+Alex Jia <ajia@redhat.com>
+Martin Kletzander <mkletzan@redhat.com>
+Alex Jia <ajia@redhat.com>
+Anthony Liguori <aliguori@us.ibm.com>
+Chris Lalancette <clalance@redhat.com>
+Christophe Fergeau <cfergeau@redhat.com>
+Cole Robinson <crobinso@redhat.com>
+Daniel Berrange <berrange@redhat.com>
+Daniel Veillard <veillard@redhat.com>
+Dave Allan <dallan@redhat.com>
+Eric Blake <eblake@redhat.com>
+Guido Günther <agx@sigxcpu.org>
+Jim Fehlig <jfehlig@suse.com>
+Jim Meyering <meyering@redhat.com>
+Jiří Denemark <jdenemar@redhat.com>
+John Levon <john.levon@sun.com>
+Justin Clift <jclift@redhat.com>
+Laine Stump <laine@redhat.com>
+Mark McLoughlin <markmc@redhat.com>
+Martin Kletzander <mkletzan@redhat.com>
+Matthias Bolte <matthias.bolte@googlemail.com>
+Michal Prívozník <mprivozn@redhat.com>
+Osier Yang <jyang@redhat.com>
+Peter Krempa <pkrempa@redhat.com>
+Richard W.M. Jones <rjones@redhat.com>
+Stefan Berger <stefanb@us.ibm.com>
+Wen Congyang <wency@cn.fujitsu.com>
+
+Previous maintainers:
+
+Atsushi SAKAI <sakaia@jp.fujitsu.com>
+Dan Smith <danms@us.ibm.com>
+Dave Leskovec <dlesko@linux.vnet.ibm.com>
+Karel Zak <kzak@redhat.com>
+
+Patches have also been contributed by:
+
+Abel Míguez Rodríguez <amiguezr@pdi.ucm.es>
+Amit Shah <amit.shah@redhat.com>
+Andrew Puch <apuch@redhat.com>
+Anton Protopopov <aspsk2@gmail.com>
+Ben Guthro <ben.guthro@gmail.com>
+Christian Ehrhardt <ehrhardt@linux.vnet.ibm.com>
+Daniel Hokka Zakrisson <daniel@hozac.com>
+Dan Wendlandt <dan@nicira.com>
+David Lively <dlively@virtualiron.com>
+David Lutterkort <dlutter@redhat.com>
+Evgeniy Sokolov <evg@openvz.org>
+Hugh Brock <hbrock@redhat.com>
+Itamar Heim <iheim@redhat.com>
+James Morris <jmorris@namei.org>
+Javier Fontan <jfontan@gmail.com>
+Jeremy Katz <katzj@redhat.com>
+Kaitlin Rupert <kaitlin@linux.vnet.ibm.com>
+Kazuki Mizushima <mizushima.kazuk@jp.fujitsu.com>
+Mads Chr. Olesen <shiyee@shiyee.dk>
+Mark Johnson <johnson.nh@gmail.com>
+Markus Armbruster <armbru@redhat.com>
+Masayuki Sunou <fj1826dm@aa.jp.fujitsu.com>
+Matthias Witte <witte@netzquadrat.de>
+Michel Ponceau <michel.ponceau@bull.net>
+Nobuhiro Itou <fj0873gn@aa.jp.fujitsu.com>
+Pete Vetere <pvetere@redhat.com>
+Philippe Berthault <philippe.berthault@Bull.net>
+Saori Fukuta <fukuta.saori@jp.fujitsu.com>
+Shigeki Sakamoto <fj0588di@aa.jp.fujitsu.com>
+Shuveb Hussain <shuveb@binarykarma.com>
+Stefan de Konink <dekonink@kinkrsoftware.nl>
+Takahashi Tomohiro <takatom@jp.fujitsu.com>
+Tatsuro Enokura <fj7716hz@aa.jp.fujitsu.com>
+
+#authorslist#
+
+[....send patches to get your name here....]
+
+The libvirt logo was designed by Diana Fong
+
+-- End
+;; Local Variables:
+;; coding: utf-8
+;; End:
