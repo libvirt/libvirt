@@ -8880,19 +8880,27 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
 
+    /* Ignore emulatorpin if <vcpu> placement is "auto", they
+     * conflicts with each other, and <vcpu> placement can't be
+     * simply ignored, as <numatune>'s placement defaults to it.
+     */
     if (n) {
-        if (n > 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("only one emulatorpin is supported"));
-            VIR_FREE(nodes);
-            goto error;
+        if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+            if (n > 1) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only one emulatorpin is supported"));
+                VIR_FREE(nodes);
+                goto error;
+            }
+
+            def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
+                                                                   def->maxvcpus, 1);
+
+            if (!def->cputune.emulatorpin)
+                goto error;
+        } else {
+            VIR_WARN("Ignore emulatorpin for <vcpu> placement is 'auto'");
         }
-
-        def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0], ctxt,
-                                                               def->maxvcpus, 1);
-
-        if (!def->cputune.emulatorpin)
-            goto error;
     }
     VIR_FREE(nodes);
 
