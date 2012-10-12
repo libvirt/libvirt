@@ -8806,7 +8806,15 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
         }
 
-        def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
+        if (vcpupin->vcpuid >= def->vcpus)
+            /* To avoid the regression when daemon loading
+             * domain confs, we can't simply error out if
+             * <vcpupin> nodes greater than current vcpus,
+             * ignoring them instead.
+             */
+            VIR_WARN("Ignore vcpupin for not onlined vcpus");
+        else
+            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
     }
     VIR_FREE(nodes);
 
