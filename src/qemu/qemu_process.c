@@ -2618,7 +2618,8 @@ static int qemuProcessHook(void *data)
 
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
-    if (qemuProcessInitCpuAffinity(h->driver, h->vm, h->nodemask) < 0)
+    if (!h->vm->def->cputune.emulatorpin &&
+        qemuProcessInitCpuAffinity(h->driver, h->vm, h->nodemask) < 0)
         goto cleanup;
 
     if (qemuProcessInitNumaMemoryPolicy(h->vm, h->nodemask) < 0)
