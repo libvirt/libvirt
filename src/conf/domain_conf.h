@@ -2302,4 +2302,7 @@ virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def,
 int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
                   virDomainPtr **domains, unsigned int flags);
 
+virDomainVcpuPinDefPtr virDomainLookupVcpuPin(virDomainDefPtr def,
+                                              int vcpuid);
+
 #endif /* __DOMAIN_CONF_H */

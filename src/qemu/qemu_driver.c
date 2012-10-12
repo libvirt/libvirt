@@ -3603,6 +3603,7 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
     int ncpupids;
     virCgroupPtr cgroup = NULL;
     virCgroupPtr cgroup_vcpu = NULL;
+    bool cgroup_available = false;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -3656,11 +3657,13 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0) {
-        int rv = -1;
+    cgroup_available = (virCgroupForDomain(driver->cgroup, vm->def->name,
+                                           &cgroup, 0) == 0);
 
-        if (nvcpus > oldvcpus) {
-            for (i = oldvcpus; i < nvcpus; i++) {
+    if (nvcpus > oldvcpus) {
+        for (i = oldvcpus; i < nvcpus; i++) {
+            if (cgroup_available) {
+                int rv = -1;
                 /* Create cgroup for the onlined vcpu */
                 rv = virCgroupForVcpu(cgroup, i, &cgroup_vcpu, 1);
                 if (rv < 0) {
@@ -3680,11 +3683,62 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
                     virCgroupRemove(cgroup_vcpu);
                     goto cleanup;
                 }
-
-                virCgroupFree(&cgroup_vcpu);
             }
-        } else {
-            for (i = oldvcpus - 1; i >= nvcpus; i--) {
+
+            /* Inherit def->cpuset */
+            if (vm->def->cpumask) {
+                /* vm->def->cputune.vcpupin can't be NULL if
+                 * vm->def->cpumask is not NULL.
+                 */
+                virDomainVcpuPinDefPtr vcpupin = NULL;
+
+                if (VIR_REALLOC_N(vm->def->cputune.vcpupin,
+                                  vm->def->cputune.nvcpupin + 1) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                if (VIR_ALLOC(vcpupin) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+
+                vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
+                virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
+                vcpupin->vcpuid = i;
+                vm->def->cputune.vcpupin[vm->def->cputune.nvcpupin++] = vcpupin;
+
+                if (cgroup_available) {
+                    if (qemuSetupCgroupVcpuPin(cgroup_vcpu,
+                                               vm->def->cputune.vcpupin,
+                                               vm->def->cputune.nvcpupin, i) < 0) {
+                        virReportError(VIR_ERR_OPERATION_INVALID,
+                                       _("failed to set cpuset.cpus in cgroup"
+                                         " for vcpu %d"), i);
+                        ret = -1;
+                        goto cleanup;
+                    }
+                } else {
+                    if (virProcessInfoSetAffinity(cpupids[i],
+                                                  vcpupin->cpumask) < 0) {
+                        virReportError(VIR_ERR_SYSTEM_ERROR,
+                                       _("failed to set cpu affinity for vcpu %d"),
+                                       i);
+                        ret = -1;
+                        goto cleanup;
+                    }
+                }
+            }
+
+            virCgroupFree(&cgroup_vcpu);
+	}
+    } else {
+        for (i = oldvcpus - 1; i >= nvcpus; i--) {
+            virDomainVcpuPinDefPtr vcpupin = NULL;
+
+            if (cgroup_available) {
+                int rv = -1;
+
                 rv = virCgroupForVcpu(cgroup, i, &cgroup_vcpu, 0);
                 if (rv < 0) {
                     virReportSystemError(-rv,
@@ -3698,9 +3752,12 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
                 virCgroupRemove(cgroup_vcpu);
                 virCgroupFree(&cgroup_vcpu);
             }
-        }
 
-        virCgroupFree(&cgroup);
+            /* Free vcpupin setting */
+            if ((vcpupin = virDomainLookupVcpuPin(vm->def, i))) {
+                VIR_FREE(vcpupin);
+            }
+        }
     }
 
     priv->nvcpupids = ncpupids;
