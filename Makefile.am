@@ -28,6 +28,7 @@ EXTRA_DIST = \
   cfg.mk \
   examples/domain-events/events-python \
   run.in \
+  AUTHORS.in \
   $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -78,7 +79,7 @@ MAINTAINERCLEANFILES = .git-module-status
 # disable this check
 distuninstallcheck:
 
-dist-hook: gen-ChangeLog
+dist-hook: gen-ChangeLog gen-AUTHORS
 
 # Generate the ChangeLog file (with all entries since the switch to git)
 # and insert it into the directory we're about to use to create a tarball.
@@ -90,4 +91,13 @@ gen-ChangeLog:
 	    --since=$(gen_start_date) > $(distdir)/cl-t;	\
 	  rm -f $(distdir)/ChangeLog;				\
 	  mv $(distdir)/cl-t $(distdir)/ChangeLog;		\
+	fi
+
+.PHONY: gen-AUTHORS
+gen-AUTHORS:
+	if test -d .git; then \
+	    out="`git log --pretty=format:'%aN <%aE>' | sort -u`" && \
+	    cat $(srcdir)/AUTHORS.in | perl -p -e "s/#authorslist#/$$out/" > \
+	      $(distdir)/AUTHORS-tmp && \
+	    mv -f $(distdir)/AUTHORS-tmp $(distdir)/AUTHORS ; \
 	fi
