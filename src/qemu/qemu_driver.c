@@ -12665,8 +12665,12 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     int ret = -1;
     int idx;
     virDomainDiskDefPtr disk;
+    const char *top_canon = NULL;
+    virStorageFileMetadataPtr top_meta = NULL;
+    const char *top_parent = NULL;
+    const char *base_canon = NULL;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -12697,20 +12701,55 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                        disk->dst);
         goto endjob;
     }
+    if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
+        goto endjob;
 
-    if (!top)
-        top = disk->src;
+    if (!top) {
+        top_canon = disk->src;
+        top_meta = disk->backingChain;
+    } else if (!(top_canon = virStorageFileChainLookup(disk->backingChain,
+                                                       disk->src,
+                                                       top, &top_meta,
+                                                       &top_parent))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find top '%s' in chain for '%s'"),
+                       top, path);
+        goto endjob;
+    }
+    if (!top_meta || !top_meta->backingStore) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("top '%s' in chain for '%s' has no backing file"),
+                       top, path);
+        goto endjob;
+    }
+    if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW)) {
+        base_canon = top_meta->backingStore;
+    } else if (!(base_canon = virStorageFileChainLookup(top_meta, top_canon,
+                                                        base, NULL, NULL))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find base '%s' below '%s' in chain "
+                         "for '%s'"),
+                       base ? base : "(default)", top_canon, path);
+        goto endjob;
+    }
+    /* Note that this code exploits the fact that
+     * virStorageFileChainLookup guarantees a simple pointer
+     * comparison will work, rather than needing full-blown STREQ.  */
+    if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
+        base_canon != top_meta->backingStore) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("base '%s' is not immediately below '%s' in chain "
+                         "for '%s'"),
+                       base, top_canon, path);
+        goto endjob;
+    }
 
-    /* XXX For now, we are relying on qemu to check that 'top' and
-     * 'base' resolve to members of the backing chain in correct
-     * order; but if we ever get more paranoid and track the backing
-     * chain ourself, we should be pre-validating the data rather than
-     * relying on qemu.  For that matter, we need to be changing the
-     * SELinux label on both 'base' and the parent of 'top', so that
-     * qemu can open(O_RDWR) those files for the duration of the
-     * commit.  */
+    /* XXX We need to be changing the SELinux label on both 'base' and
+     * the parent of 'top', so that qemu can open(O_RDWR) those files
+     * for the duration of the commit.  */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockCommit(priv->mon, device, top, base, bandwidth);
+    ret = qemuMonitorBlockCommit(priv->mon, device, top_canon, base_canon,
+                                 bandwidth);
     qemuDomainObjExitMonitor(driver, vm);
 
 endjob:

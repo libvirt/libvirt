@@ -19381,8 +19381,6 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk,
     }
 
     virCheckNonNullArgGoto(disk, error);
-    if (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW)
-        virCheckNullArgGoto(base, error);
 
     if (conn->driver->domainBlockCommit) {
         int ret;
