@@ -84,10 +84,10 @@ augeastests_DATA = test_libvirtd.aug
 CLEANFILES += test_libvirtd.aug
 
 libvirtd.8: $(srcdir)/libvirtd.8.in
-	sed \
+	$(AM_V_GEN)sed \
 	    -e 's!SYSCONFDIR!$(sysconfdir)!g' \
 	    -e 's!LOCALSTATEDIR!$(localstatedir)!g' \
-	    < $< > $@-t
+	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
@@ -215,15 +215,15 @@ LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 BUILT_SOURCES += $(LOGROTATE_CONFS)
 
 libvirtd.logrotate: libvirtd.logrotate.in
-	sed							\
+	$(AM_V_GEN)sed						\
 	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
-	    < $< > $@-t
+	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
-	sed							\
+	$(AM_V_GEN)sed						\
 	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
-	    < $< > $@-t
+	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
