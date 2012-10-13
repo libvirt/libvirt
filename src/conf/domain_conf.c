@@ -14848,15 +14848,10 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     int ret = -1;
     size_t depth = 0;
     char *nextpath = NULL;
-    virStorageFileMetadata *meta;
+    virStorageFileMetadata *meta = NULL;
 
     if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
         return 0;
-
-    if (VIR_ALLOC(meta) < 0) {
-        virReportOOMError();
-        return ret;
-    }
 
     if (disk->format > 0) {
         format = disk->format;
@@ -14900,7 +14895,7 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
             }
         }
 
-        if (virStorageFileGetMetadataFromFD(path, fd, format, meta) < 0) {
+        if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format))) {
             VIR_FORCE_CLOSE(fd);
             goto cleanup;
         }
@@ -14934,6 +14929,8 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         /* Allow probing for image formats that are safe */
         if (format == VIR_STORAGE_FILE_AUTO_SAFE)
             format = VIR_STORAGE_FILE_AUTO;
+        virStorageFileFreeMetadata(meta);
+        meta = NULL;
     } while (nextpath);
 
     ret = 0;

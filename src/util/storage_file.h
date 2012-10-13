@@ -73,10 +73,9 @@ virStorageFileMetadataPtr virStorageFileGetMetadata(const char *path,
                                                     int format,
                                                     uid_t uid, gid_t gid,
                                                     bool allow_probe);
-int virStorageFileGetMetadataFromFD(const char *path,
-                                    int fd,
-                                    int format,
-                                    virStorageFileMetadata *meta);
+virStorageFileMetadataPtr virStorageFileGetMetadataFromFD(const char *path,
+                                                          int fd,
+                                                          int format);
 
 void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 

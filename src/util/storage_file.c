@@ -851,41 +851,43 @@ virStorageFileProbeFormat(const char *path)
  * backing store. Callers are advised against probing for the
  * backing store format in this case.
  *
- * Caller MUST free @meta after use via virStorageFileFreeMetadata.
+ * Caller MUST free the result after use via virStorageFileFreeMetadata.
  */
-int
+virStorageFileMetadataPtr
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
-                                int format,
-                                virStorageFileMetadata *meta)
+                                int format)
 {
+    virStorageFileMetadata *meta = NULL;
     unsigned char *head = NULL;
     ssize_t len = STORAGE_MAX_HEAD;
-    int ret = -1;
+    virStorageFileMetadata *ret = NULL;
     struct stat sb;
 
-    memset(meta, 0, sizeof(*meta));
+    if (VIR_ALLOC(meta) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              path);
-        return -1;
+        goto cleanup;
     }
 
-    /* No header to probe for directories */
-    if (S_ISDIR(sb.st_mode)) {
-        return 0;
-    }
+    /* No header to probe for directories, but also no backing file */
+    if (S_ISDIR(sb.st_mode))
+        return meta;
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
         virReportSystemError(errno, _("cannot seek to start of '%s'"), path);
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(head, len) < 0) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
     if ((len = read(fd, head, len)) < 0) {
@@ -903,9 +905,13 @@ virStorageFileGetMetadataFromFD(const char *path,
         goto cleanup;
     }
 
-    ret = virStorageFileGetMetadataFromBuf(format, path, head, len, meta);
+    if (virStorageFileGetMetadataFromBuf(format, path, head, len, meta) < 0)
+        goto cleanup;
+    ret = meta;
+    meta = NULL;
 
 cleanup:
+    virStorageFileFreeMetadata(meta);
     VIR_FREE(head);
     return ret;
 }
@@ -933,21 +939,12 @@ virStorageFileGetMetadataRecurse(const char *path, int format,
         return NULL;
     }
 
-    if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError();
-        VIR_FORCE_CLOSE(fd);
-        return NULL;
-    }
-    if (virStorageFileGetMetadataFromFD(path, fd, format, ret) < 0) {
-        virStorageFileFreeMetadata(ret);
-        VIR_FORCE_CLOSE(fd);
-        return NULL;
-    }
+    ret = virStorageFileGetMetadataFromFD(path, fd, format);
 
     if (VIR_CLOSE(fd) < 0)
         VIR_WARN("could not close file %s", path);
 
-    if (ret->backingStoreIsFile) {
+    if (ret && ret->backingStoreIsFile) {
         if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
             ret->backingStoreFormat = VIR_STORAGE_FILE_RAW;
         else if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO_SAFE)

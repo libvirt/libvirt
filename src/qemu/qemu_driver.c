@@ -9313,14 +9313,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         }
     }
 
-    if (VIR_ALLOC(meta) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virStorageFileGetMetadataFromFD(path, fd,
-                                        format,
-                                        meta) < 0)
+    if (!(meta = virStorageFileGetMetadataFromFD(path, fd, format)))
         goto cleanup;
 
     /* Get info for normal formats */
