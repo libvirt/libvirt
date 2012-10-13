@@ -50,13 +50,16 @@ enum virStorageFileFormat {
 
 VIR_ENUM_DECL(virStorageFileFormat);
 
-typedef struct _virStorageFileMetadata {
+typedef struct _virStorageFileMetadata virStorageFileMetadata;
+typedef virStorageFileMetadata *virStorageFileMetadataPtr;
+struct _virStorageFileMetadata {
     char *backingStore;
-    int backingStoreFormat;
+    int backingStoreFormat; /* enum virStorageFileFormat */
     bool backingStoreIsFile;
+    virStorageFileMetadataPtr backingMeta;
     unsigned long long capacity;
     bool encrypted;
-} virStorageFileMetadata;
+};
 
 # ifndef DEV_BSIZE
 #  define DEV_BSIZE 512
@@ -66,15 +69,16 @@ int virStorageFileProbeFormat(const char *path);
 int virStorageFileProbeFormatFromFD(const char *path,
                                     int fd);
 
-int virStorageFileGetMetadata(const char *path,
-                              int format,
-                              virStorageFileMetadata *meta);
+virStorageFileMetadataPtr virStorageFileGetMetadata(const char *path,
+                                                    int format,
+                                                    uid_t uid, gid_t gid,
+                                                    bool allow_probe);
 int virStorageFileGetMetadataFromFD(const char *path,
                                     int fd,
                                     int format,
                                     virStorageFileMetadata *meta);
 
-void virStorageFileFreeMetadata(virStorageFileMetadata *meta);
+void virStorageFileFreeMetadata(virStorageFileMetadataPtr meta);
 
 int virStorageFileResize(const char *path, unsigned long long capacity);
 

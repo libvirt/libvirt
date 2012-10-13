@@ -40,6 +40,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "c-ctype.h"
+#include "virhash.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -839,7 +840,7 @@ virStorageFileProbeFormat(const char *path)
  *
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
- * will probe to automatically identify the format.
+ * will probe to automatically identify the format.  Does not recurse.
  *
  * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
  * format, since a malicious guest can turn a raw file into any
@@ -909,12 +910,69 @@ cleanup:
     return ret;
 }
 
+/* Recursive workhorse for virStorageFileGetMetadata.  */
+static virStorageFileMetadataPtr
+virStorageFileGetMetadataRecurse(const char *path, int format,
+                                 uid_t uid, gid_t gid,
+                                 bool allow_probe, virHashTablePtr cycle)
+{
+    int fd;
+    virStorageFileMetadataPtr ret = NULL;
+
+    if (virHashLookup(cycle, path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("backing store for %s is self-referential"),
+                       path);
+        return NULL;
+    }
+    if (virHashAddEntry(cycle, path, (void *)1) < 0)
+        return NULL;
+
+    if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
+        virReportSystemError(-fd, _("cannot open file '%s'"), path);
+        return NULL;
+    }
+
+    if (VIR_ALLOC(ret) < 0) {
+        virReportOOMError();
+        VIR_FORCE_CLOSE(fd);
+        return NULL;
+    }
+    if (virStorageFileGetMetadataFromFD(path, fd, format, ret) < 0) {
+        virStorageFileFreeMetadata(ret);
+        VIR_FORCE_CLOSE(fd);
+        return NULL;
+    }
+
+    if (VIR_CLOSE(fd) < 0)
+        VIR_WARN("could not close file %s", path);
+
+    if (ret->backingStoreIsFile) {
+        if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
+            ret->backingStoreFormat = VIR_STORAGE_FILE_RAW;
+        else if (ret->backingStoreFormat == VIR_STORAGE_FILE_AUTO_SAFE)
+            ret->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
+        format = ret->backingStoreFormat;
+        ret->backingMeta = virStorageFileGetMetadataRecurse(ret->backingStore,
+                                                            format,
+                                                            uid, gid,
+                                                            allow_probe,
+                                                            cycle);
+    }
+
+    return ret;
+}
+
 /**
  * virStorageFileGetMetadata:
  *
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
- * will probe to automatically identify the format.
+ * will probe to automatically identify the format.  Recurses through
+ * the entire chain.
+ *
+ * Open files using UID and GID (or pass -1 for the current user/group).
+ * Treat any backing files without explicit type as raw, unless ALLOW_PROBE.
  *
  * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
  * format, since a malicious guest can turn a raw file into any
@@ -922,27 +980,27 @@ cleanup:
  *
  * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
  * it indicates the image didn't specify an explicit format for its
- * backing store. Callers are advised against probing for the
- * backing store format in this case.
+ * backing store. Callers are advised against using ALLOW_PROBE, as
+ * it would probe the backing store format in this case.
  *
- * Caller MUST free @meta after use via virStorageFileFreeMetadata.
+ * Caller MUST free result after use via virStorageFileFreeMetadata.
  */
-int
-virStorageFileGetMetadata(const char *path,
-                          int format,
-                          virStorageFileMetadata *meta)
+virStorageFileMetadataPtr
+virStorageFileGetMetadata(const char *path, int format,
+                          uid_t uid, gid_t gid,
+                          bool allow_probe)
 {
-    int fd, ret;
+    virHashTablePtr cycle = virHashCreate(5, NULL);
+    virStorageFileMetadataPtr ret;
 
-    if ((fd = open(path, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("cannot open file '%s'"), path);
-        return -1;
-    }
+    if (!cycle)
+        return NULL;
 
-    ret = virStorageFileGetMetadataFromFD(path, fd, format, meta);
-
-    VIR_FORCE_CLOSE(fd);
-
+    if (format <= VIR_STORAGE_FILE_NONE)
+        format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
+    ret = virStorageFileGetMetadataRecurse(path, format, uid, gid,
+                                           allow_probe, cycle);
+    virHashFree(cycle);
     return ret;
 }
 
@@ -957,6 +1015,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     if (!meta)
         return;
 
+    virStorageFileFreeMetadata(meta->backingMeta);
     VIR_FREE(meta->backingStore);
     VIR_FREE(meta);
 }
