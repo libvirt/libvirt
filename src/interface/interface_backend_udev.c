@@ -19,6 +19,8 @@
  */
 #include <config.h>
 
+#include <errno.h>
+#include <dirent.h>
 #include <libudev.h>
 
 #include "virterror_internal.h"
@@ -489,6 +491,256 @@ err:
     return ret;
 }
 
+/**
+ * Helper function for our use of scandir()
+ *
+ * @param entry - directory entry passed by scandir()
+ *
+ * @return 1 if we want to add it to scandir's list, 0 if not.
+ */
+static int
+udevIfaceScanDirFilter(const struct dirent *entry)
+{
+    if (STREQ(entry->d_name, ".") || STREQ(entry->d_name, ".."))
+        return 0;
+
+    return 1;
+}
+
+/**
+ * Frees any memory allocated by udevIfaceGetIfaceDef()
+ *
+ * @param ifacedef - interface to free and cleanup
+ */
+static void
+udevIfaceFreeIfaceDef(virInterfaceDef *ifacedef)
+{
+    if (!ifacedef)
+        return;
+
+    if (ifacedef->type == VIR_INTERFACE_TYPE_BRIDGE) {
+        VIR_FREE(ifacedef->data.bridge.delay);
+        for (int i = 0; i < ifacedef->data.bridge.nbItf; i++) {
+            udevIfaceFreeIfaceDef(ifacedef->data.bridge.itf[i]);
+        }
+        VIR_FREE(ifacedef->data.bridge.itf);
+    }
+
+    if (ifacedef->type == VIR_INTERFACE_TYPE_VLAN) {
+        VIR_FREE(ifacedef->data.vlan.devname);
+    }
+
+    VIR_FREE(ifacedef->mac);
+    VIR_FREE(ifacedef->name);
+
+    VIR_FREE(ifacedef);
+}
+
+
+static virInterfaceDef * ATTRIBUTE_NONNULL(1)
+udevIfaceGetIfaceDef(struct udev *udev, char *name)
+{
+    struct udev_device *dev = NULL;
+    virInterfaceDef *ifacedef;
+    unsigned int mtu;
+    const char *mtu_str;
+    char *vlan_parent_dev = NULL;
+    struct dirent **member_list = NULL;
+    int member_count = 0;
+
+    /* Allocate our interface definition structure */
+    if (VIR_ALLOC(ifacedef) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /* Clear our structure and set safe defaults */
+    ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;
+    ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
+    ifacedef->name = strdup(name);
+
+    if (!ifacedef->name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Lookup the device we've been asked about */
+    dev = udev_device_new_from_subsystem_sysname(udev, "net", name);
+    if (!dev) {
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("couldn't find interface named '%s'"), name);
+        goto cleanup;
+    }
+
+    /* MAC address */
+    ifacedef->mac = strdup(udev_device_get_sysattr_value(dev, "address"));
+    if (!ifacedef) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* MTU */
+    mtu_str = udev_device_get_sysattr_value(dev, "mtu");
+    if (virStrToLong_ui(mtu_str, NULL, 10, &mtu) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse MTU value '%s'"), mtu_str);
+        goto cleanup;
+    }
+    ifacedef->mtu = mtu;
+
+    /* Number of IP protocols this interface has assigned */
+    /* XXX: Do we want a netlink query or a call out to ip or leave it? */
+    ifacedef->nprotos = 0;
+    ifacedef->protos = NULL;
+
+    /* Check if its a VLAN since we can have a VLAN of any of the
+     * other devices */
+    vlan_parent_dev = strrchr(name, '.');
+    if (vlan_parent_dev) {
+        /* Found the VLAN dot */
+        char *vid;
+
+        vlan_parent_dev = strdup(name);
+        if (!vlan_parent_dev) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Find the DEVICE.VID separator again */
+        vid = strrchr(vlan_parent_dev, '.');
+        if (!vid) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to find the VID for the VLAN device '%s'"),
+                           name);
+            goto cleanup;
+        }
+
+        /* Replace the dot with a NULL so we can have the device and VID */
+        vid[0] = '\0';
+        vid++;
+
+        /* Set our type to VLAN  */
+        ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
+
+        /* Set the VLAN specifics */
+        ifacedef->data.vlan.tag = vid;
+        ifacedef->data.vlan.devname = vlan_parent_dev;
+    } else if (STREQ_NULLABLE(udev_device_get_devtype(dev), "bridge")) {
+        /* Check if its a bridge device */
+        char *member_path;
+        const char *stp_str;
+        int stp;
+
+        /* Set our type to Bridge  */
+        ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
+
+        /* Bridge specifics */
+        ifacedef->data.bridge.delay =
+            strdup(udev_device_get_sysattr_value(dev, "bridge/forward_delay"));
+        if (!ifacedef->data.bridge.delay) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        stp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
+        if (virStrToLong_i(stp_str, NULL, 10, &stp) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not parse STP state '%s'"), stp_str);
+            goto cleanup;
+        }
+        ifacedef->data.bridge.stp = stp;
+
+        /* Members of the bridge */
+        virAsprintf(&member_path, "%s/%s",
+                    udev_device_get_syspath(dev), "brif");
+        if (!member_path) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        /* Get each member of the bridge */
+        member_count = scandir(member_path, &member_list,
+                               udevIfaceScanDirFilter, alphasort);
+
+        /* Don't need the path anymore */
+        VIR_FREE(member_path);
+
+        if (member_count < 0) {
+            virReportSystemError(errno,
+                                 _("Could not get members of bridge '%s'"),
+                                 name);
+            goto cleanup;
+        }
+
+        /* Allocate our list of member devices */
+        if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        ifacedef->data.bridge.nbItf = member_count;
+
+        for (int i= 0; i < member_count; i++) {
+            ifacedef->data.bridge.itf[i] =
+                udevIfaceGetIfaceDef(udev, member_list[i]->d_name);
+            VIR_FREE(member_list[i]);
+        }
+
+        VIR_FREE(member_list);
+
+    } else {
+        /* Set our type to ethernet */
+        ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
+    }
+
+    udev_device_unref(dev);
+
+    return ifacedef;
+
+cleanup:
+    udev_device_unref(dev);
+    for (int i = 0; i < member_count; i++) {
+        VIR_FREE(member_list[i]);
+    }
+    VIR_FREE(member_list);
+
+    udevIfaceFreeIfaceDef(ifacedef);
+
+    return NULL;
+}
+
+static char *
+udevIfaceGetXMLDesc(virInterfacePtr ifinfo,
+                    unsigned int flags)
+{
+    struct udev_iface_driver *driverState = ifinfo->conn->interfacePrivateData;
+    struct udev *udev = udev_ref(driverState->udev);
+    virInterfaceDef *ifacedef;
+    char *xmlstr = NULL;
+
+    virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);
+
+    /* Recursively build up the interface XML based on the requested
+     * interface name
+     */
+    ifacedef = udevIfaceGetIfaceDef(udev, ifinfo->name);
+
+    /* We've already printed by it happened */
+    if (!ifacedef)
+        goto err;
+
+    /* Convert our interface to XML */
+    xmlstr = virInterfaceDefFormat(ifacedef);
+
+    /* Recursively free our interface structures and free the children too */
+    udevIfaceFreeIfaceDef(ifacedef);
+
+err:
+    /* decrement our udev ptr */
+    udev_unref(udev);
+
+    return xmlstr;
+}
+
 static int
 udevIfaceIsActive(virInterfacePtr ifinfo)
 {
@@ -530,6 +782,7 @@ static virInterfaceDriver udevIfaceDriver = {
     .interfaceLookupByName = udevIfaceLookupByName, /* 1.0.0 */
     .interfaceLookupByMACString = udevIfaceLookupByMACString, /* 1.0.0 */
     .interfaceIsActive = udevIfaceIsActive, /* 1.0.0 */
+    .interfaceGetXMLDesc = udevIfaceGetXMLDesc, /* 1.0.0 */
 };
 
 int
