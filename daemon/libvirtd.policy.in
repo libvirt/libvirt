@@ -43,8 +43,8 @@ License along with this library.  If not, see
       <defaults>
         <!-- Any program can use libvirt in read/write mode if they
              provide the root password -->
-        <allow_any>auth_admin</allow_any>
-        <allow_inactive>auth_admin</allow_inactive>
+        <allow_any>@authaction@</allow_any>
+        <allow_inactive>@authaction@</allow_inactive>
         <allow_active>@authaction@</allow_active>
       </defaults>
     </action>
