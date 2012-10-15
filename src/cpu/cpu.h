@@ -28,11 +28,14 @@
 # include "datatypes.h"
 # include "conf/cpu_conf.h"
 # include "cpu_x86_data.h"
+# include "cpu_ppc_data.h"
 
 
 union cpuData {
     struct cpuX86Data x86;
     /* generic driver needs no data */
+    /* PowerPC driver need data*/
+    struct cpuPPCData ppc;
 };
 
 
