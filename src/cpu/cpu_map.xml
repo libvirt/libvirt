@@ -495,4 +495,18 @@
       <feature name='fma4'/>
     </model>
   </arch>
+  <arch name='ppc64'>
+   <!-- vendor definitions -->
+    <vendor name='IBM' string='PowerPC'/>
+   <!-- IBM-based CPU models -->
+    <model name='POWER7'>
+      <vendor name='IBM'/>
+    </model>
+    <model name='POWER7_v2.1'>
+      <vendor name='IBM'/>
+    </model>
+    <model name='POWER7_v2.3'>
+      <vendor name='IBM'/>
+    </model>
+  </arch>
 </cpus>
