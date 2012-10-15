@@ -10658,11 +10658,124 @@ qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotCreateInactive(struct qemud_driver *driver,
-                                 virDomainObjPtr vm,
-                                 virDomainSnapshotObjPtr snap)
+qemuDomainSnapshotCreateInactiveInternal(struct qemud_driver *driver,
+                                         virDomainObjPtr vm,
+                                         virDomainSnapshotObjPtr snap)
 {
     return qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-c", false);
+}
+
+/* The domain is expected to be locked and inactive. */
+static int
+qemuDomainSnapshotCreateInactiveExternal(struct qemud_driver *driver,
+                                         virDomainObjPtr vm,
+                                         virDomainSnapshotObjPtr snap,
+                                         bool reuse)
+{
+    int i;
+    virDomainSnapshotDiskDefPtr snapdisk;
+    virDomainDiskDefPtr defdisk;
+    virCommandPtr cmd = NULL;
+    const char *qemuImgPath;
+    virBitmapPtr created;
+
+    int ret = -1;
+
+    if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
+        return -1;
+
+    if (!(created = virBitmapNew(snap->def->ndisks))) {
+        virReportOOMError();
+        return -1;
+    }
+
+    /* If reuse is true, then qemuDomainSnapshotPrepare already
+     * ensured that the new files exist, and it was up to the user to
+     * create them correctly.  */
+    for (i = 0; i < snap->def->ndisks && !reuse; i++) {
+        snapdisk = &(snap->def->disks[i]);
+        defdisk = snap->def->dom->disks[snapdisk->index];
+        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
+
+        if (!snapdisk->format)
+            snapdisk->format = VIR_STORAGE_FILE_QCOW2;
+
+        /* creates cmd line args: qemu-img create -f qcow2 -o */
+        if (!(cmd = virCommandNewArgList(qemuImgPath,
+                                         "create",
+                                         "-f",
+                                         virStorageFileFormatTypeToString(snapdisk->format),
+                                         "-o",
+                                         NULL)))
+            goto cleanup;
+
+        if (defdisk->format > 0) {
+            /* adds cmd line arg: backing_file=/path/to/backing/file,backing_fmd=format */
+            virCommandAddArgFormat(cmd, "backing_file=%s,backing_fmt=%s",
+                                   defdisk->src,
+                                   virStorageFileFormatTypeToString(defdisk->format));
+        } else {
+            if (!driver->allowDiskFormatProbing) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown image format of '%s' and "
+                                 "format probing is disabled"),
+                               defdisk->src);
+                goto cleanup;
+            }
+
+            /* adds cmd line arg: backing_file=/path/to/backing/file */
+            virCommandAddArgFormat(cmd, "backing_file=%s", defdisk->src);
+        }
+
+        /* adds cmd line args: /path/to/target/file */
+        virCommandAddArg(cmd, snapdisk->file);
+
+        /* If the target does not exist, we're going to create it possibly */
+        if (!virFileExists(snapdisk->file))
+            ignore_value(virBitmapSetBit(created, i));
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = NULL;
+    }
+
+    /* update disk definitions */
+    for (i = 0; i < snap->def->ndisks; i++) {
+        snapdisk = &(snap->def->disks[i]);
+        defdisk = vm->def->disks[snapdisk->index];
+
+        if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            VIR_FREE(defdisk->src);
+            if (!(defdisk->src = strdup(snapdisk->file))) {
+                /* we cannot rollback here in a sane way */
+                virReportOOMError();
+                goto cleanup;
+            }
+            defdisk->format = snapdisk->format;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+
+    /* unlink images if creation has failed */
+    if (ret < 0) {
+        ssize_t bit = -1;
+        while ((bit = virBitmapNextSetBit(created, bit)) >= 0) {
+            snapdisk = &(snap->def->disks[bit]);
+            if (unlink(snapdisk->file) < 0)
+                VIR_WARN("Failed to remove snapshot image '%s'",
+                         snapdisk->file);
+        }
+    }
+    virBitmapFree(created);
+
+    return ret;
 }
 
 
@@ -10758,11 +10871,11 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
 {
     int ret = -1;
     int i;
-    bool found = false;
     bool active = virDomainObjIsActive(vm);
     struct stat st;
     bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     bool atomic = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
+    bool found_internal = false;
     int external = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -10783,7 +10896,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                 dom_disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
                 (dom_disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG ||
                  dom_disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD)) {
-                found = true;
                 break;
             }
             if (vm->def->disks[i]->format > 0 &&
@@ -10803,7 +10915,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                disk->name);
                 goto cleanup;
             }
-            found = true;
+            found_internal = true;
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
@@ -10837,7 +10949,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                disk->name, disk->file);
                 goto cleanup;
             }
-            found = true;
             external++;
             break;
 
@@ -10852,14 +10963,36 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
         }
     }
 
-    /* external snapshot is possible without specifying a disk to snapshot */
-    if (!found &&
-        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+    /* internal snapshot requires a disk image to store the memory image to */
+    if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL &&
+        !found_internal) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("internal and disk-only snapshots require at least "
+                       _("internal checkpoints require at least "
                          "one disk to be selected for snapshot"));
         goto cleanup;
     }
+
+    /* disk snapshot requires at least one disk */
+    if (def->state == VIR_DOMAIN_DISK_SNAPSHOT && !external) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk-only snapshots require at least "
+                         "one disk to be selected for snapshot"));
+        goto cleanup;
+    }
+
+    /* For now, we don't allow mixing internal and external disks.
+     * XXX technically, we could mix internal and external disks for
+     * offline snapshots */
+    if (found_internal && external) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("mixing internal and external snapshots is not "
+                         "supported yet"));
+        goto cleanup;
+    }
+
+    /* Alter flags to let later users know what we learned.  */
+    if (external && !active)
+        *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
 
     if (def->state != VIR_DOMAIN_DISK_SNAPSHOT && active) {
         if (external == 1 ||
@@ -11360,6 +11493,25 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                 parse_flags)))
         goto cleanup;
 
+    /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
+        (!virDomainObjIsActive(vm) ||
+         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
+         flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("live snapshot creation is supported only "
+                         "with external checkpoints"));
+        goto cleanup;
+    }
+    if ((def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
+         def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL) &&
+        flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("disk-only snapshot creation is not compatible with "
+                         "memory snapshot"));
+        goto cleanup;
+    }
+
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         /* Prevent circular chains */
         if (def->parent) {
@@ -11472,15 +11624,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-            if (!virDomainObjIsActive(vm)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disk snapshots of inactive domains not "
-                                 "implemented yet"));
-                goto cleanup;
-            }
             align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
             align_match = false;
-            def->state = VIR_DOMAIN_DISK_SNAPSHOT;
+            if (virDomainObjIsActive(vm))
+                def->state = VIR_DOMAIN_DISK_SNAPSHOT;
+            else
+                def->state = VIR_DOMAIN_SHUTOFF;
             def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
         } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             def->state = virDomainObjGetState(vm, NULL);
@@ -11523,25 +11672,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
     }
 
-    /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
-        (!virDomainObjIsActive(vm) ||
-         snap->def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
-         flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("live snapshot creation is supported only "
-                         "with external checkpoints"));
-        goto cleanup;
-    }
-    if ((snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
-         snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL) &&
-        flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("disk-only snapshot creation is not compatible with "
-                         "memory snapshot"));
-        goto cleanup;
-    }
-
     /* actually do the snapshot */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         /* XXX Should we validate that the redefined snapshot even
@@ -11561,9 +11691,19 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 goto cleanup;
         }
     } else {
-        /* inactive */
-        if (qemuDomainSnapshotCreateInactive(driver, vm, snap) < 0)
-            goto cleanup;
+        /* inactive; qemuDomainSnapshotPrepare guaranteed that we
+         * aren't mixing internal and external, and altered flags to
+         * contain DISK_ONLY if there is an external disk.  */
+        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+            bool reuse = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
+
+            if (qemuDomainSnapshotCreateInactiveExternal(driver, vm, snap,
+                                                         reuse) < 0)
+                goto cleanup;
+        } else {
+            if (qemuDomainSnapshotCreateInactiveInternal(driver, vm, snap) < 0)
+                goto cleanup;
+        }
     }
 
     /* If we fail after this point, there's not a whole lot we can
