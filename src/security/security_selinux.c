@@ -237,6 +237,46 @@ cleanup:
     return mcs;
 }
 
+static char *
+virSecuritySELinuxContextAddRange(security_context_t src,
+                                  security_context_t dst)
+{
+    char *str = NULL;
+    char *ret = NULL;
+    context_t srccon = NULL;
+    context_t dstcon = NULL;
+
+    if (!src || !dst)
+        return ret;
+
+    if (!(srccon = context_new(src)) || !(dstcon = context_new(dst))) {
+        virReportSystemError(errno, "%s",
+                             _("unable to allocate security context"));
+        goto cleanup;
+    }
+
+    if (context_range_set(dstcon, context_range_get(srccon)) == -1) {
+        virReportSystemError(errno,
+                             _("unable to set security context range '%s'"), dst);
+        goto cleanup;
+    }
+
+    if (!(str = context_str(dstcon))) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to format SELinux context"));
+        goto cleanup;
+    }
+
+    if (!(ret = strdup(str))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+cleanup:
+    if (srccon) context_free(srccon);
+    if (dstcon) context_free(dstcon);
+    return ret;
+}
 
 static char *
 virSecuritySELinuxGenNewContext(const char *basecontext,
@@ -1597,6 +1637,7 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
     context_t execcon = NULL;
     context_t proccon = NULL;
     security_context_t scon = NULL;
+    char *str = NULL;
     int rc = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -1615,13 +1656,6 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
         goto done;
     }
 
-    if ( !(execcon = context_new(secdef->label)) ) {
-        virReportSystemError(errno,
-                             _("unable to allocate socket security context '%s'"),
-                             secdef->label);
-        goto done;
-    }
-
     if (getcon_raw(&scon) == -1) {
         virReportSystemError(errno,
                              _("unable to get current process context '%s'"),
@@ -1629,26 +1663,13 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
         goto done;
     }
 
-    if ( !(proccon = context_new(scon)) ) {
-        virReportSystemError(errno,
-                             _("unable to set socket security context '%s'"),
-                             secdef->label);
+    if (!(str = virSecuritySELinuxContextAddRange(secdef->label, scon)))
         goto done;
-    }
 
-    if (context_range_set(proccon, context_range_get(execcon)) == -1) {
+    VIR_DEBUG("Setting VM %s socket context %s", def->name, str);
+    if (setsockcreatecon_raw(str) == -1) {
         virReportSystemError(errno,
-                             _("unable to set socket security context range '%s'"),
-                             secdef->label);
-        goto done;
-    }
-
-    VIR_DEBUG("Setting VM %s socket context %s",
-              def->name, context_str(proccon));
-    if (setsockcreatecon_raw(context_str(proccon)) == -1) {
-        virReportSystemError(errno,
-                             _("unable to set socket security context '%s'"),
-                             context_str(proccon));
+                             _("unable to set socket security context '%s'"), str);
         goto done;
     }
 
@@ -1660,6 +1681,7 @@ done:
     if (execcon) context_free(execcon);
     if (proccon) context_free(proccon);
     freecon(scon);
+    VIR_FREE(str);
     return rc;
 }
 
@@ -1869,6 +1891,53 @@ virSecuritySELinuxSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return virSecuritySELinuxFSetFilecon(fd, secdef->imagelabel);
 }
 
+static int
+virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                virDomainDefPtr def,
+                                int fd)
+{
+    struct stat buf;
+    security_context_t fcon = NULL;
+    virSecurityLabelDefPtr secdef;
+    char *str = NULL;
+    int rc = -1;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (secdef == NULL)
+        return rc;
+
+    if (secdef->label == NULL)
+        return 0;
+
+    if (fstat(fd, &buf) < 0) {
+        virReportSystemError(errno, _("cannot stat tap fd %d"), fd);
+        goto cleanup;
+    }
+
+    if ((buf.st_mode & S_IFMT) != S_IFCHR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("tap fd %d is not character device"), fd);
+        goto cleanup;
+    }
+
+    if (getContext("/dev/tap.*", buf.st_mode, &fcon) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot lookup default selinux label for tap fd %d"), fd);
+        goto cleanup;
+    }
+
+    if (!(str = virSecuritySELinuxContextAddRange(secdef->label, fcon))) {
+        goto cleanup;
+    } else {
+        rc = virSecuritySELinuxFSetFilecon(fd, str);
+    }
+
+cleanup:
+    freecon(fcon);
+    VIR_FREE(str);
+    return rc;
+}
+
 static char *
 virSecuritySELinuxGenImageLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def)
@@ -1969,6 +2038,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainRestoreSavedStateLabel       = virSecuritySELinuxRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecuritySELinuxSetImageFDLabel,
+    .domainSetSecurityTapFDLabel        = virSecuritySELinuxSetTapFDLabel,
 
     .domainGetSecurityMountOptions      = virSecuritySELinuxGetSecurityMountOptions,
 };

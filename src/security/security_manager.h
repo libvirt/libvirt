@@ -105,6 +105,9 @@ int virSecurityManagerVerify(virSecurityManagerPtr mgr,
 int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       int fd);
+int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    int fd);
 char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                               virDomainDefPtr vm);
 virSecurityManagerPtr*

@@ -95,6 +95,9 @@ typedef int (*virSecurityDomainSecurityVerify) (virSecurityManagerPtr mgr,
 typedef int (*virSecurityDomainSetImageFDLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
                                                  int fd);
+typedef int (*virSecurityDomainSetTapFDLabel) (virSecurityManagerPtr mgr,
+                                               virDomainDefPtr def,
+                                               int fd);
 typedef char *(*virSecurityDomainGetMountOptions) (virSecurityManagerPtr mgr,
                                                          virDomainDefPtr def);
 
@@ -134,6 +137,7 @@ struct _virSecurityDriver {
     virSecurityDomainRestoreSavedStateLabel domainRestoreSavedStateLabel;
 
     virSecurityDomainSetImageFDLabel domainSetSecurityImageFDLabel;
+    virSecurityDomainSetTapFDLabel domainSetSecurityTapFDLabel;
 
     virSecurityDomainGetMountOptions domainGetSecurityMountOptions;
 };
