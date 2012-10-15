@@ -989,7 +989,7 @@
 
     <p>
       The <code>on_lockfailure</code> element (<span class="since">since
-      0.10.3</span>) may be used to configure what action should be
+      1.0.0</span>) may be used to configure what action should be
       taken when a lock manager loses resource locks. The following
       actions are recognized by libvirt, although not all of them need
       to be supported by individual lock managers. When no action is
@@ -2140,7 +2140,7 @@
       address on the hosts using the <code>address</code> element. PCI devices
       on the other hand can only be described by their <code>address</code>.
 
-      <span class="since">Since 0.10.3</span>, the <code>source</code> element
+      <span class="since">Since 1.0.0</span>, the <code>source</code> element
       of USB devices may contain <code>startupPolicy</code> attribute which can
       be used to define policy what to do if the specified host USB device is
       not found. The attribute accepts the following values:

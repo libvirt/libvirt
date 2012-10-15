@@ -520,16 +520,16 @@ cleanup:
 
 static virInterfaceDriver udevIfaceDriver = {
     "udev",
-    .open = udevIfaceOpenInterface, /* 0.10.3 */
-    .close = udevIfaceCloseInterface, /* 0.10.3 */
-    .numOfInterfaces = udevIfaceNumOfInterfaces, /* 0.10.3 */
-    .listInterfaces = udevIfaceListInterfaces, /* 0.10.3 */
-    .numOfDefinedInterfaces = udevIfaceNumOfDefinedInterfaces, /* 0.10.3 */
-    .listDefinedInterfaces = udevIfaceListDefinedInterfaces, /* 0.10.3 */
-    .listAllInterfaces = udevIfaceListAllInterfaces, /* 0.10.3 */
-    .interfaceLookupByName = udevIfaceLookupByName, /* 0.10.3 */
-    .interfaceLookupByMACString = udevIfaceLookupByMACString, /* 0.10.3 */
-    .interfaceIsActive = udevIfaceIsActive, /* 0.10.3 */
+    .open = udevIfaceOpenInterface, /* 1.0.0 */
+    .close = udevIfaceCloseInterface, /* 1.0.0 */
+    .numOfInterfaces = udevIfaceNumOfInterfaces, /* 1.0.0 */
+    .listInterfaces = udevIfaceListInterfaces, /* 1.0.0 */
+    .numOfDefinedInterfaces = udevIfaceNumOfDefinedInterfaces, /* 1.0.0 */
+    .listDefinedInterfaces = udevIfaceListDefinedInterfaces, /* 1.0.0 */
+    .listAllInterfaces = udevIfaceListAllInterfaces, /* 1.0.0 */
+    .interfaceLookupByName = udevIfaceLookupByName, /* 1.0.0 */
+    .interfaceLookupByMACString = udevIfaceLookupByMACString, /* 1.0.0 */
+    .interfaceIsActive = udevIfaceIsActive, /* 1.0.0 */
 };
 
 int
