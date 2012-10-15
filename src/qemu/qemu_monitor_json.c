@@ -3068,7 +3068,7 @@ int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
                           _("deleting disk is not supported.  "
                             "This may leak data if disk is reassigned"));
                 ret = 1;
-                virResetLastError();;
+                virResetLastError();
             }
         }
     } else if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {

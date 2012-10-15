@@ -736,7 +736,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
         if (!channel) {
             if (libssh2_session_last_errno(session) !=
                 LIBSSH2_ERROR_EAGAIN) {
-                goto err;;
+                goto err;
             } else {
                 waitsocket(sock, session);
             }

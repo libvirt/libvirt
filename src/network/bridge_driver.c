@@ -981,7 +981,7 @@ networkRestartDhcpDaemon(virNetworkObjPtr network)
 static int
 networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 {
-    virBuffer configbuf = VIR_BUFFER_INITIALIZER;;
+    virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int ret = -1, ii;
     virNetworkIpDefPtr ipdef;
     bool v6present = false;
