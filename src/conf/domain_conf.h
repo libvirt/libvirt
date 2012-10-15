@@ -567,10 +567,10 @@ struct _virDomainDiskDef {
         } secret;
     } auth;
     char *driverName;
-    char *driverType;
+    int format; /* enum virStorageFileFormat */
 
     char *mirror;
-    char *mirrorFormat;
+    int mirrorFormat; /* enum virStorageFileFormat */
     bool mirroring;
 
     struct {

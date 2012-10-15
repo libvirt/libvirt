@@ -3846,7 +3846,8 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VIR_DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
         VIR_DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
         VIR_DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-        VIR_DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        VIR_DEBUG("disk(%d) driverType: %s", i,
+                  virStorageFileFormatTypeToString(def->disks[i]->format));
         VIR_DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
         VIR_DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
                                              ? "True" : "False"));
@@ -4125,7 +4126,8 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         VIR_DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
         VIR_DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
         VIR_DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-        VIR_DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        VIR_DEBUG("disk(%d) driverType: %s", i,
+                  virStorageFileFormatTypeToString(def->disks[i]->format));
         VIR_DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
         VIR_DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
                                              ? "True" : "False"));

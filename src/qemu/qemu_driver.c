@@ -6335,11 +6335,8 @@ qemuDomainUpdateDeviceConfig(qemuCapsPtr caps,
             orig->driverName = disk->driverName;
             disk->driverName = NULL;
         }
-        if (disk->driverType) {
-            VIR_FREE(orig->driverType);
-            orig->driverType = disk->driverType;
-            disk->driverType = NULL;
-        }
+        if (disk->format)
+            orig->format = disk->format;
         disk->src = NULL;
         break;
 
@@ -9302,13 +9299,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     /* Probe for magic formats */
-    if (disk->driverType) {
-        if ((format = virStorageFileFormatTypeFromString(disk->driverType)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown disk format %s for %s"),
-                           disk->driverType, disk->src);
-            goto cleanup;
-        }
+    if (disk->format) {
+        format = disk->format;
     } else {
         if (driver->allowDiskFormatProbing) {
             if ((format = virStorageFileProbeFormat(disk->src)) < 0)
@@ -10481,7 +10473,7 @@ qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 
         if ((disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) ||
             (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-             STRNEQ_NULLABLE(disk->driverType, "qcow2"))) {
+             disk->format > 0 && disk->format != VIR_STORAGE_FILE_QCOW2)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Disk '%s' does not support snapshotting"),
                            disk->src);
@@ -10675,13 +10667,14 @@ qemuDomainSnapshotDiskPrepare(virDomainObjPtr vm, virDomainSnapshotDefPtr def,
                                disk->name);
                 goto cleanup;
             }
-            if (!vm->def->disks[i]->driverType ||
-                STRNEQ(vm->def->disks[i]->driverType, "qcow2")) {
+            if (vm->def->disks[i]->format > 0 &&
+                vm->def->disks[i]->format != VIR_STORAGE_FILE_QCOW2) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("internal snapshot for disk %s unsupported "
                                  "for storage type %s"),
                                disk->name,
-                               NULLSTR(vm->def->disks[i]->driverType));
+                               virStorageFileFormatTypeToString(
+                                   vm->def->disks[i]->format));
                 goto cleanup;
             }
             found = true;
@@ -10768,13 +10761,12 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
     char *source = NULL;
-    char *driverType = NULL;
+    int format = VIR_STORAGE_FILE_NONE;
     char *persistSource = NULL;
-    char *persistDriverType = NULL;
     int ret = -1;
     int fd = -1;
     char *origsrc = NULL;
-    char *origdriver = NULL;
+    int origdriver;
     bool need_unlink = false;
 
     if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
@@ -10783,14 +10775,19 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
         return -1;
     }
 
+    if (snap->driverType) {
+        format = virStorageFileFormatTypeFromString(snap->driverType);
+        if (format <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown driver type %s"), snap->driverType);
+            goto cleanup;
+        }
+    }
+
     if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0 ||
         !(source = strdup(snap->file)) ||
-        (STRNEQ_NULLABLE(disk->driverType, snap->driverType) &&
-         !(driverType = strdup(snap->driverType))) ||
         (persistDisk &&
-         (!(persistSource = strdup(source)) ||
-          (STRNEQ_NULLABLE(persistDisk->driverType, snap->driverType) &&
-           !(persistDriverType = strdup(snap->driverType)))))) {
+         !(persistSource = strdup(source)))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -10807,8 +10804,8 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
 
     origsrc = disk->src;
     disk->src = source;
-    origdriver = disk->driverType;
-    disk->driverType = (char *) "raw"; /* Don't want to probe backing files */
+    origdriver = disk->format;
+    disk->format = VIR_STORAGE_FILE_RAW; /* Don't want to probe backing files */
 
     if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
                                 vm, disk) < 0)
@@ -10829,8 +10826,7 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
 
     disk->src = origsrc;
     origsrc = NULL;
-    disk->driverType = origdriver;
-    origdriver = NULL;
+    disk->format = origdriver;
 
     /* create the actual snapshot */
     ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
@@ -10844,34 +10840,24 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     VIR_FREE(disk->src);
     disk->src = source;
     source = NULL;
-    if (driverType) {
-        VIR_FREE(disk->driverType);
-        disk->driverType = driverType;
-        driverType = NULL;
-    }
+    disk->format = format;
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
         persistDisk->src = persistSource;
         persistSource = NULL;
-        if (persistDriverType) {
-            VIR_FREE(persistDisk->driverType);
-            persistDisk->driverType = persistDriverType;
-            persistDriverType = NULL;
-        }
+        persistDisk->format = format;
     }
 
 cleanup:
     if (origsrc) {
         disk->src = origsrc;
-        disk->driverType = origdriver;
+        disk->format = origdriver;
     }
     if (need_unlink && unlink(source))
         VIR_WARN("unable to unlink just-created %s", source);
     VIR_FREE(device);
     VIR_FREE(source);
-    VIR_FREE(driverType);
     VIR_FREE(persistSource);
-    VIR_FREE(persistDriverType);
     return ret;
 }
 
@@ -10888,17 +10874,12 @@ qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
                                        bool need_unlink)
 {
     char *source = NULL;
-    char *driverType = NULL;
     char *persistSource = NULL;
-    char *persistDriverType = NULL;
     struct stat st;
 
     if (!(source = strdup(origdisk->src)) ||
-        (origdisk->driverType &&
-         !(driverType = strdup(origdisk->driverType))) ||
         (persistDisk &&
-         (!(persistSource = strdup(source)) ||
-          (driverType && !(persistDriverType = strdup(driverType)))))) {
+         !(persistSource = strdup(source)))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -10918,27 +10899,17 @@ qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
     VIR_FREE(disk->src);
     disk->src = source;
     source = NULL;
-    VIR_FREE(disk->driverType);
-    if (driverType) {
-        disk->driverType = driverType;
-        driverType = NULL;
-    }
+    disk->format = origdisk->format;
     if (persistDisk) {
         VIR_FREE(persistDisk->src);
         persistDisk->src = persistSource;
         persistSource = NULL;
-        VIR_FREE(persistDisk->driverType);
-        if (persistDriverType) {
-            persistDisk->driverType = persistDriverType;
-            persistDriverType = NULL;
-        }
+        persistDisk->format = origdisk->format;
     }
 
 cleanup:
     VIR_FREE(source);
-    VIR_FREE(driverType);
     VIR_FREE(persistSource);
-    VIR_FREE(persistDriverType);
 }
 
 /* The domain is expected to be locked and active. */

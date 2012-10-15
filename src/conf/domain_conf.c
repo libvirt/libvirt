@@ -975,9 +975,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->src);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
-    VIR_FREE(def->driverType);
     VIR_FREE(def->mirror);
-    VIR_FREE(def->mirrorFormat);
     VIR_FREE(def->auth.username);
     VIR_FREE(def->wwn);
     if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
@@ -4176,12 +4174,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     authUsername = NULL;
     def->driverName = driverName;
     driverName = NULL;
-    def->driverType = driverType;
-    driverType = NULL;
     def->mirror = mirror;
     mirror = NULL;
-    def->mirrorFormat = mirrorFormat;
-    mirrorFormat = NULL;
     def->mirroring = mirroring;
     def->encryption = encryption;
     encryption = NULL;
@@ -4190,23 +4184,35 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     def->wwn = wwn;
     wwn = NULL;
 
-    if (!def->driverType &&
-        caps->defaultDiskDriverType &&
-        !(def->driverType = strdup(virStorageFileFormatTypeToString(
-                                       caps->defaultDiskDriverType))))
-        goto no_memory;
+    if (driverType) {
+        def->format = virStorageFileFormatTypeFromString(driverType);
+        if (def->format <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown driver format value '%s'"),
+                           driverType);
+            goto error;
+        }
+    } else if (def->type == VIR_DOMAIN_DISK_TYPE_FILE ||
+               def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+        def->format = caps->defaultDiskDriverType;
+    }
 
     if (!def->driverName &&
         caps->defaultDiskDriverName &&
         !(def->driverName = strdup(caps->defaultDiskDriverName)))
         goto no_memory;
 
-
-    if (def->mirror && !def->mirrorFormat &&
-        caps->defaultDiskDriverType &&
-        !(def->mirrorFormat = strdup(virStorageFileFormatTypeToString(
-                                         caps->defaultDiskDriverType))))
-        goto no_memory;
+    if (mirrorFormat) {
+        def->mirrorFormat = virStorageFileFormatTypeFromString(mirrorFormat);
+        if (def->mirrorFormat <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown mirror format value '%s'"),
+                           driverType);
+            goto error;
+        }
+    } else if (def->mirror) {
+        def->mirrorFormat = caps->defaultDiskDriverType;
+    }
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
         && virDomainDiskDefAssignAddress(caps, def) < 0)
@@ -11865,13 +11871,14 @@ virDomainDiskDefFormat(virBufferPtr buf,
                           virDomainSnapshotLocationTypeToString(def->snapshot));
     virBufferAddLit(buf, ">\n");
 
-    if (def->driverName || def->driverType || def->cachemode ||
+    if (def->driverName || def->format > 0 || def->cachemode ||
         def->ioeventfd || def->event_idx || def->copy_on_read) {
         virBufferAddLit(buf, "      <driver");
         if (def->driverName)
             virBufferAsprintf(buf, " name='%s'", def->driverName);
-        if (def->driverType)
-            virBufferAsprintf(buf, " type='%s'", def->driverType);
+        if (def->format > 0)
+            virBufferAsprintf(buf, " type='%s'",
+                              virStorageFileFormatTypeToString(def->format));
         if (def->cachemode)
             virBufferAsprintf(buf, " cache='%s'", cachemode);
         if (def->error_policy)
@@ -11983,7 +11990,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->mirror && !(flags & VIR_DOMAIN_XML_INACTIVE)) {
         virBufferEscapeString(buf, "      <mirror file='%s'", def->mirror);
         if (def->mirrorFormat)
-            virBufferAsprintf(buf, " format='%s'", def->mirrorFormat);
+            virBufferAsprintf(buf, " format='%s'",
+                              virStorageFileFormatTypeToString(def->mirrorFormat));
         if (def->mirroring)
             virBufferAddLit(buf, " ready='yes'");
         virBufferAddLit(buf, "/>\n");
@@ -14850,15 +14858,8 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
         return ret;
     }
 
-    if (disk->driverType) {
-        const char *formatStr = disk->driverType;
-
-        if ((format = virStorageFileFormatTypeFromString(formatStr)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown disk format '%s' for %s"),
-                           disk->driverType, disk->src);
-            goto cleanup;
-        }
+    if (disk->format > 0) {
+        format = disk->format;
     } else {
         if (allowProbing) {
             format = VIR_STORAGE_FILE_AUTO;

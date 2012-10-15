@@ -41,6 +41,7 @@
 #include "capabilities.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
+#include "storage_file.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -505,25 +506,30 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
     if (l_disk->driverName) {
         if (STREQ(l_disk->driverName, "tap") ||
             STREQ(l_disk->driverName, "tap2")) {
-            if (l_disk->driverType) {
-                if (STREQ(l_disk->driverType, "qcow")) {
-                    x_disk->format = DISK_FORMAT_QCOW;
-                    x_disk->backend = DISK_BACKEND_QDISK;
-                } else if (STREQ(l_disk->driverType, "qcow2")) {
-                    x_disk->format = DISK_FORMAT_QCOW2;
-                    x_disk->backend = DISK_BACKEND_QDISK;
-                } else if (STREQ(l_disk->driverType, "vhd")) {
-                    x_disk->format = DISK_FORMAT_VHD;
-                    x_disk->backend = DISK_BACKEND_TAP;
-                } else if (STREQ(l_disk->driverType, "aio") ||
-                            STREQ(l_disk->driverType, "raw")) {
-                    x_disk->format = DISK_FORMAT_RAW;
-                    x_disk->backend = DISK_BACKEND_TAP;
-                }
-            } else {
+            switch (l_disk->format) {
+            case VIR_STORAGE_FILE_QCOW:
+                x_disk->format = DISK_FORMAT_QCOW;
+                x_disk->backend = DISK_BACKEND_QDISK;
+                break;
+            case VIR_STORAGE_FILE_QCOW2:
+                x_disk->format = DISK_FORMAT_QCOW2;
+                x_disk->backend = DISK_BACKEND_QDISK;
+                break;
+            case VIR_STORAGE_FILE_VHD:
+                x_disk->format = DISK_FORMAT_VHD;
+                x_disk->backend = DISK_BACKEND_TAP;
+                break;
+            case VIR_STORAGE_FILE_NONE:
                 /* No subtype specified, default to raw/tap */
-                    x_disk->format = DISK_FORMAT_RAW;
-                    x_disk->backend = DISK_BACKEND_TAP;
+            case VIR_STORAGE_FILE_RAW:
+                x_disk->format = DISK_FORMAT_RAW;
+                x_disk->backend = DISK_BACKEND_TAP;
+                break;
+            default:
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("libxenlight does not support disk driver %s"),
+                               virStorageFileFormatTypeToString(l_disk->format));
+                return -1;
             }
         } else if (STREQ(l_disk->driverName, "file")) {
             x_disk->format = DISK_FORMAT_RAW;

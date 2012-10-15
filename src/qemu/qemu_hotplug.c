@@ -45,6 +45,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "device_conf.h"
+#include "storage_file.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -107,10 +108,10 @@ int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
     if (disk->src) {
         const char *format = NULL;
         if (disk->type != VIR_DOMAIN_DISK_TYPE_DIR) {
-            if (disk->driverType)
-                format = disk->driverType;
-            else if (origdisk->driverType)
-                format = origdisk->driverType;
+            if (disk->format > 0)
+                format = virStorageFileFormatTypeToString(disk->format);
+            else if (origdisk->format > 0)
+                format = virStorageFileFormatTypeToString(origdisk->format);
         }
         ret = qemuMonitorChangeMedia(priv->mon,
                                      driveAlias,

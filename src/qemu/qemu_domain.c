@@ -36,6 +36,7 @@
 #include "virfile.h"
 #include "domain_event.h"
 #include "virtime.h"
+#include "storage_file.h"
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -1410,7 +1411,7 @@ void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
                                  virDomainDiskDefPtr disk,
                                  int logFD)
 {
-    if (!disk->driverType &&
+    if ((!disk->format || disk->format == VIR_STORAGE_FILE_AUTO) &&
         driver->allowDiskFormatProbing)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 
@@ -1662,8 +1663,8 @@ qemuDomainSnapshotForEachQcow2Raw(struct qemud_driver *driver,
     for (i = 0; i < ndisks; i++) {
         /* FIXME: we also need to handle LVM here */
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            if (!def->disks[i]->driverType ||
-                STRNEQ(def->disks[i]->driverType, "qcow2")) {
+            if (def->disks[i]->format > 0 &&
+                def->disks[i]->format != VIR_STORAGE_FILE_QCOW2) {
                 if (try_all) {
                     /* Continue on even in the face of error, since other
                      * disks in this VM may have the same snapshot name.

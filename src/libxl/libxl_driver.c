@@ -3202,11 +3202,7 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 orig->driverName = disk->driverName;
                 disk->driverName = NULL;
             }
-            if (disk->driverType) {
-                VIR_FREE(orig->driverType);
-                orig->driverType = disk->driverType;
-                disk->driverType = NULL;
-            }
+            orig->format = disk->format;
             disk->src = NULL;
             break;
         default:

@@ -37,6 +37,7 @@
 #include "xen_xm.h"
 #include "xen_sxpr.h"
 #include "domain_conf.h"
+#include "storage_file.h"
 
 /* Convenience method to grab a long int from the config file object */
 static int xenXMConfigGetBool(virConfPtr conf,
@@ -554,23 +555,24 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 /* And the sub-type for tap:XXX: type */
                 if (disk->driverName &&
                     STREQ(disk->driverName, "tap")) {
+                    char *driverType;
+
                     if (!(tmp = strchr(disk->src, ':')))
                         goto skipdisk;
-                    if (VIR_ALLOC_N(disk->driverType, (tmp - disk->src) + 1) < 0)
+
+                    if (!(driverType = strndup(disk->src, tmp - disk->src)))
                         goto no_memory;
-                    if (virStrncpy(disk->driverType, disk->src,
-                                   (tmp - disk->src),
-                                   (tmp - disk->src) + 1) == NULL) {
+                    if (STREQ(driverType, "aio"))
+                        disk->format = VIR_STORAGE_FILE_RAW;
+                    else
+                        disk->format =
+                            virStorageFileFormatTypeFromString(driverType);
+                    VIR_FREE(driverType);
+                    if (disk->format <= 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Driver type %s too big for destination"),
+                                       _("Unknown driver type %s"),
                                        disk->src);
                         goto cleanup;
-                    }
-                    if (STREQ(disk->driverType, "aio")) {
-                        /* In-place conversion to "raw" */
-                        disk->driverType[0] = 'r';
-                        disk->driverType[1] = 'a';
-                        disk->driverType[2] = 'w';
                     }
 
                     /* Strip the prefix we found off the source file name */
@@ -1208,10 +1210,13 @@ static int xenFormatXMDisk(virConfValuePtr list,
     virConfValuePtr val, tmp;
 
     if(disk->src) {
-        if (disk->driverName) {
-            const char *type = disk->driverType ? disk->driverType : "aio";
-            if (STREQ(type, "raw"))
+        if (disk->format) {
+            const char *type;
+
+            if (disk->format == VIR_STORAGE_FILE_RAW)
                 type = "aio";
+            else
+                type = virStorageFileFormatTypeToString(disk->format);
             virBufferAsprintf(&buf, "%s:", disk->driverName);
             if (STREQ(disk->driverName, "tap"))
                 virBufferAsprintf(&buf, "%s:", type);

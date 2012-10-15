@@ -43,6 +43,7 @@
 #include "virnetdevtap.h"
 #include "base64.h"
 #include "device_conf.h"
+#include "storage_file.h"
 
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -2142,11 +2143,10 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
           disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
         if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
             /* QEMU only supports magic FAT format for now */
-            if (disk->driverType &&
-                STRNEQ(disk->driverType, "fat")) {
+            if (disk->format > 0 && disk->format != VIR_STORAGE_FILE_FAT) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported disk driver type for '%s'"),
-                               disk->driverType);
+                               virStorageFileFormatTypeToString(disk->format));
                 goto error;
             }
             if (!disk->readonly) {
@@ -2243,10 +2243,11 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                        _("transient disks not supported yet"));
         goto error;
     }
-    if (disk->driverType && *disk->driverType != '\0' &&
+    if (disk->format > 0 &&
         disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
         qemuCapsGet(caps, QEMU_CAPS_DRIVE_FORMAT))
-        virBufferAsprintf(&opt, ",format=%s", disk->driverType);
+        virBufferAsprintf(&opt, ",format=%s",
+                          virStorageFileFormatTypeToString(disk->format));
 
     /* generate geometry command string */
     if (disk->geometry.cylinders > 0 &&
@@ -5244,11 +5245,10 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
                 /* QEMU only supports magic FAT format for now */
-                if (disk->driverType &&
-                    STRNEQ(disk->driverType, "fat")) {
+                if (disk->format > 0 && disk->format != VIR_STORAGE_FILE_FAT) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unsupported disk driver type for '%s'"),
-                                   disk->driverType);
+                                   virStorageFileFormatTypeToString(disk->format));
                     goto error;
                 }
                 if (!disk->readonly) {
@@ -7055,7 +7055,7 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                 virReportOOMError();
                 goto cleanup;
             }
-            def->driverType = values[i];
+            def->format = virStorageFileFormatTypeFromString(values[i]);
             values[i] = NULL;
         } else if (STREQ(keywords[i], "cache")) {
             if (STREQ(values[i], "off") ||

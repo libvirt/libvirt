@@ -36,6 +36,7 @@
 #include "count-one-bits.h"
 #include "xenxs_private.h"
 #include "xen_sxpr.h"
+#include "storage_file.h"
 
 /* Get a domain id from a S-expression string */
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion)
@@ -427,6 +428,8 @@ xenParseSxprDisks(virDomainDefPtr def,
 
                 if (STREQ (disk->driverName, "tap") ||
                     STREQ (disk->driverName, "tap2")) {
+                    char *driverType = NULL;
+
                     offset = strchr(src, ':');
                     if (!offset) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -434,20 +437,18 @@ xenParseSxprDisks(virDomainDefPtr def,
                         goto error;
                     }
 
-                    if (VIR_ALLOC_N(disk->driverType, (offset-src)+1)< 0)
+                    if (!(driverType = strndup(src, offset - src)))
                         goto no_memory;
-                    if (virStrncpy(disk->driverType, src, offset-src,
-                                   (offset-src)+1) == NULL) {
+                    if (STREQ(driverType, "aio"))
+                        disk->format = VIR_STORAGE_FILE_RAW;
+                    else
+                        disk->format =
+                            virStorageFileFormatTypeFromString(driverType);
+                    VIR_FREE(driverType);
+                    if (disk->format <= 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Driver type %s too big for destination"),
-                                       src);
+                                       _("Unknown driver type %s"), src);
                         goto error;
-                    }
-                    if (STREQ(disk->driverType, "aio")) {
-                        /* In-place conversion to "raw" */
-                        disk->driverType[0] = 'r';
-                        disk->driverType[1] = 'a';
-                        disk->driverType[2] = 'w';
                     }
 
                     src = offset + 1;
@@ -1837,9 +1838,12 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         if (def->driverName) {
             if (STREQ(def->driverName, "tap") ||
                 STREQ(def->driverName, "tap2")) {
-                const char *type = def->driverType ? def->driverType : "aio";
-                if (STREQ(type, "raw"))
+                const char *type;
+
+                if (!def->format || def->format == VIR_STORAGE_FILE_RAW)
                     type = "aio";
+                else
+                    type = virStorageFileFormatTypeToString(def->format);
                 virBufferEscapeSexpr(buf, "(uname '%s:", def->driverName);
                 virBufferEscapeSexpr(buf, "%s:", type);
                 virBufferEscapeSexpr(buf, "%s')", def->src);
