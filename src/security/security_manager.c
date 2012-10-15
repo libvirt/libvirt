@@ -469,6 +469,17 @@ int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
     return -1;
 }
 
+int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    int fd)
+{
+    if (mgr->drv->domainSetSecurityTapFDLabel)
+        return mgr->drv->domainSetSecurityTapFDLabel(mgr, vm, fd);
+
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
 char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm)
 {

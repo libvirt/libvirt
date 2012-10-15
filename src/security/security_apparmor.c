@@ -872,6 +872,15 @@ AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
     return reload_profile(mgr, def, fd_path, true);
 }
 
+/* TODO need code here */
+static int
+AppArmorSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                      virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      int fd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 virSecurityDriver virAppArmorSecurityDriver = {
     .privateDataLen                     = 0,
     .name                               = SECURITY_APPARMOR_NAME,
@@ -908,4 +917,5 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainRestoreSavedStateLabel       = AppArmorRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = AppArmorSetImageFDLabel,
+    .domainSetSecurityTapFDLabel        = AppArmorSetTapFDLabel,
 };

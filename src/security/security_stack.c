@@ -445,6 +445,23 @@ virSecurityStackSetImageFDLabel(virSecurityManagerPtr mgr,
     return rc;
 }
 
+static int
+virSecurityStackSetTapFDLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr vm,
+                              int fd)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetTapFDLabel(item->securityManager, vm, fd) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
 static char *virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                              virDomainDefPtr vm ATTRIBUTE_UNUSED) {
     return NULL;
@@ -509,6 +526,7 @@ virSecurityDriver virSecurityDriverStack = {
     .domainRestoreSavedStateLabel       = virSecurityStackRestoreSavedStateLabel,
 
     .domainSetSecurityImageFDLabel      = virSecurityStackSetImageFDLabel,
+    .domainSetSecurityTapFDLabel        = virSecurityStackSetTapFDLabel,
 
     .domainGetSecurityMountOptions      = virSecurityStackGetMountOptions,
 };

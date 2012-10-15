@@ -204,7 +204,8 @@ virSecurityDriver virSecurityDriverNop = {
     .domainSetSavedStateLabel           = virSecurityDomainSetSavedStateLabelNop,
     .domainRestoreSavedStateLabel       = virSecurityDomainRestoreSavedStateLabelNop,
 
-    .domainSetSecurityImageFDLabel      =  virSecurityDomainSetFDLabelNop,
+    .domainSetSecurityImageFDLabel      = virSecurityDomainSetFDLabelNop,
+    .domainSetSecurityTapFDLabel        = virSecurityDomainSetFDLabelNop,
 
     .domainGetSecurityMountOptions      = virSecurityDomainGetMountOptionsNop,
 };
