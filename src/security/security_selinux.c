@@ -901,7 +901,7 @@ getContext(const char *newpath, mode_t mode, security_context_t *fcon)
     if (handle == NULL)
         return -1;
 
-    ret = selabel_lookup(handle, fcon, newpath, mode);
+    ret = selabel_lookup_raw(handle, fcon, newpath, mode);
     selabel_close(handle);
     return ret;
 #else
