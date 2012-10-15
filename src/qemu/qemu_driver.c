@@ -3731,7 +3731,7 @@ static int qemudDomainHotplugVcpus(struct qemud_driver *driver,
             }
 
             virCgroupFree(&cgroup_vcpu);
-	}
+        }
     } else {
         for (i = oldvcpus - 1; i >= nvcpus; i--) {
             virDomainVcpuPinDefPtr vcpupin = NULL;
