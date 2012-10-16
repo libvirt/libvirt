@@ -2045,10 +2045,10 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
  * @cpu: the physical CPU number
  *
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
- * USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.
+ * It sets the bit (CPU usable) of the related cpu in cpumap.
  */
 
-#define VIR_USE_CPU(cpumap,cpu) (cpumap[(cpu)/8] |= (1<<((cpu)%8)))
+#define VIR_USE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] |= (1 << ((cpu) % 8)))
 
 /**
  * VIR_UNUSE_CPU:
@@ -2056,10 +2056,21 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
  * @cpu: the physical CPU number
  *
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
- * USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.
+ * It resets the bit (CPU not usable) of the related cpu in cpumap.
  */
 
-#define VIR_UNUSE_CPU(cpumap,cpu)       (cpumap[(cpu)/8] &= ~(1<<((cpu)%8)))
+#define VIR_UNUSE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] &= ~(1 << ((cpu) % 8)))
+
+/**
+ * VIR_CPU_USED:
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN)
+ * @cpu: the physical CPU number
+ *
+ * This macro can be used in conjunction with virNodeGetCPUMap() API.
+ * It returns non-zero if the bit of the related CPU is set.
+ */
+
+#define VIR_CPU_USED(cpumap, cpu) ((cpumap)[(cpu) / 8] & (1 << ((cpu) % 8)))
 
 /**
  * VIR_CPU_MAPLEN:
@@ -2070,7 +2081,7 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
  * CPU map between a single virtual & all physical CPUs of a domain.
  */
 
-#define VIR_CPU_MAPLEN(cpu)      (((cpu)+7)/8)
+#define VIR_CPU_MAPLEN(cpu) (((cpu) + 7) / 8)
 
 
 int                     virDomainGetVcpus       (virDomainPtr domain,
@@ -2087,12 +2098,12 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * @cpu: the physical CPU number
  *
  * This macro is to be used in conjunction with virDomainGetVcpus() API.
- * VIR_CPU_USABLE macro returns a non zero value (true) if the cpu
+ * VIR_CPU_USABLE macro returns a non-zero value (true) if the cpu
  * is usable by the vcpu, and 0 otherwise.
  */
 
-#define VIR_CPU_USABLE(cpumaps,maplen,vcpu,cpu) \
-        (cpumaps[((vcpu)*(maplen))+((cpu)/8)] & (1<<((cpu)%8)))
+#define VIR_CPU_USABLE(cpumaps, maplen, vcpu, cpu) \
+    VIR_CPU_USED(VIR_GET_CPUMAP(cpumaps, maplen, vcpu), cpu)
 
 /**
  * VIR_COPY_CPUMAP:
@@ -2104,12 +2115,12 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  *      (ie: malloc(maplen))
  *
  * This macro is to be used in conjunction with virDomainGetVcpus() and
- * virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of
- * the specified vcpu from cpumaps array and copy it into cpumap to be used
+ * virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extracts the cpumap of
+ * the specified vcpu from cpumaps array and copies it into cpumap to be used
  * later by virDomainPinVcpu() API.
  */
-#define VIR_COPY_CPUMAP(cpumaps,maplen,vcpu,cpumap) \
-        memcpy(cpumap, &(cpumaps[(vcpu)*(maplen)]), (maplen))
+#define VIR_COPY_CPUMAP(cpumaps, maplen, vcpu, cpumap) \
+    memcpy(cpumap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen)
 
 
 /**
@@ -2122,7 +2133,7 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the
  * cpumap of the specified vcpu from cpumaps array.
  */
-#define VIR_GET_CPUMAP(cpumaps,maplen,vcpu)     &(cpumaps[(vcpu)*(maplen)])
+#define VIR_GET_CPUMAP(cpumaps, maplen, vcpu) (&((cpumaps)[(vcpu) * (maplen)]))
 
 
 typedef enum {
