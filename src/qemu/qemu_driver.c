@@ -10083,7 +10083,8 @@ qemuCPUCompare(virConnectPtr conn,
     if (!driver->caps) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get host capabilities"));
-    } else if (!driver->caps->host.cpu) {
+    } else if (!driver->caps->host.cpu ||
+               !driver->caps->host.cpu->model) {
         VIR_WARN("cannot get host CPU capabilities");
         ret = VIR_CPU_COMPARE_INCOMPATIBLE;
     } else {

@@ -844,6 +844,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     guest->arch.defaultInfo.emulator_mtime = binary_mtime;
 
     if (caps->host.cpu &&
+        caps->host.cpu->model &&
         qemuCapsProbeCPUModels(binary, NULL, info->arch, &ncpus, NULL) == 0 &&
         ncpus > 0 &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
@@ -973,12 +974,11 @@ qemuCapsInitCPU(virCapsPtr caps,
     cpu->sockets = nodeinfo.sockets;
     cpu->cores = nodeinfo.cores;
     cpu->threads = nodeinfo.threads;
+    caps->host.cpu = cpu;
 
     if (!(data = cpuNodeData(arch))
         || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
-        goto error;
-
-    caps->host.cpu = cpu;
+        goto cleanup;
 
     ret = 0;
 
