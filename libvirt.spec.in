@@ -1030,7 +1030,11 @@ Include header files & development libraries for the libvirt C library.
 %package lock-sanlock
 Summary: Sanlock lock manager plugin for QEMU driver
 Group: Development/Libraries
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
+Requires: sanlock >= 2.4
+%else
 Requires: sanlock >= 1.8
+%endif
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
 Requires: %{name}-daemon = %{version}-%{release}
