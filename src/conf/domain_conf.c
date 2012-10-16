@@ -113,12 +113,16 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "pae",
               "hap",
               "viridian",
-              "privnet")
+              "privnet",
+              "hyperv")
 
 VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
               "default",
               "on",
               "off")
+
+VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
+              "relaxed")
 
 VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
               "destroy",
@@ -9074,6 +9078,53 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         VIR_FREE(nodes);
     }
 
+    if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+        int feature;
+        int value;
+        node = ctxt->node;
+        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unsupported HyperV Enlightenment feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            ctxt->node = nodes[i];
+
+            switch ((enum virDomainHyperv) feature) {
+                case VIR_DOMAIN_HYPERV_RELAXED:
+                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("missing 'state' attribute for "
+                                         "HyperV Enlightenment feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    if ((value = virDomainFeatureStateTypeFromString(tmp)) < 0) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("invalid value of state argument "
+                                         "for HyperV Enlightenment feature '%s'"),
+                                       nodes[i]->name);
+                        goto error;
+                    }
+
+                    def->hyperv_features[feature] = value;
+                    break;
+
+                case VIR_DOMAIN_HYPERV_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+        ctxt->node = node;
+    }
+
     if (virDomainEventActionParseXML(ctxt, "on_reboot",
                                      "string(./on_reboot[1])",
                                      &def->onReboot,
@@ -13817,7 +13868,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->features) {
         virBufferAddLit(buf, "  <features>\n");
         for (i = 0 ; i < VIR_DOMAIN_FEATURE_LAST ; i++) {
-            if (def->features & (1 << i)) {
+            if (def->features & (1 << i) && i != VIR_DOMAIN_FEATURE_HYPERV) {
                 const char *name = virDomainFeatureTypeToString(i);
                 if (!name) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -13833,6 +13884,25 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virBufferAddLit(buf, "/>\n");
             }
         }
+
+        if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+            virBufferAddLit(buf, "    <hyperv>\n");
+            for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+                switch ((enum virDomainHyperv) i) {
+                case VIR_DOMAIN_HYPERV_RELAXED:
+                    if (def->hyperv_features[i])
+                        virBufferAsprintf(buf, "      <%s state='%s'/>\n",
+                                          virDomainHypervTypeToString(i),
+                                          virDomainFeatureStateTypeToString(def->hyperv_features[i]));
+                    break;
+
+                case VIR_DOMAIN_HYPERV_LAST:
+                    break;
+                }
+            }
+            virBufferAddLit(buf, "    </hyperv>\n");
+        }
+
         virBufferAddLit(buf, "  </features>\n");
     }
 

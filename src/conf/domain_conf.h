@@ -1385,6 +1385,7 @@ enum virDomainFeature {
     VIR_DOMAIN_FEATURE_HAP,
     VIR_DOMAIN_FEATURE_VIRIDIAN,
     VIR_DOMAIN_FEATURE_PRIVNET,
+    VIR_DOMAIN_FEATURE_HYPERV,
 
     VIR_DOMAIN_FEATURE_LAST
 };
@@ -1395,6 +1396,12 @@ enum virDomainFeatureState {
     VIR_DOMAIN_FEATURE_STATE_OFF,
 
     VIR_DOMAIN_FEATURE_STATE_LAST
+};
+
+enum virDomainHyperv {
+    VIR_DOMAIN_HYPERV_RELAXED = 0,
+
+    VIR_DOMAIN_HYPERV_LAST
 };
 
 enum virDomainLifecycleAction {
@@ -1710,6 +1717,8 @@ struct _virDomainDef {
     int features;
     /* enum virDomainFeatureState */
     int apic_eoi;
+    /* These options are of type virDomainFeatureState */
+    int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
 
     virDomainClockDef clock;
 
@@ -2239,6 +2248,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 VIR_ENUM_DECL(virDomainNumatuneMemPlacementMode)
+VIR_ENUM_DECL(virDomainHyperv)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)

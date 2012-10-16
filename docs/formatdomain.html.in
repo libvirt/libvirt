@@ -1047,6 +1047,10 @@
     &lt;apic/&gt;
     &lt;hap/&gt;
     &lt;privnet/&gt;
+    &lt;hyperv&gt;
+      &lt;relaxed state='on'&gt;
+    &lt;/hyperv&gt;
+
   &lt;/features&gt;
   ...</pre>
 
@@ -1086,6 +1090,23 @@
         automatically set if any interface devices are defined.
         This feature is only relevant for container based
         virtualization drivers, such as LXC.
+      </dd>
+      <dt><code>hyperv</code></dt>
+      <dd>Enable various features improving behavior of guests
+        running Microsoft Windows.
+      <table class="top_table">
+        <tr>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Value</th>
+        </tr>
+        <tr>
+          <td>relaxed</td>
+          <td>Relax contstraints on timers</td>
+          <td> on, off</td>
+        </tr>
+      </table>
+      <span class="since">Since 1.0.0 (QEMU only)</span>
       </dd>
     </dl>
 
