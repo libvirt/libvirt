@@ -2612,6 +2612,7 @@ static virDriver umlDriver = {
     .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.5.0 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.5.0 */
+    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
     .domainEventRegister = umlDomainEventRegister, /* 0.9.4 */
     .domainEventDeregister = umlDomainEventDeregister, /* 0.9.4 */
     .isEncrypted = umlIsEncrypted, /* 0.7.3 */

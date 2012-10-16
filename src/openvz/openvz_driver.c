@@ -2127,6 +2127,7 @@ static virDriver openvzDriver = {
     .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.12 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.9.12 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.9.12 */
+    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
     .getCapabilities = openvzGetCapabilities, /* 0.4.6 */
     .listDomains = openvzListDomains, /* 0.3.1 */
     .numOfDomains = openvzNumDomains, /* 0.3.1 */

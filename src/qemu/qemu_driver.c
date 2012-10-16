@@ -14203,6 +14203,7 @@ static virDriver qemuDriver = {
     .domainGetCPUStats = qemuDomainGetCPUStats, /* 0.9.11 */
     .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
 };
 
 

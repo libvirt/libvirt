@@ -2736,6 +2736,7 @@ static virDriver lxcDriver = {
     .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
+    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
     .domainEventRegister = lxcDomainEventRegister, /* 0.7.0 */
     .domainEventDeregister = lxcDomainEventDeregister, /* 0.7.0 */
     .isEncrypted = lxcIsEncrypted, /* 0.7.3 */

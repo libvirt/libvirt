@@ -5687,6 +5687,36 @@ static int testListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+static int
+testNodeGetCPUMap(virConnectPtr conn,
+                  unsigned char **cpumap,
+                  unsigned int *online,
+                  unsigned int flags)
+{
+    testConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    testDriverLock(privconn);
+    if (cpumap) {
+        if (VIR_ALLOC_N(*cpumap, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        *cpumap[0] = 0x15;
+    }
+
+    if (online)
+        *online = 3;
+
+    ret = 8;
+
+cleanup:
+    testDriverUnlock(privconn);
+    return ret;
+}
+
 
 static virDriver testDriver = {
     .no = VIR_DRV_TEST,
@@ -5756,6 +5786,7 @@ static virDriver testDriver = {
     .domainEventRegisterAny = testDomainEventRegisterAny, /* 0.8.0 */
     .domainEventDeregisterAny = testDomainEventDeregisterAny, /* 0.8.0 */
     .isAlive = testIsAlive, /* 0.9.8 */
+    .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
 };
 
 static virNetworkDriver testNetworkDriver = {
