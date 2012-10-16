@@ -1,0 +1,56 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+    <boot dev='cdrom'/>
+    <boot dev='network'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <boot order='1'/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='sheepdog' name='image'>
+        <host name='example.org' port='6000'/>
+      </source>
+      <target dev='vda' bus='virtio'/>
+      <boot order='3'/>
+    </disk>
+    <disk type='file' device='floppy'>
+      <driver name='qemu' type='raw'/>
+      <source file='/dev/null'/>
+      <target dev='fdb' bus='fdc'/>
+      <boot order='4'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='ide' index='0'/>
+    <controller type='fdc' index='0'/>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:55'/>
+      <model type='virtio'/>
+      <boot order='2'/>
+    </interface>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
