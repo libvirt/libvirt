@@ -4569,6 +4569,53 @@ cleanup:
     return rv;
 }
 
+static int
+remoteDispatchNodeGetCPUMap(virNetServerPtr server ATTRIBUTE_UNUSED,
+                            virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                            virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                            virNetMessageErrorPtr rerr,
+                            remote_node_get_cpu_map_args *args,
+                            remote_node_get_cpu_map_ret *ret)
+{
+    unsigned char *cpumap = NULL;
+    unsigned int online;
+    unsigned int flags;
+    int cpunum;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    flags = args->flags;
+
+    cpunum = virNodeGetCPUMap(priv->conn, args->need_results ? &cpumap : NULL,
+                              &online, flags);
+    if (cpunum < 0)
+        goto cleanup;
+
+    /* 'serialize' return cpumap */
+    if (args->need_results) {
+        ret->cpumap.cpumap_len = VIR_CPU_MAPLEN(cpunum);
+        ret->cpumap.cpumap_val = (char *) cpumap;
+        cpumap = NULL;
+    }
+
+    ret->online = online;
+    ret->ret = cpunum;
+
+    rv = 0;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    VIR_FREE(cpumap);
+    return rv;
+}
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

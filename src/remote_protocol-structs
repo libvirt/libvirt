@@ -2126,6 +2126,18 @@ struct remote_node_get_memory_parameters_ret {
         } params;
         int                        nparams;
 };
+struct remote_node_get_cpu_map_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_node_get_cpu_map_ret {
+        struct {
+                u_int              cpumap_len;
+                char *             cpumap_val;
+        } cpumap;
+        u_int                      online;
+        int                        ret;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2419,4 +2431,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BLOCK_COMMIT = 290,
         REMOTE_PROC_NETWORK_UPDATE = 291,
         REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292,
+        REMOTE_PROC_NODE_GET_CPU_MAP = 293,
 };

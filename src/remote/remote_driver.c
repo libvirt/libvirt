@@ -5780,6 +5780,53 @@ done:
     return rv;
 }
 
+static int
+remoteNodeGetCPUMap(virConnectPtr conn,
+                    unsigned char **cpumap,
+                    unsigned int *online,
+                    unsigned int flags)
+{
+    int rv = -1;
+    remote_node_get_cpu_map_args args;
+    remote_node_get_cpu_map_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.need_results = !!cpumap;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_CPU_MAP,
+             (xdrproc_t) xdr_remote_node_get_cpu_map_args,
+             (char *) &args,
+             (xdrproc_t) xdr_remote_node_get_cpu_map_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (ret.ret < 0)
+        goto cleanup;
+
+    if (cpumap) {
+        if (VIR_ALLOC_N(*cpumap, ret.cpumap.cpumap_len) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        memcpy(*cpumap, ret.cpumap.cpumap_val, ret.cpumap.cpumap_len);
+    }
+
+    if (online)
+        *online = ret.online;
+
+    rv = ret.ret;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_node_get_cpu_map_ret, (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
 {
@@ -6094,6 +6141,7 @@ static virDriver remote_driver = {
     .domainGetHostname = remoteDomainGetHostname, /* 0.10.0 */
     .nodeSetMemoryParameters = remoteNodeSetMemoryParameters, /* 0.10.2 */
     .nodeGetMemoryParameters = remoteNodeGetMemoryParameters, /* 0.10.2 */
+    .nodeGetCPUMap = remoteNodeGetCPUMap, /* 1.0.0 */
 };
 
 static virNetworkDriver network_driver = {
