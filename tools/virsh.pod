@@ -277,6 +277,11 @@ and size of the physical memory. The output corresponds to virNodeInfo
 structure. Specifically, the "CPU socket(s)" field means number of CPU
 sockets per NUMA cell.
 
+=item B<nodecpumap>
+
+Displays the node's total number of CPUs, the number of online CPUs
+and the list of online CPUs.
+
 =item B<nodecpustats> [I<cpu>] [I<--percent>]
 
 Returns cpu stats of the node.

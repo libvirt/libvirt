@@ -271,6 +271,45 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "nodecpumap" command
+ */
+static const vshCmdInfo info_node_cpumap[] = {
+    {"help", N_("node cpu map")},
+    {"desc", N_("Displays the node's total number of CPUs, the number of"
+                " online CPUs and the list of online CPUs.")},
+    {NULL, NULL}
+};
+
+static bool
+cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int cpu, cpunum;
+    unsigned char *cpumap = NULL;
+    unsigned int online;
+    bool ret = false;
+
+    cpunum = virNodeGetCPUMap(ctl->conn, &cpumap, &online, 0);
+    if (cpunum < 0) {
+        vshError(ctl, "%s", _("Unable to get cpu map"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, "%-15s %d\n", _("CPUs present:"), cpunum);
+    vshPrint(ctl, "%-15s %d\n", _("CPUs online:"), online);
+
+    vshPrint(ctl, "%-15s ", _("CPU map:"));
+    for (cpu = 0; cpu < cpunum; cpu++)
+        vshPrint(ctl, "%c", VIR_CPU_USED(cpumap, cpu) ? 'y' : '-');
+    vshPrint(ctl, "\n");
+
+    ret = true;
+
+  cleanup:
+    VIR_FREE(cpumap);
+    return ret;
+}
+
+/*
  * "nodecpustats" command
  */
 static const vshCmdInfo info_nodecpustats[] = {
@@ -1046,6 +1085,7 @@ const vshCmdDef hostAndHypervisorCmds[] = {
     {"hostname", cmdHostname, NULL, info_hostname, 0},
     {"node-memory-tune", cmdNodeMemoryTune,
      opts_node_memory_tune, info_node_memory_tune, 0},
+    {"nodecpumap", cmdNodeCpuMap, NULL, info_node_cpumap, 0},
     {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
     {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
