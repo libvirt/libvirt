@@ -1389,12 +1389,12 @@ enum virDomainFeature {
     VIR_DOMAIN_FEATURE_LAST
 };
 
-enum virDomainApicEoi {
-    VIR_DOMAIN_APIC_EOI_DEFAULT = 0,
-    VIR_DOMAIN_APIC_EOI_ON,
-    VIR_DOMAIN_APIC_EOI_OFF,
+enum virDomainFeatureState {
+    VIR_DOMAIN_FEATURE_STATE_DEFAULT = 0,
+    VIR_DOMAIN_FEATURE_STATE_ON,
+    VIR_DOMAIN_FEATURE_STATE_OFF,
 
-    VIR_DOMAIN_APIC_EOI_LAST
+    VIR_DOMAIN_FEATURE_STATE_LAST
 };
 
 enum virDomainLifecycleAction {
@@ -1708,7 +1708,7 @@ struct _virDomainDef {
     virDomainOSDef os;
     char *emulator;
     int features;
-    /* enum virDomainApicEoi */
+    /* enum virDomainFeatureState */
     int apic_eoi;
 
     virDomainClockDef clock;
@@ -2173,7 +2173,7 @@ VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainBootMenu)
 VIR_ENUM_DECL(virDomainFeature)
-VIR_ENUM_DECL(virDomainApicEoi)
+VIR_ENUM_DECL(virDomainFeatureState)
 VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainPMState)

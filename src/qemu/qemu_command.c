@@ -4227,7 +4227,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
     if (def->apic_eoi) {
         char sign;
-        if (def->apic_eoi == VIR_DOMAIN_APIC_EOI_ON)
+        if (def->apic_eoi == VIR_DOMAIN_FEATURE_STATE_ON)
             sign = '+';
         else
             sign = '-';
@@ -7761,9 +7761,9 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 dom->clock.timers[i]->present = present;
             } else if (STREQ(feature, "kvm_pv_eoi")) {
                 if (policy == VIR_CPU_FEATURE_REQUIRE)
-                    dom->apic_eoi = VIR_DOMAIN_APIC_EOI_ON;
+                    dom->apic_eoi = VIR_DOMAIN_FEATURE_STATE_ON;
                 else
-                    dom->apic_eoi = VIR_DOMAIN_APIC_EOI_OFF;
+                    dom->apic_eoi = VIR_DOMAIN_FEATURE_STATE_OFF;
             } else {
                 if (!cpu) {
                     if (!(cpu = qemuInitGuestCPU(dom)))

@@ -115,7 +115,7 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "viridian",
               "privnet")
 
-VIR_ENUM_IMPL(virDomainApicEoi, VIR_DOMAIN_APIC_EOI_LAST,
+VIR_ENUM_IMPL(virDomainFeatureState, VIR_DOMAIN_FEATURE_STATE_LAST,
               "default",
               "on",
               "off")
@@ -9060,7 +9060,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 tmp = virXPathString("string(./features/apic/@eoi)", ctxt);
                 if (tmp) {
                     int eoi;
-                    if ((eoi = virDomainApicEoiTypeFromString(tmp)) <= 0) {
+                    if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("unknown value for attribute eoi: %s"),
                                        tmp);
@@ -13828,7 +13828,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 if (i == VIR_DOMAIN_FEATURE_APIC && def->apic_eoi) {
                     virBufferAsprintf(buf,
                                       " eoi='%s'",
-                                      virDomainApicEoiTypeToString(def->apic_eoi));
+                                      virDomainFeatureStateTypeToString(def->apic_eoi));
                 }
                 virBufferAddLit(buf, "/>\n");
             }
