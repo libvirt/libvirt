@@ -492,6 +492,9 @@ def myDomainEventPMSuspendCallback(conn, dom, reason, opaque):
             dom.name(), dom.ID())
 def myDomainEventBalloonChangeCallback(conn, dom, utcoffset, actual):
     print "myDomainEventBalloonChangeCallback: Domain %s(%s) %d" % (dom.name(), dom.ID(), actual)
+def myDomainEventPMSuspendDiskCallback(conn, dom, reason, opaque):
+    print "myDomainEventPMSuspendDiskCallback: Domain %s(%s) system pmsuspend_disk" % (
+            dom.name(), dom.ID())
 def usage(out=sys.stderr):
     print >>out, "usage: "+os.path.basename(sys.argv[0])+" [-hdl] [uri]"
     print >>out, "   uri will default to qemu:///system"
