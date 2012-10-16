@@ -1216,6 +1216,13 @@ if test "x$with_sanlock" != "xno"; then
   if test "x$with_sanlock" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_SANLOCK], 1,
       [whether Sanlock plugin for lock management is available])
+
+    AC_CHECK_LIB([sanlock_client], [sanlock_killpath],
+                 [sanlock_killpath=yes], [sanlock_killpath=no])
+    if test "x$sanlock_killpath" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
+        [whether Sanlock supports sanlock_killpath])
+    fi
   fi
 fi
 AM_CONDITIONAL([HAVE_SANLOCK], [test "x$with_sanlock" = "xyes"])

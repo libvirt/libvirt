@@ -687,6 +687,7 @@ static int virLockManagerSanlockAddResource(virLockManagerPtr lock,
     return 0;
 }
 
+#if HAVE_SANLOCK_KILLPATH
 static int
 virLockManagerSanlockRegisterKillscript(int sock,
                                         const char *vmuri,
@@ -762,6 +763,18 @@ cleanup:
     VIR_FREE(args);
     return ret;
 }
+#else
+static int
+virLockManagerSanlockRegisterKillscript(int sock ATTRIBUTE_UNUSED,
+                                        const char *vmuri ATTRIBUTE_UNUSED,
+                                        const char *uuidstr ATTRIBUTE_UNUSED,
+                                        virDomainLockFailureAction action ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("sanlock is too old to support lock failure action"));
+    return -1;
+}
+#endif
 
 static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                         const char *state,
