@@ -268,7 +268,7 @@ virProcessKillPainfully(pid_t pid, bool force)
             VIR_DEBUG("Timed out waiting after SIGTERM to process %d, "
                       "sending SIGKILL", pid);
             /* No SIGKILL kill on Win32 ! Use SIGABRT instead which our
-             * virProcessKill proc will handle more or less lik SIGKILL */
+             * virProcessKill proc will handle more or less like SIGKILL */
 #ifdef WIN32
             signum = SIGABRT; /* kill it after a grace period */
             signame = "ABRT";
