@@ -1227,7 +1227,9 @@ qemuDomainDefFormatBuf(struct qemud_driver *driver,
     if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
         def_cpu &&
         (def_cpu->mode != VIR_CPU_MODE_CUSTOM || def_cpu->model)) {
-        if (!driver->caps || !driver->caps->host.cpu) {
+        if (!driver->caps ||
+            !driver->caps->host.cpu ||
+            !driver->caps->host.cpu->model) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("cannot get host CPU capabilities"));
             goto cleanup;

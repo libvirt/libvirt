@@ -685,6 +685,7 @@ qemuCapsInitGuest(virCapsPtr caps,
     nmachines = 0;
 
     if (caps->host.cpu &&
+        caps->host.cpu->model &&
         qemuCapsGetCPUDefinitions(qemubinCaps, NULL) > 0 &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
@@ -781,12 +782,11 @@ qemuCapsInitCPU(virCapsPtr caps,
     cpu->sockets = nodeinfo.sockets;
     cpu->cores = nodeinfo.cores;
     cpu->threads = nodeinfo.threads;
+    caps->host.cpu = cpu;
 
     if (!(data = cpuNodeData(arch))
         || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
-        goto error;
-
-    caps->host.cpu = cpu;
+        goto cleanup;
 
     ret = 0;
 
