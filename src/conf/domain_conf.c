@@ -8180,8 +8180,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr *nodes = NULL;
     int i, n;
-    char *bootstr, *tmp;
-    char *useserial = NULL;
+    char *tmp = NULL;
     int ret = -1;
     unsigned long deviceBoot, serialPorts;
 
@@ -8228,23 +8227,23 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
     }
 
-    bootstr = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
-    if (bootstr) {
-        def->os.bootmenu = virDomainBootMenuTypeFromString(bootstr);
+    tmp = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
+    if (tmp) {
+        def->os.bootmenu = virDomainBootMenuTypeFromString(tmp);
         if (def->os.bootmenu <= 0) {
             /* In order not to break misconfigured machines, this
              * should not emit an error, but rather set the bootmenu
              * to disabled */
             VIR_WARN("disabling bootmenu due to unknown option '%s'",
-                     bootstr);
+                     tmp);
             def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
         }
-        VIR_FREE(bootstr);
+        VIR_FREE(tmp);
     }
 
-    useserial = virXPathString("string(./os/bios[1]/@useserial)", ctxt);
-    if (useserial) {
-        if (STREQ(useserial, "yes")) {
+    tmp = virXPathString("string(./os/bios[1]/@useserial)", ctxt);
+    if (tmp) {
+        if (STREQ(tmp, "yes")) {
             if (virXPathULong("count(./devices/serial)",
                               ctxt, &serialPorts) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -8256,6 +8255,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         } else {
             def->os.bios.useserial = VIR_DOMAIN_BIOS_USESERIAL_NO;
         }
+        VIR_FREE(tmp);
     }
 
     tmp = virXPathString("string(./os/bios[1]/@rebootTimeout)", ctxt);
@@ -8277,7 +8277,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
 cleanup:
     VIR_FREE(tmp);
-    VIR_FREE(useserial);
     VIR_FREE(nodes);
     return ret;
 }
