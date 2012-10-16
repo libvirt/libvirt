@@ -410,7 +410,13 @@ BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
 %endif
 %if %{with_sanlock}
+# make sure libvirt is built with new enough sanlock on
+# distros that have it; required for on_lockfailure
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
+BuildRequires: sanlock-devel >= 2.4
+%else
 BuildRequires: sanlock-devel >= 1.8
+%endif
 %endif
 %if %{with_libpcap}
 BuildRequires: libpcap-devel
