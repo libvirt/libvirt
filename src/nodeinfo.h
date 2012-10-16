@@ -58,4 +58,10 @@ int nodeSetMemoryParameters(virConnectPtr conn,
                             virTypedParameterPtr params,
                             int nparams,
                             unsigned int flags);
+
+int nodeGetCPUMap(virConnectPtr conn,
+                  unsigned char **cpumap,
+                  unsigned int *online,
+                  unsigned int flags);
+
 #endif /* __VIR_NODEINFO_H__*/

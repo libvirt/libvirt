@@ -1249,6 +1249,34 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
+int nodeGetCPUMap(virConnectPtr conn,
+                  unsigned char **cpumap,
+                  unsigned int *online,
+                  unsigned int flags)
+{
+    virBitmapPtr cpus = NULL;
+    int maxpresent;
+    int ret = -1;
+    int dummy;
+
+    virCheckFlags(0, -1);
+
+    if (!(cpus = nodeGetCPUBitmap(conn, &maxpresent)))
+        goto cleanup;
+
+    if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)
+        goto cleanup;
+    if (online)
+        *online = virBitmapCountBits(cpus);
+
+    ret = maxpresent;
+cleanup:
+    if (ret < 0 && cpumap)
+        VIR_FREE(*cpumap);
+    virBitmapFree(cpus);
+    return ret;
+}
+
 #if HAVE_NUMACTL
 # if LIBNUMA_API_VERSION <= 1
 #  define NUMA_MAX_N_CPUS 4096
