@@ -123,6 +123,7 @@ static void virLogOutputToFd(virLogSource src,
                              int linenr,
                              const char *funcname,
                              const char *timestamp,
+                             virLogMetadataPtr metadata,
                              unsigned int flags,
                              const char *rawstr,
                              const char *str,
@@ -774,7 +775,7 @@ virLogVMessage(virLogSource source,
                const char *filename,
                int linenr,
                const char *funcname,
-               virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
+               virLogMetadataPtr metadata,
                const char *fmt,
                va_list vargs)
 {
@@ -845,14 +846,14 @@ virLogVMessage(virLogSource source,
                 if (virLogVersionString(&rawver, &ver) >= 0)
                     virLogOutputs[i].f(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
-                                       timestamp, 0, rawver, ver,
+                                       timestamp, NULL, 0, rawver, ver,
                                        virLogOutputs[i].data);
                 VIR_FREE(ver);
                 virLogOutputs[i].logVersion = false;
             }
             virLogOutputs[i].f(source, priority,
                                filename, linenr, funcname,
-                               timestamp, filterflags,
+                               timestamp, metadata, filterflags,
                                str, msg, virLogOutputs[i].data);
         }
     }
@@ -863,14 +864,14 @@ virLogVMessage(virLogSource source,
             if (virLogVersionString(&rawver, &ver) >= 0)
                 virLogOutputToFd(VIR_LOG_FROM_FILE, VIR_LOG_INFO,
                                  __FILE__, __LINE__, __func__,
-                                 timestamp, 0, rawver, ver,
+                                 timestamp, NULL, 0, rawver, ver,
                                  (void *) STDERR_FILENO);
             VIR_FREE(ver);
             logVersionStderr = false;
         }
         virLogOutputToFd(source, priority,
                          filename, linenr, funcname,
-                         timestamp, filterflags,
+                         timestamp, metadata, filterflags,
                          str, msg, (void *) STDERR_FILENO);
     }
     virLogUnlock();
@@ -909,6 +910,7 @@ virLogOutputToFd(virLogSource source ATTRIBUTE_UNUSED,
                  int linenr ATTRIBUTE_UNUSED,
                  const char *funcname ATTRIBUTE_UNUSED,
                  const char *timestamp,
+                 virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
                  unsigned int flags,
                  const char *rawstr ATTRIBUTE_UNUSED,
                  const char *str,
@@ -995,6 +997,7 @@ virLogOutputToSyslog(virLogSource source ATTRIBUTE_UNUSED,
                      int linenr ATTRIBUTE_UNUSED,
                      const char *funcname ATTRIBUTE_UNUSED,
                      const char *timestamp ATTRIBUTE_UNUSED,
+                     virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
                      unsigned int flags,
                      const char *rawstr ATTRIBUTE_UNUSED,
                      const char *str,
@@ -1063,6 +1066,7 @@ virLogOutputToJournald(virLogSource source,
                        int linenr,
                        const char *funcname,
                        const char *timestamp ATTRIBUTE_UNUSED,
+                       virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
                        unsigned int flags,
                        const char *rawstr,
                        const char *str ATTRIBUTE_UNUSED,

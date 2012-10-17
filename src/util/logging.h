@@ -111,6 +111,7 @@ typedef struct _virLogMetadata *virLogMetadataPtr;
  * @linenr: line where the message was emitted
  * @funcname: the function emitting the message
  * @timestamp: zero terminated string with timestamp of the message
+ * @metadata: NULL or metadata array, terminated by an item with NULL key
  * @flags: flags associated with the message
  * @rawstr: the unformatted message to log, zero terminated
  * @str: the message to log, preformatted and zero terminated
@@ -124,6 +125,7 @@ typedef void (*virLogOutputFunc) (virLogSource src,
                                   int linenr,
                                   const char *funcname,
                                   const char *timestamp,
+                                  virLogMetadataPtr metadata,
                                   unsigned int flags,
                                   const char *rawstr,
                                   const char *str,
