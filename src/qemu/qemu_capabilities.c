@@ -284,7 +284,7 @@ qemuCapsParseMachineTypesStr(const char *output,
             goto no_memory;
 
         p = t;
-        if (!(t = strstr(p, "(default)")) && (!next || t < next))
+        if ((t = strstr(p, "(default)")) && (!next || t < next))
             defIdx = caps->nmachineTypes;
 
         if ((t = strstr(p, "(alias of ")) && (!next || t < next)) {
