@@ -1634,8 +1634,6 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
 {
     /* TODO: verify DOI */
     virSecurityLabelDefPtr secdef;
-    context_t execcon = NULL;
-    context_t proccon = NULL;
     security_context_t scon = NULL;
     char *str = NULL;
     int rc = -1;
@@ -1678,8 +1676,6 @@ done:
 
     if (security_getenforce() != 1)
         rc = 0;
-    if (execcon) context_free(execcon);
-    if (proccon) context_free(proccon);
     freecon(scon);
     VIR_FREE(str);
     return rc;
