@@ -212,6 +212,55 @@
     </p>
 
 
+    <h2><a name="bracket_spacing">Bracket spacing</a></h2>
+
+    <p>
+      The keywords <code>if</code>, <code>for</code>, <code>while</code>,
+      and <code>switch</code> must have a single space following them
+      before the opening bracket. eg
+    </p>
+    <pre>
+      if(foo)   // Bad
+      if (foo)  // Good
+</pre>
+
+    <p>
+      Function implementations must <strong>not</strong> have any whitespace
+      between the function name and the opening bracket. eg
+    </p>
+    <pre>
+      int foo (int wizz)  // Bad
+      int foo(int wizz)   // Good
+</pre>
+
+    <p>
+      Function calls must <strong>not</strong> have any whitespace
+      between the function name and the opening bracket. eg
+    </p>
+    <pre>
+      bar = foo (wizz);  // Bad
+      bar = foo(wizz);   // Good
+</pre>
+
+    <p>
+      Function typedefs must <strong>not</strong> have any whitespace
+      between the closing bracket of the function name and opening
+      bracket of the arg list. eg
+    </p>
+    <pre>
+      typedef int (*foo) (int wizz);  // Bad
+      typedef int (*foo)(int wizz);   // Good
+</pre>
+
+    <p>
+      There must not be any whitespace immediately following any
+      opening bracket, or immediately prior to any closing bracket
+    </p>
+    <pre>
+      int foo( int wizz );  // Bad
+      int foo(int wizz);    // Good
+</pre>
+
     <h2><a name="curly_braces">Curly braces</a></h2>
 
     <p>

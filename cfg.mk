@@ -718,7 +718,12 @@ _autogen:
 	./config.status
 
 # regenerate HACKING as part of the syntax-check
-syntax-check: $(top_srcdir)/HACKING
+syntax-check: $(top_srcdir)/HACKING bracket-spacing-check
+
+bracket-spacing-check:
+	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
+	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
+          (echo $(ME): incorrect whitespace around brackets, see HACKING for rules && exit 1)
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check: \

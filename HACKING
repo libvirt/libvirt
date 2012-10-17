@@ -179,6 +179,37 @@ otherwise. For example, it is preferable to use "/* */" comments rather than
 declare them at the beginning of a scope, rather than immediately before use.
 
 
+Bracket spacing
+===============
+The keywords "if", "for", "while", and "switch" must have a single space
+following them before the opening bracket. eg
+
+      if(foo)   // Bad
+      if (foo)  // Good
+
+Function implementations mustnothave any whitespace between the function name and the opening bracket. eg
+
+      int foo (int wizz)  // Bad
+      int foo(int wizz)   // Good
+
+Function calls mustnothave any whitespace between the function name and the opening bracket. eg
+
+      bar = foo (wizz);  // Bad
+      bar = foo(wizz);   // Good
+
+Function typedefs mustnothave any whitespace between the closing bracket of the function name and
+opening bracket of the arg list. eg
+
+      typedef int (*foo) (int wizz);  // Bad
+      typedef int (*foo)(int wizz);   // Good
+
+There must not be any whitespace immediately following any opening bracket, or
+immediately prior to any closing bracket
+
+      int foo( int wizz );  // Bad
+      int foo(int wizz);    // Good
+
+
 Curly braces
 ============
 Omit the curly braces around an "if", "while", "for" etc. body only when that
