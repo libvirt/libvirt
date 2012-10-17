@@ -729,6 +729,7 @@ virLogVersionString(const char **rawmsg,
  * @filename: file where the message was emitted
  * @linenr: line where the message was emitted
  * @funcname: the function emitting the (debug) message
+ * @metadata: NULL or metadata array, terminated by an item with NULL key
  * @fmt: the string format
  * @...: the arguments
  *
@@ -741,13 +742,14 @@ virLogMessage(virLogSource source,
               const char *filename,
               int linenr,
               const char *funcname,
+              virLogMetadataPtr metadata,
               const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
     virLogVMessage(source, priority,
                    filename, linenr, funcname,
-                   fmt, ap);
+                   metadata, fmt, ap);
     va_end(ap);
 }
 
@@ -759,6 +761,7 @@ virLogMessage(virLogSource source,
  * @filename: file where the message was emitted
  * @linenr: line where the message was emitted
  * @funcname: the function emitting the (debug) message
+ * @metadata: NULL or metadata array, terminated by an item with NULL key
  * @fmt: the string format
  * @vargs: format args
  *
@@ -771,6 +774,7 @@ virLogVMessage(virLogSource source,
                const char *filename,
                int linenr,
                const char *funcname,
+               virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
                const char *fmt,
                va_list vargs)
 {

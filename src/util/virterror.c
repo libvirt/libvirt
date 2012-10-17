@@ -679,7 +679,7 @@ virRaiseErrorFull(const char *filename ATTRIBUTE_UNUSED,
     virLogMessage(virErrorLogPriorityFilter ? VIR_LOG_FROM_FILE : VIR_LOG_FROM_ERROR,
                   priority,
                   filename, linenr, funcname,
-                  "%s", str);
+                  NULL, "%s", str);
 
     errno = save_errno;
 }

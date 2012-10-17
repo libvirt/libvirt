@@ -61,7 +61,7 @@ typedef enum {
  */
 # ifdef ENABLE_DEBUG
 #  define VIR_DEBUG_INT(src, filename, linenr, funcname, ...)           \
-    virLogMessage(src, VIR_LOG_DEBUG, filename, linenr, funcname, __VA_ARGS__)
+    virLogMessage(src, VIR_LOG_DEBUG, filename, linenr, funcname, NULL, __VA_ARGS__)
 # else
 /**
  * virLogEatParams:
@@ -78,11 +78,11 @@ static inline void virLogEatParams(virLogSource unused, ...)
 # endif /* !ENABLE_DEBUG */
 
 # define VIR_INFO_INT(src, filename, linenr, funcname, ...)             \
-    virLogMessage(src, VIR_LOG_INFO, filename, linenr, funcname, __VA_ARGS__)
+    virLogMessage(src, VIR_LOG_INFO, filename, linenr, funcname, NULL, __VA_ARGS__)
 # define VIR_WARN_INT(src, filename, linenr, funcname, ...)             \
-    virLogMessage(src, VIR_LOG_WARN, filename, linenr, funcname, __VA_ARGS__)
+    virLogMessage(src, VIR_LOG_WARN, filename, linenr, funcname, NULL, __VA_ARGS__)
 # define VIR_ERROR_INT(src, filename, linenr, funcname, ...)            \
-    virLogMessage(src, VIR_LOG_ERROR, filename, linenr, funcname, __VA_ARGS__)
+    virLogMessage(src, VIR_LOG_ERROR, filename, linenr, funcname, NULL, __VA_ARGS__)
 
 # define VIR_DEBUG(...)                                                 \
     VIR_DEBUG_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
@@ -92,6 +92,16 @@ static inline void virLogEatParams(virLogSource unused, ...)
     VIR_WARN_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
 # define VIR_ERROR(...)                                                 \
     VIR_ERROR_INT(VIR_LOG_FROM_FILE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+
+
+struct _virLogMetadata {
+    const char *key;
+    const char *s;              /* String value, or NULL to use "i" */
+    int i;
+};
+
+typedef struct _virLogMetadata virLogMetadata;
+typedef struct _virLogMetadata *virLogMetadataPtr;
 
 /**
  * virLogOutputFunc:
@@ -164,14 +174,16 @@ extern void virLogMessage(virLogSource src,
                           const char *filename,
                           int linenr,
                           const char *funcname,
-                          const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(6, 7);
+                          virLogMetadataPtr metadata,
+                          const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
 extern void virLogVMessage(virLogSource src,
                            virLogPriority priority,
                            const char *filename,
                            int linenr,
                            const char *funcname,
+                           virLogMetadataPtr metadata,
                            const char *fmt,
-                           va_list vargs) ATTRIBUTE_FMT_PRINTF(6, 0);
+                           va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
 extern int virLogSetBufferSize(int size);
 extern void virLogEmergencyDumpAll(int signum);
 #endif

@@ -106,11 +106,11 @@ void virAuditSend(const char *filename,
         if (success)
             virLogMessage(VIR_LOG_FROM_AUDIT, VIR_LOG_INFO,
                           filename, linenr, funcname,
-                          "success=yes %s", str);
+                          NULL, "success=yes %s", str);
         else
             virLogMessage(VIR_LOG_FROM_AUDIT, VIR_LOG_WARN,
                           filename, linenr, funcname,
-                          "success=no %s", str);
+                          NULL, "success=no %s", str);
     }
 
 #if HAVE_AUDIT
