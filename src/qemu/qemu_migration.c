@@ -2624,10 +2624,10 @@ qemuMigrationPerformJob(struct qemud_driver *driver,
     }
 
     if (!qemuMigrationIsAllowed(driver, vm, NULL))
-        goto cleanup;
+        goto endjob;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
-        goto cleanup;
+        goto endjob;
 
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
 
