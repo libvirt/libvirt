@@ -725,7 +725,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                NULL);
     virCommandAddArg(cmd, "-L");
     if (vol->capacity != vol->allocation) {
-        virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->allocation, 1024));
+        virCommandAddArgFormat(cmd, "%lluK",
+                VIR_DIV_UP(vol->allocation ? vol->allocation : 1, 1024));
         virCommandAddArg(cmd, "--virtualsize");
     }
     virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->capacity, 1024));
