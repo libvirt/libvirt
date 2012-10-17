@@ -285,7 +285,7 @@ int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
 #endif /* WIN32 */
 
 int virSetBlocking(int fd, bool blocking) {
-    return set_nonblocking_flag (fd, !blocking);
+    return set_nonblocking_flag(fd, !blocking);
 }
 
 int virSetNonBlock(int fd) {
@@ -314,7 +314,7 @@ virPipeReadUntilEOF(int outfd, int errfd,
     fds[1].revents = 0;
     finished[1] = 0;
 
-    while(!(finished[0] && finished[1])) {
+    while (!(finished[0] && finished[1])) {
 
         if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
             if ((errno == EAGAIN) || (errno == EINTR))
@@ -386,7 +386,7 @@ error:
    number of bytes.  If the length of the input is <= max_len, and
    upon error while reading that data, it works just like fread_file.  */
 static char *
-saferead_lim (int fd, size_t max_len, size_t *length)
+saferead_lim(int fd, size_t max_len, size_t *length)
 {
     char *buf = NULL;
     size_t alloc = 0;
@@ -409,9 +409,9 @@ saferead_lim (int fd, size_t max_len, size_t *length)
         }
 
         /* Ensure that (size + requested <= max_len); */
-        requested = MIN (size < max_len ? max_len - size : 0,
-                         alloc - size - 1);
-        count = saferead (fd, buf + size, requested);
+        requested = MIN(size < max_len ? max_len - size : 0,
+                        alloc - size - 1);
+        count = saferead(fd, buf + size, requested);
         size += count;
 
         if (count != requested || requested == 0) {
@@ -441,7 +441,7 @@ virFileReadLimFD(int fd, int maxlen, char **buf)
         errno = EINVAL;
         return -1;
     }
-    s = saferead_lim (fd, maxlen+1, &len);
+    s = saferead_lim(fd, maxlen+1, &len);
     if (s == NULL)
         return -1;
     if (len > maxlen || (int)len != len) {
@@ -540,9 +540,9 @@ int virFileLinkPointsTo(const char *checkLink,
     struct stat src_sb;
     struct stat dest_sb;
 
-    return (stat (checkLink, &src_sb) == 0
-            && stat (checkDest, &dest_sb) == 0
-            && SAME_INODE (src_sb, dest_sb));
+    return (stat(checkLink, &src_sb) == 0
+            && stat(checkDest, &dest_sb) == 0
+            && SAME_INODE(src_sb, dest_sb));
 }
 
 
@@ -678,7 +678,7 @@ char *virFindFileInPath(const char *file)
 bool virFileIsDir(const char *path)
 {
     struct stat s;
-    return (stat (path, &s) == 0) && S_ISDIR (s.st_mode);
+    return (stat(path, &s) == 0) && S_ISDIR(s.st_mode);
 }
 
 bool virFileExists(const char *path)
@@ -2270,7 +2270,7 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     char hostname[HOST_NAME_MAX+1], *result;
     struct addrinfo hints, *info;
 
-    r = gethostname (hostname, sizeof(hostname));
+    r = gethostname(hostname, sizeof(hostname));
     if (r == -1) {
         virReportSystemError(errno,
                              "%s", _("failed to determine host name"));
@@ -2305,7 +2305,7 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     }
 
     /* Tell static analyzers about getaddrinfo semantics.  */
-    sa_assert (info);
+    sa_assert(info);
 
     if (info->ai_canonname == NULL ||
         STRPREFIX(info->ai_canonname, "localhost"))
@@ -2316,7 +2316,7 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
         result = strdup(hostname);
     else
         /* Caller frees this string. */
-        result = strdup (info->ai_canonname);
+        result = strdup(info->ai_canonname);
 
     freeaddrinfo(info);
 
@@ -2827,7 +2827,7 @@ virGetUserDirectory(void)
      */
     if (dir) {
         char *p;
-        while ((p = strchr (dir, '/')) != NULL)
+        while ((p = strchr(dir, '/')) != NULL)
             *p = '\\';
     }
 

@@ -288,15 +288,11 @@ virSocketAddrSetPort(virSocketAddrPtr addr, int port) {
 
     port = htons(port);
 
-    if(addr->data.stor.ss_family == AF_INET) {
+    if (addr->data.stor.ss_family == AF_INET) {
         addr->data.inet4.sin_port = port;
-    }
-
-    else if(addr->data.stor.ss_family == AF_INET6) {
+    } else if (addr->data.stor.ss_family == AF_INET6) {
         addr->data.inet6.sin6_port = port;
-    }
-
-    else {
+    } else {
         return -1;
     }
 
@@ -315,11 +311,9 @@ virSocketAddrGetPort(virSocketAddrPtr addr) {
     if (addr == NULL)
         return -1;
 
-    if(addr->data.stor.ss_family == AF_INET) {
+    if (addr->data.stor.ss_family == AF_INET) {
         return ntohs(addr->data.inet4.sin_port);
-    }
-
-    else if(addr->data.stor.ss_family == AF_INET6) {
+    } else if (addr->data.stor.ss_family == AF_INET6) {
         return ntohs(addr->data.inet6.sin6_port);
     }
 

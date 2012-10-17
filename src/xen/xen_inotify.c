@@ -96,7 +96,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
        initial list of domains */
     VIR_DEBUG("Looking for dom with uuid: %s", uuid_str);
     /* XXX Should not have to go via a virDomainPtr obj instance */
-    if(!(dom = xenDaemonLookupByUUID(conn, rawuuid))) {
+    if (!(dom = xenDaemonLookupByUUID(conn, rawuuid))) {
         /* If we are here, the domain has gone away.
            search for, and create a domain from the stored
            list info */
@@ -250,7 +250,7 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("got inotify event");
 
-    if( conn && conn->privateData ) {
+    if (conn && conn->privateData) {
         priv = conn->privateData;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -299,14 +299,14 @@ reread:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("looking up dom"));
 
-            if (xenInotifyRemoveDomainConfigInfo(conn, fname) < 0 ) {
+            if (xenInotifyRemoveDomainConfigInfo(conn, fname) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config cache"));
                 goto cleanup;
             }
-        } else if (e->mask & ( IN_CREATE | IN_CLOSE_WRITE | IN_MOVED_TO) ) {
+        } else if (e->mask & (IN_CREATE | IN_CLOSE_WRITE | IN_MOVED_TO)) {
             virDomainEventPtr event;
-            if (xenInotifyAddDomainConfigInfo(conn, fname) < 0 ) {
+            if (xenInotifyAddDomainConfigInfo(conn, fname) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config cache"));
                 goto cleanup;
@@ -381,7 +381,7 @@ xenInotifyOpen(virConnectPtr conn,
                 return -1;
             }
 
-            if (xenInotifyAddDomainConfigInfo(conn, path) < 0 ) {
+            if (xenInotifyAddDomainConfigInfo(conn, path) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config list"));
                 closedir(dh);
@@ -414,7 +414,7 @@ xenInotifyOpen(virConnectPtr conn,
 
     VIR_DEBUG("Building initial config cache");
     if (priv->useXenConfigCache &&
-        xenXMConfigCacheRefresh (conn) < 0) {
+        xenXMConfigCacheRefresh(conn) < 0) {
         VIR_DEBUG("Failed to enable XM config cache %s", conn->err.message);
         return -1;
     }

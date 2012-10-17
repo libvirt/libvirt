@@ -121,7 +121,7 @@ virSecurityStackVerify(virSecurityManagerPtr mgr,
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
-    for(; item; item = item->next) {
+    for (; item; item = item->next) {
         if (virSecurityManagerVerify(item->securityManager, def) < 0) {
             rc = -1;
             break;

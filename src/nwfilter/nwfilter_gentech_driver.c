@@ -231,7 +231,7 @@ printString(void *payload ATTRIBUTE_UNUSED, const void *name, void *data)
 {
     struct printString *ps = data;
 
-    if ((STREQ((char *)name, NWFILTER_STD_VAR_IP ) && !ps->reportIP ) ||
+    if ((STREQ((char *)name, NWFILTER_STD_VAR_IP) && !ps->reportIP) ||
         (STREQ((char *)name, NWFILTER_STD_VAR_MAC) && !ps->reportMAC))
         return;
 
@@ -1182,13 +1182,13 @@ virNWFilterDomainFWUpdateCB(void *payload,
                     break;
 
                 case STEP_TEAR_NEW:
-                    if ( !virHashLookup(cb->skipInterfaces, net->ifname)) {
+                    if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
                         cb->err = virNWFilterRollbackUpdateFilter(net);
                     }
                     break;
 
                 case STEP_TEAR_OLD:
-                    if ( !virHashLookup(cb->skipInterfaces, net->ifname)) {
+                    if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
                         cb->err = virNWFilterTearOldFilter(net);
                     }
                     break;

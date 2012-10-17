@@ -336,7 +336,7 @@ testDomainGenerateIfname(virDomainDefPtr domdef) {
         /* Generate network interface names */
         for (i = 0 ; i < domdef->nnets ; i++) {
             if (domdef->nets[i]->ifname &&
-                STREQ (domdef->nets[i]->ifname, ifname)) {
+                STREQ(domdef->nets[i]->ifname, ifname)) {
                 found = 1;
                 break;
             }
@@ -1175,7 +1175,7 @@ static int testClose(virConnectPtr conn)
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
 
-    VIR_FREE (privconn);
+    VIR_FREE(privconn);
     conn->privateData = NULL;
     return 0;
 }
@@ -1218,7 +1218,7 @@ static int testNodeGetInfo(virConnectPtr conn,
     return 0;
 }
 
-static char *testGetCapabilities (virConnectPtr conn)
+static char *testGetCapabilities(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
     char *xml;
@@ -1416,9 +1416,9 @@ cleanup:
     return ret;
 }
 
-static int testListDomains (virConnectPtr conn,
-                            int *ids,
-                            int maxids)
+static int testListDomains(virConnectPtr conn,
+                           int *ids,
+                           int maxids)
 {
     testConnPtr privconn = conn->privateData;
     int n;
@@ -1430,7 +1430,7 @@ static int testListDomains (virConnectPtr conn,
     return n;
 }
 
-static int testDestroyDomain (virDomainPtr domain)
+static int testDestroyDomain(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1467,7 +1467,7 @@ cleanup:
     return ret;
 }
 
-static int testResumeDomain (virDomainPtr domain)
+static int testResumeDomain(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1508,7 +1508,7 @@ cleanup:
     return ret;
 }
 
-static int testPauseDomain (virDomainPtr domain)
+static int testPauseDomain(virDomainPtr domain)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1597,14 +1597,14 @@ cleanup:
     return ret;
 }
 
-static int testShutdownDomain (virDomainPtr domain)
+static int testShutdownDomain(virDomainPtr domain)
 {
     return testShutdownDomainFlags(domain, 0);
 }
 
 /* Similar behaviour as shutdown */
-static int testRebootDomain (virDomainPtr domain,
-                             unsigned int action ATTRIBUTE_UNUSED)
+static int testRebootDomain(virDomainPtr domain,
+                            unsigned int action ATTRIBUTE_UNUSED)
 {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1673,8 +1673,8 @@ cleanup:
     return ret;
 }
 
-static int testGetDomainInfo (virDomainPtr domain,
-                              virDomainInfoPtr info)
+static int testGetDomainInfo(virDomainPtr domain,
+                             virDomainInfoPtr info)
 {
     testConnPtr privconn = domain->conn->privateData;
     struct timeval tv;
@@ -2851,7 +2851,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
 
     for (i = 0 ; i < privdom->def->nnets ; i++) {
         if (privdom->def->nets[i]->ifname &&
-            STREQ (privdom->def->nets[i]->ifname, path)) {
+            STREQ(privdom->def->nets[i]->ifname, path)) {
             found = 1;
             break;
         }
@@ -5051,7 +5051,7 @@ cleanup:
 
 static int testStorageVolumeTypeForPool(int pooltype) {
 
-    switch(pooltype) {
+    switch (pooltype) {
         case VIR_STORAGE_POOL_DIR:
         case VIR_STORAGE_POOL_FS:
         case VIR_STORAGE_POOL_NETFS:

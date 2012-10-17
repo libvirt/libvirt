@@ -240,7 +240,7 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
 
     /* Just in case someone forget to set FD_CLOEXEC, explicitly
      * close all FDs before executing the container */
-    open_max = sysconf (_SC_OPEN_MAX);
+    open_max = sysconf(_SC_OPEN_MAX);
     for (i = 0; i < open_max; i++)
         if (i != ttyfd && i != control && i != handshakefd) {
             int tmpfd = i;
@@ -1456,7 +1456,7 @@ static int lxcContainerMountCGroups(struct lxcContainerCGroup *mounts,
     }
 
     if (virAsprintf(&opts,
-                    "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")) < 0 ) {
+                    "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -1721,7 +1721,7 @@ static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
                              CAP_AUDIT_CONTROL, /* No messing with auditing status */
                              CAP_MAC_ADMIN, /* No messing with LSM config */
                              keepReboot ? -1 : CAP_SYS_BOOT, /* No use of reboot */
-                             -1 /* sentinal */)) < 0) {
+                             -1)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to remove capabilities: %d"), ret);
         return -1;
@@ -1758,7 +1758,7 @@ static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcContainerChild( void *data )
+static int lxcContainerChild(void *data)
 {
     lxc_child_argv_t *argv = data;
     virDomainDefPtr vmDef = argv->config;

@@ -492,7 +492,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                "lst" is guaranteed to be non-NULL.  This stops it
                from issuing an invalid NULL-dereference warning about
                "prev = lst; while (prev->next..." below.  */
-            sa_assert (lst);
+            sa_assert(lst);
 
             if (CUR != ',') {
                 virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
@@ -880,9 +880,9 @@ virConfGetValue(virConfPtr conf, const char *setting)
  * Returns 0 on success, or -1 on failure.
  */
 int
-virConfSetValue (virConfPtr conf,
-                 const char *setting,
-                 virConfValuePtr value)
+virConfSetValue(virConfPtr conf,
+                const char *setting,
+                virConfValuePtr value)
 {
     virConfEntryPtr cur, prev = NULL;
 
@@ -961,7 +961,7 @@ virConfWriteFile(const char *filename, virConfPtr conf)
         return -1;
     }
 
-    fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
+    fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         virBufferFreeAndReset(&buf);
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"));

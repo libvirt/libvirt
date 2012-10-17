@@ -128,7 +128,7 @@ enum {
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
 #define WRITE_BLOCK_SIZE_DEFAULT (4 * 1024)
 
-static int ATTRIBUTE_NONNULL (2)
+static int ATTRIBUTE_NONNULL(2)
 virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
                           int fd,
@@ -1625,18 +1625,18 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
         size_t buf_len = 0;
         /* Be careful: even when it returns -1,
            this use of getdelim allocates memory.  */
-        ssize_t tok_len = getdelim (&buf, &buf_len, 0, fp);
+        ssize_t tok_len = getdelim(&buf, &buf_len, 0, fp);
         v[n_tok] = buf;
         if (tok_len < 0) {
             /* Maybe EOF, maybe an error.
                If n_tok > 0, then we know it's an error.  */
-            if (n_tok && func (pool, n_tok, v, data) < 0)
+            if (n_tok && func(pool, n_tok, v, data) < 0)
                 goto cleanup;
             break;
         }
         ++n_tok;
         if (n_tok == n_columns) {
-            if (func (pool, n_tok, v, data) < 0)
+            if (func(pool, n_tok, v, data) < 0)
                 goto cleanup;
             n_tok = 0;
             for (i = 0; i < n_columns; i++) {

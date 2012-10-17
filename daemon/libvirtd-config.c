@@ -45,7 +45,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                           const char *filename)
 {
     char **list;
-    virConfValuePtr p = virConfGetValue (conf, key);
+    virConfValuePtr p = virConfGetValue(conf, key);
     if (!p)
         return 0;
 
@@ -57,7 +57,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                            key);
             return -1;
         }
-        list[0] = strdup (p->str);
+        list[0] = strdup(p->str);
         list[1] = NULL;
         if (list[0] == NULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -88,7 +88,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
                 VIR_FREE(list);
                 return -1;
             }
-            list[i] = strdup (pp->str);
+            list[i] = strdup(pp->str);
             if (list[i] == NULL) {
                 int j;
                 for (j = 0 ; j < i ; j++)
@@ -119,15 +119,15 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
 
 /* A helper function used by each of the following macros.  */
 static int
-checkType (virConfValuePtr p, const char *filename,
-           const char *key, virConfType required_type)
+checkType(virConfValuePtr p, const char *filename,
+          const char *key, virConfType required_type)
 {
     if (p->type != required_type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("remoteReadConfigFile: %s: %s: invalid type:"
                          " got %s; expected %s"), filename, key,
-                       virConfTypeName (p->type),
-                       virConfTypeName (required_type));
+                       virConfTypeName(p->type),
+                       virConfTypeName(required_type));
         return -1;
     }
     return 0;
@@ -139,12 +139,12 @@ checkType (virConfValuePtr p, const char *filename,
    failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
 #define GET_CONF_STR(conf, filename, var_name)                          \
     do {                                                                \
-        virConfValuePtr p = virConfGetValue (conf, #var_name);          \
+        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
         if (p) {                                                        \
-            if (checkType (p, filename, #var_name, VIR_CONF_STRING) < 0) \
+            if (checkType(p, filename, #var_name, VIR_CONF_STRING) < 0) \
                 goto error;                                             \
             VIR_FREE(data->var_name);                                   \
-            if (!(data->var_name = strdup (p->str))) {                  \
+            if (!(data->var_name = strdup(p->str))) {                   \
                 virReportOOMError();                                    \
                 goto error;                                             \
             }                                                           \
@@ -154,9 +154,9 @@ checkType (virConfValuePtr p, const char *filename,
 /* Like GET_CONF_STR, but for integral values.  */
 #define GET_CONF_INT(conf, filename, var_name)                          \
     do {                                                                \
-        virConfValuePtr p = virConfGetValue (conf, #var_name);          \
+        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
         if (p) {                                                        \
-            if (checkType (p, filename, #var_name, VIR_CONF_LONG) < 0)  \
+            if (checkType(p, filename, #var_name, VIR_CONF_LONG) < 0)   \
                 goto error;                                             \
             data->var_name = p->l;                                      \
         }                                                               \
@@ -166,11 +166,11 @@ checkType (virConfValuePtr p, const char *filename,
 static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, const char *filename) {
     virConfValuePtr p;
 
-    p = virConfGetValue (conf, key);
+    p = virConfGetValue(conf, key);
     if (!p)
         return 0;
 
-    if (checkType (p, filename, key, VIR_CONF_STRING) < 0)
+    if (checkType(p, filename, key, VIR_CONF_STRING) < 0)
         return -1;
 
     if (!p->str)
@@ -366,11 +366,11 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                         const char *filename,
                         virConfPtr conf)
 {
-    GET_CONF_INT (conf, filename, listen_tcp);
-    GET_CONF_INT (conf, filename, listen_tls);
-    GET_CONF_STR (conf, filename, tls_port);
-    GET_CONF_STR (conf, filename, tcp_port);
-    GET_CONF_STR (conf, filename, listen_addr);
+    GET_CONF_INT(conf, filename, listen_tcp);
+    GET_CONF_INT(conf, filename, listen_tls);
+    GET_CONF_STR(conf, filename, tls_port);
+    GET_CONF_STR(conf, filename, tcp_port);
+    GET_CONF_STR(conf, filename, listen_addr);
 
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &data->auth_unix_rw, filename) < 0)
         goto error;
@@ -393,22 +393,22 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (remoteConfigGetAuth(conf, "auth_tls", &data->auth_tls, filename) < 0)
         goto error;
 
-    GET_CONF_STR (conf, filename, unix_sock_group);
-    GET_CONF_STR (conf, filename, unix_sock_ro_perms);
-    GET_CONF_STR (conf, filename, unix_sock_rw_perms);
+    GET_CONF_STR(conf, filename, unix_sock_group);
+    GET_CONF_STR(conf, filename, unix_sock_ro_perms);
+    GET_CONF_STR(conf, filename, unix_sock_rw_perms);
 
-    GET_CONF_STR (conf, filename, unix_sock_dir);
+    GET_CONF_STR(conf, filename, unix_sock_dir);
 
-    GET_CONF_INT (conf, filename, mdns_adv);
-    GET_CONF_STR (conf, filename, mdns_name);
+    GET_CONF_INT(conf, filename, mdns_adv);
+    GET_CONF_STR(conf, filename, mdns_name);
 
-    GET_CONF_INT (conf, filename, tls_no_sanity_certificate);
-    GET_CONF_INT (conf, filename, tls_no_verify_certificate);
+    GET_CONF_INT(conf, filename, tls_no_sanity_certificate);
+    GET_CONF_INT(conf, filename, tls_no_verify_certificate);
 
-    GET_CONF_STR (conf, filename, key_file);
-    GET_CONF_STR (conf, filename, cert_file);
-    GET_CONF_STR (conf, filename, ca_file);
-    GET_CONF_STR (conf, filename, crl_file);
+    GET_CONF_STR(conf, filename, key_file);
+    GET_CONF_STR(conf, filename, cert_file);
+    GET_CONF_STR(conf, filename, ca_file);
+    GET_CONF_STR(conf, filename, crl_file);
 
     if (remoteConfigGetStringList(conf, "tls_allowed_dn_list",
                                   &data->tls_allowed_dn_list, filename) < 0)
@@ -420,28 +420,28 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         goto error;
 
 
-    GET_CONF_INT (conf, filename, min_workers);
-    GET_CONF_INT (conf, filename, max_workers);
-    GET_CONF_INT (conf, filename, max_clients);
+    GET_CONF_INT(conf, filename, min_workers);
+    GET_CONF_INT(conf, filename, max_workers);
+    GET_CONF_INT(conf, filename, max_clients);
 
-    GET_CONF_INT (conf, filename, prio_workers);
+    GET_CONF_INT(conf, filename, prio_workers);
 
-    GET_CONF_INT (conf, filename, max_requests);
-    GET_CONF_INT (conf, filename, max_client_requests);
+    GET_CONF_INT(conf, filename, max_requests);
+    GET_CONF_INT(conf, filename, max_client_requests);
 
-    GET_CONF_INT (conf, filename, audit_level);
-    GET_CONF_INT (conf, filename, audit_logging);
+    GET_CONF_INT(conf, filename, audit_level);
+    GET_CONF_INT(conf, filename, audit_logging);
 
-    GET_CONF_STR (conf, filename, host_uuid);
+    GET_CONF_STR(conf, filename, host_uuid);
 
-    GET_CONF_INT (conf, filename, log_level);
-    GET_CONF_STR (conf, filename, log_filters);
-    GET_CONF_STR (conf, filename, log_outputs);
-    GET_CONF_INT (conf, filename, log_buffer_size);
+    GET_CONF_INT(conf, filename, log_level);
+    GET_CONF_STR(conf, filename, log_filters);
+    GET_CONF_STR(conf, filename, log_outputs);
+    GET_CONF_INT(conf, filename, log_buffer_size);
 
-    GET_CONF_INT (conf, filename, keepalive_interval);
-    GET_CONF_INT (conf, filename, keepalive_count);
-    GET_CONF_INT (conf, filename, keepalive_required);
+    GET_CONF_INT(conf, filename, keepalive_interval);
+    GET_CONF_INT(conf, filename, keepalive_count);
+    GET_CONF_INT(conf, filename, keepalive_required);
 
     return 0;
 

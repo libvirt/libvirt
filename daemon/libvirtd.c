@@ -713,23 +713,23 @@ error:
 static void
 daemonVersion(const char *argv0)
 {
-    printf ("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
+    printf("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
 }
 
 #ifdef __sun
 static int
 daemonSetupPrivs(void)
 {
-    chown ("/var/run/libvirt", SYSTEM_UID, SYSTEM_UID);
+    chown("/var/run/libvirt", SYSTEM_UID, SYSTEM_UID);
 
-    if (__init_daemon_priv (PU_RESETGROUPS | PU_CLEARLIMITSET,
-        SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
+    if (__init_daemon_priv(PU_RESETGROUPS | PU_CLEARLIMITSET,
+                           SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
         VIR_ERROR(_("additional privileges are required"));
         return -1;
     }
 
-    if (priv_set (PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
-        PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
+    if (priv_set(PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
+                 PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
         VIR_ERROR(_("failed to set reduced privileges"));
         return -1;
     }
@@ -884,42 +884,43 @@ static int migrateProfile(void)
 static void
 daemonUsage(const char *argv0, bool privileged)
 {
-    fprintf (stderr,
-             _("\n\
-Usage:\n\
-  %s [options]\n\
-\n\
-Options:\n\
-  -v | --verbose         Verbose messages.\n\
-  -d | --daemon          Run as a daemon & write PID file.\n\
-  -l | --listen          Listen for TCP/IP connections.\n\
-  -t | --timeout <secs>  Exit after timeout period.\n\
-  -f | --config <file>   Configuration file.\n\
-     | --version         Display version information.\n\
-  -p | --pid-file <file> Change name of PID file.\n\
-\n\
-libvirt management daemon:\n"), argv0);
+    fprintf(stderr,
+            _("\n"
+              "Usage:\n"
+              "  %s [options]\n"
+              "\n"
+              "Options:\n"
+              "  -v | --verbose         Verbose messages.\n"
+              "  -d | --daemon          Run as a daemon & write PID file.\n"
+              "  -l | --listen          Listen for TCP/IP connections.\n"
+              "  -t | --timeout <secs>  Exit after timeout period.\n"
+              "  -f | --config <file>   Configuration file.\n"
+              "     | --version         Display version information.\n"
+              "  -p | --pid-file <file> Change name of PID file.\n"
+              "\n"
+              "libvirt management daemon:\n"),
+            argv0);
 
     if (privileged) {
         fprintf(stderr,
-                _("\n\
-  Default paths:\n\
-\n\
-    Configuration file (unless overridden by -f):\n\
-      %s/libvirt/libvirtd.conf\n\
-\n\
-    Sockets:\n\
-      %s/run/libvirt/libvirt-sock\n\
-      %s/run/libvirt/libvirt-sock-ro\n\
-\n\
-    TLS:\n\
-      CA certificate:     %s/pki/CA/caert.pem\n\
-      Server certificate: %s/pki/libvirt/servercert.pem\n\
-      Server private key: %s/pki/libvirt/private/serverkey.pem\n\
-\n\
-    PID file (unless overridden by -p):\n\
-      %s/run/libvirtd.pid\n\
-\n"),
+                _("\n"
+                  "  Default paths:\n"
+                  "\n"
+                  "    Configuration file (unless overridden by -f):\n"
+                  "      %s/libvirt/libvirtd.conf\n"
+                  "\n"
+                  "    Sockets:\n"
+                  "      %s/run/libvirt/libvirt-sock\n"
+                  "      %s/run/libvirt/libvirt-sock-ro\n"
+                  "\n"
+                  "    TLS:\n"
+                  "      CA certificate:     %s/pki/CA/caert.pem\n"
+                  "      Server certificate: %s/pki/libvirt/servercert.pem\n"
+                  "      Server private key: %s/pki/libvirt/private/serverkey.pem\n"
+                  "\n"
+                  "    PID file (unless overridden by -p):\n"
+                  "      %s/run/libvirtd.pid\n"
+                  "\n"),
                 SYSCONFDIR,
                 LOCALSTATEDIR,
                 LOCALSTATEDIR,
@@ -928,24 +929,24 @@ libvirt management daemon:\n"), argv0);
                 SYSCONFDIR,
                 LOCALSTATEDIR);
     } else {
-        fprintf(stderr,
-                "%s", _("\n\
-  Default paths:\n\
-\n\
-    Configuration file (unless overridden by -f):\n\
-      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n\
-\n\
-    Sockets:\n\
-      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n\
-\n\
-    TLS:\n\
-      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n\
-      Server certificate: $HOME/.pki/libvirt/servercert.pem\n\
-      Server private key: $HOME/.pki/libvirt/serverkey.pem\n\
-\n\
-    PID file:\n\
-      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n\
-\n"));
+        fprintf(stderr, "%s",
+                _("\n"
+                  "  Default paths:\n"
+                  "\n"
+                  "    Configuration file (unless overridden by -f):\n"
+                  "      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
+                  "\n"
+                  "    Sockets:\n"
+                  "      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
+                  "\n"
+                  "    TLS:\n"
+                  "      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
+                  "      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
+                  "      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
+                  "\n"
+                  "    PID file:\n"
+                  "      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
+                  "\n"));
     }
 }
 
@@ -985,8 +986,8 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    if (setlocale (LC_ALL, "") == NULL ||
-        bindtextdomain (PACKAGE, LOCALEDIR) == NULL ||
+    if (setlocale(LC_ALL, "") == NULL ||
+        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
         textdomain(PACKAGE) == NULL ||
         virInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
@@ -1081,7 +1082,7 @@ int main(int argc, char **argv) {
         default:
             VIR_ERROR(_("%s: internal error: unknown flag: %c"),
                       argv[0], c);
-            exit (EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     }
 

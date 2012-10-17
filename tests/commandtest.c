@@ -625,12 +625,12 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     }
     if ((fd = open(abs_builddir "/commandhelper.log",
                    O_CREAT | O_TRUNC | O_WRONLY, 0600)) < 0) {
-        printf("Cannot open log file: %s\n", strerror (errno));
+        printf("Cannot open log file: %s\n", strerror(errno));
         goto cleanup;
     }
     virCommandWriteArgLog(cmd, fd);
     if (VIR_CLOSE(fd) < 0) {
-        printf("Cannot close log file: %s\n", strerror (errno));
+        printf("Cannot close log file: %s\n", strerror(errno));
         goto cleanup;
     }
 

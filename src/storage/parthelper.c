@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     }
 
     /* return the geometry of the disk and then exit */
-    if(cmd == DISK_GEOMETRY) {
+    if (cmd == DISK_GEOMETRY) {
         printf("%d%c%d%c%d%c",
                dev->hw_geom.cylinders, '\0',
                dev->hw_geom.heads, '\0',
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
                    type, '\0',
                    content, '\0',
                    part->geom.start * dev->sector_size, '\0',
-                   (part->geom.end + 1 ) * dev->sector_size, '\0',
+                   (part->geom.end + 1) * dev->sector_size, '\0',
                    part->geom.length * dev->sector_size, '\0');
         } else {
             printf("%s%c%s%c%s%c%llu%c%llu%c%llu%c",
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
                    type, '\0',
                    content, '\0',
                    part->geom.start * dev->sector_size, '\0',
-                   (part->geom.end + 1 ) * dev->sector_size, '\0',
+                   (part->geom.end + 1) * dev->sector_size, '\0',
                    part->geom.length * dev->sector_size, '\0');
         }
         part = ped_disk_next_partition(disk, part);

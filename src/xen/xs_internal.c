@@ -95,7 +95,7 @@ virConnectDoStoreList(virConnectPtr conn, const char *path,
     if (priv->xshandle == NULL || path == NULL || nb == NULL)
         return NULL;
 
-    return xs_directory (priv->xshandle, 0, path, nb);
+    return xs_directory(priv->xshandle, 0, path, nb);
 }
 
 /**
@@ -287,8 +287,8 @@ xenStoreOpen(virConnectPtr conn,
     }
 
     /* This will get called once at start */
-    if ( xenStoreAddWatch(conn, "@releaseDomain",
-                     "releaseDomain", xenStoreDomainReleased, priv) < 0 )
+    if (xenStoreAddWatch(conn, "@releaseDomain",
+                         "releaseDomain", xenStoreDomainReleased, priv) < 0)
     {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("adding watch @releaseDomain"));
@@ -296,8 +296,8 @@ xenStoreOpen(virConnectPtr conn,
     }
 
     /* The initial call of this will fill domInfoList */
-    if( xenStoreAddWatch(conn, "@introduceDomain",
-                     "introduceDomain", xenStoreDomainIntroduced, priv) < 0 )
+    if (xenStoreAddWatch(conn, "@introduceDomain",
+                         "introduceDomain", xenStoreDomainIntroduced, priv) < 0)
     {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("adding watch @introduceDomain"));
@@ -571,7 +571,7 @@ xenStoreNumOfDomains(virConnectPtr conn)
                 realnum++;
         }
 out:
-        VIR_FREE (idlist);
+        VIR_FREE(idlist);
         ret = realnum;
     }
     return ret;
@@ -599,7 +599,7 @@ xenStoreDoListDomains(virConnectPtr conn, xenUnifiedPrivatePtr priv, int *ids, i
     if (priv->xshandle == NULL)
         goto out;
 
-    idlist = xs_directory (priv->xshandle, 0, "/local/domain", &num);
+    idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist == NULL)
         goto out;
 
@@ -615,7 +615,7 @@ xenStoreDoListDomains(virConnectPtr conn, xenUnifiedPrivatePtr priv, int *ids, i
     }
 
 out:
-    VIR_FREE (idlist);
+    VIR_FREE(idlist);
     return ret;
 }
 
@@ -696,7 +696,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
         prop[199] = 0;
         tmp = xs_read(priv->xshandle, 0, prop, &len);
         if (tmp != NULL) {
-            found = STREQ (name, tmp);
+            found = STREQ(name, tmp);
             VIR_FREE(tmp);
             if (found)
                 break;
@@ -985,19 +985,19 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
             if (val == NULL)
                 break;
             if ((devlen != len) || memcmp(val, dev, len)) {
-                VIR_FREE (val);
+                VIR_FREE(val);
             } else {
                 ret = strdup(list[i]);
 
                 if (ret == NULL)
                     virReportOOMError();
 
-                VIR_FREE (val);
-                VIR_FREE (list);
+                VIR_FREE(val);
+                VIR_FREE(list);
                 return ret;
             }
         }
-        VIR_FREE (list);
+        VIR_FREE(list);
     }
     snprintf(dir, sizeof(dir), "/local/domain/0/backend/tap/%d", id);
     list = xs_directory(priv->xshandle, 0, dir, &num);
@@ -1008,19 +1008,19 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
             if (val == NULL)
                 break;
             if ((devlen != len) || memcmp(val, dev, len)) {
-                VIR_FREE (val);
+                VIR_FREE(val);
             } else {
                 ret = strdup(list[i]);
 
                 if (ret == NULL)
                     virReportOOMError();
 
-                VIR_FREE (val);
-                VIR_FREE (list);
+                VIR_FREE(val);
+                VIR_FREE(list);
                 return ret;
             }
         }
-        VIR_FREE (list);
+        VIR_FREE(list);
     }
     return NULL;
 }
@@ -1164,12 +1164,12 @@ int xenStoreAddWatch(virConnectPtr conn,
         return -1;
 
     list = priv->xsWatchList;
-    if(!list)
+    if (!list)
         return -1;
 
     /* check if we already have this callback on our list */
     for (n=0; n < list->count; n++) {
-        if( STREQ(list->watches[n]->path, path) &&
+        if (STREQ(list->watches[n]->path, path) &&
             STREQ(list->watches[n]->token, token)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("watch already tracked"));
@@ -1228,11 +1228,11 @@ int xenStoreRemoveWatch(virConnectPtr conn,
         return -1;
 
     list = priv->xsWatchList;
-    if(!list)
+    if (!list)
         return -1;
 
     for (i = 0 ; i < list->count ; i++) {
-        if( STREQ(list->watches[i]->path, path) &&
+        if (STREQ(list->watches[i]->path, path) &&
             STREQ(list->watches[i]->token, token)) {
 
             if (!xs_unwatch(priv->xshandle,
@@ -1271,8 +1271,8 @@ xenStoreFindWatch(xenStoreWatchListPtr list,
 {
     int i;
     for (i = 0 ; i < list->count ; i++)
-        if( STREQ(path, list->watches[i]->path) &&
-            STREQ(token, list->watches[i]->token) )
+        if (STREQ(path, list->watches[i]->path) &&
+            STREQ(token, list->watches[i]->token))
             return list->watches[i];
 
     return NULL;
@@ -1293,14 +1293,14 @@ xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
     virConnectPtr        conn = data;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if(!priv) return;
+    if (!priv) return;
 
     /* only set a watch on read and write events */
     if (events & (VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP)) return;
 
     xenUnifiedLock(priv);
 
-    if(!priv->xshandle)
+    if (!priv->xshandle)
         goto cleanup;
 
     event = xs_read_watch(priv->xshandle, &stringCount);
@@ -1311,7 +1311,7 @@ xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
     token = event[XS_WATCH_TOKEN];
 
     sw = xenStoreFindWatch(priv->xsWatchList, path, token);
-    if( sw )
+    if (sw)
         sw->cb(conn, path, token, sw->opaque);
     VIR_FREE(event);
 
@@ -1342,7 +1342,7 @@ retry:
     if (new_domain_cnt < 0)
         return -1;
 
-    if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
+    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -1418,14 +1418,14 @@ int xenStoreDomainReleased(virConnectPtr conn,
 
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) opaque;
 
-    if(!priv->activeDomainList->count) return 0;
+    if (!priv->activeDomainList->count) return 0;
 
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
     if (new_domain_cnt < 0)
         return -1;
 
-    if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
+    if (VIR_ALLOC_N(new_domids,new_domain_cnt) < 0) {
         virReportOOMError();
         return -1;
     }

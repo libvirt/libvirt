@@ -945,7 +945,7 @@ create_name:
         if (virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
                                                          linkdev, vmuuid,
                                                          virtPortProfile,
-                                                         vmOp) < 0 )
+                                                         vmOp) < 0)
         goto disassociate_exit;
     }
 

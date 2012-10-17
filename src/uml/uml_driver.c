@@ -455,7 +455,7 @@ umlStartup(int privileged)
                         "%s/log/libvirt/uml", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
+        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
 
         if (virAsprintf(&uml_driver->monitorDir,
@@ -1173,7 +1173,7 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
             return VIR_DRV_OPEN_ERROR;
     } else {
         if (conn->uri->scheme == NULL ||
-            STRNEQ (conn->uri->scheme, "uml"))
+            STRNEQ(conn->uri->scheme, "uml"))
             return VIR_DRV_OPEN_DECLINED;
 
         /* Allow remote driver to deal with URIs with hostname server */
@@ -1183,15 +1183,15 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
 
         /* Check path and tell them correct path if they made a mistake */
         if (uml_driver->privileged) {
-            if (STRNEQ (conn->uri->path, "/system") &&
-                STRNEQ (conn->uri->path, "/session")) {
+            if (STRNEQ(conn->uri->path, "/system") &&
+                STRNEQ(conn->uri->path, "/session")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected UML URI path '%s', try uml:///system"),
                                conn->uri->path);
                 return VIR_DRV_OPEN_ERROR;
             }
         } else {
-            if (STRNEQ (conn->uri->path, "/session")) {
+            if (STRNEQ(conn->uri->path, "/session")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected UML URI path '%s', try uml:///session"),
                                conn->uri->path);

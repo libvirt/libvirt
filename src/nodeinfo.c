@@ -839,7 +839,7 @@ int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
         goto cleanup;
 
     /* Convert to KB. */
-    nodeinfo->memory = physmem_total () / 1024;
+    nodeinfo->memory = physmem_total() / 1024;
 
 cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
@@ -1161,7 +1161,7 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
     for (i = 0; i < *nparams && i < NODE_MEMORY_PARAMETERS_NUM; i++) {
         virTypedParameterPtr param = &params[i];
 
-        switch(i) {
+        switch (i) {
         case 0:
             if (nodeGetMemoryParameterValue("pages_to_scan",
                                             &pages_to_scan) < 0)

@@ -162,7 +162,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     char *eol, *tmp_base;
     virSysinfoProcessorDefPtr processor;
 
-    while((tmp_base = strstr(base, "processor")) != NULL) {
+    while ((tmp_base = strstr(base, "processor")) != NULL) {
         base = tmp_base;
         eol = strchr(base, '\n');
         cur = strchr(base, ':') + 1;
@@ -217,7 +217,7 @@ virSysinfoRead(void) {
     if (VIR_ALLOC(ret) < 0)
         goto no_memory;
 
-    if(virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
         return NULL;
@@ -516,7 +516,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     char *eol;
     virSysinfoProcessorDefPtr processor;
 
-    while((tmp_base = strstr(base, "Processor Information")) != NULL) {
+    while ((tmp_base = strstr(base, "Processor Information")) != NULL) {
         base = tmp_base;
         eol = NULL;
 

@@ -503,7 +503,7 @@ static void virEventPollCleanupTimeouts(void) {
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
      */
-    for (i = 0 ; i < eventLoop.timeoutsCount ; ) {
+    for (i = 0 ; i < eventLoop.timeoutsCount ;) {
         if (!eventLoop.timeouts[i].deleted) {
             i++;
             continue;
@@ -551,7 +551,7 @@ static void virEventPollCleanupHandles(void) {
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
      */
-    for (i = 0 ; i < eventLoop.handlesCount ; ) {
+    for (i = 0 ; i < eventLoop.handlesCount ;) {
         if (!eventLoop.handles[i].deleted) {
             i++;
             continue;
@@ -717,13 +717,13 @@ int
 virEventPollToNativeEvents(int events)
 {
     int ret = 0;
-    if(events & VIR_EVENT_HANDLE_READABLE)
+    if (events & VIR_EVENT_HANDLE_READABLE)
         ret |= POLLIN;
-    if(events & VIR_EVENT_HANDLE_WRITABLE)
+    if (events & VIR_EVENT_HANDLE_WRITABLE)
         ret |= POLLOUT;
-    if(events & VIR_EVENT_HANDLE_ERROR)
+    if (events & VIR_EVENT_HANDLE_ERROR)
         ret |= POLLERR;
-    if(events & VIR_EVENT_HANDLE_HANGUP)
+    if (events & VIR_EVENT_HANDLE_HANGUP)
         ret |= POLLHUP;
     return ret;
 }
@@ -732,15 +732,15 @@ int
 virEventPollFromNativeEvents(int events)
 {
     int ret = 0;
-    if(events & POLLIN)
+    if (events & POLLIN)
         ret |= VIR_EVENT_HANDLE_READABLE;
-    if(events & POLLOUT)
+    if (events & POLLOUT)
         ret |= VIR_EVENT_HANDLE_WRITABLE;
-    if(events & POLLERR)
+    if (events & POLLERR)
         ret |= VIR_EVENT_HANDLE_ERROR;
-    if(events & POLLNVAL) /* Treat NVAL as error, since libvirt doesn't distinguish */
+    if (events & POLLNVAL) /* Treat NVAL as error, since libvirt doesn't distinguish */
         ret |= VIR_EVENT_HANDLE_ERROR;
-    if(events & POLLHUP)
+    if (events & POLLHUP)
         ret |= VIR_EVENT_HANDLE_HANGUP;
     return ret;
 }

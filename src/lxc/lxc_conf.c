@@ -184,7 +184,7 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
         goto no_memory;
 
     /* Avoid error from non-existant or unreadable file. */
-    if (access (filename, R_OK) == -1)
+    if (access(filename, R_OK) == -1)
         goto done;
     conf = virConfReadFile(filename, 0);
     if (!conf)
@@ -199,11 +199,11 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
     }
 
     p = virConfGetValue(conf, "log_with_libvirtd");
-    CHECK_TYPE ("log_with_libvirtd", VIR_CONF_LONG);
+    CHECK_TYPE("log_with_libvirtd", VIR_CONF_LONG);
     if (p) driver->log_libvirtd = p->l;
 
-    p = virConfGetValue (conf, "security_driver");
-    CHECK_TYPE ("security_driver", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "security_driver");
+    CHECK_TYPE("security_driver", VIR_CONF_STRING);
     if (p && p->str) {
         if (!(driver->securityDriverName = strdup(p->str))) {
             virReportOOMError();
@@ -212,12 +212,12 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
         }
     }
 
-    p = virConfGetValue (conf, "security_default_confined");
-    CHECK_TYPE ("security_default_confined", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "security_default_confined");
+    CHECK_TYPE("security_default_confined", VIR_CONF_LONG);
     if (p) driver->securityDefaultConfined = p->l;
 
-    p = virConfGetValue (conf, "security_require_confined");
-    CHECK_TYPE ("security_require_confined", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "security_require_confined");
+    CHECK_TYPE("security_require_confined", VIR_CONF_LONG);
     if (p) driver->securityRequireConfined = p->l;
 
 

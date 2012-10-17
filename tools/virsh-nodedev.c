@@ -365,7 +365,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             return false;
         }
 
-        switch(cap_type) {
+        switch (cap_type) {
         case VIR_NODE_DEV_CAP_SYSTEM:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM;
             break;

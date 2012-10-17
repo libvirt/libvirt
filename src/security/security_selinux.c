@@ -546,7 +546,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
 
     switch (seclabel->type) {
     case VIR_DOMAIN_SECLABEL_STATIC:
-        if (!(ctx = context_new(seclabel->label)) ) {
+        if (!(ctx = context_new(seclabel->label))) {
             virReportSystemError(errno,
                                  _("unable to allocate socket security context '%s'"),
                                  seclabel->label);

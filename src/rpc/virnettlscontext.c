@@ -373,7 +373,7 @@ virNetTLSContextCheckCertDNWhitelist(const char *dname,
                                      const char *const*wildcards)
 {
     while (*wildcards) {
-        int ret = fnmatch (*wildcards, dname, 0);
+        int ret = fnmatch(*wildcards, dname, 0);
         if (ret == 0) /* Successful match */
             return 1;
         if (ret != FNM_NOMATCH) {
@@ -600,7 +600,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
         if (err < 0) {
             virReportError(VIR_ERR_SYSTEM_ERROR,
                            _("Unable to set x509 CA certificate: %s: %s"),
-                           cacert, gnutls_strerror (err));
+                           cacert, gnutls_strerror(err));
             goto cleanup;
         }
     }

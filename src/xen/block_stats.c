@@ -60,13 +60,13 @@
 # endif
 
 static int
-xstrtoint64 (char const *s, int base, int64_t *result)
+xstrtoint64(char const *s, int base, int64_t *result)
 {
     long long int lli;
     char *p;
 
     errno = 0;
-    lli = strtoll (s, &p, base);
+    lli = strtoll(s, &p, base);
     if (errno || !(*p == 0 || *p == '\n') || p == s || (int64_t) lli != lli)
         return -1;
     *result = lli;
@@ -74,26 +74,26 @@ xstrtoint64 (char const *s, int base, int64_t *result)
 }
 
 static int64_t
-read_stat (const char *path)
+read_stat(const char *path)
 {
     char str[64];
     int64_t r;
     int i;
     FILE *fp;
 
-    fp = fopen (path, "r");
+    fp = fopen(path, "r");
     if (!fp)
       return -1;
 
     /* read, but don't bail out before closing */
-    i = fread (str, 1, sizeof(str) - 1, fp);
+    i = fread(str, 1, sizeof(str) - 1, fp);
 
     if (VIR_FCLOSE(fp) != 0        /* disk error */
         || i < 1)               /* ensure we read at least one byte */
         return -1;
 
     str[i] = '\0';              /* make sure the string is nul-terminated */
-    if (xstrtoint64 (str, 10, &r) == -1)
+    if (xstrtoint64(str, 10, &r) == -1)
         return -1;
 
     return r;
@@ -136,7 +136,7 @@ read_bd_stat(int device, int domid, const char *str)
  * is no connected device.
  */
 static int
-check_bd_connected (xenUnifiedPrivatePtr priv, int device, int domid)
+check_bd_connected(xenUnifiedPrivatePtr priv, int device, int domid)
 {
     char s[256], *rs;
     int r;
@@ -146,11 +146,11 @@ check_bd_connected (xenUnifiedPrivatePtr priv, int device, int domid)
      * xenstore, etc.
      */
     if (!priv->xshandle) return 1;
-    snprintf (s, sizeof(s), "/local/domain/0/backend/vbd/%d/%d/state",
-              domid, device);
+    snprintf(s, sizeof(s), "/local/domain/0/backend/vbd/%d/%d/state",
+             domid, device);
     s[sizeof(s) - 1] = '\0';
 
-    rs = xs_read (priv->xshandle, 0, s, &len);
+    rs = xs_read(priv->xshandle, 0, s, &len);
     if (!rs) return 1;
     if (len == 0) {
         /* Hmmm ... we can get to xenstore but it returns an empty
@@ -161,7 +161,7 @@ check_bd_connected (xenUnifiedPrivatePtr priv, int device, int domid)
         return 0;
     }
 
-    r = STREQ (rs, "4");
+    r = STREQ(rs, "4");
     VIR_FREE(rs);
     return r;
 }
@@ -170,11 +170,11 @@ static int
 read_bd_stats(xenUnifiedPrivatePtr priv,
               int device, int domid, struct _virDomainBlockStats *stats)
 {
-    stats->rd_req   = read_bd_stat (device, domid, "rd_req");
-    stats->rd_bytes = read_bd_stat (device, domid, "rd_sect");
-    stats->wr_req   = read_bd_stat (device, domid, "wr_req");
-    stats->wr_bytes = read_bd_stat (device, domid, "wr_sect");
-    stats->errs     = read_bd_stat (device, domid, "oo_req");
+    stats->rd_req   = read_bd_stat(device, domid, "rd_req");
+    stats->rd_bytes = read_bd_stat(device, domid, "rd_sect");
+    stats->wr_req   = read_bd_stat(device, domid, "wr_req");
+    stats->wr_bytes = read_bd_stat(device, domid, "wr_sect");
+    stats->errs     = read_bd_stat(device, domid, "oo_req");
 
     /* None of the files were found - it's likely that this version
      * of Xen is an old one which just doesn't support stats collection.
@@ -195,7 +195,7 @@ read_bd_stats(xenUnifiedPrivatePtr priv,
     if (stats->rd_req == 0 && stats->rd_bytes == 0 &&
         stats->wr_req == 0 && stats->wr_bytes == 0 &&
         stats->errs == 0 &&
-        !check_bd_connected (priv, device, domid)) {
+        !check_bd_connected(priv, device, domid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Frontend block device not connected for domain %d"),
                        domid);
@@ -358,10 +358,10 @@ xenLinuxDomainDeviceID(int domid, const char *path)
 }
 
 int
-xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
-                          virDomainPtr dom,
-                          const char *path,
-                          struct _virDomainBlockStats *stats)
+xenLinuxDomainBlockStats(xenUnifiedPrivatePtr priv,
+                         virDomainPtr dom,
+                         const char *path,
+                         struct _virDomainBlockStats *stats)
 {
     int device = xenLinuxDomainDeviceID(dom->id, path);
 

@@ -147,7 +147,7 @@ edit_cleanup:
     VIR_FREE(doc_edited);
     VIR_FREE(doc_reread);
     if (tmp) {
-        unlink (tmp);
+        unlink(tmp);
         VIR_FREE(tmp);
     }
 

@@ -27,7 +27,7 @@ virCapsPtr testXenCapsInit(void) {
         "xenpv"
     };
 
-    uname (&utsname);
+    uname(&utsname);
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)
         return NULL;

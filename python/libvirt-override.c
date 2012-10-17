@@ -192,7 +192,7 @@ setPyVirTypedParameter(PyObject *info,
         ignore_value(virStrcpyStatic(temp->field, keystr));
         temp->type = params[i].type;
 
-        switch(params[i].type) {
+        switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
             if (libvirt_intUnwrap(value, &temp->value.i) < 0)
                 goto cleanup;
@@ -1940,21 +1940,21 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
  ************************************************************************/
 
 static PyObject *
-libvirt_virGetVersion (PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+libvirt_virGetVersion(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 {
     char *type = NULL;
     unsigned long libVer, typeVer = 0;
     int c_retval;
 
-    if (!PyArg_ParseTuple (args, (char *) "|s", &type))
+    if (!PyArg_ParseTuple(args, (char *) "|s", &type))
         return NULL;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
 
     if (type == NULL)
-        c_retval = virGetVersion (&libVer, NULL, NULL);
+        c_retval = virGetVersion(&libVer, NULL, NULL);
     else
-        c_retval = virGetVersion (&libVer, type, &typeVer);
+        c_retval = virGetVersion(&libVer, type, &typeVer);
 
     LIBVIRT_END_ALLOW_THREADS;
 
@@ -1962,14 +1962,14 @@ libvirt_virGetVersion (PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
         return VIR_PY_NONE;
 
     if (type == NULL)
-        return PyInt_FromLong (libVer);
+        return PyInt_FromLong(libVer);
     else
-        return Py_BuildValue ((char *) "kk", libVer, typeVer);
+        return Py_BuildValue((char *) "kk", libVer, typeVer);
 }
 
 static PyObject *
-libvirt_virConnectGetVersion (PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args)
+libvirt_virConnectGetVersion(PyObject *self ATTRIBUTE_UNUSED,
+                             PyObject *args)
 {
     unsigned long hvVersion;
     int c_retval;
@@ -1990,12 +1990,12 @@ libvirt_virConnectGetVersion (PyObject *self ATTRIBUTE_UNUSED,
     if (c_retval == -1)
         return VIR_PY_INT_FAIL;
 
-    return PyInt_FromLong (hvVersion);
+    return PyInt_FromLong(hvVersion);
 }
 
 static PyObject *
-libvirt_virConnectGetLibVersion (PyObject *self ATTRIBUTE_UNUSED,
-                                     PyObject *args)
+libvirt_virConnectGetLibVersion(PyObject *self ATTRIBUTE_UNUSED,
+                                PyObject *args)
 {
     unsigned long libVer;
     int c_retval;
@@ -2016,7 +2016,7 @@ libvirt_virConnectGetLibVersion (PyObject *self ATTRIBUTE_UNUSED,
     if (c_retval == -1)
         return VIR_PY_INT_FAIL;
 
-    return PyInt_FromLong (libVer);
+    return PyInt_FromLong(libVer);
 }
 
 static PyObject *
@@ -4404,7 +4404,7 @@ static PyObject *libvirt_dict      = NULL;
 static PyObject *libvirt_dom_class = NULL;
 
 static PyObject *
-getLibvirtModuleObject (void) {
+getLibvirtModuleObject(void) {
     if (libvirt_module)
         return libvirt_module;
 
@@ -4421,7 +4421,7 @@ getLibvirtModuleObject (void) {
 }
 
 static PyObject *
-getLibvirtDictObject (void) {
+getLibvirtDictObject(void) {
     if (libvirt_dict)
         return libvirt_dict;
 
@@ -4438,7 +4438,7 @@ getLibvirtDictObject (void) {
 }
 
 static PyObject *
-getLibvirtDomainClassObject (void) {
+getLibvirtDomainClassObject(void) {
     if (libvirt_dom_class)
         return libvirt_dom_class;
 
@@ -4975,7 +4975,7 @@ libvirt_virEventInvokeHandleCallback(PyObject *self ATTRIBUTE_UNUSED,
 
     if (cb) {
         LIBVIRT_BEGIN_ALLOW_THREADS;
-        cb (watch, fd, event, opaque);
+        cb(watch, fd, event, opaque);
         LIBVIRT_END_ALLOW_THREADS;
     }
 
@@ -5002,7 +5002,7 @@ libvirt_virEventInvokeTimeoutCallback(PyObject *self ATTRIBUTE_UNUSED,
     opaque = (void *) PyvirVoidPtr_Get(py_opaque);
     if (cb) {
         LIBVIRT_BEGIN_ALLOW_THREADS;
-        cb (timer, opaque);
+        cb(timer, opaque);
         LIBVIRT_END_ALLOW_THREADS;
     }
 

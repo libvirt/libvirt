@@ -287,7 +287,7 @@ virStorageBackendGetMaps(virStoragePoolObjPtr pool)
 
 out:
     if (dmt != NULL) {
-        dm_task_destroy (dmt);
+        dm_task_destroy(dmt);
     }
     return retval;
 }

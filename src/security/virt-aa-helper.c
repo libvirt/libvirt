@@ -678,7 +678,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
         struct utsname utsname;
 
         /* Really, this never fails - look at the man-page. */
-        uname (&utsname);
+        uname(&utsname);
         if ((ctl->arch = strdup(utsname.machine)) == NULL) {
             vah_error(ctl, 0, _("could not allocate memory"));
             goto cleanup;
@@ -692,7 +692,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     rc = 0;
 
   cleanup:
-    xmlFreeDoc (xml);
+    xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
 
     return rc;

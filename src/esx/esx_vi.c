@@ -2440,7 +2440,7 @@ esxVI_LookupNumberOfDomainsByPowerState(esxVI_Context *ctx,
                 }
 
                 if ((!inverse && powerState_ == powerState) ||
-                    ( inverse && powerState_ != powerState)) {
+                    (inverse && powerState_ != powerState)) {
                     count++;
                 }
             } else {

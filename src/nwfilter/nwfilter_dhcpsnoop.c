@@ -1640,7 +1640,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     }
 
     /* check that all tools are available for applying the filters (late) */
-    if ( !techdriver->canApplyBasicRules()) {
+    if (!techdriver->canApplyBasicRules()) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("IP parameter must be provided since "
                          "snooping the IP address does not work "

@@ -659,7 +659,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     memset(&d_config, 0, sizeof(d_config));
 
-    if (libxlBuildDomainConfig(driver, vm->def, &d_config) < 0 )
+    if (libxlBuildDomainConfig(driver, vm->def, &d_config) < 0)
         return -1;
 
     if (libxlFreeMem(priv, &d_config) < 0) {
@@ -3562,7 +3562,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
 
     if (nparams)
         *nparams = 0;
-    switch(sched_id) {
+    switch (sched_id) {
     case XEN_SCHEDULER_SEDF:
         ret = strdup("sedf");
         break;

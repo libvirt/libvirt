@@ -492,7 +492,7 @@ PowerPCDecode(virCPUDefPtr cpu,
         if (ret < 0) {
             VIR_FREE(cpuCandidate);
             goto out;
-        }else if(ret == 1) {
+        } else if (ret == 1) {
             cpuCandidate->model = cpu_model;
             cpuCandidate->vendor = cpu_vendor;
             virCPUDefFree(cpuModel);
@@ -530,7 +530,7 @@ out:
 static uint32_t ppc_mfpvr(void)
 {
     uint32_t pvr;
-    asm ("mfpvr %0"
+    asm("mfpvr %0"
         : "=r"(pvr));
     return pvr;
 }

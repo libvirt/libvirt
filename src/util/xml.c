@@ -782,11 +782,11 @@ error:
 
 const char *virXMLPickShellSafeComment(const char *str1, const char *str2)
 {
-    if(str1 && !strpbrk(str1, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
-       !strstr(str1, "--"))
+    if (str1 && !strpbrk(str1, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
+        !strstr(str1, "--"))
         return str1;
-    if(str2 && !strpbrk(str2, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
-       !strstr(str2, "--"))
+    if (str2 && !strpbrk(str2, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
+        !strstr(str2, "--"))
         return str2;
     return NULL;
 }

@@ -1319,7 +1319,7 @@ void virReportSystemErrorFull(int domcode,
         size_t len = strlen(errnoDetail);
         if (0 <= n && n + 2 + len < sizeof(msgDetailBuf)) {
           char *p = msgDetailBuf + n;
-          stpcpy (stpcpy (p, ": "), errnoDetail);
+          stpcpy(stpcpy(p, ": "), errnoDetail);
           msgDetail = msgDetailBuf;
         }
     }

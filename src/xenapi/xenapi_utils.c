@@ -306,7 +306,7 @@ getCpuBitMapfromString(char *mask, unsigned char *cpumap, int maplen)
         if (virStrToLong_i(num, NULL, 10, &pos) < 0)
             return;
         if (pos < 0 || pos > max_bits - 1)
-            VIR_WARN ("number in str %d exceeds cpumap's max bits %d", pos, max_bits);
+            VIR_WARN("number in str %d exceeds cpumap's max bits %d", pos, max_bits);
         else
             (cpumap)[pos / 8] |= (1 << (pos % 8));
         num = strtok_r(NULL, ",", &bp);
@@ -342,7 +342,7 @@ mapPowerState(enum xen_vm_power_state state)
 
 /* allocate a flexible array and fill values(key,val) */
 int
-allocStringMap (xen_string_string_map **strings, char *key, char *val)
+allocStringMap(xen_string_string_map **strings, char *key, char *val)
 {
     int sz = ((*strings) == NULL) ? 0 : (*strings)->size;
     sz++;
@@ -383,8 +383,8 @@ xenapiSessionErrorHandle(virConnectPtr conn, virErrorNumber errNum,
 
 /* creates network intereface for VM */
 static int
-createVifNetwork (virConnectPtr conn, xen_vm vm, int device,
-                  char *bridge, char *mac)
+createVifNetwork(virConnectPtr conn, xen_vm vm, int device,
+                 char *bridge, char *mac)
 {
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
     xen_vm xvm = NULL;
@@ -402,7 +402,7 @@ createVifNetwork (virConnectPtr conn, xen_vm vm, int device,
     xen_network_record *net_rec = NULL;
     int cnt = 0;
     if (xen_network_get_all(session, &net_set)) {
-        for(cnt = 0; cnt < net_set->size; cnt++) {
+        for (cnt = 0; cnt < net_set->size; cnt++) {
             if (xen_network_get_record(session, &net_rec, net_set->contents[cnt])) {
                 if (STREQ(net_rec->bridge, bridge)) {
                     break;
@@ -446,8 +446,8 @@ createVifNetwork (virConnectPtr conn, xen_vm vm, int device,
 
 /* Create a VM record from the XML description */
 int
-createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
-                       xen_vm_record **record, xen_vm *vm)
+createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
+                      xen_vm_record **record, xen_vm *vm)
 {
     char uuidStr[VIR_UUID_STRING_BUFLEN];
     xen_string_string_map *strings = NULL;

@@ -1005,7 +1005,7 @@ static int udevProcessStorage(struct udev_device *device,
     const char* devnode;
 
     devnode = udev_device_get_devnode(device);
-    if(!devnode) {
+    if (!devnode) {
         VIR_DEBUG("No devnode for '%s'", udev_device_get_devpath(device));
         goto out;
     }

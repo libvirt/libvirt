@@ -355,7 +355,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     int ret = 0;
 
     /* Check incoming */
-    if ( !cbList ) {
+    if (!cbList) {
         return -1;
     }
 

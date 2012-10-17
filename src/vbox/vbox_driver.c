@@ -151,7 +151,7 @@ static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
 
     if (conn->uri == NULL ||
         conn->uri->scheme == NULL ||
-        STRNEQ (conn->uri->scheme, "vbox") ||
+        STRNEQ(conn->uri->scheme, "vbox") ||
         conn->uri->server != NULL)
         return VIR_DRV_OPEN_DECLINED;
 
@@ -162,14 +162,14 @@ static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
     }
 
     if (uid != 0) {
-        if (STRNEQ (conn->uri->path, "/session")) {
+        if (STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown driver path '%s' specified (try vbox:///session)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
     } else { /* root */
-        if (STRNEQ (conn->uri->path, "/system") &&
-            STRNEQ (conn->uri->path, "/session")) {
+        if (STRNEQ(conn->uri->path, "/system") &&
+            STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown driver path '%s' specified (try vbox:///system)"), conn->uri->path);
             return VIR_DRV_OPEN_ERROR;

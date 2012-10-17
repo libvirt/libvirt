@@ -164,8 +164,8 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
         VIR_FREE(tmp);
     }
 
-    p = virConfGetValue (conf, "group");
-    CHECK_TYPE ("group", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "group");
+    CHECK_TYPE("group", VIR_CONF_STRING);
     if (p) {
         if (!(tmp = strdup(p->str))) {
             virReportOOMError();

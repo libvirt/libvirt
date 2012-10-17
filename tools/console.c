@@ -83,7 +83,7 @@ static void do_signal(int sig ATTRIBUTE_UNUSED) {
 
 # ifndef HAVE_CFMAKERAW
 static void
-cfmakeraw (struct termios *attr)
+cfmakeraw(struct termios *attr)
 {
     attr->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
                          | INLCR | IGNCR | ICRNL | IXON);

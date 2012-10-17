@@ -372,7 +372,7 @@ libxlMakeDomCreateInfo(virDomainDefPtr def, libxl_domain_create_info *c_info)
     }
 
     virUUIDFormat(def->uuid, uuidstr);
-    if (libxl_uuid_from_string(&c_info->uuid, uuidstr) ) {
+    if (libxl_uuid_from_string(&c_info->uuid, uuidstr)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxenlight failed to parse UUID '%s'"), uuidstr);
         goto error;
@@ -920,7 +920,7 @@ libxlMakeCapabilities(libxl_ctx *ctx)
     const libxl_version_info *ver_info;
     struct utsname utsname;
 
-    regcomp (&xen_cap_rec, xen_cap_re, REG_EXTENDED);
+    regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

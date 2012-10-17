@@ -898,7 +898,7 @@ iptablesRenameTmpRootChain(virBufferPtr buf,
     };
 
     PRINT_IPT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
-    PRINT_IPT_ROOT_CHAIN(   chain,    chainPrefix, ifname);
+    PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
     virBufferAsprintf(buf,
                       "$IPT -E %s %s" CMD_SEPARATOR,
@@ -2141,14 +2141,14 @@ ebtablesCreateRuleInstance(char chainPrefix,
         INST_ITEM(stpHdrFilter, dataFlags, "--stp-flags")
         INST_ITEM_RANGE(stpHdrFilter, dataRootPri, dataRootPriHi,
                         "--stp-root-pri");
-        INST_ITEM_MASK( stpHdrFilter, dataRootAddr, dataRootAddrMask,
+        INST_ITEM_MASK(stpHdrFilter, dataRootAddr, dataRootAddrMask,
                        "--stp-root-addr");
         INST_ITEM_RANGE(stpHdrFilter, dataRootCost, dataRootCostHi,
                         "--stp-root-cost");
         INST_ITEM_RANGE(stpHdrFilter, dataSndrPrio, dataSndrPrioHi,
                         "--stp-sender-prio");
-        INST_ITEM_MASK( stpHdrFilter, dataSndrAddr, dataSndrAddrMask,
-                        "--stp-sender-addr");
+        INST_ITEM_MASK(stpHdrFilter, dataSndrAddr, dataSndrAddrMask,
+                       "--stp-sender-addr");
         INST_ITEM_RANGE(stpHdrFilter, dataPort, dataPortHi, "--stp-port");
         INST_ITEM_RANGE(stpHdrFilter, dataAge, dataAgeHi, "--stp-msg-age");
         INST_ITEM_RANGE(stpHdrFilter, dataMaxAge, dataMaxAgeHi,
@@ -3093,10 +3093,10 @@ ebtablesRenameTmpSubChain(virBufferPtr buf,
 
     if (protocol) {
         PRINT_CHAIN(tmpchain, tmpChainPrefix, ifname, protocol);
-        PRINT_CHAIN(   chain,    chainPrefix, ifname, protocol);
+        PRINT_CHAIN(chain, chainPrefix, ifname, protocol);
     } else {
         PRINT_ROOT_CHAIN(tmpchain, tmpChainPrefix, ifname);
-        PRINT_ROOT_CHAIN(   chain,    chainPrefix, ifname);
+        PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
     }
 
     virBufferAsprintf(buf,
@@ -3571,7 +3571,7 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
     time_t now = time(NULL);
 
     if (isIPv6 &&
-        (now - lastReportIPv6) > BRIDGE_NF_CALL_ALERT_INTERVAL ) {
+        (now - lastReportIPv6) > BRIDGE_NF_CALL_ALERT_INTERVAL) {
         pathname = PROC_BRIDGE_NF_CALL_IP6TABLES;
     } else if (now - lastReport > BRIDGE_NF_CALL_ALERT_INTERVAL) {
         pathname = PROC_BRIDGE_NF_CALL_IPTABLES;
@@ -3686,7 +3686,7 @@ ebiptablesApplyNewRules(const char *ifname,
 
     /* scan the rules to see which chains need to be created */
     for (i = 0; i < nruleInstances; i++) {
-        sa_assert (inst);
+        sa_assert(inst);
         if (inst[i]->ruleType == RT_EBTABLES) {
             const char *name = inst[i]->neededProtocolChain;
             if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP) {
@@ -3743,7 +3743,7 @@ ebiptablesApplyNewRules(const char *ifname,
        commands for creating and connecting ebtables chains */
     j = 0;
     for (i = 0; i < nruleInstances; i++) {
-        sa_assert (inst);
+        sa_assert(inst);
         switch (inst[i]->ruleType) {
         case RT_EBTABLES:
             while (j < nEbtChains &&
@@ -3801,7 +3801,7 @@ ebiptablesApplyNewRules(const char *ifname,
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
         for (i = 0; i < nruleInstances; i++) {
-            sa_assert (inst);
+            sa_assert(inst);
             if (inst[i]->ruleType == RT_IPTABLES)
                 iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
@@ -4079,7 +4079,7 @@ ebiptablesAllTeardown(const char *ifname)
         NWFILTER_SET_IPTABLES_SHELLVAR(&buf);
 
         iptablesUnlinkRootChains(&buf, ifname);
-        iptablesClearVirtInPost (&buf, ifname);
+        iptablesClearVirtInPost(&buf, ifname);
         iptablesRemoveRootChains(&buf, ifname);
     }
 
@@ -4087,7 +4087,7 @@ ebiptablesAllTeardown(const char *ifname)
         NWFILTER_SET_IP6TABLES_SHELLVAR(&buf);
 
         iptablesUnlinkRootChains(&buf, ifname);
-        iptablesClearVirtInPost (&buf, ifname);
+        iptablesClearVirtInPost(&buf, ifname);
         iptablesRemoveRootChains(&buf, ifname);
     }
 

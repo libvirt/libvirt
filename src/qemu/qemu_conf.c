@@ -134,12 +134,12 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
      */
-    if (access (filename, R_OK) == -1) {
+    if (access(filename, R_OK) == -1) {
         VIR_INFO("Could not read qemu config file %s", filename);
         return 0;
     }
 
-    conf = virConfReadFile (filename, 0);
+    conf = virConfReadFile(filename, 0);
     if (!conf) {
         return -1;
     }
@@ -153,20 +153,20 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         return -1;                                                      \
     }
 
-    p = virConfGetValue (conf, "vnc_auto_unix_socket");
-    CHECK_TYPE ("vnc_auto_unix_socket", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "vnc_auto_unix_socket");
+    CHECK_TYPE("vnc_auto_unix_socket", VIR_CONF_LONG);
     if (p) driver->vncAutoUnixSocket = p->l;
 
-    p = virConfGetValue (conf, "vnc_tls");
-    CHECK_TYPE ("vnc_tls", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "vnc_tls");
+    CHECK_TYPE("vnc_tls", VIR_CONF_LONG);
     if (p) driver->vncTLS = p->l;
 
-    p = virConfGetValue (conf, "vnc_tls_x509_verify");
-    CHECK_TYPE ("vnc_tls_x509_verify", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "vnc_tls_x509_verify");
+    CHECK_TYPE("vnc_tls_x509_verify", VIR_CONF_LONG);
     if (p) driver->vncTLSx509verify = p->l;
 
-    p = virConfGetValue (conf, "vnc_tls_x509_cert_dir");
-    CHECK_TYPE ("vnc_tls_x509_cert_dir", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "vnc_tls_x509_cert_dir");
+    CHECK_TYPE("vnc_tls_x509_cert_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->vncTLSx509certdir);
         if (!(driver->vncTLSx509certdir = strdup(p->str))) {
@@ -176,8 +176,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "vnc_listen");
-    CHECK_TYPE ("vnc_listen", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "vnc_listen");
+    CHECK_TYPE("vnc_listen", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->vncListen);
         if (!(driver->vncListen = strdup(p->str))) {
@@ -187,8 +187,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "vnc_password");
-    CHECK_TYPE ("vnc_password", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "vnc_password");
+    CHECK_TYPE("vnc_password", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->vncPassword);
         if (!(driver->vncPassword = strdup(p->str))) {
@@ -198,7 +198,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "security_driver");
+    p = virConfGetValue(conf, "security_driver");
     if (p && p->type == VIR_CONF_LIST) {
         size_t len;
         virConfValuePtr pp;
@@ -228,7 +228,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
         driver->securityDriverNames[len] = NULL;
     } else {
-        CHECK_TYPE ("security_driver", VIR_CONF_STRING);
+        CHECK_TYPE("security_driver", VIR_CONF_STRING);
         if (p && p->str) {
             if (VIR_ALLOC_N(driver->securityDriverNames, 2) < 0 ||
                 !(driver->securityDriverNames[0] = strdup(p->str))) {
@@ -240,21 +240,21 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "security_default_confined");
-    CHECK_TYPE ("security_default_confined", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "security_default_confined");
+    CHECK_TYPE("security_default_confined", VIR_CONF_LONG);
     if (p) driver->securityDefaultConfined = p->l;
 
-    p = virConfGetValue (conf, "security_require_confined");
-    CHECK_TYPE ("security_require_confined", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "security_require_confined");
+    CHECK_TYPE("security_require_confined", VIR_CONF_LONG);
     if (p) driver->securityRequireConfined = p->l;
 
 
-    p = virConfGetValue (conf, "vnc_sasl");
-    CHECK_TYPE ("vnc_sasl", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "vnc_sasl");
+    CHECK_TYPE("vnc_sasl", VIR_CONF_LONG);
     if (p) driver->vncSASL = p->l;
 
-    p = virConfGetValue (conf, "vnc_sasl_dir");
-    CHECK_TYPE ("vnc_sasl_dir", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "vnc_sasl_dir");
+    CHECK_TYPE("vnc_sasl_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->vncSASLdir);
         if (!(driver->vncSASLdir = strdup(p->str))) {
@@ -264,12 +264,12 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "spice_tls");
-    CHECK_TYPE ("spice_tls", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "spice_tls");
+    CHECK_TYPE("spice_tls", VIR_CONF_LONG);
     if (p) driver->spiceTLS = p->l;
 
-    p = virConfGetValue (conf, "spice_tls_x509_cert_dir");
-    CHECK_TYPE ("spice_tls_x509_cert_dir", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "spice_tls_x509_cert_dir");
+    CHECK_TYPE("spice_tls_x509_cert_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->spiceTLSx509certdir);
         if (!(driver->spiceTLSx509certdir = strdup(p->str))) {
@@ -279,8 +279,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "spice_listen");
-    CHECK_TYPE ("spice_listen", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "spice_listen");
+    CHECK_TYPE("spice_listen", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->spiceListen);
         if (!(driver->spiceListen = strdup(p->str))) {
@@ -290,8 +290,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "spice_password");
-    CHECK_TYPE ("spice_password", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "spice_password");
+    CHECK_TYPE("spice_password", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->spicePassword);
         if (!(driver->spicePassword = strdup(p->str))) {
@@ -301,8 +301,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "remote_display_port_min");
-    CHECK_TYPE ("remote_display_port_min", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "remote_display_port_min");
+    CHECK_TYPE("remote_display_port_min", VIR_CONF_LONG);
     if (p) {
         if (p->l < QEMU_REMOTE_PORT_MIN) {
             /* if the port is too low, we can't get the display name
@@ -317,8 +317,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         driver->remotePortMin = p->l;
     }
 
-    p = virConfGetValue (conf, "remote_display_port_max");
-    CHECK_TYPE ("remote_display_port_max", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "remote_display_port_max");
+    CHECK_TYPE("remote_display_port_max", VIR_CONF_LONG);
     if (p) {
         if (p->l > QEMU_REMOTE_PORT_MAX ||
             p->l < driver->remotePortMin) {
@@ -342,8 +342,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         return -1;
     }
 
-    p = virConfGetValue (conf, "user");
-    CHECK_TYPE ("user", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "user");
+    CHECK_TYPE("user", VIR_CONF_STRING);
     if (!(user = strdup(p && p->str ? p->str : QEMU_USER))) {
         virReportOOMError();
         virConfFree(conf);
@@ -357,8 +357,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     VIR_FREE(user);
 
 
-    p = virConfGetValue (conf, "group");
-    CHECK_TYPE ("group", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "group");
+    CHECK_TYPE("group", VIR_CONF_STRING);
     if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP))) {
         virReportOOMError();
         virConfFree(conf);
@@ -372,13 +372,13 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     VIR_FREE(group);
 
 
-    p = virConfGetValue (conf, "dynamic_ownership");
-    CHECK_TYPE ("dynamic_ownership", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "dynamic_ownership");
+    CHECK_TYPE("dynamic_ownership", VIR_CONF_LONG);
     if (p) driver->dynamicOwnership = p->l;
 
 
-    p = virConfGetValue (conf, "cgroup_controllers");
-    CHECK_TYPE ("cgroup_controllers", VIR_CONF_LIST);
+    p = virConfGetValue(conf, "cgroup_controllers");
+    CHECK_TYPE("cgroup_controllers", VIR_CONF_LIST);
     if (p) {
         virConfValuePtr pp;
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
@@ -412,8 +412,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "cgroup_device_acl");
-    CHECK_TYPE ("cgroup_device_acl", VIR_CONF_LIST);
+    p = virConfGetValue(conf, "cgroup_device_acl");
+    CHECK_TYPE("cgroup_device_acl", VIR_CONF_LIST);
     if (p) {
         int len = 0;
         virConfValuePtr pp;
@@ -430,7 +430,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
                 virConfFree(conf);
                 return -1;
             }
-            driver->cgroupDeviceACL[i] = strdup (pp->str);
+            driver->cgroupDeviceACL[i] = strdup(pp->str);
             if (driver->cgroupDeviceACL[i] == NULL) {
                 virReportOOMError();
                 virConfFree(conf);
@@ -441,8 +441,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         driver->cgroupDeviceACL[i] = NULL;
     }
 
-    p = virConfGetValue (conf, "save_image_format");
-    CHECK_TYPE ("save_image_format", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "save_image_format");
+    CHECK_TYPE("save_image_format", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->saveImageFormat);
         if (!(driver->saveImageFormat = strdup(p->str))) {
@@ -452,8 +452,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "dump_image_format");
-    CHECK_TYPE ("dump_image_format", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "dump_image_format");
+    CHECK_TYPE("dump_image_format", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->dumpImageFormat);
         if (!(driver->dumpImageFormat = strdup(p->str))) {
@@ -463,8 +463,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "auto_dump_path");
-    CHECK_TYPE ("auto_dump_path", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "auto_dump_path");
+    CHECK_TYPE("auto_dump_path", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->autoDumpPath);
         if (!(driver->autoDumpPath = strdup(p->str))) {
@@ -474,16 +474,16 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "auto_dump_bypass_cache");
-    CHECK_TYPE ("auto_dump_bypass_cache", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "auto_dump_bypass_cache");
+    CHECK_TYPE("auto_dump_bypass_cache", VIR_CONF_LONG);
     if (p) driver->autoDumpBypassCache = true;
 
-    p = virConfGetValue (conf, "auto_start_bypass_cache");
-    CHECK_TYPE ("auto_start_bypass_cache", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "auto_start_bypass_cache");
+    CHECK_TYPE("auto_start_bypass_cache", VIR_CONF_LONG);
     if (p) driver->autoStartBypassCache = true;
 
-    p = virConfGetValue (conf, "hugetlbfs_mount");
-    CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "hugetlbfs_mount");
+    CHECK_TYPE("hugetlbfs_mount", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->hugetlbfs_mount);
         if (!(driver->hugetlbfs_mount = strdup(p->str))) {
@@ -493,8 +493,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "mac_filter");
-    CHECK_TYPE ("mac_filter", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "mac_filter");
+    CHECK_TYPE("mac_filter", VIR_CONF_LONG);
     if (p && p->l) {
         driver->macFilter = p->l;
         if (!(driver->ebtables = ebtablesContextNew("qemu"))) {
@@ -515,24 +515,24 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
-    p = virConfGetValue (conf, "relaxed_acs_check");
-    CHECK_TYPE ("relaxed_acs_check", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "relaxed_acs_check");
+    CHECK_TYPE("relaxed_acs_check", VIR_CONF_LONG);
     if (p) driver->relaxedACS = p->l;
 
-    p = virConfGetValue (conf, "vnc_allow_host_audio");
-    CHECK_TYPE ("vnc_allow_host_audio", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "vnc_allow_host_audio");
+    CHECK_TYPE("vnc_allow_host_audio", VIR_CONF_LONG);
     if (p) driver->vncAllowHostAudio = p->l;
 
-    p = virConfGetValue (conf, "clear_emulator_capabilities");
-    CHECK_TYPE ("clear_emulator_capabilities", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "clear_emulator_capabilities");
+    CHECK_TYPE("clear_emulator_capabilities", VIR_CONF_LONG);
     if (p) driver->clearEmulatorCapabilities = p->l;
 
-    p = virConfGetValue (conf, "allow_disk_format_probing");
-    CHECK_TYPE ("allow_disk_format_probing", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "allow_disk_format_probing");
+    CHECK_TYPE("allow_disk_format_probing", VIR_CONF_LONG);
     if (p) driver->allowDiskFormatProbing = p->l;
 
-    p = virConfGetValue (conf, "set_process_name");
-    CHECK_TYPE ("set_process_name", VIR_CONF_LONG);
+    p = virConfGetValue(conf, "set_process_name");
+    CHECK_TYPE("set_process_name", VIR_CONF_LONG);
     if (p) driver->setProcessName = p->l;
 
     p = virConfGetValue(conf, "max_processes");
@@ -543,8 +543,8 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE("max_files", VIR_CONF_LONG);
     if (p) driver->maxFiles = p->l;
 
-    p = virConfGetValue (conf, "lock_manager");
-    CHECK_TYPE ("lock_manager", VIR_CONF_STRING);
+    p = virConfGetValue(conf, "lock_manager");
+    CHECK_TYPE("lock_manager", VIR_CONF_STRING);
     if (p && p->str) {
         char *lockConf;
         virLockManagerPluginUnref(driver->lockManager);
@@ -575,7 +575,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE("seccomp_sandbox", VIR_CONF_LONG);
     if (p) driver->seccompSandbox = p->l;
 
-    virConfFree (conf);
+    virConfFree(conf);
     return 0;
 }
 

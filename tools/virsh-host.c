@@ -148,7 +148,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
 
-    if ( (cell_given = vshCommandOptInt(cmd, "cellno", &cell)) < 0) {
+    if ((cell_given = vshCommandOptInt(cmd, "cellno", &cell)) < 0) {
         vshError(ctl, "%s", _("cell number has to be a number"));
         goto cleanup;
     }
@@ -808,7 +808,7 @@ cmdHostname(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    vshPrint (ctl, "%s\n", hostname);
+    vshPrint(ctl, "%s\n", hostname);
     VIR_FREE(hostname);
 
     return true;

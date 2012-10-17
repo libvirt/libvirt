@@ -1565,7 +1565,7 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 
 no_memory:
     if (ret) {
-        for ( ; i >= 0; --i) {
+        for (; i >= 0; --i) {
             if (ret[i]) {
                 virBitmapFree(ret[i]->cpumask);
                 VIR_FREE(ret[i]);
@@ -1596,7 +1596,7 @@ virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
     if (!def || !nvcpupin)
         return;
 
-    for(i = 0; i < nvcpupin; i++) {
+    for (i = 0; i < nvcpupin; i++) {
         virDomainVcpuPinDefFree(def[i]);
     }
 
@@ -3305,7 +3305,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
 
     /* Checking missing model information */
     if (def->nseclabels > 1) {
-        for(; n; n--) {
+        for (; n; n--) {
             if (def->seclabels[n - 1]->model == NULL) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing security model "
@@ -4898,14 +4898,14 @@ virDomainNetDefParseXML(virCapsPtr caps,
             } else if (!script &&
                        xmlStrEqual(cur->name, BAD_CAST "script")) {
                 script = virXMLPropString(cur, "path");
-            } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
+            } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
                 model = virXMLPropString(cur, "type");
-            } else if (xmlStrEqual (cur->name, BAD_CAST "driver")) {
+            } else if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
                 backend = virXMLPropString(cur, "name");
                 txmode = virXMLPropString(cur, "txmode");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
-            } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
+            } else if (xmlStrEqual(cur->name, BAD_CAST "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("Invalid specification of multiple <filterref>s "
@@ -6929,29 +6929,29 @@ virDomainWatchdogDefParseXML(const xmlNodePtr node,
     char *action = NULL;
     virDomainWatchdogDefPtr def;
 
-    if (VIR_ALLOC (def) < 0) {
+    if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         return NULL;
     }
 
-    model = virXMLPropString (node, "model");
+    model = virXMLPropString(node, "model");
     if (model == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("watchdog must contain model name"));
         goto error;
     }
-    def->model = virDomainWatchdogModelTypeFromString (model);
+    def->model = virDomainWatchdogModelTypeFromString(model);
     if (def->model < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown watchdog model '%s'"), model);
         goto error;
     }
 
-    action = virXMLPropString (node, "action");
+    action = virXMLPropString(node, "action");
     if (action == NULL)
         def->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
     else {
-        def->action = virDomainWatchdogActionTypeFromString (action);
+        def->action = virDomainWatchdogActionTypeFromString(action);
         if (def->action < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown watchdog action '%s'"), action);
@@ -6963,13 +6963,13 @@ virDomainWatchdogDefParseXML(const xmlNodePtr node,
         goto error;
 
 cleanup:
-    VIR_FREE (action);
-    VIR_FREE (model);
+    VIR_FREE(action);
+    VIR_FREE(model);
 
     return def;
 
 error:
-    virDomainWatchdogDefFree (def);
+    virDomainWatchdogDefFree(def);
     def = NULL;
     goto cleanup;
 }
@@ -12952,8 +12952,8 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
                            virDomainWatchdogDefPtr def,
                            unsigned int flags)
 {
-    const char *model = virDomainWatchdogModelTypeToString (def->model);
-    const char *action = virDomainWatchdogActionTypeToString (def->action);
+    const char *model = virDomainWatchdogModelTypeToString(def->model);
+    const char *action = virDomainWatchdogActionTypeToString(def->action);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -15371,7 +15371,7 @@ virDomainDeviceDefCopy(virCapsPtr caps,
     char *xmlStr = NULL;
     int rc = -1;
 
-    switch(src->type) {
+    switch (src->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         rc = virDomainDiskDefFormat(&buf, src->data.disk, flags);
         break;

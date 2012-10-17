@@ -309,7 +309,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
  * Caller must hold the lock on 'conn->privateData' before
  * calling this function
  */
-int xenXMConfigCacheRefresh (virConnectPtr conn) {
+int xenXMConfigCacheRefresh(virConnectPtr conn) {
     xenUnifiedPrivatePtr priv = conn->privateData;
     DIR *dh;
     struct dirent *ent;
@@ -411,9 +411,9 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
  * every few seconds
  */
 virDrvOpenStatus
-xenXMOpen (virConnectPtr conn,
-           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           unsigned int flags)
+xenXMOpen(virConnectPtr conn,
+          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+          unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
 
@@ -893,7 +893,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
         goto cleanup;
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domname)))
@@ -949,7 +949,7 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
         goto cleanup;
 
     if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID, (const void *)uuid)))
@@ -1049,7 +1049,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 
     xenUnifiedLock(priv);
 
-    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0) {
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0) {
         xenUnifiedUnlock(priv);
         return NULL;
     }
@@ -1261,7 +1261,7 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
         goto cleanup;
 
     if (maxnames > virHashSize(priv->configCache))
@@ -1306,7 +1306,7 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
         goto cleanup;
 
     ret = virHashSize(priv->nameConfigMap);
@@ -1527,11 +1527,11 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 }
 
 int
-xenXMDomainBlockPeek (virDomainPtr dom ATTRIBUTE_UNUSED,
-                      const char *path ATTRIBUTE_UNUSED,
-                      unsigned long long offset ATTRIBUTE_UNUSED,
-                      size_t size ATTRIBUTE_UNUSED,
-                      void *buffer ATTRIBUTE_UNUSED)
+xenXMDomainBlockPeek(virDomainPtr dom ATTRIBUTE_UNUSED,
+                     const char *path ATTRIBUTE_UNUSED,
+                     unsigned long long offset ATTRIBUTE_UNUSED,
+                     size_t size ATTRIBUTE_UNUSED,
+                     void *buffer ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("block peeking not implemented"));

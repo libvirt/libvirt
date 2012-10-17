@@ -1794,7 +1794,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
          * URI when passing it to the qemu monitor, so bad
          * characters in hostname part don't matter.
          */
-        if (!STRPREFIX (uri_in, "tcp:")) {
+        if (!STRPREFIX(uri_in, "tcp:")) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("only tcp URIs are supported for KVM/QEMU"
                              " migrations"));
@@ -1802,7 +1802,7 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
         }
 
         /* Get the port number. */
-        p = strrchr (uri_in, ':');
+        p = strrchr(uri_in, ':');
         if (p == strchr(uri_in, ':')) {
             /* Generate a port */
             this_port = QEMUD_MIGRATION_FIRST_PORT + port++;
@@ -1817,8 +1817,8 @@ qemuMigrationPrepareDirect(struct qemud_driver *driver,
 
         } else {
             p++; /* definitely has a ':' in it, see above */
-            this_port = virParseNumber (&p);
-            if (this_port == -1 || p-uri_in != strlen (uri_in)) {
+            this_port = virParseNumber(&p);
+            if (this_port == -1 || p-uri_in != strlen(uri_in)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                "%s", _("URI ended with incorrect ':port'"));
                 goto cleanup;
@@ -3338,7 +3338,7 @@ qemuMigrationFinish(struct qemud_driver *driver,
             }
         }
 
-        dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
+        dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
 
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,

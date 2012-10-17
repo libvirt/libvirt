@@ -216,12 +216,12 @@ virtTestLoadFile(const char *file, char **buf)
     int len, tmplen, buflen;
 
     if (!fp) {
-        fprintf (stderr, "%s: failed to open: %s\n", file, strerror(errno));
+        fprintf(stderr, "%s: failed to open: %s\n", file, strerror(errno));
         return -1;
     }
 
     if (fstat(fileno(fp), &st) < 0) {
-        fprintf (stderr, "%s: failed to fstat: %s\n", file, strerror(errno));
+        fprintf(stderr, "%s: failed to fstat: %s\n", file, strerror(errno));
         VIR_FORCE_FCLOSE(fp);
         return -1;
     }
@@ -229,7 +229,7 @@ virtTestLoadFile(const char *file, char **buf)
     tmplen = buflen = st.st_size + 1;
 
     if (VIR_ALLOC_N(*buf, buflen) < 0) {
-        fprintf (stderr, "%s: larger than available memory (> %d)\n", file, buflen);
+        fprintf(stderr, "%s: larger than available memory (> %d)\n", file, buflen);
         VIR_FORCE_FCLOSE(fp);
         return -1;
     }
@@ -253,7 +253,7 @@ virtTestLoadFile(const char *file, char **buf)
             tmplen -= len;
         }
         if (ferror(fp)) {
-            fprintf (stderr, "%s: read failed: %s\n", file, strerror(errno));
+            fprintf(stderr, "%s: read failed: %s\n", file, strerror(errno));
             VIR_FORCE_FCLOSE(fp);
             VIR_FREE(*buf);
             return -1;
@@ -282,7 +282,7 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
         goto cleanup;
 
-    open_max = sysconf (_SC_OPEN_MAX);
+    open_max = sysconf(_SC_OPEN_MAX);
     for (i = 0; i < open_max; i++) {
         if (i != stdinfd &&
             i != pipefd) {

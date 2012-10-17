@@ -152,7 +152,7 @@ netcf_error:
     {
         ncf_close(driverState->netcf);
     }
-    virMutexDestroy (&driverState->lock);
+    virMutexDestroy(&driverState->lock);
 mutex_error:
     VIR_FREE(driverState);
 alloc_error:

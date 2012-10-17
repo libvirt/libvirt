@@ -1209,7 +1209,7 @@ static int xenFormatXMDisk(virConfValuePtr list,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
 
-    if(disk->src) {
+    if (disk->src) {
         if (disk->format) {
             const char *type;
 

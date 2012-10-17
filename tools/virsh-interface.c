@@ -774,7 +774,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     /* Set stp and delay attributes in <bridge> according to the
      * commandline options.
      */
-    if (!xmlSetProp(br_node, BAD_CAST "stp", BAD_CAST (stp ? "on" : "off"))) {
+    if (!xmlSetProp(br_node, BAD_CAST "stp", BAD_CAST(stp ? "on" : "off"))) {
         vshError(ctl, "%s", _("Failed to set stp attribute in xml document"));
         goto cleanup;
     }

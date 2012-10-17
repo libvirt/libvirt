@@ -147,7 +147,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     }
 
     while (*wildcards) {
-        int rv = fnmatch (*wildcards, identity, 0);
+        int rv = fnmatch(*wildcards, identity, 0);
         if (rv == 0) {
             ret = 1;
             goto cleanup; /* Successful match */

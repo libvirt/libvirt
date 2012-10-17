@@ -132,7 +132,7 @@ char *qemuMonitorEscapeArg(const char *in)
     */
 
     for (i = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
+        switch (in[i]) {
         case '\r':
         case '\n':
         case '"':
@@ -149,7 +149,7 @@ char *qemuMonitorEscapeArg(const char *in)
         return NULL;
 
     for (i = j = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
+        switch (in[i]) {
         case '\r':
             out[j++] = '\\';
             out[j++] = 'r';
@@ -187,7 +187,7 @@ char *qemuMonitorUnescapeArg(const char *in)
         next = in[i];
         if (in[i] == '\\') {
             ++i;
-            switch(in[i]) {
+            switch (in[i]) {
             case 'r':
                 next = '\r';
                 break;

@@ -635,7 +635,7 @@ qemudStartup(int privileged) {
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
+        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
 
         if (virAsprintf(&qemu_driver->stateDir,
@@ -1085,15 +1085,15 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         }
 
         if (qemu_driver->privileged) {
-            if (STRNEQ (conn->uri->path, "/system") &&
-                STRNEQ (conn->uri->path, "/session")) {
+            if (STRNEQ(conn->uri->path, "/system") &&
+                STRNEQ(conn->uri->path, "/session")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected QEMU URI path '%s', try qemu:///system"),
                                conn->uri->path);
                 return VIR_DRV_OPEN_ERROR;
             }
         } else {
-            if (STRNEQ (conn->uri->path, "/session")) {
+            if (STRNEQ(conn->uri->path, "/session")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected QEMU URI path '%s', try qemu:///session"),
                                conn->uri->path);
@@ -1121,7 +1121,7 @@ static int qemudClose(virConnectPtr conn) {
 
 /* Which features are supported by this driver? */
 static int
-qemudSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+qemudSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
     case VIR_DRV_FEATURE_MIGRATION_V2:
@@ -8704,9 +8704,9 @@ cleanup:
 
 #ifdef __linux__
 static int
-qemudDomainInterfaceStats (virDomainPtr dom,
-                           const char *path,
-                           struct _virDomainInterfaceStats *stats)
+qemudDomainInterfaceStats(virDomainPtr dom,
+                          const char *path,
+                          struct _virDomainInterfaceStats *stats)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -8734,7 +8734,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0 ; i < vm->def->nnets ; i++) {
         if (vm->def->nets[i]->ifname &&
-            STREQ (vm->def->nets[i]->ifname, path)) {
+            STREQ(vm->def->nets[i]->ifname, path)) {
             ret = 0;
             break;
         }
@@ -8753,9 +8753,9 @@ cleanup:
 }
 #else
 static int
-qemudDomainInterfaceStats (virDomainPtr dom,
-                           const char *path ATTRIBUTE_UNUSED,
-                           struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+qemudDomainInterfaceStats(virDomainPtr dom,
+                          const char *path ATTRIBUTE_UNUSED,
+                          struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));
@@ -8991,7 +8991,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
     }
 
     for (i = 0; i < *nparams && i < QEMU_NB_BANDWIDTH_PARAM; i++) {
-        switch(i) {
+        switch (i) {
         case 0: /* inbound.average */
             if (virTypedParameterAssign(&params[i],
                                         VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
@@ -9060,10 +9060,10 @@ cleanup:
 }
 
 static int
-qemudDomainMemoryStats (virDomainPtr dom,
-                        struct _virDomainMemoryStat *stats,
-                        unsigned int nr_stats,
-                        unsigned int flags)
+qemudDomainMemoryStats(virDomainPtr dom,
+                       struct _virDomainMemoryStat *stats,
+                       unsigned int nr_stats,
+                       unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -9119,11 +9119,11 @@ cleanup:
 }
 
 static int
-qemudDomainBlockPeek (virDomainPtr dom,
-                      const char *path,
-                      unsigned long long offset, size_t size,
-                      void *buffer,
-                      unsigned int flags)
+qemudDomainBlockPeek(virDomainPtr dom,
+                     const char *path,
+                     unsigned long long offset, size_t size,
+                     void *buffer,
+                     unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -9187,10 +9187,10 @@ cleanup:
 }
 
 static int
-qemudDomainMemoryPeek (virDomainPtr dom,
-                       unsigned long long offset, size_t size,
-                       void *buffer,
-                       unsigned int flags)
+qemudDomainMemoryPeek(virDomainPtr dom,
+                      unsigned long long offset, size_t size,
+                      void *buffer,
+                      unsigned int flags)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -9570,16 +9570,16 @@ cleanup:
  *
  * This starts an empty VM listening on a TCP port.
  */
-static int ATTRIBUTE_NONNULL (5)
-qemudDomainMigratePrepare2 (virConnectPtr dconn,
-                            char **cookie ATTRIBUTE_UNUSED,
-                            int *cookielen ATTRIBUTE_UNUSED,
-                            const char *uri_in,
-                            char **uri_out,
-                            unsigned long flags,
-                            const char *dname,
-                            unsigned long resource ATTRIBUTE_UNUSED,
-                            const char *dom_xml)
+static int ATTRIBUTE_NONNULL(5)
+qemudDomainMigratePrepare2(virConnectPtr dconn,
+                           char **cookie ATTRIBUTE_UNUSED,
+                           int *cookielen ATTRIBUTE_UNUSED,
+                           const char *uri_in,
+                           char **uri_out,
+                           unsigned long flags,
+                           const char *dname,
+                           unsigned long resource ATTRIBUTE_UNUSED,
+                           const char *dom_xml)
 {
     struct qemud_driver *driver = dconn->privateData;
     int ret = -1;
@@ -9629,13 +9629,13 @@ cleanup:
 
 /* Perform is the second step, and it runs on the source host. */
 static int
-qemudDomainMigratePerform (virDomainPtr dom,
-                           const char *cookie,
-                           int cookielen,
-                           const char *uri,
-                           unsigned long flags,
-                           const char *dname,
-                           unsigned long resource)
+qemudDomainMigratePerform(virDomainPtr dom,
+                          const char *cookie,
+                          int cookielen,
+                          const char *uri,
+                          unsigned long flags,
+                          const char *dname,
+                          unsigned long resource)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -9685,13 +9685,13 @@ cleanup:
 
 /* Finish is the third and final step, and it runs on the destination host. */
 static virDomainPtr
-qemudDomainMigrateFinish2 (virConnectPtr dconn,
-                           const char *dname,
-                           const char *cookie ATTRIBUTE_UNUSED,
-                           int cookielen ATTRIBUTE_UNUSED,
-                           const char *uri ATTRIBUTE_UNUSED,
-                           unsigned long flags,
-                           int retcode)
+qemudDomainMigrateFinish2(virConnectPtr dconn,
+                          const char *dname,
+                          const char *cookie ATTRIBUTE_UNUSED,
+                          int cookielen ATTRIBUTE_UNUSED,
+                          const char *uri ATTRIBUTE_UNUSED,
+                          unsigned long flags,
+                          int retcode)
 {
     struct qemud_driver *driver = dconn->privateData;
     virDomainObjPtr vm;
@@ -10043,11 +10043,11 @@ cleanup:
 
 
 static int
-qemudNodeDeviceGetPciInfo (virNodeDevicePtr dev,
-                           unsigned *domain,
-                           unsigned *bus,
-                           unsigned *slot,
-                           unsigned *function)
+qemudNodeDeviceGetPciInfo(virNodeDevicePtr dev,
+                          unsigned *domain,
+                          unsigned *bus,
+                          unsigned *slot,
+                          unsigned *function)
 {
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapsDefPtr cap;
@@ -10089,7 +10089,7 @@ out:
 }
 
 static int
-qemudNodeDeviceDettach (virNodeDevicePtr dev)
+qemudNodeDeviceDettach(virNodeDevicePtr dev)
 {
     struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
@@ -10120,7 +10120,7 @@ out:
 }
 
 static int
-qemudNodeDeviceReAttach (virNodeDevicePtr dev)
+qemudNodeDeviceReAttach(virNodeDevicePtr dev)
 {
     struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
@@ -10164,7 +10164,7 @@ out:
 }
 
 static int
-qemudNodeDeviceReset (virNodeDevicePtr dev)
+qemudNodeDeviceReset(virNodeDevicePtr dev)
 {
     struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
@@ -13580,7 +13580,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     for (i = 0; i < QEMU_NB_BLOCK_IO_TUNE_PARAM && i < *nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        switch(i) {
+        switch (i) {
         case 0:
             if (virTypedParameterAssign(param,
                                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,

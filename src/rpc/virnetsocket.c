@@ -453,7 +453,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     if (e != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to resolve address '%s' service '%s': %s"),
-                       nodename, service, gai_strerror (e));
+                       nodename, service, gai_strerror(e));
         return -1;
     }
 

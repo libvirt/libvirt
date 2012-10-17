@@ -501,14 +501,14 @@ static int
 testHashGetItemsCompKey(const virHashKeyValuePairPtr a,
                         const virHashKeyValuePairPtr b)
 {
-    return strcmp (a->key, b->key);
+    return strcmp(a->key, b->key);
 }
 
 static int
 testHashGetItemsCompValue(const virHashKeyValuePairPtr a,
                           const virHashKeyValuePairPtr b)
 {
-    return strcmp (a->value, b->value);
+    return strcmp(a->value, b->value);
 }
 
 static int

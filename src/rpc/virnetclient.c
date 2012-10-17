@@ -754,14 +754,14 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     struct pollfd fds[1];
     sigset_t oldmask, blockedsigs;
 
-    sigemptyset (&blockedsigs);
+    sigemptyset(&blockedsigs);
 #ifdef SIGWINCH
-    sigaddset (&blockedsigs, SIGWINCH);
+    sigaddset(&blockedsigs, SIGWINCH);
 #endif
 #ifdef SIGCHLD
-    sigaddset (&blockedsigs, SIGCHLD);
+    sigaddset(&blockedsigs, SIGCHLD);
 #endif
-    sigaddset (&blockedsigs, SIGPIPE);
+    sigaddset(&blockedsigs, SIGPIPE);
 
     virNetClientLock(client);
 
@@ -1510,14 +1510,14 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
-        sigemptyset (&blockedsigs);
+        sigemptyset(&blockedsigs);
 #ifdef SIGWINCH
-        sigaddset (&blockedsigs, SIGWINCH);
+        sigaddset(&blockedsigs, SIGWINCH);
 #endif
 #ifdef SIGCHLD
-        sigaddset (&blockedsigs, SIGCHLD);
+        sigaddset(&blockedsigs, SIGCHLD);
 #endif
-        sigaddset (&blockedsigs, SIGPIPE);
+        sigaddset(&blockedsigs, SIGPIPE);
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
 
     repoll:

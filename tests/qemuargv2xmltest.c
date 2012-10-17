@@ -118,7 +118,7 @@ mymain(void)
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
-    if((driver.stateDir = strdup("/nowhere")) == NULL)
+    if ((driver.stateDir = strdup("/nowhere")) == NULL)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \

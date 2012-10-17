@@ -878,7 +878,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
         val = 0;
 
-        switch(i) {
+        switch (i) {
         case 0: /* fill memory hard limit here */
             rc = virCgroupGetMemoryHardLimit(cgroup, &val);
             if (rc != 0) {

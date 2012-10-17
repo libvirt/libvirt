@@ -1403,7 +1403,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     } else {
         /* If scheme isn't 'openvz', then its for another driver */
         if (conn->uri->scheme == NULL ||
-            STRNEQ (conn->uri->scheme, "openvz"))
+            STRNEQ(conn->uri->scheme, "openvz"))
             return VIR_DRV_OPEN_DECLINED;
 
         /* If server name is given, its for remote driver */
@@ -1412,7 +1412,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
 
         /* If path isn't /system, then they typoed, so tell them correct path */
         if (conn->uri->path == NULL ||
-            STRNEQ (conn->uri->path, "/system")) {
+            STRNEQ(conn->uri->path, "/system")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected OpenVZ URI path '%s', try openvz:///system"),
                            conn->uri->path);
@@ -1601,7 +1601,7 @@ out:
     VIR_FORCE_CLOSE(outfd);
     virCommandFree(cmd);
     if (rc < 0) {
-        for ( ; got >= 0 ; got--)
+        for (; got >= 0 ; got--)
             VIR_FREE(names[got]);
     }
     return rc;
@@ -1636,8 +1636,8 @@ Version: 2.2
             break;
         }
 
-        if (sscanf (line, "%d %llu %llu %llu",
-                    &readvps, &usertime, &nicetime, &systime) == 4
+        if (sscanf(line, "%d %llu %llu %llu",
+                   &readvps, &usertime, &nicetime, &systime) == 4
             && readvps == vpsid) { /*found vpsid*/
             /* convert jiffies to nanoseconds */
             *cpuTime = (1000ull * 1000ull * 1000ull
@@ -1942,9 +1942,9 @@ cleanup:
 }
 
 static int
-openvzDomainInterfaceStats (virDomainPtr dom,
-                            const char *path,
-                            struct _virDomainInterfaceStats *stats)
+openvzDomainInterfaceStats(virDomainPtr dom,
+                           const char *path,
+                           struct _virDomainInterfaceStats *stats)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -1972,7 +1972,7 @@ openvzDomainInterfaceStats (virDomainPtr dom,
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0 ; i < vm->def->nnets ; i++) {
         if (vm->def->nets[i]->ifname &&
-            STREQ (vm->def->nets[i]->ifname, path)) {
+            STREQ(vm->def->nets[i]->ifname, path)) {
             ret = 0;
             break;
         }

@@ -242,7 +242,7 @@
     esxVI_##_type##_Serialize(esxVI_##_type *item,                            \
                               const char *element, virBufferPtr output)       \
     {                                                                         \
-        if (element == NULL || output == NULL ) {                             \
+        if (element == NULL || output == NULL) {                              \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
                            _("Invalid argument"));                            \
             return -1;                                                        \

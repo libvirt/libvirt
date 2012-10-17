@@ -159,8 +159,8 @@ int virTimeFieldsThenRaw(unsigned long long when, struct tm *fields)
 
       /* Adjust DAYS and Y to match the guessed year.  */
       days -= ((yg - y) * 365
-               + LEAPS_THRU_END_OF (yg - 1)
-               - LEAPS_THRU_END_OF (y - 1));
+               + LEAPS_THRU_END_OF(yg - 1)
+               - LEAPS_THRU_END_OF(y - 1));
       y = yg;
     }
     fields->tm_year = y - 1900;

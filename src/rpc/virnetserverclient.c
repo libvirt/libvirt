@@ -1196,7 +1196,7 @@ virNetServerClientDispatchHandshake(virNetServerClientPtr client)
         /* Carry on waiting for more handshake. Update
            the events just in case handshake data flow
            direction has changed */
-        virNetServerClientUpdateEvent (client);
+        virNetServerClientUpdateEvent(client);
     } else {
         /* Fatal error in handshake */
         client->wantClose = true;

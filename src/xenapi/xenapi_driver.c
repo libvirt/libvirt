@@ -59,7 +59,7 @@ static int xenapiDefaultConsoleType(const char *ostype)
  * Return virCapsPtr on success or NULL on failure
  */
 static virCapsPtr
-getCapsObject (void)
+getCapsObject(void)
 {
     virCapsGuestPtr guest1, guest2;
     virCapsGuestDomainPtr domain1, domain2;
@@ -98,8 +98,8 @@ getCapsObject (void)
  * Return VIR_DRV_OPEN_SUCCESS on success, else VIR_DRV_OPEN_ERROR
  */
 static virDrvOpenStatus
-xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
-            unsigned int flags)
+xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
+           unsigned int flags)
 {
     char *username = NULL;
     char *password = NULL;
@@ -225,7 +225,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth,
  *
  */
 static int
-xenapiClose (virConnectPtr conn)
+xenapiClose(virConnectPtr conn)
 {
     struct _xenapiPrivate *priv = conn->privateData;
 
@@ -251,7 +251,7 @@ xenapiClose (virConnectPtr conn)
  * Returns 0
  */
 static int
-xenapiSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+xenapiSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
     case VIR_DRV_FEATURE_MIGRATION_V2:
@@ -268,7 +268,7 @@ xenapiSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
  * Returns name of the driver
  */
 static const char *
-xenapiType (virConnectPtr conn ATTRIBUTE_UNUSED)
+xenapiType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return "XenAPI";
 }
@@ -281,7 +281,7 @@ xenapiType (virConnectPtr conn ATTRIBUTE_UNUSED)
  *
  */
 static int
-xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
+xenapiGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
     xen_host host;
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
@@ -333,7 +333,7 @@ xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
  * Returns the hostname on success, or NULL on failure
  */
 static char *
-xenapiGetHostname (virConnectPtr conn)
+xenapiGetHostname(virConnectPtr conn)
 {
     char *result = NULL;
     xen_host host;
@@ -356,7 +356,7 @@ xenapiGetHostname (virConnectPtr conn)
  * Returns a hardcoded value for Maximum VCPUS
  */
 static int
-xenapiGetMaxVcpus (virConnectPtr conn ATTRIBUTE_UNUSED, const char *type ATTRIBUTE_UNUSED)
+xenapiGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type ATTRIBUTE_UNUSED)
 {
     /* this is hardcoded for simplicity and set to a resonable value compared
        to the actual value */
@@ -371,7 +371,7 @@ xenapiGetMaxVcpus (virConnectPtr conn ATTRIBUTE_UNUSED, const char *type ATTRIBU
  * Returns Node details on success or else -1
  */
 static int
-xenapiNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
+xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
     int64_t memory, mhz;
     xen_host_cpu_set *host_cpu_set;
@@ -422,7 +422,7 @@ xenapiNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
  * Returns capabilities as an XML string
  */
 static char *
-xenapiGetCapabilities (virConnectPtr conn)
+xenapiGetCapabilities(virConnectPtr conn)
 {
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (caps) {
@@ -444,7 +444,7 @@ xenapiGetCapabilities (virConnectPtr conn)
  * Returns the number of domain found or -1 in case of error
  */
 static int
-xenapiListDomains (virConnectPtr conn, int *ids, int maxids)
+xenapiListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     /* vm.list */
     xen_host host;
@@ -481,7 +481,7 @@ xenapiListDomains (virConnectPtr conn, int *ids, int maxids)
  * Returns the number of domains found or -1 in case of error
  */
 static int
-xenapiNumOfDomains (virConnectPtr conn)
+xenapiNumOfDomains(virConnectPtr conn)
 {
     /* #(vm.list) */
     xen_vm_set *result = NULL;
@@ -510,9 +510,9 @@ xenapiNumOfDomains (virConnectPtr conn)
  * Returns the domain pointer or NULL in case of error
  */
 static virDomainPtr
-xenapiDomainCreateXML (virConnectPtr conn,
-                       const char *xmlDesc,
-                       unsigned int flags)
+xenapiDomainCreateXML(virConnectPtr conn,
+                      const char *xmlDesc,
+                      unsigned int flags)
 {
     xen_vm_record *record = NULL;
     xen_vm vm = NULL;
@@ -562,7 +562,7 @@ xenapiDomainCreateXML (virConnectPtr conn,
  * or NULL in case of error
  */
 static virDomainPtr
-xenapiDomainLookupByID (virConnectPtr conn, int id)
+xenapiDomainLookupByID(virConnectPtr conn, int id)
 {
     int i;
     int64_t domID;
@@ -617,8 +617,8 @@ xenapiDomainLookupByID (virConnectPtr conn, int id)
  * or -1 in case of error
  */
 static virDomainPtr
-xenapiDomainLookupByUUID (virConnectPtr conn,
-                          const unsigned char *uuid)
+xenapiDomainLookupByUUID(virConnectPtr conn,
+                         const unsigned char *uuid)
 {
     /* vm.get_by_uuid */
     xen_vm vm;
@@ -655,8 +655,8 @@ xenapiDomainLookupByUUID (virConnectPtr conn,
  * or -1 in case of error
  */
 static virDomainPtr
-xenapiDomainLookupByName (virConnectPtr conn,
-                          const char *name)
+xenapiDomainLookupByName(virConnectPtr conn,
+                         const char *name)
 {
     /* vm.get_by_name_label */
     xen_vm_set *vms = NULL;
@@ -706,7 +706,7 @@ xenapiDomainLookupByName (virConnectPtr conn,
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainSuspend (virDomainPtr dom)
+xenapiDomainSuspend(virDomainPtr dom)
 {
     /* vm.pause() */
     xen_vm vm;
@@ -741,7 +741,7 @@ xenapiDomainSuspend (virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainResume (virDomainPtr dom)
+xenapiDomainResume(virDomainPtr dom)
 {
     /* vm.unpause() */
     xen_vm vm;
@@ -820,7 +820,7 @@ xenapiDomainShutdown(virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainReboot (virDomainPtr dom, unsigned int flags)
+xenapiDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     /* vm.clean_reboot */
     xen_vm vm;
@@ -912,7 +912,7 @@ xenapiDomainDestroy(virDomainPtr dom)
  * Returns OS version on success or NULL in case of error
  */
 static char *
-xenapiDomainGetOSType (virDomainPtr dom)
+xenapiDomainGetOSType(virDomainPtr dom)
 {
     xen_vm vm=NULL;
     xen_vm_set *vms;
@@ -949,7 +949,7 @@ xenapiDomainGetOSType (virDomainPtr dom)
  * or 0 in case of error
  */
 static unsigned long long
-xenapiDomainGetMaxMemory (virDomainPtr dom)
+xenapiDomainGetMaxMemory(virDomainPtr dom)
 {
     int64_t mem_static_max = 0;
     xen_vm vm;
@@ -980,7 +980,7 @@ xenapiDomainGetMaxMemory (virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainSetMaxMemory (virDomainPtr dom, unsigned long memory)
+xenapiDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
 {
     /* vm.set_memory_static_max */
     xen_vm vm;
@@ -1015,7 +1015,7 @@ xenapiDomainSetMaxMemory (virDomainPtr dom, unsigned long memory)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
+xenapiDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
     int64_t maxmem = 0, memory = 0, vcpu = 0;
     xen_vm vm;
@@ -1108,8 +1108,8 @@ cleanup:
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
-                           unsigned int flags)
+xenapiDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
+                          unsigned int flags)
 {
     /* vm.set_vcpus_max */
     xen_vm vm;
@@ -1147,7 +1147,7 @@ xenapiDomainSetVcpusFlags (virDomainPtr dom, unsigned int nvcpus,
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
+xenapiDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
     return xenapiDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_VCPU_LIVE);
 }
@@ -1159,8 +1159,8 @@ xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
  * Returns 0 on success or -1 in case of error
  */
 static int
-xenapiDomainPinVcpu (virDomainPtr dom, unsigned int vcpu ATTRIBUTE_UNUSED,
-                     unsigned char *cpumap, int maplen)
+xenapiDomainPinVcpu(virDomainPtr dom, unsigned int vcpu ATTRIBUTE_UNUSED,
+                    unsigned char *cpumap, int maplen)
 {
     char *value = NULL;
     xen_vm vm;
@@ -1200,9 +1200,9 @@ xenapiDomainPinVcpu (virDomainPtr dom, unsigned int vcpu ATTRIBUTE_UNUSED,
  * Return number of structures filled on success or -1 in case of error
  */
 static int
-xenapiDomainGetVcpus (virDomainPtr dom,
-                      virVcpuInfoPtr info, int maxinfo,
-                      unsigned char *cpumaps, int maplen)
+xenapiDomainGetVcpus(virDomainPtr dom,
+                     virVcpuInfoPtr info, int maxinfo,
+                     unsigned char *cpumaps, int maplen)
 {
 
     xen_vm_set *vms = NULL;
@@ -1278,7 +1278,7 @@ xenapiDomainGetVcpus (virDomainPtr dom,
  * Returns Vcpus count on success or -1 in case of error
  */
 static int
-xenapiDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
+xenapiDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     xen_vm vm;
     xen_vm_set *vms;
@@ -1321,7 +1321,7 @@ xenapiDomainGetVcpusFlags (virDomainPtr dom, unsigned int flags)
  * Returns maximum number of Vcpus on success or -1 in case of error
  */
 static int
-xenapiDomainGetMaxVcpus (virDomainPtr dom)
+xenapiDomainGetMaxVcpus(virDomainPtr dom)
 {
     return xenapiDomainGetVcpusFlags(dom, (VIR_DOMAIN_VCPU_LIVE |
                                            VIR_DOMAIN_VCPU_MAXIMUM));
@@ -1380,7 +1380,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
             for (i = 0; i < result->size; i++) {
                 if (STREQ(result->contents[i].key, "order")) {
                     int cnt = 0;
-                    while(result->contents[i].val[cnt] != '\0') {
+                    while (result->contents[i].val[cnt] != '\0') {
                         defPtr->os.bootDevs[cnt] = map2LibvirtBootOrder(result->contents[i].val[cnt]);
                         cnt++;
                     }
@@ -1421,7 +1421,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         }
         xen_vm_get_pv_args(session, &value, vm);
         if (STRNEQ(value, "")) {
-            if(!(defPtr->os.cmdline = strdup(value))) {
+            if (!(defPtr->os.cmdline = strdup(value))) {
                 VIR_FREE(boot_policy);
                 VIR_FREE(value);
                 goto error_cleanup;
@@ -1462,7 +1462,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     xen_vm_get_platform(session, &result, vm);
     if (result != NULL) {
         int i;
-        for(i = 0; i < result->size; i++) {
+        for (i = 0; i < result->size; i++) {
             if (STREQ(result->contents[i].val, "true")) {
                 if (STREQ(result->contents[i].key, "acpi"))
                     defPtr->features = defPtr->features | (1<<VIR_DOMAIN_FEATURE_ACPI);
@@ -1535,8 +1535,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
  * Returns number of names provided in the array or -1 in case of error
  */
 static int
-xenapiListDefinedDomains (virConnectPtr conn, char **const names,
-                          int maxnames)
+xenapiListDefinedDomains(virConnectPtr conn, char **const names,
+                         int maxnames)
 {
     int i,j=0,doms;
     xen_vm_set *result;
@@ -1582,7 +1582,7 @@ xenapiListDefinedDomains (virConnectPtr conn, char **const names,
  * Returns number of domains found on success or -1 in case of error
  */
 static int
-xenapiNumOfDefinedDomains (virConnectPtr conn)
+xenapiNumOfDefinedDomains(virConnectPtr conn)
 {
     xen_vm_set *result;
     xen_vm_record *record;
@@ -1615,7 +1615,7 @@ xenapiNumOfDefinedDomains (virConnectPtr conn)
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainCreateWithFlags (virDomainPtr dom, unsigned int flags)
+xenapiDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     xen_vm_set *vms;
     xen_vm vm;
@@ -1657,7 +1657,7 @@ xenapiDomainCreateWithFlags (virDomainPtr dom, unsigned int flags)
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainCreate (virDomainPtr dom)
+xenapiDomainCreate(virDomainPtr dom)
 {
     return xenapiDomainCreateWithFlags(dom, 0);
 }
@@ -1669,7 +1669,7 @@ xenapiDomainCreate (virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static virDomainPtr
-xenapiDomainDefineXML (virConnectPtr conn, const char *xml)
+xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     xen_vm_record *record=NULL;
     xen_vm vm=NULL;
@@ -1755,7 +1755,7 @@ xenapiDomainUndefine(virDomainPtr dom)
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainGetAutostart (virDomainPtr dom, int *autostart)
+xenapiDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     int i,flag=0;
     xen_vm_set *vms;
@@ -1802,7 +1802,7 @@ xenapiDomainGetAutostart (virDomainPtr dom, int *autostart)
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainSetAutostart (virDomainPtr dom, int autostart)
+xenapiDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     xen_vm_set *vms;
     xen_vm vm;
@@ -1835,7 +1835,7 @@ xenapiDomainSetAutostart (virDomainPtr dom, int autostart)
 }
 
 static char *
-xenapiDomainGetSchedulerType (virDomainPtr dom ATTRIBUTE_UNUSED, int *nparams)
+xenapiDomainGetSchedulerType(virDomainPtr dom ATTRIBUTE_UNUSED, int *nparams)
 {
     char *result = NULL;
 
@@ -1853,7 +1853,7 @@ xenapiDomainGetSchedulerType (virDomainPtr dom ATTRIBUTE_UNUSED, int *nparams)
  * Returns memory size on success or 0 in case of error
  */
 static unsigned long long
-xenapiNodeGetFreeMemory (virConnectPtr conn)
+xenapiNodeGetFreeMemory(virConnectPtr conn)
 {
     xen_host_metrics_set *xen_met_set;
     unsigned long long freeMem = 0;
@@ -1886,8 +1886,8 @@ xenapiDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
  * Returns the number of entries filled in freeMems, or -1 in case of error.
  */
 static int
-xenapiNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
-                              int startCell, int maxCells)
+xenapiNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
+                             int startCell, int maxCells)
 {
     if (maxCells > 1 && startCell > 0) {
         xenapiSessionErrorHandler(conn, VIR_ERR_NO_SUPPORT, NULL);
@@ -1970,9 +1970,9 @@ static virDriver xenapiDriver = {
  * Returns the driver priority or -1 in case of error.
  */
 int
-xenapiRegister (void)
+xenapiRegister(void)
 {
-    return virRegisterDriver (&xenapiDriver);
+    return virRegisterDriver(&xenapiDriver);
 }
 
 /*

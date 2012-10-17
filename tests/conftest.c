@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     }
     virConfFree(conf);
     if (fwrite(buffer, 1, len, stdout) != len) {
-        fprintf(stderr, "Write failed: %s\n", strerror (errno));
+        fprintf(stderr, "Write failed: %s\n", strerror(errno));
         goto cleanup;
     }
 

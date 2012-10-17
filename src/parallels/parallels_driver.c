@@ -1089,7 +1089,7 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     return ret;
 }
 
-typedef int (*parallelsChangeStateFunc)    (virDomainObjPtr privdom);
+typedef int (*parallelsChangeStateFunc)(virDomainObjPtr privdom);
 #define PARALLELS_UUID(x)     (((parallelsDomObjPtr)(x->privateData))->uuid)
 
 static int
@@ -1283,7 +1283,7 @@ parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
             !STREQ_NULLABLE(oldserial->source.data.file.path,
                             newserial->source.data.file.path))
             goto error;
-        if(newserial->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        if (newserial->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
            (!STREQ_NULLABLE(oldserial->source.data.nix.path,
                             newserial->source.data.nix.path) ||
             oldserial->source.data.nix.listen == newserial->source.data.nix.listen)) {

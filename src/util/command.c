@@ -269,7 +269,7 @@ virFork(pid_t *pid)
     if (*pid < 0) {
         /* attempt to restore signal mask, but ignore failure, to
            avoid obscuring the fork failure */
-        ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+        ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
         virReportSystemError(saved_errno,
                              "%s", _("cannot fork child process"));
         goto cleanup;

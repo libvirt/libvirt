@@ -247,7 +247,7 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
 
     command_idx = n;
 
-    if(action == ADD || action == REMOVE) {
+    if (action == ADD || action == REMOVE) {
         if (!(argv[n++] = strdup("--insert")))
             goto error;
 

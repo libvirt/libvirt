@@ -1857,7 +1857,7 @@ pciGetPciConfigAddressFromSysfsDeviceLink(const char *device_link,
         return ret;
     }
 
-    device_path = canonicalize_file_name (device_link);
+    device_path = canonicalize_file_name(device_link);
     if (device_path == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
         virReportError(VIR_ERR_INTERNAL_ERROR,

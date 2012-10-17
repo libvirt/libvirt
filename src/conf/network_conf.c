@@ -1376,7 +1376,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
         forwardDev = virXPathString("string(./@dev)", ctxt);
         forwardManaged = virXPathString("string(./@managed)", ctxt);
-        if(forwardManaged != NULL) {
+        if (forwardManaged != NULL) {
             if (STRCASEEQ(forwardManaged, "yes"))
                 def->managed = 1;
         }
@@ -3124,8 +3124,8 @@ void virNetworkObjUnlock(virNetworkObjPtr obj)
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool
-virNetworkMatch (virNetworkObjPtr netobj,
-                 unsigned int flags)
+virNetworkMatch(virNetworkObjPtr netobj,
+                unsigned int flags)
 {
     /* filter by active state */
     if (MATCH(VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE) &&

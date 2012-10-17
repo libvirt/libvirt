@@ -825,7 +825,7 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     };
 
     /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
+    uname(&utsname);
 
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    1, 1)) == NULL)
@@ -1558,7 +1558,7 @@ cleanup:
 
 
 static void
-uname_normalize (struct utsname *ut)
+uname_normalize(struct utsname *ut)
 {
     uname(ut);
 

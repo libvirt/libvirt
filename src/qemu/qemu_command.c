@@ -122,7 +122,7 @@ VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
 
 
 static void
-uname_normalize (struct utsname *ut)
+uname_normalize(struct utsname *ut)
 {
     uname(ut);
 
@@ -1837,7 +1837,7 @@ qemuBuildIoEventFdStr(virBufferPtr buf,
 static int
 qemuSafeSerialParamValue(const char *value)
 {
-    if (strspn(value, QEMU_SERIAL_PARAM_ACCEPTED_CHARS) != strlen (value)) {
+    if (strspn(value, QEMU_SERIAL_PARAM_ACCEPTED_CHARS) != strlen(value)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("driver serial '%s' contains unsafe characters"),
                        value);
@@ -2686,9 +2686,9 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
         fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) {
         if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
             virBufferAddLit(&opt, ",security_model=mapped");
-        } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+        } else if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
             virBufferAddLit(&opt, ",security_model=passthrough");
-        } else if(fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
+        } else if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
             virBufferAddLit(&opt, ",security_model=none");
         }
     } else {
@@ -3631,7 +3631,7 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
 
-    switch(dev->type) {
+    switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         virBufferAsprintf(&buf, "null,id=char%s", alias);
         break;
@@ -5728,7 +5728,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         char *addr;
         int port;
 
-        switch(channel->targetType) {
+        switch (channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
             if (!qemuCapsGet(caps, QEMU_CAPS_CHARDEV) ||
                 !qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
@@ -5796,7 +5796,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainChrDefPtr console = def->consoles[i];
         char *devstr;
 
-        switch(console->targetType) {
+        switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
             if (!qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -8408,7 +8408,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 if (!(def->os.machine = strndup(val, params - val)))
                     goto no_memory;
 
-                while(params++) {
+                while (params++) {
                     /* prepared for more "-machine" parameters */
                     char *tmp = params;
                     params = strchr(params, ',');
@@ -8581,7 +8581,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             }
         } else if (STREQ(arg, "-watchdog")) {
             WANT_VALUE();
-            int model = virDomainWatchdogModelTypeFromString (val);
+            int model = virDomainWatchdogModelTypeFromString(val);
 
             if (model != -1) {
                 virDomainWatchdogDefPtr wd;
@@ -8593,7 +8593,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             }
         } else if (STREQ(arg, "-watchdog-action") && def->watchdog) {
             WANT_VALUE();
-            int action = virDomainWatchdogActionTypeFromString (val);
+            int action = virDomainWatchdogActionTypeFromString(val);
 
             if (action != -1)
                 def->watchdog->action = action;

@@ -491,7 +491,7 @@ int qemuDomainAttachSCSIDisk(virConnectPtr conn,
     /* Tell clang that "cont" is non-NULL.
        This is because disk->info.addr.driver.controller is unsigned,
        and hence the above loop must iterate at least once.  */
-    sa_assert (cont);
+    sa_assert(cont);
 
     if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -715,7 +715,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
          */
         if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
             driver->privileged ||
-            (!qemuCapsGet (priv->caps, QEMU_CAPS_NETDEV_BRIDGE))) {
+            (!qemuCapsGet(priv->caps, QEMU_CAPS_NETDEV_BRIDGE))) {
             if ((tapfd = qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                                  priv->caps)) < 0)
                 goto cleanup;
@@ -1097,7 +1097,7 @@ int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
         usbDevice *usb;
         qemuCgroupData data;
 
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to find cgroup for %s"),
                            vm->def->name);
@@ -2415,7 +2415,7 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
     idx = virDomainHostdevFind(vm->def, hostdev, &detach);
 
     if (idx < 0) {
-        switch(subsys->type) {
+        switch (subsys->type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("host pci device %.4x:%.2x:%.2x.%.1x not found"),

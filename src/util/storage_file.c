@@ -213,7 +213,7 @@ cowGetBackingStore(char **res,
         return BACKING_STORE_OK;
     }
 
-    *res = strndup ((const char*)buf + 4+4, COW_FILENAME_MAXLEN);
+    *res = strndup((const char*)buf + 4+4, COW_FILENAME_MAXLEN);
     if (*res == NULL) {
         virReportOOMError();
         return BACKING_STORE_ERROR;
@@ -459,23 +459,23 @@ cleanup:
 static unsigned long
 qedGetHeaderUL(const unsigned char *loc)
 {
-    return ( ((unsigned long)loc[3] << 24)
-           | ((unsigned long)loc[2] << 16)
-           | ((unsigned long)loc[1] << 8)
-           | ((unsigned long)loc[0] << 0));
+    return (((unsigned long)loc[3] << 24) |
+            ((unsigned long)loc[2] << 16) |
+            ((unsigned long)loc[1] << 8) |
+            ((unsigned long)loc[0] << 0));
 }
 
 static unsigned long long
 qedGetHeaderULL(const unsigned char *loc)
 {
-    return ( ((unsigned long long)loc[7] << 56)
-           | ((unsigned long long)loc[6] << 48)
-           | ((unsigned long long)loc[5] << 40)
-           | ((unsigned long long)loc[4] << 32)
-           | ((unsigned long long)loc[3] << 24)
-           | ((unsigned long long)loc[2] << 16)
-           | ((unsigned long long)loc[1] << 8)
-           | ((unsigned long long)loc[0] << 0));
+    return (((unsigned long long)loc[7] << 56) |
+            ((unsigned long long)loc[6] << 48) |
+            ((unsigned long long)loc[5] << 40) |
+            ((unsigned long long)loc[4] << 32) |
+            ((unsigned long long)loc[3] << 24) |
+            ((unsigned long long)loc[2] << 16) |
+            ((unsigned long long)loc[1] << 8) |
+            ((unsigned long long)loc[0] << 0));
 }
 
 static int

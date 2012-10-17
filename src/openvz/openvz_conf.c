@@ -285,7 +285,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
 
             /*parse string*/
             do {
-                char *next = strchrnul (p, ',');
+                char *next = strchrnul(p, ',');
                 if (STRPREFIX(p, "ifname=")) {
                     /* skip in libvirt */
                 } else if (STRPREFIX(p, "host_ifname=")) {
@@ -456,7 +456,7 @@ openvzReadFSConf(virDomainDefPtr def,
         } else {
             /* Ensure that we can multiply by 1024 without overflowing. */
             if (barrier > ULLONG_MAX / 1024 ||
-                limit > ULLONG_MAX / 1024 ) {
+                limit > ULLONG_MAX / 1024) {
                 virReportSystemError(VIR_ERR_OVERFLOW, "%s",
                                      _("Unable to parse quota"));
                 goto error;
@@ -985,7 +985,7 @@ openvz_readline(int fd, char *ptr, int maxlen)
     char c;
 
     for (n = 1; n < maxlen; n++) {
-        if ( (rc = read(fd, &c, 1)) == 1) {
+        if ((rc = read(fd, &c, 1)) == 1) {
             *ptr++ = c;
             if (c == '\n')
                 break;

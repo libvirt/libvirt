@@ -302,7 +302,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
     if (vm->def->blkio.weight != 0) {
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_BLKIO)) {
             rc = virCgroupSetBlkioWeight(cgroup, vm->def->blkio.weight);
-            if(rc != 0) {
+            if (rc != 0) {
                 virReportSystemError(-rc,
                                      _("Unable to set io weight for domain %s"),
                                      vm->def->name);
@@ -391,7 +391,7 @@ int qemuSetupCgroup(struct qemud_driver *driver,
     if (vm->def->cputune.shares != 0) {
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
             rc = virCgroupSetCpuShares(cgroup, vm->def->cputune.shares);
-            if(rc != 0) {
+            if (rc != 0) {
                 virReportSystemError(-rc,
                                      _("Unable to set io cpu shares for domain %s"),
                                      vm->def->name);

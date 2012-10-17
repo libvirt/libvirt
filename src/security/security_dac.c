@@ -911,7 +911,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
             return rc;
     }
 
-    switch(seclabel->type) {
+    switch (seclabel->type) {
     case VIR_DOMAIN_SECLABEL_STATIC:
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

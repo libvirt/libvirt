@@ -216,7 +216,7 @@ nwfilterDriverStartup(int privileged)
     }
 
     if (privileged) {
-        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
+        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         base = virGetUserConfigDirectory();

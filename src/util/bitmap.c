@@ -366,7 +366,7 @@ int virBitmapParse(const char *str,
             cur++;
             virSkipSpaces(&cur);
             neg = false;
-        } else if(*cur == 0 || *cur == sep) {
+        } else if (*cur == 0 || *cur == sep) {
             break;
         } else {
             goto parse_error;

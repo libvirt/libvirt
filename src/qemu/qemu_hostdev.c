@@ -268,7 +268,7 @@ qemuDomainHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
     if (!virtPort)
         return ret;
 
-    switch(virtPort->virtPortType) {
+    switch (virtPort->virtPortType) {
     case VIR_NETDEV_VPORT_PROFILE_NONE:
     case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:

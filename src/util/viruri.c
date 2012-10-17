@@ -39,7 +39,7 @@ virURIParamAppend(virURIPtr uri,
 
     if (!(pname = strdup(name)))
         goto no_memory;
-    if (!(pvalue = strdup (value)))
+    if (!(pvalue = strdup(value)))
         goto no_memory;
 
     if (VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1) < 0)
@@ -73,14 +73,14 @@ virURIParseParams(virURIPtr uri)
         char *name = NULL, *value = NULL;
 
         /* Find the next separator, or end of the string. */
-        end = strchr (query, '&');
+        end = strchr(query, '&');
         if (!end)
-            end = strchr (query, ';');
+            end = strchr(query, ';');
         if (!end)
-            end = query + strlen (query);
+            end = query + strlen(query);
 
         /* Find the first '=' character between here and end. */
-        eq = strchr (query, '=');
+        eq = strchr(query, '=');
         if (eq && eq >= end) eq = NULL;
 
         /* Empty section (eg. "&&"). */
@@ -91,14 +91,14 @@ virURIParseParams(virURIPtr uri)
          * and consistent with CGI.pm we assume value is "".
          */
         else if (!eq) {
-            name = xmlURIUnescapeString (query, end - query, NULL);
+            name = xmlURIUnescapeString(query, end - query, NULL);
             if (!name) goto no_memory;
         }
         /* Or if we have "name=" here (works around annoying
          * problem when calling xmlURIUnescapeString with len = 0).
          */
         else if (eq+1 == end) {
-            name = xmlURIUnescapeString (query, eq - query, NULL);
+            name = xmlURIUnescapeString(query, eq - query, NULL);
             if (!name) goto no_memory;
         }
         /* If the '=' character is at the beginning then we have
@@ -109,10 +109,10 @@ virURIParseParams(virURIPtr uri)
 
         /* Otherwise it's "name=value". */
         else {
-            name = xmlURIUnescapeString (query, eq - query, NULL);
+            name = xmlURIUnescapeString(query, eq - query, NULL);
             if (!name)
                 goto no_memory;
-            value = xmlURIUnescapeString (eq+1, end - (eq+1), NULL);
+            value = xmlURIUnescapeString(eq+1, end - (eq+1), NULL);
             if (!value) {
                 VIR_FREE(name);
                 goto no_memory;
@@ -292,9 +292,9 @@ char *virURIFormatParams(virURIPtr uri)
 
     for (i = 0; i < uri->paramsCount; ++i) {
         if (!uri->params[i].ignore) {
-            if (amp) virBufferAddChar (&buf, '&');
-            virBufferStrcat (&buf, uri->params[i].name, "=", NULL);
-            virBufferURIEncodeString (&buf, uri->params[i].value);
+            if (amp) virBufferAddChar(&buf, '&');
+            virBufferStrcat(&buf, uri->params[i].name, "=", NULL);
+            virBufferURIEncodeString(&buf, uri->params[i].value);
             amp = 1;
         }
     }

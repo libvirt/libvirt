@@ -1132,7 +1132,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     /* Check and display whether the domain autostarts or not */
     if (!virDomainGetAutostart(dom, &autostart)) {
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"),
-                 autostart ? _("enable") : _("disable") );
+                 autostart ? _("enable") : _("disable"));
     }
 
     has_managed_save = virDomainHasManagedSaveImage(dom, 0);

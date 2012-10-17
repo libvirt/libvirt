@@ -813,7 +813,7 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     if (virStorageVolGetInfo(vol, &info) == 0) {
         double val;
         const char *unit;
-        switch(info.type) {
+        switch (info.type) {
         case VIR_STORAGE_VOL_FILE:
             vshPrint(ctl, "%-15s %s\n", _("Type:"), _("file"));
             break;

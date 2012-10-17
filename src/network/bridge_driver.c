@@ -350,7 +350,7 @@ networkStartup(int privileged) {
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup (SYSCONFDIR "/libvirt")) == NULL)
+        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         char *userdir = virGetUserCacheDirectory();
@@ -2037,7 +2037,7 @@ networkCheckRouteCollision(virNetworkObjPtr network)
 
     VIR_DEBUG("%s output:\n%s", PROC_NET_ROUTE, buf);
 
-    if (!STRPREFIX (buf, "Iface"))
+    if (!STRPREFIX(buf, "Iface"))
         goto out;
 
     /* First line is just headings, skip it */
@@ -3366,7 +3366,7 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
             (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
             (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
             netdef->forwardIfs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-            if(vfname[ii]) {
+            if (vfname[ii]) {
                 netdef->forwardIfs[ii].device.dev = strdup(vfname[ii]);
                 if (!netdef->forwardIfs[ii].device.dev) {
                     virReportOOMError();

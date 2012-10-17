@@ -504,8 +504,8 @@ learnIPAddressThread(void *arg)
                     /* skip mcast addresses (224.0.0.0 - 239.255.255.255),
                      * class E (240.0.0.0 - 255.255.255.255, includes eth.
                      * bcast) and zero address in DHCP Requests */
-                    if ( (ntohl(vmaddr) & 0xe0000000) == 0xe0000000 ||
-                         vmaddr == 0) {
+                    if ((ntohl(vmaddr) & 0xe0000000) == 0xe0000000 ||
+                        vmaddr == 0) {
                         vmaddr = 0;
                         continue;
                     }
@@ -672,7 +672,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     if (howDetect == 0)
         return -1;
 
-    if ( !techdriver->canApplyBasicRules()) {
+    if (!techdriver->canApplyBasicRules()) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("IP parameter must be provided since "
                          "snooping the IP address does not work "

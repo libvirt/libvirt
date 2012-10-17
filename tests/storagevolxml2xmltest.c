@@ -104,7 +104,7 @@ mymain(void)
                         1, testCompareXMLToXMLHelper, &info) < 0) \
             ret = -1;   \
        }    \
-    while(0);
+    while (0);
 
     DO_TEST("pool-dir", "vol-file");
     DO_TEST("pool-dir", "vol-file-backing");

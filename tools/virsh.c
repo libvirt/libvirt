@@ -559,7 +559,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     int fd;
     char ebuf[1024];
 
-    tmpdir = getenv ("TMPDIR");
+    tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
     if (virAsprintf(&ret, "%s/virshXXXXXX.xml", tmpdir) < 0) {
         vshError(ctl, "%s", _("out of memory"));
@@ -1959,7 +1959,7 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
     int ret = 0;
     char *str = NULL;
 
-    switch(item->type) {
+    switch (item->type) {
     case VIR_TYPED_PARAM_INT:
         ret = virAsprintf(&str, "%d", item->value.i);
         break;

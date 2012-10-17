@@ -65,7 +65,7 @@ virCapsPtr umlCapsInit(void) {
     virCapsGuestPtr guest;
 
     /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
+    uname(&utsname);
 
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)

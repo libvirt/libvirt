@@ -56,16 +56,16 @@ linuxDomainInterfaceStats(const char *path,
     FILE *fp;
     char line[256], *colon;
 
-    fp = fopen ("/proc/net/dev", "r");
+    fp = fopen("/proc/net/dev", "r");
     if (!fp) {
         virReportSystemError(errno, "%s",
                              _("Could not open /proc/net/dev"));
         return -1;
     }
 
-    path_len = strlen (path);
+    path_len = strlen(path);
 
-    while (fgets (line, sizeof(line), fp)) {
+    while (fgets(line, sizeof(line), fp)) {
         long long dummy;
         long long rx_bytes;
         long long rx_packets;
@@ -80,23 +80,23 @@ linuxDomainInterfaceStats(const char *path,
          *   "   eth0:..."
          * Split it at the colon.
          */
-        colon = strchr (line, ':');
+        colon = strchr(line, ':');
         if (!colon) continue;
         *colon = '\0';
         if (colon-path_len >= line &&
-            STREQ (colon-path_len, path)) {
+            STREQ(colon-path_len, path)) {
             /* IMPORTANT NOTE!
              * /proc/net/dev vif<domid>.nn sees the network from the point
              * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
              * are bytes RECEIVED by the domain.  That's why the TX/RX fields
              * appear to be swapped here.
              */
-            if (sscanf (colon+1,
-                        "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
-                        &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
-                        &dummy, &dummy, &dummy, &dummy,
-                        &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
-                        &dummy, &dummy, &dummy, &dummy) != 16)
+            if (sscanf(colon+1,
+                       "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
+                       &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
+                       &dummy, &dummy, &dummy, &dummy,
+                       &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
+                       &dummy, &dummy, &dummy, &dummy) != 16)
                 continue;
 
             stats->rx_bytes = rx_bytes;
@@ -107,7 +107,7 @@ linuxDomainInterfaceStats(const char *path,
             stats->tx_packets = tx_packets;
             stats->tx_errs = tx_errs;
             stats->tx_drop = tx_drop;
-            VIR_FORCE_FCLOSE (fp);
+            VIR_FORCE_FCLOSE(fp);
 
             return 0;
         }

@@ -2079,7 +2079,7 @@ hit:
         goto cleanup;
     }
 
-    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0 ) {
+    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
         vshError(ctl, _("Failed to create XML"));
         goto cleanup;
     }
@@ -2965,8 +2965,8 @@ out_sig:
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
 
-typedef void (*jobWatchTimeoutFunc) (vshControl *ctl, virDomainPtr dom,
-                                     void *opaque);
+typedef void (*jobWatchTimeoutFunc)(vshControl *ctl, virDomainPtr dom,
+                                    void *opaque);
 
 static bool
 vshWatchJob(vshControl *ctl,

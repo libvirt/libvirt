@@ -165,7 +165,7 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
     ws_xml_destroy_doc(response);
     response = NULL;
 
-    while (enumContext != NULL && *enumContext != '\0' ) {
+    while (enumContext != NULL && *enumContext != '\0') {
         response = wsmc_action_pull(priv->client, resourceUri, options,
                                     filter, enumContext);
 

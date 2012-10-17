@@ -9,7 +9,7 @@
 #include "virrandom.h"
 
 int
-main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
+main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 {
     virSecurityManagerPtr mgr;
     const char *doi, *model;
@@ -19,23 +19,23 @@ main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 
     mgr = virSecurityManagerNew(NULL, "QEMU", false, true, false);
     if (mgr == NULL) {
-        fprintf (stderr, "Failed to start security driver");
+        fprintf(stderr, "Failed to start security driver");
         exit(EXIT_FAILURE);
     }
 
     model = virSecurityManagerGetModel(mgr);
     if (!model)
     {
-        fprintf (stderr, "Failed to copy secModel model: %s",
-                 strerror (errno));
+        fprintf(stderr, "Failed to copy secModel model: %s",
+                strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     doi = virSecurityManagerGetDOI(mgr);
     if (!doi)
     {
-        fprintf (stderr, "Failed to copy secModel DOI: %s",
-                 strerror (errno));
+        fprintf(stderr, "Failed to copy secModel DOI: %s",
+                strerror(errno));
         exit(EXIT_FAILURE);
     }
 

@@ -406,16 +406,16 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
                                    pool->def->target.path,
                                    NULL);
     else if (glusterfs)
-        cmd = virCommandNewArgList( MOUNT,
-                                    "-t",
-                                    (pool->def->type == VIR_STORAGE_POOL_FS ?
-                                     virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
-                                     virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format)),
-                                    src,
-                                    "-o",
-                                    "direct-io-mode=1",
-                                    pool->def->target.path,
-                                    NULL);
+        cmd = virCommandNewArgList(MOUNT,
+                                   "-t",
+                                   (pool->def->type == VIR_STORAGE_POOL_FS ?
+                                    virStoragePoolFormatFileSystemTypeToString(pool->def->source.format) :
+                                    virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format)),
+                                   src,
+                                   "-o",
+                                   "direct-io-mode=1",
+                                   pool->def->target.path,
+                                   NULL);
     else
         cmd = virCommandNewArgList(MOUNT,
                                    "-t",

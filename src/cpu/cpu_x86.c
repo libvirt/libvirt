@@ -548,16 +548,16 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     }
 
     vendor->cpuid.function = 0;
-    vendor->cpuid.ebx = (string[0]       ) |
-                        (string[1]  <<  8) |
-                        (string[2]  << 16) |
-                        (string[3]  << 24);
-    vendor->cpuid.edx = (string[4]       ) |
-                        (string[5]  <<  8) |
-                        (string[6]  << 16) |
-                        (string[7]  << 24);
-    vendor->cpuid.ecx = (string[8]       ) |
-                        (string[9]  <<  8) |
+    vendor->cpuid.ebx = (string[0]) |
+                        (string[1] << 8) |
+                        (string[2] << 16) |
+                        (string[3] << 24);
+    vendor->cpuid.edx = (string[4]) |
+                        (string[5] << 8) |
+                        (string[6] << 16) |
+                        (string[7] << 24);
+    vendor->cpuid.ecx = (string[8]) |
+                        (string[9] << 8) |
                         (string[10] << 16) |
                         (string[11] << 24);
 
