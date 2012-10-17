@@ -36,12 +36,10 @@ typedef struct _qemuCgroupData qemuCgroupData;
 
 bool qemuCgroupControllerActive(struct qemud_driver *driver,
                                 int controller);
-int qemuSetupDiskCgroup(struct qemud_driver *driver,
-                        virDomainObjPtr vm,
+int qemuSetupDiskCgroup(virDomainObjPtr vm,
                         virCgroupPtr cgroup,
                         virDomainDiskDefPtr disk);
-int qemuTeardownDiskCgroup(struct qemud_driver *driver,
-                           virDomainObjPtr vm,
+int qemuTeardownDiskCgroup(virDomainObjPtr vm,
                            virCgroupPtr cgroup,
                            virDomainDiskDefPtr disk);
 int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,

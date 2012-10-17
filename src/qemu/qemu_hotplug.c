@@ -2006,7 +2006,7 @@ int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(vm, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
@@ -2089,7 +2089,7 @@ int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(driver, vm, cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(vm, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
