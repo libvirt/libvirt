@@ -10454,6 +10454,66 @@ cleanup:
     return ret;
 }
 
+typedef enum {
+    VIR_DISK_CHAIN_NO_ACCESS,
+    VIR_DISK_CHAIN_READ_ONLY,
+    VIR_DISK_CHAIN_READ_WRITE,
+} qemuDomainDiskChainMode;
+
+/* Several operations end up adding or removing a single element of a
+ * disk backing file chain; this helper function ensures that the lock
+ * manager, cgroup device controller, and security manager labelling
+ * are all aware of each new file before it is added to a chain, and
+ * can revoke access to a file no longer needed in a chain.  */
+static int
+qemuDomainPrepareDiskChainElement(struct qemud_driver *driver,
+                                  virDomainObjPtr vm,
+                                  virCgroupPtr cgroup,
+                                  virDomainDiskDefPtr disk,
+                                  char *file,
+                                  qemuDomainDiskChainMode mode)
+{
+    /* The easiest way to label a single file with the same
+     * permissions it would have as if part of the disk chain is to
+     * temporarily modify the disk in place.  */
+    char *origsrc = disk->src;
+    int origformat = disk->format;
+    virStorageFileMetadataPtr origchain = disk->backingChain;
+    bool origreadonly = disk->readonly;
+    int ret = -1;
+
+    disk->src = file;
+    disk->format = VIR_STORAGE_FILE_RAW;
+    disk->backingChain = NULL;
+    disk->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
+
+    if (mode == VIR_DISK_CHAIN_NO_ACCESS) {
+        if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                                vm->def, disk) < 0)
+            VIR_WARN("Unable to restore security label on %s", disk->src);
+        if (cgroup && qemuTeardownDiskCgroup(vm, cgroup, disk) < 0)
+            VIR_WARN("Failed to teardown cgroup for disk path %s", disk->src);
+        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
+            VIR_WARN("Unable to release lock on %s", disk->src);
+    } else if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
+                                       vm, disk) < 0 ||
+               (cgroup && qemuSetupDiskCgroup(vm, cgroup, disk) < 0) ||
+               virSecurityManagerSetImageLabel(driver->securityManager,
+                                               vm->def, disk) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    disk->src = origsrc;
+    disk->format = origformat;
+    disk->backingChain = origchain;
+    disk->readonly = origreadonly;
+    return ret;
+}
+
+
 static bool
 qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 {
@@ -10763,8 +10823,6 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     char *persistSource = NULL;
     int ret = -1;
     int fd = -1;
-    char *origsrc = NULL;
-    int origdriver;
     bool need_unlink = false;
 
     if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
@@ -10791,10 +10849,6 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
         VIR_FORCE_CLOSE(fd);
     }
 
-    origsrc = disk->src;
-    disk->src = source;
-    origdriver = disk->format;
-    disk->format = VIR_STORAGE_FILE_RAW; /* Don't want to probe backing files */
     /* XXX Here, we know we are about to alter disk->backingChain if
      * successful, so we nuke the existing chain so that future
      * commands will recompute it.  Better would be storing the chain
@@ -10804,26 +10858,12 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     virStorageFileFreeMetadata(disk->backingChain);
     disk->backingChain = NULL;
 
-    if (virDomainLockDiskAttach(driver->lockManager, driver->uri,
-                                vm, disk) < 0)
-        goto cleanup;
-    if (cgroup && qemuSetupDiskCgroup(vm, cgroup, disk) < 0) {
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", source);
+    if (qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, source,
+                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+        qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, source,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
         goto cleanup;
     }
-    if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
-                                        disk) < 0) {
-        if (cgroup && qemuTeardownDiskCgroup(vm, cgroup, disk) < 0)
-            VIR_WARN("Failed to teardown cgroup for disk path %s", source);
-        if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-            VIR_WARN("Unable to release lock on %s", source);
-        goto cleanup;
-    }
-
-    disk->src = origsrc;
-    origsrc = NULL;
-    disk->format = origdriver;
 
     /* create the actual snapshot */
     if (snap->format)
@@ -10848,10 +10888,6 @@ qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
     }
 
 cleanup:
-    if (origsrc) {
-        disk->src = origsrc;
-        disk->format = origdriver;
-    }
     if (need_unlink && unlink(source))
         VIR_WARN("unable to unlink just-created %s", source);
     VIR_FREE(device);
@@ -10883,13 +10919,8 @@ qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, disk) < 0)
-        VIR_WARN("Unable to restore security label on %s", disk->src);
-    if (cgroup && qemuTeardownDiskCgroup(vm, cgroup, disk) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s", disk->src);
-    if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
-        VIR_WARN("Unable to release lock on %s", disk->src);
+    qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, origdisk->src,
+                                      VIR_DISK_CHAIN_NO_ACCESS);
     if (need_unlink && stat(disk->src, &st) == 0 &&
         S_ISREG(st.st_mode) && unlink(disk->src) < 0)
         VIR_WARN("Unable to remove just-created %s", disk->src);
