@@ -4245,7 +4245,8 @@ qemudDomainPinEmulator(virDomainPtr dom,
                 if (virCgroupForDomain(driver->cgroup, vm->def->name,
                                        &cgroup_dom, 0) == 0) {
                     if (virCgroupForEmulator(cgroup_dom, &cgroup_emulator, 0) == 0) {
-                        if (qemuSetupCgroupEmulatorPin(cgroup_emulator, newVcpuPin[0]) < 0) {
+                        if (qemuSetupCgroupEmulatorPin(cgroup_emulator,
+                                                       newVcpuPin[0]->cpumask) < 0) {
                             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                            _("failed to set cpuset.cpus in cgroup"
                                              " for emulator threads"));

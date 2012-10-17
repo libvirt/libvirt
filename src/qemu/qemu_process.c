@@ -2024,11 +2024,12 @@ cleanup:
     return ret;
 }
 
-/* Set CPU affinities for emulator threads if emulatorpin xml provided. */
+/* Set CPU affinities for emulator threads. */
 static int
 qemuProcessSetEmulatorAffinites(virConnectPtr conn,
                                 virDomainObjPtr vm)
 {
+    virBitmapPtr cpumask;
     virDomainDefPtr def = vm->def;
     virNodeInfo nodeinfo;
     int ret = -1;
@@ -2036,15 +2037,14 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
     if (virNodeGetInfo(conn, &nodeinfo) != 0)
         return -1;
 
-    if (!def->cputune.emulatorpin)
-        return 0;
-
-    if (virProcessInfoSetAffinity(vm->pid,
-                                  def->cputune.emulatorpin->cpumask) < 0) {
+    if (def->cputune.emulatorpin)
+        cpumask = def->cputune.emulatorpin->cpumask;
+    else if (def->cpumask)
+        cpumask = def->cpumask;
+    else
         goto cleanup;
-    }
 
-    ret = 0;
+    ret = virProcessInfoSetAffinity(vm->pid, cpumask);
 cleanup:
     return ret;
 }

@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.h: QEMU cgroup management
  *
- * Copyright (C) 2006-2007, 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            virDomainVcpuPinDefPtr *vcpupin,
                            int nvcpupin,
                            int vcpuid);
-int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virDomainVcpuPinDefPtr vcpupin);
+int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virBitmapPtr cpumask);
 int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
                                virDomainObjPtr vm);
