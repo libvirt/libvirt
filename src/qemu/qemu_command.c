@@ -4238,6 +4238,26 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         have_cpu = true;
     }
 
+    if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
+        if (!have_cpu) {
+            virBufferAdd(&buf, default_model, -1);
+            have_cpu = true;
+        }
+
+        for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+            switch ((enum virDomainHyperv) i) {
+            case VIR_DOMAIN_HYPERV_RELAXED:
+                if (def->hyperv_features[i] == VIR_DOMAIN_FEATURE_STATE_ON)
+                    virBufferAsprintf(&buf, ",hv_%s",
+                                      virDomainHypervTypeToString(i));
+                break;
+
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+        }
+    }
+
     if (virBufferError(&buf))
         goto no_memory;
 
@@ -7708,8 +7728,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 cpu->model = model;
                 model = NULL;
             }
-        }
-        else if (*p == '+' || *p == '-') {
+        } else if (*p == '+' || *p == '-') {
             char *feature;
             int policy;
             int ret = 0;
@@ -7779,6 +7798,41 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             VIR_FREE(feature);
             if (ret < 0)
                 goto error;
+        } else if (STRPREFIX(p, "hv_")) {
+            char *feature;
+            int f;
+            p += 3; /* "hv_" */
+
+            if (*p == '\0' || *p == ',')
+                goto syntax;
+
+            if (next)
+                feature = strndup(p, next - p - 1);
+            else
+                feature = strdup(p);
+
+            if (!feature)
+                goto no_memory;
+
+            dom->features |= (1 << VIR_DOMAIN_FEATURE_HYPERV);
+
+            if ((f = virDomainHypervTypeFromString(feature)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported HyperV Enlightenment feature "
+                                 "'%s'"), feature);
+                goto error;
+            }
+
+            switch ((enum virDomainHyperv) f) {
+            case VIR_DOMAIN_HYPERV_RELAXED:
+                dom->hyperv_features[f] = VIR_DOMAIN_FEATURE_STATE_ON;
+                break;
+
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+
+            VIR_FREE(feature);
         }
     } while ((p = next));
 

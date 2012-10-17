@@ -150,6 +150,8 @@ mymain(void)
     DO_TEST("eoi-disabled");
     DO_TEST("eoi-enabled");
 
+    DO_TEST("hyperv");
+
     DO_TEST("hugepages");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
