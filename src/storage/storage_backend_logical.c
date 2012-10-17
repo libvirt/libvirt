@@ -699,6 +699,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 {
     int fdret, fd = -1;
     virCommandPtr cmd = NULL;
+    virErrorPtr err;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -775,9 +776,11 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     return 0;
 
  cleanup:
+    err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
     virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
     virCommandFree(cmd);
+    virSetError(err);
     return -1;
 }
 
