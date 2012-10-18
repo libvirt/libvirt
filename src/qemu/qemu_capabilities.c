@@ -2055,6 +2055,8 @@ qemuCapsInitHelp(qemuCapsPtr caps)
         /* For historical compat we use 'itanium' as arch name */
         if (STREQ(tmp, "ia64"))
             tmp = "itanium";
+        else if (STREQ(tmp, "i386"))
+            tmp = "i686";
     } else {
         uname_normalize(&ut);
         tmp = ut.machine;
