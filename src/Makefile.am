@@ -660,7 +660,7 @@ CPU_SOURCES =							\
 		cpu/cpu_s390.h cpu/cpu_s390.c			\
 		cpu/cpu_arm.h cpu/cpu_arm.c			\
 		cpu/cpu_map.h cpu/cpu_map.c cpu/cpu_powerpc.h	\
-		cpu/cpu_powerpc.c
+		cpu/cpu_powerpc.c cpu/cpu_ppc_data.h
 
 VMX_SOURCES =							\
 		vmx/vmx.c vmx/vmx.h
