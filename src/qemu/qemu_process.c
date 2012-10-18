@@ -2037,12 +2037,14 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
     if (virNodeGetInfo(conn, &nodeinfo) != 0)
         return -1;
 
-    if (def->cputune.emulatorpin)
+    if (def->cputune.emulatorpin) {
         cpumask = def->cputune.emulatorpin->cpumask;
-    else if (def->cpumask)
+    } else if (def->cpumask) {
         cpumask = def->cpumask;
-    else
+    } else {
+        ret = 0;
         goto cleanup;
+    }
 
     ret = virProcessInfoSetAffinity(vm->pid, cpumask);
 cleanup:
