@@ -1038,6 +1038,7 @@ Requires: sanlock >= 1.8
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
 Requires: %{name}-daemon = %{version}-%{release}
+Requires: %{name}-client = %{version}-%{release}
 
 %description lock-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
