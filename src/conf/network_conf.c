@@ -260,8 +260,9 @@ virNetworkObjAssignDef(virNetworkObjPtr network,
             return -1;
         }
     } else if (!live) {
-        virNetworkDefFree(network->newDef); /* should be unnecessary */
+        virNetworkDefFree(network->newDef);
         virNetworkDefFree(network->def);
+        network->newDef = NULL;
         network->def = def;
     } else {
         virReportError(VIR_ERR_OPERATION_INVALID,
