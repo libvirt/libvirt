@@ -2399,7 +2399,6 @@ qemuMonitorJSONSpiceGetMigrationStatusReply(virJSONValuePtr reply,
                                             bool *spice_migrated)
 {
     virJSONValuePtr ret;
-    const char *migrated_str;
 
     if (!(ret = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2407,13 +2406,11 @@ qemuMonitorJSONSpiceGetMigrationStatusReply(virJSONValuePtr reply,
         return -1;
     }
 
-    if (!(migrated_str = virJSONValueObjectGetString(ret, "migrated"))) {
+    if (virJSONValueObjectGetBoolean(ret, "migrated", spice_migrated) < 0) {
         /* Deliberately don't report error here as we are
          * probably dealing with older qemu which doesn't
          * report this yet. Pretend spice is migrated. */
         *spice_migrated = true;
-    } else {
-        *spice_migrated = STREQ(migrated_str, "true");
     }
 
     return 0;
