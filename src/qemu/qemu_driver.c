@@ -2025,7 +2025,7 @@ cleanup:
 }
 
 
-/* Count how many snapshots in a set have external disk snapshots.  */
+/* Count how many snapshots in a set are external snapshots or checkpoints.  */
 static void
 qemuDomainSnapshotCountExternal(void *payload,
                                 const void *name ATTRIBUTE_UNUSED,
@@ -2034,7 +2034,7 @@ qemuDomainSnapshotCountExternal(void *payload,
     virDomainSnapshotObjPtr snap = payload;
     int *count = data;
 
-    if (snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+    if (virDomainSnapshotIsExternal(snap))
         (*count)++;
 }
 
@@ -12512,7 +12512,7 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY)) {
         if (!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) &&
-            snap->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+            virDomainSnapshotIsExternal(snap))
             external++;
         if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)
             virDomainSnapshotForEachDescendant(snap,

@@ -1023,3 +1023,20 @@ cleanup:
     }
     return ret;
 }
+
+
+bool
+virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap)
+{
+    int i;
+
+    if (snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+        return true;
+
+    for (i = 0; i < snap->def->ndisks; i++) {
+        if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            return true;
+    }
+
+    return false;
+}

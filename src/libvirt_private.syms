@@ -1083,6 +1083,7 @@ virDomainSnapshotFindByName;
 virDomainSnapshotForEach;
 virDomainSnapshotForEachChild;
 virDomainSnapshotForEachDescendant;
+virDomainSnapshotIsExternal;
 virDomainSnapshotLocationTypeFromString;
 virDomainSnapshotLocationTypeToString;
 virDomainSnapshotObjListGetNames;

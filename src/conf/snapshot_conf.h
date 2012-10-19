@@ -155,6 +155,8 @@ int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotPtr **snaps,
                            unsigned int flags);
 
+bool virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap);
+
 VIR_ENUM_DECL(virDomainSnapshotLocation)
 VIR_ENUM_DECL(virDomainSnapshotState)
 
