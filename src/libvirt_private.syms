@@ -872,6 +872,7 @@ virNetworkObjLock;
 virNetworkObjReplacePersistentDef;
 virNetworkObjSetDefTransient;
 virNetworkObjUnlock;
+virNetworkObjUnsetDefTransient;
 virNetworkObjUpdate;
 virNetworkRemoveInactive;
 virNetworkSaveConfig;

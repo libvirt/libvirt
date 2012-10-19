@@ -352,6 +352,20 @@ virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live)
     return network->newDef ? 0 : -1;
 }
 
+/* virNetworkObjUnsetDefTransient:
+ *
+ * This *undoes* what virNetworkObjSetDefTransient did.
+ */
+void
+virNetworkObjUnsetDefTransient(virNetworkObjPtr network)
+{
+    if (network->def) {
+        virNetworkDefFree(network->def);
+        network->def = network->newDef;
+        network->newDef = NULL;
+    }
+}
+
 /*
  * virNetworkObjGetPersistentDef:
  * @network: network object pointer
