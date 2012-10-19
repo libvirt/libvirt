@@ -95,6 +95,11 @@ enum {
      * messages).
      */
     VIR_DRV_FEATURE_PROGRAM_KEEPALIVE = 10,
+
+    /*
+     * Support for VIR_DOMAIN_XML_MIGRATABLE flag in domainGetXMLDesc
+     */
+    VIR_DRV_FEATURE_XML_MIGRATABLE = 11,
 };
 
 
