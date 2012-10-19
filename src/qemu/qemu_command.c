@@ -5857,6 +5857,12 @@ qemuBuildCommandLine(virConnectPtr conn,
         def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
 
+        if (!qemuCapsGet(caps, QEMU_CAPS_VNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc graphics are not supported with this QEMU"));
+            goto error;
+        }
+
         if (def->graphics[0]->data.vnc.socket ||
             driver->vncAutoUnixSocket) {
 

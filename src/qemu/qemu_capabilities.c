@@ -188,6 +188,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "dump-guest-core",
               "seamless-migration",
               "block-commit",
+              "vnc",
     );
 
 struct _qemuCaps {
@@ -938,6 +939,8 @@ qemuCapsComputeCmdFlags(const char *help,
     }
     if (strstr(help, "-spice"))
         qemuCapsSet(caps, QEMU_CAPS_SPICE);
+    if (strstr(help, "-vnc"))
+        qemuCapsSet(caps, QEMU_CAPS_VNC);
     if (strstr(help, "seamless-migration="))
         qemuCapsSet(caps, QEMU_CAPS_SEAMLESS_MIGRATION);
     if (strstr(help, "boot=on"))
@@ -1884,6 +1887,8 @@ qemuCapsProbeQMPCommands(qemuCapsPtr caps,
             qemuCapsSet(caps, QEMU_CAPS_KVM);
         else if (STREQ(name, "block-commit"))
             qemuCapsSet(caps, QEMU_CAPS_BLOCK_COMMIT);
+        else if (STREQ(name, "query-vnc"))
+            qemuCapsSet(caps, QEMU_CAPS_VNC);
         VIR_FREE(name);
     }
     VIR_FREE(commands);

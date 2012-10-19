@@ -147,7 +147,8 @@ mymain(void)
             QEMU_CAPS_NO_REBOOT,
             QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("kvm-74", 9001, 1, 74,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -161,7 +162,8 @@ mymain(void)
             QEMU_CAPS_MEM_PATH,
             QEMU_CAPS_TDF,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("kvm-83-rhel56", 9001, 1, 83,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -189,7 +191,8 @@ mymain(void)
             QEMU_CAPS_SMBIOS_TYPE,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-0.10.5", 10005, 0, 0,
             QEMU_CAPS_KQEMU,
             QEMU_CAPS_VNC_COLON,
@@ -210,7 +213,8 @@ mymain(void)
             QEMU_CAPS_NO_HPET,
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.10.5", 10005, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -237,7 +241,8 @@ mymain(void)
             QEMU_CAPS_NESTING,
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("kvm-86", 10050, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -264,7 +269,8 @@ mymain(void)
             QEMU_CAPS_SMBIOS_TYPE,
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.11.0-rc2", 10092, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -296,7 +302,8 @@ mymain(void)
             QEMU_CAPS_SMBIOS_TYPE,
             QEMU_CAPS_VGA_NONE,
             QEMU_CAPS_NO_SHUTDOWN,
-            QEMU_CAPS_NO_ACPI);
+            QEMU_CAPS_NO_ACPI,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-0.12.1", 12001, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -331,7 +338,8 @@ mymain(void)
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
-            QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.1.2-rhel60", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -382,7 +390,8 @@ mymain(void)
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
-            QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.3", 12003, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -424,7 +433,8 @@ mymain(void)
             QEMU_CAPS_PCI_ROMBAR,
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
-            QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.13.0", 13000, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -484,7 +494,8 @@ mymain(void)
             QEMU_CAPS_NO_ACPI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
             QEMU_CAPS_CPU_HOST,
-            QEMU_CAPS_SCSI_LSI);
+            QEMU_CAPS_SCSI_LSI,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -542,7 +553,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO,
             QEMU_CAPS_CPU_HOST,
-            QEMU_CAPS_BLOCKIO);
+            QEMU_CAPS_BLOCKIO,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.1.2-rhel62-beta", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -610,7 +622,8 @@ mymain(void)
             QEMU_CAPS_DRIVE_COPY_ON_READ,
             QEMU_CAPS_CPU_HOST,
             QEMU_CAPS_SCSI_CD,
-            QEMU_CAPS_BLOCKIO);
+            QEMU_CAPS_BLOCKIO,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -683,7 +696,8 @@ mymain(void)
             QEMU_CAPS_SCSI_CD,
             QEMU_CAPS_IDE_CD,
             QEMU_CAPS_SCSI_LSI,
-            QEMU_CAPS_BLOCKIO);
+            QEMU_CAPS_BLOCKIO,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -764,7 +778,8 @@ mymain(void)
             QEMU_CAPS_NETDEV_BRIDGE,
             QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_VIRTIO_SCSI_PCI,
-            QEMU_CAPS_BLOCKIO);
+            QEMU_CAPS_BLOCKIO,
+            QEMU_CAPS_VNC);
     DO_TEST("qemu-1.2.0", 1002000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -848,7 +863,8 @@ mymain(void)
             QEMU_CAPS_BLOCKIO,
             QEMU_CAPS_SCSI_DISK_WWN,
             QEMU_CAPS_SECCOMP_SANDBOX,
-            QEMU_CAPS_DUMP_GUEST_CORE);
+            QEMU_CAPS_DUMP_GUEST_CORE,
+            QEMU_CAPS_VNC);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
