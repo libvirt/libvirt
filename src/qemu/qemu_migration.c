@@ -800,6 +800,8 @@ qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
                        virDomainDefPtr def)
 {
     int nsnapshots;
+    bool forbid;
+    int i;
 
     if (vm) {
         if (qemuProcessAutoDestroyActive(driver, vm)) {
@@ -817,9 +819,23 @@ qemuMigrationIsAllowed(struct qemud_driver *driver, virDomainObjPtr vm,
 
         def = vm->def;
     }
-    if (def->nhostdevs > 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("Domain with assigned host devices cannot be migrated"));
+
+    /* Migration with USB host devices is allowed, all other devices are
+     * forbidden.
+     */
+    forbid = false;
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+            forbid = true;
+            break;
+        }
+    }
+    if (forbid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain with assigned non-USB host devices "
+                         "cannot be migrated"));
         return false;
     }
 
