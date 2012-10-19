@@ -1,3 +1,4 @@
 @DNSMASQ@ --strict-order --bind-interfaces \
 --local=// --domain-needed --conf-file= \
---except-interface lo --listen-address 192.168.122.1\
+--except-interface lo --listen-address 192.168.122.1 \
+--addn-hosts=/var/lib/libvirt/dnsmasq/local.addnhosts\

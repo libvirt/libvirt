@@ -4,4 +4,6 @@
 --dhcp-range 192.168.122.2,192.168.122.254 \
 --dhcp-leasefile=/var/lib/libvirt/dnsmasq/netboot.leases \
 --dhcp-lease-max=253 --dhcp-no-override --expand-hosts \
+--dhcp-hostsfile=/var/lib/libvirt/dnsmasq/netboot.hostsfile \
+--addn-hosts=/var/lib/libvirt/dnsmasq/netboot.addnhosts \
 --dhcp-boot pxeboot.img,,10.20.30.40\

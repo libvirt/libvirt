@@ -751,12 +751,19 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         if (networkBuildDnsmasqHostsfile(dctx, ipdef, network->def->dns) < 0)
             goto cleanup;
 
-        if (dctx->hostsfile->nhosts)
+        /* Even if there are currently no static hosts, if we're
+         * listening for DHCP, we should write a 0-length hosts
+         * file to allow for runtime additions.
+         */
+        if (ipdef->nranges || ipdef->nhosts)
             virCommandAddArgPair(cmd, "--dhcp-hostsfile",
                                  dctx->hostsfile->path);
-        if (dctx->addnhostsfile->nhosts)
-            virCommandAddArgPair(cmd, "--addn-hosts",
-                                 dctx->addnhostsfile->path);
+
+        /* Likewise, always create this file and put it on the commandline, to allow for
+         * for runtime additions.
+         */
+        virCommandAddArgPair(cmd, "--addn-hosts",
+                             dctx->addnhostsfile->path);
 
         if (ipdef->tftproot) {
             virCommandAddArgList(cmd, "--enable-tftp",
@@ -2882,7 +2889,10 @@ networkUpdate(virNetworkPtr net,
 {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network = NULL;
-    int isActive, ret = -1;
+    int isActive, ret = -1, ii;
+    virNetworkIpDefPtr ipdef;
+    bool oldDhcpActive = false;
+
 
     virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
@@ -2895,6 +2905,16 @@ networkUpdate(virNetworkPtr net,
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
         goto cleanup;
+    }
+
+    /* see if we are listening for dhcp pre-modification */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+         ii++) {
+        if (ipdef->nranges || ipdef->nhosts) {
+            oldDhcpActive = true;
+            break;
+        }
     }
 
     /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
@@ -2938,8 +2958,30 @@ networkUpdate(virNetworkPtr net,
             if (networkRestartDhcpDaemon(network) < 0)
                 goto cleanup;
 
-        } else if (section == VIR_NETWORK_SECTION_IP_DHCP_HOST ||
-                   section == VIR_NETWORK_SECTION_DNS_HOST ||
+        } else if (section == VIR_NETWORK_SECTION_IP_DHCP_HOST) {
+            /* if we previously weren't listening for dhcp and now we
+             * are (or vice-versa) then we need to do a restart,
+             * otherwise we just need to do a refresh (redo the config
+             * files and send SIGHUP)
+             */
+            bool newDhcpActive = false;
+
+            for (ii = 0;
+                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
+                 ii++) {
+                if (ipdef->nranges || ipdef->nhosts) {
+                    newDhcpActive = true;
+                    break;
+                }
+            }
+
+            if ((newDhcpActive != oldDhcpActive &&
+                networkRestartDhcpDaemon(network) < 0) ||
+                networkRefreshDhcpDaemon(network) < 0) {
+                goto cleanup;
+            }
+
+        } else if (section == VIR_NETWORK_SECTION_DNS_HOST ||
                    section == VIR_NETWORK_SECTION_DNS_TXT ||
                    section == VIR_NETWORK_SECTION_DNS_SRV) {
             /* these sections only change things in config files, so we

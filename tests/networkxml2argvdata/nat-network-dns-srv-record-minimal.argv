@@ -13,4 +13,5 @@
 --dhcp-leasefile=/var/lib/libvirt/dnsmasq/default.leases \
 --dhcp-lease-max=253 \
 --dhcp-no-override \
---dhcp-hostsfile=/var/lib/libvirt/dnsmasq/default.hostsfile\
+--dhcp-hostsfile=/var/lib/libvirt/dnsmasq/default.hostsfile \
+--addn-hosts=/var/lib/libvirt/dnsmasq/default.addnhosts\
