@@ -424,6 +424,7 @@ virDomainLifecycleCrashTypeFromString;
 virDomainLifecycleCrashTypeToString;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
+virDomainList;
 virDomainLiveConfigHelperMethod;
 virDomainLoadAllConfigs;
 virDomainLockFailureTypeFromString;
@@ -495,24 +496,6 @@ virDomainSmartcardTypeFromString;
 virDomainSmartcardTypeToString;
 virDomainSmbiosModeTypeFromString;
 virDomainSmbiosModeTypeToString;
-virDomainSnapshotAlignDisks;
-virDomainSnapshotAssignDef;
-virDomainSnapshotDefFormat;
-virDomainSnapshotDefFree;
-virDomainSnapshotDefParseString;
-virDomainSnapshotDropParent;
-virDomainSnapshotFindByName;
-virDomainSnapshotForEach;
-virDomainSnapshotForEachChild;
-virDomainSnapshotForEachDescendant;
-virDomainSnapshotLocationTypeFromString;
-virDomainSnapshotLocationTypeToString;
-virDomainSnapshotObjListGetNames;
-virDomainSnapshotObjListNum;
-virDomainSnapshotObjListRemove;
-virDomainSnapshotStateTypeFromString;
-virDomainSnapshotStateTypeToString;
-virDomainSnapshotUpdateRelations;
 virDomainSoundDefFree;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;
@@ -1087,6 +1070,29 @@ sexpr_u64;
 sexpr2string;
 string2sexpr;
 
+
+# snapshot_conf.h
+virDomainListSnapshots;
+virDomainSnapshotAlignDisks;
+virDomainSnapshotAssignDef;
+virDomainSnapshotDefFormat;
+virDomainSnapshotDefFree;
+virDomainSnapshotDefParseString;
+virDomainSnapshotDropParent;
+virDomainSnapshotFindByName;
+virDomainSnapshotForEach;
+virDomainSnapshotForEachChild;
+virDomainSnapshotForEachDescendant;
+virDomainSnapshotLocationTypeFromString;
+virDomainSnapshotLocationTypeToString;
+virDomainSnapshotObjListGetNames;
+virDomainSnapshotObjListNum;
+virDomainSnapshotObjListRemove;
+virDomainSnapshotStateTypeFromString;
+virDomainSnapshotStateTypeToString;
+virDomainSnapshotUpdateRelations;
+
+
 # storage_conf.h
 virStoragePartedFsTypeTypeToString;
 virStoragePoolDefFormat;
@@ -1324,11 +1330,6 @@ virConsoleOpen;
 
 # virdbus.h
 virDBusGetSystemBus;
-
-
-# virdomainlist.h
-virDomainList;
-virDomainListSnapshots;
 
 
 # virfile.h
