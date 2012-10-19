@@ -253,6 +253,7 @@ int virNetworkObjAssignDef(virNetworkObjPtr network,
                            const virNetworkDefPtr def,
                            bool live);
 int virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live);
+void virNetworkObjUnsetDefTransient(virNetworkObjPtr network);
 virNetworkDefPtr virNetworkObjGetPersistentDef(virNetworkObjPtr network);
 int virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
                                       virNetworkDefPtr def);
