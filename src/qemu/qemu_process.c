@@ -2004,13 +2004,8 @@ qemuProcessSetVcpuAffinites(virConnectPtr conn,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    virNodeInfo nodeinfo;
     int vcpu, n;
     int ret = -1;
-
-    if (virNodeGetInfo(conn, &nodeinfo) != 0) {
-        return  -1;
-    }
 
     if (!def->cputune.nvcpupin)
         return 0;
@@ -2042,23 +2037,16 @@ qemuProcessSetEmulatorAffinites(virConnectPtr conn,
 {
     virBitmapPtr cpumask;
     virDomainDefPtr def = vm->def;
-    virNodeInfo nodeinfo;
     int ret = -1;
 
-    if (virNodeGetInfo(conn, &nodeinfo) != 0)
-        return -1;
-
-    if (def->cputune.emulatorpin) {
+    if (def->cputune.emulatorpin)
         cpumask = def->cputune.emulatorpin->cpumask;
-    } else if (def->cpumask) {
+    else if (def->cpumask)
         cpumask = def->cpumask;
-    } else {
-        ret = 0;
-        goto cleanup;
-    }
+    else
+        return 0;
 
     ret = virProcessInfoSetAffinity(vm->pid, cpumask);
-cleanup:
     return ret;
 }
 
