@@ -1908,6 +1908,8 @@ qemuCapsProbeQMPEvents(qemuCapsPtr caps,
 
         if (STREQ(name, "BALLOON_CHANGE"))
             qemuCapsSet(caps, QEMU_CAPS_BALLOON_EVENT);
+        if (STREQ(name, "SPICE_MIGRATE_COMPLETED"))
+            qemuCapsSet(caps, QEMU_CAPS_SEAMLESS_MIGRATION);
         VIR_FREE(name);
     }
     VIR_FREE(events);
