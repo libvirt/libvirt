@@ -2618,6 +2618,7 @@ networkValidate(virNetworkDefPtr def)
 {
     int ii;
     bool vlanUsed, vlanAllowed;
+    const char *defaultPortGroup = NULL;
 
     /* The only type of networks that currently support transparent
      * vlan configuration are those using hostdev sr-iov devices from
@@ -2637,6 +2638,17 @@ networkValidate(virNetworkDefPtr def)
             (def->portGroups[ii].virtPortProfile->virtPortType
              == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)) {
             vlanAllowed = true;
+        }
+        if (def->portGroups[ii].isDefault) {
+            if (defaultPortGroup) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("network '%s' has multiple default "
+                                 "<portgroup> elements (%s and %s), "
+                                 "but only one default is allowed"),
+                               def->name, defaultPortGroup,
+                               def->portGroups[ii].name);
+            }
+            defaultPortGroup = def->portGroups[ii].name;
         }
     }
     if (vlanUsed && !vlanAllowed) {

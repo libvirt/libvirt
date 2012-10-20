@@ -2752,7 +2752,8 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
                              /* virNetworkUpdateFlags */
                              unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    int ii, ret = -1;
+    int ii, foundName = -1, foundDefault = -1;
+    int ret = -1;
     virPortGroupDef portgroup;
 
     memset(&portgroup, 0, sizeof(portgroup));
@@ -2766,9 +2767,11 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
     /* check if a portgroup with same name already exists */
     for (ii = 0; ii < def->nPortGroups; ii++) {
         if (STREQ(portgroup.name, def->portGroups[ii].name))
-            break;
+            foundName = ii;
+        if (def->portGroups[ii].isDefault)
+            foundDefault = ii;
     }
-    if (ii == def->nPortGroups &&
+    if (foundName == -1 &&
         ((command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) ||
          (command == VIR_NETWORK_UPDATE_COMMAND_DELETE))) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2776,7 +2779,7 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
                          "in network '%s' matching <portgroup name='%s'>"),
                        def->name, portgroup.name);
         goto cleanup;
-    } else if (ii < def->nPortGroups &&
+    } else if (foundName >= 0 &&
                ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
                 (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST))) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2787,11 +2790,25 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
         goto cleanup;
     }
 
+    /* if there is already a different default, we can't make this
+     * one the default.
+     */
+    if (command != VIR_NETWORK_UPDATE_COMMAND_DELETE &&
+        portgroup.isDefault &&
+        foundDefault >= 0 && foundDefault != foundName) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("a different portgroup entry in "
+                         "network '%s' is already set as the default. "
+                         "Only one default is allowed."),
+                       def->name);
+        goto cleanup;
+    }
+
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
         /* replace existing entry */
-        virPortGroupDefClear(&def->portGroups[ii]);
-        def->portGroups[ii] = portgroup;
+        virPortGroupDefClear(&def->portGroups[foundName]);
+        def->portGroups[foundName] = portgroup;
         memset(&portgroup, 0, sizeof(portgroup));
 
     } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
@@ -2816,9 +2833,9 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         /* remove it */
-        virPortGroupDefClear(&def->portGroups[ii]);
-        memmove(def->portGroups + ii, def->portGroups + ii + 1,
-                sizeof(*def->portGroups) * (def->nPortGroups - ii - 1));
+        virPortGroupDefClear(&def->portGroups[foundName]);
+        memmove(def->portGroups + foundName, def->portGroups + foundName + 1,
+                sizeof(*def->portGroups) * (def->nPortGroups - foundName - 1));
         def->nPortGroups--;
         ignore_value(VIR_REALLOC_N(def->portGroups, def->nPortGroups));
     } else {
