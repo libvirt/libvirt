@@ -2169,7 +2169,6 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
     qemuCapsSet(caps, QEMU_CAPS_NODEFCONFIG);
     qemuCapsSet(caps, QEMU_CAPS_BOOT_MENU);
     qemuCapsSet(caps, QEMU_CAPS_FSDEV);
-    qemuCapsSet(caps, QEMU_CAPS_NESTING);
     qemuCapsSet(caps, QEMU_CAPS_NAME_PROCESS);
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_READONLY);
     qemuCapsSet(caps, QEMU_CAPS_SMBIOS_TYPE);
