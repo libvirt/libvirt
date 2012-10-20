@@ -1261,6 +1261,8 @@ static int virFileMakePathHelper(char *path, mode_t mode)
     struct stat st;
     char *p;
 
+    VIR_DEBUG("path=%s mode=0%o", path, mode);
+
     if (stat(path, &st) >= 0) {
         if (S_ISDIR(st.st_mode))
             return 0;
