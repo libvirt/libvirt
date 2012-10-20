@@ -568,7 +568,11 @@ SELinuxRestoreSecurityFileLabel(const char *path)
     }
 
     if (getContext(newpath, buf.st_mode, &fcon) < 0) {
+        /* Any user created path likely does not have a default label,
+         * which makes this an expected non error
+         */
         VIR_WARN("cannot lookup default selinux label for %s", newpath);
+        rc = 0;
     } else {
         rc = SELinuxSetFilecon(newpath, fcon);
     }
