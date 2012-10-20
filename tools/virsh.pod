@@ -1295,6 +1295,10 @@ will be held for that many milliseconds.  The default codeset is
 B<linux>, but use of the I<--codeset> option allows other codesets to
 be chosen.
 
+If multiple keycodes are specified, they are all sent simultaneously
+to the guest, and they may be received in random order. If you need
+distinct keypresses, you must use multiple send-key invocations.
+
 =over 4
 
 =item B<linux>
@@ -1359,10 +1363,14 @@ bit of the first byte. No symbolic names are provided.
 =back
 
 B<Examples>
-  # send three strokes 'k', 'e', 'y', using xt codeset
+  # send three strokes 'k', 'e', 'y', using xt codeset. these
+  # are all pressed simultaneously and may be received by the guest
+  # in random order
   virsh send-key dom --codeset xt 37 18 21
+
   # send one stroke 'right-ctrl+C'
   virsh send-key dom KEY_RIGHTCTRL KEY_C
+
   # send a tab, held for 1 second
   virsh send-key --holdtime 1000 0xf
 
