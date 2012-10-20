@@ -35,6 +35,7 @@
 #include "conf.h"
 #include "util.h"
 #include "c-ctype.h"
+#include "logging.h"
 #include "memory.h"
 #include "virfile.h"
 
@@ -762,6 +763,8 @@ virConfReadFile(const char *filename, unsigned int flags)
     char *content;
     int len;
     virConfPtr conf;
+
+    VIR_DEBUG("filename=%s", NULLSTR(filename));
 
     if (filename == NULL) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
