@@ -18,9 +18,12 @@ mech_list: digest-md5
 #   qemu+tcp://hostname/system?auth=sasl.gssapi
 #mech_list: digest-md5 gssapi
 
-# MIT kerberos ignores this option & needs KRB5_KTNAME env var.
-# May be useful for other non-Linux OS though....
-keytab: /etc/libvirt/krb5.tab
+# Some older builds of MIT kerberos on Linux ignore this option &
+# instead need KRB5_KTNAME env var.
+# For modern Linux, and other OS, this should be sufficient
+#
+# There is no default value here, uncomment if you need this
+#keytab: /etc/libvirt/krb5.tab
 
 # If using digest-md5 for username/passwds, then this is the file
 # containing the passwds. Use 'saslpasswd2 -a libvirt [username]'
