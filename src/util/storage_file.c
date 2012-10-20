@@ -830,11 +830,11 @@ cleanup:
  * Best option: Don't use this function
  */
 int
-virStorageFileProbeFormat(const char *path)
+virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid)
 {
     int fd, ret;
 
-    if ((fd = open(path, O_RDONLY)) < 0) {
+    if ((fd = virFileOpenAs(path, O_RDONLY, 0, uid, gid, 0)) < 0) {
         virReportSystemError(errno, _("cannot open file '%s'"), path);
         return -1;
     }

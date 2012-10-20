@@ -66,7 +66,7 @@ struct _virStorageFileMetadata {
 #  define DEV_BSIZE 512
 # endif
 
-int virStorageFileProbeFormat(const char *path);
+int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 int virStorageFileProbeFormatFromFD(const char *path,
                                     int fd);
 

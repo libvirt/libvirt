@@ -9310,7 +9310,8 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
         format = disk->format;
     } else {
         if (driver->allowDiskFormatProbing) {
-            if ((format = virStorageFileProbeFormat(disk->src)) < 0)
+            if ((format = virStorageFileProbeFormat(disk->src, driver->user,
+                                                    driver->group)) < 0)
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
