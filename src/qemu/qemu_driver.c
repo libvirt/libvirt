@@ -12695,12 +12695,13 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     char *device = NULL;
     int ret = -1;
     int idx;
-    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr disk = NULL;
     const char *top_canon = NULL;
     virStorageFileMetadataPtr top_meta = NULL;
     const char *top_parent = NULL;
     const char *base_canon = NULL;
     virCgroupPtr cgroup = NULL;
+    bool clean_access = false;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW, -1);
 
@@ -12790,6 +12791,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                        vm->def->name);
         goto endjob;
     }
+    clean_access = true;
     if (qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, base_canon,
                                           VIR_DISK_CHAIN_READ_WRITE) < 0 ||
         (top_parent && top_parent != disk->src &&
@@ -12805,7 +12807,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
     qemuDomainObjExitMonitor(driver, vm);
 
 endjob:
-    if (ret < 0) {
+    if (ret < 0 && clean_access) {
         /* Revert access to read-only, if possible.  */
         qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, base_canon,
                                           VIR_DISK_CHAIN_READ_ONLY);
