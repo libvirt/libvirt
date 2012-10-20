@@ -233,7 +233,8 @@ The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
 username+password style authentication. To enable Kerberos single-sign-on instead,
 the libvirt SASL configuration file must be changed. This is <code>/etc/sasl2/libvirt.conf</code>.
 The <code>mech_list</code> parameter must first be changed to <code>gssapi</code>
-instead of the default <code>digest-md5</code>. If SASL is enabled on the UNIX
+instead of the default <code>digest-md5</code>, and keytab should be set to
+<code>/etc/libvirt/krb5.tab</code> . If SASL is enabled on the UNIX
 and/or TLS sockets, Kerberos will also be used for them. Like DIGEST-MD5, the Kerberos
 mechanism provides data encryption of the session.
 </p>
