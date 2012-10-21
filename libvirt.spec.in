@@ -882,6 +882,13 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
 
+%if %{with_dtrace}
+%ifarch %{power64} s390x x86_64 ia64 alpha sparc64
+mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
+   $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
+%endif
+%endif
+
 %clean
 rm -fr %{buildroot}
 
@@ -1216,7 +1223,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %{_libdir}/lib*.so.*
 
 %if %{with_dtrace}
-%{_datadir}/systemtap/tapset/libvirt_probes.stp
+%{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
 %endif
 
