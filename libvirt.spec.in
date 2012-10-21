@@ -1371,6 +1371,15 @@ mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} \
 
 sed -i -e "s|$RPM_BUILD_ROOT||g" $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/libvirt-guests
 
+%if %{with_dtrace}
+%ifarch %{power64} s390x x86_64 ia64 alpha sparc64
+mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
+   $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
+mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
+   $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes-64.stp
+%endif
+%endif
+
 %clean
 rm -fr %{buildroot}
 
@@ -1819,8 +1828,8 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %{_libdir}/lib*.so.*
 
 %if %{with_dtrace}
-%{_datadir}/systemtap/tapset/libvirt_probes.stp
-%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp
+%{_datadir}/systemtap/tapset/libvirt_probes*.stp
+%{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
 %endif
 
