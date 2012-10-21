@@ -71,8 +71,14 @@ gif = \
   architecture.gif \
   node.gif
 
-dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in hvsupport.html.in \
-      $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
+
+internals_html_in = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
+internals_html = $(internals_html_in:%.html.in=%.html)
+
+dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) \
+  todo.html.in \
+  hvsupport.html.in
 dot_html = $(dot_html_in:%.html.in=%.html)
 
 dot_php_in = $(notdir $(wildcard $(srcdir)/*.php.in))
@@ -112,6 +118,7 @@ EXTRA_DIST=					\
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(fig) $(png) $(css) \
   $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
+  $(internals_html_in) $(internals_html) \
   sitemap.html.in \
   todo.pl hvsupport.pl todo.cfg-example
 
@@ -119,6 +126,7 @@ MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_html)) \
   $(addprefix $(srcdir)/,$(apihtml)) \
   $(addprefix $(srcdir)/,$(devhelphtml)) \
+  $(addprefix $(srcdir)/,$(internals_html)) \
   $(addprefix $(srcdir)/,$(dot_php))
 
 all-am: web
@@ -126,7 +134,8 @@ all-am: web
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 
-web: $(dot_html) html/index.html devhelp/index.html $(dot_php)
+web: $(dot_html) $(internals_html) html/index.html devhelp/index.html \
+  $(dot_php)
 
 todo.html.in: todo.pl
 	if [ -f  todo.cfg ]; then \
@@ -256,6 +265,9 @@ install-data-local:
 	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done
 	for p in $(apipng); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$p $(DESTDIR)$(HTML_DIR)/html; done
+	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/internals
+	for f in $(internals_html); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/internals; done
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
