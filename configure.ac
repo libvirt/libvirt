@@ -1493,10 +1493,11 @@ AC_ARG_WITH([secdriver-selinux],
 if test "$with_selinux" != "yes" ; then
   if test "$with_secdriver_selinux" = "check" ; then
     with_secdriver_selinux=no
-  elif test "$with_secdriver_selinux" = "yes"; then
+  fi
+  if test "$with_secdriver_selinux" != "no"; then
         AC_MSG_ERROR([You must install the libselinux development package and enable SELinux with the --with-selinux=yes in order to compile libvirt --with-secdriver-selinux=yes])
   fi
-else
+elif test "$with_secdriver_selinux" != "no"; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
   CFLAGS="$CFLAGS $SELINUX_CFLAGS"
@@ -1571,10 +1572,11 @@ AC_ARG_WITH([secdriver-apparmor],
 if test "$with_apparmor" != "yes" ; then
   if test "$with_secdriver_apparmor" = "check" ; then
     with_secdriver_apparmor=no
-  else
+  fi
+  if test "$with_secdriver_apparmor" != "no" ; then
     AC_MSG_ERROR([You must install the AppArmor development package in order to compile libvirt])
   fi
-else
+elif test "with_secdriver_apparmor" != "no" ; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
   CFLAGS="$CFLAGS $APPARMOR_CFLAGS"
