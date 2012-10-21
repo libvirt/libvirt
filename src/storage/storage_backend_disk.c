@@ -83,7 +83,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
          * dir every time its run. Should figure out a more efficient
          * way of doing this...
          */
-        vol->target.path = virStorageBackendStablePath(pool, devpath);
+        vol->target.path = virStorageBackendStablePath(pool, devpath, true);
         VIR_FREE(devpath);
         if (vol->target.path == NULL)
             return -1;

@@ -246,7 +246,8 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
      * way of doing this...
      */
     if ((vol->target.path = virStorageBackendStablePath(pool,
-                                                        devpath)) == NULL) {
+                                                        devpath,
+                                                        true)) == NULL) {
         retval = -1;
         goto free_vol;
     }

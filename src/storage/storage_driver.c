@@ -1318,7 +1318,8 @@ storageVolumeLookupByPath(virConnectPtr conn,
             const char *stable_path;
 
             stable_path = virStorageBackendStablePath(driver->pools.objs[i],
-                                                      cleanpath);
+                                                      cleanpath,
+                                                      false);
             if (stable_path == NULL) {
                 /* Don't break the whole lookup process if it fails on
                  * getting the stable path for some of the pools.
