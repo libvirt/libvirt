@@ -1382,8 +1382,6 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} \
    $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-docs-%{version}
 
-sed -i -e "s|$RPM_BUILD_ROOT||g" $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/libvirt-guests
-
 %if %{with_dtrace}
 %ifarch %{power64} s390x x86_64 ia64 alpha sparc64
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
@@ -1622,10 +1620,13 @@ fi
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 
+%attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %if %{with_systemd}
 %{_unitdir}/libvirtd.service
+%{_unitdir}/libvirt-guests.service
 %else
 %{_sysconfdir}/rc.d/init.d/libvirtd
+%{_sysconfdir}/rc.d/init.d/libvirt-guests
 %endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
@@ -1886,7 +1887,6 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 
 %{_datadir}/libvirt/cpu_map.xml
 
-%{_sysconfdir}/rc.d/init.d/libvirt-guests
 %if %{with_systemd}
 %{_unitdir}/libvirt-guests.service
 %endif
