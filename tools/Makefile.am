@@ -41,6 +41,7 @@ DISTCLEANFILES =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-host-validate
+libexec_SCRIPTS = libvirt-guests.sh
 
 if HAVE_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
@@ -187,7 +188,7 @@ uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig ||:
 
-EXTRA_DIST += libvirt-guests.init.sh
+EXTRA_DIST += libvirt-guests.sh.in libvirt-guests.init.in
 
 install-initscript: libvirt-guests.init
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
@@ -208,7 +209,7 @@ install-init:
 uninstall-init:
 endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
-libvirt-guests.init: libvirt-guests.init.sh $(top_builddir)/config.status
+libvirt-guests.sh: libvirt-guests.sh.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
 	    -e 's!\@PACKAGE\@!$(PACKAGE)!g'		\
 	    -e 's!\@bindir\@!$(bindir)!g'		\
@@ -219,20 +220,26 @@ libvirt-guests.init: libvirt-guests.init.sh $(top_builddir)/config.status
 	    < $< > $@-t &&				\
 	    chmod a+x $@-t &&				\
 	    mv $@-t $@
+BUILT_SOURCES += libvirt-guests.sh
 
+libvirt-guests.init: libvirt-guests.init.in libvirt-guests.sh
+	$(AM_V_GEN)sed \
+		-e 's!\@libexecdir\@!$(libexecdir)!g' \
+	< $< > $@-t && \
+	chmod a+x $@-t && \
+	mv $@-t $@
 
 
 EXTRA_DIST += libvirt-guests.service.in
-
 SYSTEMD_UNIT_DIR = /lib/systemd/system
 
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
-install-systemd: libvirt-guests.service install-initscript install-sysconfig
+install-systemd: libvirt-guests.service install-sysconfig libvirt-guests.sh
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) libvirt-guests.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
 
-uninstall-systemd: uninstall-initscript uninstall-sysconfig
+uninstall-systemd: uninstall-sysconfig
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirt-guests.service
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) ||:
 
@@ -251,6 +258,7 @@ libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 	    -e 's!\@localstatedir\@!$(localstatedir)!g'	\
 	    -e 's!\@sbindir\@!$(sbindir)!g'		\
 	    -e 's!\@sysconfdir\@!$(sysconfdir)!g'	\
+	    -e 's!\@libexecdir\@!$(libexecdir)!g'	\
 	    < $< > $@-t &&				\
 	    chmod a+x $@-t &&				\
 	    mv $@-t $@

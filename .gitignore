@@ -179,6 +179,7 @@
 /tools/*.[18]
 /tools/libvirt-guests.init
 /tools/libvirt-guests.service
+/tools/libvirt-guests.sh
 /tools/virsh
 /tools/virsh-*-edit.c
 /tools/virt-*-validate

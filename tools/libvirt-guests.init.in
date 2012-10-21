@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# the following is the LSB init header
+#
+### BEGIN INIT INFO
+# Provides: libvirt-guests
+# Required-Start: libvirtd
+# Required-Stop: libvirtd
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: suspend/resume libvirt guests on shutdown/boot
+# Description: This is a script for suspending active libvirt guests
+#              on shutdown and resuming them on next boot
+#              See http://libvirt.org
+### END INIT INFO
+
+# the following is chkconfig init header
+#
+# libvirt-guests:   suspend/resume libvirt guests on shutdown/boot
+#
+# chkconfig: 345 99 01
+# description:  This is a script for suspending active libvirt guests \
+#               on shutdown and resuming them on next boot \
+#               See http://libvirt.org
+#
+
+exec @libexecdir@/libvirt-guests.sh "$@"

@@ -6,8 +6,8 @@ After=syslog.target network.target
 EnvironmentFile=-/etc/sysconfig/libvirt-guests
 # Hack just call traditional service until we factor
 # out the code
-ExecStart=/etc/init.d/libvirt-guests start
-ExecStop=/etc/init.d/libvirt-guests stop
+ExecStart=@libexecdir@/libvirt-guests.sh start
+ExecStop=@libexecdir@/libvirt-guests.sh stop
 Type=oneshot
 RemainAfterExit=yes
 StandardOutput=journal+console
