@@ -5375,6 +5375,8 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     for (i = 0 ; i < def->nnets ; i++) {
         virDomainNetDefPtr net = def->nets[i];
         int bootIndex = net->info.bootIndex;
+        char *model = net->model;
+
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             int actualType = virDomainNetGetActualType(net);
             const char *brname;
@@ -5431,8 +5433,10 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
             net->data.ethernet.dev = brname;
             net->data.ethernet.ipaddr = ipaddr;
         }
+
         VIR_FREE(net->virtPortProfile);
         net->info.bootIndex = bootIndex;
+        net->model = model;
     }
 
     monitor_json = qemuCapsGet(caps, QEMU_CAPS_MONITOR_JSON);
