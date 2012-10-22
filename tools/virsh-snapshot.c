@@ -866,7 +866,7 @@ vshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                     goto cleanup;
             }
             if (from) {
-                snaps[snaplist->nsnaps++] = from;
+                snaplist->snaps[snaplist->nsnaps++].snap = from;
                 virDomainSnapshotRef(from);
             }
         }
