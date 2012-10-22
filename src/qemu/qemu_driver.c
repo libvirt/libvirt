@@ -2950,6 +2950,7 @@ endjob:
                 if (rc < 0)
                     VIR_WARN("Unable to resume guest CPUs after save failure");
             }
+            virFileWrapperFdCatchError(wrapperFd);
         }
         if (qemuDomainObjEndAsyncJob(driver, vm) == 0)
             vm = NULL;
@@ -3287,9 +3288,11 @@ doCoreDump(struct qemud_driver *driver,
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    virFileWrapperFdFree(wrapperFd);
-    if (ret != 0)
+    if (ret != 0) {
+        virFileWrapperFdCatchError(wrapperFd);
         unlink(path);
+    }
+    virFileWrapperFdFree(wrapperFd);
     return ret;
 }
 
