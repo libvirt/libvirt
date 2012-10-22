@@ -859,7 +859,8 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(def, priv, &user, &group))
         return -1;
 
-    VIR_DEBUG("Dropping privileges of DEF to %u:%u", user, group);
+    VIR_DEBUG("Dropping privileges of DEF to %u:%u",
+              (unsigned int) user, (unsigned int) group);
 
     if (virSetUIDGID(user, group) < 0)
         return -1;
@@ -920,7 +921,9 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         }
         break;
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        if (virAsprintf(&seclabel->label, "%d:%d", priv->user, priv->group) < 0) {
+        if (virAsprintf(&seclabel->label, "%d:%d",
+                        (unsigned int) priv->user,
+                        (unsigned int) priv->group) < 0) {
             virReportOOMError();
             return rc;
         }
