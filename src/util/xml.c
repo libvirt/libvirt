@@ -807,12 +807,16 @@ or other application using the libvirt API.\n\
     if (safewrite(fd, cmd, len) != len)
         return -1;
 
-    if (safewrite(fd, " ", 1) != 1)
-        return -1;
+    /* Omit the domain name if it contains a double hyphen
+     * because they aren't allowed in XML comments */
+    if (!strstr(name, "--")) {
+        if (safewrite(fd, " ", 1) != 1)
+            return -1;
 
-    len = strlen(name);
-    if (safewrite(fd, name, len) != len)
-        return -1;
+        len = strlen(name);
+        if (safewrite(fd, name, len) != len)
+            return -1;
+    }
 
     len = strlen(epilogue);
     if (safewrite(fd, epilogue, len) != len)
