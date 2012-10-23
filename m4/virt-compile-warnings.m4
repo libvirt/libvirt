@@ -150,7 +150,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     AH_VERBATIM([FORTIFY_SOURCE],
     [/* Enable compile-time and run-time bounds-checking, and some warnings,
         without upsetting newer glibc. */
-     #if defined __OPTIMIZE__ && __OPTIMIZE__
+     #if !defined _FORTIFY_SOURCE && defined __OPTIMIZE__ && __OPTIMIZE__
      # define _FORTIFY_SOURCE 2
      #endif
     ])
