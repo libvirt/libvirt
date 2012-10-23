@@ -1339,13 +1339,13 @@ virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
  * Typically target.path is one of the /dev/disk/by-XXX dirs
  * with stable paths.
  *
- * If 'wait' is true, we use a timeout loop to give dynamic paths
+ * If 'loop' is true, we use a timeout loop to give dynamic paths
  * a change to appear.
  */
 char *
 virStorageBackendStablePath(virStoragePoolObjPtr pool,
                             const char *devpath,
-                            bool wait)
+                            bool loop)
 {
     DIR *dh;
     struct dirent *dent;
@@ -1376,7 +1376,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
  reopen:
     if ((dh = opendir(pool->def->target.path)) == NULL) {
         opentries++;
-        if (wait && errno == ENOENT && opentries < 50) {
+        if (loop && errno == ENOENT && opentries < 50) {
             usleep(100 * 1000);
             goto reopen;
         }
@@ -1415,7 +1415,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         VIR_FREE(stablepath);
     }
 
-    if (wait && ++retry < 100) {
+    if (loop && ++retry < 100) {
         usleep(100 * 1000);
         goto retry;
     }

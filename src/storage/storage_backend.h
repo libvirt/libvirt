@@ -131,7 +131,7 @@ virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
 
 char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,
-                                  bool wait);
+                                  bool loop);
 
 typedef int (*virStorageBackendListVolRegexFunc)(virStoragePoolObjPtr pool,
                                                  char **const groups,
