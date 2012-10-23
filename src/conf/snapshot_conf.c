@@ -368,9 +368,8 @@ disksorter(const void *a, const void *b)
  * the domain, with a fallback to a passed in default.  Convert paths
  * to disk targets for uniformity.  Issue an error and return -1 if
  * any def->disks[n]->name appears more than once or does not map to
- * dom->disks.  If require_match, also require that existing
- * def->disks snapshot states do not override explicit def->dom
- * settings.  */
+ * dom->disks.  If require_match, also ensure that there is no
+ * conflicting requests for both internal and external snapshots.  */
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                             int default_snapshot,
@@ -416,7 +415,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
                            _("no disk named '%s'"), disk->name);
             goto cleanup;
         }
-        disk_snapshot = def->dom->disks[idx]->snapshot;
 
         if (virBitmapGetBit(map, idx, &inuse) < 0 || inuse) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -426,15 +424,22 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         }
         ignore_value(virBitmapSetBit(map, idx));
         disk->index = idx;
-        if (!disk_snapshot)
-            disk_snapshot = default_snapshot;
+
+        disk_snapshot = def->dom->disks[idx]->snapshot;
         if (!disk->snapshot) {
-            disk->snapshot = disk_snapshot;
-        } else if (disk_snapshot && require_match &&
-                   disk->snapshot != disk_snapshot) {
+            if (disk_snapshot &&
+                (!require_match ||
+                 disk_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE))
+                disk->snapshot = disk_snapshot;
+            else
+                disk->snapshot = default_snapshot;
+        } else if (require_match &&
+                   disk->snapshot != default_snapshot &&
+                   !(disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
+                     disk_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
             const char *tmp;
 
-            tmp = virDomainSnapshotLocationTypeToString(disk_snapshot);
+            tmp = virDomainSnapshotLocationTypeToString(default_snapshot);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
                            disk->name, tmp);
