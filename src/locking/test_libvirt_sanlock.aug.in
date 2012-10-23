@@ -6,3 +6,5 @@ module Test_libvirt_sanlock =
 { "disk_lease_dir" = "/var/lib/libvirt/sanlock" }
 { "host_id" = "1" }
 { "require_lease_for_disks" = "1" }
+{ "user" = "root" }
+{ "group" = "root" }

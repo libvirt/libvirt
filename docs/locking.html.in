@@ -121,6 +121,28 @@
     </pre>
 
     <p>
+      If your sanlock daemon happen to run under non-root
+      privileges, you need to tell this to libvirt so it
+      chowns created files correctly. This can be done by
+      setting <code>user</code> and/or <code>group</code>
+      variables in the configuration file. Accepted values
+      range is specified in description to the same
+      variables in <code>/etc/libvirt/qemu.conf</code>. For
+      example:
+    </p>
+
+    <pre>
+      augtool -s set /files/etc/libvirt/qemu-sanlock.conf/user sanlock
+      augtool -s set /files/etc/libvirt/qemu-sanlock.conf/group sanlock
+    </pre>
+
+    <p>
+      But remember, that if this is NFS share, you need a
+      no_root_squash-ed one for chown (and chmod possibly)
+      to succeed.
+    </p>
+
+    <p>
       In terms of storage requirements, if the filesystem
       uses 512 byte sectors, you need to allow for <code>1MB</code>
       of storage for each guest disk. So if you have a network

@@ -71,6 +71,10 @@ struct _virLockManagerSanlockDriver {
     int hostID;
     bool autoDiskLease;
     char *autoDiskLeasePath;
+
+    /* under which permissions does sanlock run */
+    uid_t user;
+    gid_t group;
 };
 
 static virLockManagerSanlockDriver *driver = NULL;
@@ -94,6 +98,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
 {
     virConfPtr conf;
     virConfValuePtr p;
+    char *tmp;
 
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
@@ -142,6 +147,39 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     else
         driver->requireLeaseForDisks = !driver->autoDiskLease;
 
+    p = virConfGetValue(conf, "user");
+    CHECK_TYPE("user", VIR_CONF_STRING);
+    if (p) {
+        if (!(tmp = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+
+        if (virGetUserID(tmp, &driver->user) < 0) {
+            VIR_FREE(tmp);
+            virConfFree(conf);
+            return -1;
+        }
+        VIR_FREE(tmp);
+    }
+
+    p = virConfGetValue (conf, "group");
+    CHECK_TYPE ("group", VIR_CONF_STRING);
+    if (p) {
+        if (!(tmp = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+        if (virGetGroupID(tmp, &driver->group) < 0) {
+            VIR_FREE(tmp);
+            virConfFree(conf);
+            return -1;
+        }
+        VIR_FREE(tmp);
+    }
+
     virConfFree(conf);
     return 0;
 }
@@ -177,6 +215,7 @@ static int virLockManagerSanlockSetupLockspace(void)
      * space allocated for it and is initialized with lease
      */
     if (stat(path, &st) < 0) {
+        int perms = 0600;
         VIR_DEBUG("Lockspace %s does not yet exist", path);
 
         if (!(dir = mdir_name(path))) {
@@ -191,7 +230,10 @@ static int virLockManagerSanlockSetupLockspace(void)
             goto error;
         }
 
-        if ((fd = open(path, O_WRONLY|O_CREAT|O_EXCL, 0600)) < 0) {
+        if (driver->group != -1)
+            perms |= 0060;
+
+        if ((fd = open(path, O_WRONLY|O_CREAT|O_EXCL, perms)) < 0) {
             if (errno != EEXIST) {
                 virReportSystemError(errno,
                                      _("Unable to create lockspace %s"),
@@ -200,6 +242,17 @@ static int virLockManagerSanlockSetupLockspace(void)
             }
             VIR_DEBUG("Someone else just created lockspace %s", path);
         } else {
+            /* chown() the path to make sure sanlock can access it */
+            if ((driver->user != -1 || driver->group != -1) &&
+                (fchown(fd, driver->user, driver->group) < 0)) {
+                virReportSystemError(errno,
+                                     _("cannot chown '%s' to (%u, %u)"),
+                                     path,
+                                     (unsigned int) driver->user,
+                                     (unsigned int) driver->group);
+                goto error_unlink;
+            }
+
             if ((rv = sanlock_align(&ls.host_id_disk)) < 0) {
                 if (rv <= -200)
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -241,6 +294,26 @@ static int virLockManagerSanlockSetupLockspace(void)
                 goto error_unlink;
             }
             VIR_DEBUG("Lockspace %s has been initialized", path);
+        }
+    } else if (S_ISREG(st.st_mode)) {
+        /* okay, the lease file exists. Check the permissions */
+        if (((driver->user != -1 && driver->user != st.st_uid) ||
+             (driver->group != -1 && driver->group != st.st_gid)) &&
+            (chown(path, driver->user, driver->group) < 0)) {
+            virReportSystemError(errno,
+                                 _("cannot chown '%s' to (%u, %u)"),
+                                 path,
+                                 (unsigned int) driver->user,
+                                 (unsigned int) driver->group);
+            goto error;
+        }
+
+        if ((driver->group != -1 && (st.st_mode & 0060) != 0060) &&
+            chmod(path, 0660) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot chmod '%s' to 0660"),
+                                 path);
+            goto error;
         }
     }
 
@@ -299,6 +372,7 @@ static int virLockManagerSanlockInit(unsigned int version,
     driver->requireLeaseForDisks = true;
     driver->hostID = 0;
     driver->autoDiskLease = false;
+    driver->user = driver->group = -1;
     if (!(driver->autoDiskLeasePath = strdup(LOCALSTATEDIR "/lib/libvirt/sanlock"))) {
         VIR_FREE(driver);
         virReportOOMError();
