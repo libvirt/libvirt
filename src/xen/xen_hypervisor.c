@@ -2157,13 +2157,6 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
         }
     }
 
-    hv_versions.hypervisor = 1;
-    hv_versions.sys_interface = -1;
-    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
-        VIR_DEBUG("Using hypervisor call v1");
-        goto done;
-    }
-
     /* Xen 4.2
      * sysctl version 9 -> xen-unstable c/s 24102:dc8e55c90604
      * domctl version 8 -> unchanged from Xen 4.1
@@ -2175,6 +2168,13 @@ xenHypervisorInit(struct xenHypervisorVersions *override_versions)
             VIR_DEBUG("Using hypervisor call v2, sys ver9 dom ver8");
             goto done;
         }
+    }
+
+    hv_versions.hypervisor = 1;
+    hv_versions.sys_interface = -1;
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        VIR_DEBUG("Using hypervisor call v1");
+        goto done;
     }
 
     /*
