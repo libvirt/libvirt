@@ -6,10 +6,17 @@
     <name>earlier_snap</name>
   </parent>
   <creationTime>1272917631</creationTime>
-  <memory snapshot='internal'/>
+  <memory snapshot='external' file='/dev/HostVG/GuestMemory'/>
+  <disks>
+    <disk name='hda' snapshot='no'/>
+  </disks>
   <domain type='qemu'>
     <name>QEMUGuest1</name>
     <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+    <metadata>
+      <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
+      <app2:bar xmlns:app2="http://bar.com/" maman="baz">barish</app2:bar>
+    </metadata>
     <memory unit='KiB'>219100</memory>
     <currentMemory unit='KiB'>219100</currentMemory>
     <vcpu placement='static' cpuset='1-4,8-20,525'>1</vcpu>
@@ -23,7 +30,7 @@
     <on_crash>destroy</on_crash>
     <devices>
       <emulator>/usr/bin/qemu</emulator>
-      <disk type='block' device='disk'>
+      <disk type='block' device='disk' snapshot='no'>
         <source dev='/dev/HostVG/QEMUGuest1'/>
         <target dev='hda' bus='ide'/>
         <address type='drive' controller='0' bus='0' target='0' unit='0'/>
@@ -33,5 +40,4 @@
       <memballoon model='virtio'/>
     </devices>
   </domain>
-  <active>1</active>
 </domainsnapshot>

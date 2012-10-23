@@ -94,6 +94,7 @@ void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->description);
     VIR_FREE(def->parent);
+    VIR_FREE(def->file);
     for (i = 0; i < def->ndisks; i++)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
     VIR_FREE(def->disks);
@@ -182,6 +183,9 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     int active;
     char *tmp;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
+    char *memorySnapshot = NULL;
+    char *memoryFile = NULL;
+    bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
 
     xml = virXMLParseCtxt(NULL, xmlStr, _("(domain_snapshot)"), &ctxt);
     if (!xml) {
@@ -243,6 +247,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                            state);
             goto cleanup;
         }
+        offline = (def->state == VIR_DOMAIN_SHUTOFF ||
+                   def->state == VIR_DOMAIN_DISK_SNAPSHOT);
 
         /* Older snapshots were created with just <domain>/<uuid>, and
          * lack domain/@type.  In that case, leave dom NULL, and
@@ -270,11 +276,42 @@ virDomainSnapshotDefParseString(const char *xmlStr,
         def->creationTime = tv.tv_sec;
     }
 
+    memorySnapshot = virXPathString("string(./memory/@snapshot)", ctxt);
+    memoryFile = virXPathString("string(./memory/@file)", ctxt);
+    if (memorySnapshot) {
+        def->memory = virDomainSnapshotLocationTypeFromString(memorySnapshot);
+        if (def->memory <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown memory snapshot setting '%s'"),
+                           memorySnapshot);
+            goto cleanup;
+        }
+        if (memoryFile &&
+            def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("memory filename '%s' requires external snapshot"),
+                           memoryFile);
+            goto cleanup;
+        }
+    } else if (memoryFile) {
+        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+    } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+        def->memory = (offline ?
+                       VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
+                       VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
+    }
+    if (offline && def->memory &&
+        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("memory state cannot be saved with offline snapshot"));
+        goto cleanup;
+    }
+    def->file = memoryFile;
+    memoryFile = NULL;
+
     if ((i = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         goto cleanup;
-    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS ||
-        (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE &&
-         def->state == VIR_DOMAIN_DISK_SNAPSHOT)) {
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS) {
         def->ndisks = i;
         if (def->ndisks && VIR_ALLOC_N(def->disks, def->ndisks) < 0) {
             virReportOOMError();
@@ -306,6 +343,8 @@ cleanup:
     VIR_FREE(creation);
     VIR_FREE(state);
     VIR_FREE(nodes);
+    VIR_FREE(memorySnapshot);
+    VIR_FREE(memoryFile);
     xmlXPathFreeContext(ctxt);
     if (ret == NULL)
         virDomainSnapshotDefFree(def);
@@ -527,8 +566,13 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
     }
     virBufferAsprintf(&buf, "  <creationTime>%lld</creationTime>\n",
                       def->creationTime);
-    /* For now, only output <disks> on disk-snapshot */
-    if (def->state == VIR_DOMAIN_DISK_SNAPSHOT) {
+    if (def->memory) {
+        virBufferAsprintf(&buf, "  <memory snapshot='%s'",
+                          virDomainSnapshotLocationTypeToString(def->memory));
+        virBufferEscapeString(&buf, " file='%s'", def->file);
+        virBufferAddLit(&buf, "/>\n");
+    }
+    if (def->ndisks) {
         virBufferAddLit(&buf, "  <disks>\n");
         for (i = 0; i < def->ndisks; i++) {
             virDomainSnapshotDiskDefPtr disk = &def->disks[i];

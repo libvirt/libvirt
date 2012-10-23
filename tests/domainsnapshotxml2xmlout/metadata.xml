@@ -6,6 +6,7 @@
     <name>earlier_snap</name>
   </parent>
   <creationTime>1272917631</creationTime>
+  <memory snapshot='internal'/>
   <domain type='qemu'>
     <name>QEMUGuest1</name>
     <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>

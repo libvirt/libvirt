@@ -31,6 +31,29 @@
           </element>
         </optional>
         <optional>
+          <element name='memory'>
+            <choice>
+              <attribute name='snapshot'>
+                <choice>
+                  <value>no</value>
+                  <value>internal</value>
+                </choice>
+              </attribute>
+              <group>
+                <optional>
+                  <attribute name='snapshot'>
+                    <value>external</value>
+                  </attribute>
+                </optional>
+                <attribute name='file'>
+                  <ref name='absFilePath'/>
+                </attribute>
+              </group>
+            </choice>
+            <empty/>
+          </element>
+        </optional>
+        <optional>
           <element name='disks'>
             <zeroOrMore>
               <ref name='disksnapshot'/>
