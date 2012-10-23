@@ -569,4 +569,9 @@ LIBVIRT_0.10.2 {
         virStoragePoolListAllVolumes;
 } LIBVIRT_0.10.0;
 
+LIBVIRT_1.0.0 {
+    global:
+        virNodeGetCPUMap;
+} LIBVIRT_0.10.2;
+
 # .... define new API here using predicted next version number ....

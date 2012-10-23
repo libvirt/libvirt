@@ -898,6 +898,12 @@ typedef int
                                      int nparams,
                                      unsigned int flags);
 
+typedef int
+    (*virDrvNodeGetCPUMap)(virConnectPtr conn,
+                           unsigned char **cpumap,
+                           unsigned int *online,
+                           unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -1087,6 +1093,7 @@ struct _virDriver {
     virDrvDomainGetMetadata             domainGetMetadata;
     virDrvNodeGetMemoryParameters       nodeGetMemoryParameters;
     virDrvNodeSetMemoryParameters       nodeSetMemoryParameters;
+    virDrvNodeGetCPUMap                 nodeGetCPUMap;
 };
 
 typedef int

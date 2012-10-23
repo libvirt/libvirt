@@ -750,6 +750,14 @@ int virNodeSetMemoryParameters(virConnectPtr conn,
                                int nparams,
                                unsigned int flags);
 
+/*
+ *  node CPU map
+ */
+int virNodeGetCPUMap(virConnectPtr conn,
+                     unsigned char **cpumap,
+                     unsigned int *online,
+                     unsigned int flags);
+
 
 /* Management of scheduler parameters */
 

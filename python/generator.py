@@ -429,6 +429,7 @@ skip_impl = (
     'virConnectRegisterCloseCallback',
     'virNodeGetMemoryParameters',
     'virNodeSetMemoryParameters',
+    'virNodeGetCPUMap',
 )
 
 qemu_skip_impl = (

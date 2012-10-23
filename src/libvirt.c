@@ -20106,3 +20106,54 @@ error:
     virDispatchError(domain->conn);
     return NULL;
 }
+
+/**
+ * virNodeGetCPUMap:
+ * @conn: pointer to the hypervisor connection
+ * @cpumap: optional pointer to a bit map of real CPUs on the host node
+ *      (in 8-bit bytes) (OUT)
+ *      In case of success each bit set to 1 means that corresponding
+ *      CPU is online.
+ *      Bytes are stored in little-endian order: CPU0-7, 8-15...
+ *      In each byte, lowest CPU number is least significant bit.
+ *      The bit map is allocated by virNodeGetCPUMap and needs
+ *      to be released using free() by the caller.
+ * @online: optional number of online CPUs in cpumap (OUT)
+ *      Contains the number of online CPUs if the call was successful.
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Get CPU map of host node CPUs.
+ *
+ * Returns number of CPUs present on the host node,
+ * or -1 if there was an error.
+ */
+int
+virNodeGetCPUMap(virConnectPtr conn,
+                 unsigned char **cpumap,
+                 unsigned int *online,
+                 unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, cpumap=%p, online=%p, flags=%x",
+              conn, cpumap, online, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->driver->nodeGetCPUMap) {
+        int ret = conn->driver->nodeGetCPUMap(conn, cpumap, online, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
