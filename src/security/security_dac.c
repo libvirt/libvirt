@@ -921,7 +921,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         }
         break;
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        if (virAsprintf(&seclabel->label, "%d:%d",
+        if (virAsprintf(&seclabel->label, "%u:%u",
                         (unsigned int) priv->user,
                         (unsigned int) priv->group) < 0) {
             virReportOOMError();
