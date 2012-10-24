@@ -924,10 +924,12 @@ get_files(vahControl * ctl)
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
          */
-        disk->chain = virStorageFileGetMetadata(disk->src, disk->format,
-                                                -1, -1,
-                                                ctl->allowDiskFormatProbing,
-                                                NULL);
+        if (!disk->backingChain) {
+            bool probe = ctl->allowDiskFormatProbing;
+            disk->backingChain = virStorageFileGetMetadata(disk->src,
+                                                           disk->format,
+                                                           -1, -1, probe);
+        }
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior
          * from before using virDomainDiskDefForeachPath. actually we should
