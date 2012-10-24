@@ -95,7 +95,8 @@ enum _esxVI_APIVersion {
     esxVI_APIVersion_41,
     esxVI_APIVersion_4x, /* > 4.1 */
     esxVI_APIVersion_50,
-    esxVI_APIVersion_5x  /* > 5.0 */
+    esxVI_APIVersion_51,
+    esxVI_APIVersion_5x  /* > 5.1 */
 };
 
 /*
@@ -114,7 +115,8 @@ enum _esxVI_ProductVersion {
     esxVI_ProductVersion_ESX41 = esxVI_ProductVersion_ESX | 3,
     esxVI_ProductVersion_ESX4x = esxVI_ProductVersion_ESX | 4, /* > 4.1 */
     esxVI_ProductVersion_ESX50 = esxVI_ProductVersion_ESX | 5,
-    esxVI_ProductVersion_ESX5x = esxVI_ProductVersion_ESX | 6, /* > 5.0 */
+    esxVI_ProductVersion_ESX51 = esxVI_ProductVersion_ESX | 6,
+    esxVI_ProductVersion_ESX5x = esxVI_ProductVersion_ESX | 7, /* > 5.1 */
 
     esxVI_ProductVersion_VPX   = (1 << 2) << 16,
     esxVI_ProductVersion_VPX25 = esxVI_ProductVersion_VPX | 1,
@@ -122,7 +124,8 @@ enum _esxVI_ProductVersion {
     esxVI_ProductVersion_VPX41 = esxVI_ProductVersion_VPX | 3,
     esxVI_ProductVersion_VPX4x = esxVI_ProductVersion_VPX | 4, /* > 4.1 */
     esxVI_ProductVersion_VPX50 = esxVI_ProductVersion_VPX | 5,
-    esxVI_ProductVersion_VPX5x = esxVI_ProductVersion_VPX | 6  /* > 5.0 */
+    esxVI_ProductVersion_VPX51 = esxVI_ProductVersion_VPX | 6,
+    esxVI_ProductVersion_VPX5x = esxVI_ProductVersion_VPX | 7  /* > 5.1 */
 };
 
 enum _esxVI_Occurrence {
