@@ -142,6 +142,9 @@
     <feature name='pdcm'>
       <cpuid function='0x00000001' ecx='0x00008000'/>
     </feature>
+    <feature name='pcid'>
+      <cpuid function='0x00000001' ecx='0x00020000'/>
+    </feature>
     <feature name='dca'> <!-- CPUID_EXT_DCA -->
       <cpuid function='0x00000001' ecx='0x00040000'/>
     </feature>
@@ -259,6 +262,15 @@
     </feature>
     <feature name='nodeid_msr'>
       <cpuid function='0x80000001' ecx='0x00080000'/>
+    </feature>
+
+    <!-- cpuid function 0x7 ecx 0x0 features -->
+    <!-- We support only ecx 0x0 now as it's done by a workaround -->
+    <feature name='smep'>
+      <cpuid function='0x00000007' ebx='0x00000080'/>
+    </feature>
+    <feature name='smap'>
+      <cpuid function='0x00000007' ebx='0x00080000'/>
     </feature>
 
     <!-- models -->

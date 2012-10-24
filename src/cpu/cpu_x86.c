@@ -1539,7 +1539,10 @@ static inline void
 cpuidCall(struct cpuX86cpuid *cpuid)
 {
 # if __x86_64__
-    asm("cpuid"
+    asm("xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
+        "xor %%ecx, %%ecx;" /* functions may use them as additional */
+        "xor %%edx, %%edx;" /* arguments */
+        "cpuid;"
         : "=a" (cpuid->eax),
           "=b" (cpuid->ebx),
           "=c" (cpuid->ecx),
@@ -1550,6 +1553,9 @@ cpuidCall(struct cpuX86cpuid *cpuid)
      * for global offset table on i386 with -fPIC
      */
     asm("push %%ebx;"
+        "xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
+        "xor %%ecx, %%ecx;" /* functions may use them as additional */
+        "xor %%edx, %%edx;" /* arguments */
         "cpuid;"
         "mov %%ebx, %1;"
         "pop %%ebx;"
