@@ -58,7 +58,8 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
 int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virBitmapPtr cpumask);
 int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
-                               virDomainObjPtr vm);
+                               virDomainObjPtr vm,
+                               virBitmapPtr nodemask);
 int qemuRemoveCgroup(struct qemud_driver *driver,
                      virDomainObjPtr vm,
                      int quiet);

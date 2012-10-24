@@ -25,6 +25,7 @@
 
 #include "qemu_cgroup.h"
 #include "qemu_domain.h"
+#include "qemu_process.h"
 #include "cgroup.h"
 #include "logging.h"
 #include "memory.h"
@@ -637,9 +638,11 @@ cleanup:
 }
 
 int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
-                               virDomainObjPtr vm)
+                               virDomainObjPtr vm,
+                               virBitmapPtr nodemask)
 {
     virBitmapPtr cpumask = NULL;
+    virBitmapPtr cpumap = NULL;
     virCgroupPtr cgroup = NULL;
     virCgroupPtr cgroup_emulator = NULL;
     virDomainDefPtr def = vm->def;
@@ -687,10 +690,15 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
         }
     }
 
-    if (def->cputune.emulatorpin)
+    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        if (!(cpumap = qemuPrepareCpumap(driver, nodemask)))
+            goto cleanup;
+        cpumask = cpumap;
+    } else if (def->cputune.emulatorpin) {
         cpumask = def->cputune.emulatorpin->cpumask;
-    else if (def->cpumask)
+    } else if (def->cpumask) {
         cpumask = def->cpumask;
+    }
 
     if (cpumask) {
         if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
@@ -711,9 +719,12 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
 
     virCgroupFree(&cgroup_emulator);
     virCgroupFree(&cgroup);
+    virBitmapFree(cpumap);
     return 0;
 
 cleanup:
+    virBitmapFree(cpumap);
+
     if (cgroup_emulator) {
         virCgroupRemove(cgroup_emulator);
         virCgroupFree(&cgroup_emulator);

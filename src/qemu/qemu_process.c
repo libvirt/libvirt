@@ -3812,7 +3812,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for emulator (if required)");
-    if (qemuSetupCgroupForEmulator(driver, vm) < 0)
+    if (qemuSetupCgroupForEmulator(driver, vm, nodemask) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting VCPU affinities");
