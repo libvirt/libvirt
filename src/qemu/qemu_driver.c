@@ -4204,6 +4204,13 @@ qemudDomainPinEmulator(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Changing affinity for emulator thread dynamically "
+                         "is not allowed when CPU placement is 'auto'"));
+        goto cleanup;
+    }
+
     if (virDomainLiveConfigHelperMethod(driver->caps, vm, &flags,
                                         &persistentDef) < 0)
         goto cleanup;
