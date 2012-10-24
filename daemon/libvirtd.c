@@ -636,10 +636,13 @@ daemonSetupLogging(struct daemonConfig *config,
         virLogParseOutputs(config->log_outputs);
 
     /*
-     * If no defined outputs, then first try to direct it
-     * to the systemd journal (if it exists)....
+     * If no defined outputs, and either running
+     * as daemon or not on a tty, then first try
+     * to direct it to the systemd journal
+     * (if it exists)....
      */
-    if (virLogGetNbOutputs() == 0) {
+    if (virLogGetNbOutputs() == 0 &&
+        (godaemon || !isatty(STDIN_FILENO))) {
         char *tmp;
         if (access("/run/systemd/journal/socket", W_OK) >= 0) {
             if (virAsprintf(&tmp, "%d:journald", virLogGetDefaultPriority()) < 0)

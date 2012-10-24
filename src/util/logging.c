@@ -1247,6 +1247,8 @@ virLogParseOutputs(const char *outputs)
     if (cur == NULL)
         return -1;
 
+    VIR_DEBUG("outputs=%s", outputs);
+
     virSkipSpaces(&cur);
     while (*cur != 0) {
         prio= virParseNumber(&cur);
