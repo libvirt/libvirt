@@ -96,5 +96,7 @@ int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
                                  virDomainObjPtr vm);
 bool qemuProcessAutoDestroyActive(struct qemud_driver *driver,
                                   virDomainObjPtr vm);
+virBitmapPtr qemuPrepareCpumap(struct qemud_driver *driver,
+                               virBitmapPtr nodemask);
 
 #endif /* __QEMU_PROCESS_H__ */
