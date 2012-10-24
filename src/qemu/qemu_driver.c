@@ -13615,8 +13615,8 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     if (nparams == 0 && ncpus != 0)
         return QEMU_NB_PER_CPU_STAT_PARAM;
 
-    /* To parse account file, we need "present" cpu map.  */
-    map = nodeGetCPUmap(domain->conn, &max_id, "present");
+    /* To parse account file, we need bitmap of online cpus.  */
+    map = nodeGetCPUBitmap(domain->conn, &max_id);
     if (!map)
         return rv;
 
@@ -13681,7 +13681,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
         goto cleanup;
 
     /* Check that the mapping of online cpus didn't change mid-parse.  */
-    map2 = nodeGetCPUmap(domain->conn, &max_id, "present");
+    map2 = nodeGetCPUBitmap(domain->conn, &max_id);
     if (!map2 || !virBitmapEqual(map, map2)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("the set of online cpus changed while reading"));

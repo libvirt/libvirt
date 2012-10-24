@@ -46,9 +46,8 @@ int nodeGetCellsFreeMemory(virConnectPtr conn,
                            int maxCells);
 unsigned long long nodeGetFreeMemory(virConnectPtr conn);
 
-virBitmapPtr nodeGetCPUmap(virConnectPtr conn,
-                           int *max_id,
-                           const char *mapname);
+virBitmapPtr nodeGetCPUBitmap(virConnectPtr conn,
+                              int *max_id);
 
 int nodeGetMemoryParameters(virConnectPtr conn,
                             virTypedParameterPtr params,

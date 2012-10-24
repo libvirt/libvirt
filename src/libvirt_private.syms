@@ -907,7 +907,7 @@ virNodeDeviceObjUnlock;
 
 # nodeinfo.h
 nodeCapsInitNUMA;
-nodeGetCPUmap;
+nodeGetCPUBitmap;
 nodeGetCPUStats;
 nodeGetCellsFreeMemory;
 nodeGetFreeMemory;
