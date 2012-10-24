@@ -833,16 +833,12 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
             ctx->apiVersion = esxVI_APIVersion_41;
         } else if (STRPREFIX(ctx->service->about->apiVersion, "4.")) {
             ctx->apiVersion = esxVI_APIVersion_4x;
-
-            VIR_WARN("Found untested VI API major/minor version '%s'",
-                     ctx->service->about->apiVersion);
         } else if (STRPREFIX(ctx->service->about->apiVersion, "5.0")) {
             ctx->apiVersion = esxVI_APIVersion_50;
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "5.1")) {
+            ctx->apiVersion = esxVI_APIVersion_51;
         } else if (STRPREFIX(ctx->service->about->apiVersion, "5.")) {
             ctx->apiVersion = esxVI_APIVersion_5x;
-
-            VIR_WARN("Found untested VI API major/minor version '%s'",
-                     ctx->service->about->apiVersion);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VI API major/minor version '2.5', '4.x' or "
@@ -869,16 +865,12 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                 ctx->productVersion = esxVI_ProductVersion_ESX41;
             } else if (STRPREFIX(ctx->service->about->version, "4.")) {
                 ctx->productVersion = esxVI_ProductVersion_ESX4x;
-
-                VIR_WARN("Found untested ESX major/minor version '%s'",
-                         ctx->service->about->version);
             } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
                 ctx->productVersion = esxVI_ProductVersion_ESX50;
+            } else if (STRPREFIX(ctx->service->about->version, "5.1")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX51;
             } else if (STRPREFIX(ctx->service->about->version, "5.")) {
                 ctx->productVersion = esxVI_ProductVersion_ESX5x;
-
-                VIR_WARN("Found untested ESX major/minor version '%s'",
-                         ctx->service->about->version);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Expecting ESX major/minor version '3.5', "
@@ -895,16 +887,12 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                 ctx->productVersion = esxVI_ProductVersion_VPX41;
             } else if (STRPREFIX(ctx->service->about->version, "4.")) {
                 ctx->productVersion = esxVI_ProductVersion_VPX4x;
-
-                VIR_WARN("Found untested VPX major/minor version '%s'",
-                         ctx->service->about->version);
             } else if (STRPREFIX(ctx->service->about->version, "5.0")) {
                 ctx->productVersion = esxVI_ProductVersion_VPX50;
+            } else if (STRPREFIX(ctx->service->about->version, "5.1")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX51;
             } else if (STRPREFIX(ctx->service->about->version, "5.")) {
                 ctx->productVersion = esxVI_ProductVersion_VPX5x;
-
-                VIR_WARN("Found untested VPX major/minor version '%s'",
-                         ctx->service->about->version);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Expecting VPX major/minor version '2.5', '4.x' "
