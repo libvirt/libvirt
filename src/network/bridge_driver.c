@@ -888,6 +888,8 @@ networkStartDhcpDaemon(struct network_driver *driver,
     char *pidfile = NULL;
     int ret = -1;
     dnsmasqContext *dctx = NULL;
+    virNetworkIpDefPtr ipdef;
+    int i;
 
     if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
@@ -930,6 +932,18 @@ networkStartDhcpDaemon(struct network_driver *driver,
                                             dctx, driver->dnsmasqCaps);
     if (ret < 0)
         goto cleanup;
+
+    /* populate dnsmasq hosts file */
+    for (i = 0; (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i)); i++) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET) &&
+            (ipdef->nranges || ipdef->nhosts)) {
+            if (networkBuildDnsmasqHostsfile(dctx, ipdef,
+                                             network->def->dns) < 0)
+                goto cleanup;
+
+            break;
+        }
+    }
 
     ret = dnsmasqSave(dctx);
     if (ret < 0)
@@ -2792,7 +2806,6 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
     int ii;
-    dnsmasqContext* dctx = NULL;
 
     networkDriverLock(driver);
 
@@ -2849,21 +2862,12 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
-    if (ipv4def) {
-        dctx = dnsmasqContextNew(def->name, DNSMASQ_STATE_DIR);
-        if (dctx == NULL ||
-            networkBuildDnsmasqHostsfile(dctx, ipv4def, def->dns) < 0 ||
-            dnsmasqSave(dctx) < 0)
-            goto cleanup;
-    }
-
     VIR_INFO("Defining network '%s'", def->name);
     ret = virGetNetwork(conn, def->name, def->uuid);
 
 cleanup:
     if (freeDef)
        virNetworkDefFree(def);
-    dnsmasqContextFree(dctx);
     if (network)
         virNetworkObjUnlock(network);
     networkDriverUnlock(driver);
