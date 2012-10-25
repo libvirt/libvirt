@@ -2690,7 +2690,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if (virNetworkObjIsDuplicate(&driver->networks, def, 1) < 0)
+    if (virNetworkObjIsDuplicate(&driver->networks, def, true) < 0)
         goto cleanup;
 
     /* Only the three L3 network types that are configured by libvirt
@@ -2749,7 +2749,7 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if (virNetworkObjIsDuplicate(&driver->networks, def, 0) < 0)
+    if (virNetworkObjIsDuplicate(&driver->networks, def, false) < 0)
         goto cleanup;
 
     /* Only the three L3 network types that are configured by libvirt

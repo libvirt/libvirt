@@ -3061,7 +3061,7 @@ cleanup:
 int
 virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                          virNetworkDefPtr def,
-                         unsigned int check_active)
+                         bool check_active)
 {
     int ret = -1;
     int dupVM = 0;

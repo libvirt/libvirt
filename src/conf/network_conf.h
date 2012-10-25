@@ -337,7 +337,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
 
 int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
                              virNetworkDefPtr def,
-                             unsigned int check_active);
+                             bool check_active);
 
 void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);
