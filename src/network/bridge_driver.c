@@ -2617,8 +2617,8 @@ static int
 networkValidate(virNetworkDefPtr def)
 {
     int ii;
-    bool vlanUsed, vlanAllowed;
-    const char *defaultPortGroup = NULL;
+    bool vlanUsed, vlanAllowed, badVlanUse = false;
+    virPortGroupDefPtr defaultPortGroup = NULL;
 
     /* The only type of networks that currently support transparent
      * vlan configuration are those using hostdev sr-iov devices from
@@ -2630,14 +2630,23 @@ networkValidate(virNetworkDefPtr def)
                    def->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH);
 
     vlanUsed = def->vlan.nTags > 0;
-    for (ii = 0; ii < def->nPortGroups && !(vlanUsed && vlanAllowed); ii++) {
-        if (def->portGroups[ii].vlan.nTags > 0)
-            vlanUsed = true;
-        if (def->forwardType == VIR_NETWORK_FORWARD_BRIDGE &&
-            def->portGroups[ii].virtPortProfile &&
-            (def->portGroups[ii].virtPortProfile->virtPortType
-             == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)) {
-            vlanAllowed = true;
+    for (ii = 0; ii < def->nPortGroups; ii++) {
+        if (vlanUsed || def->portGroups[ii].vlan.nTags > 0) {
+            /* anyone using this portgroup will get a vlan tag. Verify
+             * that they will also be using an openvswitch connection,
+             * as that is the only type of network that currently
+             * supports a vlan tag.
+             */
+            if (def->portGroups[ii].virtPortProfile) {
+                if (def->forwardType != VIR_NETWORK_FORWARD_BRIDGE ||
+                    def->portGroups[ii].virtPortProfile->virtPortType
+                    != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+                    badVlanUse = true;
+                }
+            } else if (!vlanAllowed) {
+                /* virtualport taken from base network definition */
+                badVlanUse = true;
+            }
         }
         if (def->portGroups[ii].isDefault) {
             if (defaultPortGroup) {
@@ -2645,13 +2654,20 @@ networkValidate(virNetworkDefPtr def)
                                _("network '%s' has multiple default "
                                  "<portgroup> elements (%s and %s), "
                                  "but only one default is allowed"),
-                               def->name, defaultPortGroup,
+                               def->name, defaultPortGroup->name,
                                def->portGroups[ii].name);
+                return -1;
             }
-            defaultPortGroup = def->portGroups[ii].name;
+            defaultPortGroup = &def->portGroups[ii];
         }
     }
-    if (vlanUsed && !vlanAllowed) {
+    if (badVlanUse ||
+        (vlanUsed && !vlanAllowed && !defaultPortGroup)) {
+        /* NB: if defaultPortGroup is set, we don't directly look at
+         * vlanUsed && !vlanAllowed, because the network will never be
+         * used without having a portgroup added in, so all necessary
+         * checks were done in the loop above.
+         */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("<vlan> element specified for network %s, "
                          "whose type doesn't support vlan configuration"),
