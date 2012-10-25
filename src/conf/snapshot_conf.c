@@ -208,15 +208,11 @@ virDomainSnapshotDefParseString(const char *xmlStr,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("a redefined snapshot must have a name"));
             goto cleanup;
-        } else {
-            ignore_value(virAsprintf(&def->name, "%lld",
-                                     (long long)tv.tv_sec));
         }
-    }
-
-    if (def->name == NULL) {
-        virReportOOMError();
-        goto cleanup;
+        if (virAsprintf(&def->name, "%lld", (long long)tv.tv_sec) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
     }
 
     def->description = virXPathString("string(./description)", ctxt);
