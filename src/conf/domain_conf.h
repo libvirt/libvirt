@@ -2009,12 +2009,10 @@ virDomainDiskRemove(virDomainDefPtr def, size_t i);
 virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 
-int virDomainNetIndexByMac(virDomainDefPtr def, const virMacAddrPtr mac);
+int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
+virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
-virDomainNetDefPtr
-virDomainNetRemove(virDomainDefPtr def, size_t i);
-virDomainNetDefPtr
-virDomainNetRemoveByMac(virDomainDefPtr def, const virMacAddrPtr mac);
+virDomainNetDefPtr virDomainNetRemove(virDomainDefPtr def, size_t i);
 
 int virDomainHostdevInsert(virDomainDefPtr def, virDomainHostdevDefPtr hostdev);
 virDomainHostdevDefPtr
@@ -2273,9 +2271,6 @@ VIR_ENUM_DECL(virDomainTimerMode)
 VIR_ENUM_DECL(virDomainCpuPlacementMode)
 
 VIR_ENUM_DECL(virDomainStartupPolicy)
-
-virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def,
-                                    const char *device);
 
 # define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE   \
                 (VIR_CONNECT_LIST_DOMAINS_ACTIVE | \

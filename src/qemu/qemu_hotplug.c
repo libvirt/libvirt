@@ -2448,30 +2448,28 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
                           virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
-    int i, ret = -1;
+    int detachidx, ret = -1;
     virDomainNetDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int vlan;
     char *hostnet_name = NULL;
+    char mac[VIR_MAC_STRING_BUFLEN];
     virNetDevVPortProfilePtr vport = NULL;
 
-    for (i = 0 ; i < vm->def->nnets ; i++) {
-        virDomainNetDefPtr net = vm->def->nets[i];
-
-        if (!virMacAddrCmp(&net->mac, &dev->data.net->mac)) {
-            detach = net;
-            break;
-        }
-    }
-
-    if (!detach) {
+    detachidx = virDomainNetFindIdx(vm->def, dev->data.net);
+    if (detachidx == -2) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("network device %02x:%02x:%02x:%02x:%02x:%02x not found"),
-                       dev->data.net->mac.addr[0], dev->data.net->mac.addr[1],
-                       dev->data.net->mac.addr[2], dev->data.net->mac.addr[3],
-                       dev->data.net->mac.addr[4], dev->data.net->mac.addr[5]);
+                       _("multiple devices matching mac address %s found"),
+                       virMacAddrFormat(&dev->data.net->mac, mac));
+        goto cleanup;
+        }
+    else if (detachidx < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("network device %s not found"),
+                       virMacAddrFormat(&dev->data.net->mac, mac));
         goto cleanup;
     }
+    detach = vm->def->nets[detachidx];
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         ret = qemuDomainDetachThisHostDevice(driver, vm,
@@ -2575,7 +2573,7 @@ qemuDomainDetachNetDevice(struct qemud_driver *driver,
 cleanup:
     if (!ret) {
         networkReleaseActualDevice(detach);
-        virDomainNetRemove(vm->def, i);
+        virDomainNetRemove(vm->def, detachidx);
         virDomainNetDefFree(detach);
     }
     VIR_FREE(hostnet_name);

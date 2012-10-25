@@ -7692,7 +7692,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml = NULL;
     xmlXPathObjectPtr obj=NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr cur = NULL;
+    xmlNodePtr cur = NULL, matchNode = NULL;
     xmlBufferPtr xml_buf = NULL;
     const char *mac =NULL, *type = NULL;
     char *doc;
@@ -7738,10 +7738,12 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (!mac)
+    if (!mac) {
+        matchNode = obj->nodesetval->nodeTab[0];
         goto hit;
+    }
 
-    /* search mac */
+    /* multiple possibilities, so search for matching mac */
     for (; i < obj->nodesetval->nodeNr; i++) {
         cur = obj->nodesetval->nodeTab[i]->children;
         while (cur != NULL) {
@@ -7751,14 +7753,24 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
                 diff_mac = virMacAddrCompare(tmp_mac, mac);
                 VIR_FREE(tmp_mac);
                 if (!diff_mac) {
-                    goto hit;
+                    if (matchNode) {
+                        /* this is the 2nd match, so it's ambiguous */
+                        vshError(ctl, _("Domain has multiple interfaces matching "
+                                        "MAC address %s. You must use detach-device and "
+                                        "specify the device pci address to remove it."),
+                                 mac);
+                        goto cleanup;
+                    }
+                    matchNode = obj->nodesetval->nodeTab[i];
                 }
             }
             cur = cur->next;
         }
     }
-    vshError(ctl, _("No found interface whose MAC address is %s"), mac);
-    goto cleanup;
+    if (!matchNode) {
+        vshError(ctl, _("No interface with MAC address %s was found"), mac);
+        goto cleanup;
+    }
 
  hit:
     xml_buf = xmlBufferCreate();
@@ -7767,7 +7779,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0) {
+    if (xmlNodeDump(xml_buf, xml, matchNode, 0, 0) < 0) {
         vshError(ctl, "%s", _("Failed to create XML"));
         goto cleanup;
     }
