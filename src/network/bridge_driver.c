@@ -2681,11 +2681,48 @@ cleanup:
 
 
 static int
-networkValidate(virNetworkDefPtr def)
+networkValidate(struct network_driver *driver,
+                virNetworkDefPtr def,
+                bool check_active)
 {
     int ii;
     bool vlanUsed, vlanAllowed, badVlanUse = false;
     virPortGroupDefPtr defaultPortGroup = NULL;
+    virNetworkIpDefPtr ipdef;
+    bool ipv4def = false;
+    int i;
+
+    /* check for duplicate networks */
+    if (virNetworkObjIsDuplicate(&driver->networks, def, check_active) < 0)
+        return -1;
+
+    /* Only the three L3 network types that are configured by libvirt
+     * need to have a bridge device name / mac address provided
+     */
+    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
+        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
+        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
+
+        if (virNetworkSetBridgeName(&driver->networks, def, 1))
+            return -1;
+
+        virNetworkSetBridgeMacAddr(def);
+    }
+
+    /* We only support dhcp on one IPv4 address per defined network */
+    for (i = 0; (ipdef = virNetworkDefGetIpByIndex(def, AF_INET, i)); i++) {
+        if (ipdef->nranges || ipdef->nhosts) {
+            if (ipv4def) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Multiple dhcp sections found. "
+                                 "dhcp is supported only for a "
+                                 "single IPv4 address on each network"));
+                return -1;
+            } else {
+                ipv4def = true;
+            }
+        }
+    }
 
     /* The only type of networks that currently support transparent
      * vlan configuration are those using hostdev sr-iov devices from
@@ -2755,23 +2792,7 @@ static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if (virNetworkObjIsDuplicate(&driver->networks, def, true) < 0)
-        goto cleanup;
-
-    /* Only the three L3 network types that are configured by libvirt
-     * need to have a bridge device name / mac address provided
-     */
-    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
-        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
-        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
-
-        if (virNetworkSetBridgeName(&driver->networks, def, 1))
-            goto cleanup;
-
-        virNetworkSetBridgeMacAddr(def);
-    }
-
-    if (networkValidate(def) < 0)
+    if (networkValidate(driver, def, true) < 0)
        goto cleanup;
 
     /* NB: "live" is false because this transient network hasn't yet
@@ -2801,54 +2822,17 @@ cleanup:
 
 static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
-    virNetworkIpDefPtr ipdef, ipv4def = NULL;
     virNetworkDefPtr def;
     bool freeDef = true;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
-    int ii;
 
     networkDriverLock(driver);
 
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if (virNetworkObjIsDuplicate(&driver->networks, def, false) < 0)
-        goto cleanup;
-
-    /* Only the three L3 network types that are configured by libvirt
-     * need to have a bridge device name / mac address provided
-     */
-    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
-        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
-        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
-
-        if (virNetworkSetBridgeName(&driver->networks, def, 1))
-            goto cleanup;
-
-        virNetworkSetBridgeMacAddr(def);
-    }
-
-    /* We only support dhcp on one IPv4 address per defined network */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
-         ii++) {
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
-            if (ipdef->nranges || ipdef->nhosts) {
-                if (ipv4def) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Multiple dhcp sections found. "
-                                     "dhcp is supported only for a "
-                                     "single IPv4 address on each network"));
-                    goto cleanup;
-                } else {
-                    ipv4def = ipdef;
-                }
-            }
-        }
-    }
-
-    if (networkValidate(def) < 0)
+    if (networkValidate(driver, def, false) < 0)
        goto cleanup;
 
     if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
