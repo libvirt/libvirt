@@ -156,6 +156,57 @@ networkRadvdConfigFileName(const char *netname)
     return configfile;
 }
 
+/* do needed cleanup steps and remove the network from the list */
+static int
+networkRemoveInactive(struct network_driver *driver,
+                      virNetworkObjPtr net)
+{
+    char *leasefile = NULL;
+    char *radvdconfigfile = NULL;
+    char *radvdpidbase = NULL;
+    dnsmasqContext *dctx = NULL;
+    virNetworkDefPtr def = virNetworkObjGetPersistentDef(net);
+
+    int ret = -1;
+
+    /* remove the (possibly) existing dnsmasq and radvd files */
+    if (!(dctx = dnsmasqContextNew(def->name, DNSMASQ_STATE_DIR)))
+        goto cleanup;
+
+    if (!(leasefile = networkDnsmasqLeaseFileName(def->name)))
+        goto cleanup;
+
+    if (!(radvdconfigfile = networkRadvdConfigFileName(def->name)))
+        goto no_memory;
+
+    if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
+        goto no_memory;
+
+    /* dnsmasq */
+    dnsmasqDelete(dctx);
+    unlink(leasefile);
+
+    /* radvd */
+    unlink(radvdconfigfile);
+    virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+
+    /* remove the network definition */
+    virNetworkRemoveInactive(&driver->networks, net);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(leasefile);
+    VIR_FREE(radvdconfigfile);
+    VIR_FREE(radvdpidbase);
+    dnsmasqContextFree(dctx);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
 static char *
 networkBridgeDummyNicName(const char *brname)
 {
@@ -2874,12 +2925,11 @@ cleanup:
     return ret;
 }
 
-static int networkUndefine(virNetworkPtr net) {
+static int
+networkUndefine(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
-    virNetworkIpDefPtr ipdef;
-    bool dhcp_present = false, v6present = false;
-    int ret = -1, ii;
+    int ret = -1;
 
     networkDriverLock(driver);
 
@@ -2901,58 +2951,12 @@ static int networkUndefine(virNetworkPtr net) {
                                network) < 0)
         goto cleanup;
 
-    /* we only support dhcp on one IPv4 address per defined network */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
-            if (ipdef->nranges || ipdef->nhosts)
-                dhcp_present = true;
-        } else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
-            v6present = true;
-        }
-    }
-
-    if (dhcp_present) {
-        char *leasefile;
-        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
-        if (dctx == NULL)
-            goto cleanup;
-
-        dnsmasqDelete(dctx);
-        dnsmasqContextFree(dctx);
-
-        leasefile = networkDnsmasqLeaseFileName(network->def->name);
-        if (!leasefile)
-            goto cleanup;
-        unlink(leasefile);
-        VIR_FREE(leasefile);
-    }
-
-    if (v6present) {
-        char *configfile = networkRadvdConfigFileName(network->def->name);
-
-        if (!configfile) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        unlink(configfile);
-        VIR_FREE(configfile);
-
-        char *radvdpidbase = networkRadvdPidfileBasename(network->def->name);
-
-        if (!(radvdpidbase)) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
-        VIR_FREE(radvdpidbase);
-
-    }
-
     VIR_INFO("Undefining network '%s'", network->def->name);
-    virNetworkRemoveInactive(&driver->networks,
-                             network);
+    if (networkRemoveInactive(driver, network) < 0) {
+        network = NULL;
+        goto cleanup;
+    }
+
     network = NULL;
     ret = 0;
 
@@ -3153,10 +3157,15 @@ static int networkDestroy(virNetworkPtr net) {
         goto cleanup;
     }
 
-    ret = networkShutdownNetwork(driver, network);
+    if ((ret = networkShutdownNetwork(driver, network)) < 0)
+        goto cleanup;
+
     if (!network->persistent) {
-        virNetworkRemoveInactive(&driver->networks,
-                                 network);
+        if (networkRemoveInactive(driver, network) < 0) {
+            network = NULL;
+            ret = -1;
+            goto cleanup;
+        }
         network = NULL;
     }
 
