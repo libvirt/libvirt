@@ -2764,7 +2764,9 @@ start at the current snapshot.  When used in isolation or with
 I<--parent>, the list is limited to direct children unless
 I<--descendants> is also present.  When used with I<--tree>, the
 use of I<--descendants> is implied.  This option is not compatible
-with I<--roots>.
+with I<--roots>.  Note that the starting point of I<--from> or
+I<--current> is not included in the list unless the I<--tree>
+option is also present.
 
 If I<--leaves> is specified, the list will be filtered to just
 snapshots that have no children.  Likewise, if I<--no-leaves> is

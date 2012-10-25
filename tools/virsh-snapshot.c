@@ -1197,6 +1197,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
         if (from) {
             vshError(ctl, "%s",
+                     vshCommandOptBool(cmd, "current") ?
+                     _("--roots and --current are mutually exclusive") :
                      _("--roots and --from are mutually exclusive"));
             goto cleanup;
         }
