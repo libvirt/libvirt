@@ -2864,6 +2864,7 @@ networkUndefine(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
+    bool active = false;
 
     networkDriverLock(driver);
 
@@ -2874,24 +2875,28 @@ networkUndefine(virNetworkPtr net) {
         goto cleanup;
     }
 
-    if (virNetworkObjIsActive(network)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("network is still active"));
-        goto cleanup;
-    }
+    if (virNetworkObjIsActive(network))
+        active = true;
 
     if (virNetworkDeleteConfig(driver->networkConfigDir,
                                driver->networkAutostartDir,
                                network) < 0)
         goto cleanup;
 
+    /* make the network transient */
+    network->persistent = 0;
+    virNetworkDefFree(network->newDef);
+    network->newDef = NULL;
+
     VIR_INFO("Undefining network '%s'", network->def->name);
-    if (networkRemoveInactive(driver, network) < 0) {
+    if (!active) {
+        if (networkRemoveInactive(driver, network) < 0) {
+            network = NULL;
+            goto cleanup;
+        }
         network = NULL;
-        goto cleanup;
     }
 
-    network = NULL;
     ret = 0;
 
 cleanup:
