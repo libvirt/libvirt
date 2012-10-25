@@ -9,6 +9,7 @@
 virBitmapClearAll;
 virBitmapClearBit;
 virBitmapCopy;
+virBitmapCountBits;
 virBitmapEqual;
 virBitmapFormat;
 virBitmapFree;

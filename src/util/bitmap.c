@@ -35,6 +35,7 @@
 #include "buf.h"
 #include "util.h"
 #include "c-ctype.h"
+#include "count-one-bits.h"
 
 
 struct _virBitmap {
@@ -527,8 +528,15 @@ size_t virBitmapSize(virBitmapPtr bitmap)
  */
 void virBitmapSetAll(virBitmapPtr bitmap)
 {
+    int tail = bitmap->max_bit % VIR_BITMAP_BITS_PER_UNIT;
+
     memset(bitmap->map, 0xff,
            bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT));
+
+    /* Ensure tail bits are clear.  */
+    if (tail)
+        bitmap->map[bitmap->map_len - 1] &=
+            -1UL >> (VIR_BITMAP_BITS_PER_UNIT - tail);
 }
 
 /**
@@ -585,10 +593,10 @@ bool virBitmapIsAllSet(virBitmapPtr bitmap)
  *
  * returns the position of the found bit, or -1 if no bit found.
  */
-int virBitmapNextSetBit(virBitmapPtr bitmap, int pos)
+ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
 {
-    int nl;
-    int nb;
+    size_t nl;
+    size_t nb;
     unsigned long bits;
 
     if (pos < 0)
@@ -612,4 +620,17 @@ int virBitmapNextSetBit(virBitmapPtr bitmap, int pos)
         return -1;
 
     return ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
+}
+
+/* Return the number of bits currently set in the map.  */
+size_t
+virBitmapCountBits(virBitmapPtr bitmap)
+{
+    size_t i;
+    size_t ret = 0;
+
+    for (i = 0; i < bitmap->map_len; i++)
+        ret += count_one_bits_l(bitmap->map[i]);
+
+    return ret;
 }
