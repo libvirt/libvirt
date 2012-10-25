@@ -99,6 +99,9 @@ static int test2(const void *data ATTRIBUTE_UNUSED)
     if (testBit(bitmap, 100, 1020, false) < 0)
         goto error;
 
+    if (virBitmapCountBits(bitmap) != 48)
+        goto error;
+
     bitsString2 = virBitmapFormat(bitmap);
     if (strcmp(bitsString1, bitsString2))
         goto error;
@@ -106,12 +109,16 @@ static int test2(const void *data ATTRIBUTE_UNUSED)
     virBitmapSetAll(bitmap);
     if (testBit(bitmap, 0, size - 1, true) < 0)
         goto error;
+    if (virBitmapCountBits(bitmap) != size)
+        goto error;
 
     if (!virBitmapIsAllSet(bitmap))
         goto error;
 
     virBitmapClearAll(bitmap);
     if (testBit(bitmap, 0, size - 1, false) < 0)
+        goto error;
+    if (virBitmapCountBits(bitmap) != 0)
         goto error;
 
     ret = 0;
