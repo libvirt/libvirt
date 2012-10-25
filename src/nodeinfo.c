@@ -949,9 +949,24 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
+int
+nodeGetCPUCount(void)
+{
+#ifdef __linux__
+    /* XXX should we also work on older kernels, like RHEL5, that lack
+     * cpu/present and cpu/online files?  Those kernels also lack cpu
+     * hotplugging, so it would be a matter of finding the largest
+     * cpu/cpuNN directory, and returning NN + 1 */
+    return linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("host cpu counting not implemented on this platform"));
+    return -1;
+#endif
+}
+
 virBitmapPtr
-nodeGetCPUBitmap(virConnectPtr conn ATTRIBUTE_UNUSED,
-                 int *max_id ATTRIBUTE_UNUSED)
+nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
     virBitmapPtr cpumap;
@@ -1249,10 +1264,11 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 #endif
 }
 
-int nodeGetCPUMap(virConnectPtr conn,
-                  unsigned char **cpumap,
-                  unsigned int *online,
-                  unsigned int flags)
+int
+nodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+              unsigned char **cpumap,
+              unsigned int *online,
+              unsigned int flags)
 {
     virBitmapPtr cpus = NULL;
     int maxpresent;
@@ -1261,7 +1277,7 @@ int nodeGetCPUMap(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
-    if (!(cpus = nodeGetCPUBitmap(conn, &maxpresent)))
+    if (!(cpus = nodeGetCPUBitmap(&maxpresent)))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)

@@ -13588,16 +13588,13 @@ cleanup:
 }
 
 static int
-qemuDomainGetPercpuStats(virDomainPtr domain,
-                         virDomainObjPtr vm,
+qemuDomainGetPercpuStats(virDomainObjPtr vm,
                          virCgroupPtr group,
                          virTypedParameterPtr params,
                          unsigned int nparams,
                          int start_cpu,
                          unsigned int ncpus)
 {
-    virBitmapPtr map = NULL;
-    virBitmapPtr map2 = NULL;
     int rv = -1;
     int i, id, max_id;
     char *pos;
@@ -13609,19 +13606,18 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
-    bool result;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0)
         return QEMU_NB_PER_CPU_STAT_PARAM;
 
-    /* To parse account file, we need bitmap of online cpus.  */
-    map = nodeGetCPUBitmap(domain->conn, &max_id);
-    if (!map)
+    /* To parse account file, we need to know how many cpus are present.  */
+    max_id = nodeGetCPUCount();
+    if (max_id < 0)
         return rv;
 
     if (ncpus == 0) { /* returns max cpu ID */
-        rv = max_id + 1;
+        rv = max_id;
         goto cleanup;
     }
 
@@ -13648,11 +13644,7 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
         id = start_cpu + ncpus - 1;
 
     for (i = 0; i <= id; i++) {
-        if (virBitmapGetBit(map, i, &result) < 0)
-            goto cleanup;
-        if (!result) {
-            cpu_time = 0;
-        } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
+        if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
             goto cleanup;
@@ -13680,22 +13672,9 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
     if (getSumVcpuPercpuStats(group, priv->nvcpupids, sum_cpu_time, n) < 0)
         goto cleanup;
 
-    /* Check that the mapping of online cpus didn't change mid-parse.  */
-    map2 = nodeGetCPUBitmap(domain->conn, &max_id);
-    if (!map2 || !virBitmapEqual(map, map2)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("the set of online cpus changed while reading"));
-        goto cleanup;
-    }
-
     sum_cpu_pos = sum_cpu_time;
     for (i = 0; i <= id; i++) {
-        if (virBitmapGetBit(map, i, &result) < 0)
-            goto cleanup;
-        if (!result)
-            cpu_time = 0;
-        else
-            cpu_time = *(sum_cpu_pos++);
+        cpu_time = *(sum_cpu_pos++);
         if (i < start_cpu)
             continue;
         if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
@@ -13710,8 +13689,6 @@ qemuDomainGetPercpuStats(virDomainPtr domain,
 cleanup:
     VIR_FREE(sum_cpu_time);
     VIR_FREE(buf);
-    virBitmapFree(map);
-    virBitmapFree(map2);
     return rv;
 }
 
@@ -13763,7 +13740,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     if (start_cpu == -1)
         ret = qemuDomainGetTotalcpuStats(group, params, nparams);
     else
-        ret = qemuDomainGetPercpuStats(domain, vm, group, params, nparams,
+        ret = qemuDomainGetPercpuStats(vm, group, params, nparams,
                                        start_cpu, ncpus);
 cleanup:
     virCgroupFree(&group);
