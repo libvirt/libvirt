@@ -542,5 +542,11 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='flags' type='int' info='unused, always pass 0'/>
     </function>
+    <function name='virNodeGetCPUMap' file='python'>
+      <info>Get node CPU information</info>
+      <return type='str *' info='(cpunum, cpumap, online) on success, None on error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='flags' type='int' info='unused, pass 0'/>
+    </function>
   </symbols>
 </api>

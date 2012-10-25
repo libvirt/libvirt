@@ -6397,6 +6397,75 @@ cleanup:
     return ret;
 }
 
+static PyObject *
+libvirt_virNodeGetCPUMap(PyObject *self ATTRIBUTE_UNUSED,
+                         PyObject *args)
+{
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    PyObject *ret = NULL;
+    PyObject *pycpumap = NULL;
+    PyObject *pyused = NULL;
+    PyObject *pycpunum = NULL;
+    PyObject *pyonline = NULL;
+    int i_retval;
+    unsigned char *cpumap = NULL;
+    unsigned int online = 0;
+    unsigned int flags;
+    int i;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virNodeGetCPUMap",
+                          &pyobj_conn, &flags))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virNodeGetCPUMap(conn, &cpumap, &online, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0)
+        return VIR_PY_NONE;
+
+    if ((ret = PyTuple_New(3)) == NULL)
+        goto error;
+
+    /* 0: number of CPUs */
+    if ((pycpunum = PyLong_FromLong(i_retval)) == NULL ||
+        PyTuple_SetItem(ret, 0, pycpunum) < 0)
+        goto error;
+
+    /* 1: CPU map */
+    if ((pycpumap = PyList_New(i_retval)) == NULL)
+        goto error;
+
+    for (i = 0; i < i_retval; i++) {
+        if ((pyused = PyBool_FromLong(VIR_CPU_USED(cpumap, i))) == NULL)
+            goto error;
+        if (PyList_SetItem(pycpumap, i, pyused) < 0)
+            goto error;
+    }
+
+    if (PyTuple_SetItem(ret, 1, pycpumap) < 0)
+        goto error;
+
+    /* 2: number of online CPUs */
+    if ((pyonline = PyLong_FromLong(online)) == NULL ||
+        PyTuple_SetItem(ret, 2, pyonline) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(cpumap);
+    return ret;
+error:
+    Py_XDECREF(ret);
+    Py_XDECREF(pycpumap);
+    Py_XDECREF(pyused);
+    Py_XDECREF(pycpunum);
+    Py_XDECREF(pyonline);
+    ret = NULL;
+    goto cleanup;
+}
+
 
 /************************************************************************
  *									*
@@ -6514,6 +6583,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetDiskErrors", libvirt_virDomainGetDiskErrors, METH_VARARGS, NULL},
     {(char *) "virNodeGetMemoryParameters", libvirt_virNodeGetMemoryParameters, METH_VARARGS, NULL},
     {(char *) "virNodeSetMemoryParameters", libvirt_virNodeSetMemoryParameters, METH_VARARGS, NULL},
+    {(char *) "virNodeGetCPUMap", libvirt_virNodeGetCPUMap, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
