@@ -506,7 +506,6 @@ static const vshCmdOptDef opts_node_suspend[] = {
     {"target", VSH_OT_DATA, VSH_OFLAG_REQ, N_("mem(Suspend-to-RAM), "
                                                "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")},
     {"duration", VSH_OT_INT, VSH_OFLAG_REQ, N_("Suspend duration in seconds, at least 60")},
-    {"flags", VSH_OT_INT, VSH_OFLAG_NONE, N_("Suspend flags, 0 for default")},
     {NULL, 0, 0, NULL}
 };
 
@@ -516,7 +515,6 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     unsigned int suspendTarget;
     long long duration;
-    unsigned int flags = 0;
 
     if (vshCommandOptString(cmd, "target", &target) < 0) {
         vshError(ctl, _("Invalid target argument"));
@@ -525,11 +523,6 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptLongLong(cmd, "duration", &duration) < 0) {
         vshError(ctl, _("Invalid duration argument"));
-        return false;
-    }
-
-    if (vshCommandOptUInt(cmd, "flags", &flags) < 0) {
-        vshError(ctl, _("Invalid flags argument"));
         return false;
     }
 
@@ -549,8 +542,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virNodeSuspendForDuration(ctl->conn, suspendTarget, duration,
-                                  flags) < 0) {
+    if (virNodeSuspendForDuration(ctl->conn, suspendTarget, duration, 0) < 0) {
         vshError(ctl, "%s", _("The host was not suspended"));
         return false;
     }
