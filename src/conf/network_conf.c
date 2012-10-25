@@ -359,7 +359,7 @@ virNetworkObjSetDefTransient(virNetworkObjPtr network, bool live)
 void
 virNetworkObjUnsetDefTransient(virNetworkObjPtr network)
 {
-    if (network->def) {
+    if (network->newDef) {
         virNetworkDefFree(network->def);
         network->def = network->newDef;
         network->newDef = NULL;
