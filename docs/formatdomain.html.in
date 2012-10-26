@@ -3102,7 +3102,7 @@ qemu-kvm -net nic,model=? /dev/null
       provide their own way (outside of libvirt) to tag guest traffic
       onto specific vlans.) To allow for specification of multiple
       tags (in the case of vlan trunking), a
-      subelement, <code>&lt;tag%gt;</code>, specifies which vlan tag
+      subelement, <code>&lt;tag&gt;</code>, specifies which vlan tag
       to use (for example: <code>&lt;tag id='42'/&gt;</code>. If an
       interface has more than one <code>&lt;vlan&gt;</code> element
       defined, it is assumed that the user wants to do VLAN trunking
