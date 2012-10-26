@@ -63,7 +63,7 @@ virt-xml-validate: virt-xml-validate.in Makefile
 virt-xml-validate.1: virt-xml-validate.in
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-XML-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-	        rm $(srcdir)/$@; exit 1; fi
+		rm $(srcdir)/$@; exit 1; fi
 
 virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
@@ -72,12 +72,12 @@ virt-pki-validate: virt-pki-validate.in Makefile
 virt-pki-validate.1: virt-pki-validate.in
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-PKI-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-	        rm $(srcdir)/$@; exit 1; fi
+		rm $(srcdir)/$@; exit 1; fi
 
 virt-host-validate.1: virt-host-validate.c
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-HOST-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-	        rm $(srcdir)/$@; exit 1; fi
+		rm $(srcdir)/$@; exit 1; fi
 
 virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	$(AM_V_GEN)sed -e 's,[@]SYSCONFDIR@,$(sysconfdir),' \
@@ -87,7 +87,7 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 virt-sanlock-cleanup.8: virt-sanlock-cleanup.in
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-	        rm $(srcdir)/$@; exit 1; fi
+		rm $(srcdir)/$@; exit 1; fi
 
 virt_host_validate_SOURCES = \
 		virt-host-validate.c \
@@ -172,7 +172,7 @@ endif
 virsh.1: virsh.pod
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-	        rm $(srcdir)/$@; exit 1; fi
+		rm $(srcdir)/$@; exit 1; fi
 
 install-data-local: install-init install-systemd
 
