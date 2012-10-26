@@ -2672,6 +2672,9 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         break;
     case VIR_DOMAIN_DISK_BUS_USB:
         virBufferAddLit(&opt, "usb-storage");
+
+        if (qemuBuildDeviceAddressStr(&opt, &disk->info, caps) < 0)
+            goto error;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
