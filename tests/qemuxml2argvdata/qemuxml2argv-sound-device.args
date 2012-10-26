@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
-unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -hda \
-/dev/HostVG/QEMUGuest1 -usb -soundhw pcspk -device ES1370,id=sound1,bus=pci.0,\
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -hda \
+/dev/HostVG/QEMUGuest1 -soundhw pcspk -device ES1370,id=sound1,bus=pci.0,\
 addr=0x3 -device sb16,id=sound2 -device AC97,id=sound3,bus=pci.0,addr=0x4 \
 -device intel-hda,id=sound4,bus=pci.0,addr=0x5 -device hda-duplex,\
 id=sound4-codec0,bus=sound4.0,cad=0 \

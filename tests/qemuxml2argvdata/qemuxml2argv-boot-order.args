@@ -7,6 +7,7 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu \
 -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
+-usb \
 -drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -drive file=/root/boot.iso,if=none,media=cdrom,id=drive-ide0-1-0 \
@@ -18,5 +19,4 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu \
 -global isa-fdc.bootindexB=4 \
 -device virtio-net-pci,vlan=0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x3,bootindex=2 \
 -net user,vlan=0,name=hostnet0 \
--usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

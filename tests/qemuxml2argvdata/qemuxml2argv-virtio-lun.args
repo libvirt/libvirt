@@ -2,10 +2,10 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
 /usr/bin/qemu -S -M pc-0.13 -m 1024 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi \
 -boot dc -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
--drive file=/dev/sdfake,if=none,id=drive-virtio-disk0 \
+-usb -drive file=/dev/sdfake,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,scsi=on,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0 \
 -drive file=/dev/sdfake2,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-pci,scsi=on,bus=pci.0,addr=0x5,drive=drive-virtio-disk1,id=virtio-disk1 \
 -device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:e5:48:58,bus=pci.0,addr=0x3 \
--net user,vlan=0,name=hostnet0 -serial pty -usb \
+-net user,vlan=0,name=hostnet0 -serial pty \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7

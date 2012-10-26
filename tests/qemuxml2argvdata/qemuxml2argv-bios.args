@@ -2,6 +2,6 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
 /usr/bin/qemu -S -M pc -bios /usr/share/seabios/bios.bin \
 -m 1024 -smp 1 -nographic -nodefaults -device sga \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
--hda /dev/HostVG/QEMUGuest1 -serial pty \
--usb -device usb-tablet,id=input0 \
+-usb -hda /dev/HostVG/QEMUGuest1 -serial pty \
+-device usb-tablet,id=input0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
