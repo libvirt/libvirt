@@ -642,7 +642,7 @@ address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
 =item B<blockcopy> I<domain> I<path> I<dest> [I<bandwidth>] [I<--shallow>]
-[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--verbose]
+[I<--reuse-external>] [I<--raw>] [I<--wait> [I<--verbose>]
 [{I<--pivot> | I<--finish>}] [I<--timeout> B<seconds>] [I<--async>]]
 
 Copy a disk backing image chain to I<dest>. By default, this command
@@ -683,7 +683,7 @@ I<path> specifies fully-qualified path of the disk.
 I<bandwidth> specifies copying bandwidth limit in Mbps.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
-[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async]]
+[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
 
 Populate a disk from its backing image chain. By default, this command
 flattens the entire chain; but if I<base> is specified, containing the
