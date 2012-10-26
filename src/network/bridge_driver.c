@@ -2822,7 +2822,7 @@ cleanup:
 
 static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
-    virNetworkDefPtr def;
+    virNetworkDefPtr def = NULL;
     bool freeDef = true;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
@@ -2835,11 +2835,17 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     if (networkValidate(driver, def, false) < 0)
        goto cleanup;
 
-    if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
-        goto cleanup;
-    freeDef = false;
+    if ((network = virNetworkFindByName(&driver->networks, def->name))) {
+        network->persistent = 1;
+        if (virNetworkObjAssignDef(network, def, false) < 0)
+            goto cleanup;
+    } else {
+        if (!(network = virNetworkAssignDef(&driver->networks, def, false)))
+            goto cleanup;
+    }
 
-    network->persistent = 1;
+    /* def was asigned */
+    freeDef = false;
 
     if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
         virNetworkRemoveInactive(&driver->networks, network);
