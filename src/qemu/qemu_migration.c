@@ -783,23 +783,22 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     }
 
     if (!(tmp = virXPathString("string(./hostuuid[1])", ctxt))) {
-        VIR_WARN("Missing hostuuid element in migration data; cannot "
-                 "detect migration to the same host");
-    } else {
-        if (virUUIDParse(tmp, mig->remoteHostuuid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("malformed hostuuid element in migration data"));
-            goto error;
-        }
-        if (memcmp(mig->remoteHostuuid, mig->localHostuuid,
-                   VIR_UUID_BUFLEN) == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Attempt to migrate guest to the same host %s"),
-                           tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing hostuuid element in migration data"));
+        goto error;
     }
+    if (virUUIDParse(tmp, mig->remoteHostuuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed hostuuid element in migration data"));
+        goto error;
+    }
+    if (memcmp(mig->remoteHostuuid, mig->localHostuuid, VIR_UUID_BUFLEN) == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Attempt to migrate guest to the same host %s"),
+                       tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
 
     /* Check to ensure all mandatory features from XML are also
      * present in 'flags' */
