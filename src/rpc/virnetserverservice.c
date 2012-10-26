@@ -256,6 +256,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     virJSONValuePtr socks;
     size_t i;
     int n;
+    unsigned int max;
 
     if (virNetServerServiceInitialize() < 0)
         return NULL;
@@ -274,12 +275,12 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
         goto error;
     }
     if (virJSONValueObjectGetNumberUint(object, "nrequests_client_max",
-                                        &n) < 0) {
+                                        &max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing nrequests_client_max field in JSON state document"));
         goto error;
     }
-    svc->nrequests_client_max = n;
+    svc->nrequests_client_max = max;
 
     if (!(socks = virJSONValueObjectGet(object, "socks"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
