@@ -295,6 +295,7 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
 
     if ((network = virNetworkFindByName(nets, def->name))) {
         if (virNetworkObjAssignDef(network, def, live) < 0) {
+            virNetworkObjUnlock(network);
             return NULL;
         }
         return network;
