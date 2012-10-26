@@ -384,7 +384,8 @@ POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
 $(srcdir)/libvirtd.8.in: libvirtd.pod.in
-	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@
+	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@ \
+	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
