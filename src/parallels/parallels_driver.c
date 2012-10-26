@@ -1256,14 +1256,16 @@ static int
 parallelsApplySerialParams(virDomainChrDefPtr *oldserials, int nold,
                            virDomainChrDefPtr *newserials, int nnew)
 {
+    int i, j;
+
     if (nold != nnew)
         goto error;
 
-    for (int i = 0; i < nold; i++) {
+    for (i = 0; i < nold; i++) {
         virDomainChrDefPtr oldserial = oldserials[i];
         virDomainChrDefPtr newserial = NULL;
 
-        for (int j = 0; j < nnew; j++) {
+        for (j = 0; j < nnew; j++) {
             if (newserials[j]->target.port == oldserial->target.port) {
                 newserial = newserials[j];
                 break;
