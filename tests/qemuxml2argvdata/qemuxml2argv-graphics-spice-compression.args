@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu -S -M pc -m 214 -smp 1 -nodefaults -monitor \
-unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -hda \
-/dev/HostVG/QEMUGuest1 -usb -spice port=5903,tls-port=5904,addr=127.0.0.1,\
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -hda \
+/dev/HostVG/QEMUGuest1 -spice port=5903,tls-port=5904,addr=127.0.0.1,\
 x509-dir=/etc/pki/libvirt-spice,\
 image-compression=auto_glz,jpeg-wan-compression=auto,zlib-glz-wan-compression=auto,\
 playback-compression=on,streaming-video=filter -vga \

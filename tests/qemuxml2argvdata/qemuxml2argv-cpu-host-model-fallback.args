@@ -13,7 +13,7 @@ LOGNAME=test \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot n \
+-usb \
 -net none \
 -serial none \
--parallel none \
--usb
+-parallel none
