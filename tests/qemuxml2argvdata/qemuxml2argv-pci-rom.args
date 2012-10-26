@@ -1,12 +1,12 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M \
 pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -monitor \
-unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -hda \
+unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb -hda \
 /dev/HostVG/QEMUGuest2 \
 -device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,addr=0x3,rombar=1 \
 -net user,vlan=0,name=hostnet0 \
 -device virtio-net-pci,vlan=1,id=net1,mac=52:54:00:24:a5:9e,bus=pci.0,addr=0x4,\
 romfile=/etc/fake/bootrom.bin -net user,vlan=1,name=hostnet1 \
--usb -device pci-assign,host=06:12.5,id=hostdev0,bus=pci.0,addr=0x5,rombar=0 \
+-device pci-assign,host=06:12.5,id=hostdev0,bus=pci.0,addr=0x5,rombar=0 \
 -device pci-assign,host=06:12.6,id=hostdev1,bus=pci.0,addr=0x6,rombar=1,\
 romfile=/etc/fake/bootrom.bin \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7
