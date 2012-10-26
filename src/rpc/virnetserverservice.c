@@ -1,7 +1,7 @@
 /*
  * virnetserverservice.c: generic network RPC server service
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -274,11 +274,12 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
         goto error;
     }
     if (virJSONValueObjectGetNumberUint(object, "nrequests_client_max",
-                                        (unsigned int *)&svc->nrequests_client_max) < 0) {
+                                        &n) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing nrequests_client_max field in JSON state document"));
         goto error;
     }
+    svc->nrequests_client_max = n;
 
     if (!(socks = virJSONValueObjectGet(object, "socks"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
