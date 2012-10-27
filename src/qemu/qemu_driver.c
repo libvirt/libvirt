@@ -12865,9 +12865,11 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     virDomainDiskDefPtr disk;
     int ret = -1;
     int idx;
+    struct stat st;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
-    virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW, -1);
+    virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
+                  VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -12929,12 +12931,39 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     }
 
     /* Prepare the destination file.  */
+    if (stat(dest, &st) < 0) {
+        if (errno != ENOENT) {
+            virReportSystemError(errno, _("unable to stat for disk %s: %s"),
+                                 disk->dst, dest);
+            goto endjob;
+        } else if (flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT) {
+            virReportSystemError(errno,
+                                 _("missing destination file for disk %s: %s"),
+                                 disk->dst, dest);
+            goto endjob;
+        }
+    } else if (!S_ISBLK(st.st_mode) && st.st_size &&
+               !(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("external destination file for disk %s already "
+                         "exists and is not a block device: %s"),
+                       disk->dst, dest);
+        goto endjob;
+    }
+
     /* XXX We also need to add security labeling, lock manager lease,
-     * and auditing of those events, as well as to support reuse of
-     * existing images, including probing the existing format of an
-     * existing image.  */
+     * and auditing of those events.  */
     if (!format) {
-        disk->mirrorFormat = disk->format;
+        if (flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT) {
+            /* If the user passed the REUSE_EXT flag, then either they
+             * also passed the RAW flag (and format is non-NULL), or
+             * it is safe for us to probe the format from the file
+             * that we will be using.  */
+            disk->mirrorFormat = virStorageFileProbeFormat(dest, driver->user,
+                                                           driver->group);
+        } else {
+            disk->mirrorFormat = disk->format;
+        }
         if (disk->mirrorFormat > 0)
             format = virStorageFileFormatTypeToString(disk->mirrorFormat);
     } else {
@@ -12978,6 +13007,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
+                  VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_REBASE_COPY |
                   VIR_DOMAIN_BLOCK_REBASE_COPY_RAW, -1);
 
