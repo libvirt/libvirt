@@ -12866,6 +12866,9 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     int ret = -1;
     int idx;
     struct stat st;
+    bool need_unlink = false;
+    char *mirror = NULL;
+    virCgroupPtr cgroup = NULL;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
@@ -12878,6 +12881,13 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
+        goto cleanup;
+    }
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES) &&
+        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to find cgroup for %s"),
+                       vm->def->name);
         goto cleanup;
     }
 
@@ -12951,31 +12961,40 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
         goto endjob;
     }
 
-    /* XXX We also need to add security labeling, lock manager lease,
-     * and auditing of those events.  */
-    if (!format) {
-        if (flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT) {
-            /* If the user passed the REUSE_EXT flag, then either they
-             * also passed the RAW flag (and format is non-NULL), or
-             * it is safe for us to probe the format from the file
-             * that we will be using.  */
-            disk->mirrorFormat = virStorageFileProbeFormat(dest, driver->user,
-                                                           driver->group);
-        } else {
+    if (!(flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)) {
+        int fd = qemuOpenFile(driver, dest, O_WRONLY | O_TRUNC | O_CREAT,
+                              &need_unlink, NULL);
+        if (fd < 0)
+            goto endjob;
+        VIR_FORCE_CLOSE(fd);
+        if (!format)
             disk->mirrorFormat = disk->format;
-        }
-        if (disk->mirrorFormat > 0)
-            format = virStorageFileFormatTypeToString(disk->mirrorFormat);
-    } else {
+    } else if (format) {
         disk->mirrorFormat = virStorageFileFormatTypeFromString(format);
         if (disk->mirrorFormat <= 0) {
             virReportError(VIR_ERR_INVALID_ARG, _("unrecognized format '%s'"),
                            format);
             goto endjob;
         }
+    } else {
+        /* If the user passed the REUSE_EXT flag, then either they
+         * also passed the RAW flag (and format is non-NULL), or it is
+         * safe for us to probe the format from the file that we will
+         * be using.  */
+        disk->mirrorFormat = virStorageFileProbeFormat(dest, driver->user,
+                                                       driver->group);
     }
+    if (!format && disk->mirrorFormat > 0)
+        format = virStorageFileFormatTypeToString(disk->mirrorFormat);
     if (!(disk->mirror = strdup(dest))) {
         virReportOOMError();
+        goto endjob;
+    }
+
+    if (qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, dest,
+                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+        qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, dest,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
         goto endjob;
     }
 
@@ -12983,19 +13002,33 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDriveMirror(priv->mon, device, dest, format, bandwidth,
                                  flags);
+    virDomainAuditDisk(vm, NULL, dest, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(driver, vm);
+    if (ret < 0) {
+        qemuDomainPrepareDiskChainElement(driver, vm, cgroup, disk, dest,
+                                          VIR_DISK_CHAIN_NO_ACCESS);
+        goto endjob;
+    }
+
+    /* Update vm in place to match changes.  */
+    need_unlink = false;
+    disk->mirror = mirror;
+    mirror = NULL;
 
 endjob:
-    if (ret < 0) {
-        VIR_FREE(disk->mirror);
+    if (need_unlink && unlink(dest))
+        VIR_WARN("unable to unlink just-created %s", dest);
+    if (ret < 0)
         disk->mirrorFormat = VIR_STORAGE_FILE_NONE;
-    }
+    VIR_FREE(mirror);
     if (qemuDomainObjEndJob(driver, vm) == 0) {
         vm = NULL;
         goto cleanup;
     }
 
 cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
     VIR_FREE(device);
     if (vm)
         virDomainObjUnlock(vm);
