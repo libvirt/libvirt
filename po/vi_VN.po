@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2012-10-27 16:54-0400\n"
 "PO-Revision-Date: 2011-12-30 03:35+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Vietnamese (Viet Nam) (http://www.transifex.net/projects/p/"
@@ -913,20 +913,20 @@ msgstr "không thể khởi chạy mutex"
 #: src/qemu/qemu_driver.c:2307 src/qemu/qemu_driver.c:2811
 #: src/qemu/qemu_driver.c:2870 src/qemu/qemu_driver.c:3085
 #: src/qemu/qemu_driver.c:3196 src/qemu/qemu_driver.c:3287
-#: src/qemu/qemu_driver.c:4506 src/qemu/qemu_driver.c:7517
-#: src/qemu/qemu_driver.c:7582 src/qemu/qemu_driver.c:7605
-#: src/qemu/qemu_driver.c:7667 src/qemu/qemu_driver.c:7695
-#: src/qemu/qemu_driver.c:7836 src/qemu/qemu_driver.c:8197
-#: src/qemu/qemu_driver.c:8332 src/qemu/qemu_driver.c:8883
-#: src/qemu/qemu_driver.c:9393 src/qemu/qemu_driver.c:9428
-#: src/qemu/qemu_driver.c:9490 src/qemu/qemu_driver.c:9548
-#: src/qemu/qemu_driver.c:9723 src/qemu/qemu_driver.c:10109
-#: src/qemu/qemu_driver.c:11425 src/qemu/qemu_driver.c:11434
-#: src/qemu/qemu_driver.c:11578 src/qemu/qemu_driver.c:11694
-#: src/qemu/qemu_driver.c:11708 src/qemu/qemu_driver.c:11808
-#: src/qemu/qemu_driver.c:12194 src/qemu/qemu_driver.c:12566
-#: src/qemu/qemu_driver.c:12639 src/qemu/qemu_driver.c:12669
-#: src/qemu/qemu_driver.c:12715 src/qemu/qemu_migration.c:2622
+#: src/qemu/qemu_driver.c:4506 src/qemu/qemu_driver.c:7521
+#: src/qemu/qemu_driver.c:7586 src/qemu/qemu_driver.c:7609
+#: src/qemu/qemu_driver.c:7671 src/qemu/qemu_driver.c:7699
+#: src/qemu/qemu_driver.c:7840 src/qemu/qemu_driver.c:8201
+#: src/qemu/qemu_driver.c:8336 src/qemu/qemu_driver.c:8887
+#: src/qemu/qemu_driver.c:9397 src/qemu/qemu_driver.c:9432
+#: src/qemu/qemu_driver.c:9494 src/qemu/qemu_driver.c:9552
+#: src/qemu/qemu_driver.c:9727 src/qemu/qemu_driver.c:10113
+#: src/qemu/qemu_driver.c:11429 src/qemu/qemu_driver.c:11438
+#: src/qemu/qemu_driver.c:11582 src/qemu/qemu_driver.c:11698
+#: src/qemu/qemu_driver.c:11712 src/qemu/qemu_driver.c:11812
+#: src/qemu/qemu_driver.c:12198 src/qemu/qemu_driver.c:12570
+#: src/qemu/qemu_driver.c:12643 src/qemu/qemu_driver.c:12673
+#: src/qemu/qemu_driver.c:12719 src/qemu/qemu_migration.c:2622
 #: src/uml/uml_driver.c:2395 src/xen/xen_driver.c:2133
 #: src/xen/xen_hypervisor.c:1177 src/xen/xen_hypervisor.c:1258
 #: src/xen/xen_hypervisor.c:1377 src/xen/xm_internal.c:715
@@ -2904,7 +2904,7 @@ msgstr "ảnh chụp miền %s không mong đợi đã tồn tại"
 msgid "unknown disk format '%s' for %s"
 msgstr "định dạng đĩa không rõ '%s' cho %s"
 
-#: src/conf/domain_conf.c:14388 src/qemu/qemu_driver.c:8461
+#: src/conf/domain_conf.c:14388 src/qemu/qemu_driver.c:8465
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "không có định dạng đĩa cho %s và thăm dò bị tắt"
@@ -4826,7 +4826,7 @@ msgstr "Ảnh chụp '%s' đã tồn tại"
 msgid "Could not create snapshot: %s"
 msgstr ""
 
-#: src/esx/esx_driver.c:4668 src/qemu/qemu_driver.c:10805
+#: src/esx/esx_driver.c:4668 src/qemu/qemu_driver.c:10809
 #: src/vbox/vbox_tmpl.c:6340
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -6980,41 +6980,41 @@ msgstr "Thất bại khi đặt bộ nhớ cho miền"
 
 #: src/lxc/lxc_driver.c:821 src/lxc/lxc_driver.c:2967
 #: src/lxc/lxc_driver.c:3111 src/lxc/lxc_driver.c:3215
-#: src/lxc/lxc_driver.c:3319 src/qemu/qemu_driver.c:6178
-#: src/qemu/qemu_driver.c:6338 src/qemu/qemu_driver.c:6520
-#: src/qemu/qemu_driver.c:6627 src/qemu/qemu_driver.c:6789
-#: src/qemu/qemu_driver.c:6958 src/qemu/qemu_driver.c:7183
-#: src/qemu/qemu_driver.c:7399 src/qemu/qemu_driver.c:12578
+#: src/lxc/lxc_driver.c:3319 src/qemu/qemu_driver.c:6182
+#: src/qemu/qemu_driver.c:6342 src/qemu/qemu_driver.c:6524
+#: src/qemu/qemu_driver.c:6631 src/qemu/qemu_driver.c:6793
+#: src/qemu/qemu_driver.c:6962 src/qemu/qemu_driver.c:7187
+#: src/qemu/qemu_driver.c:7403 src/qemu/qemu_driver.c:12582
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "không thể tìm cgroup cho miền %s"
 
-#: src/lxc/lxc_driver.c:833 src/qemu/qemu_driver.c:6534
+#: src/lxc/lxc_driver.c:833 src/qemu/qemu_driver.c:6538
 msgid "unable to set memory hard_limit tunable"
 msgstr "không thể đặt hard_limit bộ nhớ điều phối được"
 
-#: src/lxc/lxc_driver.c:840 src/qemu/qemu_driver.c:6547
+#: src/lxc/lxc_driver.c:840 src/qemu/qemu_driver.c:6551
 msgid "unable to set memory soft_limit tunable"
 msgstr "không thể đặt soft_limit bộ nhớ điều phối được"
 
-#: src/lxc/lxc_driver.c:847 src/qemu/qemu_driver.c:6560
+#: src/lxc/lxc_driver.c:847 src/qemu/qemu_driver.c:6564
 msgid "unable to set swap_hard_limit tunable"
 msgstr "không thể đặt swap_hard_limit bộ nhớ điều phối được"
 
-#: src/lxc/lxc_driver.c:911 src/qemu/qemu_driver.c:6688
+#: src/lxc/lxc_driver.c:911 src/qemu/qemu_driver.c:6692
 msgid "unable to get memory hard limit"
 msgstr "không thể lấy hạn chế cứng bộ nhớ"
 
-#: src/lxc/lxc_driver.c:922 src/qemu/qemu_driver.c:6701
+#: src/lxc/lxc_driver.c:922 src/qemu/qemu_driver.c:6705
 msgid "unable to get memory soft limit"
 msgstr "không thể lấy hạn chế mềm bộ nhớ"
 
-#: src/lxc/lxc_driver.c:933 src/qemu/qemu_driver.c:6714
+#: src/lxc/lxc_driver.c:933 src/qemu/qemu_driver.c:6718
 msgid "unable to get swap hard limit"
 msgstr "không thể lấy hạn chế cứng trao đổi"
 
 #: src/lxc/lxc_driver.c:1210 src/network/bridge_driver.c:1836
-#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8005
+#: src/qemu/qemu_command.c:270 src/qemu/qemu_driver.c:8009
 #: src/util/virnetdevmacvlan.c:939
 #, c-format
 msgid "cannot set bandwidth limits on %s"
@@ -7161,29 +7161,29 @@ msgstr "Miền đã đang chạy"
 #: src/qemu/qemu_driver.c:3440 src/qemu/qemu_driver.c:3550
 #: src/qemu/qemu_driver.c:3683 src/qemu/qemu_driver.c:3762
 #: src/qemu/qemu_driver.c:3853 src/qemu/qemu_driver.c:3894
-#: src/qemu/qemu_driver.c:4489 src/qemu/qemu_driver.c:4817
-#: src/qemu/qemu_driver.c:5035 src/qemu/qemu_driver.c:5686
-#: src/qemu/qemu_driver.c:5857 src/qemu/qemu_driver.c:5884
-#: src/qemu/qemu_driver.c:7576 src/qemu/qemu_driver.c:7661
-#: src/qemu/qemu_driver.c:7830 src/qemu/qemu_driver.c:8188
-#: src/qemu/qemu_driver.c:8249 src/qemu/qemu_driver.c:8317
-#: src/qemu/qemu_driver.c:8414 src/qemu/qemu_driver.c:8777
-#: src/qemu/qemu_driver.c:8867 src/qemu/qemu_driver.c:9054
-#: src/qemu/qemu_driver.c:9125 src/qemu/qemu_driver.c:9369
-#: src/qemu/qemu_driver.c:9419 src/qemu/qemu_driver.c:9481
-#: src/qemu/qemu_driver.c:9537 src/qemu/qemu_driver.c:9594
-#: src/qemu/qemu_driver.c:10326 src/qemu/qemu_driver.c:10575
-#: src/qemu/qemu_driver.c:10606 src/qemu/qemu_driver.c:10644
-#: src/qemu/qemu_driver.c:10684 src/qemu/qemu_driver.c:10726
-#: src/qemu/qemu_driver.c:10761 src/qemu/qemu_driver.c:10791
-#: src/qemu/qemu_driver.c:10834 src/qemu/qemu_driver.c:10869
-#: src/qemu/qemu_driver.c:10939 src/qemu/qemu_driver.c:11302
-#: src/qemu/qemu_driver.c:11419 src/qemu/qemu_driver.c:11572
-#: src/qemu/qemu_driver.c:11688 src/qemu/qemu_driver.c:11802
-#: src/qemu/qemu_driver.c:11897 src/qemu/qemu_driver.c:12052
-#: src/qemu/qemu_driver.c:12183 src/qemu/qemu_driver.c:12268
-#: src/qemu/qemu_driver.c:12368 src/qemu/qemu_driver.c:12631
-#: src/qemu/qemu_driver.c:12706 src/test/test_driver.c:2126
+#: src/qemu/qemu_driver.c:4489 src/qemu/qemu_driver.c:4821
+#: src/qemu/qemu_driver.c:5039 src/qemu/qemu_driver.c:5690
+#: src/qemu/qemu_driver.c:5861 src/qemu/qemu_driver.c:5888
+#: src/qemu/qemu_driver.c:7580 src/qemu/qemu_driver.c:7665
+#: src/qemu/qemu_driver.c:7834 src/qemu/qemu_driver.c:8192
+#: src/qemu/qemu_driver.c:8253 src/qemu/qemu_driver.c:8321
+#: src/qemu/qemu_driver.c:8418 src/qemu/qemu_driver.c:8781
+#: src/qemu/qemu_driver.c:8871 src/qemu/qemu_driver.c:9058
+#: src/qemu/qemu_driver.c:9129 src/qemu/qemu_driver.c:9373
+#: src/qemu/qemu_driver.c:9423 src/qemu/qemu_driver.c:9485
+#: src/qemu/qemu_driver.c:9541 src/qemu/qemu_driver.c:9598
+#: src/qemu/qemu_driver.c:10330 src/qemu/qemu_driver.c:10579
+#: src/qemu/qemu_driver.c:10610 src/qemu/qemu_driver.c:10648
+#: src/qemu/qemu_driver.c:10688 src/qemu/qemu_driver.c:10730
+#: src/qemu/qemu_driver.c:10765 src/qemu/qemu_driver.c:10795
+#: src/qemu/qemu_driver.c:10838 src/qemu/qemu_driver.c:10873
+#: src/qemu/qemu_driver.c:10943 src/qemu/qemu_driver.c:11306
+#: src/qemu/qemu_driver.c:11423 src/qemu/qemu_driver.c:11576
+#: src/qemu/qemu_driver.c:11692 src/qemu/qemu_driver.c:11806
+#: src/qemu/qemu_driver.c:11901 src/qemu/qemu_driver.c:12056
+#: src/qemu/qemu_driver.c:12187 src/qemu/qemu_driver.c:12272
+#: src/qemu/qemu_driver.c:12372 src/qemu/qemu_driver.c:12635
+#: src/qemu/qemu_driver.c:12710 src/test/test_driver.c:2126
 #: src/uml/uml_driver.c:1637 src/uml/uml_driver.c:1662
 #: src/uml/uml_driver.c:1695 src/uml/uml_driver.c:2038
 #: src/uml/uml_driver.c:2156 src/uml/uml_driver.c:2389
@@ -7228,18 +7228,18 @@ msgid "Unknown release: %s"
 msgstr "Phát hành không rõ: %s"
 
 #: src/lxc/lxc_driver.c:2814 src/lxc/lxc_driver.c:2962
-#: src/lxc/lxc_driver.c:3105 src/qemu/qemu_driver.c:5982
-#: src/qemu/qemu_driver.c:7178 src/qemu/qemu_driver.c:7393
+#: src/lxc/lxc_driver.c:3105 src/qemu/qemu_driver.c:5986
+#: src/qemu/qemu_driver.c:7182 src/qemu/qemu_driver.c:7397
 msgid "cgroup CPU controller is not mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2847 src/qemu/qemu_driver.c:7059
-#: src/qemu/qemu_driver.c:7280
+#: src/lxc/lxc_driver.c:2847 src/qemu/qemu_driver.c:7063
+#: src/qemu/qemu_driver.c:7284
 msgid "unable to get cpu bandwidth period tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2854 src/qemu/qemu_driver.c:7052
-#: src/qemu/qemu_driver.c:7287
+#: src/lxc/lxc_driver.c:2854 src/qemu/qemu_driver.c:7056
+#: src/qemu/qemu_driver.c:7291
 msgid "unable to get cpu bandwidth tunable"
 msgstr ""
 
@@ -7256,7 +7256,7 @@ msgid "Unable to set cpu bandwidth quota"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2904 src/qemu/qemu_cgroup.c:502
-#: src/qemu/qemu_driver.c:7039 src/xenapi/xenapi_utils.c:375
+#: src/qemu/qemu_driver.c:7043 src/xenapi/xenapi_utils.c:375
 #: src/xenapi/xenapi_utils.c:379
 #, c-format
 msgid "%s"
@@ -7264,39 +7264,39 @@ msgstr "%s"
 
 #: src/lxc/lxc_driver.c:2944 src/lxc/lxc_driver.c:3086
 #: src/lxc/lxc_driver.c:3199 src/lxc/lxc_driver.c:3296
-#: src/qemu/qemu_driver.c:6161 src/qemu/qemu_driver.c:6315
-#: src/qemu/qemu_driver.c:6503 src/qemu/qemu_driver.c:6610
-#: src/qemu/qemu_driver.c:6772 src/qemu/qemu_driver.c:6935
-#: src/qemu/qemu_driver.c:7160 src/qemu/qemu_driver.c:7374
-#: src/qemu/qemu_driver.c:7911 src/qemu/qemu_driver.c:8074
-#: src/qemu/qemu_driver.c:12559
+#: src/qemu/qemu_driver.c:6165 src/qemu/qemu_driver.c:6319
+#: src/qemu/qemu_driver.c:6507 src/qemu/qemu_driver.c:6614
+#: src/qemu/qemu_driver.c:6776 src/qemu/qemu_driver.c:6939
+#: src/qemu/qemu_driver.c:7164 src/qemu/qemu_driver.c:7378
+#: src/qemu/qemu_driver.c:7915 src/qemu/qemu_driver.c:8078
+#: src/qemu/qemu_driver.c:12563
 #, c-format
 msgid "No such domain %s"
 msgstr "Không có miền %s như vậy"
 
-#: src/lxc/lxc_driver.c:2981 src/qemu/qemu_driver.c:7197
+#: src/lxc/lxc_driver.c:2981 src/qemu/qemu_driver.c:7201
 msgid "unable to set cpu shares tunable"
 msgstr "không thể đặt chia sẻ cpu điều phối được"
 
-#: src/lxc/lxc_driver.c:3118 src/qemu/qemu_driver.c:7406
+#: src/lxc/lxc_driver.c:3118 src/qemu/qemu_driver.c:7410
 msgid "unable to get cpu shares tunable"
 msgstr "không thể lấy chia sẻ cpu điều phối được"
 
 #: src/lxc/lxc_driver.c:3209 src/lxc/lxc_driver.c:3313
-#: src/qemu/qemu_driver.c:6172 src/qemu/qemu_driver.c:6332
+#: src/qemu/qemu_driver.c:6176 src/qemu/qemu_driver.c:6336
 msgid "blkio cgroup isn't mounted"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:3227 src/lxc/lxc_driver.c:3250
-#: src/qemu/qemu_driver.c:6193 src/qemu/qemu_driver.c:6249
+#: src/qemu/qemu_driver.c:6197 src/qemu/qemu_driver.c:6253
 msgid "out of blkio weight range."
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3234 src/qemu/qemu_driver.c:6201
+#: src/lxc/lxc_driver.c:3234 src/qemu/qemu_driver.c:6205
 msgid "unable to set blkio weight tunable"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3332 src/qemu/qemu_driver.c:6353
+#: src/lxc/lxc_driver.c:3332 src/qemu/qemu_driver.c:6357
 msgid "unable to get blkio weight"
 msgstr ""
 
@@ -7315,13 +7315,13 @@ msgid "Cannot create autostart directory %s"
 msgstr "Không thể tạo thư mục tự khởi động %s"
 
 #: src/lxc/lxc_driver.c:3515 src/libxl/libxl_driver.c:3470
-#: src/qemu/qemu_driver.c:5912 src/uml/uml_driver.c:2275
+#: src/qemu/qemu_driver.c:5916 src/uml/uml_driver.c:2275
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Thất bại khi tạo liên kết tượng trưng '%s' tới '%s'"
 
 #: src/lxc/lxc_driver.c:3522 src/libxl/libxl_driver.c:3477
-#: src/network/bridge_driver.c:2664 src/qemu/qemu_driver.c:5919
+#: src/network/bridge_driver.c:2664 src/qemu/qemu_driver.c:5923
 #: src/storage/storage_driver.c:1063 src/uml/uml_driver.c:2282
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -7344,7 +7344,7 @@ msgstr ""
 msgid "default"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:3803 src/qemu/qemu_driver.c:11614
+#: src/lxc/lxc_driver.c:3803 src/qemu/qemu_driver.c:11618
 #: src/uml/uml_driver.c:2423 src/xen/xen_driver.c:2161
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -7667,16 +7667,16 @@ msgstr ""
 msgid "parsing xm config failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2777 src/qemu/qemu_driver.c:5041
+#: src/libxl/libxl_driver.c:2777 src/qemu/qemu_driver.c:5045
 #: src/uml/uml_driver.c:1944 src/vmware/vmware_driver.c:644
 msgid "cannot undefine transient domain"
 msgstr "không thể hủy định miền tạm thời"
 
-#: src/libxl/libxl_driver.c:2789 src/qemu/qemu_driver.c:5066
+#: src/libxl/libxl_driver.c:2789 src/qemu/qemu_driver.c:5070
 msgid "Failed to remove domain managed save image"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2794 src/qemu/qemu_driver.c:5072
+#: src/libxl/libxl_driver.c:2794 src/qemu/qemu_driver.c:5076
 #: tools/virsh.c:2900
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
@@ -7713,13 +7713,13 @@ msgstr "đường dẫn nguồn đĩa bị thiếu"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2934 src/qemu/qemu_driver.c:5164
+#: src/libxl/libxl_driver.c:2934 src/qemu/qemu_driver.c:5168
 #: src/uml/uml_driver.c:2061
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "tuyến đĩa '%s' không thể được cắm nóng"
 
-#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5170
+#: src/libxl/libxl_driver.c:2940 src/qemu/qemu_driver.c:5174
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "kiểu thiết bị đĩa '%s' không thể được cắm nóng"
@@ -7745,18 +7745,18 @@ msgstr ""
 msgid "device type '%s' cannot hot unplugged"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3019 src/qemu/qemu_driver.c:5260
+#: src/libxl/libxl_driver.c:3019 src/qemu/qemu_driver.c:5264
 #: src/uml/uml_driver.c:2066
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "kiểu thiết bị '%s' không thể được gắn"
 
-#: src/libxl/libxl_driver.c:3037 src/qemu/qemu_driver.c:5441
+#: src/libxl/libxl_driver.c:3037 src/qemu/qemu_driver.c:5445
 #, c-format
 msgid "target %s already exists."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3050 src/qemu/qemu_driver.c:5508
+#: src/libxl/libxl_driver.c:3050 src/qemu/qemu_driver.c:5512
 msgid "persistent attach of device is not supported"
 msgstr ""
 
@@ -7765,54 +7765,54 @@ msgstr ""
 msgid "device type '%s' cannot be detached"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3088 src/qemu/qemu_driver.c:5529
+#: src/libxl/libxl_driver.c:3088 src/qemu/qemu_driver.c:5533
 #, c-format
 msgid "no target device %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3096 src/qemu/qemu_driver.c:5575
+#: src/libxl/libxl_driver.c:3096 src/qemu/qemu_driver.c:5579
 msgid "persistent detach of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3121 src/qemu/qemu_driver.c:5382
+#: src/libxl/libxl_driver.c:3121 src/qemu/qemu_driver.c:5386
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "tuyến đĩa '%s' không thể được cập nhật"
 
-#: src/libxl/libxl_driver.c:3128 src/qemu/qemu_driver.c:5419
+#: src/libxl/libxl_driver.c:3128 src/qemu/qemu_driver.c:5423
 #, c-format
 msgid "device type '%s' cannot be updated"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3149 src/qemu/qemu_driver.c:5595
+#: src/libxl/libxl_driver.c:3149 src/qemu/qemu_driver.c:5599
 #, c-format
 msgid "target %s doesn't exist."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5602
+#: src/libxl/libxl_driver.c:3155 src/qemu/qemu_driver.c:5606
 msgid "this disk doesn't support update"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3176 src/qemu/qemu_driver.c:5647
+#: src/libxl/libxl_driver.c:3176 src/qemu/qemu_driver.c:5651
 msgid "persistent update of device is not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3231 src/qemu/qemu_driver.c:5711
+#: src/libxl/libxl_driver.c:3231 src/qemu/qemu_driver.c:5715
 msgid "cannot modify device on transient domain"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3257 src/libxl/libxl_driver.c:3281
-#: src/qemu/qemu_driver.c:5748 src/qemu/qemu_driver.c:5769
+#: src/qemu/qemu_driver.c:5752 src/qemu/qemu_driver.c:5773
 #, c-format
 msgid "unknown domain modify action %d"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3448 src/qemu/qemu_driver.c:5890
+#: src/libxl/libxl_driver.c:3448 src/qemu/qemu_driver.c:5894
 #: src/uml/uml_driver.c:2253
 msgid "cannot set autostart for transient domain"
 msgstr "không thể đặt tự khởi động cho miền tạm thời"
 
-#: src/libxl/libxl_driver.c:3463 src/qemu/qemu_driver.c:5905
+#: src/libxl/libxl_driver.c:3463 src/qemu/qemu_driver.c:5909
 #: src/storage/storage_driver.c:1048 src/uml/uml_driver.c:2268
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -9369,8 +9369,8 @@ msgid "Unable to rollback cpu bandwidth period"
 msgstr ""
 
 #: src/qemu/qemu_cgroup.c:491 src/qemu/qemu_cgroup.c:582
-#: src/qemu/qemu_driver.c:5136 src/qemu/qemu_driver.c:5365
-#: src/qemu/qemu_driver.c:10116 src/qemu/qemu_hotplug.c:1081
+#: src/qemu/qemu_driver.c:5140 src/qemu/qemu_driver.c:5369
+#: src/qemu/qemu_driver.c:10120 src/qemu/qemu_hotplug.c:1081
 #: src/qemu/qemu_hotplug.c:1667 src/qemu/qemu_hotplug.c:1771
 #: src/qemu/qemu_migration.c:3216
 #, c-format
@@ -9623,7 +9623,7 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2201 src/qemu/qemu_driver.c:11903
+#: src/qemu/qemu_command.c:2201 src/qemu/qemu_driver.c:11907
 #, fuzzy
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "Di trú STDIO không hỗ trợ với binary QEMU này"
@@ -9916,7 +9916,7 @@ msgstr "bộ thời gian pit không được hỗ trợ"
 msgid "hypervisor lacks deviceboot feature"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4566 src/qemu/qemu_driver.c:5128
+#: src/qemu/qemu_command.c:4566 src/qemu/qemu_driver.c:5132
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "tên trình điều khiển không hỗ trợ '%s' cho đĩa '%s'"
@@ -10567,8 +10567,8 @@ msgstr "đường dẫn URI QEMU '%s' không mong đợi, thử qemu:/
 msgid "no domain with matching id %d"
 msgstr "không có miền khớp id %d"
 
-#: src/qemu/qemu_driver.c:1226 src/qemu/qemu_driver.c:8823
-#: src/qemu/qemu_driver.c:9091
+#: src/qemu/qemu_driver.c:1226 src/qemu/qemu_driver.c:8827
+#: src/qemu/qemu_driver.c:9095
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "không có miền khớp tên '%s'"
@@ -10580,14 +10580,14 @@ msgid "resume operation failed"
 msgstr "tiếp tục thao tác thất bại"
 
 #: src/qemu/qemu_driver.c:1594 src/qemu/qemu_driver.c:1672
-#: src/qemu/qemu_driver.c:9645 src/qemu/qemu_driver.c:9673
-#: src/qemu/qemu_driver.c:12654
+#: src/qemu/qemu_driver.c:9649 src/qemu/qemu_driver.c:9677
+#: src/qemu/qemu_driver.c:12658
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:1599 src/qemu/qemu_driver.c:1677
-#: src/qemu/qemu_driver.c:9651 src/qemu/qemu_driver.c:9680
-#: src/qemu/qemu_driver.c:12660
+#: src/qemu/qemu_driver.c:9655 src/qemu/qemu_driver.c:9684
+#: src/qemu/qemu_driver.c:12664
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
@@ -10652,14 +10652,14 @@ msgstr ""
 msgid "Error from child process creating '%s'"
 msgstr "Lỗi từ tiến trình con tạo '%s'"
 
-#: src/qemu/qemu_driver.c:2569 src/qemu/qemu_driver.c:10332
+#: src/qemu/qemu_driver.c:2569 src/qemu/qemu_driver.c:10336
 #: src/qemu/qemu_migration.c:807
 msgid "domain is marked for auto destroy"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:2597 src/qemu/qemu_driver.c:3103
-#: src/qemu/qemu_driver.c:9739 src/qemu/qemu_driver.c:10151
-#: src/qemu/qemu_driver.c:11075 src/qemu/qemu_driver.c:11126
+#: src/qemu/qemu_driver.c:9743 src/qemu/qemu_driver.c:10155
+#: src/qemu/qemu_driver.c:11079 src/qemu/qemu_driver.c:11130
 #: src/qemu/qemu_hotplug.c:419 src/qemu/qemu_hotplug.c:788
 #: src/qemu/qemu_migration.c:1934 src/qemu/qemu_migration.c:2235
 #: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
@@ -10715,7 +10715,7 @@ msgstr ""
 msgid "resuming after dump failed"
 msgstr "tiếp tục sau khi dump thất bại"
 
-#: src/qemu/qemu_driver.c:3185 src/qemu/qemu_driver.c:7506
+#: src/qemu/qemu_driver.c:3185 src/qemu/qemu_driver.c:7510
 #, c-format
 msgid "no domain matching uuid '%s'"
 msgstr ""
@@ -10724,7 +10724,7 @@ msgstr ""
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3215 src/qemu/qemu_driver.c:8344
+#: src/qemu/qemu_driver.c:3215 src/qemu/qemu_driver.c:8348
 #: src/vbox/vbox_tmpl.c:9022
 #, c-format
 msgid "mkstemp(\"%s\") failed"
@@ -10839,540 +10839,540 @@ msgstr ""
 msgid "cannot seek in '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4755
+#: src/qemu/qemu_driver.c:4759
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4826
+#: src/qemu/qemu_driver.c:4830
 msgid "domain is already running"
 msgstr "miền đã đang chạy"
 
-#: src/qemu/qemu_driver.c:5049
+#: src/qemu/qemu_driver.c:5053
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5153
+#: src/qemu/qemu_driver.c:5157
 #, fuzzy
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "Thiết bị đĩa '%s' không hỗ trợ chụp ảnh"
 
-#: src/qemu/qemu_driver.c:5200
+#: src/qemu/qemu_driver.c:5204
 #, c-format
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "tuyến bộ điều khiển đĩa '%s' không thể được cắm nóng"
 
-#: src/qemu/qemu_driver.c:5287 src/uml/uml_driver.c:2177
+#: src/qemu/qemu_driver.c:5291 src/uml/uml_driver.c:2177
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Kiểu đĩa này không thể tháo nóng được"
 
-#: src/qemu/qemu_driver.c:5291
+#: src/qemu/qemu_driver.c:5295
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5312
+#: src/qemu/qemu_driver.c:5316
 #, c-format
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "tuyến bộ điều khiển đĩa '%s' không thể được tháo nóng"
 
-#: src/qemu/qemu_driver.c:5344 src/uml/uml_driver.c:2181
+#: src/qemu/qemu_driver.c:5348 src/uml/uml_driver.c:2181
 msgid "This type of device cannot be hot unplugged"
 msgstr "Kiểu thiết bị này không thể tháo nóng được"
 
-#: src/qemu/qemu_driver.c:5463
+#: src/qemu/qemu_driver.c:5467
 #, c-format
 msgid "mac %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5479
+#: src/qemu/qemu_driver.c:5483
 msgid "device is already in the domain configuration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5495
+#: src/qemu/qemu_driver.c:5499
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5542
+#: src/qemu/qemu_driver.c:5546
 #, c-format
 msgid "no nic of mac %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5554
+#: src/qemu/qemu_driver.c:5558
 #, fuzzy
 msgid "device not present in domain configuration"
 msgstr "phân tích thông tin miền Xend thất bại"
 
-#: src/qemu/qemu_driver.c:5566 src/qemu/qemu_hotplug.c:2410
+#: src/qemu/qemu_driver.c:5570 src/qemu/qemu_hotplug.c:2410
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5632
+#: src/qemu/qemu_driver.c:5636
 #, c-format
 msgid "mac %s doesn't exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5703
+#: src/qemu/qemu_driver.c:5707
 msgid "cannot do live update a device on inactive domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6086
+#: src/qemu/qemu_driver.c:6090
 #, fuzzy, c-format
 msgid "unable to parse device weight '%s'"
 msgstr "không thể phân tích địa chỉ mac '%s'"
 
-#: src/qemu/qemu_driver.c:6221
+#: src/qemu/qemu_driver.c:6225
 #, c-format
 msgid "Unable to set io device weight for path %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6405 src/qemu/qemu_driver.c:6445
+#: src/qemu/qemu_driver.c:6409 src/qemu/qemu_driver.c:6449
 #: src/util/virtypedparam.c:143
 #, c-format
 msgid "Field name '%s' too long"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6514 src/qemu/qemu_driver.c:6621
-#: src/qemu/qemu_driver.c:6952
+#: src/qemu/qemu_driver.c:6518 src/qemu/qemu_driver.c:6625
+#: src/qemu/qemu_driver.c:6956
 msgid "cgroup memory controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6783
+#: src/qemu/qemu_driver.c:6787
 msgid "cgroup cpuset controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6803
+#: src/qemu/qemu_driver.c:6807
 msgid "can't change numa mode for running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6820
+#: src/qemu/qemu_driver.c:6824
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6828
+#: src/qemu/qemu_driver.c:6832
 msgid "unable to set numa tunable"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6990
+#: src/qemu/qemu_driver.c:6994
 msgid "unable to get numa nodeset"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7102
+#: src/qemu/qemu_driver.c:7106
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: %d)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7319
+#: src/qemu/qemu_driver.c:7323
 #, c-format
 msgid "Unable to find vcpu cgroup for %s(vcpu: 0)"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7483
+#: src/qemu/qemu_driver.c:7487
 msgid "empty path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7491
+#: src/qemu/qemu_driver.c:7495
 #, c-format
 msgid "size must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7523 src/qemu/qemu_driver.c:7588
-#: src/qemu/qemu_driver.c:7674 src/test/test_driver.c:2800
+#: src/qemu/qemu_driver.c:7527 src/qemu/qemu_driver.c:7592
+#: src/qemu/qemu_driver.c:7678 src/test/test_driver.c:2800
 #, c-format
 msgid "invalid path: %s"
 msgstr "đường dẫn không hợp lý: %s"
 
-#: src/qemu/qemu_driver.c:7595 src/qemu/qemu_driver.c:7681
+#: src/qemu/qemu_driver.c:7599 src/qemu/qemu_driver.c:7685
 #: src/qemu/qemu_hotplug.c:78
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "thiếu tên hiệu thiết bị đĩa cho %s"
 
-#: src/qemu/qemu_driver.c:7853 src/test/test_driver.c:2855
+#: src/qemu/qemu_driver.c:7857 src/test/test_driver.c:2855
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "đường dẫn không hợp lệ, '%s' không phải là một giao diện đã biết"
 
-#: src/qemu/qemu_driver.c:7867
+#: src/qemu/qemu_driver.c:7871
 msgid "interface stats not implemented on this platform"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7923 src/qemu/qemu_driver.c:7931
-#: src/qemu/qemu_driver.c:8095
+#: src/qemu/qemu_driver.c:7927 src/qemu/qemu_driver.c:7935
+#: src/qemu/qemu_driver.c:8099
 #, c-format
 msgid "Can't find device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8208
+#: src/qemu/qemu_driver.c:8212
 #, fuzzy
 msgid "cannot get RSS for domain"
 msgstr "không thể đọc cputime cho miền"
 
-#: src/qemu/qemu_driver.c:8255 src/qemu/qemu_driver.c:8420
+#: src/qemu/qemu_driver.c:8259 src/qemu/qemu_driver.c:8424
 #: src/uml/uml_driver.c:2328
 msgid "NULL or empty path"
 msgstr "NULL hay đường dẫn trống"
 
-#: src/qemu/qemu_driver.c:8262 src/uml/uml_driver.c:2335
+#: src/qemu/qemu_driver.c:8266 src/uml/uml_driver.c:2335
 #, c-format
 msgid "invalid path '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8271
+#: src/qemu/qemu_driver.c:8275
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: mở thất bại"
 
-#: src/qemu/qemu_driver.c:8282
+#: src/qemu/qemu_driver.c:8286
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s: thất bại khi tìm kiếm hoặc đọc"
 
-#: src/qemu/qemu_driver.c:8323
+#: src/qemu/qemu_driver.c:8327
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "thông số cờ phải là VIR_MEMORY_VIRTUAL hoặc VIR_MEMORY_PHYSICAL"
 
-#: src/qemu/qemu_driver.c:8368
+#: src/qemu/qemu_driver.c:8372
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "thất bại khi đọc tập tin tạm được tạo với mẫu %s"
 
-#: src/qemu/qemu_driver.c:8427
+#: src/qemu/qemu_driver.c:8431
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr "đường dẫn không hợp lệ %s không được gán cho miền"
 
-#: src/qemu/qemu_driver.c:8433
+#: src/qemu/qemu_driver.c:8437
 #, c-format
 msgid "disk %s does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8443
+#: src/qemu/qemu_driver.c:8447
 #, c-format
 msgid "failed to open path '%s'"
 msgstr "thất bại khi mở đường dẫn '%s'"
 
-#: src/qemu/qemu_driver.c:8451
+#: src/qemu/qemu_driver.c:8455
 #, c-format
 msgid "unknown disk format %s for %s"
 msgstr "định dạng đĩa %s không rõ cho %s"
 
-#: src/qemu/qemu_driver.c:8480 src/storage/storage_backend.c:1011
+#: src/qemu/qemu_driver.c:8484 src/storage/storage_backend.c:1011
 #: src/storage/storage_backend.c:1039 src/storage/storage_backend.c:1159
 #: src/util/storage_file.c:744 src/util/storage_file.c:840
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "không thể thống kê tập tin '%s'"
 
-#: src/qemu/qemu_driver.c:8502
+#: src/qemu/qemu_driver.c:8506
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "thất bại khi tìm tới cuối của %s"
 
-#: src/qemu/qemu_driver.c:8656 src/qemu/qemu_driver.c:8728
-#: src/qemu/qemu_driver.c:8968 src/qemu/qemu_driver.c:9003
+#: src/qemu/qemu_driver.c:8660 src/qemu/qemu_driver.c:8732
+#: src/qemu/qemu_driver.c:8972 src/qemu/qemu_driver.c:9007
 msgid "no domain XML passed"
 msgstr "không có miền XML vượt qua"
 
-#: src/qemu/qemu_driver.c:8661 src/qemu/qemu_driver.c:9008
+#: src/qemu/qemu_driver.c:8665 src/qemu/qemu_driver.c:9012
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel đã gọi như không có cờ TUNNELLED được đặt"
 
-#: src/qemu/qemu_driver.c:8666 src/qemu/qemu_driver.c:9013
+#: src/qemu/qemu_driver.c:8670 src/qemu/qemu_driver.c:9017
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr "di trú đường ống đã yêu cầu nhưng KHÔNG có luồng đi qua"
 
-#: src/qemu/qemu_driver.c:8672 src/qemu/qemu_driver.c:8712
-#: src/qemu/qemu_driver.c:8767
+#: src/qemu/qemu_driver.c:8676 src/qemu/qemu_driver.c:8716
+#: src/qemu/qemu_driver.c:8771
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8722 src/qemu/qemu_driver.c:8962
+#: src/qemu/qemu_driver.c:8726 src/qemu/qemu_driver.c:8966
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "Di trú đường ống đã yêu cầu nhưng phương pháp RPC không hợp lệ đã gọi"
 
-#: src/qemu/qemu_driver.c:8910 src/qemu/qemu_migration.c:1373
+#: src/qemu/qemu_driver.c:8914 src/qemu/qemu_migration.c:1373
 msgid "domain disappeared"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9197 src/xen/xen_driver.c:1971
+#: src/qemu/qemu_driver.c:9201 src/xen/xen_driver.c:1971
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "thiết bị %s không phải thiết bị PCI"
 
-#: src/qemu/qemu_driver.c:9261
+#: src/qemu/qemu_driver.c:9265
 #, c-format
 msgid "PCI device %s is still in use by domain %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9265
+#: src/qemu/qemu_driver.c:9269
 #, fuzzy, c-format
 msgid "PCI device %s is still in use"
 msgstr "Thiết bị %s đã đang dùng"
 
-#: src/qemu/qemu_driver.c:9325
+#: src/qemu/qemu_driver.c:9329
 #, fuzzy
 msgid "cannot get host capabilities"
 msgstr "không thể lấy các khả năng CPU chủ"
 
-#: src/qemu/qemu_driver.c:9436
+#: src/qemu/qemu_driver.c:9440
 msgid "no job is active on the domain"
 msgstr "không có công việc đang hoạt động trên miền"
 
-#: src/qemu/qemu_driver.c:9440
+#: src/qemu/qemu_driver.c:9444
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9498
+#: src/qemu/qemu_driver.c:9502
 msgid "domain is not being migrated"
 msgstr "miền không đang được di trú"
 
-#: src/qemu/qemu_driver.c:9628
+#: src/qemu/qemu_driver.c:9632
 #, c-format
 msgid "Disk '%s' does not support snapshotting"
 msgstr "Đĩa '%s' không hỗ trợ chụp ảnh"
 
-#: src/qemu/qemu_driver.c:9773 src/qemu/qemu_driver.c:10248
+#: src/qemu/qemu_driver.c:9777 src/qemu/qemu_driver.c:10252
 msgid "resuming after snapshot failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9803
+#: src/qemu/qemu_driver.c:9807
 #, fuzzy
 msgid "reuse is not supported with this QEMU binary"
 msgstr "SATA không được hỗ trợ với binary QEMU này"
 
-#: src/qemu/qemu_driver.c:9814
+#: src/qemu/qemu_driver.c:9818
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9822
+#: src/qemu/qemu_driver.c:9826
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9840
+#: src/qemu/qemu_driver.c:9844
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9848
+#: src/qemu/qemu_driver.c:9852
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9854
+#: src/qemu/qemu_driver.c:9858
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9869 src/qemu/qemu_driver.c:9923
+#: src/qemu/qemu_driver.c:9873 src/qemu/qemu_driver.c:9927
 msgid "unexpected code path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9876
+#: src/qemu/qemu_driver.c:9880
 msgid "disk snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9886
+#: src/qemu/qemu_driver.c:9890
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10308
+#: src/qemu/qemu_driver.c:10312
 msgid "quiesce requires disk-only"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10337
+#: src/qemu/qemu_driver.c:10341
 msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10351
+#: src/qemu/qemu_driver.c:10355
 #, c-format
 msgid "cannot set snapshot %s as its own parent"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10358
+#: src/qemu/qemu_driver.c:10362
 #, c-format
 msgid "parent %s for snapshot %s not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10365
+#: src/qemu/qemu_driver.c:10369
 #, c-format
 msgid "parent %s would create cycle to %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10383
+#: src/qemu/qemu_driver.c:10387
 #, c-format
 msgid "definition for snapshot %s must use uuid %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10394
+#: src/qemu/qemu_driver.c:10398
 #, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10402
+#: src/qemu/qemu_driver.c:10406
 #, c-format
 msgid ""
 "cannot change between disk snapshot and system checkpoint in snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10447
+#: src/qemu/qemu_driver.c:10451
 msgid "disk snapshots of inactive domains not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10651 src/qemu/qemu_driver.c:10691
-#: src/qemu/qemu_driver.c:10798 src/qemu/qemu_driver.c:10876
-#: src/qemu/qemu_driver.c:10946 src/qemu/qemu_driver.c:11309
+#: src/qemu/qemu_driver.c:10655 src/qemu/qemu_driver.c:10695
+#: src/qemu/qemu_driver.c:10802 src/qemu/qemu_driver.c:10880
+#: src/qemu/qemu_driver.c:10950 src/qemu/qemu_driver.c:11313
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "không có ảnh chụp miền khớp tên '%s'"
 
-#: src/qemu/qemu_driver.c:10733
+#: src/qemu/qemu_driver.c:10737
 #, c-format
 msgid "no snapshot with matching name '%s'"
 msgstr "không có ảnh chụp khớp tên '%s'"
 
-#: src/qemu/qemu_driver.c:10840
+#: src/qemu/qemu_driver.c:10844
 msgid "the domain does not have a current snapshot"
 msgstr "miền không có ảnh chụp hiện tại"
 
-#: src/qemu/qemu_driver.c:10957
+#: src/qemu/qemu_driver.c:10961
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10963
+#: src/qemu/qemu_driver.c:10967
 msgid "revert to external disk snapshot not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10970
+#: src/qemu/qemu_driver.c:10974
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10980
+#: src/qemu/qemu_driver.c:10984
 msgid "must respawn qemu to start inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11324
+#: src/qemu/qemu_driver.c:11328
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11351
+#: src/qemu/qemu_driver.c:11355
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11484
+#: src/qemu/qemu_driver.c:11488
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11489
+#: src/qemu/qemu_driver.c:11493
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11607
+#: src/qemu/qemu_driver.c:11611
 #, c-format
 msgid "cannot find character device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11627
+#: src/qemu/qemu_driver.c:11631
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11666
+#: src/qemu/qemu_driver.c:11670
 msgid "No device found for specified path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11816
+#: src/qemu/qemu_driver.c:11820
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11828
+#: src/qemu/qemu_driver.c:11832
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11952
+#: src/qemu/qemu_driver.c:11956
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11959
+#: src/qemu/qemu_driver.c:11963
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12006
+#: src/qemu/qemu_driver.c:12010
 msgid "Write to config file failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12292
+#: src/qemu/qemu_driver.c:12296
 #, fuzzy
 msgid "QEmu driver does not support modifying<metadata> element"
 msgstr "Phiên bản Xen không hỗ trợ thay đổi cấu hình cố định"
 
-#: src/qemu/qemu_driver.c:12298 src/qemu/qemu_driver.c:12325
-#: src/qemu/qemu_driver.c:12394
+#: src/qemu/qemu_driver.c:12302 src/qemu/qemu_driver.c:12329
+#: src/qemu/qemu_driver.c:12398
 #, fuzzy
 msgid "unknown metadata type"
 msgstr "kiểu virt không rõ"
 
-#: src/qemu/qemu_driver.c:12320 src/qemu/qemu_driver.c:12388
+#: src/qemu/qemu_driver.c:12324 src/qemu/qemu_driver.c:12392
 #, fuzzy
 msgid "QEMU driver does not support<metadata> element"
 msgstr "Binary QEMU %s không hỗ trợ kqemu"
 
-#: src/qemu/qemu_driver.c:12401
+#: src/qemu/qemu_driver.c:12405
 #, fuzzy
 msgid "Requested metadata element is not present"
 msgstr "thiết bị đã yêu cầu không tồn tại"
 
-#: src/qemu/qemu_driver.c:12430 src/qemu/qemu_driver.c:12444
+#: src/qemu/qemu_driver.c:12434 src/qemu/qemu_driver.c:12448
 #, fuzzy
 msgid "unable to get cpu account"
 msgstr "không thể lấy chia sẻ cpu điều phối được"
 
-#: src/qemu/qemu_driver.c:12499
+#: src/qemu/qemu_driver.c:12503
 #, fuzzy, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "Kích thước bộ nhớ đã yêu cầu %lu kb lớn hơn lớn nhất là %lu kb"
 
-#: src/qemu/qemu_driver.c:12520
+#: src/qemu/qemu_driver.c:12524
 #, fuzzy
 msgid "cpuacct parse error"
 msgstr "lỗi phân tích"
 
-#: src/qemu/qemu_driver.c:12572
+#: src/qemu/qemu_driver.c:12576
 #, fuzzy
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "bộ điều khiển đĩa %s:%d không thấy"
 
-#: src/qemu/qemu_driver.c:12610
+#: src/qemu/qemu_driver.c:12614
 msgid "Duration not supported. Use 0 for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12618
+#: src/qemu/qemu_driver.c:12622
 #, fuzzy, c-format
 msgid "Unknown suspend target: %u"
 msgstr "Kiểu nguồn không rõ: '%s'"
 
-#: src/qemu/qemu_driver.c:12647
+#: src/qemu/qemu_driver.c:12651
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12723
+#: src/qemu/qemu_driver.c:12727
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
@@ -14293,9 +14293,9 @@ msgstr "lỗi gọi profile_status()"
 msgid "could not remove profile for '%s'"
 msgstr "không thể xóa bỏ hồ sơ cho '%s'"
 
-#: src/security/security_apparmor.c:561 src/security/security_selinux.c:1099
-#: src/security/security_selinux.c:1128 src/security/security_selinux.c:1163
-#: src/security/security_selinux.c:1230 src/security/security_selinux.c:1267
+#: src/security/security_apparmor.c:561 src/security/security_selinux.c:1103
+#: src/security/security_selinux.c:1132 src/security/security_selinux.c:1167
+#: src/security/security_selinux.c:1234 src/security/security_selinux.c:1271
 #, c-format
 msgid ""
 "security label driver mismatch: '%s' model configured for domain, but "
@@ -14374,7 +14374,7 @@ msgstr ""
 msgid "security label model %s is not supported with selinux"
 msgstr ""
 
-#: src/security/security_selinux.c:209 src/security/security_selinux.c:1172
+#: src/security/security_selinux.c:209 src/security/security_selinux.c:1176
 #, c-format
 msgid "unable to allocate socket security context '%s'"
 msgstr "không thể cấp phát ngữ cảnh bảo mật socket '%s'"
@@ -14420,38 +14420,38 @@ msgstr ""
 msgid "unable to set security context '%s' on fd %d"
 msgstr ""
 
-#: src/security/security_selinux.c:980 src/security/security_selinux.c:1322
+#: src/security/security_selinux.c:984 src/security/security_selinux.c:1326
 #, c-format
 msgid "unknown smartcard type %d"
 msgstr ""
 
-#: src/security/security_selinux.c:1109
+#: src/security/security_selinux.c:1113
 #, c-format
 msgid "Invalid security label %s"
 msgstr "Nhãn bảo mật %s không hợp lệ"
 
-#: src/security/security_selinux.c:1138
+#: src/security/security_selinux.c:1142
 #, c-format
 msgid "unable to set security context '%s'"
 msgstr "không thể đặt ngữ cảnh bảo mật '%s'"
 
-#: src/security/security_selinux.c:1179
+#: src/security/security_selinux.c:1183
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "không thể lấy ngữ cảnh tiến trình hiện tại '%s'"
 
-#: src/security/security_selinux.c:1186 src/security/security_selinux.c:1202
-#: src/security/security_selinux.c:1241
+#: src/security/security_selinux.c:1190 src/security/security_selinux.c:1206
+#: src/security/security_selinux.c:1245
 #, c-format
 msgid "unable to set socket security context '%s'"
 msgstr "không thể đặt ngữ cảnh bảo mật socket '%s'"
 
-#: src/security/security_selinux.c:1193
+#: src/security/security_selinux.c:1197
 #, c-format
 msgid "unable to set socket security context range '%s'"
 msgstr "không thể đặt miền ngữ cảnh bảo mật socket '%s'"
 
-#: src/security/security_selinux.c:1277
+#: src/security/security_selinux.c:1281
 #, c-format
 msgid "unable to clear socket security context '%s'"
 msgstr "không thể làm sạch ngữ cảnh bảo mật socket '%s'"
@@ -14756,7 +14756,7 @@ msgid "cannot sync data to file '%s'"
 msgstr "không thể đồng bộ dữ liệu vào tập tin '%s'"
 
 #: src/storage/storage_backend.c:219 src/storage/storage_backend.c:288
-#: src/storage/storage_backend_logical.c:736
+#: src/storage/storage_backend_logical.c:737
 #, c-format
 msgid "cannot close file '%s'"
 msgstr "thất bại khi đóng tập tin '%s'"
@@ -14791,7 +14791,7 @@ msgid "cannot fill file '%s'"
 msgstr "không thể điền tập tin '%s'"
 
 #: src/storage/storage_backend.c:384 src/storage/storage_backend_disk.c:648
-#: src/storage/storage_backend_logical.c:685
+#: src/storage/storage_backend_logical.c:686
 msgid "storage pool does not support encrypted volumes"
 msgstr "pool lưu trữ không hỗ trợ các ổ đã mã hóa"
 
@@ -15234,17 +15234,17 @@ msgstr ""
 msgid "cannot close device '%s'"
 msgstr "không thể đóng thiết bị '%s'"
 
-#: src/storage/storage_backend_logical.c:722
+#: src/storage/storage_backend_logical.c:723
 #, c-format
 msgid "cannot set file owner '%s'"
 msgstr "không thể đặt chủ tập tin '%s'"
 
-#: src/storage/storage_backend_logical.c:729
+#: src/storage/storage_backend_logical.c:730
 #, c-format
 msgid "cannot set file mode '%s'"
 msgstr "không thể đặt chế độ tập tin '%s'"
 
-#: src/storage/storage_backend_logical.c:745
+#: src/storage/storage_backend_logical.c:746
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "không thể tìm ổ mới tạo '%s'"
