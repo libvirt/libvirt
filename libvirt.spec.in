@@ -1901,6 +1901,9 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Sat Oct 27 2012 Cole Robinson <crobinso@redhat.com> - 0.10.2.1-1
+- Stable release 0.10.2.1
+
 * Mon Sep 24 2012 Daniel Veillard <veillard@redhat.com> - 0.10.2-1
 - network: define new API virNetworkUpdate
 - add support for QEmu sandbox support
