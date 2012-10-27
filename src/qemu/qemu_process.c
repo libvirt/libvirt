@@ -1926,7 +1926,7 @@ qemuPrepareCpumap(struct qemud_driver *driver,
             bool result;
             if (virBitmapGetBit(nodemask, i, &result) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Failed to covert nodeset to cpuset"));
+                               _("Failed to convert nodeset to cpuset"));
                 virBitmapFree(cpumap);
                 return NULL;
             }
