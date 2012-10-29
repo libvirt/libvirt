@@ -1599,7 +1599,6 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
     char *snapDir = NULL;
     char *snapFile = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *tmp;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     newxml = virDomainSnapshotDefFormat(uuidstr, snapshot->def,
@@ -1622,13 +1621,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virAsprintf(&tmp, "snapshot-edit %s", vm->def->name) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ret = virXMLSaveFile(snapFile, snapshot->def->name, tmp, newxml);
-    VIR_FREE(tmp);
+    ret = virXMLSaveFile(snapFile, NULL, "snapshot-edit", newxml);
 
 cleanup:
     VIR_FREE(snapFile);

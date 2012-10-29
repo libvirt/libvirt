@@ -61,6 +61,7 @@ xmlDocPtr      virXMLParseHelper(int domcode,
                                  const char *url,
                                  xmlXPathContextPtr *pctxt);
 
+const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
 /**
  * virXMLParse:
  * @filename: file to parse, or NULL for string parsing

@@ -973,8 +973,7 @@ parallelsStorageVolumeDefine(virStoragePoolObjPtr pool,
         if (!xml_path)
             goto cleanup;
 
-        if (virXMLSaveFile(xml_path, privvol->name,
-                           "volume-create", xmldesc)) {
+        if (virXMLSaveFile(xml_path, NULL, "volume-create", xmldesc)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Can't create file with volume description"));
             goto cleanup;

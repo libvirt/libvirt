@@ -1637,6 +1637,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
                          virStoragePoolObjPtr pool,
                          virStoragePoolDefPtr def)
 {
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *xml;
     int ret = -1;
 
@@ -1666,7 +1667,10 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
         return -1;
     }
 
-    ret = virXMLSaveFile(pool->configFile, def->name, "pool-edit", xml);
+    virUUIDFormat(def->uuid, uuidstr);
+    ret = virXMLSaveFile(pool->configFile,
+                         virXMLPickShellSafeComment(def->name, uuidstr),
+                         "pool-edit", xml);
     VIR_FREE(xml);
 
     return ret;

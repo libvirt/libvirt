@@ -2717,6 +2717,7 @@ int virNWFilterSaveXML(const char *configDir,
                        virNWFilterDefPtr def,
                        const char *xml)
 {
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL;
     int ret = -1;
 
@@ -2730,7 +2731,10 @@ int virNWFilterSaveXML(const char *configDir,
         goto cleanup;
     }
 
-    ret = virXMLSaveFile(configFile, def->name, "nwfilter-edit", xml);
+    virUUIDFormat(def->uuid, uuidstr);
+    ret = virXMLSaveFile(configFile,
+                         virXMLPickShellSafeComment(def->name, uuidstr),
+                         "nwfilter-edit", xml);
 
  cleanup:
     VIR_FREE(configFile);
@@ -3151,6 +3155,7 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
                       virNWFilterObjPtr nwfilter,
                       virNWFilterDefPtr def)
 {
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *xml;
     int ret;
 
@@ -3174,7 +3179,10 @@ virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
         return -1;
     }
 
-    ret = virXMLSaveFile(nwfilter->configFile, def->name, "nwfilter-edit", xml);
+    virUUIDFormat(def->uuid, uuidstr);
+    ret = virXMLSaveFile(nwfilter->configFile,
+                         virXMLPickShellSafeComment(def->name, uuidstr),
+                         "nwfilter-edit", xml);
     VIR_FREE(xml);
 
     return ret;

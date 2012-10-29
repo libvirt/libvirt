@@ -780,6 +780,16 @@ error:
     goto cleanup;
 }
 
+const char *virXMLPickShellSafeComment(const char *str1, const char *str2)
+{
+    if(str1 && !strpbrk(str1, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
+       !strstr(str1, "--"))
+        return str1;
+    if(str2 && !strpbrk(str2, "\r\t\n !\"#$&'()*;<>?[\\]^`{|}~") &&
+       !strstr(str2, "--"))
+        return str2;
+    return NULL;
+}
 
 static int virXMLEmitWarning(int fd,
                              const char *name,
@@ -794,7 +804,7 @@ OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:\n\
 or other application using the libvirt API.\n\
 -->\n\n";
 
-    if (fd < 0 || !name || !cmd) {
+    if (fd < 0 || !cmd) {
         errno = EINVAL;
         return -1;
     }
@@ -807,9 +817,7 @@ or other application using the libvirt API.\n\
     if (safewrite(fd, cmd, len) != len)
         return -1;
 
-    /* Omit the domain name if it contains a double hyphen
-     * because they aren't allowed in XML comments */
-    if (!strstr(name, "--")) {
+    if (name) {
         if (safewrite(fd, " ", 1) != 1)
             return -1;
 
@@ -837,7 +845,7 @@ virXMLRewriteFile(int fd, void *opaque)
 {
     struct virXMLRewriteFileData *data = opaque;
 
-    if (data->warnName && data->warnCommand) {
+    if (data->warnCommand) {
         if (virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0)
             return -1;
     }
