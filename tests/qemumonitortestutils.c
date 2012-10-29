@@ -423,9 +423,23 @@ static qemuMonitorCallbacks qemuCallbacks = {
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
 {
-    qemuMonitorTestPtr test;
-    const char *path = abs_builddir "/qemumonitorjsontest.sock";
+    qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
+
+    char *tmpdir = NULL, *path = NULL;
+    char template[] = "/tmp/libvirt_XXXXXX";
+
+    tmpdir = mkdtemp(template);
+    if (tmpdir == NULL) {
+        virReportSystemError(errno, "%s",
+                             "Failed to create temporary directory");
+        goto error;
+    }
+
+    if (virAsprintf(&path, "%s/qemumonitorjsontest.sock", tmpdir) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     memset(&src, 0, sizeof(src));
     src.type = VIR_DOMAIN_CHR_TYPE_UNIX;
@@ -494,11 +508,16 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
     test->running = true;
     virMutexUnlock(&test->lock);
 
+cleanup:
+    if (tmpdir)
+        if (rmdir(tmpdir) < 0)
+            VIR_WARN("Failed to remove tempdir: %s", strerror(errno));
+    VIR_FREE(path);
     return test;
 
 error:
     qemuMonitorTestFree(test);
-    return NULL;
+    goto cleanup;
 }
 
 qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test)
