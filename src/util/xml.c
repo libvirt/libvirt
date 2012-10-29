@@ -796,13 +796,15 @@ static int virXMLEmitWarning(int fd,
                              const char *cmd)
 {
     size_t len;
-    const char *prologue = "<!--\n\
-WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE \n\
-OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:\n\
-  virsh ";
-    const char *epilogue = "\n\
-or other application using the libvirt API.\n\
--->\n\n";
+    const char *prologue =
+        "<!--\n"
+        "WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE\n"
+        "OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:\n"
+        "  virsh ";
+    const char *epilogue =
+        "\n"
+        "or other application using the libvirt API.\n"
+        "-->\n\n";
 
     if (fd < 0 || !cmd) {
         errno = EINVAL;
