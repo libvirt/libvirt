@@ -386,7 +386,7 @@ sc_prohibit_sprintf:
 	  $(_sc_search_regexp)
 
 sc_prohibit_readlink:
-	@prohibit='readlink *\('					\
+	@prohibit='\<readlink *\('					\
 	halt='use virFileResolveLink, not readlink'			\
 	  $(_sc_search_regexp)
 
