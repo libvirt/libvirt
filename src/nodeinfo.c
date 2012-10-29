@@ -202,9 +202,9 @@ CPU_COUNT(cpu_set_t *set)
 /* parses a node entry, returning number of processors in the node and
  * filling arguments */
 static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 {
     int ret = -1;
     int processors = 0;
