@@ -1578,6 +1578,8 @@ networkRemoveGeneralIp6tablesRules(struct network_driver *driver,
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
         return;
 
+    iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+    iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
     iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);
