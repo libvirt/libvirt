@@ -270,7 +270,7 @@
       <cpuid function='0x00000007' ebx='0x00000080'/>
     </feature>
     <feature name='smap'>
-      <cpuid function='0x00000007' ebx='0x00080000'/>
+      <cpuid function='0x00000007' ebx='0x00100000'/>
     </feature>
 
     <!-- models -->
