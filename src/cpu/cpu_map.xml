@@ -560,6 +560,13 @@
       <feature name='xop'/>
       <feature name='fma4'/>
     </model>
+
+    <model name='Opteron_G5'>
+      <model name='Opteron_G4'/>
+      <feature name='f16c'/>
+      <feature name='fma'/>
+      <feature name='tbm'/>
+    </model>
   </arch>
   <arch name='ppc64'>
    <!-- vendor definitions -->
