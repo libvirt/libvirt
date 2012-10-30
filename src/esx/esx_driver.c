@@ -718,6 +718,7 @@ esxConnectToHost(virConnectPtr conn,
             priv->host->productVersion != esxVI_ProductVersion_ESX41 &&
             priv->host->productVersion != esxVI_ProductVersion_ESX4x &&
             priv->host->productVersion != esxVI_ProductVersion_ESX50 &&
+            priv->host->productVersion != esxVI_ProductVersion_ESX51 &&
             priv->host->productVersion != esxVI_ProductVersion_ESX5x) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("%s is neither an ESX 3.5, 4.x nor 5.x host"),
@@ -847,6 +848,7 @@ esxConnectToVCenter(virConnectPtr conn,
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX41 &&
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX4x &&
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX50 &&
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX51 &&
         priv->vCenter->productVersion != esxVI_ProductVersion_VPX5x) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s is neither a vCenter 2.5, 4.x nor 5.x server"),
