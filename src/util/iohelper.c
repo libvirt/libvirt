@@ -179,6 +179,12 @@ runIO(const char *path, int fd, int oflags, unsigned long long length)
         }
     }
 
+    /* Ensure all data is written */
+    if (fdatasync(fdout) < 0) {
+        virReportSystemError(errno, _("unable to fsync %s"), fdoutname);
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
