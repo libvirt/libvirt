@@ -13298,7 +13298,7 @@ virStorageVolGetKey(virStorageVolPtr vol)
 /**
  * virStorageVolCreateXML:
  * @pool: pointer to storage pool
- * @xmldesc: description of volume to create
+ * @xmlDesc: description of volume to create
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Create a storage volume within a pool based
@@ -13309,10 +13309,10 @@ virStorageVolGetKey(virStorageVolPtr vol)
  */
 virStorageVolPtr
 virStorageVolCreateXML(virStoragePoolPtr pool,
-                       const char *xmldesc,
+                       const char *xmlDesc,
                        unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, flags=%x", pool, flags);
+    VIR_DEBUG("pool=%p, xmlDesc=%s, flags=%x", pool, xmlDesc, flags);
 
     virResetLastError();
 
@@ -13322,7 +13322,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
         return NULL;
     }
 
-    virCheckNonNullArgGoto(xmldesc, error);
+    virCheckNonNullArgGoto(xmlDesc, error);
 
     if (pool->conn->flags & VIR_CONNECT_RO) {
         virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
@@ -13331,7 +13331,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->volCreateXML) {
         virStorageVolPtr ret;
-        ret = pool->conn->storageDriver->volCreateXML (pool, xmldesc, flags);
+        ret = pool->conn->storageDriver->volCreateXML (pool, xmlDesc, flags);
         if (!ret)
             goto error;
         return ret;
@@ -13348,7 +13348,7 @@ error:
 /**
  * virStorageVolCreateXMLFrom:
  * @pool: pointer to parent pool for the new volume
- * @xmldesc: description of volume to create
+ * @xmlDesc: description of volume to create
  * @clonevol: storage volume to use as input
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
@@ -13361,11 +13361,12 @@ error:
  */
 virStorageVolPtr
 virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
-                           const char *xmldesc,
+                           const char *xmlDesc,
                            virStorageVolPtr clonevol,
                            unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, flags=%x, clonevol=%p", pool, flags, clonevol);
+    VIR_DEBUG("pool=%p, xmlDesc=%s, clonevol=%p, flags=%x",
+              pool, xmlDesc, clonevol, flags);
 
     virResetLastError();
 
@@ -13380,7 +13381,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto error;
     }
 
-    virCheckNonNullArgGoto(xmldesc, error);
+    virCheckNonNullArgGoto(xmlDesc, error);
 
     if (pool->conn->flags & VIR_CONNECT_RO ||
         clonevol->conn->flags & VIR_CONNECT_RO) {
@@ -13391,7 +13392,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     if (pool->conn->storageDriver &&
         pool->conn->storageDriver->volCreateXMLFrom) {
         virStorageVolPtr ret;
-        ret = pool->conn->storageDriver->volCreateXMLFrom (pool, xmldesc,
+        ret = pool->conn->storageDriver->volCreateXMLFrom (pool, xmlDesc,
                                                            clonevol, flags);
         if (!ret)
             goto error;
