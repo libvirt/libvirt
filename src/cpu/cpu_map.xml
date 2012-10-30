@@ -178,6 +178,12 @@
     <feature name='avx'>
       <cpuid function='0x00000001' ecx='0x10000000'/>
     </feature>
+    <feature name='f16c'>
+      <cpuid function='0x00000001' ecx='0x20000000'/>
+    </feature>
+    <feature name='rdrand'>
+      <cpuid function='0x00000001' ecx='0x40000000'/>
+    </feature>
     <feature name='hypervisor'> <!-- CPUID_EXT_HYPERVISOR -->
       <cpuid function='0x00000001' ecx='0x80000000'/>
     </feature>
@@ -254,8 +260,14 @@
     <feature name='wdt'>
       <cpuid function='0x80000001' ecx='0x00002000'/>
     </feature>
+    <feature name='lwp'>
+      <cpuid function='0x80000001' ecx='0x00008000'/>
+    </feature>
     <feature name='fma4'>
       <cpuid function='0x80000001' ecx='0x00010000'/>
+    </feature>
+    <feature name='tce'>
+      <cpuid function='0x80000001' ecx='0x00020000'/>
     </feature>
     <feature name='cvt16'>
       <cpuid function='0x80000001' ecx='0x00040000'/>
@@ -263,11 +275,53 @@
     <feature name='nodeid_msr'>
       <cpuid function='0x80000001' ecx='0x00080000'/>
     </feature>
+    <feature name='tbm'>
+      <cpuid function='0x80000001' ecx='0x00200000'/>
+    </feature>
+    <feature name='topoext'>
+      <cpuid function='0x80000001' ecx='0x00400000'/>
+    </feature>
+    <feature name='perfctr_core'>
+      <cpuid function='0x80000001' ecx='0x00800000'/>
+    </feature>
+    <feature name='perfctr_nb'>
+      <cpuid function='0x80000001' ecx='0x01000000'/>
+    </feature>
 
     <!-- cpuid function 0x7 ecx 0x0 features -->
     <!-- We support only ecx 0x0 now as it's done by a workaround -->
+    <feature name='fsgsbase'>
+      <cpuid function='0x00000007' ebx='0x00000001'/>
+    </feature>
+    <feature name='bmi1'>
+      <cpuid function='0x00000007' ebx='0x00000008'/>
+    </feature>
+    <feature name='hle'>
+      <cpuid function='0x00000007' ebx='0x00000010'/>
+    </feature>
+    <feature name='avx2'>
+      <cpuid function='0x00000007' ebx='0x00000020'/>
+    </feature>
     <feature name='smep'>
       <cpuid function='0x00000007' ebx='0x00000080'/>
+    </feature>
+    <feature name='bmi2'>
+      <cpuid function='0x00000007' ebx='0x00000100'/>
+    </feature>
+    <feature name='erms'>
+      <cpuid function='0x00000007' ebx='0x00000200'/>
+    </feature>
+    <feature name='invpcid'>
+      <cpuid function='0x00000007' ebx='0x00000400'/>
+    </feature>
+    <feature name='rtm'>
+      <cpuid function='0x00000007' ebx='0x00000800'/>
+    </feature>
+    <feature name='rdseed'>
+      <cpuid function='0x00000007' ebx='0x00040000'/>
+    </feature>
+    <feature name='adx'>
+      <cpuid function='0x00000007' ebx='0x00080000'/>
     </feature>
     <feature name='smap'>
       <cpuid function='0x00000007' ebx='0x00100000'/>
