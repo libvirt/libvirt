@@ -495,6 +495,22 @@
       <feature name='rdtscp'/>
     </model>
 
+    <model name='Haswell'>
+      <model name='SandyBridge'/>
+      <feature name='fma'/>
+      <feature name='pcid'/>
+      <feature name='movbe'/>
+      <feature name='fsgsbase'/>
+      <feature name='bmi1'/>
+      <feature name='hle'/>
+      <feature name='avx2'/>
+      <feature name='smep'/>
+      <feature name='bmi2'/>
+      <feature name='erms'/>
+      <feature name='invpcid'/>
+      <feature name='rtm'/>
+    </model>
+
     <!-- AMD CPUs -->
     <model name='athlon'>
       <model name='pentiumpro'/>
