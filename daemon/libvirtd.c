@@ -98,6 +98,8 @@
 
 #include "configmake.h"
 
+#include "virdbus.h"
+
 #if HAVE_SASL
 virNetSASLContextPtr saslCtxt = NULL;
 #endif
@@ -774,6 +776,72 @@ static void daemonInhibitCallback(bool inhibit, void *opaque)
 }
 
 
+#ifdef HAVE_DBUS
+static DBusConnection *sessionBus;
+static DBusConnection *systemBus;
+
+static void daemonStopWorker(void *opaque)
+{
+    virNetServerPtr srv = opaque;
+
+    VIR_DEBUG("Begin stop srv=%p", srv);
+
+    ignore_value(virStateStop());
+
+    VIR_DEBUG("Completed stop srv=%p", srv);
+
+    /* Exit libvirtd cleanly */
+    virNetServerQuit(srv);
+}
+
+
+/* We do this in a thread to not block the main loop */
+static void daemonStop(virNetServerPtr srv)
+{
+    virThread thr;
+    virObjectRef(srv);
+    if (virThreadCreate(&thr, false, daemonStopWorker, srv) < 0)
+        virObjectUnref(srv);
+}
+
+
+static DBusHandlerResult
+handleSessionMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
+                         DBusMessage *message,
+                         void *opaque)
+{
+    virNetServerPtr srv = opaque;
+
+    VIR_DEBUG("srv=%p", srv);
+
+    if (dbus_message_is_signal(message,
+                               DBUS_INTERFACE_LOCAL,
+                               "Disconnected"))
+        daemonStop(srv);
+
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
+
+static DBusHandlerResult
+handleSystemMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
+                        DBusMessage *message,
+                        void *opaque)
+{
+    virNetServerPtr srv = opaque;
+
+    VIR_DEBUG("srv=%p", srv);
+
+    if (dbus_message_is_signal(message,
+                               "org.freedesktop.login1.Manager",
+                               "PrepareForShutdown"))
+        daemonStop(srv);
+
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+#endif
+
+
 static void daemonRunStateInit(void *opaque)
 {
     virNetServerPtr srv = opaque;
@@ -791,6 +859,26 @@ static void daemonRunStateInit(void *opaque)
         virObjectUnref(srv);
         return;
     }
+
+#ifdef HAVE_DBUS
+    /* Tie the non-priviledged libvirtd to the session/shutdown lifecycle */
+    if (!virNetServerIsPrivileged(srv)) {
+
+        sessionBus = virDBusGetSessionBus();
+        if (sessionBus != NULL)
+            dbus_connection_add_filter(sessionBus,
+                                       handleSessionMessageFunc, srv, NULL);
+
+        systemBus = virDBusGetSystemBus();
+        if (systemBus != NULL) {
+            dbus_connection_add_filter(systemBus,
+                                       handleSystemMessageFunc, srv, NULL);
+            dbus_bus_add_match(systemBus,
+                               "type='signal',sender='org.freedesktop.login1', interface='org.freedesktop.login1.Manager'",
+                               NULL);
+        }
+    }
+#endif
 
     /* Only now accept clients from network */
     virNetServerUpdateServices(srv, true);
