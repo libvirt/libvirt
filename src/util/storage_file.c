@@ -530,22 +530,36 @@ qedGetBackingStore(char **res,
 static char *
 absolutePathFromBaseFile(const char *base_file, const char *path)
 {
-    char *res;
-    char *tmp;
-    size_t d_len = dir_len (base_file);
+    char *res = NULL;
+    char *tmp = NULL;
+    size_t d_len = dir_len(base_file);
 
     /* If path is already absolute, or if dirname(base_file) is ".",
        just return a copy of path.  */
-    if (*path == '/' || d_len == 0)
-        return canonicalize_file_name(path);
+    if (*path == '/' || d_len == 0) {
+        if (!(res = canonicalize_file_name(path)))
+            virReportSystemError(errno,
+                                 _("Can't canonicalize path '%s'"), path);
+
+        goto cleanup;
+    }
 
     /* Ensure that the following cast-to-int is valid.  */
-    if (d_len > INT_MAX)
-        return NULL;
+    if (d_len > INT_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Directory name too long: '%s'"), base_file);
+        goto cleanup;
+    }
 
-    if (virAsprintf(&tmp, "%.*s/%s", (int) d_len, base_file, path) < 0)
-        return NULL;
-    res = canonicalize_file_name(tmp);
+    if (virAsprintf(&tmp, "%.*s/%s", (int) d_len, base_file, path) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(res = canonicalize_file_name(tmp)))
+        virReportSystemError(errno, _("Can't canonicalize path '%s'"), path);
+
+cleanup:
     VIR_FREE(tmp);
     return res;
 }
@@ -713,7 +727,6 @@ virStorageFileGetMetadataFromBuf(int format,
                 meta->backingStoreRaw = meta->backingStore;
                 meta->backingStore = absolutePathFromBaseFile(path, backing);
                 if (meta->backingStore == NULL) {
-                    virReportOOMError();
                     VIR_FREE(backing);
                     return -1;
                 }
