@@ -3303,11 +3303,11 @@ static virNetworkDriver networkDriver = {
 };
 
 static virStateDriver networkStateDriver = {
-    "Network",
-    networkStartup,
-    networkShutdown,
-    networkReload,
-    networkActive,
+    .name = "Network",
+    .initialize  = networkStartup,
+    .cleanup = networkShutdown,
+    .reload = networkReload,
+    .active = networkActive,
 };
 
 int networkRegister(void) {
