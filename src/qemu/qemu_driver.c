@@ -3485,8 +3485,8 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
-    if ((tmp_fd = mkstemp(tmp)) == -1) {
-        virReportSystemError(errno, _("mkstemp(\"%s\") failed"), tmp);
+    if ((tmp_fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
+        virReportSystemError(errno, _("mkostemp(\"%s\") failed"), tmp);
         goto endjob;
     }
     unlink_tmp = true;
@@ -9230,9 +9230,9 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     }
 
     /* Create a temporary filename. */
-    if ((fd = mkstemp (tmp)) == -1) {
+    if ((fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
         virReportSystemError(errno,
-                             _("mkstemp(\"%s\") failed"), tmp);
+                             _("mkostemp(\"%s\") failed"), tmp);
         goto endjob;
     }
 

@@ -171,9 +171,9 @@ replaceFile(const char *filename, void *data, size_t size)
         virReportOOMError();
         goto cleanup;
     }
-    fd = mkstemp (tmp_path);
+    fd = mkostemp(tmp_path, O_CLOEXEC);
     if (fd == -1) {
-        virReportSystemError(errno, _("mkstemp('%s') failed"), tmp_path);
+        virReportSystemError(errno, _("mkostemp('%s') failed"), tmp_path);
         goto cleanup;
     }
     if (fchmod(fd, S_IRUSR | S_IWUSR) != 0) {

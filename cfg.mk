@@ -339,6 +339,12 @@ sc_prohibit_fork_wrappers:
 	halt='use virCommand for child processes'			\
 	  $(_sc_search_regexp)
 
+# Prefer mkostemp with O_CLOEXEC.
+sc_prohibit_mkstemp:
+	@prohibit='[^"]\<mkstemps? *\('					\
+	halt='use mkostemp with O_CLOEXEC instead of mkstemp'		\
+	  $(_sc_search_regexp)
+
 # access with X_OK accepts directories, but we can't exec() those.
 # access with F_OK or R_OK is okay, though.
 sc_prohibit_access_xok:

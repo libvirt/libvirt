@@ -9157,8 +9157,8 @@ vboxDomainScreenshot(virDomainPtr dom,
         return NULL;
     }
 
-    if ((tmp_fd = mkstemp(tmp)) == -1) {
-        virReportSystemError(errno, _("mkstemp(\"%s\") failed"), tmp);
+    if ((tmp_fd = mkostemp(tmp, O_CLOEXEC)) == -1) {
+        virReportSystemError(errno, _("mkostemp(\"%s\") failed"), tmp);
         VIR_FREE(tmp);
         VBOX_RELEASE(machine);
         return NULL;
