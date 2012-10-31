@@ -193,6 +193,7 @@ results.log
 stamp-h
 stamp-h.in
 stamp-h1
+tags
 !/gnulib/lib/Makefile.am
 !/gnulib/tests/Makefile.am
 !/m4/virt-*.m4
