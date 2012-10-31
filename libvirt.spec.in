@@ -1568,12 +1568,13 @@ fi
 /bin/systemctl try-restart libvirt-guests.service >/dev/null 2>&1 || :
 %endif
 
+%if %{with_sanlock}
 %post lock-sanlock
 if getent group sanlock > /dev/null ; then
     chmod 0770 %{_localstatedir}/lib/libvirt/sanlock
     chown root:sanlock %{_localstatedir}/lib/libvirt/sanlock
 fi
-
+%endif
 
 %files
 %defattr(-, root, root)
