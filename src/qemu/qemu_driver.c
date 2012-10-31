@@ -996,6 +996,74 @@ qemuActive(void) {
     return active;
 }
 
+
+/*
+ * qemuStop:
+ *
+ * Save any VMs in preparation for shutdown
+ *
+ */
+static int
+qemuStop(void) {
+    int ret = -1;
+    const char *uri;
+    virConnectPtr conn;
+    int numDomains;
+    size_t i;
+    int state;
+    virDomainPtr *domains = NULL;
+    unsigned int *flags = NULL;
+
+    qemuDriverLock(qemu_driver);
+    uri = qemu_driver->privileged ?
+        "qemu:///system" :
+        "qemu:///session";
+    qemuDriverUnlock(qemu_driver);
+
+    if (!(conn = virConnectOpen(uri)))
+        return -1;
+
+    if ((numDomains = virConnectListAllDomains(conn,
+                                               &domains,
+                                               VIR_CONNECT_LIST_DOMAINS_ACTIVE)) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(flags, numDomains) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* First we pause all VMs to make them stop dirtying
+       pages, etc. We remember if any VMs were paused so
+       we can restore that on resume. */
+    for (i = 0 ; i < numDomains ; i++) {
+        flags[i] = VIR_DOMAIN_SAVE_RUNNING;
+        if (virDomainGetState(domains[i], &state, NULL, 0) == 0) {
+            if (state == VIR_DOMAIN_PAUSED) {
+                flags[i] = VIR_DOMAIN_SAVE_PAUSED;
+            }
+        }
+        virDomainSuspend(domains[i]);
+    }
+
+    ret = 0;
+    /* Then we save the VMs to disk */
+    for (i = 0 ; i < numDomains ; i++)
+        if (virDomainManagedSave(domains[i], flags[i]) < 0)
+            ret = -1;
+
+    VIR_FREE(domains);
+    VIR_FREE(flags);
+
+ cleanup:
+    for (i = 0 ; i < numDomains ; i++)
+        virDomainFree(domains[i]);
+    VIR_FREE(domains);
+    VIR_FREE(flags);
+
+    return ret;
+}
+
 /**
  * qemuShutdown:
  *
@@ -14999,6 +15067,7 @@ static virStateDriver qemuStateDriver = {
     .cleanup = qemuShutdown,
     .reload = qemuReload,
     .active = qemuActive,
+    .stop = qemuStop,
 };
 
 int qemuRegister(void) {
