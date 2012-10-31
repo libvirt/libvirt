@@ -3235,6 +3235,29 @@ int qemuMonitorGetEvents(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorGetKVMState(qemuMonitorPtr mon,
+                           bool *enabled,
+                           bool *present)
+{
+    VIR_DEBUG("mon=%p enabled=%p present=%p",
+              mon, enabled, present);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetKVMState(mon, enabled, present);
+}
+
+
 int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
                               char ***types)
 {

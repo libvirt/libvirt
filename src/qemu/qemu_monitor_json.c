@@ -4293,6 +4293,57 @@ cleanup:
 }
 
 
+int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
+                               bool *enabled,
+                               bool *present)
+{
+    int ret;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+
+    /* Safe defaults */
+    *enabled = *present = false;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-kvm", NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+            goto cleanup;
+
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-kvm reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "enabled", enabled) < 0 ||
+        virJSONValueObjectGetBoolean(data, "present", present) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-kvm replied unexpected data"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
                                   char ***types)
 {

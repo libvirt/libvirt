@@ -45,7 +45,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_MIGRATE_QEMU_TCP   = 10, /* have qemu tcp migration */
     QEMU_CAPS_MIGRATE_QEMU_EXEC  = 11, /* have qemu exec migration */
     QEMU_CAPS_DRIVE_CACHE_V2     = 12, /* cache= flag wanting new v2 values */
-    QEMU_CAPS_KVM                = 13, /* Whether KVM is compiled in */
+    QEMU_CAPS_KVM                = 13, /* Whether KVM is enabled by default */
     QEMU_CAPS_DRIVE_FORMAT       = 14, /* Is -drive format= avail */
     QEMU_CAPS_VGA                = 15, /* Is -vga avail */
 

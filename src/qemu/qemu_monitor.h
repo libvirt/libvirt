@@ -620,6 +620,10 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
 int qemuMonitorGetEvents(qemuMonitorPtr mon,
                          char ***events);
 
+int qemuMonitorGetKVMState(qemuMonitorPtr mon,
+                           bool *enabled,
+                           bool *present);
+
 int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
                               char ***types);
 int qemuMonitorGetObjectProps(qemuMonitorPtr mon,

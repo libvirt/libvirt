@@ -322,6 +322,11 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
                              char ***events)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
+                               bool *enabled,
+                               bool *present)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
                                   char ***types)
     ATTRIBUTE_NONNULL(2);
