@@ -2327,6 +2327,14 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     if (!(caps->arch = qemuMonitorGetTargetArch(mon)))
         goto cleanup;
 
+    /* Map i386, i486, i586 to i686.  */
+    if (caps->arch[0] == 'i' &&
+        caps->arch[1] != '\0' &&
+        caps->arch[2] == '8' &&
+        caps->arch[3] == '6' &&
+        caps->arch[4] == '\0')
+        caps->arch[1] = '6';
+
     /* Currently only x86_64 and i686 support PCI-multibus. */
     if (STREQLEN(caps->arch, "x86_64", 6) ||
         STREQLEN(caps->arch, "i686", 4)) {
