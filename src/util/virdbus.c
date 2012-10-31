@@ -32,40 +32,49 @@
 #ifdef HAVE_DBUS
 
 static DBusConnection *systembus = NULL;
-static virOnceControl once = VIR_ONCE_CONTROL_INITIALIZER;
-static DBusError dbuserr;
+static DBusConnection *sessionbus = NULL;
+static virOnceControl systemonce = VIR_ONCE_CONTROL_INITIALIZER;
+static virOnceControl sessiononce = VIR_ONCE_CONTROL_INITIALIZER;
+static DBusError systemdbuserr;
+static DBusError sessiondbuserr;
 
 static dbus_bool_t virDBusAddWatch(DBusWatch *watch, void *data);
 static void virDBusRemoveWatch(DBusWatch *watch, void *data);
 static void virDBusToggleWatch(DBusWatch *watch, void *data);
 
-static void virDBusSystemBusInit(void)
+static DBusConnection *virDBusBusInit(DBusBusType type, DBusError *dbuserr)
 {
+    DBusConnection *bus;
+
     /* Allocate and initialize a new HAL context */
     dbus_connection_set_change_sigpipe(FALSE);
     dbus_threads_init_default();
 
-    dbus_error_init(&dbuserr);
-    if (!(systembus = dbus_bus_get(DBUS_BUS_SYSTEM, &dbuserr)))
-        return;
+    dbus_error_init(dbuserr);
+    if (!(bus = dbus_bus_get(type, dbuserr)))
+        return NULL;
 
-    dbus_connection_set_exit_on_disconnect(systembus, FALSE);
+    dbus_connection_set_exit_on_disconnect(bus, FALSE);
 
     /* Register dbus watch callbacks */
-    if (!dbus_connection_set_watch_functions(systembus,
+    if (!dbus_connection_set_watch_functions(bus,
                                              virDBusAddWatch,
                                              virDBusRemoveWatch,
                                              virDBusToggleWatch,
-                                             NULL, NULL)) {
-        systembus = NULL;
-        return;
+                                             bus, NULL)) {
+        return NULL;
     }
+    return bus;
 }
 
+static void virDBusSystemBusInit(void)
+{
+    systembus = virDBusBusInit(DBUS_BUS_SYSTEM, &systemdbuserr);
+}
 
 DBusConnection *virDBusGetSystemBus(void)
 {
-    if (virOnce(&once, virDBusSystemBusInit) < 0) {
+    if (virOnce(&systemonce, virDBusSystemBusInit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to run one time DBus initializer"));
         return NULL;
@@ -74,7 +83,7 @@ DBusConnection *virDBusGetSystemBus(void)
     if (!systembus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to get DBus system bus connection: %s"),
-                       dbuserr.message ? dbuserr.message : "watch setup failed");
+                       systemdbuserr.message ? systemdbuserr.message : "watch setup failed");
         return NULL;
     }
 
@@ -82,12 +91,44 @@ DBusConnection *virDBusGetSystemBus(void)
 }
 
 
+static void virDBusSessionBusInit(void)
+{
+    sessionbus = virDBusBusInit(DBUS_BUS_SESSION, &sessiondbuserr);
+}
+
+DBusConnection *virDBusGetSessionBus(void)
+{
+    if (virOnce(&sessiononce, virDBusSessionBusInit) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to run one time DBus initializer"));
+        return NULL;
+    }
+
+    if (!sessionbus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to get DBus session bus connection: %s"),
+                       sessiondbuserr.message ? sessiondbuserr.message : "watch setup failed");
+        return NULL;
+    }
+
+    return sessionbus;
+}
+
+struct virDBusWatch
+{
+    int watch;
+    DBusConnection *bus;
+};
+
 static void virDBusWatchCallback(int fdatch ATTRIBUTE_UNUSED,
                                  int fd ATTRIBUTE_UNUSED,
                                  int events, void *opaque)
 {
     DBusWatch *watch = opaque;
+    struct virDBusWatch *info;
     int dbus_flags = 0;
+
+    info = dbus_watch_get_data(watch);
 
     if (events & VIR_EVENT_HANDLE_READABLE)
         dbus_flags |= DBUS_WATCH_READABLE;
@@ -100,7 +141,7 @@ static void virDBusWatchCallback(int fdatch ATTRIBUTE_UNUSED,
 
     (void)dbus_watch_handle(watch, dbus_flags);
 
-    while (dbus_connection_dispatch(systembus) == DBUS_DISPATCH_DATA_REMAINS)
+    while (dbus_connection_dispatch(info->bus) == DBUS_DISPATCH_DATA_REMAINS)
         /* keep dispatching while data remains */;
 }
 
@@ -120,18 +161,13 @@ static int virDBusTranslateWatchFlags(int dbus_flags)
 }
 
 
-struct virDBusWatch
-{
-    int watch;
-};
-
 static void virDBusWatchFree(void *data) {
     struct virDBusWatch *info = data;
     VIR_FREE(info);
 }
 
 static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
-                                  void *data ATTRIBUTE_UNUSED)
+                                   void *data)
 {
     int flags = 0;
     int fd;
@@ -148,6 +184,7 @@ static dbus_bool_t virDBusAddWatch(DBusWatch *watch,
 # else
     fd = dbus_watch_get_fd(watch);
 # endif
+    info->bus = (DBusConnection *)data;
     info->watch = virEventAddHandle(fd, flags,
                                     virDBusWatchCallback,
                                     watch, NULL);
@@ -188,6 +225,13 @@ static void virDBusToggleWatch(DBusWatch *watch,
 
 #else /* ! HAVE_DBUS */
 DBusConnection *virDBusGetSystemBus(void)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("DBus support not compiled into this binary"));
+    return NULL;
+}
+
+DBusConnection *virDBusGetSessionBus(void)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("DBus support not compiled into this binary"));

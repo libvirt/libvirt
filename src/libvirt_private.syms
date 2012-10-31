@@ -1335,6 +1335,7 @@ virConsoleOpen;
 
 
 # virdbus.h
+virDBusGetSessionBus;
 virDBusGetSystemBus;
 
 

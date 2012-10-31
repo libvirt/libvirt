@@ -30,5 +30,6 @@
 # include "internal.h"
 
 DBusConnection *virDBusGetSystemBus(void);
+DBusConnection *virDBusGetSessionBus(void);
 
 #endif /* __VIR_DBUS_H__ */
