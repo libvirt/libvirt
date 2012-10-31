@@ -936,7 +936,7 @@ libvirt management daemon:\n"), argv0);
       $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n\
 \n\
     Sockets:\n\
-      $XDG_RUNTIME_DIR/libvirt/libvirt-sock (in UNIX abstract namespace)\n\
+      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n\
 \n\
     TLS:\n\
       CA certificate:     $HOME/.pki/libvirt/cacert.pem\n\
