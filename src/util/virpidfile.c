@@ -206,7 +206,7 @@ int virPidFileReadPathIfAlive(const char *path,
                               pid_t *pid,
                               const char *binPath)
 {
-    int ret, retPid;
+    int ret;
     bool isLink;
     char *procPath = NULL;
     char *procLink = NULL;
@@ -215,7 +215,7 @@ int virPidFileReadPathIfAlive(const char *path,
     char *resolvedProcLink = NULL;
     const char deletedText[] = " (deleted)";
     size_t deletedTextLen = strlen(deletedText);
-
+    pid_t retPid;
 
     /* only set this at the very end on success */
     *pid = -1;

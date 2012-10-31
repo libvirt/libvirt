@@ -250,7 +250,7 @@ virProcessKillPainfully(pid_t pid, bool force)
     int i, ret = -1;
     const char *signame = "TERM";
 
-    VIR_DEBUG("vpid=%d force=%d", pid, force);
+    VIR_DEBUG("vpid=%lld force=%d", (long long)pid, force);
 
     /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
      * to see if it dies. If the process still hasn't exited, and
@@ -265,8 +265,8 @@ virProcessKillPainfully(pid_t pid, bool force)
         if (i == 0) {
             signum = SIGTERM; /* kindly suggest it should exit */
         } else if ((i == 50) & force) {
-            VIR_DEBUG("Timed out waiting after SIGTERM to process %d, "
-                      "sending SIGKILL", pid);
+            VIR_DEBUG("Timed out waiting after SIGTERM to process %lld, "
+                      "sending SIGKILL", (long long)pid);
             /* No SIGKILL kill on Win32 ! Use SIGABRT instead which our
              * virProcessKill proc will handle more or less like SIGKILL */
 #ifdef WIN32
@@ -283,8 +283,8 @@ virProcessKillPainfully(pid_t pid, bool force)
         if (virProcessKill(pid, signum) < 0) {
             if (errno != ESRCH) {
                 virReportSystemError(errno,
-                                     _("Failed to terminate process %d with SIG%s"),
-                                     pid, signame);
+                                     _("Failed to terminate process %lld with SIG%s"),
+                                     (long long)pid, signame);
                 goto cleanup;
             }
             ret = signum == SIGTERM ? 0 : 1;
@@ -294,7 +294,8 @@ virProcessKillPainfully(pid_t pid, bool force)
         usleep(200 * 1000);
     }
 
-    VIR_DEBUG("Timed out waiting after SIGKILL to process %d", pid);
+    VIR_DEBUG("Timed out waiting after SIGKILL to process %lld",
+              (long long)pid);
 
 cleanup:
     return ret;
