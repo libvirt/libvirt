@@ -68,7 +68,7 @@
 # define HYPER_TO_ULONG(_to, _from) (_to) = (_from)
 #endif
 
-static int inside_daemon = 0;
+static bool inside_daemon = false;
 static virDriverPtr remoteDriver = NULL;
 
 struct private_data {
@@ -150,12 +150,12 @@ static char *get_transport_from_scheme(char *scheme);
 
 #ifdef WITH_LIBVIRTD
 static int
-remoteStartup(int privileged ATTRIBUTE_UNUSED)
+remoteStartup(bool privileged ATTRIBUTE_UNUSED)
 {
     /* Mark that we're inside the daemon so we can avoid
      * re-entering ourselves
      */
-    inside_daemon = 1;
+    inside_daemon = true;
     return 0;
 }
 #endif

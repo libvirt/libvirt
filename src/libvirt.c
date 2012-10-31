@@ -789,13 +789,13 @@ virRegisterStateDriver(virStateDriverPtr driver)
 
 /**
  * virStateInitialize:
- * @privileged: set to 1 if running with root privilege, 0 otherwise
+ * @privileged: set to true if running with root privilege, false otherwise
  *
  * Initialize all virtualization drivers.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
-int virStateInitialize(int privileged) {
+int virStateInitialize(bool privileged) {
     int i;
 
     if (virInitialize() < 0)

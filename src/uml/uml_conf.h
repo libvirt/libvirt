@@ -44,7 +44,7 @@
 struct uml_driver {
     virMutex lock;
 
-    int privileged;
+    bool privileged;
 
     unsigned long umlVersion;
     int nextvmid;

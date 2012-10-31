@@ -59,7 +59,7 @@ struct _virQEMUDriver {
 
     virThreadPoolPtr workerPool;
 
-    int privileged;
+    bool privileged;
     const char *uri;
 
     uid_t user;

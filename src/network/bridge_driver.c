@@ -330,7 +330,7 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
  * Initialization function for the QEmu daemon
  */
 static int
-networkStartup(int privileged) {
+networkStartup(bool privileged) {
     char *base = NULL;
 #ifdef HAVE_FIREWALLD
     DBusConnection *sysbus = NULL;

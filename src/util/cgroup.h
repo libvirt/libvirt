@@ -44,24 +44,24 @@ VIR_ENUM_DECL(virCgroupController);
 
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
-                       int privileged,
-                       int create);
+                       bool privileged,
+                       bool create);
 
 int virCgroupGetAppRoot(virCgroupPtr *group);
 
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,
                        virCgroupPtr *group,
-                       int create);
+                       bool create);
 
 int virCgroupForVcpu(virCgroupPtr driver,
                      int vcpuid,
                      virCgroupPtr *group,
-                     int create);
+                     bool create);
 
 int virCgroupForEmulator(virCgroupPtr driver,
                          virCgroupPtr *group,
-                         int create);
+                         bool create);
 
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,

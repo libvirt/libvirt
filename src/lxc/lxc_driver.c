@@ -69,7 +69,7 @@
 
 #define LXC_NB_MEM_PARAM  3
 
-static int lxcStartup(int privileged);
+static int lxcStartup(bool privileged);
 static int lxcShutdown(void);
 virLXCDriverPtr lxc_driver = NULL;
 
@@ -1397,7 +1397,7 @@ error:
 }
 
 
-static int lxcStartup(int privileged)
+static int lxcStartup(bool privileged)
 {
     char *ld;
     int rc;

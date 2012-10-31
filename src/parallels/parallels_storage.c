@@ -121,7 +121,7 @@ parallelsStorageOpen(virConnectPtr conn,
 {
     char *base = NULL;
     virStorageDriverStatePtr storageState;
-    int privileged = (geteuid() == 0);
+    bool privileged = (geteuid() == 0);
     parallelsConnPtr privconn = conn->privateData;
     size_t i;
 

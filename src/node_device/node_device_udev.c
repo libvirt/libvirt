@@ -1604,7 +1604,7 @@ out:
     return ret;
 }
 
-static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
+static int udevDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;

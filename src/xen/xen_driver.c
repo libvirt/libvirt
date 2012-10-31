@@ -90,7 +90,7 @@ static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
 };
 
 #if defined WITH_LIBVIRTD || defined __sun
-static int inside_daemon;
+static bool inside_daemon = false;
 #endif
 
 /**
@@ -201,9 +201,9 @@ done:
 #ifdef WITH_LIBVIRTD
 
 static int
-xenInitialize(int privileged ATTRIBUTE_UNUSED)
+xenInitialize(bool privileged ATTRIBUTE_UNUSED)
 {
-    inside_daemon = 1;
+    inside_daemon = true;
     return 0;
 }
 

@@ -1073,7 +1073,7 @@ secretDriverCleanup(void)
 }
 
 static int
-secretDriverStartup(int privileged)
+secretDriverStartup(bool privileged)
 {
     char *base = NULL;
 

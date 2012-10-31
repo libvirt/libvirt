@@ -834,7 +834,7 @@ libxlShutdown(void)
 }
 
 static int
-libxlStartup(int privileged) {
+libxlStartup(bool privileged) {
     const libxl_version_info *ver_info;
     char *log_file = NULL;
     virCommandPtr cmd;

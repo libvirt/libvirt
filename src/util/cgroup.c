@@ -526,8 +526,10 @@ static int virCgroupSetMemoryUseHierarchy(virCgroupPtr group)
     return rc;
 }
 
-static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
-                              int create, unsigned int flags)
+static int virCgroupMakeGroup(virCgroupPtr parent,
+                              virCgroupPtr group,
+                              bool create,
+                              unsigned int flags)
 {
     int i;
     int rc = 0;
@@ -641,9 +643,9 @@ err:
     return rc;
 }
 
-static int virCgroupAppRoot(int privileged,
+static int virCgroupAppRoot(bool privileged,
                             virCgroupPtr *group,
-                            int create)
+                            bool create)
 {
     virCgroupPtr rootgrp = NULL;
     int rc;
@@ -924,8 +926,8 @@ cleanup:
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
-                       int privileged,
-                       int create)
+                       bool privileged,
+                       bool create)
 {
     int rc;
     char *path = NULL;
@@ -957,8 +959,8 @@ out:
 #else
 int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED,
-                       int privileged ATTRIBUTE_UNUSED,
-                       int create ATTRIBUTE_UNUSED)
+                       bool privileged ATTRIBUTE_UNUSED,
+                       bool create ATTRIBUTE_UNUSED)
 {
     /* Claim no support */
     return -ENXIO;
@@ -994,7 +996,7 @@ int virCgroupGetAppRoot(virCgroupPtr *group)
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,
                        virCgroupPtr *group,
-                       int create)
+                       bool create)
 {
     int rc;
     char *path;
@@ -1030,7 +1032,7 @@ int virCgroupForDomain(virCgroupPtr driver,
 int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
                        const char *name ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED,
-                       int create ATTRIBUTE_UNUSED)
+                       bool create ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
@@ -1049,7 +1051,7 @@ int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
 int virCgroupForVcpu(virCgroupPtr driver,
                      int vcpuid,
                      virCgroupPtr *group,
-                     int create)
+                     bool create)
 {
     int rc;
     char *path;
@@ -1075,7 +1077,7 @@ int virCgroupForVcpu(virCgroupPtr driver,
 int virCgroupForVcpu(virCgroupPtr driver ATTRIBUTE_UNUSED,
                      int vcpuid ATTRIBUTE_UNUSED,
                      virCgroupPtr *group ATTRIBUTE_UNUSED,
-                     int create ATTRIBUTE_UNUSED)
+                     bool create ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
@@ -1091,8 +1093,8 @@ int virCgroupForVcpu(virCgroupPtr driver ATTRIBUTE_UNUSED,
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupForEmulator(virCgroupPtr driver,
-                          virCgroupPtr *group,
-                          int create)
+                         virCgroupPtr *group,
+                         bool create)
 {
     int rc;
     char *path;
@@ -1116,8 +1118,8 @@ int virCgroupForEmulator(virCgroupPtr driver,
 }
 #else
 int virCgroupForEmulator(virCgroupPtr driver ATTRIBUTE_UNUSED,
-                          virCgroupPtr *group ATTRIBUTE_UNUSED,
-                          int create ATTRIBUTE_UNUSED)
+                         virCgroupPtr *group ATTRIBUTE_UNUSED,
+                         bool create ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }

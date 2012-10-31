@@ -419,7 +419,7 @@ cleanup:
  * Initialization function for the Uml daemon
  */
 static int
-umlStartup(int privileged)
+umlStartup(bool privileged)
 {
     char *base = NULL;
     char *userdir = NULL;

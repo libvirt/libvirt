@@ -610,7 +610,7 @@ qemuDomainFindMaxID(void *payload,
  * Initialization function for the QEmu daemon
  */
 static int
-qemuStartup(int privileged) {
+qemuStartup(bool privileged) {
     char *base = NULL;
     char *driverConf = NULL;
     int rc;
