@@ -72,8 +72,8 @@ void qemuDriverUnlock(struct qemud_driver *driver)
 }
 
 
-int qemudLoadDriverConfig(struct qemud_driver *driver,
-                          const char *filename) {
+int qemuLoadDriverConfig(struct qemud_driver *driver,
+                         const char *filename) {
     virConfPtr conf;
     virConfValuePtr p;
     char *user;

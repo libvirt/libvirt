@@ -2367,8 +2367,8 @@ cleanup:
 
 
 static int
-qemudParseDriveAddReply(const char *reply,
-                        virDomainDeviceDriveAddressPtr addr)
+qemuParseDriveAddReply(const char *reply,
+                       virDomainDeviceDriveAddressPtr addr)
 {
     char *s, *e;
 
@@ -2446,7 +2446,7 @@ try_command:
         goto cleanup;
     }
 
-    if (qemudParseDriveAddReply(reply, driveAddr) < 0) {
+    if (qemuParseDriveAddReply(reply, driveAddr) < 0) {
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
             VIR_FREE(cmd);

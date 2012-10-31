@@ -73,7 +73,7 @@
 #define SHUTDOWN_POSTFIX ": shutting down\n"
 
 /**
- * qemudRemoveDomainStatus
+ * qemuProcessRemoveDomainStatus
  *
  * remove all state files of a domain from statedir
  *

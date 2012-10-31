@@ -176,8 +176,8 @@ struct _qemuDomainCmdlineDef {
 
 void qemuDriverLock(struct qemud_driver *driver);
 void qemuDriverUnlock(struct qemud_driver *driver);
-int qemudLoadDriverConfig(struct qemud_driver *driver,
-                          const char *filename);
+int qemuLoadDriverConfig(struct qemud_driver *driver,
+                         const char *filename);
 
 struct qemuDomainDiskInfo {
     bool removable;
