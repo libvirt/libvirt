@@ -1603,12 +1603,14 @@ libvirt_net_rpc_server_la_SOURCES = \
 	rpc/virnetserver.h rpc/virnetserver.c
 libvirt_net_rpc_server_la_CFLAGS = \
 			$(AVAHI_CFLAGS) \
+			$(DBUS_CFLAGS) \
 			$(XDR_CFLAGS) \
 			$(AM_CFLAGS) \
 			$(POLKIT_CFLAGS)
 libvirt_net_rpc_server_la_LDFLAGS = \
 			$(AM_LDFLAGS) \
 			$(AVAHI_LIBS) \
+			$(DBUS_LIBS) \
 			$(POLKIT_LIBS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)

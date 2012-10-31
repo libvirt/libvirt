@@ -165,7 +165,9 @@ nwfilterDriverInstallDBusMatches(DBusConnection *sysbus ATTRIBUTE_UNUSED)
  * Initialization function for the QEmu daemon
  */
 static int
-nwfilterDriverStartup(bool privileged)
+nwfilterDriverStartup(bool privileged ATTRIBUTE_UNUSED,
+                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
     DBusConnection *sysbus = NULL;

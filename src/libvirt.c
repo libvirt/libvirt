@@ -790,12 +790,17 @@ virRegisterStateDriver(virStateDriverPtr driver)
 /**
  * virStateInitialize:
  * @privileged: set to true if running with root privilege, false otherwise
+ * @callback: callback to invoke to inhibit shutdown of the daemon
+ * @opaque: data to pass to @callback
  *
  * Initialize all virtualization drivers.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
-int virStateInitialize(bool privileged) {
+int virStateInitialize(bool privileged,
+                       virStateInhibitCallback callback,
+                       void *opaque)
+{
     int i;
 
     if (virInitialize() < 0)
@@ -805,7 +810,9 @@ int virStateInitialize(bool privileged) {
         if (virStateDriverTab[i]->initialize) {
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
-            if (virStateDriverTab[i]->initialize(privileged) < 0) {
+            if (virStateDriverTab[i]->initialize(privileged,
+                                                 callback,
+                                                 opaque) < 0) {
                 VIR_ERROR(_("Initialization of %s state driver failed"),
                           virStateDriverTab[i]->name);
                 return -1;
@@ -847,24 +854,6 @@ int virStateReload(void) {
         if (virStateDriverTab[i]->reload &&
             virStateDriverTab[i]->reload() < 0)
             ret = -1;
-    }
-    return ret;
-}
-
-/**
- * virStateActive:
- *
- * Run each virtualization driver's "active" method.
- *
- * Returns 0 if none are active, 1 if at least one is.
- */
-int virStateActive(void) {
-    int i, ret = 0;
-
-    for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->active &&
-            virStateDriverTab[i]->active())
-            ret = 1;
     }
     return ret;
 }

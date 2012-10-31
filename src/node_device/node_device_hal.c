@@ -586,9 +586,9 @@ static void device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
 }
 
 
-
-
-static int halDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED)
+static int halDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED,
+                                   virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                                   void *opaque ATTRIBUTE_UNUSED)
 {
     LibHalContext *hal_ctx = NULL;
     char **udi = NULL;

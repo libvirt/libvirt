@@ -1604,7 +1604,9 @@ out:
     return ret;
 }
 
-static int udevDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED)
+static int udevDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED,
+                                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                                    void *opaque ATTRIBUTE_UNUSED)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;

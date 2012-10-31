@@ -101,8 +101,7 @@ struct _virNetServer {
     virNetTLSContextPtr tls;
 
     unsigned int autoShutdownTimeout;
-    virNetServerAutoShutdownFunc autoShutdownFunc;
-    void *autoShutdownOpaque;
+    size_t autoShutdownInhibitions;
 
     virNetServerClientPrivNew clientPrivNew;
     virNetServerClientPrivPreExecRestart clientPrivPreExecRestart;
@@ -707,18 +706,32 @@ bool virNetServerIsPrivileged(virNetServerPtr srv)
 
 
 void virNetServerAutoShutdown(virNetServerPtr srv,
-                              unsigned int timeout,
-                              virNetServerAutoShutdownFunc func,
-                              void *opaque)
+                              unsigned int timeout)
 {
     virNetServerLock(srv);
 
     srv->autoShutdownTimeout = timeout;
-    srv->autoShutdownFunc = func;
-    srv->autoShutdownOpaque = opaque;
 
     virNetServerUnlock(srv);
 }
+
+
+void virNetServerAddShutdownInhibition(virNetServerPtr srv)
+{
+    virNetServerLock(srv);
+    srv->autoShutdownInhibitions++;
+    virNetServerUnlock(srv);
+}
+
+
+void virNetServerRemoveShutdownInhibition(virNetServerPtr srv)
+{
+    virNetServerLock(srv);
+    srv->autoShutdownInhibitions--;
+    virNetServerUnlock(srv);
+}
+
+
 
 static sig_atomic_t sigErrors = 0;
 static int sigLastErrno = 0;
@@ -932,7 +945,7 @@ static void virNetServerAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,
 
     virNetServerLock(srv);
 
-    if (srv->autoShutdownFunc(srv, srv->autoShutdownOpaque)) {
+    if (!srv->autoShutdownInhibitions) {
         VIR_DEBUG("Automatic shutdown triggered");
         srv->quit = 1;
     }

@@ -128,7 +128,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
  * Initialization function for the QEmu daemon
  */
 static int
-storageDriverStartup(bool privileged)
+storageDriverStartup(bool privileged,
+                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                     void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
 

@@ -584,16 +584,6 @@ error:
 }
 
 
-static int daemonShutdownCheck(virNetServerPtr srv ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED)
-{
-    if (virStateActive())
-        return 0;
-
-    return 1;
-}
-
-
 /*
  * Set up the logging environment
  * By default if daemonized all errors go to the logfile libvirtd.log,
@@ -772,6 +762,18 @@ static int daemonSetupSignals(virNetServerPtr srv)
     return 0;
 }
 
+
+static void daemonInhibitCallback(bool inhibit, void *opaque)
+{
+    virNetServerPtr srv = opaque;
+
+    if (inhibit)
+        virNetServerAddShutdownInhibition(srv);
+    else
+        virNetServerRemoveShutdownInhibition(srv);
+}
+
+
 static void daemonRunStateInit(void *opaque)
 {
     virNetServerPtr srv = opaque;
@@ -780,7 +782,9 @@ static void daemonRunStateInit(void *opaque)
      * This is deliberately done after telling the parent process
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
-    if (virStateInitialize(virNetServerIsPrivileged(srv)) < 0) {
+    if (virStateInitialize(virNetServerIsPrivileged(srv),
+                           daemonInhibitCallback,
+                           srv) < 0) {
         VIR_ERROR(_("Driver state initialization failed"));
         /* Ensure the main event loop quits */
         kill(getpid(), SIGTERM);
@@ -1270,9 +1274,7 @@ int main(int argc, char **argv) {
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
         virNetServerAutoShutdown(srv,
-                                 timeout,
-                                 daemonShutdownCheck,
-                                 NULL);
+                                 timeout);
     }
 
     if ((daemonSetupSignals(srv)) < 0) {

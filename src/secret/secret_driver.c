@@ -1073,7 +1073,9 @@ secretDriverCleanup(void)
 }
 
 static int
-secretDriverStartup(bool privileged)
+secretDriverStartup(bool privileged,
+                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                    void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
 
@@ -1166,7 +1168,6 @@ static virStateDriver stateDriver = {
     .initialize = secretDriverStartup,
     .cleanup = secretDriverCleanup,
     .reload = secretDriverReload,
-    .active = NULL      /* All persistent state is immediately saved to disk */
 };
 
 int

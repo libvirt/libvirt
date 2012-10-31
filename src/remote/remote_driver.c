@@ -150,7 +150,9 @@ static char *get_transport_from_scheme(char *scheme);
 
 #ifdef WITH_LIBVIRTD
 static int
-remoteStartup(bool privileged ATTRIBUTE_UNUSED)
+remoteStartup(bool privileged ATTRIBUTE_UNUSED,
+              virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+              void *opaque ATTRIBUTE_UNUSED)
 {
     /* Mark that we're inside the daemon so we can avoid
      * re-entering ourselves

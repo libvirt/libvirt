@@ -610,7 +610,10 @@ qemuDomainFindMaxID(void *payload,
  * Initialization function for the QEmu daemon
  */
 static int
-qemuStartup(bool privileged) {
+qemuStartup(bool privileged,
+            virStateInhibitCallback callback,
+            void *opaque)
+{
     char *base = NULL;
     char *driverConf = NULL;
     int rc;
@@ -631,6 +634,8 @@ qemuStartup(bool privileged) {
 
     qemu_driver->privileged = privileged;
     qemu_driver->uri = privileged ? "qemu:///system" : "qemu:///session";
+    qemu_driver->inhibitCallback = callback;
+    qemu_driver->inhibitOpaque = opaque;
 
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
@@ -972,28 +977,6 @@ qemuReload(void) {
     qemuDriverUnlock(qemu_driver);
 
     return 0;
-}
-
-/**
- * qemuActive:
- *
- * Checks if the QEmu daemon is active, i.e. has an active domain or
- * an active network
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-qemuActive(void) {
-    int active = 0;
-
-    if (!qemu_driver)
-        return 0;
-
-    /* XXX having to iterate here is not great because it requires many locks */
-    qemuDriverLock(qemu_driver);
-    active = virDomainObjListNumOfDomains(&qemu_driver->domains, 1);
-    qemuDriverUnlock(qemu_driver);
-    return active;
 }
 
 
@@ -15066,7 +15049,6 @@ static virStateDriver qemuStateDriver = {
     .initialize = qemuStartup,
     .cleanup = qemuShutdown,
     .reload = qemuReload,
-    .active = qemuActive,
     .stop = qemuStop,
 };
 

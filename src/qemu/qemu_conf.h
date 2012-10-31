@@ -73,6 +73,10 @@ struct _virQEMUDriver {
     int cgroupControllers;
     char **cgroupDeviceACL;
 
+    size_t nactive;
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
+
     virDomainObjList domains;
 
     /* These four directories are ones libvirtd uses (so must be root:root

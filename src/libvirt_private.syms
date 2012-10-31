@@ -1595,6 +1595,7 @@ xdr_virNetMessageError;
 # virnetserver.h
 virNetServerAddProgram;
 virNetServerAddService;
+virNetServerAddShutdownInhibition;
 virNetServerAddSignalHandler;
 virNetServerAutoShutdown;
 virNetServerClose;
@@ -1604,6 +1605,7 @@ virNetServerNew;
 virNetServerNewPostExecRestart;
 virNetServerPreExecRestart;
 virNetServerQuit;
+virNetServerRemoveShutdownInhibition;
 virNetServerRun;
 virNetServerSetTLSContext;
 virNetServerUpdateServices;

@@ -201,7 +201,9 @@ done:
 #ifdef WITH_LIBVIRTD
 
 static int
-xenInitialize(bool privileged ATTRIBUTE_UNUSED)
+xenInitialize(bool privileged ATTRIBUTE_UNUSED,
+              virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+              void *opaque ATTRIBUTE_UNUSED)
 {
     inside_daemon = true;
     return 0;

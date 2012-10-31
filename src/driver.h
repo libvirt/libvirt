@@ -1500,10 +1500,12 @@ struct _virStorageDriver {
 };
 
 # ifdef WITH_LIBVIRTD
-typedef int (*virDrvStateInitialize) (bool privileged);
+
+typedef int (*virDrvStateInitialize) (bool privileged,
+                                      virStateInhibitCallback callback,
+                                      void *opaque);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
-typedef int (*virDrvStateActive) (void);
 typedef int (*virDrvStateStop) (void);
 
 typedef struct _virStateDriver virStateDriver;
@@ -1514,7 +1516,6 @@ struct _virStateDriver {
     virDrvStateInitialize  initialize;
     virDrvStateCleanup     cleanup;
     virDrvStateReload      reload;
-    virDrvStateActive      active;
     virDrvStateStop        stop;
 };
 # endif

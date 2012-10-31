@@ -372,6 +372,11 @@ reread:
             }
 
             dom->def->id = driver->nextvmid++;
+
+            if (!driver->nactive && driver->inhibitCallback)
+                driver->inhibitCallback(true, driver->inhibitOpaque);
+            driver->nactive++;
+
             virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
                                  VIR_DOMAIN_RUNNING_BOOTED);
 
@@ -419,7 +424,9 @@ cleanup:
  * Initialization function for the Uml daemon
  */
 static int
-umlStartup(bool privileged)
+umlStartup(bool privileged,
+           virStateInhibitCallback callback,
+           void *opaque)
 {
     char *base = NULL;
     char *userdir = NULL;
@@ -428,6 +435,8 @@ umlStartup(bool privileged)
         return -1;
 
     uml_driver->privileged = privileged;
+    uml_driver->inhibitCallback = callback;
+    uml_driver->inhibitOpaque = opaque;
 
     if (virMutexInit(&uml_driver->lock) < 0) {
         VIR_FREE(uml_driver);
@@ -585,27 +594,6 @@ umlReload(void) {
     return 0;
 }
 
-/**
- * umlActive:
- *
- * Checks if the Uml daemon is active, i.e. has an active domain or
- * an active network
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-umlActive(void) {
-    int active = 0;
-
-    if (!uml_driver)
-        return 0;
-
-    umlDriverLock(uml_driver);
-    active = virDomainObjListNumOfDomains(&uml_driver->domains, 1);
-    umlDriverUnlock(uml_driver);
-
-    return active;
-}
 
 static void
 umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
@@ -1154,6 +1142,10 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
         vm->def->id = -1;
         vm->newDef = NULL;
     }
+
+    driver->nactive--;
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
 }
 
 
@@ -2634,7 +2626,6 @@ static virStateDriver umlStateDriver = {
     .initialize = umlStartup,
     .cleanup = umlShutdown,
     .reload = umlReload,
-    .active = umlActive,
 };
 
 int umlRegister(void) {

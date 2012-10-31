@@ -52,6 +52,11 @@ struct _virLXCDriver {
     virCapsPtr caps;
 
     virCgroupPtr cgroup;
+
+    size_t nactive;
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
+
     virDomainObjList domains;
     char *configDir;
     char *autostartDir;

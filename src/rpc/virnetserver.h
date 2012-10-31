@@ -60,9 +60,10 @@ typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
 bool virNetServerIsPrivileged(virNetServerPtr srv);
 
 void virNetServerAutoShutdown(virNetServerPtr srv,
-                              unsigned int timeout,
-                              virNetServerAutoShutdownFunc func,
-                              void *opaque);
+                              unsigned int timeout);
+
+void virNetServerAddShutdownInhibition(virNetServerPtr srv);
+void virNetServerRemoveShutdownInhibition(virNetServerPtr srv);
 
 typedef void (*virNetServerSignalFunc)(virNetServerPtr srv, siginfo_t *info, void *opaque);
 

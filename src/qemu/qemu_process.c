@@ -3228,6 +3228,10 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
+
 endjob:
     if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
@@ -3435,6 +3439,10 @@ int qemuProcessStart(virConnectPtr conn,
     vm->def->id = driver->nextvmid++;
     qemuDomainSetFakeReboot(driver, vm, false);
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
+
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -4002,6 +4010,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
      */
     vm->def->id = -1;
 
+    driver->nactive--;
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
     if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
          * timestamp log writing if failed on opening log file. */
@@ -4232,6 +4244,10 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     vm->def->id = driver->nextvmid++;
+
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
 
     if (virFileMakePath(driver->logDir) < 0) {
         virReportSystemError(errno,

@@ -28,10 +28,14 @@
 # include "internal.h"
 
 # ifdef WITH_LIBVIRTD
-int virStateInitialize(bool privileged);
+typedef void (*virStateInhibitCallback)(bool inhibit,
+                                        void *opaque);
+
+int virStateInitialize(bool privileged,
+                       virStateInhibitCallback inhibit,
+                       void *opaque);
 int virStateCleanup(void);
 int virStateReload(void);
-int virStateActive(void);
 int virStateStop(void);
 # endif
 

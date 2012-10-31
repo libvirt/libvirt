@@ -45,11 +45,14 @@ struct uml_driver {
     virMutex lock;
 
     bool privileged;
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
 
     unsigned long umlVersion;
     int nextvmid;
 
     virDomainObjList domains;
+    size_t nactive;
 
     char *configDir;
     char *autostartDir;

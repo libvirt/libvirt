@@ -312,6 +312,10 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     }
 
+    driver->nactive--;
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         vm->def->graphics[0]->data.vnc.autoport) {
@@ -717,6 +721,10 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto error;
 
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
+
     event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
                                      restore_fd < 0 ?
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED :
@@ -782,6 +790,10 @@ libxlReconnectDomain(void *payload,
     vm->def->id = d_info.domid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNKNOWN);
 
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
+
     /* Recreate domain death et. al. events */
     libxlCreateDomEvents(vm);
     virDomainObjUnlock(vm);
@@ -834,7 +846,10 @@ libxlShutdown(void)
 }
 
 static int
-libxlStartup(bool privileged) {
+libxlStartup(bool privileged,
+             virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+             void *opaque ATTRIBUTE_UNUSED)
+{
     const libxl_version_info *ver_info;
     char *log_file = NULL;
     virCommandPtr cmd;
@@ -1030,14 +1045,6 @@ libxlReload(void)
     return 0;
 }
 
-static int
-libxlActive(void)
-{
-    if (!libxl_driver)
-        return 0;
-
-    return 1;
-}
 
 static virDrvOpenStatus
 libxlOpen(virConnectPtr conn,
@@ -3969,7 +3976,6 @@ static virStateDriver libxlStateDriver = {
     .initialize = libxlStartup,
     .cleanup = libxlShutdown,
     .reload = libxlReload,
-    .active = libxlActive,
 };
 
 

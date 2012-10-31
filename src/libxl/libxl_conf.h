@@ -61,6 +61,11 @@ struct _libxlDriverPrivate {
     libxl_ctx ctx;
 
     virBitmapPtr reservedVNCPorts;
+
+    size_t nactive;
+    virStateInhibitCallback inhibitCallback;
+    void *inhibitOpaque;
+
     virDomainObjList domains;
 
     virDomainEventStatePtr domainEventState;

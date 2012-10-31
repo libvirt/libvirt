@@ -252,6 +252,10 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     vm->pid = -1;
     vm->def->id = -1;
 
+    driver->nactive--;
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(false, driver->inhibitOpaque);
+
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr iface = vm->def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(iface);
@@ -1139,6 +1143,10 @@ int virLXCProcessStart(virConnectPtr conn,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->doneStopEvent = false;
 
+    if (!driver->nactive && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+    driver->nactive++;
+
     if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
         char out[1024];
 
@@ -1312,6 +1320,10 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
         vm->def->id = vm->pid;
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNKNOWN);
+
+        if (!driver->nactive && driver->inhibitCallback)
+            driver->inhibitCallback(true, driver->inhibitOpaque);
+        driver->nactive++;
 
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;

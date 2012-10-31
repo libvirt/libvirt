@@ -70,7 +70,9 @@
 
 #define LXC_NB_MEM_PARAM  3
 
-static int lxcStartup(bool privileged);
+static int lxcStartup(bool privileged,
+                      virStateInhibitCallback callback,
+                      void *opaque);
 static int lxcShutdown(void);
 virLXCDriverPtr lxc_driver = NULL;
 
@@ -1398,7 +1400,9 @@ error:
 }
 
 
-static int lxcStartup(bool privileged)
+static int lxcStartup(bool privileged,
+                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
 {
     char *ld;
     int rc;
@@ -1564,26 +1568,6 @@ static int lxcShutdown(void)
     return 0;
 }
 
-/**
- * lxcActive:
- *
- * Checks if the LXC daemon is active, i.e. has an active domain
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-lxcActive(void) {
-    int active;
-
-    if (lxc_driver == NULL)
-        return 0;
-
-    lxcDriverLock(lxc_driver);
-    active = virDomainObjListNumOfDomains(&lxc_driver->domains, 1);
-    lxcDriverUnlock(lxc_driver);
-
-    return active;
-}
 
 static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
 {
@@ -3014,7 +2998,6 @@ static virStateDriver lxcStateDriver = {
     .name = LXC_DRIVER_NAME,
     .initialize = lxcStartup,
     .cleanup = lxcShutdown,
-    .active = lxcActive,
     .reload = lxcReload,
 };
 
