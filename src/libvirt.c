@@ -869,6 +869,24 @@ int virStateActive(void) {
     return ret;
 }
 
+/**
+ * virStateStop:
+ *
+ * Run each virtualization driver's "stop" method.
+ *
+ * Returns 0 if successful, -1 on failure
+ */
+int virStateStop(void) {
+    int i, ret = 0;
+
+    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+        if (virStateDriverTab[i]->stop &&
+            virStateDriverTab[i]->stop())
+            ret = 1;
+    }
+    return ret;
+}
+
 #endif
 
 

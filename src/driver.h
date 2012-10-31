@@ -1504,6 +1504,7 @@ typedef int (*virDrvStateInitialize) (int privileged);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
 typedef int (*virDrvStateActive) (void);
+typedef int (*virDrvStateStop) (void);
 
 typedef struct _virStateDriver virStateDriver;
 typedef virStateDriver *virStateDriverPtr;
@@ -1514,6 +1515,7 @@ struct _virStateDriver {
     virDrvStateCleanup     cleanup;
     virDrvStateReload      reload;
     virDrvStateActive      active;
+    virDrvStateStop        stop;
 };
 # endif
 
