@@ -1661,14 +1661,6 @@ static int qemudDomainSuspend(virDomainPtr dom) {
 
     priv = vm->privateData;
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-        reason = VIR_DOMAIN_PAUSED_MIGRATION;
-        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
-    } else {
-        reason = VIR_DOMAIN_PAUSED_USER;
-        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
-    }
-
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_SUSPEND) < 0)
         goto cleanup;
 
@@ -1676,6 +1668,14 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
         goto endjob;
+    }
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        reason = VIR_DOMAIN_PAUSED_MIGRATION;
+        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+    } else {
+        reason = VIR_DOMAIN_PAUSED_USER;
+        eventDetail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
     }
 
     state = virDomainObjGetState(vm, NULL);
