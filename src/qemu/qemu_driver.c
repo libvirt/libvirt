@@ -1517,9 +1517,12 @@ static int qemudNumDomains(virConnectPtr conn) {
 static int
 qemuCanonicalizeMachine(virDomainDefPtr def, qemuCapsPtr caps)
 {
-    const char *canon = qemuCapsGetCanonicalMachine(caps, def->os.machine);
+    const char *canon;
 
-    if (canon != def->os.machine) {
+    if (!(canon = qemuCapsGetCanonicalMachine(caps, def->os.machine)))
+        return 0;
+
+    if (STRNEQ(canon, def->os.machine)) {
         char *tmp;
         if (!(tmp = strdup(canon))) {
             virReportOOMError();

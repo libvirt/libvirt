@@ -1845,9 +1845,11 @@ no_memory:
 
 const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
                                         const char *name)
-
 {
     size_t i;
+
+    if (!name)
+        return NULL;
 
     for (i = 0 ; i < caps->nmachineTypes ; i++) {
         if (!caps->machineAliases[i])

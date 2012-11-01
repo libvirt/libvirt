@@ -8768,6 +8768,17 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         }
     }
 
+    if (!def->os.machine) {
+        const char *defaultMachine =
+                        virCapabilitiesDefaultGuestMachine(caps,
+                                                           def->os.type,
+                                                           def->os.arch,
+                                                           virDomainVirtTypeToString(def->virtType));
+        if (defaultMachine != NULL)
+            if (!(def->os.machine = strdup(defaultMachine)))
+                goto no_memory;
+    }
+
     if (!nographics && def->ngraphics == 0) {
         virDomainGraphicsDefPtr sdl;
         const char *display = qemuFindEnv(progenv, "DISPLAY");
