@@ -5793,7 +5793,8 @@ remoteNodeGetCPUMap(virConnectPtr conn,
 
     remoteDriverLock(priv);
 
-    args.need_results = !!cpumap;
+    args.need_map = !!cpumap;
+    args.need_online = !!online;
     args.flags = flags;
 
     memset (&ret, 0, sizeof(ret));

@@ -1277,6 +1277,9 @@ nodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
+    if (!cpumap && !online)
+        return nodeGetCPUCount();
+
     if (!(cpus = nodeGetCPUBitmap(&maxpresent)))
         goto cleanup;
 

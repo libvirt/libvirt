@@ -4578,7 +4578,7 @@ remoteDispatchNodeGetCPUMap(virNetServerPtr server ATTRIBUTE_UNUSED,
                             remote_node_get_cpu_map_ret *ret)
 {
     unsigned char *cpumap = NULL;
-    unsigned int online;
+    unsigned int online = 0;
     unsigned int flags;
     int cpunum;
     int rv = -1;
@@ -4592,13 +4592,13 @@ remoteDispatchNodeGetCPUMap(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    cpunum = virNodeGetCPUMap(priv->conn, args->need_results ? &cpumap : NULL,
-                              &online, flags);
+    cpunum = virNodeGetCPUMap(priv->conn, args->need_map ? &cpumap : NULL,
+                              args->need_online ? &online : NULL, flags);
     if (cpunum < 0)
         goto cleanup;
 
     /* 'serialize' return cpumap */
-    if (args->need_results) {
+    if (args->need_map) {
         ret->cpumap.cpumap_len = VIR_CPU_MAPLEN(cpunum);
         ret->cpumap.cpumap_val = (char *) cpumap;
         cpumap = NULL;

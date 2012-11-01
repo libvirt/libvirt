@@ -2671,7 +2671,8 @@ struct remote_node_get_memory_parameters_ret {
 };
 
 struct remote_node_get_cpu_map_args {
-    int need_results;
+    int need_map;
+    int need_online;
     unsigned int flags;
 };
 
