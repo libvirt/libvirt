@@ -2062,9 +2062,9 @@ the network; if a parent-index isn't provided, the "most appropriate"
 <dhcp> element), but if I<--parent-index> is given, that particular
 instance of <ip> will get the modification.
 
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
+If I<--live> is specified, affect a running network.
+If I<--config> is specified, affect the next startup of a persistent network.
+If I<--current> is specified, affect the current network state.
 Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. Not specifying any flag is the same as specifying I<--current>.
 
