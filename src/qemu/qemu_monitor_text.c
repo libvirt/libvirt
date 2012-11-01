@@ -3193,9 +3193,6 @@ qemuMonitorTextParseBlockIoThrottle(const char *result,
     p = result;
 
     while (*p) {
-        if (STRPREFIX(p, QEMU_DRIVE_HOST_PREFIX))
-            p += strlen(QEMU_DRIVE_HOST_PREFIX);
-
         if (STREQLEN(p, device, devnamelen) &&
             p[devnamelen] == ':' && p[devnamelen+1] == ' ') {
 
