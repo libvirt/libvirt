@@ -79,13 +79,14 @@ static int linuxNodeGetMemoryStats(FILE *meminfo,
                                    int *nparams);
 
 /* Return the positive decimal contents of the given
- * DIR/cpu%u/FILE, or -1 on error.  If MISSING_OK and the
- * file could not be found, return 1 instead of an error; this is
- * because some machines cannot hot-unplug cpu0, or because
- * hot-unplugging is disabled.  */
+ * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
+ * and the file could not be found, return that instead of an error;
+ * this is useful for machines that cannot hot-unplug cpu0, or where
+ * hot-unplugging is disabled, or where the kernel is too old
+ * to support NUMA cells, etc.  */
 static int
 virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
-                   bool missing_ok)
+                   int default_value)
 {
     char *path;
     FILE *pathfp;
@@ -100,8 +101,8 @@ virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
 
     pathfp = fopen(path, "r");
     if (pathfp == NULL) {
-        if (missing_ok && errno == ENOENT)
-            value = 1;
+        if (default_value >= 0 && errno == ENOENT)
+            value = default_value;
         else
             virReportSystemError(errno, _("cannot open %s"), path);
         goto cleanup;
@@ -174,7 +175,7 @@ static int
 virNodeParseSocket(const char *dir, unsigned int cpu)
 {
     int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id",
-                                 false);
+                                 0);
 # if defined(__powerpc__) || \
     defined(__powerpc64__) || \
     defined(__s390__) || \
@@ -236,14 +237,15 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
-        if ((online = virNodeGetCpuValue(node, cpu, "online", true)) < 0)
+        if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
             goto cleanup;
 
         if (!online)
             continue;
 
         /* Parse socket */
-        sock = virNodeParseSocket(node, cpu);
+        if ((sock = virNodeParseSocket(node, cpu)) < 0)
+            goto cleanup;
         CPU_SET(sock, &sock_map);
 
         if (sock > sock_max)
@@ -275,7 +277,7 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
-        if ((online = virNodeGetCpuValue(node, cpu, "online", true)) < 0)
+        if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
             goto cleanup;
 
         if (!online)
@@ -284,7 +286,8 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         processors++;
 
         /* Parse socket */
-        sock = virNodeParseSocket(node, cpu);
+        if ((sock = virNodeParseSocket(node, cpu)) < 0)
+            goto cleanup;
         if (!CPU_ISSET(sock, &sock_map)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("CPU socket topology has changed"));
@@ -297,7 +300,7 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         /* logical cpu is equivalent to a core on s390 */
         core = cpu;
 # else
-        core = virNodeGetCpuValue(node, cpu, "topology/core_id", false);
+        core = virNodeGetCpuValue(node, cpu, "topology/core_id", 0);
 # endif
 
         CPU_SET(core, &core_maps[sock]);
