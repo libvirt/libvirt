@@ -3739,7 +3739,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
             goto cleanup;
         }
 
-        if (STREQ(current_dev, device))
+        if (STRNEQ(current_dev, device))
             continue;
 
         found = true;
