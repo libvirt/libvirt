@@ -755,9 +755,9 @@ static const vshCmdOptDef opts_network_update[] = {
      N_("name of file containing xml (or, if it starts with '<', the complete "
         "xml element itself) to add/modify, or to be matched for search")},
     {"parent-index", VSH_OT_INT, 0, N_("which parent object to search through")},
-    {"config", VSH_OT_BOOL, 0, N_("affect next boot")},
-    {"live", VSH_OT_BOOL, 0, N_("affect running domain")},
-    {"current", VSH_OT_BOOL, 0, N_("affect current domain")},
+    {"config", VSH_OT_BOOL, 0, N_("affect next network startup")},
+    {"live", VSH_OT_BOOL, 0, N_("affect running network")},
+    {"current", VSH_OT_BOOL, 0, N_("affect current state of network")},
     {NULL, 0, 0, NULL}
 };
 
