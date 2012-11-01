@@ -2314,7 +2314,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     VIR_DEBUG("Got version %d.%d.%d (%s)",
               major, minor, micro, NULLSTR(package));
 
-    if (!(major >= 1 || (major == 1 && minor >= 1))) {
+    if (major < 1 || (major == 1 && minor < 2)) {
         VIR_DEBUG("Not new enough for QMP capabilities detection");
         ret = 0;
         goto cleanup;
