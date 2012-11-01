@@ -1717,6 +1717,7 @@ static int lxcContainerDropCapabilities(bool keepReboot ATTRIBUTE_UNUSED)
                              CAPNG_INHERITABLE | CAPNG_BOUNDING_SET,
                              CAP_SYS_MODULE, /* No kernel module loading */
                              CAP_SYS_TIME, /* No changing the clock */
+                             CAP_MKNOD, /* No creating device nodes */
                              CAP_AUDIT_CONTROL, /* No messing with auditing status */
                              CAP_MAC_ADMIN, /* No messing with LSM config */
                              keepReboot ? -1 : CAP_SYS_BOOT, /* No use of reboot */
