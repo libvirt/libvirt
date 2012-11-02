@@ -60,7 +60,7 @@
 
 #ifdef __UCLIBC__
 /* uclibc does not implement mkostemp GNU extention */
-#define mkostemp(x,y) mkstemp(x)
+# define mkostemp(x,y) mkstemp(x)
 #endif
 
 VIR_ENUM_DECL(virLogSource)
