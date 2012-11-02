@@ -1921,6 +1921,16 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Fri Nov  2 2012 Daniel Veillard <veillard@redhat.com> - 1.0.0-1
+- virNodeGetCPUMap: Define public API
+- Add systemd journal support
+- Add a qemu capabilities cache manager
+- USB migration support
+- various improvement and fixes when using QMP QEmu interface
+- Support for Xen 4.2
+- Lot of localization enhancements
+- a lot of bug fixes, improvements and portability work
+
 * Mon Sep 24 2012 Daniel Veillard <veillard@redhat.com> - 0.10.2-1
 - network: define new API virNetworkUpdate
 - add support for QEmu sandbox support
