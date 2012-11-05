@@ -1,0 +1,28 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+QEMU_AUDIO_DRV=spice /usr/libexec/qemu-kvm -S -M rhel6.1.0 -enable-kvm -m \
+4096 -smp 4 -nodefaults -chardev \
+socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon \
+chardev=charmonitor,id=monitor,mode=readline -boot order=cna,menu=off \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -device \
+virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x7 -device \
+usb-ccid,id=ccid0 -drive \
+file=/tmp/fdr.img,if=none,id=drive-virtio-disk0,cache=off,aio=native \
+-device \
+virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive \
+file=/tmp/Fedora-17-x86_64-Live-Desktop.iso,if=none,media=cdrom,id=drive-ide0-1-0 \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 -device \
+virtio-net-pci,vlan=0,id=net0,mac=52:54:00:4d:4b:19,bus=pci.0,addr=0x3 -net \
+user,vlan=0,name=hostnet0 -chardev \
+spicevmc,id=charsmartcard0,name=smartcard -device \
+ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
+-chardev pty,id=charserial0 -device \
+isa-serial,chardev=charserial0,id=serial0 -chardev \
+spicevmc,id=charchannel0,name=vdagent -device \
+virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0,name=com.redhat.spice.0 \
+-device usb-tablet,id=input0 -spice \
+port=0,addr=0.0.0.0,x509-dir=/etc/pki/libvirt-spice -device \
+intel-hda,id=sound0,bus=pci.0,addr=0x4 -device \
+hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 -device \
+usb-host,hostbus=14,hostaddr=6,id=hostdev0 -device \
+virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
