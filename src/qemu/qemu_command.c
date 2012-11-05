@@ -4473,6 +4473,16 @@ qemuBuildCommandLine(virConnectPtr conn,
     int usbcontroller = 0;
     bool usblegacy = false;
     uname_normalize(&ut);
+    int contOrder[] = {
+        /* We don't add an explicit IDE or FD controller because the
+         * provided PIIX4 device already includes one. It isn't possible to
+         * remove the PIIX4. */
+        VIR_DOMAIN_CONTROLLER_TYPE_USB,
+        VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+        VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+        VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+        VIR_DOMAIN_CONTROLLER_TYPE_CCID,
+    };
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "caps=%p migrateFrom=%s migrateFD=%d "
@@ -5051,15 +5061,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
-        for (j = 0; j < 1; j++) {
+        for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
             for (i = 0; i < def->ncontrollers; i++) {
                 virDomainControllerDefPtr cont = def->controllers[i];
 
-                /* We don't add an explicit IDE or FD controller because the
-                 * provided PIIX4 device already includes one. It isn't possible to
-                 * remove the PIIX4. */
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE ||
-                    cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
+                if (cont->type != contOrder[j])
                     continue;
 
                 /* Also, skip USB controllers with type none.*/
