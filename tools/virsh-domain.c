@@ -8298,6 +8298,7 @@ const vshCmdDef domManagementCmds[] = {
     {"blockjob", cmdBlockJob, opts_block_job, info_block_job, 0},
     {"blockpull", cmdBlockPull, opts_block_pull, info_block_pull, 0},
     {"blockresize", cmdBlockResize, opts_block_resize, info_block_resize, 0},
+    {"boot", cmdStart, opts_start, info_start, 0},
     {"change-media", cmdChangeMedia, opts_change_media, info_change_media, 0},
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console, 0},
@@ -8351,6 +8352,7 @@ const vshCmdDef domManagementCmds[] = {
     {"numatune", cmdNumatune, opts_numatune, info_numatune, 0},
     {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
     {"reset", cmdReset, opts_reset, info_reset, 0},
+    {"restart", cmdReboot, opts_reboot, info_reboot, 0},
     {"restore", cmdRestore, opts_restore, info_restore, 0},
     {"resume", cmdResume, opts_resume, info_resume, 0},
     {"save", cmdSave, opts_save, info_save, 0},
@@ -8367,6 +8369,7 @@ const vshCmdDef domManagementCmds[] = {
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus, 0},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown, 0},
     {"start", cmdStart, opts_start, info_start, 0},
+    {"stop", cmdShutdown, opts_shutdown, info_shutdown, 0},
     {"suspend", cmdSuspend, opts_suspend, info_suspend, 0},
     {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole, 0},
     {"undefine", cmdUndefine, opts_undefine, info_undefine, 0},
