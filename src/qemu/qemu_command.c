@@ -4456,7 +4456,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virDomainSnapshotObjPtr snapshot,
                      enum virNetDevVPortProfileOp vmop)
 {
-    int i;
+    int i, j;
     struct utsname ut;
     int disableKQEMU = 0;
     int enableKQEMU = 0;
@@ -5051,61 +5051,63 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
-        for (i = 0 ; i < def->ncontrollers ; i++) {
-            virDomainControllerDefPtr cont = def->controllers[i];
+        for (j = 0; j < 1; j++) {
+            for (i = 0; i < def->ncontrollers; i++) {
+                virDomainControllerDefPtr cont = def->controllers[i];
 
-            /* We don't add an explicit IDE or FD controller because the
-             * provided PIIX4 device already includes one. It isn't possible to
-             * remove the PIIX4. */
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE ||
-                cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
-                continue;
+                /* We don't add an explicit IDE or FD controller because the
+                 * provided PIIX4 device already includes one. It isn't possible to
+                 * remove the PIIX4. */
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE ||
+                    cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
+                    continue;
 
-             /* Also, skip USB controllers with type none.*/
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
-                usbcontroller = -1; /* mark we don't want a controller */
-                continue;
-            }
+                /* Also, skip USB controllers with type none.*/
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+                    usbcontroller = -1; /* mark we don't want a controller */
+                    continue;
+                }
 
-            /* Only recent QEMU implements a SATA (AHCI) controller */
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
-                if (!qemuCapsGet(caps, QEMU_CAPS_ICH9_AHCI)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("SATA is not supported with this "
-                                     "QEMU binary"));
-                    goto error;
+                /* Only recent QEMU implements a SATA (AHCI) controller */
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
+                    if (!qemuCapsGet(caps, QEMU_CAPS_ICH9_AHCI)) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("SATA is not supported with this "
+                                         "QEMU binary"));
+                        goto error;
+                    } else {
+                        char *devstr;
+
+                        virCommandAddArg(cmd, "-device");
+                        if (!(devstr = qemuBuildControllerDevStr(def, cont,
+                                                                 caps, NULL)))
+                            goto error;
+
+                        virCommandAddArg(cmd, devstr);
+                        VIR_FREE(devstr);
+                    }
+                } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                           cont->model == -1 &&
+                           !qemuCapsGet(caps, QEMU_CAPS_PIIX3_USB_UHCI)) {
+                    if (usblegacy) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("Multiple legacy USB controllers are "
+                                         "not supported"));
+                        goto error;
+                    }
+                    usblegacy = true;
                 } else {
-                    char *devstr;
-
                     virCommandAddArg(cmd, "-device");
-                    if (!(devstr = qemuBuildControllerDevStr(def, cont,
-                                                             caps, NULL)))
+
+                    char *devstr;
+                    if (!(devstr = qemuBuildControllerDevStr(def, cont, caps,
+                                                             &usbcontroller)))
                         goto error;
 
                     virCommandAddArg(cmd, devstr);
                     VIR_FREE(devstr);
                 }
-            } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                       cont->model == -1 &&
-                       !qemuCapsGet(caps, QEMU_CAPS_PIIX3_USB_UHCI)) {
-                if (usblegacy) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Multiple legacy USB controllers are "
-                                     "not supported"));
-                    goto error;
-                }
-                usblegacy = true;
-            } else {
-                virCommandAddArg(cmd, "-device");
-
-                char *devstr;
-                if (!(devstr = qemuBuildControllerDevStr(def, cont, caps,
-                                                         &usbcontroller)))
-                    goto error;
-
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
             }
         }
     }
@@ -5581,7 +5583,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainSmartcardDefPtr smartcard = def->smartcards[0];
         char *devstr;
         virBuffer opt = VIR_BUFFER_INITIALIZER;
-        int j;
         const char *database;
 
         if (def->nsmartcards > 1 ||
