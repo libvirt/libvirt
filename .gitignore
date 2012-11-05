@@ -188,7 +188,9 @@ Makefile.in
 TAGS
 coverage
 cscope.files
+cscope.in.out
 cscope.out
+cscope.po.out
 results.log
 stamp-h
 stamp-h.in
