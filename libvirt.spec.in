@@ -1468,7 +1468,6 @@ done
 if [ $1 -eq 1 ] ; then
     # Initial installation
     /bin/systemctl enable libvirtd.service >/dev/null 2>&1 || :
-    /bin/systemctl enable cgconfig.service >/dev/null 2>&1 || :
 fi
 %else
 %if %{with_cgconfig}
