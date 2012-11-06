@@ -149,6 +149,9 @@ static const char *eventDetailToString(int event, int detail) {
             case VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT:
                 ret = "Snapshot";
                 break;
+            case VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR:
+                ret = "API error";
+                break;
             }
             break;
         case VIR_DOMAIN_EVENT_RESUMED:

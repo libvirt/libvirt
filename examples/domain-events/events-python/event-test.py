@@ -445,7 +445,7 @@ def detailToString(event, detail):
         ( "Added", "Updated" ),
         ( "Removed", ),
         ( "Booted", "Migrated", "Restored", "Snapshot", "Wakeup" ),
-        ( "Paused", "Migrated", "IOError", "Watchdog", "Restored", "Snapshot" ),
+        ( "Paused", "Migrated", "IOError", "Watchdog", "Restored", "Snapshot", "API error" ),
         ( "Unpaused", "Migrated", "Snapshot" ),
         ( "Shutdown", "Destroyed", "Crashed", "Migrated", "Saved", "Failed", "Snapshot"),
         ( "Finished", ),

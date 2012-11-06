@@ -3159,6 +3159,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG = 3,  /* Suspended due to a watchdog firing */
     VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4,  /* Restored from paused state file */
     VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5, /* Restored from paused snapshot */
+    VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6, /* suspended after failure during libvirt API call */
 
 #ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_SUSPENDED_LAST
