@@ -1140,6 +1140,8 @@ By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify C<acpi> or C<agent>.
 
+The command B<restart> is an alias for the older B<reboot>.
+
 =item B<reset> I<domain>
 
 Reset a domain immediately without any guest shutdown. B<reset>
@@ -1545,6 +1547,8 @@ By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify C<acpi> or C<agent>.
 
+The command B<stop> is an alias for the older B<shutdown>.
+
 =item B<start> I<domain-name-or-uuid> [I<--console>] [I<--paused>]
 [I<--autodestroy>] [I<--bypass-cache>] [I<--force-boot>]
 =item B<boot> I<domain-name-or-uuid> [I<--console>] [I<--paused>]
@@ -1561,6 +1565,8 @@ exits.  If I<--bypass-cache> is specified, and managedsave state exists,
 the restore will avoid the file system cache, although this may slow
 down the operation.  If I<--force-boot> is specified, then any
 managedsave state is discarded and a fresh boot occurs.
+
+The command B<boot> is an alias for the older B<start>.
 
 =item B<suspend> I<domain>
 
