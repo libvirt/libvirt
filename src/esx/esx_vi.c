@@ -2,7 +2,7 @@
 /*
  * esx_vi.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -4657,7 +4657,9 @@ esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersio
       case esxVI_ProductVersion_VPX50:
         return 8;
 
+      case esxVI_ProductVersion_ESX51:
       case esxVI_ProductVersion_ESX5x:
+      case esxVI_ProductVersion_VPX51:
       case esxVI_ProductVersion_VPX5x:
         return 8;
 
