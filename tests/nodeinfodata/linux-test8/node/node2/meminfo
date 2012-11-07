@@ -1,0 +1,29 @@
+
+Node 2 MemTotal:       16777216 kB
+Node 2 MemFree:        16253184 kB
+Node 2 MemUsed:          524032 kB
+Node 2 Active:            37548 kB
+Node 2 Inactive:          74344 kB
+Node 2 Active(anon):      14780 kB
+Node 2 Inactive(anon):      388 kB
+Node 2 Active(file):      22768 kB
+Node 2 Inactive(file):    73956 kB
+Node 2 Unevictable:           0 kB
+Node 2 Mlocked:               0 kB
+Node 2 Dirty:                 4 kB
+Node 2 Writeback:             0 kB
+Node 2 FilePages:         97148 kB
+Node 2 Mapped:             3112 kB
+Node 2 AnonPages:         12704 kB
+Node 2 Shmem:               416 kB
+Node 2 KernelStack:         648 kB
+Node 2 PageTables:         1300 kB
+Node 2 NFS_Unstable:          0 kB
+Node 2 Bounce:                0 kB
+Node 2 WritebackTmp:          0 kB
+Node 2 Slab:              16488 kB
+Node 2 SReclaimable:       9576 kB
+Node 2 SUnreclaim:         6912 kB
+Node 2 HugePages_Total:     0
+Node 2 HugePages_Free:      0
+Node 2 HugePages_Surp:      0
