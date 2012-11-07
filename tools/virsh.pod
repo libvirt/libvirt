@@ -553,7 +553,7 @@ B<Example>
 
  virsh dumpxml <domain> > domain.xml
  vi domain.xml (or make changes with your other text editor)
- virsh create < domain.xml
+ virsh create domain.xml
 
 =item B<define> I<FILE>
 
