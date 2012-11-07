@@ -531,17 +531,19 @@ typedef virTypedParameter *virTypedParameterPtr;
 typedef struct _virNodeInfo virNodeInfo;
 
 struct _virNodeInfo {
-    char model[32];     /* string indicating the CPU model */
-    unsigned long memory;/* memory size in kilobytes */
-    unsigned int cpus;  /* the number of active CPUs */
-    unsigned int mhz;   /* expected CPU frequency */
-    unsigned int nodes; /* the number of NUMA cell, 1 for unusual NUMA
-                           topologies or uniform memory access; check
-                           capabilities XML for the actual NUMA topology */
-    unsigned int sockets;/* number of CPU sockets per node if nodes > 1,
-                            total number of CPU sockets otherwise */
-    unsigned int cores; /* number of cores per socket */
-    unsigned int threads;/* number of threads per core */
+    char model[32];       /* string indicating the CPU model */
+    unsigned long memory; /* memory size in kilobytes */
+    unsigned int cpus;    /* the number of active CPUs */
+    unsigned int mhz;     /* expected CPU frequency */
+    unsigned int nodes;   /* the number of NUMA cell, 1 for unusual NUMA
+                             topologies or uniform memory access; check
+                             capabilities XML for the actual NUMA topology */
+    unsigned int sockets; /* number of CPU sockets per node if nodes > 1,
+                             1 in case of unusual NUMA topology */
+    unsigned int cores;   /* number of cores per socket, total number of
+                             processors in case of unusual NUMA topology*/
+    unsigned int threads; /* number of threads per core, 1 in case of
+                             unusual numa topology */
 };
 
 /**

@@ -204,7 +204,12 @@ CPU_COUNT(cpu_set_t *set)
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
+ATTRIBUTE_NONNULL(5)
+virNodeParseNode(const char *node,
+                 int *sockets,
+                 int *cores,
+                 int *threads,
+                 int *offline)
 {
     int ret = -1;
     int processors = 0;
@@ -278,8 +283,10 @@ virNodeParseNode(const char *node, int *sockets, int *cores, int *threads)
         if ((online = virNodeGetCpuValue(node, cpu, "online", true)) < 0)
             goto cleanup;
 
-        if (!online)
+        if (!online) {
+            (*offline)++;
             continue;
+        }
 
         processors++;
 
@@ -348,7 +355,7 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     char line[1024];
     DIR *nodedir = NULL;
     struct dirent *nodedirent = NULL;
-    int cpus, cores, socks, threads;
+    int cpus, cores, socks, threads, offline = 0;
     unsigned int node;
     int ret = -1;
     char *sysfs_nodedir = NULL;
@@ -469,8 +476,8 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
             goto cleanup;
         }
 
-        if ((cpus = virNodeParseNode(sysfs_cpudir, &socks,
-                                     &cores, &threads)) < 0)
+        if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
+                                     &threads, &offline)) < 0)
             goto cleanup;
 
         VIR_FREE(sysfs_cpudir);
@@ -505,7 +512,8 @@ fallback:
         goto cleanup;
     }
 
-    if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores, &threads)) < 0)
+    if ((cpus = virNodeParseNode(sysfs_cpudir, &socks, &cores,
+                                 &threads, &offline)) < 0)
         goto cleanup;
 
     nodeinfo->nodes = 1;
@@ -529,6 +537,23 @@ done:
     if (nodeinfo->threads == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no threads found"));
         goto cleanup;
+    }
+
+    /* Now check if the topology makes sense. There are machines that don't
+     * expose their real number of nodes or for example the AMD Bulldozer
+     * architecture that exposes their Clustered integer core modules as both
+     * threads and cores. This approach throws off our detection. Unfortunately
+     * the nodeinfo structure isn't designed to carry the full topology so
+     * we're going to lie about the detected topology to notify the user
+     * to check the host capabilities for the actual topology. */
+    if ((nodeinfo->nodes *
+         nodeinfo->sockets *
+         nodeinfo->cores *
+         nodeinfo->threads) != (nodeinfo->cpus + offline)) {
+        nodeinfo->nodes = 1;
+        nodeinfo->sockets = 1;
+        nodeinfo->cores = nodeinfo->cpus + offline;
+        nodeinfo->threads = 1;
     }
 
     ret = 0;
