@@ -168,7 +168,9 @@ vshPrettyCapacity(unsigned long long val, const char **unit)
 
 /*
  * Convert the strings separated by ',' into array. The caller
- * must free the returned array after use.
+ * must free the first array element and the returned array after
+ * use (all other array elements belong to the memory allocated
+ * for the first array element).
  *
  * Returns the length of the filled array on success, or -1
  * on error.
@@ -179,35 +181,46 @@ vshStringToArray(const char *str,
 {
     char *str_copied = vshStrdup(NULL, str);
     char *str_tok = NULL;
+    char *tmp;
     unsigned int nstr_tokens = 0;
     char **arr = NULL;
+    size_t len = strlen(str_copied);
 
-    /* tokenize the string from user and save it's parts into an array */
-    if (str_copied) {
-        nstr_tokens = 1;
+    /* tokenize the string from user and save its parts into an array */
+    nstr_tokens = 1;
 
-        /* count the delimiters */
-        str_tok = str_copied;
-        while (*str_tok) {
-            if (*str_tok == ',')
-                nstr_tokens++;
+    /* count the delimiters, recognizing ,, as an escape for a
+     * literal comma */
+    str_tok = str_copied;
+    while ((str_tok = strchr(str_tok, ','))) {
+        if (str_tok[1] == ',')
             str_tok++;
-        }
-
-        if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
-            virReportOOMError();
-            VIR_FREE(str_copied);
-            return -1;
-        }
-
-        /* tokenize the input string */
-        nstr_tokens = 0;
-        str_tok = str_copied;
-        do {
-            arr[nstr_tokens] = strsep(&str_tok, ",");
+        else
             nstr_tokens++;
-        } while (str_tok);
+        str_tok++;
     }
+
+    if (VIR_ALLOC_N(arr, nstr_tokens) < 0) {
+        virReportOOMError();
+        VIR_FREE(str_copied);
+        return -1;
+    }
+
+    /* tokenize the input string, while treating ,, as a literal comma */
+    nstr_tokens = 0;
+    tmp = str_tok = str_copied;
+    while ((tmp = strchr(tmp, ','))) {
+        if (tmp[1] == ',') {
+            memmove(&tmp[1], &tmp[2], len - (tmp - str_copied) - 2 + 1);
+            len--;
+            tmp++;
+            continue;
+        }
+        *tmp++ = '\0';
+        arr[nstr_tokens++] = str_tok;
+        str_tok = tmp;
+    }
+    arr[nstr_tokens++] = str_tok;
 
     *array = arr;
     return nstr_tokens;

@@ -197,33 +197,26 @@ static int
 vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
 {
     int ret = -1;
-    char *name = NULL;
-    char *snapshot = NULL;
-    char *driver = NULL;
-    char *file = NULL;
-    char *spec = vshStrdup(ctl, str);
-    char *tmp = spec;
-    size_t len = strlen(str);
+    const char *name = NULL;
+    const char *snapshot = NULL;
+    const char *driver = NULL;
+    const char *file = NULL;
+    char **array = NULL;
+    int narray;
+    int i;
 
-    if (*str == ',')
+    narray = vshStringToArray(str, &array);
+    if (narray <= 0)
         goto cleanup;
-    name = tmp;
-    while ((tmp = strchr(tmp, ','))) {
-        if (tmp[1] == ',') {
-            /* Recognize ,, as an escape for a literal comma */
-            memmove(&tmp[1], &tmp[2], len - (tmp - spec) - 2 + 1);
-            len--;
-            tmp++;
-            continue;
-        }
-        /* Terminate previous string, look for next recognized one */
-        *tmp++ = '\0';
-        if (!snapshot && STRPREFIX(tmp, "snapshot="))
-            snapshot = tmp + strlen("snapshot=");
-        else if (!driver && STRPREFIX(tmp, "driver="))
-            driver = tmp + strlen("driver=");
-        else if (!file && STRPREFIX(tmp, "file="))
-            file = tmp + strlen("file=");
+
+    name = array[0];
+    for (i = 1; i < narray; i++) {
+        if (!snapshot && STRPREFIX(array[i], "snapshot="))
+            snapshot = array[i] + strlen("snapshot=");
+        else if (!driver && STRPREFIX(array[i], "driver="))
+            driver = array[i] + strlen("driver=");
+        else if (!file && STRPREFIX(array[i], "file="))
+            file = array[i] + strlen("file=");
         else
             goto cleanup;
     }
@@ -245,7 +238,10 @@ vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
 cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
-    VIR_FREE(spec);
+    if (array) {
+        VIR_FREE(*array);
+        VIR_FREE(array);
+    }
     return ret;
 }
 
