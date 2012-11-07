@@ -727,8 +727,9 @@ virStorageFileGetMetadataFromBuf(int format,
                 meta->backingStoreRaw = meta->backingStore;
                 meta->backingStore = absolutePathFromBaseFile(path, backing);
                 if (meta->backingStore == NULL) {
-                    VIR_FREE(backing);
-                    return -1;
+                    /* the backing file is (currently) unavailable, treat this
+                     * file as standalone */
+                    backingFormat = VIR_STORAGE_FILE_NONE;
                 }
             }
             VIR_FREE(backing);
