@@ -194,6 +194,49 @@ cleanup:
  * "snapshot-create-as" command
  */
 static int
+vshParseSnapshotMemspec(vshControl *ctl, virBufferPtr buf, const char *str)
+{
+    int ret = -1;
+    const char *snapshot = NULL;
+    const char *file = NULL;
+    char **array = NULL;
+    int narray;
+    int i;
+
+    if (!str)
+        return 0;
+
+    narray = vshStringToArray(str, &array);
+    if (narray < 0)
+        goto cleanup;
+
+    for (i = 0; i < narray; i++) {
+        if (!snapshot && STRPREFIX(array[i], "snapshot="))
+            snapshot = array[i] + strlen("snapshot=");
+        else if (!file && STRPREFIX(array[i], "file="))
+            file = array[i] + strlen("file=");
+        else if (!file && *array[i] == '/')
+            file = array[i];
+        else
+            goto cleanup;
+    }
+
+    virBufferAddLit(buf, "  <memory");
+    virBufferEscapeString(buf, " snapshot='%s'", snapshot);
+    virBufferEscapeString(buf, " file='%s'", file);
+    virBufferAddLit(buf, "/>\n");
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        vshError(ctl, _("unable to parse memspec: %s"), str);
+    if (array) {
+        VIR_FREE(*array);
+        VIR_FREE(array);
+    }
+    return ret;
+}
+
+static int
 vshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
 {
     int ret = -1;
@@ -263,6 +306,8 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {"quiesce", VSH_OT_BOOL, 0, N_("quiesce guest's file systems")},
     {"atomic", VSH_OT_BOOL, 0, N_("require atomic operation")},
     {"live", VSH_OT_BOOL, 0, N_("take a live snapshot")},
+    {"memspec", VSH_OT_DATA, VSH_OFLAG_REQ_OPT,
+     N_("memory attributes: [file=]name[,snapshot=type]")},
     {"diskspec", VSH_OT_ARGV, 0,
      N_("disk attributes: disk[,snapshot=type][,driver=type][,file=name]")},
     {NULL, 0, 0, NULL}
@@ -276,6 +321,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
+    const char *memspec = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
@@ -310,6 +356,12 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
         virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
     if (desc)
         virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
+
+    if (vshCommandOptString(cmd, "memspec", &memspec) < 0 ||
+        vshParseSnapshotMemspec(ctl, &buf, memspec) < 0) {
+        virBufferFreeAndReset(&buf);
+        goto cleanup;
+    }
     if (vshCommandOptBool(cmd, "diskspec")) {
         virBufferAddLit(&buf, "  <disks>\n");
         while ((opt = vshCommandOptArgv(cmd, opt))) {

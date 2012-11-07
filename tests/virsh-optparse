@@ -1,7 +1,7 @@
 #!/bin/sh
 # Ensure that virsh option parsing doesn't regress
 
-# Copyright (C) 2011 Red Hat, Inc.
+# Copyright (C) 2011-2012 Red Hat, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ done
 cat <<\EOF > exp-out || framework_failure
 <domainsnapshot>
   <description>1&lt;2</description>
+  <memory file='d,e'/>
   <disks>
     <disk name='vda' snapshot='external'>
       <source file='a&amp;b,c'/>
@@ -84,7 +85,7 @@ cat <<\EOF > exp-out || framework_failure
 EOF
 virsh -q -c $test_url snapshot-create-as --print-xml test \
   --diskspec 'vda,file=a&b,,c,snapshot=external' --description '1<2' \
-  --diskspec vdb >out 2>>err || fail=1
+  --diskspec vdb --memspec file=d,,e >out 2>>err || fail=1
 compare exp-out out || fail=1
 
 cat <<\EOF > exp-out || framework_failure
