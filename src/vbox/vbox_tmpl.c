@@ -7725,7 +7725,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
     virSocketAddr netmask;
 
     if ((!def) ||
-        (def->forwardType != VIR_NETWORK_FORWARD_NONE) ||
+        (def->forward.type != VIR_NETWORK_FORWARD_NONE) ||
         (def->nips == 0 || !def->ips))
         goto cleanup;
 
@@ -8129,7 +8129,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
 
                 VBOX_UTF8_TO_UTF16(networkNameUtf8 , &networkNameUtf16);
 
-                def->forwardType = VIR_NETWORK_FORWARD_NONE;
+                def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
                 data->vboxObj->vtbl->FindDHCPServerByNetworkName(data->vboxObj,
                                                                  networkNameUtf16,

@@ -372,11 +372,11 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     }
 
     /* FIXME: Add support for NAT */
-    if (def->forwardType != VIR_NETWORK_FORWARD_NONE &&
-        def->forwardType != VIR_NETWORK_FORWARD_BRIDGE) {
+    if (def->forward.type != VIR_NETWORK_FORWARD_NONE &&
+        def->forward.type != VIR_NETWORK_FORWARD_BRIDGE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported forward mode '%s'"),
-                       virNetworkForwardTypeToString(def->forwardType));
+                       virNetworkForwardTypeToString(def->forward.type));
         goto cleanup;
     }
 
@@ -405,7 +405,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if (def->forwardType != VIR_NETWORK_FORWARD_NONE && def->nForwardIfs > 0) {
+    if (def->forward.type != VIR_NETWORK_FORWARD_NONE && def->forward.nifs > 0) {
         if (esxVI_HostVirtualSwitchBondBridge_Alloc
               (&hostVirtualSwitchBondBridge) < 0) {
             goto cleanup;
@@ -419,10 +419,10 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
             goto cleanup;
         }
 
-        for (i = 0; i < def->nForwardIfs; ++i) {
+        for (i = 0; i < def->forward.nifs; ++i) {
             bool found = false;
 
-            if (def->forwardIfs[i].type !=
+            if (def->forward.ifs[i].type !=
                 VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported device type in network %s "
@@ -433,7 +433,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 
             for (physicalNic = physicalNicList; physicalNic != NULL;
                  physicalNic = physicalNic->_next) {
-                if (STREQ(def->forwardIfs[i].device.dev, physicalNic->device)) {
+                if (STREQ(def->forward.ifs[i].device.dev, physicalNic->device)) {
                     if (esxVI_String_AppendValueToList
                           (&hostVirtualSwitchBondBridge->nicDevice,
                            physicalNic->key) < 0) {
@@ -448,7 +448,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
             if (! found) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not find PhysicalNic with name '%s'"),
-                               def->forwardIfs[i].device.dev);
+                               def->forward.ifs[i].device.dev);
                 goto cleanup;
             }
         }
@@ -721,7 +721,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         goto cleanup;
     }
 
-    def->forwardType = VIR_NETWORK_FORWARD_NONE;
+    def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
     /* Count PhysicalNics on HostVirtualSwitch */
     count = 0;
@@ -732,9 +732,9 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     }
 
     if (count > 0) {
-        def->forwardType = VIR_NETWORK_FORWARD_BRIDGE;
+        def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
 
-        if (VIR_ALLOC_N(def->forwardIfs, count) < 0) {
+        if (VIR_ALLOC_N(def->forward.ifs, count) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -751,17 +751,17 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
             for (physicalNic = physicalNicList; physicalNic != NULL;
                  physicalNic = physicalNic->_next) {
                 if (STREQ(physicalNicKey->value, physicalNic->key)) {
-                    def->forwardIfs[def->nForwardIfs].type
+                    def->forward.ifs[def->forward.nifs].type
                         = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-                    def->forwardIfs[def->nForwardIfs].device.dev
+                    def->forward.ifs[def->forward.nifs].device.dev
                         = strdup(physicalNic->device);
 
-                    if (def->forwardIfs[def->nForwardIfs].device.dev == NULL) {
+                    if (def->forward.ifs[def->forward.nifs].device.dev == NULL) {
                         virReportOOMError();
                         goto cleanup;
                     }
 
-                    ++def->nForwardIfs;
+                    ++def->forward.nifs;
 
                     found = true;
                     break;

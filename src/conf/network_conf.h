@@ -161,6 +161,22 @@ struct _virNetworkForwardPfDef {
     int connections; /* how many guest interfaces are connected to this device? */
 };
 
+typedef struct _virNetworkForwardDef virNetworkForwardDef;
+typedef virNetworkForwardDef *virNetworkForwardDefPtr;
+struct _virNetworkForwardDef {
+    int type;     /* One of virNetworkForwardType constants */
+    bool managed;  /* managed attribute for hostdev mode */
+
+    /* If there are multiple forward devices (i.e. a pool of
+     * interfaces), they will be listed here.
+     */
+    size_t npfs;
+    virNetworkForwardPfDefPtr pfs;
+
+    size_t nifs;
+    virNetworkForwardIfDefPtr ifs;
+};
+
 typedef struct _virPortGroupDef virPortGroupDef;
 typedef virPortGroupDef *virPortGroupDefPtr;
 struct _virPortGroupDef {
@@ -191,17 +207,7 @@ struct _virNetworkDef {
      */
     bool ipv6nogw;
 
-    int forwardType;    /* One of virNetworkForwardType constants */
-    int managed;        /* managed attribute for hostdev mode */
-
-    /* If there are multiple forward devices (i.e. a pool of
-     * interfaces), they will be listed here.
-     */
-    size_t nForwardPfs;
-    virNetworkForwardPfDefPtr forwardPfs;
-
-    size_t nForwardIfs;
-    virNetworkForwardIfDefPtr forwardIfs;
+    virNetworkForwardDef forward;
 
     size_t nips;
     virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
@@ -280,9 +286,9 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags);
 static inline const char *
 virNetworkDefForwardIf(const virNetworkDefPtr def, size_t n)
 {
-    return ((def->forwardIfs && (def->nForwardIfs > n) &&
-             def->forwardIfs[n].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
-            ? def->forwardIfs[n].device.dev : NULL);
+    return ((def->forward.ifs && (def->forward.nifs > n) &&
+             def->forward.ifs[n].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
+            ? def->forward.ifs[n].device.dev : NULL);
 }
 
 virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,

@@ -711,7 +711,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * host's /etc/resolv.conf (since this could be used as a channel
      * to build a connection to the outside).
      */
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NONE) {
+    if (network->def->forward.type == VIR_NETWORK_FORWARD_NONE) {
         virCommandAddArgList(cmd, "--dhcp-option=3",
                              "--no-resolv", NULL);
     }
@@ -1325,9 +1325,9 @@ networkRefreshDaemons(struct network_driver *driver)
 
         virNetworkObjLock(network);
         if (virNetworkObjIsActive(network) &&
-            ((network->def->forwardType == VIR_NETWORK_FORWARD_NONE) ||
-             (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) ||
-             (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE))) {
+            ((network->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+             (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+             (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
             /* Only the three L3 network types that are configured by
              * libvirt will have a dnsmasq or radvd daemon associated
              * with them.  Here we send a SIGHUP to an existing
@@ -1862,12 +1862,12 @@ networkAddIpSpecificIptablesRules(struct network_driver *driver,
      * forward mode is NAT. This is because IPv6 has no NAT.
      */
 
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
+    if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             return networkAddMasqueradingIptablesRules(driver, network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             return networkAddRoutingIptablesRules(driver, network, ipdef);
-    } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
+    } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
         return networkAddRoutingIptablesRules(driver, network, ipdef);
     }
     return 0;
@@ -1878,12 +1878,12 @@ networkRemoveIpSpecificIptablesRules(struct network_driver *driver,
                                      virNetworkObjPtr network,
                                      virNetworkIpDefPtr ipdef)
 {
-    if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
+    if (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             networkRemoveMasqueradingIptablesRules(driver, network, ipdef);
         else if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
             networkRemoveRoutingIptablesRules(driver, network, ipdef);
-    } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
+    } else if (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
         networkRemoveRoutingIptablesRules(driver, network, ipdef);
     }
 }
@@ -1951,9 +1951,9 @@ networkReloadIptablesRules(struct network_driver *driver)
 
         virNetworkObjLock(network);
         if (virNetworkObjIsActive(network) &&
-            ((network->def->forwardType == VIR_NETWORK_FORWARD_NONE) ||
-             (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) ||
-             (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE))) {
+            ((network->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+             (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+             (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
             /* Only the three L3 network types that are configured by libvirt
              * need to have iptables rules reloaded.
              */
@@ -2253,8 +2253,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
     if (virNetDevSetOnline(network->def->bridge, 1) < 0)
         goto err2;
 
-    /* If forwardType != NONE, turn on global IP forwarding */
-    if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
+    /* If forward.type != NONE, turn on global IP forwarding */
+    if (network->def->forward.type != VIR_NETWORK_FORWARD_NONE &&
         networkEnableIpForwarding(v4present, v6present) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to enable IP forwarding"));
@@ -2424,7 +2424,7 @@ networkStartNetwork(struct network_driver *driver,
     if (virNetworkObjSetDefTransient(network, true) < 0)
         return -1;
 
-    switch (network->def->forwardType) {
+    switch (network->def->forward.type) {
 
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
@@ -2486,7 +2486,7 @@ static int networkShutdownNetwork(struct network_driver *driver,
     unlink(stateFile);
     VIR_FREE(stateFile);
 
-    switch (network->def->forwardType) {
+    switch (network->def->forward.type) {
 
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
@@ -2739,9 +2739,9 @@ networkValidate(struct network_driver *driver,
     /* Only the three L3 network types that are configured by libvirt
      * need to have a bridge device name / mac address provided
      */
-    if (def->forwardType == VIR_NETWORK_FORWARD_NONE ||
-        def->forwardType == VIR_NETWORK_FORWARD_NAT ||
-        def->forwardType == VIR_NETWORK_FORWARD_ROUTE) {
+    if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
+        def->forward.type == VIR_NETWORK_FORWARD_NAT ||
+        def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
 
         if (virNetworkSetBridgeName(&driver->networks, def, 1))
             return -1;
@@ -2756,7 +2756,7 @@ networkValidate(struct network_driver *driver,
                            _("Unsupported <ip> element in network %s "
                              "with forward mode='%s'"),
                            def->name,
-                           virNetworkForwardTypeToString(def->forwardType));
+                           virNetworkForwardTypeToString(def->forward.type));
             return -1;
         }
         if (def->dns.ntxts || def->dns.nhosts || def->dns.nsrvs) {
@@ -2764,7 +2764,7 @@ networkValidate(struct network_driver *driver,
                            _("Unsupported <dns> element in network %s "
                              "with forward mode='%s'"),
                            def->name,
-                           virNetworkForwardTypeToString(def->forwardType));
+                           virNetworkForwardTypeToString(def->forward.type));
             return -1;
         }
         if (def->domain) {
@@ -2772,7 +2772,7 @@ networkValidate(struct network_driver *driver,
                            _("Unsupported <domain> element in network %s "
                              "with forward mode='%s'"),
                            def->name,
-                           virNetworkForwardTypeToString(def->forwardType));
+                           virNetworkForwardTypeToString(def->forward.type));
             return -1;
         }
     }
@@ -2797,7 +2797,7 @@ networkValidate(struct network_driver *driver,
      * a pool, and those using an Open vSwitch bridge.
      */
 
-    vlanAllowed = (def->forwardType == VIR_NETWORK_FORWARD_BRIDGE &&
+    vlanAllowed = (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                    def->virtPortProfile &&
                    def->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH);
 
@@ -2810,7 +2810,7 @@ networkValidate(struct network_driver *driver,
              * supports a vlan tag.
              */
             if (def->portGroups[ii].virtPortProfile) {
-                if (def->forwardType != VIR_NETWORK_FORWARD_BRIDGE ||
+                if (def->forward.type != VIR_NETWORK_FORWARD_BRIDGE ||
                     def->portGroups[ii].virtPortProfile->virtPortType
                     != VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
                     badVlanUse = true;
@@ -3105,9 +3105,9 @@ networkUpdate(virNetworkPtr net,
         if ((section == VIR_NETWORK_SECTION_IP ||
              section == VIR_NETWORK_SECTION_FORWARD ||
              section == VIR_NETWORK_SECTION_FORWARD_INTERFACE) &&
-           (network->def->forwardType == VIR_NETWORK_FORWARD_NONE ||
-            network->def->forwardType == VIR_NETWORK_FORWARD_NAT ||
-            network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)) {
+           (network->def->forward.type == VIR_NETWORK_FORWARD_NONE ||
+            network->def->forward.type == VIR_NETWORK_FORWARD_NAT ||
+            network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
             /* these could affect the iptables rules */
             networkRemoveIptablesRules(driver, network);
             if (networkAddIptablesRules(driver, network) < 0)
@@ -3405,37 +3405,37 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
     struct pci_config_address **virt_fns;
     int ret = -1, ii = 0;
 
-    if ((virNetDevGetVirtualFunctions(netdef->forwardPfs->dev,
+    if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,
                                       &vfname, &virt_fns, &num_virt_fns)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get Virtual functions on %s"),
-                       netdef->forwardPfs->dev);
+                       netdef->forward.pfs->dev);
         goto finish;
     }
 
     if (num_virt_fns == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No Vf's present on SRIOV PF %s"),
-                       netdef->forwardPfs->dev);
+                       netdef->forward.pfs->dev);
        goto finish;
     }
 
-    if ((VIR_ALLOC_N(netdef->forwardIfs, num_virt_fns)) < 0) {
+    if ((VIR_ALLOC_N(netdef->forward.ifs, num_virt_fns)) < 0) {
         virReportOOMError();
         goto finish;
     }
 
-    netdef->nForwardIfs = num_virt_fns;
+    netdef->forward.nifs = num_virt_fns;
 
-    for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-        if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) ||
-            (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
-            (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
-            (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
-            netdef->forwardIfs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+    for (ii = 0; ii < netdef->forward.nifs; ii++) {
+        if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
+            (netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
+            (netdef->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
+            (netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+            netdef->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
             if (vfname[ii]) {
-                netdef->forwardIfs[ii].device.dev = strdup(vfname[ii]);
-                if (!netdef->forwardIfs[ii].device.dev) {
+                netdef->forward.ifs[ii].device.dev = strdup(vfname[ii]);
+                if (!netdef->forward.ifs[ii].device.dev) {
                     virReportOOMError();
                     goto finish;
                 }
@@ -3446,13 +3446,13 @@ networkCreateInterfacePool(virNetworkDefPtr netdef) {
                 goto finish;
             }
         }
-        else if (netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+        else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
             /* VF's are always PCI devices */
-            netdef->forwardIfs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
-            netdef->forwardIfs[ii].device.pci.domain = virt_fns[ii]->domain;
-            netdef->forwardIfs[ii].device.pci.bus = virt_fns[ii]->bus;
-            netdef->forwardIfs[ii].device.pci.slot = virt_fns[ii]->slot;
-            netdef->forwardIfs[ii].device.pci.function = virt_fns[ii]->function;
+            netdef->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI;
+            netdef->forward.ifs[ii].device.pci.domain = virt_fns[ii]->domain;
+            netdef->forward.ifs[ii].device.pci.bus = virt_fns[ii]->bus;
+            netdef->forward.ifs[ii].device.pci.slot = virt_fns[ii]->slot;
+            netdef->forward.ifs[ii].device.pci.function = virt_fns[ii]->function;
         }
     }
 
@@ -3535,16 +3535,16 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             goto error;
     }
 
-    if ((netdef->forwardType == VIR_NETWORK_FORWARD_NONE) ||
-        (netdef->forwardType == VIR_NETWORK_FORWARD_NAT) ||
-        (netdef->forwardType == VIR_NETWORK_FORWARD_ROUTE)) {
+    if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+        (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
         /* for these forward types, the actual net type really *is*
          *NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
         */
         if (iface->data.network.actual)
             iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-    } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) &&
+    } else if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) &&
                netdef->bridge) {
 
         /* <forward type='bridge'/> <bridge name='xxx'/>
@@ -3587,7 +3587,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             }
         }
 
-    } else if (netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+    } else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
 
         if (!iface->data.network.actual
             && (VIR_ALLOC(iface->data.network.actual) < 0)) {
@@ -3596,15 +3596,15 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_HOSTDEV;
-        if (netdef->nForwardPfs > 0 && netdef->nForwardIfs <= 0 &&
+        if (netdef->forward.npfs > 0 && netdef->forward.nifs <= 0 &&
             networkCreateInterfacePool(netdef) < 0) {
             goto error;
         }
 
         /* pick first dev with 0 connections */
-        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (netdef->forwardIfs[ii].connections == 0) {
-                dev = &netdef->forwardIfs[ii];
+        for (ii = 0; ii < netdef->forward.nifs; ii++) {
+            if (netdef->forward.ifs[ii].connections == 0) {
+                dev = &netdef->forward.ifs[ii];
                 break;
             }
         }
@@ -3619,7 +3619,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         iface->data.network.actual->data.hostdev.def.parent.data.net = iface;
         iface->data.network.actual->data.hostdev.def.info = &iface->info;
         iface->data.network.actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        iface->data.network.actual->data.hostdev.def.managed = netdef->managed;
+        iface->data.network.actual->data.hostdev.def.managed = netdef->forward.managed ? 1 : 0;
         iface->data.network.actual->data.hostdev.def.source.subsys.type = dev->type;
         iface->data.network.actual->data.hostdev.def.source.subsys.u.pci = dev->device.pci;
 
@@ -3648,10 +3648,10 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
             }
         }
 
-    } else if ((netdef->forwardType == VIR_NETWORK_FORWARD_BRIDGE) ||
-               (netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) ||
-               (netdef->forwardType == VIR_NETWORK_FORWARD_VEPA) ||
-               (netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+    } else if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
+               (netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
+               (netdef->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
+               (netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
 
         /* <forward type='bridge|private|vepa|passthrough'> are all
          * VIR_DOMAIN_NET_TYPE_DIRECT.
@@ -3665,7 +3665,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
 
         /* Set type=direct and appropriate <source mode='xxx'/> */
         iface->data.network.actual->type = actualType = VIR_DOMAIN_NET_TYPE_DIRECT;
-        switch (netdef->forwardType) {
+        switch (netdef->forward.type) {
         case VIR_NETWORK_FORWARD_BRIDGE:
             iface->data.network.actual->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_BRIDGE;
             break;
@@ -3707,7 +3707,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         /* If there is only a single device, just return it (caller will detect
          * any error if exclusive use is required but could not be acquired).
          */
-        if ((netdef->nForwardIfs <= 0) && (netdef->nForwardPfs <= 0)) {
+        if ((netdef->forward.nifs <= 0) && (netdef->forward.npfs <= 0)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' uses a direct mode, but "
                              "has no forward dev and no interface pool"),
@@ -3716,7 +3716,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         } else {
             /* pick an interface from the pool */
 
-            if (netdef->nForwardPfs > 0 && netdef->nForwardIfs == 0 &&
+            if (netdef->forward.npfs > 0 && netdef->forward.nifs == 0 &&
                 networkCreateInterfacePool(netdef) < 0) {
                 goto error;
             }
@@ -3727,25 +3727,25 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
              * just search for the one with the lowest number of
              * connections.
              */
-            if ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
-                ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
+            if ((netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
+                ((netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) &&
                  iface->data.network.actual->virtPortProfile &&
                  (iface->data.network.actual->virtPortProfile->virtPortType
                   == VIR_NETDEV_VPORT_PROFILE_8021QBH))) {
 
                 /* pick first dev with 0 connections */
-                for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].connections == 0) {
-                        dev = &netdef->forwardIfs[ii];
+                for (ii = 0; ii < netdef->forward.nifs; ii++) {
+                    if (netdef->forward.ifs[ii].connections == 0) {
+                        dev = &netdef->forward.ifs[ii];
                         break;
                     }
                 }
             } else {
                 /* pick least used dev */
-                dev = &netdef->forwardIfs[0];
-                for (ii = 1; ii < netdef->nForwardIfs; ii++) {
-                    if (netdef->forwardIfs[ii].connections < dev->connections)
-                        dev = &netdef->forwardIfs[ii];
+                dev = &netdef->forward.ifs[0];
+                for (ii = 1; ii < netdef->forward.nifs; ii++) {
+                    if (netdef->forward.ifs[ii].connections < dev->connections)
+                        dev = &netdef->forward.ifs[ii];
                 }
             }
             /* dev points at the physical device we want to use */
@@ -3885,11 +3885,11 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         goto success;
     }
 
-    if (netdef->nForwardPfs > 0 && netdef->nForwardIfs == 0 &&
+    if (netdef->forward.npfs > 0 && netdef->forward.nifs == 0 &&
         networkCreateInterfacePool(netdef) < 0) {
         goto error;
     }
-    if (netdef->nForwardIfs == 0) {
+    if (netdef->forward.nifs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("network '%s' uses a direct or hostdev mode, "
                          "but has no forward dev and no interface pool"),
@@ -3909,11 +3909,11 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         }
 
         /* find the matching interface and increment its connections */
-        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (netdef->forwardIfs[ii].type
+        for (ii = 0; ii < netdef->forward.nifs; ii++) {
+            if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
-                STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
-                dev = &netdef->forwardIfs[ii];
+                STREQ(actualDev, netdef->forward.ifs[ii].device.dev)) {
+                dev = &netdef->forward.ifs[ii];
                 break;
             }
         }
@@ -3931,8 +3931,8 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
          * must be 0 in those cases.
          */
         if ((dev->connections > 0) &&
-            ((netdef->forwardType == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
-             ((netdef->forwardType == VIR_NETWORK_FORWARD_PRIVATE) &&
+            ((netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH) ||
+             ((netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) &&
               iface->data.network.actual->virtPortProfile &&
               (iface->data.network.actual->virtPortProfile->virtPortType
                == VIR_NETDEV_VPORT_PROFILE_8021QBH)))) {
@@ -3960,12 +3960,12 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         }
 
         /* find the matching interface and increment its connections */
-        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (netdef->forwardIfs[ii].type
+        for (ii = 0; ii < netdef->forward.nifs; ii++) {
+            if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
                 virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
-                                         &netdef->forwardIfs[ii].device.pci)) {
-                dev = &netdef->forwardIfs[ii];
+                                         &netdef->forward.ifs[ii].device.pci)) {
+                dev = &netdef->forward.ifs[ii];
                 break;
             }
         }
@@ -3987,7 +3987,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
          * current connections count must be 0 in those cases.
          */
         if ((dev->connections > 0) &&
-            netdef->forwardType == VIR_NETWORK_FORWARD_HOSTDEV) {
+            netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' claims the PCI device at "
                              "domain=%d bus=%d slot=%d function=%d "
@@ -4062,7 +4062,7 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         goto success;
     }
 
-    if (netdef->nForwardIfs == 0) {
+    if (netdef->forward.nifs == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("network '%s' uses a direct/hostdev mode, but "
                          "has no forward dev and no interface pool"),
@@ -4081,11 +4081,11 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             goto error;
         }
 
-        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (netdef->forwardIfs[ii].type
+        for (ii = 0; ii < netdef->forward.nifs; ii++) {
+            if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV &&
-                STREQ(actualDev, netdef->forwardIfs[ii].device.dev)) {
-                dev = &netdef->forwardIfs[ii];
+                STREQ(actualDev, netdef->forward.ifs[ii].device.dev)) {
+                dev = &netdef->forward.ifs[ii];
                 break;
             }
         }
@@ -4112,12 +4112,12 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
             goto error;
         }
 
-        for (ii = 0; ii < netdef->nForwardIfs; ii++) {
-            if (netdef->forwardIfs[ii].type
+        for (ii = 0; ii < netdef->forward.nifs; ii++) {
+            if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
                 virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
-                                          &netdef->forwardIfs[ii].device.pci)) {
-                dev = &netdef->forwardIfs[ii];
+                                          &netdef->forward.ifs[ii].device.pci)) {
+                dev = &netdef->forward.ifs[ii];
                 break;
             }
         }
@@ -4202,7 +4202,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     }
     netdef = network->def;
 
-    switch (netdef->forwardType) {
+    switch (netdef->forward.type) {
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
@@ -4227,8 +4227,8 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
-        if ((netdef->nForwardIfs > 0) && netdef->forwardIfs)
-            dev_name = netdef->forwardIfs[0].device.dev;
+        if ((netdef->forward.nifs > 0) && netdef->forward.ifs)
+            dev_name = netdef->forward.ifs[0].device.dev;
 
         if (!dev_name) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
