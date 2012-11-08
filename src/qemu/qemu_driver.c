@@ -445,9 +445,11 @@ err_exit:
     return NULL;
 }
 
-static void qemuDomainSnapshotLoad(void *payload,
-                                   const void *name ATTRIBUTE_UNUSED,
-                                   void *data)
+
+static void
+qemuDomainSnapshotLoad(void *payload,
+                       const void *name ATTRIBUTE_UNUSED,
+                       void *data)
 {
     virDomainObjPtr vm = (virDomainObjPtr)payload;
     char *baseDir = (char *)data;
@@ -559,9 +561,10 @@ cleanup:
 }
 
 
-static void qemuDomainNetsRestart(void *payload,
-                                const void *name ATTRIBUTE_UNUSED,
-                                void *data ATTRIBUTE_UNUSED)
+static void
+qemuDomainNetsRestart(void *payload,
+                      const void *name ATTRIBUTE_UNUSED,
+                      void *data ATTRIBUTE_UNUSED)
 {
     int i;
     virDomainObjPtr vm = (virDomainObjPtr)payload;
