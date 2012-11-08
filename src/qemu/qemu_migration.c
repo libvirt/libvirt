@@ -2168,6 +2168,17 @@ qemuMigrationRun(struct qemud_driver *driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
+    if (priv->job.asyncAbort) {
+        /* explicitly do this *after* we entered the monitor,
+         * as this is a critical section so we are guaranteed
+         * priv->job.asyncAbort will not change */
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
+                       qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
+                       _("canceled by client"));
+        goto cleanup;
+    }
+
     if (qemuMonitorSetMigrationSpeed(priv->mon, migrate_speed) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;

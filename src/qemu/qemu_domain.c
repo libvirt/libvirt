@@ -160,6 +160,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->mask = DEFAULT_JOB_MASK;
     job->start = 0;
     job->dump_memory_only = false;
+    job->asyncAbort = false;
     memset(&job->info, 0, sizeof(job->info));
 }
 
@@ -957,6 +958,17 @@ qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
     virCondBroadcast(&priv->job.asyncCond);
 
     return virObjectUnref(obj);
+}
+
+void
+qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    VIR_DEBUG("Requesting abort of async job: %s",
+              qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+
+    priv->job.asyncAbort = true;
 }
 
 static int

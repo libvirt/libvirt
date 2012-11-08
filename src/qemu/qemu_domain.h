@@ -111,6 +111,7 @@ struct qemuDomainJobObj {
     unsigned long long start;           /* When the async job started */
     bool dump_memory_only;              /* use dump-guest-memory to do dump */
     virDomainJobInfo info;              /* Async job progress data */
+    bool asyncAbort;                    /* abort of async job requested */
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
@@ -204,6 +205,7 @@ bool qemuDomainObjEndJob(struct qemud_driver *driver,
 bool qemuDomainObjEndAsyncJob(struct qemud_driver *driver,
                               virDomainObjPtr obj)
     ATTRIBUTE_RETURN_CHECK;
+void qemuDomainObjAbortAsyncJob(virDomainObjPtr obj);
 void qemuDomainObjSetJobPhase(struct qemud_driver *driver,
                               virDomainObjPtr obj,
                               int phase);
