@@ -17182,8 +17182,7 @@ error:
  * @domain: a domain object
  *
  * Requests that the current background job be aborted at the
- * soonest opportunity. This will block until the job has
- * either completed, or aborted.
+ * soonest opportunity.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
