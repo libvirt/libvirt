@@ -3230,9 +3230,6 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
-    if (obj->def->id >= driver->nextvmid)
-        driver->nextvmid = obj->def->id + 1;
-
 endjob:
     if (!qemuDomainObjEndJob(driver, obj))
         obj = NULL;
