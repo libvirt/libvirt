@@ -14,7 +14,8 @@
 static virCapsPtr caps;
 static virVMXContext ctx;
 
-static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
+                                  const char *arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }

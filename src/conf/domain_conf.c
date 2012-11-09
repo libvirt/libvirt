@@ -5282,7 +5282,7 @@ virDomainChrDefaultTargetType(virCapsPtr caps,
                            _("Driver does not have a default console type set"));
             return -1;
         }
-        target = caps->defaultConsoleTargetType(def->os.type);
+        target = caps->defaultConsoleTargetType(def->os.type, def->os.arch);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:

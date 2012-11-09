@@ -117,7 +117,8 @@ libxlNextFreeVncPort(libxlDriverPrivatePtr driver, int startPort)
 }
 
 
-static int libxlDefaultConsoleType(const char *ostype)
+static int libxlDefaultConsoleType(const char *ostype,
+                                   const char *arch ATTRIBUTE_UNUSED)
 {
     if (STREQ(ostype, "hvm"))
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;

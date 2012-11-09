@@ -87,7 +87,8 @@ parallelsDriverUnlock(parallelsConnPtr driver)
 }
 
 static int
-parallelsDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+parallelsDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
+                            const char *arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }

@@ -43,7 +43,8 @@
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 
 
-static int xenapiDefaultConsoleType(const char *ostype)
+static int xenapiDefaultConsoleType(const char *ostype,
+                                    const char *arch ATTRIBUTE_UNUSED)
 {
     if (STREQ(ostype, "hvm"))
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;

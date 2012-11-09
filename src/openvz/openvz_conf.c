@@ -169,7 +169,8 @@ error:
 }
 
 
-static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED)
+static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
+                                    const char *arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
 }
