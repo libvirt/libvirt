@@ -61,8 +61,10 @@ bootstrap_hash()
 # the required file po/Makevars.
 # Only run bootstrap from a git checkout, never from a tarball.
 if test -d .git; then
-    curr_status=.git-module-status
-    t=$(bootstrap_hash; git diff .gnulib)
+    curr_status=.git-module-status t=
+    if test -d .gnulib; then
+        t=$(bootstrap_hash; git diff .gnulib)
+    fi
     case $t:${CLEAN_SUBMODULE+set} in
         *:set) ;;
         *-dirty*)
