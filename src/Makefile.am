@@ -493,6 +493,7 @@ ESX_DRIVER_SOURCES =							\
 		esx/esx_interface_driver.c esx/esx_interface_driver.h	\
 		esx/esx_network_driver.c esx/esx_network_driver.h	\
 		esx/esx_storage_driver.c esx/esx_storage_driver.h	\
+		esx/esx_storage_backend_vmfs.c esx/esx_storage_backend_vmfs.h	\
 		esx/esx_device_monitor.c esx/esx_device_monitor.h	\
 		esx/esx_secret_driver.c esx/esx_secret_driver.h		\
 		esx/esx_nwfilter_driver.c esx/esx_nwfilter_driver.h	\

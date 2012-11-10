@@ -163,7 +163,8 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             datastoreName = NULL;
 
             if (esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
-                                               &hostMount) < 0 ||
+                                               &hostMount,
+                                               esxVI_Occurrence_RequiredItem) < 0 ||
                 esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
                                      esxVI_Occurrence_RequiredItem) < 0) {
                 goto cleanup;
@@ -307,7 +308,8 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         if (esxVI_LookupDatastoreByName(data->ctx, datastoreName, NULL, &datastore,
                                         esxVI_Occurrence_RequiredItem) < 0 ||
             esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
-                                           &hostMount) < 0) {
+                                           &hostMount,
+                                           esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;
         }
 

@@ -3107,7 +3107,8 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
 int
 esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *datastore,
-                               esxVI_DatastoreHostMount **hostMount)
+                               esxVI_DatastoreHostMount **hostMount,
+                               esxVI_Occurrence occurrence)
 {
     int result = -1;
     esxVI_String *propertyNameList = NULL;
@@ -3155,7 +3156,7 @@ esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
         break;
     }
 
-    if (*hostMount == NULL) {
+    if (*hostMount == NULL && occurrence == esxVI_Occurrence_RequiredItem) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not lookup datastore host mount"));
         goto cleanup;
