@@ -4787,6 +4787,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     bool hasHwVirt = false;
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
+    int sdl = 0;
+    int vnc = 0;
+    int spice = 0;
     int usbcontroller = 0;
     bool usblegacy = false;
     uname_normalize(&ut);
@@ -6201,9 +6204,28 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->ngraphics > 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("only 1 graphics device is supported"));
+    for (i = 0 ; i < def->ngraphics ; ++i) {
+        switch (def->graphics[i]->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            ++sdl;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            ++vnc;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            ++spice;
+            break;
+        }
+    }
+    if (!qemuCapsGet(caps, QEMU_CAPS_0_10) && sdl + vnc + spice > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only 1 graphics device is supported"));
+        goto error;
+    }
+    if (sdl > 1 || vnc > 1 || spice > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only 1 graphics device of each type "
+                         "(sdl, vnc, spice) is supported"));
         goto error;
     }
 
