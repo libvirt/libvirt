@@ -58,6 +58,14 @@ enum AutoStartWaitHeartbeatSetting
 end
 
 
+enum FibreChannelPortType
+    fabric
+    loop
+    pointToPoint
+    unknown
+end
+
+
 enum ManagedEntityStatus
     gray
     green
@@ -144,6 +152,9 @@ object AboutInfo
     String                                   productLineId                  r
     String                                   apiType                        r
     String                                   apiVersion                     r
+    String                                   instanceUuid                   o
+    String                                   licenseProductName             o
+    String                                   licenseProductVersion          o
 end
 
 
@@ -184,6 +195,7 @@ object DatastoreInfo
     String                                   url                            r
     Long                                     freeSpace                      r
     Long                                     maxFileSize                    r
+    DateTime                                 timestamp                      o
 end
 
 
@@ -218,6 +230,12 @@ object EventArgument
 end
 
 
+object ExtendedElementDescription    extends ElementDescription
+    String                                   messageCatalogKeyPrefix        r
+    KeyAnyValue                              messageArg                     ol
+end
+
+
 object FileBackedVirtualDiskSpec     extends VirtualDiskSpec
     Long                                     capacityKb                     r
 end
@@ -227,6 +245,7 @@ object FileInfo
     String                                   path                           r
     Long                                     fileSize                       o
     DateTime                                 modification                   o
+    String                                   owner                          o
 end
 
 
@@ -238,6 +257,7 @@ object FileQueryFlags
     Boolean                                  fileType                       r
     Boolean                                  fileSize                       r
     Boolean                                  modification                   r
+    Boolean                                  fileOwner                      o
 end
 
 
@@ -263,6 +283,14 @@ object HostAutoStartManagerConfig
 end
 
 
+object HostBlockAdapterTargetTransport extends HostTargetTransport
+end
+
+
+object HostBlockHba                  extends HostHostBusAdapter
+end
+
+
 object HostConfigManager
     ManagedObjectReference                   cpuScheduler                   o
     ManagedObjectReference                   datastoreSystem                o
@@ -270,6 +298,7 @@ object HostConfigManager
     ManagedObjectReference                   storageSystem                  o
     ManagedObjectReference                   networkSystem                  o
     ManagedObjectReference                   vmotionSystem                  o
+    ManagedObjectReference                   virtualNicManager              o
     ManagedObjectReference                   serviceSystem                  o
     ManagedObjectReference                   firewallSystem                 o
     ManagedObjectReference                   advancedOption                 o
@@ -281,6 +310,9 @@ object HostConfigManager
     ManagedObjectReference                   bootDeviceSystem               o
     ManagedObjectReference                   firmwareSystem                 o
     ManagedObjectReference                   healthStatusSystem             o
+    ManagedObjectReference                   pciPassthruSystem              o
+    ManagedObjectReference                   licenseManager                 o
+    ManagedObjectReference                   kernelModuleSystem             o
 end
 
 
@@ -310,6 +342,32 @@ object HostDatastoreBrowserSearchSpec
 end
 
 
+object HostDevice
+    String                                   deviceName                     r
+    String                                   deviceType                     r
+end
+
+
+object HostDiskDimensionsLba
+    Int                                      blockSize                      r
+    Long                                     block                          r
+end
+
+
+object HostFibreChannelHba           extends HostHostBusAdapter
+    Long                                     portWorldWideName              r
+    Long                                     nodeWorldWideName              r
+    FibreChannelPortType                     portType                       r
+    Long                                     speed                          r
+end
+
+
+object HostFibreChannelTargetTransport extends HostTargetTransport
+    Long                                     portWorldWideName              r
+    Long                                     nodeWorldWideName              r
+end
+
+
 object HostFileSystemVolume
     String                                   type                           r
     String                                   name                           r
@@ -317,10 +375,169 @@ object HostFileSystemVolume
 end
 
 
+object HostHostBusAdapter
+    String                                   key                            o
+    String                                   device                         r
+    Int                                      bus                            r
+    String                                   status                         r
+    String                                   model                          r
+    String                                   driver                         o
+    String                                   pci                            o
+end
+
+
+object HostInternetScsiHba           extends HostHostBusAdapter
+    Boolean                                  isSoftwareBased                r
+    HostInternetScsiHbaDiscoveryCapabilities discoveryCapabilities          r
+    HostInternetScsiHbaDiscoveryProperties   discoveryProperties            r
+    HostInternetScsiHbaAuthenticationCapabilities authenticationCapabilities r
+    HostInternetScsiHbaAuthenticationProperties authenticationProperties    r
+    HostInternetScsiHbaDigestCapabilities    digestCapabilities             o
+    HostInternetScsiHbaDigestProperties      digestProperties               o
+    HostInternetScsiHbaIPCapabilities        ipCapabilities                 r
+    HostInternetScsiHbaIPProperties          ipProperties                   r
+    OptionDef                                supportedAdvancedOptions       i
+    HostInternetScsiHbaParamValue            advancedOptions                ol
+    String                                   iScsiName                      r
+    String                                   iScsiAlias                     o
+    HostInternetScsiHbaSendTarget            configuredSendTarget           ol
+    HostInternetScsiHbaStaticTarget          configuredStaticTarget         ol
+    Int                                      maxSpeedMb                     o
+    Int                                      currentSpeedMb                 o
+end
+
+
+object HostInternetScsiHbaAuthenticationCapabilities
+    Boolean                                  chapAuthSettable               r
+    Boolean                                  krb5AuthSettable               r
+    Boolean                                  srpAuthSettable                r
+    Boolean                                  spkmAuthSettable               r
+    Boolean                                  mutualChapSettable             o
+    Boolean                                  targetChapSettable             o
+    Boolean                                  targetMutualChapSettable       o
+end
+
+
+object HostInternetScsiHbaAuthenticationProperties
+    Boolean                                  chapAuthEnabled                r
+    String                                   chapName                       o
+    String                                   chapSecret                     o
+    String                                   chapAuthenticationType         o
+    Boolean                                  chapInherited                  o
+    String                                   mutualChapName                 o
+    String                                   mutualChapSecret               o
+    String                                   mutualChapAuthenticationType   o
+    Boolean                                  mutualChapInherited            o
+end
+
+
+object HostInternetScsiHbaDigestCapabilities
+    Boolean                                  headerDigestSettable           o
+    Boolean                                  dataDigestSettable             o
+    Boolean                                  targetHeaderDigestSettable     o
+    Boolean                                  targetDataDigestSettable       o
+end
+
+
+object HostInternetScsiHbaDigestProperties
+    String                                   headerDigestType               o
+    Boolean                                  headerDigestInherited          o
+    String                                   dataDigestType                 o
+    Boolean                                  dataDigestInherited            o
+end
+
+
+object HostInternetScsiHbaDiscoveryCapabilities
+    Boolean                                  iSnsDiscoverySettable          r
+    Boolean                                  slpDiscoverySettable           r
+    Boolean                                  staticTargetDiscoverySettable  r
+    Boolean                                  sendTargetsDiscoverySettable   r
+end
+
+
+object HostInternetScsiHbaDiscoveryProperties
+    Boolean                                  iSnsDiscoveryEnabled           r
+    String                                   iSnsDiscoveryMethod            o
+    String                                   iSnsHost                       o
+    Boolean                                  slpDiscoveryEnabled            r
+    String                                   slpDiscoveryMethod             o
+    String                                   slpHost                        o
+    Boolean                                  staticTargetDiscoveryEnabled   r
+    Boolean                                  sendTargetsDiscoveryEnabled    r
+end
+
+
+object HostInternetScsiHbaIPCapabilities
+    Boolean                                  addressSettable                r
+    Boolean                                  ipConfigurationMethodSettable  r
+    Boolean                                  subnetMaskSettable             r
+    Boolean                                  defaultGatewaySettable         r
+    Boolean                                  primaryDnsServerAddressSettable r
+    Boolean                                  alternateDnsServerAddressSettable r
+    Boolean                                  ipv6Supported                  o
+    Boolean                                  arpRedirectSettable            o
+    Boolean                                  mtuSettable                    o
+    Boolean                                  hostNameAsTargetAddress        o
+end
+
+
+object HostInternetScsiHbaIPProperties
+    String                                   mac                            o
+    String                                   address                        o
+    Boolean                                  dhcpConfigurationEnabled       r
+    String                                   subnetMask                     o
+    String                                   defaultGateway                 o
+    String                                   primaryDnsServerAddress        o
+    String                                   alternateDnsServerAddress      o
+    String                                   ipv6Address                    o
+    String                                   ipv6SubnetMask                 o
+    String                                   ipv6DefaultGateway             o
+    Boolean                                  arpRedirectEnabled             o
+    Int                                      mtu                            o
+    Boolean                                  jumboFramesEnabled             o
+end
+
+
+object HostInternetScsiHbaParamValue extends OptionValue
+    Boolean                                  isInherited                    o
+end
+
+
+object HostInternetScsiHbaSendTarget
+    String                                   address                        r
+    Int                                      port                           o
+    HostInternetScsiHbaAuthenticationProperties authenticationProperties    o
+    HostInternetScsiHbaDigestProperties      digestProperties               o
+    OptionDef                                supportedAdvancedOptions       i
+    HostInternetScsiHbaParamValue            advancedOptions                ol
+    String                                   parent                         o
+end
+
+
+object HostInternetScsiHbaStaticTarget
+    String                                   address                        r
+    Int                                      port                           o
+    String                                   iScsiName                      r
+    HostInternetScsiHbaAuthenticationProperties authenticationProperties    o
+    HostInternetScsiHbaDigestProperties      digestProperties               o
+    OptionDef                                supportedAdvancedOptions       i
+    HostInternetScsiHbaParamValue            advancedOptions                ol
+    String                                   parent                         o
+end
+
+
+object HostInternetScsiTargetTransport extends HostTargetTransport
+    String                                   iScsiName                      r
+    String                                   iScsiAlias                     r
+    String                                   address                        ol
+end
+
+
 object HostIpConfig
     Boolean                                  dhcp                           r
     String                                   ipAddress                      o
     String                                   subnetMask                     o
+    HostIpConfigIpV6AddressConfiguration     ipV6Config                     i
 end
 
 
@@ -395,6 +612,14 @@ object HostNicTeamingPolicy
 end
 
 
+object HostParallelScsiHba           extends HostHostBusAdapter
+end
+
+
+object HostParallelScsiTargetTransport extends HostTargetTransport
+end
+
+
 object HostPortGroup
     String                                   key                            o
     HostPortGroupPort                        port                           ol
@@ -419,9 +644,41 @@ object HostPortGroupSpec
 end
 
 
+object HostScsiDisk                  extends ScsiLun
+    HostDiskDimensionsLba                    capacity                       r
+    String                                   devicePath                     r
+end
+
+
 object HostScsiDiskPartition
     String                                   diskName                       r
     Int                                      partition                      r
+end
+
+
+object HostScsiTopologyInterface
+    String                                   key                            r
+    String                                   adapter                        r
+    HostScsiTopologyTarget                   target                         ol
+end
+
+
+object HostScsiTopologyLun
+    String                                   key                            r
+    Int                                      lun                            r
+    String                                   scsiLun                        r
+end
+
+
+object HostScsiTopologyTarget
+    String                                   key                            r
+    Int                                      target                         r
+    HostScsiTopologyLun                      lun                            ol
+    HostTargetTransport                      transport                      o
+end
+
+
+object HostTargetTransport
 end
 
 
@@ -450,6 +707,7 @@ end
 object HostVirtualSwitchBondBridge   extends HostVirtualSwitchBridge
     String                                   nicDevice                      rl
     HostVirtualSwitchBeaconConfig            beacon                         o
+    LinkDiscoveryProtocolConfig              linkDiscoveryProtocolConfig    i
 end
 
 
@@ -478,6 +736,7 @@ object HostVmfsVolume                extends HostFileSystemVolume
     String                                   uuid                           r
     HostScsiDiskPartition                    extent                         rl
     Boolean                                  vmfsUpgradable                 r
+    HostForceMountedInfo                     forceMountedInfo               i
 end
 
 
@@ -486,6 +745,12 @@ end
 
 
 object IsoImageFileQuery             extends FileQuery
+end
+
+
+object KeyAnyValue
+    String                                   key                            r
+    AnyType                                  value                          r
 end
 
 
@@ -529,6 +794,12 @@ end
 
 object OptionType
     Boolean                                  valueIsReadonly                o
+end
+
+
+object OptionValue
+    String                                   key                            r
+    AnyType                                  value                          o
 end
 
 
@@ -659,6 +930,45 @@ object ResourcePoolResourceUsage
 end
 
 
+object ScsiLun                       extends HostDevice
+    String                                   key                            o
+    String                                   uuid                           r
+    ScsiLunDescriptor                        descriptor                     ol
+    String                                   canonicalName                  o
+    String                                   displayName                    o
+    String                                   lunType                        r
+    String                                   vendor                         o
+    String                                   model                          o
+    String                                   revision                       o
+    Int                                      scsiLevel                      o
+    String                                   serialNumber                   o
+    ScsiLunDurableName                       durableName                    o
+    ScsiLunDurableName                       alternateName                  ol
+    Byte                                     standardInquiry                ol
+    Int                                      queueDepth                     o
+    String                                   operationalState               rl
+    ScsiLunCapabilities                      capabilities                   o
+end
+
+
+object ScsiLunCapabilities
+    Boolean                                  updateDisplayNameSupported     r
+end
+
+
+object ScsiLunDescriptor
+    String                                   quality                        r
+    String                                   id                             r
+end
+
+
+object ScsiLunDurableName
+    String                                   namespace                      r
+    Byte                                     namespaceId                    r
+    Byte                                     data                           ol
+end
+
+
 object SelectionSpec
     String                                   name                           o
 end
@@ -688,6 +998,16 @@ object ServiceContent
     ManagedObjectReference                   fileManager                    o
     ManagedObjectReference                   virtualDiskManager             o
     ManagedObjectReference                   virtualizationManager          o
+    ManagedObjectReference                   snmpSystem                     o
+    ManagedObjectReference                   vmProvisioningChecker          o
+    ManagedObjectReference                   vmCompatibilityChecker         o
+    ManagedObjectReference                   ovfManager                     o
+    ManagedObjectReference                   ipPoolManager                  o
+    ManagedObjectReference                   dvSwitchManager                o
+    ManagedObjectReference                   hostProfileManager             o
+    ManagedObjectReference                   clusterProfileManager          o
+    ManagedObjectReference                   complianceManager              o
+    ManagedObjectReference                   localizationManager            o
 end
 
 
@@ -700,6 +1020,7 @@ end
 object TaskInfo
     String                                   key                            r
     ManagedObjectReference                   task                           r
+    LocalizableMessage                       description                    i
     String                                   name                           o
     String                                   descriptionId                  r
     ManagedObjectReference                   entity                         o
@@ -716,6 +1037,9 @@ object TaskInfo
     DateTime                                 startTime                      o
     DateTime                                 completeTime                   o
     Int                                      eventChainId                   r
+    String                                   changeTag                      o
+    String                                   parentTaskKey                  o
+    String                                   rootTaskKey                    o
 end
 
 
@@ -763,9 +1087,14 @@ object VirtualMachineConfigSpec
     String                                   name                           o
     String                                   version                        o
     String                                   uuid                           o
+    String                                   instanceUuid                   o
     Long                                     npivNodeWorldWideName          ol
     Long                                     npivPortWorldWideName          ol
     String                                   npivWorldWideNameType          o
+    Short                                    npivDesiredNodeWwns            i
+    Short                                    npivDesiredPortWwns            i
+    Boolean                                  npivTemporaryDisabled          o
+    Boolean                                  npivOnNonRdmDisks              o
     String                                   npivWorldWideNameOp            o
     String                                   locationId                     o
     String                                   guestId                        o
@@ -778,6 +1107,9 @@ object VirtualMachineConfigSpec
     VirtualMachineDefaultPowerOpInfo         powerOpInfo                    i
     Int                                      numCPUs                        o
     Long                                     memoryMB                       o
+    Boolean                                  memoryHotAddEnabled            o
+    Boolean                                  cpuHotAddEnabled               o
+    Boolean                                  cpuHotRemoveEnabled            o
     VirtualDeviceConfigSpec                  deviceChange                   i
     ResourceAllocationInfo                   cpuAllocation                  o
     ResourceAllocationInfo                   memoryAllocation               o
@@ -788,6 +1120,11 @@ object VirtualMachineConfigSpec
     OptionValue                              extraConfig                    i
     String                                   swapPlacement                  o
     VirtualMachineBootOptions                bootOptions                    i
+    VmConfigSpec                             vAppConfig                     i
+    FaultToleranceConfigInfo                 ftInfo                         i
+    Boolean                                  vAppConfigRemoved              o
+    Boolean                                  vAssertsEnabled                o
+    Boolean                                  changeTrackingEnabled          o
 end
 
 
@@ -804,10 +1141,13 @@ object VirtualMachineSnapshotTree
     ManagedObjectReference                   vm                             r
     String                                   name                           r
     String                                   description                    r
+    Int                                      id                             o
     DateTime                                 createTime                     r
     VirtualMachinePowerState                 state                          r
     Boolean                                  quiesced                       r
+    String                                   backupManifest                 o
     VirtualMachineSnapshotTree               childSnapshotList              ol
+    Boolean                                  replaySupported                o
 end
 
 
@@ -838,6 +1178,7 @@ object VmDiskFileInfo                extends FileInfo
     Int                                      hardwareVersion                o
     String                                   controllerType                 o
     String                                   diskExtents                    ol
+    Boolean                                  thin                           o
 end
 
 
@@ -851,6 +1192,7 @@ object VmDiskFileQueryFilter
     String                                   diskType                       ol
     Int                                      matchHardwareVersion           ol
     String                                   controllerType                 ol
+    Boolean                                  thin                           o
 end
 
 
@@ -860,6 +1202,7 @@ object VmDiskFileQueryFlags
     Boolean                                  hardwareVersion                r
     Boolean                                  controllerType                 o
     Boolean                                  diskExtents                    o
+    Boolean                                  thin                           o
 end
 
 
@@ -1016,6 +1359,7 @@ method FindByUuid                    returns ManagedObjectReference         o
     ManagedObjectReference                   datacenter                     o
     String                                   uuid                           r
     Boolean                                  vmSearch                       r
+    Boolean                                  instanceUuid                   o
 end
 
 
@@ -1138,6 +1482,12 @@ method RemoveVirtualSwitch
 end
 
 
+method RescanHba
+    ManagedObjectReference                   _this                          r
+    String                                   hbaDevice                      r
+end
+
+
 method RetrieveProperties            returns ObjectContent                  ol
     ManagedObjectReference                   _this:propertyCollector        r
     PropertyFilterSpec                       specSet                        rl
@@ -1147,6 +1497,7 @@ end
 method RevertToSnapshot_Task         returns ManagedObjectReference         r
     ManagedObjectReference                   _this                          r
     ManagedObjectReference                   host                           o
+    Boolean                                  suppressPowerOn                o
 end
 
 

@@ -31,6 +31,7 @@
 #include "esx_private.h"
 #include "esx_storage_driver.h"
 #include "esx_storage_backend_vmfs.h"
+#include "esx_storage_backend_iscsi.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -42,11 +43,13 @@
  */
 enum {
     VMFS = 0,
+    ISCSI,
     LAST_BACKEND
 };
 
 static virStorageDriverPtr backends[] = {
-    &esxStorageBackendVMFS
+    &esxStorageBackendVMFS,
+    &esxStorageBackendISCSI
 };
 
 
@@ -386,9 +389,13 @@ esxStorageVolumeLookupByPath(virConnectPtr conn, const char *path)
      *
      * VMFS Datastore path follows cannonical format i.e.:
      * [<datastore_name>] <file_path>
+     *          WHEREAS
+     * iSCSI LUNs device path follows normal linux path convention
      */
     if (STRPREFIX(path, "[")) {
         return backends[VMFS]->volLookupByPath(conn, path);
+    } else if (STRPREFIX(path, "/")) {
+        return backends[ISCSI]->volLookupByPath(conn, path);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unexpected volume path format: %s"), path);

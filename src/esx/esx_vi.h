@@ -526,7 +526,25 @@ int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
                              esxVI_HostCpuIdInfo *hostCpuIdInfo);
 
-int esxVI_ProductVersionToDefaultVirtualHWVersion(esxVI_ProductVersion productVersion);
+int esxVI_ProductVersionToDefaultVirtualHWVersion
+      (esxVI_ProductVersion productVersion);
+
+int esxVI_LookupHostInternetScsiHbaStaticTargetByName
+      (esxVI_Context *ctx, const char *name,
+       esxVI_HostInternetScsiHbaStaticTarget **target,
+       esxVI_Occurrence occurrence);
+
+int esxVI_LookupHostInternetScsiHba
+      (esxVI_Context *ctx, esxVI_HostInternetScsiHba **hostInternetScsiHba);
+
+int esxVI_LookupScsiLunList(esxVI_Context *ctx, esxVI_ScsiLun **scsiLunList);
+
+int esxVI_LookupHostScsiTopologyLunListByTargetName
+      (esxVI_Context *ctx, const char *name,
+       esxVI_HostScsiTopologyLun **hostScsiTopologyLunList);
+
+int esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx, const char *key,
+                                            char **poolName);
 
 # include "esx_vi.generated.h"
 

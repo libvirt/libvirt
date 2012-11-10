@@ -4792,7 +4792,7 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     }
 
     if (esxVI_RevertToSnapshot_Task(priv->primary, snapshotTree->snapshot, NULL,
-                                    &task) < 0 ||
+                                    esxVI_Boolean_Undefined, &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, snapshot->domain->uuid,
                                     esxVI_Occurrence_RequiredItem,
                                     priv->parsedUri->autoAnswer, &taskInfoState,

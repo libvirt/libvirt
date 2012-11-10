@@ -32,6 +32,7 @@ src/datatypes.c
 src/driver.c
 src/esx/esx_driver.c
 src/esx/esx_network_driver.c
+src/esx/esx_storage_backend_iscsi.c
 src/esx/esx_storage_backend_vmfs.c
 src/esx/esx_storage_driver.c
 src/esx/esx_util.c
