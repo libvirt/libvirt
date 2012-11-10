@@ -3885,7 +3885,8 @@ testStoragePoolLookupByUUID(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     if (pool)
@@ -3909,7 +3910,8 @@ testStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     if (pool)
@@ -4201,7 +4203,8 @@ testStoragePoolCreate(virConnectPtr conn,
     }
     pool->active = 1;
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     virStoragePoolDefFree(def);
@@ -4241,7 +4244,8 @@ testStoragePoolDefine(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     virStoragePoolDefFree(def);
@@ -4668,7 +4672,8 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
     for (i = 0 ; i < pool->volumes.count; i++) {
         if (!(vol = virGetStorageVol(obj->conn, pool->def->name,
                                      pool->volumes.objs[i]->name,
-                                     pool->volumes.objs[i]->key)))
+                                     pool->volumes.objs[i]->key,
+                                     NULL, NULL)))
             goto cleanup;
         tmp_vols[nvols++] = vol;
     }
@@ -4725,7 +4730,8 @@ testStorageVolumeLookupByName(virStoragePoolPtr pool,
     }
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
 
 cleanup:
     if (privpool)
@@ -4752,7 +4758,8 @@ testStorageVolumeLookupByKey(virConnectPtr conn,
                 ret = virGetStorageVol(conn,
                                        privconn->pools.objs[i]->def->name,
                                        privvol->name,
-                                       privvol->key);
+                                       privvol->key,
+                                       NULL, NULL);
                 virStoragePoolObjUnlock(privconn->pools.objs[i]);
                 break;
             }
@@ -4786,7 +4793,8 @@ testStorageVolumeLookupByPath(virConnectPtr conn,
                 ret = virGetStorageVol(conn,
                                        privconn->pools.objs[i]->def->name,
                                        privvol->name,
-                                       privvol->key);
+                                       privvol->key,
+                                       NULL, NULL);
                 virStoragePoolObjUnlock(privconn->pools.objs[i]);
                 break;
             }
@@ -4875,7 +4883,8 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
     privpool->volumes.objs[privpool->volumes.count++] = privvol;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
     privvol = NULL;
 
 cleanup:
@@ -4969,7 +4978,8 @@ testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
     privpool->volumes.objs[privpool->volumes.count++] = privvol;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
     privvol = NULL;
 
 cleanup:

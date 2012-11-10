@@ -379,6 +379,8 @@ virInterfaceDispose(void *obj)
  * @conn: the hypervisor connection
  * @name: pointer to the storage pool name
  * @uuid: pointer to the uuid
+ * @privateData: pointer to driver specific private data
+ * @freeFunc: private data cleanup function pointer specfic to driver
  *
  * Lookup if the storage pool is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
@@ -389,7 +391,8 @@ virInterfaceDispose(void *obj)
  */
 virStoragePoolPtr
 virGetStoragePool(virConnectPtr conn, const char *name,
-                  const unsigned char *uuid)
+                  const unsigned char *uuid,
+                  void *privateData, virFreeCallback freeFunc)
 {
     virStoragePoolPtr ret = NULL;
 
@@ -411,6 +414,10 @@ virGetStoragePool(virConnectPtr conn, const char *name,
 
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+
+    /* set the driver specific data */
+    ret->privateData = privateData;
+    ret->privateDataFreeFunc = freeFunc;
 
     return ret;
 
@@ -442,6 +449,10 @@ virStoragePoolDispose(void *obj)
     virUUIDFormat(pool->uuid, uuidstr);
     VIR_DEBUG("release pool %p %s %s", pool, pool->name, uuidstr);
 
+    if (pool->privateDataFreeFunc) {
+        pool->privateDataFreeFunc(pool->privateData);
+    }
+
     VIR_FREE(pool->name);
     virObjectUnref(pool->conn);
 }
@@ -453,6 +464,8 @@ virStoragePoolDispose(void *obj)
  * @pool: pool owning the volume
  * @name: pointer to the storage vol name
  * @key: pointer to unique key of the volume
+ * @privateData: pointer to driver specific private data
+ * @freeFunc: private data cleanup function pointer specfic to driver
  *
  * Lookup if the storage vol is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
@@ -463,7 +476,7 @@ virStoragePoolDispose(void *obj)
  */
 virStorageVolPtr
 virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
-                 const char *key)
+                 const char *key, void *privateData, virFreeCallback freeFunc)
 {
     virStorageVolPtr ret = NULL;
 
@@ -488,6 +501,10 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
         goto no_memory;
 
     ret->conn = virObjectRef(conn);
+
+    /* set driver specific data */
+    ret->privateData = privateData;
+    ret->privateDataFreeFunc = freeFunc;
 
     return ret;
 
@@ -515,6 +532,10 @@ virStorageVolDispose(void *obj)
 {
     virStorageVolPtr vol = obj;
     VIR_DEBUG("release vol %p %s", vol, vol->name);
+
+    if (vol->privateDataFreeFunc) {
+        vol->privateDataFreeFunc(vol->privateData);
+    }
 
     VIR_FREE(vol->key);
     VIR_FREE(vol->name);

@@ -5863,13 +5863,15 @@ get_nonnull_interface(virConnectPtr conn, remote_nonnull_interface iface)
 static virStoragePoolPtr
 get_nonnull_storage_pool(virConnectPtr conn, remote_nonnull_storage_pool pool)
 {
-    return virGetStoragePool(conn, pool.name, BAD_CAST pool.uuid);
+    return virGetStoragePool(conn, pool.name, BAD_CAST pool.uuid,
+                             NULL, NULL);
 }
 
 static virStorageVolPtr
 get_nonnull_storage_vol(virConnectPtr conn, remote_nonnull_storage_vol vol)
 {
-    return virGetStorageVol(conn, vol.pool, vol.name, vol.key);
+    return virGetStorageVol(conn, vol.pool, vol.name, vol.key,
+                            NULL, NULL);
 }
 
 static virNodeDevicePtr

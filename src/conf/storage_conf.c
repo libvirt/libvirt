@@ -1981,7 +1981,8 @@ virStoragePoolList(virConnectPtr conn,
             if (pools) {
                 if (!(pool = virGetStoragePool(conn,
                                                poolobj->def->name,
-                                               poolobj->def->uuid))) {
+                                               poolobj->def->uuid,
+                                               NULL, NULL))) {
                     virStoragePoolObjUnlock(poolobj);
                     goto cleanup;
                 }

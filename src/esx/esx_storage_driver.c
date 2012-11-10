@@ -282,7 +282,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     md5_buffer(hostMount->mountInfo->path,
                strlen(hostMount->mountInfo->path), md5);
 
-    pool = virGetStoragePool(conn, name, md5);
+    pool = virGetStoragePool(conn, name, md5, NULL, NULL);
 
   cleanup:
     esxVI_ObjectContent_Free(&datastore);
@@ -348,7 +348,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         goto cleanup;
     }
 
-    pool = virGetStoragePool(conn, name, uuid);
+    pool = virGetStoragePool(conn, name, uuid, NULL, NULL);
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
@@ -766,7 +766,7 @@ esxStorageVolumeLookupByName(virStoragePoolPtr pool, const char *name)
         goto cleanup;
     }
 
-    volume = virGetStorageVol(pool->conn, pool->name, name, key);
+    volume = virGetStorageVol(pool->conn, pool->name, name, key, NULL, NULL);
 
   cleanup:
     VIR_FREE(datastorePath);
@@ -800,7 +800,7 @@ esxStorageVolumeLookupByPath(virConnectPtr conn, const char *path)
         goto cleanup;
     }
 
-    volume = virGetStorageVol(conn, datastoreName, directoryAndFileName, key);
+    volume = virGetStorageVol(conn, datastoreName, directoryAndFileName, key, NULL, NULL);
 
   cleanup:
     VIR_FREE(datastoreName);
@@ -934,7 +934,7 @@ esxStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
                 if (STREQ(key, key_candidate)) {
                     /* Found matching UUID */
                     volume = virGetStorageVol(conn, datastoreName,
-                                              volumeName, key);
+                                              volumeName, key, NULL, NULL);
                     goto cleanup;
                 }
             }
@@ -1155,7 +1155,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         goto cleanup;
     }
 
-    volume = virGetStorageVol(pool->conn, pool->name, def->name, key);
+    volume = virGetStorageVol(pool->conn, pool->name, def->name, key, NULL, NULL);
 
   cleanup:
     if (virtualDiskSpec != NULL) {
@@ -1357,7 +1357,7 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
         goto cleanup;
     }
 
-    volume = virGetStorageVol(pool->conn, pool->name, def->name, key);
+    volume = virGetStorageVol(pool->conn, pool->name, def->name, key, NULL, NULL);
 
   cleanup:
     VIR_FREE(sourceDatastorePath);

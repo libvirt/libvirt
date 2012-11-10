@@ -350,7 +350,8 @@ parallelsStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     if (pool)
@@ -374,7 +375,8 @@ parallelsStoragePoolLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     if (pool)
@@ -459,7 +461,8 @@ parallelsStoragePoolDefine(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid);
+    ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
+                            NULL, NULL);
 
 cleanup:
     virStoragePoolDefFree(def);
@@ -831,7 +834,8 @@ parallelsStorageVolumeLookupByName(virStoragePoolPtr pool,
     }
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
 
 cleanup:
     if (privpool)
@@ -857,7 +861,8 @@ parallelsStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
             if (privvol) {
                 ret = virGetStorageVol(conn,
                                        privconn->pools.objs[i]->def->name,
-                                       privvol->name, privvol->key);
+                                       privvol->name, privvol->key,
+                                       NULL, NULL);
                 virStoragePoolObjUnlock(privconn->pools.objs[i]);
                 break;
             }
@@ -889,7 +894,8 @@ parallelsStorageVolumeLookupByPathLocked(virConnectPtr conn, const char *path)
             if (privvol) {
                 ret = virGetStorageVol(conn,
                                        privconn->pools.objs[i]->def->name,
-                                       privvol->name, privvol->key);
+                                       privvol->name, privvol->key,
+                                       NULL, NULL);
                 virStoragePoolObjUnlock(privconn->pools.objs[i]);
                 break;
             }
@@ -1026,7 +1032,8 @@ parallelsStorageVolumeCreateXML(virStoragePoolPtr pool,
         goto cleanup;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
 cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
@@ -1115,7 +1122,8 @@ parallelsStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
     privpool->volumes.objs[privpool->volumes.count++] = privvol;
 
     ret = virGetStorageVol(pool->conn, privpool->def->name,
-                           privvol->name, privvol->key);
+                           privvol->name, privvol->key,
+                           NULL, NULL);
     privvol = NULL;
 
 cleanup:

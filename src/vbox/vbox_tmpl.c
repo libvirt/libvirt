@@ -8321,7 +8321,7 @@ static virStoragePoolPtr vboxStoragePoolLookupByName(virConnectPtr conn, const c
 
         ignore_value(virUUIDParse(uuidstr, uuid));
 
-        ret = virGetStoragePool(conn, name, uuid);
+        ret = virGetStoragePool(conn, name, uuid, NULL, NULL);
     }
 
     return ret;
@@ -8450,7 +8450,8 @@ static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const
                             vboxIIDToUUID(&hddIID, uuid);
                             virUUIDFormat(uuid, key);
 
-                            ret = virGetStorageVol(pool->conn, pool->name, name, key);
+                            ret = virGetStorageVol(pool->conn, pool->name, name, key,
+                                                   NULL, NULL);
 
                             VIR_DEBUG("virStorageVolPtr: %p", ret);
                             VIR_DEBUG("Storage Volume Name: %s", name);
@@ -8511,7 +8512,8 @@ static virStorageVolPtr vboxStorageVolLookupByKey(virConnectPtr conn, const char
 
             if (hddNameUtf8) {
                 if (vboxStorageNumOfPools(conn) == 1) {
-                    ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key);
+                    ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key,
+                                           NULL, NULL);
                     VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
                 } else {
                     /* TODO: currently only one default pool and thus
@@ -8583,7 +8585,8 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
                      * the check below, change it when pools are supported
                      */
                     if (vboxStorageNumOfPools(conn) == 1)
-                        ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key);
+                        ret = virGetStorageVol(conn, "default-pool", hddNameUtf8, key,
+                                               NULL, NULL);
 
                     VIR_DEBUG("Storage Volume Pool: %s", "default-pool");
                     VIR_DEBUG("Storage Volume Name: %s", hddNameUtf8);
@@ -8683,7 +8686,8 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
                         vboxIIDToUUID(&hddIID, uuid);
                         virUUIDFormat(uuid, key);
 
-                        ret = virGetStorageVol(pool->conn, pool->name, def->name, key);
+                        ret = virGetStorageVol(pool->conn, pool->name, def->name, key,
+                                               NULL, NULL);
                     }
 
                     vboxIIDUnalloc(&hddIID);

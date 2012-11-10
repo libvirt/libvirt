@@ -196,6 +196,13 @@ struct _virStoragePool {
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the storage pool external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the storage pool unique identifier */
+
+    /* Private data pointer which can be used by driver as they wish.
+     * Cleanup function pointer can be hooked to provide custom cleanup
+     * operation.
+     */
+    void *privateData;
+    virFreeCallback privateDataFreeFunc;
 };
 
 /**
@@ -209,6 +216,13 @@ struct _virStorageVol {
     char *pool;                          /* Pool name of owner */
     char *name;                          /* the storage vol external name */
     char *key;                           /* unique key for storage vol */
+
+    /* Private data pointer which can be used by driver as they wish.
+     * Cleanup function pointer can be hooked to provide custom cleanup
+     * operation.
+     */
+    void *privateData;
+    virFreeCallback privateDataFreeFunc;
 };
 
 /**
@@ -293,12 +307,16 @@ virInterfacePtr virGetInterface(virConnectPtr conn,
                                 const char *name,
                                 const char *mac);
 virStoragePoolPtr virGetStoragePool(virConnectPtr conn,
-                                      const char *name,
-                                      const unsigned char *uuid);
+                                    const char *name,
+                                    const unsigned char *uuid,
+                                    void *privateData,
+                                    virFreeCallback freeFunc);
 virStorageVolPtr virGetStorageVol(virConnectPtr conn,
                                      const char *pool,
                                     const char *name,
-                                    const char *key);
+                                    const char *key,
+                                    void *privateData,
+                                    virFreeCallback freeFunc);
 virNodeDevicePtr virGetNodeDevice(virConnectPtr conn,
                                   const char *name);
 virSecretPtr virGetSecret(virConnectPtr conn,
