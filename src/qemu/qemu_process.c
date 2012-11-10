@@ -2079,16 +2079,17 @@ qemuProcessInitPasswords(virConnectPtr conn,
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (vm->def->ngraphics == 1) {
-        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+    for (int i = 0 ; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
-                                                    &vm->def->graphics[0]->data.vnc.auth,
+                                                    &graphics->data.vnc.auth,
                                                     driver->vncPassword);
-        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
                                                     VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
-                                                    &vm->def->graphics[0]->data.spice.auth,
+                                                    &graphics->data.spice.auth,
                                                     driver->spicePassword);
         }
     }
@@ -3479,21 +3480,22 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(driver, vm, 1);
 
-    if (vm->def->ngraphics == 1) {
-        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            !vm->def->graphics[0]->data.vnc.socket &&
-            vm->def->graphics[0]->data.vnc.autoport) {
+    for (i = 0 ; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            !graphics->data.vnc.socket &&
+            graphics->data.vnc.autoport) {
             int port = qemuProcessNextFreePort(driver, driver->remotePortMin);
             if (port < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Unable to find an unused port for VNC"));
                 goto cleanup;
             }
-            vm->def->graphics[0]->data.vnc.port = port;
-        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            graphics->data.vnc.port = port;
+        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             int port = -1;
-            if (vm->def->graphics[0]->data.spice.autoport ||
-                vm->def->graphics[0]->data.spice.port == -1) {
+            if (graphics->data.spice.autoport ||
+                graphics->data.spice.port == -1) {
                 port = qemuProcessNextFreePort(driver, driver->remotePortMin);
 
                 if (port < 0) {
@@ -3502,13 +3504,13 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
 
-                vm->def->graphics[0]->data.spice.port = port;
+                graphics->data.spice.port = port;
             }
             if (driver->spiceTLS &&
-                (vm->def->graphics[0]->data.spice.autoport ||
-                 vm->def->graphics[0]->data.spice.tlsPort == -1)) {
+                (graphics->data.spice.autoport ||
+                 graphics->data.spice.tlsPort == -1)) {
                 int tlsPort = qemuProcessNextFreePort(driver,
-                                                      vm->def->graphics[0]->data.spice.port + 1);
+                                                      graphics->data.spice.port + 1);
                 if (tlsPort < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Unable to find an unused port for SPICE TLS"));
@@ -3516,20 +3518,19 @@ int qemuProcessStart(virConnectPtr conn,
                     goto cleanup;
                 }
 
-                vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
+                graphics->data.spice.tlsPort = tlsPort;
             }
         }
 
-        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-            vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            virDomainGraphicsDefPtr graphics = vm->def->graphics[0];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
+            graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (graphics->nListens == 0) {
                 if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0) {
                     virReportOOMError();
                     goto cleanup;
                 }
                 graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
-                if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+                if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
                     graphics->listens[0].address = strdup(driver->vncListen);
                 else
                     graphics->listens[0].address = strdup(driver->spiceListen);
@@ -4145,19 +4146,20 @@ retry:
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
-    /* Remove VNC port from port reservation bitmap, but only if it was
-       reserved by the driver (autoport=yes)
+    /* Remove VNC and Spice ports from port reservation bitmap, but only if
+       they were reserved by the driver (autoport=yes)
     */
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport) {
-        qemuProcessReturnPort(driver, vm->def->graphics[0]->data.vnc.port);
-    }
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-        vm->def->graphics[0]->data.spice.autoport) {
-        qemuProcessReturnPort(driver, vm->def->graphics[0]->data.spice.port);
-        qemuProcessReturnPort(driver, vm->def->graphics[0]->data.spice.tlsPort);
+    for (i = 0 ; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            graphics->data.vnc.autoport) {
+            qemuProcessReturnPort(driver, graphics->data.vnc.port);
+        }
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+            graphics->data.spice.autoport) {
+            qemuProcessReturnPort(driver, graphics->data.spice.port);
+            qemuProcessReturnPort(driver, graphics->data.spice.tlsPort);
+        }
     }
 
     vm->taint = 0;
