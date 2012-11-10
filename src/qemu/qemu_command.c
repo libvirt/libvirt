@@ -788,7 +788,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, qemuCapsPtr caps)
 
     return 0;
 
-    no_memory:
+no_memory:
     virReportOOMError();
     return -1;
 }
