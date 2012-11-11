@@ -76,16 +76,16 @@ struct _virNetworkDHCPHostDef {
     virSocketAddr ip;
 };
 
-typedef struct _virNetworkDNSTxtRecordsDef virNetworkDNSTxtRecordsDef;
-typedef virNetworkDNSTxtRecordsDef *virNetworkDNSTxtRecordsDefPtr;
-struct _virNetworkDNSTxtRecordsDef {
+typedef struct _virNetworkDNSTxtDef virNetworkDNSTxtDef;
+typedef virNetworkDNSTxtDef *virNetworkDNSTxtDefPtr;
+struct _virNetworkDNSTxtDef {
     char *name;
     char *value;
 };
 
-typedef struct _virNetworkDNSSrvRecordsDef virNetworkDNSSrvRecordsDef;
-typedef virNetworkDNSSrvRecordsDef *virNetworkDNSSrvRecordsDefPtr;
-struct _virNetworkDNSSrvRecordsDef {
+typedef struct _virNetworkDNSSrvDef virNetworkDNSSrvDef;
+typedef virNetworkDNSSrvDef *virNetworkDNSSrvDefPtr;
+struct _virNetworkDNSSrvDef {
     char *domain;
     char *service;
     char *protocol;
@@ -95,21 +95,23 @@ struct _virNetworkDNSSrvRecordsDef {
     int weight;
 };
 
-struct _virNetworkDNSHostsDef {
+typedef struct _virNetworkDNSHostDef virNetworkDNSHostDef;
+typedef virNetworkDNSHostDef *virNetworkDNSHostDefPtr;
+struct _virNetworkDNSHostDef {
     virSocketAddr ip;
     int nnames;
     char **names;
 };
 
-typedef struct _virNetworkDNSHostsDef *virNetworkDNSHostsDefPtr;
-
+typedef struct _virNetworkDNSDef virNetworkDNSDef;
+typedef virNetworkDNSDef *virNetworkDNSDefPtr;
 struct _virNetworkDNSDef {
-    unsigned int ntxtrecords;
-    virNetworkDNSTxtRecordsDefPtr txtrecords;
-    unsigned int nhosts;
-    virNetworkDNSHostsDefPtr hosts;
-    unsigned int nsrvrecords;
-    virNetworkDNSSrvRecordsDefPtr srvrecords;
+    size_t ntxts;
+    virNetworkDNSTxtDefPtr txts;
+    size_t nhosts;
+    virNetworkDNSHostDefPtr hosts;
+    size_t nsrvs;
+    virNetworkDNSSrvDefPtr srvs;
 };
 
 typedef struct _virNetworkDNSDef *virNetworkDNSDefPtr;

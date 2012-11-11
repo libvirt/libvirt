@@ -580,7 +580,7 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
 
     if (dnsdef) {
         for (i = 0; i < dnsdef->nhosts; i++) {
-            virNetworkDNSHostsDefPtr host = &(dnsdef->hosts[i]);
+            virNetworkDNSHostDefPtr host = &(dnsdef->hosts[i]);
             if (VIR_SOCKET_ADDR_VALID(&host->ip)) {
                 for (j = 0; j < host->nnames; j++)
                     if (dnsmasqAddHost(dctx, &host->ip, host->names[j]) < 0)
@@ -719,38 +719,38 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         virNetworkDNSDefPtr dns = network->def->dns;
         int i;
 
-        for (i = 0; i < dns->ntxtrecords; i++) {
+        for (i = 0; i < dns->ntxts; i++) {
             virCommandAddArgFormat(cmd, "--txt-record=%s,%s",
-                                   dns->txtrecords[i].name,
-                                   dns->txtrecords[i].value);
+                                   dns->txts[i].name,
+                                   dns->txts[i].value);
         }
 
-        for (i = 0; i < dns->nsrvrecords; i++) {
-            if (dns->srvrecords[i].service && dns->srvrecords[i].protocol) {
-                if (dns->srvrecords[i].port) {
-                    if (virAsprintf(&recordPort, "%d", dns->srvrecords[i].port) < 0) {
+        for (i = 0; i < dns->nsrvs; i++) {
+            if (dns->srvs[i].service && dns->srvs[i].protocol) {
+                if (dns->srvs[i].port) {
+                    if (virAsprintf(&recordPort, "%d", dns->srvs[i].port) < 0) {
                         virReportOOMError();
                         goto cleanup;
                     }
                 }
-                if (dns->srvrecords[i].priority) {
-                    if (virAsprintf(&recordPriority, "%d", dns->srvrecords[i].priority) < 0) {
+                if (dns->srvs[i].priority) {
+                    if (virAsprintf(&recordPriority, "%d", dns->srvs[i].priority) < 0) {
                         virReportOOMError();
                         goto cleanup;
                     }
                 }
-                if (dns->srvrecords[i].weight) {
-                    if (virAsprintf(&recordWeight, "%d", dns->srvrecords[i].weight) < 0) {
+                if (dns->srvs[i].weight) {
+                    if (virAsprintf(&recordWeight, "%d", dns->srvs[i].weight) < 0) {
                         virReportOOMError();
                         goto cleanup;
                     }
                 }
 
                 if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
-                                dns->srvrecords[i].service,
-                                dns->srvrecords[i].protocol,
-                                dns->srvrecords[i].domain   ? dns->srvrecords[i].domain : "",
-                                dns->srvrecords[i].target   ? dns->srvrecords[i].target : "",
+                                dns->srvs[i].service,
+                                dns->srvs[i].protocol,
+                                dns->srvs[i].domain   ? dns->srvs[i].domain : "",
+                                dns->srvs[i].target   ? dns->srvs[i].target : "",
                                 recordPort                  ? recordPort                : "",
                                 recordPriority              ? recordPriority            : "",
                                 recordWeight                ? recordWeight              : "") < 0) {
@@ -2764,7 +2764,7 @@ networkValidate(struct network_driver *driver,
             return -1;
         }
         if (def->dns &&
-            (def->dns->ntxtrecords || def->dns->nhosts || def->dns->nsrvrecords)) {
+            (def->dns->ntxts || def->dns->nhosts || def->dns->nsrvs)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported <dns> element in network %s "
                              "with forward mode='%s'"),

@@ -136,13 +136,13 @@ static void virNetworkIpDefClear(virNetworkIpDefPtr def)
 static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
 {
     if (def) {
-        if (def->txtrecords) {
-            while (def->ntxtrecords--) {
-                VIR_FREE(def->txtrecords[def->ntxtrecords].name);
-                VIR_FREE(def->txtrecords[def->ntxtrecords].value);
+        if (def->txts) {
+            while (def->ntxts--) {
+                VIR_FREE(def->txts[def->ntxts].name);
+                VIR_FREE(def->txts[def->ntxts].value);
             }
         }
-        VIR_FREE(def->txtrecords);
+        VIR_FREE(def->txts);
         if (def->nhosts) {
             while (def->nhosts--) {
                 while (def->hosts[def->nhosts].nnames--)
@@ -151,15 +151,15 @@ static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
             }
         }
         VIR_FREE(def->hosts);
-        if (def->nsrvrecords) {
-            while (def->nsrvrecords--) {
-                VIR_FREE(def->srvrecords[def->nsrvrecords].domain);
-                VIR_FREE(def->srvrecords[def->nsrvrecords].service);
-                VIR_FREE(def->srvrecords[def->nsrvrecords].protocol);
-                VIR_FREE(def->srvrecords[def->nsrvrecords].target);
+        if (def->nsrvs) {
+            while (def->nsrvs--) {
+                VIR_FREE(def->srvs[def->nsrvs].domain);
+                VIR_FREE(def->srvs[def->nsrvs].service);
+                VIR_FREE(def->srvs[def->nsrvs].protocol);
+                VIR_FREE(def->srvs[def->nsrvs].target);
             }
         }
-        VIR_FREE(def->srvrecords);
+        VIR_FREE(def->srvs);
         VIR_FREE(def);
     }
 }
@@ -883,18 +883,18 @@ virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
         goto error;
     }
 
-    if (VIR_REALLOC_N(def->srvrecords, def->nsrvrecords + 1) < 0) {
+    if (VIR_REALLOC_N(def->srvs, def->nsrvs + 1) < 0) {
         virReportOOMError();
         goto error;
     }
 
-    def->srvrecords[def->nsrvrecords].service = service;
-    def->srvrecords[def->nsrvrecords].protocol = protocol;
-    def->srvrecords[def->nsrvrecords].domain = NULL;
-    def->srvrecords[def->nsrvrecords].target = NULL;
-    def->srvrecords[def->nsrvrecords].port = 0;
-    def->srvrecords[def->nsrvrecords].priority = 0;
-    def->srvrecords[def->nsrvrecords].weight = 0;
+    def->srvs[def->nsrvs].service = service;
+    def->srvs[def->nsrvs].protocol = protocol;
+    def->srvs[def->nsrvs].domain = NULL;
+    def->srvs[def->nsrvs].target = NULL;
+    def->srvs[def->nsrvs].port = 0;
+    def->srvs[def->nsrvs].priority = 0;
+    def->srvs[def->nsrvs].weight = 0;
 
     /* Following attributes are optional but we had to make sure they're NULL above */
     if ((target = virXMLPropString(cur, "target")) && (domain = virXMLPropString(cur, "domain"))) {
@@ -902,23 +902,23 @@ virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
 
         ctxt->node = cur;
         if (virXPathInt("string(./@port)", ctxt, &port))
-            def->srvrecords[def->nsrvrecords].port = port;
+            def->srvs[def->nsrvs].port = port;
 
         if (virXPathInt("string(./@priority)", ctxt, &priority))
-            def->srvrecords[def->nsrvrecords].priority = priority;
+            def->srvs[def->nsrvs].priority = priority;
 
         if (virXPathInt("string(./@weight)", ctxt, &weight))
-            def->srvrecords[def->nsrvrecords].weight = weight;
+            def->srvs[def->nsrvs].weight = weight;
         ctxt->node = save_ctxt;
 
-        def->srvrecords[def->nsrvrecords].domain = domain;
-        def->srvrecords[def->nsrvrecords].target = target;
-        def->srvrecords[def->nsrvrecords].port = port;
-        def->srvrecords[def->nsrvrecords].priority = priority;
-        def->srvrecords[def->nsrvrecords].weight = weight;
+        def->srvs[def->nsrvs].domain = domain;
+        def->srvs[def->nsrvs].target = target;
+        def->srvs[def->nsrvs].port = port;
+        def->srvs[def->nsrvs].priority = priority;
+        def->srvs[def->nsrvs].weight = weight;
     }
 
-    def->nsrvrecords++;
+    def->nsrvs++;
 
     goto cleanup;
 
@@ -971,14 +971,14 @@ virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
                 goto error;
             }
 
-            if (VIR_REALLOC_N(def->txtrecords, def->ntxtrecords + 1) < 0) {
+            if (VIR_REALLOC_N(def->txts, def->ntxts + 1) < 0) {
                 virReportOOMError();
                 goto error;
             }
 
-            def->txtrecords[def->ntxtrecords].name = name;
-            def->txtrecords[def->ntxtrecords].value = value;
-            def->ntxtrecords++;
+            def->txts[def->ntxts].name = name;
+            def->txts[def->ntxts].value = value;
+            def->ntxts++;
             name = NULL;
             value = NULL;
         } else if (cur->type == XML_ELEMENT_NODE &&
@@ -1690,28 +1690,28 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<dns>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0 ; i < def->ntxtrecords ; i++) {
+    for (i = 0 ; i < def->ntxts ; i++) {
         virBufferAsprintf(buf, "<txt name='%s' value='%s' />\n",
-                              def->txtrecords[i].name,
-                              def->txtrecords[i].value);
+                              def->txts[i].name,
+                              def->txts[i].value);
     }
 
-    for (i = 0 ; i < def->nsrvrecords ; i++) {
-        if (def->srvrecords[i].service && def->srvrecords[i].protocol) {
+    for (i = 0 ; i < def->nsrvs ; i++) {
+        if (def->srvs[i].service && def->srvs[i].protocol) {
             virBufferAsprintf(buf, "<srv service='%s' protocol='%s'",
-                                  def->srvrecords[i].service,
-                                  def->srvrecords[i].protocol);
+                                  def->srvs[i].service,
+                                  def->srvs[i].protocol);
 
-            if (def->srvrecords[i].domain)
-                virBufferAsprintf(buf, " domain='%s'", def->srvrecords[i].domain);
-            if (def->srvrecords[i].target)
-                virBufferAsprintf(buf, " target='%s'", def->srvrecords[i].target);
-            if (def->srvrecords[i].port)
-                virBufferAsprintf(buf, " port='%d'", def->srvrecords[i].port);
-            if (def->srvrecords[i].priority)
-                virBufferAsprintf(buf, " priority='%d'", def->srvrecords[i].priority);
-            if (def->srvrecords[i].weight)
-                virBufferAsprintf(buf, " weight='%d'", def->srvrecords[i].weight);
+            if (def->srvs[i].domain)
+                virBufferAsprintf(buf, " domain='%s'", def->srvs[i].domain);
+            if (def->srvs[i].target)
+                virBufferAsprintf(buf, " target='%s'", def->srvs[i].target);
+            if (def->srvs[i].port)
+                virBufferAsprintf(buf, " port='%d'", def->srvs[i].port);
+            if (def->srvs[i].priority)
+                virBufferAsprintf(buf, " priority='%d'", def->srvs[i].priority);
+            if (def->srvs[i].weight)
+                virBufferAsprintf(buf, " weight='%d'", def->srvs[i].weight);
 
             virBufferAsprintf(buf, "/>\n");
         }
