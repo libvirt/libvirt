@@ -601,9 +601,9 @@ int virNetworkIpDefNetmask(const virNetworkIpDefPtr def,
 
 
 static int
-virNetworkDHCPRangeDefParse(const char *networkName,
-                            xmlNodePtr node,
-                            virNetworkDHCPRangeDefPtr range)
+virNetworkDHCPRangeDefParseXML(const char *networkName,
+                               xmlNodePtr node,
+                               virNetworkDHCPRangeDefPtr range)
 {
 
 
@@ -645,10 +645,10 @@ cleanup:
 }
 
 static int
-virNetworkDHCPHostDefParse(const char *networkName,
-                           xmlNodePtr node,
-                           virNetworkDHCPHostDefPtr host,
-                           bool partialOkay)
+virNetworkDHCPHostDefParseXML(const char *networkName,
+                              xmlNodePtr node,
+                              virNetworkDHCPHostDefPtr host,
+                              bool partialOkay)
 {
     char *mac = NULL, *name = NULL, *ip = NULL;
     virMacAddr addr;
@@ -732,9 +732,9 @@ cleanup:
 }
 
 static int
-virNetworkDHCPDefParse(const char *networkName,
-                       virNetworkIpDefPtr def,
-                       xmlNodePtr node)
+virNetworkDHCPDefParseXML(const char *networkName,
+                          xmlNodePtr node,
+                          virNetworkIpDefPtr def)
 {
 
     xmlNodePtr cur;
@@ -748,8 +748,8 @@ virNetworkDHCPDefParse(const char *networkName,
                 virReportOOMError();
                 return -1;
             }
-            if (virNetworkDHCPRangeDefParse(networkName, cur,
-                                            &def->ranges[def->nranges]) < 0) {
+            if (virNetworkDHCPRangeDefParseXML(networkName, cur,
+                                               &def->ranges[def->nranges]) < 0) {
                 return -1;
             }
             def->nranges++;
@@ -761,9 +761,9 @@ virNetworkDHCPDefParse(const char *networkName,
                 virReportOOMError();
                 return -1;
             }
-            if (virNetworkDHCPHostDefParse(networkName, cur,
-                                           &def->hosts[def->nhosts],
-                                           false) < 0) {
+            if (virNetworkDHCPHostDefParseXML(networkName, cur,
+                                              &def->hosts[def->nhosts],
+                                              false) < 0) {
                 return -1;
             }
             def->nhosts++;
@@ -1077,10 +1077,10 @@ cleanup:
 }
 
 static int
-virNetworkIPParseXML(const char *networkName,
-                     virNetworkIpDefPtr def,
-                     xmlNodePtr node,
-                     xmlXPathContextPtr ctxt)
+virNetworkIPDefParseXML(const char *networkName,
+                        xmlNodePtr node,
+                        xmlXPathContextPtr ctxt,
+                        virNetworkIpDefPtr def)
 {
     /*
      * virNetworkIpDef object is already allocated as part of an array.
@@ -1110,7 +1110,7 @@ virNetworkIPParseXML(const char *networkName,
             virReportError(VIR_ERR_XML_ERROR,
                            _("Bad address '%s' in definition of network '%s'"),
                            address, networkName);
-            goto error;
+            goto cleanup;
         }
 
     }
@@ -1122,27 +1122,27 @@ virNetworkIPParseXML(const char *networkName,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("no family specified for non-IPv4 address '%s' in network '%s'"),
                            address, networkName);
-            goto error;
+            goto cleanup;
         }
     } else if (STREQ(def->family, "ipv4")) {
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("family 'ipv4' specified for non-IPv4 address '%s' in network '%s'"),
                            address, networkName);
-            goto error;
+            goto cleanup;
         }
     } else if (STREQ(def->family, "ipv6")) {
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"),
                            address, networkName);
-            goto error;
+            goto cleanup;
         }
     } else {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unrecognized family '%s' in definition of network '%s'"),
                        def->family, networkName);
-        goto error;
+        goto cleanup;
     }
 
     /* parse/validate netmask */
@@ -1152,14 +1152,14 @@ virNetworkIPParseXML(const char *networkName,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("netmask specified without address in network '%s'"),
                            networkName);
-            goto error;
+            goto cleanup;
         }
 
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("netmask not supported for address '%s' in network '%s' (IPv4 only)"),
                            address, networkName);
-            goto error;
+            goto cleanup;
         }
 
         if (def->prefix > 0) {
@@ -1167,17 +1167,17 @@ virNetworkIPParseXML(const char *networkName,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("network '%s' cannot have both prefix='%u' and a netmask"),
                            networkName, def->prefix);
-            goto error;
+            goto cleanup;
         }
 
         if (virSocketAddrParse(&def->netmask, netmask, AF_UNSPEC) < 0)
-            goto error;
+            goto cleanup;
 
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("network '%s' has invalid netmask '%s' for address '%s' (both must be IPv4)"),
                            networkName, netmask, address);
-            goto error;
+            goto cleanup;
         }
     }
 
@@ -1187,9 +1187,9 @@ virNetworkIPParseXML(const char *networkName,
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE &&
                 xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
-                result = virNetworkDHCPDefParse(networkName, def, cur);
+                result = virNetworkDHCPDefParseXML(networkName, cur, def);
                 if (result)
-                    goto error;
+                    goto cleanup;
 
             } else if (cur->type == XML_ELEMENT_NODE &&
                        xmlStrEqual(cur->name, BAD_CAST "tftp")) {
@@ -1209,7 +1209,7 @@ virNetworkIPParseXML(const char *networkName,
 
     result = 0;
 
-error:
+cleanup:
     if (result < 0) {
         virNetworkIpDefClear(def);
     }
@@ -1246,7 +1246,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     if (!def->name) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing required name attribute in portgroup"));
-        goto error;
+        goto cleanup;
     }
 
     isDefault = virXPathString("string(./@default)", ctxt);
@@ -1255,21 +1255,21 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
         (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode, 0)))) {
-        goto error;
+        goto cleanup;
     }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
         !(def->bandwidth = virNetDevBandwidthParse(bandwidth_node))) {
-        goto error;
+        goto cleanup;
     }
 
     vlanNode = virXPathNode("./vlan", ctxt);
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &def->vlan) < 0)
-        goto error;
+        goto cleanup;
 
     result = 0;
-error:
+cleanup:
     if (result < 0) {
         virPortGroupDefClear(def);
     }
@@ -1437,8 +1437,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         }
         /* parse each addr */
         for (ii = 0; ii < nIps; ii++) {
-            int ret = virNetworkIPParseXML(def->name, &def->ips[ii],
-                                           ipNodes[ii], ctxt);
+            int ret = virNetworkIPDefParseXML(def->name, ipNodes[ii],
+                                              ctxt, &def->ips[ii]);
             if (ret < 0)
                 goto error;
             def->nips++;
@@ -2507,7 +2507,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     /* parse the xml into a virNetworkDHCPHostDef */
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
-        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, false) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, false) < 0)
             goto cleanup;
 
         /* search for the entry with this (mac|name),
@@ -2540,7 +2540,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
                (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
-        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, true) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, true) < 0)
             goto cleanup;
 
         /* log error if an entry with same name/address/ip already exists */
@@ -2574,7 +2574,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         }
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
-        if (virNetworkDHCPHostDefParse(def->name, ctxt->node, &host, false) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, false) < 0)
             goto cleanup;
 
         /* find matching entry - all specified attributes must match */
@@ -2640,7 +2640,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         goto cleanup;
     }
 
-    if (virNetworkDHCPRangeDefParse(def->name, ctxt->node, &range) < 0)
+    if (virNetworkDHCPRangeDefParseXML(def->name, ctxt->node, &range) < 0)
         goto cleanup;
 
     /* check if an entry with same name/address/ip already exists */
