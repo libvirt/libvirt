@@ -176,7 +176,24 @@ virNetworkDNSDefClear(virNetworkDNSDefPtr def)
     }
 }
 
-void virNetworkDefFree(virNetworkDefPtr def)
+static void
+virNetworkForwardDefClear(virNetworkForwardDefPtr def)
+{
+    int ii;
+
+    for (ii = 0 ; ii < def->npfs && def->pfs ; ii++) {
+        virNetworkForwardPfDefClear(&def->pfs[ii]);
+    }
+    VIR_FREE(def->pfs);
+
+    for (ii = 0 ; ii < def->nifs && def->ifs ; ii++) {
+        virNetworkForwardIfDefClear(&def->ifs[ii]);
+    }
+    VIR_FREE(def->ifs);
+}
+
+void
+virNetworkDefFree(virNetworkDefPtr def)
 {
     int ii;
 
@@ -187,15 +204,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->bridge);
     VIR_FREE(def->domain);
 
-    for (ii = 0 ; ii < def->forward.npfs && def->forward.pfs ; ii++) {
-        virNetworkForwardPfDefClear(&def->forward.pfs[ii]);
-    }
-    VIR_FREE(def->forward.pfs);
-
-    for (ii = 0 ; ii < def->forward.nifs && def->forward.ifs ; ii++) {
-        virNetworkForwardIfDefClear(&def->forward.ifs[ii]);
-    }
-    VIR_FREE(def->forward.ifs);
+    virNetworkForwardDefClear(&def->forward);
 
     for (ii = 0 ; ii < def->nips && def->ips ; ii++) {
         virNetworkIpDefClear(&def->ips[ii]);
@@ -1278,6 +1287,211 @@ cleanup:
     return result;
 }
 
+static int
+virNetworkForwardDefParseXML(const char *networkName,
+                             xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
+                             virNetworkForwardDefPtr def)
+{
+    int ii, ret = -1;
+    xmlNodePtr *forwardIfNodes = NULL;
+    xmlNodePtr *forwardPfNodes = NULL;
+    xmlNodePtr *forwardAddrNodes = NULL;
+    int nForwardIfs, nForwardAddrs, nForwardPfs;
+    char *forwardDev = NULL;
+    char *forwardManaged = NULL;
+    char *type = NULL;
+    xmlNodePtr save = ctxt->node;
+
+    ctxt->node = node;
+
+    if (!(type = virXPathString("string(./@mode)", ctxt))) {
+        def->type = VIR_NETWORK_FORWARD_NAT;
+    } else {
+        if ((def->type = virNetworkForwardTypeFromString(type)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown forwarding type '%s'"), type);
+            goto cleanup;
+        }
+        VIR_FREE(type);
+    }
+
+    forwardManaged = virXPathString("string(./@managed)", ctxt);
+    if (forwardManaged != NULL &&
+        STRCASEEQ(forwardManaged, "yes")) {
+        def->managed = true;
+    }
+
+    /* bridge and hostdev modes can use a pool of physical interfaces */
+    nForwardIfs = virXPathNodeSet("./interface", ctxt, &forwardIfNodes);
+    if (nForwardIfs < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <interface> element found in <forward> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+
+    nForwardAddrs = virXPathNodeSet("./address", ctxt, &forwardAddrNodes);
+    if (nForwardAddrs < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <address> element found in <forward> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+
+    nForwardPfs = virXPathNodeSet("./pf", ctxt, &forwardPfNodes);
+    if (nForwardPfs < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <pf> element found in <forward> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+
+    if (((nForwardIfs > 0) + (nForwardAddrs > 0) + (nForwardPfs > 0)) > 1) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("<address>, <interface>, and <pf> elements in <forward> "
+                         "of network %s are mutually exclusive"),
+                       networkName);
+        goto cleanup;
+    }
+
+    forwardDev = virXPathString("string(./@dev)", ctxt);
+    if (forwardDev && (nForwardAddrs > 0 || nForwardPfs > 0)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("the <forward> 'dev' attribute cannot be used when "
+                         "<address> or <pf> sub-elements are present "
+                         "in network %s"));
+        goto cleanup;
+    }
+
+    if (nForwardIfs > 0 || forwardDev) {
+
+        if (VIR_ALLOC_N(def->ifs, MAX(nForwardIfs, 1)) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (forwardDev) {
+            def->ifs[0].device.dev = forwardDev;
+            def->ifs[0].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+            forwardDev = NULL;
+            def->nifs++;
+        }
+
+        /* parse each <interface> */
+        for (ii = 0; ii < nForwardIfs; ii++) {
+            forwardDev = virXMLPropString(forwardIfNodes[ii], "dev");
+            if (!forwardDev) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Missing required dev attribute in "
+                                 "<forward> <interface> element of network %s"),
+                               networkName);
+                goto cleanup;
+            }
+
+            if ((ii == 0) && (def->nifs == 1)) {
+                /* both <forward dev='x'> and <interface dev='x'/> are
+                 * present.  If they don't match, it's an error.
+                 */
+                if (STRNEQ(forwardDev, def->ifs[0].device.dev)) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("<forward dev='%s'> must match first "
+                                     "<interface dev='%s'/> in network %s"),
+                                   def->ifs[0].device.dev,
+                                   forwardDev, networkName);
+                    goto cleanup;
+                }
+                VIR_FREE(forwardDev);
+                continue;
+            }
+
+            def->ifs[ii].device.dev = forwardDev;
+            forwardDev = NULL;
+            def->ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
+            def->nifs++;
+        }
+
+    } else if (nForwardAddrs > 0) {
+
+        if (VIR_ALLOC_N(def->ifs, nForwardAddrs) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (ii = 0; ii < nForwardAddrs; ii++) {
+            if (!(type = virXMLPropString(forwardAddrNodes[ii], "type"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing address type in network %s"),
+                               networkName);
+                goto cleanup;
+            }
+
+            if ((def->ifs[ii].type = virNetworkForwardHostdevDeviceTypeFromString(type)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unknown address type '%s' in network %s"),
+                               type, networkName);
+                goto cleanup;
+            }
+
+            switch (def->ifs[ii].type) {
+            case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
+                if (virDevicePCIAddressParseXML(forwardAddrNodes[ii],
+                                                &def->ifs[ii].device.pci) < 0) {
+                    goto cleanup;
+                }
+                break;
+
+            /* Add USB case here if we ever find a reason to support it */
+
+            default:
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("unsupported address type '%s' in network %s"),
+                               type, networkName);
+                goto cleanup;
+            }
+            VIR_FREE(type);
+            def->nifs++;
+        }
+
+    } else if (nForwardPfs > 1) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Only one <pf> element is allowed in <forward> of network %s"),
+                       networkName);
+        goto cleanup;
+    } else if (nForwardPfs == 1) {
+
+        if (VIR_ALLOC_N(def->pfs, nForwardPfs) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        forwardDev = virXMLPropString(*forwardPfNodes, "dev");
+        if (!forwardDev) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Missing required dev attribute "
+                             "in <pf> element of network '%s'"),
+                           networkName);
+            goto cleanup;
+        }
+
+        def->pfs->dev = forwardDev;
+        forwardDev = NULL;
+        def->npfs++;
+
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(type);
+    VIR_FREE(forwardDev);
+    VIR_FREE(forwardManaged);
+    VIR_FREE(forwardPfNodes);
+    VIR_FREE(forwardIfNodes);
+    VIR_FREE(forwardAddrNodes);
+    ctxt->node = save;
+    return ret;
+}
+
 static virNetworkDefPtr
 virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 {
@@ -1286,17 +1500,11 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     char *stp = NULL;
     xmlNodePtr *ipNodes = NULL;
     xmlNodePtr *portGroupNodes = NULL;
-    xmlNodePtr *forwardIfNodes = NULL;
-    xmlNodePtr *forwardPfNodes = NULL;
-    xmlNodePtr *forwardAddrNodes = NULL;
+    int nIps, nPortGroups;
     xmlNodePtr dnsNode = NULL;
     xmlNodePtr virtPortNode = NULL;
     xmlNodePtr forwardNode = NULL;
-    int nIps, nPortGroups, nForwardIfs, nForwardPfs, nForwardAddrs;
     char *ipv6nogwStr = NULL;
-    char *forwardDev = NULL;
-    char *forwardManaged = NULL;
-    char *type = NULL;
     xmlNodePtr save = ctxt->node;
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
@@ -1362,6 +1570,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     /* Parse bridge information */
     def->bridge = virXPathString("string(./bridge[1]/@name)", ctxt);
     stp = virXPathString("string(./bridge[1]/@stp)", ctxt);
+    def->stp = (stp && STREQ(stp, "off")) ? 0 : 1;
 
     if (virXPathULong("string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
         def->delay = 0;
@@ -1446,246 +1655,82 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     VIR_FREE(ipNodes);
 
     forwardNode = virXPathNode("./forward", ctxt);
-    if (!forwardNode) {
-        def->forward.type = VIR_NETWORK_FORWARD_NONE;
-        def->stp = (stp && STREQ(stp, "off")) ? 0 : 1;
-    } else {
-        ctxt->node = forwardNode;
-        tmp = virXPathString("string(./@mode)", ctxt);
-        if (tmp) {
-            if ((def->forward.type = virNetworkForwardTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("unknown forwarding type '%s'"), tmp);
-                VIR_FREE(tmp);
-                goto error;
-            }
-            VIR_FREE(tmp);
-        } else {
-            def->forward.type = VIR_NETWORK_FORWARD_NAT;
-        }
-
-        forwardDev = virXPathString("string(./@dev)", ctxt);
-        forwardManaged = virXPathString("string(./@managed)", ctxt);
-        if (forwardManaged != NULL) {
-            if (STRCASEEQ(forwardManaged, "yes"))
-                def->forward.managed = true;
-        }
-
-        /* all of these modes can use a pool of physical interfaces */
-        nForwardIfs = virXPathNodeSet("./interface", ctxt, &forwardIfNodes);
-        nForwardPfs = virXPathNodeSet("./pf", ctxt, &forwardPfNodes);
-        nForwardAddrs = virXPathNodeSet("./address", ctxt, &forwardAddrNodes);
-
-        if (nForwardIfs < 0 || nForwardPfs < 0 || nForwardAddrs < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("No interface pool or SRIOV physical device given"));
-            goto error;
-        }
-
-        if ((nForwardIfs > 0) && (nForwardAddrs > 0)) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Address and interface attributes are mutually exclusive"));
-            goto error;
-        }
-
-        if ((nForwardPfs > 0) && ((nForwardIfs > 0) || (nForwardAddrs > 0))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Address/interface attributes and Physical function are mutually exclusive "));
-            goto error;
-        }
-
-        if (nForwardPfs == 1) {
-            if (VIR_ALLOC_N(def->forward.pfs, nForwardPfs) < 0) {
-                virReportOOMError();
-                goto error;
-            }
-
-            if (forwardDev) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("A forward Dev should not be used when using a SRIOV PF"));
-                goto error;
-            }
-
-            forwardDev = virXMLPropString(*forwardPfNodes, "dev");
-            if (!forwardDev) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Missing required dev attribute in network '%s' pf element"),
-                               def->name);
-                goto error;
-            }
-
-            def->forward.pfs->dev = forwardDev;
-            forwardDev = NULL;
-            def->forward.npfs++;
-        } else if (nForwardPfs > 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Use of more than one physical interface is not allowed"));
-            goto error;
-        }
-        if (nForwardAddrs > 0) {
-            int ii;
-
-            if (VIR_ALLOC_N(def->forward.ifs, nForwardAddrs) < 0) {
-                virReportOOMError();
-                goto error;
-            }
-
-            if (forwardDev) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("A forward Dev should not be used when using address attribute"));
-                goto error;
-            }
-
-            for (ii = 0; ii < nForwardAddrs; ii++) {
-                type = virXMLPropString(forwardAddrNodes[ii], "type");
-
-                if (type) {
-                    if ((def->forward.ifs[ii].type = virNetworkForwardHostdevDeviceTypeFromString(type)) < 0) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("unknown address type '%s'"), type);
-                        goto error;
-                    }
-                } else {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   "%s", _("No type specified for device address"));
-                    goto error;
-                }
-
-                switch (def->forward.ifs[ii].type) {
-                case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
-                    if (virDevicePCIAddressParseXML(forwardAddrNodes[ii], &(def->forward.ifs[ii].device.pci)) < 0)
-                        goto error;
-                    break;
-
-                /* Add USB case here */
-
-                default:
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("unknown address type '%s'"), type);
-                    goto error;
-                }
-                VIR_FREE(type);
-                def->forward.nifs++;
-            }
-        }
-        else if (nForwardIfs > 0 || forwardDev) {
-            int ii;
-
-            /* allocate array to hold all the portgroups */
-            if (VIR_ALLOC_N(def->forward.ifs, MAX(nForwardIfs, 1)) < 0) {
-                virReportOOMError();
-                goto error;
-            }
-
-            if (forwardDev) {
-                def->forward.ifs[0].device.dev = forwardDev;
-                def->forward.ifs[0].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-                forwardDev = NULL;
-                def->forward.nifs++;
-            }
-
-            /* parse each forwardIf */
-            for (ii = 0; ii < nForwardIfs; ii++) {
-                forwardDev = virXMLPropString(forwardIfNodes[ii], "dev");
-                if (!forwardDev) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("Missing required dev attribute in network '%s' forward interface element"),
-                                   def->name);
-                    goto error;
-                }
-
-                if ((ii == 0) && (def->forward.nifs == 1)) {
-                    /* both forwardDev and an interface element are present.
-                     * If they don't match, it's an error. */
-                    if (STRNEQ(forwardDev, def->forward.ifs[0].device.dev)) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("forward dev '%s' must match first interface element dev '%s' in network '%s'"),
-                                       def->forward.ifs[0].device.dev,
-                                       forwardDev, def->name);
-                        goto error;
-                    }
-                    VIR_FREE(forwardDev);
-                    continue;
-                }
-
-                def->forward.ifs[ii].device.dev = forwardDev;
-                forwardDev = NULL;
-                def->forward.ifs[ii].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-                def->forward.nifs++;
-            }
-        }
-        VIR_FREE(type);
-        VIR_FREE(forwardDev);
-        VIR_FREE(forwardManaged);
-        VIR_FREE(forwardPfNodes);
-        VIR_FREE(forwardIfNodes);
-        VIR_FREE(forwardAddrNodes);
-        switch (def->forward.type) {
-        case VIR_NETWORK_FORWARD_ROUTE:
-        case VIR_NETWORK_FORWARD_NAT:
-            /* It's pointless to specify L3 forwarding without specifying
-             * the network we're on.
-             */
-            if (def->nips == 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("%s forwarding requested, but no IP address provided for network '%s'"),
-                               virNetworkForwardTypeToString(def->forward.type),
-                               def->name);
-                goto error;
-            }
-            if (def->forward.nifs > 1) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("multiple forwarding interfaces specified for network '%s', only one is supported"),
-                               def->name);
-                goto error;
-            }
-            def->stp = (stp && STREQ(stp, "off")) ? 0 : 1;
-            break;
-        case VIR_NETWORK_FORWARD_PRIVATE:
-        case VIR_NETWORK_FORWARD_VEPA:
-        case VIR_NETWORK_FORWARD_PASSTHROUGH:
-        case VIR_NETWORK_FORWARD_HOSTDEV:
-            if (def->bridge) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("bridge name not allowed in %s mode (network '%s')"),
-                               virNetworkForwardTypeToString(def->forward.type),
-                               def->name);
-                goto error;
-            }
-            /* fall through to next case */
-        case VIR_NETWORK_FORWARD_BRIDGE:
-            if (def->delay || stp) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("bridge delay/stp options only allowed in route, nat, and isolated mode, not in %s (network '%s')"),
-                               virNetworkForwardTypeToString(def->forward.type),
-                               def->name);
-                goto error;
-            }
-            if (def->bridge && (def->forward.nifs || def->forward.npfs)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("A network with forward mode='%s' can specify "
-                                 "a  bridge name or a forward dev, but not "
-                                 "both (network '%s')"),
-                               virNetworkForwardTypeToString(def->forward.type),
-                               def->name);
-                goto error;
-            }
-            break;
-        }
+    if (forwardNode &&
+        virNetworkForwardDefParseXML(def->name, forwardNode, ctxt, &def->forward) < 0) {
+        goto error;
     }
+
+    /* Validate some items in the main NetworkDef that need to align
+     * with the chosen forward mode.
+     */
+    switch (def->forward.type) {
+    case VIR_NETWORK_FORWARD_NONE:
+        break;
+
+    case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_NAT:
+        /* It's pointless to specify L3 forwarding without specifying
+         * the network we're on.
+         */
+        if (def->nips == 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("%s forwarding requested, "
+                             "but no IP address provided for network '%s'"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+        }
+        if (def->forward.nifs > 1) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("multiple forwarding interfaces specified "
+                             "for network '%s', only one is supported"),
+                           def->name);
+            goto error;
+        }
+        break;
+
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+    case VIR_NETWORK_FORWARD_HOSTDEV:
+        if (def->bridge) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("bridge name not allowed in %s mode (network '%s')"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+        }
+        /* fall through to next case */
+    case VIR_NETWORK_FORWARD_BRIDGE:
+        if (def->delay || stp) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("bridge delay/stp options only allowed in route, nat, and isolated mode, not in %s (network '%s')"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+        }
+        if (def->bridge && (def->forward.nifs || def->forward.npfs)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("A network with forward mode='%s' can specify "
+                             "a bridge name or a forward dev, but not "
+                             "both (network '%s')"),
+                           virNetworkForwardTypeToString(def->forward.type),
+                           def->name);
+            goto error;
+        }
+        break;
+    }
+
     VIR_FREE(stp);
     ctxt->node = save;
     return def;
 
- error:
+error:
     VIR_FREE(stp);
     virNetworkDefFree(def);
     VIR_FREE(ipNodes);
     VIR_FREE(portGroupNodes);
-    VIR_FREE(forwardIfNodes);
-    VIR_FREE(forwardPfNodes);
     VIR_FREE(ipv6nogwStr);
-    VIR_FREE(forwardDev);
     ctxt->node = save;
     return NULL;
 }
