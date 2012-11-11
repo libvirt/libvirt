@@ -118,15 +118,14 @@ virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
     VIR_FREE(def->name);
 }
 
-static void virNetworkIpDefClear(virNetworkIpDefPtr def)
+static void
+virNetworkIpDefClear(virNetworkIpDefPtr def)
 {
-    int ii;
-
     VIR_FREE(def->family);
     VIR_FREE(def->ranges);
 
-    for (ii = 0 ; ii < def->nhosts && def->hosts ; ii++)
-        virNetworkDHCPHostDefClear(&def->hosts[ii]);
+    while (def->nhosts--)
+        virNetworkDHCPHostDefClear(&def->hosts[def->nhosts]);
 
     VIR_FREE(def->hosts);
     VIR_FREE(def->tftproot);
