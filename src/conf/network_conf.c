@@ -133,34 +133,47 @@ static void virNetworkIpDefClear(virNetworkIpDefPtr def)
     VIR_FREE(def->bootfile);
 }
 
-static void virNetworkDNSDefFree(virNetworkDNSDefPtr def)
+static void
+virNetworkDNSTxtDefClear(virNetworkDNSTxtDefPtr def)
 {
-    if (def) {
-        if (def->txts) {
-            while (def->ntxts--) {
-                VIR_FREE(def->txts[def->ntxts].name);
-                VIR_FREE(def->txts[def->ntxts].value);
-            }
-        }
+    VIR_FREE(def->name);
+    VIR_FREE(def->value);
+}
+
+static void
+virNetworkDNSHostDefClear(virNetworkDNSHostDefPtr def)
+{
+    while (def->nnames--)
+        VIR_FREE(def->names[def->nnames]);
+    VIR_FREE(def->names);
+}
+
+static void
+virNetworkDNSSrvDefClear(virNetworkDNSSrvDefPtr def)
+{
+    VIR_FREE(def->domain);
+    VIR_FREE(def->service);
+    VIR_FREE(def->protocol);
+    VIR_FREE(def->target);
+}
+
+static void
+virNetworkDNSDefClear(virNetworkDNSDefPtr def)
+{
+    if (def->txts) {
+        while (def->ntxts--)
+            virNetworkDNSTxtDefClear(&def->txts[def->ntxts]);
         VIR_FREE(def->txts);
-        if (def->nhosts) {
-            while (def->nhosts--) {
-                while (def->hosts[def->nhosts].nnames--)
-                    VIR_FREE(def->hosts[def->nhosts].names[def->hosts[def->nhosts].nnames]);
-                VIR_FREE(def->hosts[def->nhosts].names);
-            }
-        }
+    }
+    if (def->hosts) {
+        while (def->nhosts--)
+            virNetworkDNSHostDefClear(&def->hosts[def->nhosts]);
         VIR_FREE(def->hosts);
-        if (def->nsrvs) {
-            while (def->nsrvs--) {
-                VIR_FREE(def->srvs[def->nsrvs].domain);
-                VIR_FREE(def->srvs[def->nsrvs].service);
-                VIR_FREE(def->srvs[def->nsrvs].protocol);
-                VIR_FREE(def->srvs[def->nsrvs].target);
-            }
-        }
+    }
+    if (def->srvs) {
+        while (def->nsrvs--)
+            virNetworkDNSSrvDefClear(&def->srvs[def->nsrvs]);
         VIR_FREE(def->srvs);
-        VIR_FREE(def);
     }
 }
 
@@ -195,7 +208,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
     }
     VIR_FREE(def->portGroups);
 
-    virNetworkDNSDefFree(def->dns);
+    virNetworkDNSDefClear(&def->dns);
 
     VIR_FREE(def->virtPortProfile);
 
@@ -787,224 +800,279 @@ virNetworkDHCPDefParse(const char *networkName,
 }
 
 static int
-virNetworkDNSHostsDefParseXML(virNetworkDNSDefPtr def,
-                              xmlNodePtr node)
+virNetworkDNSHostDefParseXML(const char *networkName,
+                             xmlNodePtr node,
+                             virNetworkDNSHostDefPtr def,
+                             bool partialOkay)
 {
     xmlNodePtr cur;
     char *ip;
-    virSocketAddr inaddr;
-    int ret = -1;
 
-    if (!(ip = virXMLPropString(node, "ip")) ||
-        (virSocketAddrParse(&inaddr, ip, AF_UNSPEC) < 0)) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("Missing IP address in DNS host definition"));
+    if (!(ip = virXMLPropString(node, "ip")) && !partialOkay) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing IP address in network '%s' DNS HOST record"),
+                       networkName);
+        VIR_FREE(ip);
+        goto error;
+    }
+
+    if (ip && (virSocketAddrParse(&def->ip, ip, AF_UNSPEC) < 0)) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Invalid IP address in network '%s' DNS HOST record"),
+                       networkName);
         VIR_FREE(ip);
         goto error;
     }
     VIR_FREE(ip);
-
-    if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0) {
-        virReportOOMError();
-        goto error;
-    }
-
-    def->hosts[def->nhosts].ip = inaddr;
-    def->hosts[def->nhosts].nnames = 0;
-
-    if (VIR_ALLOC(def->hosts[def->nhosts].names) < 0) {
-        virReportOOMError();
-        goto error;
-    }
 
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "hostname")) {
               if (cur->children != NULL) {
-                  if (VIR_REALLOC_N(def->hosts[def->nhosts].names, def->hosts[def->nhosts].nnames + 1) < 0) {
+                  if (VIR_REALLOC_N(def->names, def->nnames + 1) < 0) {
                       virReportOOMError();
                       goto error;
                   }
-
-                  def->hosts[def->nhosts].names[def->hosts[def->nhosts].nnames] = strdup((char *)cur->children->content);
-                  def->hosts[def->nhosts].nnames++;
+                  def->names[def->nnames++] = (char *)xmlNodeGetContent(cur);
+                  if (!def->names[def->nnames - 1]) {
+                      virReportError(VIR_ERR_XML_DETAIL,
+                                     _("Missing hostname in network '%s' DNS HOST record"),
+                                     networkName);
+                  }
               }
         }
-
         cur = cur->next;
     }
+    if (def->nnames == 0 && !partialOkay) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing hostname in network '%s' DNS HOST record"),
+                       networkName);
+        goto error;
+    }
 
-    def->nhosts++;
+    if (!VIR_SOCKET_ADDR_VALID(&def->ip) && def->nnames == 0) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing ip and hostname in network '%s' DNS HOST record"),
+                       networkName);
+        goto error;
+    }
 
-    ret = 0;
+    return 0;
 
 error:
-    return ret;
+    virNetworkDNSHostDefClear(def);
+    return -1;
 }
 
 static int
-virNetworkDNSSrvDefParseXML(virNetworkDNSDefPtr def,
-                            xmlNodePtr cur,
-                            xmlXPathContextPtr ctxt)
+virNetworkDNSSrvDefParseXML(const char *networkName,
+                            xmlNodePtr node,
+                            xmlXPathContextPtr ctxt,
+                            virNetworkDNSSrvDefPtr def,
+                            bool partialOkay)
 {
-    char *domain = NULL;
-    char *service = NULL;
-    char *protocol = NULL;
-    char *target = NULL;
-    int port;
-    int priority;
-    int weight;
-    int ret = 0;
-
-    if (!(service = virXMLPropString(cur, "service"))) {
+    if (!(def->service = virXMLPropString(node, "service")) && !partialOkay) {
         virReportError(VIR_ERR_XML_DETAIL,
-                       "%s", _("Missing required service attribute in dns srv record"));
+                       _("Missing required service attribute in DNS SRV record "
+                         " of network %s"), networkName);
+        goto error;
+    }
+    if (strlen(def->service) > DNS_RECORD_LENGTH_SRV) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Service name '%s' in network %s is too long, limit is %d bytes"),
+                       def->service, networkName, DNS_RECORD_LENGTH_SRV);
         goto error;
     }
 
-    if (strlen(service) > DNS_RECORD_LENGTH_SRV) {
+    if (!(def->protocol = virXMLPropString(node, "protocol")) && !partialOkay) {
         virReportError(VIR_ERR_XML_DETAIL,
-                       _("Service name is too long, limit is %d bytes"),
-                       DNS_RECORD_LENGTH_SRV);
-        goto error;
-    }
-
-    if (!(protocol = virXMLPropString(cur, "protocol"))) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("Missing required protocol attribute in dns srv record '%s'"), service);
+                       _("Missing required protocol attribute "
+                         "in dns srv record '%s' of network %s"),
+                       def->service, networkName);
         goto error;
     }
 
     /* Check whether protocol value is the supported one */
-    if (STRNEQ(protocol, "tcp") && (STRNEQ(protocol, "udp"))) {
+    if (STRNEQ(def->protocol, "tcp") && (STRNEQ(def->protocol, "udp"))) {
         virReportError(VIR_ERR_XML_DETAIL,
-                       _("Invalid protocol attribute value '%s'"), protocol);
+                       _("Invalid protocol attribute value '%s' "
+                         " in DNS SRV record of network %s"),
+                       def->protocol, networkName);
         goto error;
     }
 
-    if (VIR_REALLOC_N(def->srvs, def->nsrvs + 1) < 0) {
-        virReportOOMError();
-        goto error;
-    }
-
-    def->srvs[def->nsrvs].service = service;
-    def->srvs[def->nsrvs].protocol = protocol;
-    def->srvs[def->nsrvs].domain = NULL;
-    def->srvs[def->nsrvs].target = NULL;
-    def->srvs[def->nsrvs].port = 0;
-    def->srvs[def->nsrvs].priority = 0;
-    def->srvs[def->nsrvs].weight = 0;
-
-    /* Following attributes are optional but we had to make sure they're NULL above */
-    if ((target = virXMLPropString(cur, "target")) && (domain = virXMLPropString(cur, "domain"))) {
+    /* Following attributes are optional */
+    if ((def->target = virXMLPropString(node, "target")) &&
+        (def->domain = virXMLPropString(node, "domain"))) {
         xmlNodePtr save_ctxt = ctxt->node;
 
-        ctxt->node = cur;
-        if (virXPathInt("string(./@port)", ctxt, &port))
-            def->srvs[def->nsrvs].port = port;
+        ctxt->node = node;
+        if (virXPathUInt("string(./@port)", ctxt, &def->port) < 0 ||
+            def->port > 65535) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing or invalid port attribute "
+                             "in network %s"), networkName);
+            goto error;
+        }
 
-        if (virXPathInt("string(./@priority)", ctxt, &priority))
-            def->srvs[def->nsrvs].priority = priority;
+        if (virXPathUInt("string(./@priority)", ctxt, &def->priority) < 0 ||
+            def->priority > 65535) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing or invalid priority attribute "
+                             "in network %s"), networkName);
+            goto error;
+        }
 
-        if (virXPathInt("string(./@weight)", ctxt, &weight))
-            def->srvs[def->nsrvs].weight = weight;
+        if (virXPathUInt("string(./@weight)", ctxt, &def->weight) < 0 ||
+            def->weight > 65535) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Missing or invalid weight attribute "
+                             "in network %s"), networkName);
+            goto error;
+        }
+
         ctxt->node = save_ctxt;
-
-        def->srvs[def->nsrvs].domain = domain;
-        def->srvs[def->nsrvs].target = target;
-        def->srvs[def->nsrvs].port = port;
-        def->srvs[def->nsrvs].priority = priority;
-        def->srvs[def->nsrvs].weight = weight;
     }
 
-    def->nsrvs++;
-
-    goto cleanup;
+    if (!(def->service || def->protocol)) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing required service attribute or protocol "
+                         "in DNS SRV record of network %s"), networkName);
+        goto error;
+    }
+    return 0;
 
 error:
-    VIR_FREE(domain);
-    VIR_FREE(service);
-    VIR_FREE(protocol);
-    VIR_FREE(target);
-
-    ret = -1;
-
-cleanup:
-    return ret;
+    virNetworkDNSSrvDefClear(def);
+    return -1;
 }
 
 static int
-virNetworkDNSDefParseXML(virNetworkDNSDefPtr *dnsdef,
-                         xmlNodePtr node,
-                         xmlXPathContextPtr ctxt)
+virNetworkDNSTxtDefParseXML(const char *networkName,
+                            xmlNodePtr node,
+                            virNetworkDNSTxtDefPtr def,
+                            bool partialOkay)
 {
-    xmlNodePtr cur;
-    int ret = -1;
-    char *name = NULL;
-    char *value = NULL;
-    virNetworkDNSDefPtr def = NULL;
-
-    if (VIR_ALLOC(def) < 0) {
-        virReportOOMError();
+    if (!(def->name = virXMLPropString(node, "name"))) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("missing required name attribute in DNS TXT record "
+                         "of network %s"), networkName);
+        goto error;
+    }
+    if (strchr(def->name, ' ') != NULL) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("prohibited space character in DNS TXT record "
+                         "name '%s' of network %s"), def->name, networkName);
+        goto error;
+    }
+    if (!(def->value = virXMLPropString(node, "value")) && !partialOkay) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("missing required value attribute in DNS TXT record "
+                         "named '%s' of network %s"), def->name, networkName);
         goto error;
     }
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "txt")) {
-            if (!(name = virXMLPropString(cur, "name"))) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               "%s", _("Missing required name attribute in dns txt record"));
-                goto error;
-            }
-            if (!(value = virXMLPropString(cur, "value"))) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("Missing required value attribute in dns txt record '%s'"), name);
-                goto error;
-            }
+    if (!(def->name || def->value)) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("Missing required name or value "
+                         "in DNS TXT record of network %s"), networkName);
+        goto error;
+    }
+    return 0;
 
-            if (strchr(name, ' ') != NULL) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("spaces are not allowed in DNS TXT record names (name is '%s')"), name);
-                goto error;
-            }
+error:
+    virNetworkDNSTxtDefClear(def);
+    return -1;
+}
 
-            if (VIR_REALLOC_N(def->txts, def->ntxts + 1) < 0) {
-                virReportOOMError();
-                goto error;
-            }
+static int
+virNetworkDNSDefParseXML(const char *networkName,
+                         xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
+                         virNetworkDNSDefPtr def)
+{
+    xmlNodePtr *hostNodes = NULL;
+    xmlNodePtr *srvNodes = NULL;
+    xmlNodePtr *txtNodes = NULL;
+    int nhosts, nsrvs, ntxts;
+    int ii, ret = -1;
+    xmlNodePtr save = ctxt->node;
 
-            def->txts[def->ntxts].name = name;
-            def->txts[def->ntxts].value = value;
-            def->ntxts++;
-            name = NULL;
-            value = NULL;
-        } else if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "srv")) {
-            ret = virNetworkDNSSrvDefParseXML(def, cur, ctxt);
-            if (ret < 0)
-                goto error;
-        } else if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "host")) {
-            ret = virNetworkDNSHostsDefParseXML(def, cur);
-            if (ret < 0)
-                goto error;
+    ctxt->node = node;
+
+    nhosts = virXPathNodeSet("./host", ctxt, &hostNodes);
+    if (nhosts < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <host> element found in <dns> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+    if (nhosts > 0) {
+        if (VIR_ALLOC_N(def->hosts, nhosts) < 0) {
+            virReportOOMError();
+            goto cleanup;
         }
 
-        cur = cur->next;
+        for (ii = 0; ii < nhosts; ii++) {
+            if (virNetworkDNSHostDefParseXML(networkName, hostNodes[ii],
+                                             &def->hosts[def->nhosts], false) < 0) {
+                goto cleanup;
+            }
+            def->nhosts++;
+        }
+    }
+
+    nsrvs = virXPathNodeSet("./srv", ctxt, &srvNodes);
+    if (nsrvs < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <srv> element found in <dns> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+    if (nsrvs > 0) {
+        if (VIR_ALLOC_N(def->srvs, nsrvs) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (ii = 0; ii < nsrvs; ii++) {
+            if (virNetworkDNSSrvDefParseXML(networkName, srvNodes[ii], ctxt,
+                                            &def->srvs[def->nsrvs], false) < 0) {
+                goto cleanup;
+            }
+            def->nsrvs++;
+        }
+    }
+
+    ntxts = virXPathNodeSet("./txt", ctxt, &txtNodes);
+    if (ntxts < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid <txt> element found in <dns> of network %s"),
+                       networkName);
+        goto cleanup;
+    }
+    if (ntxts > 0) {
+        if (VIR_ALLOC_N(def->txts, ntxts) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        for (ii = 0; ii < ntxts; ii++) {
+            if (virNetworkDNSTxtDefParseXML(networkName, txtNodes[ii],
+                                            &def->txts[def->ntxts], false) < 0) {
+                goto cleanup;
+            }
+            def->ntxts++;
+        }
     }
 
     ret = 0;
-error:
-    if (ret < 0) {
-        VIR_FREE(name);
-        VIR_FREE(value);
-        virNetworkDNSDefFree(def);
-    } else {
-        *dnsdef = def;
-    }
+cleanup:
+    VIR_FREE(hostNodes);
+    VIR_FREE(srvNodes);
+    VIR_FREE(txtNodes);
+    ctxt->node = save;
     return ret;
 }
 
@@ -1320,9 +1388,9 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     dnsNode = virXPathNode("./dns", ctxt);
-    if (dnsNode != NULL) {
-        if (virNetworkDNSDefParseXML(&def->dns, dnsNode, ctxt) < 0)
-            goto error;
+    if (dnsNode != NULL &&
+        virNetworkDNSDefParseXML(def->name, dnsNode, ctxt, &def->dns) < 0) {
+        goto error;
     }
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
@@ -1684,7 +1752,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     int result = 0;
     int i;
 
-    if (def == NULL)
+    if (!(def->nhosts || def->nsrvs || def->ntxts))
         goto out;
 
     virBufferAddLit(buf, "<dns>\n");
@@ -1959,7 +2027,7 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
     if (def->domain)
         virBufferAsprintf(&buf, "<domain name='%s'/>\n", def->domain);
 
-    if (virNetworkDNSDefFormat(&buf, def->dns) < 0)
+    if (virNetworkDNSDefFormat(&buf, &def->dns) < 0)
         goto error;
 
     if (virNetDevVlanFormat(&def->vlan, &buf) < 0)

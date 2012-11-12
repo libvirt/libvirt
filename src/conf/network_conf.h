@@ -90,9 +90,9 @@ struct _virNetworkDNSSrvDef {
     char *service;
     char *protocol;
     char *target;
-    int port;
-    int priority;
-    int weight;
+    unsigned int port;
+    unsigned int priority;
+    unsigned int weight;
 };
 
 typedef struct _virNetworkDNSHostDef virNetworkDNSHostDef;
@@ -206,7 +206,7 @@ struct _virNetworkDef {
     size_t nips;
     virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
 
-    virNetworkDNSDefPtr dns; /* ptr to dns related configuration */
+    virNetworkDNSDef dns;   /* dns related configuration */
     virNetDevVPortProfilePtr virtPortProfile;
 
     size_t nPortGroups;
