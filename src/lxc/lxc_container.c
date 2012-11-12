@@ -595,6 +595,36 @@ cleanup:
     return rc;
 }
 
+#if HAVE_FUSE
+static int lxcContainerMountProcFuse(virDomainDefPtr def,
+                                     const char *srcprefix)
+{
+    int ret;
+    char *meminfo_path = NULL;
+
+    if ((ret = virAsprintf(&meminfo_path,
+                           "%s/%s/%s/meminfo",
+                           srcprefix, LXC_STATE_DIR,
+                           def->name)) < 0)
+        return ret;
+
+    if ((ret = mount(meminfo_path, "/proc/meminfo",
+                     NULL, MS_BIND, NULL)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on /proc/meminfo"),
+                             meminfo_path);
+    }
+
+    VIR_FREE(meminfo_path);
+    return ret;
+}
+#else
+static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                     const char *srcprefix ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+#endif
 
 static int lxcContainerMountFSDevPTS(virDomainFSDefPtr root)
 {
@@ -1554,6 +1584,10 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerMountBasicFS(true, sec_mount_options) < 0)
         goto cleanup;
 
+    /* Mounts /proc/meminfo etc sysinfo */
+    if (lxcContainerMountProcFuse(vmDef, "/.oldroot") < 0)
+        goto cleanup;
+
     /* Now we can re-mount the cgroups controllers in the
      * same configuration as before */
     if (lxcContainerMountCGroups(mounts, nmounts,
@@ -1648,6 +1682,10 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
 
     /* Mounts the core /proc, /sys, etc filesystems */
     if (lxcContainerMountBasicFS(false, sec_mount_options) < 0)
+        goto cleanup;
+
+    /* Mounts /proc/meminfo etc sysinfo */
+    if (lxcContainerMountProcFuse(vmDef, "/.oldroot") < 0)
         goto cleanup;
 
     /* Now we can re-mount the cgroups controllers in the
