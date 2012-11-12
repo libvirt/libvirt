@@ -1371,6 +1371,26 @@ int virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 }
 
 /**
+ * virCgroupGetMemSwapUsage:
+ *
+ * @group: The cgroup to get mem+swap usage for
+ * @kb: The mem+swap amount in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
+{
+    long long unsigned int usage_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.memsw.usage_in_bytes", &usage_in_bytes);
+    if (ret == 0)
+        *kb = usage_in_bytes >> 10;
+    return ret;
+}
+
+/**
  * virCgroupSetCpusetMems:
  *
  * @group: The cgroup to set cpuset.mems for

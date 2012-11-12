@@ -98,6 +98,7 @@ virCgroupGetCpuacctUsage;
 virCgroupGetCpusetCpus;
 virCgroupGetCpusetMems;
 virCgroupGetFreezerState;
+virCgroupGetMemSwapUsage;
 virCgroupGetMemSwapHardLimit;
 virCgroupGetMemoryHardLimit;
 virCgroupGetMemorySoftLimit;
