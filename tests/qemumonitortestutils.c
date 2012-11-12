@@ -331,9 +331,17 @@ static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
 }
 
 
+static void
+qemuMonitorTestFreeTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+{
+    /* nothing to be done here */
+}
+
+
 void qemuMonitorTestFree(qemuMonitorTestPtr test)
 {
     size_t i;
+    int timer = -1;
 
     if (!test)
         return;
@@ -341,6 +349,8 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test)
     virMutexLock(&test->lock);
     if (test->running) {
         test->quit = true;
+        /* HACK: Add a dummy timeout to break event loop */
+        timer = virEventAddTimeout(0, qemuMonitorTestFreeTimer, NULL, NULL);
     }
     virMutexUnlock(&test->lock);
 
@@ -360,6 +370,9 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test)
 
     if (test->running)
         virThreadJoin(&test->thread);
+
+    if (timer != -1)
+        virEventRemoveTimeout(timer);
 
     for (i = 0 ; i < test->nitems ; i++)
         qemuMonitorTestItemFree(test->items[i]);
