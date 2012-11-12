@@ -99,6 +99,7 @@
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_capng         0%{!?_without_capng:0}
+%define with_fuse          0%{!?_without_fuse:0}
 %define with_netcf         0%{!?_without_netcf:0}
 %define with_udev          0%{!?_without_udev:0}
 %define with_hal           0%{!?_without_hal:0}
@@ -201,6 +202,11 @@
 # libcapng is used to manage capabilities in Fedora 12 / RHEL-6 or newer
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %define with_capng     0%{!?_without_capng:1}
+%endif
+
+# fuse is used to provide virtualized /proc for LXC
+%if 0%{?fedora} >= 17 || 0%{?rhel} >= 7
+%define with_fuse      0%{!?_without_fuse:1}
 %endif
 
 # netcf is used to manage network interfaces in Fedora 12 / RHEL-6 or newer
@@ -515,6 +521,9 @@ BuildRequires: numactl-devel
 %endif
 %if %{with_capng}
 BuildRequires: libcap-ng-devel >= 0.5.0
+%endif
+%if %{with_fuse}
+BuildRequires: fuse-devel >= 2.8.6
 %endif
 %if %{with_phyp} || %{with_libssh2_transport}
 %if %{with_libssh2_transport}
@@ -1199,6 +1208,10 @@ of recent versions of Linux (and other OSes).
 %define _without_capng --without-capng
 %endif
 
+%if ! %{with_fuse}
+%define _without_fuse --without-fuse
+%endif
+
 %if ! %{with_netcf}
 %define _without_netcf --without-netcf
 %endif
@@ -1302,6 +1315,7 @@ autoreconf -if
            %{?_without_numactl} \
            %{?_without_numad} \
            %{?_without_capng} \
+           %{?_without_fuse} \
            %{?_without_netcf} \
            %{?_without_selinux} \
            %{?_with_selinux_mount} \

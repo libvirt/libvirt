@@ -115,6 +115,7 @@ LIBSSH2_REQUIRED="1.0"
 LIBSSH2_TRANSPORT_REQUIRED="1.3"
 LIBBLKID_REQUIRED="2.17"
 DBUS_REQUIRED="1.0.0"
+FUSE_REQUIRED="2.8.6"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -1866,6 +1867,29 @@ AC_SUBST([CAPNG_CFLAGS])
 AC_SUBST([CAPNG_LIBS])
 
 
+dnl libfuse
+AC_ARG_WITH([fuse],
+  AC_HELP_STRING([--with-fuse], [use libfuse to proivde fuse filesystem support for libvirt lxc]),
+  [],
+  [with_fuse=check])
+dnl
+dnl This check looks for 'fuse'
+dnl
+AS_IF([test "x$with_fuse" != "xno"],
+        [PKG_CHECK_MODULES([FUSE], [fuse >= $FUSE_REQUIRED],
+          [with_fuse=yes
+           AC_SUBST([FUSE_CFLAGS])
+           AC_SUBST([FUSE_LIBS])
+           AC_DEFINE_UNQUOTED([HAVE_FUSE], 1, [whether fuse is available for libvirt lxc])
+          ],
+          [if test "x$with_fuse" = "xyes" ; then
+             AC_MSG_ERROR([You must install fuse library to compile libvirt])
+           else
+             with_fuse=no
+           fi
+          ])
+        ])
+AM_CONDITIONAL([HAVE_FUSE], [test "x$with_fuse" = "xyes"])
 
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
@@ -3169,6 +3193,11 @@ if test "$with_capng" = "yes" ; then
 AC_MSG_NOTICE([   capng: $CAPNG_CFLAGS $CAPNG_LIBS])
 else
 AC_MSG_NOTICE([   capng: no])
+fi
+if test "$with_fuse" = "yes" ; then
+AC_MSG_NOTICE([    fuse: $FUSE_CFLAGS $FUSE_LIBS])
+else
+AC_MSG_NOTICE([    fuse: no])
 fi
 if test "$with_xen" = "yes" ; then
 AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
