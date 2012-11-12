@@ -2924,20 +2924,92 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
                            /* virNetworkUpdateFlags */
                            unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    virNetworkDefUpdateNoSupport(def, "dns host");
-    return -1;
-}
+    int ii, jj, kk, foundIdx, ret = -1;
+    virNetworkDNSDefPtr dns = &def->dns;
+    virNetworkDNSHostDef host;
+    bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
+                  command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
+    bool foundCt = 0;
 
-static int
-virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
-                          unsigned int command ATTRIBUTE_UNUSED,
-                          int parentIndex ATTRIBUTE_UNUSED,
-                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
-                          /* virNetworkUpdateFlags */
-                          unsigned int fflags ATTRIBUTE_UNUSED)
-{
-    virNetworkDefUpdateNoSupport(def, "dns txt");
-    return -1;
+    memset(&host, 0, sizeof(host));
+
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("DNS HOST records cannot be modified, "
+                         "only added or deleted"));
+        goto cleanup;
+    }
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "host") < 0)
+        goto cleanup;
+
+    if (virNetworkDNSHostDefParseXML(def->name, ctxt->node, &host, !isAdd) < 0)
+        goto cleanup;
+
+    for (ii = 0; ii < dns->nhosts; ii++) {
+        bool foundThisTime = false;
+
+        if (virSocketAddrEqual(&host.ip, &dns->hosts[ii].ip))
+            foundThisTime = true;
+
+        for (jj = 0; jj < host.nnames && !foundThisTime; jj++) {
+            for (kk = 0; kk < dns->hosts[ii].nnames && !foundThisTime; kk++) {
+                if (STREQ(host.names[jj], dns->hosts[ii].names[kk]))
+                    foundThisTime = true;
+            }
+        }
+        if (foundThisTime) {
+            foundCt++;
+            foundIdx = ii;
+        }
+    }
+
+    if (isAdd) {
+
+        if (foundCt > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("there is already at least one DNS HOST "
+                             "record with a matching field in network %s"),
+                           def->name);
+            goto cleanup;
+        }
+
+        /* add to beginning/end of list */
+        if (VIR_INSERT_ELEMENT(dns->hosts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->nhosts, dns->nhosts, host) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        if (foundCt == 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate a matching DNS HOST "
+                             "record in network %s"), def->name);
+            goto cleanup;
+        }
+        if (foundCt > 1) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("multiple matching DNS HOST records were "
+                             "found in network %s"), def->name);
+            goto cleanup;
+        }
+
+        /* remove it */
+        virNetworkDNSHostDefClear(&dns->hosts[foundIdx]);
+        VIR_DELETE_ELEMENT(dns->hosts, foundIdx, dns->nhosts);
+
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkDNSHostDefClear(&host);
+    return ret;
 }
 
 static int
@@ -2948,8 +3020,160 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
                           /* virNetworkUpdateFlags */
                           unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    virNetworkDefUpdateNoSupport(def, "dns txt");
-    return -1;
+    int ii, foundIdx, ret = -1;
+    virNetworkDNSDefPtr dns = &def->dns;
+    virNetworkDNSSrvDef srv;
+    bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
+                  command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
+    bool foundCt = 0;
+
+    memset(&srv, 0, sizeof(srv));
+
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("DNS SRV records cannot be modified, "
+                         "only added or deleted"));
+        goto cleanup;
+    }
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "srv") < 0)
+        goto cleanup;
+
+    if (virNetworkDNSSrvDefParseXML(def->name, ctxt->node, ctxt, &srv, !isAdd) < 0)
+        goto cleanup;
+
+    for (ii = 0; ii < dns->nsrvs; ii++) {
+        if ((!srv.domain || STREQ_NULLABLE(srv.domain, dns->srvs[ii].domain)) &&
+            (!srv.service || STREQ_NULLABLE(srv.service, dns->srvs[ii].service)) &&
+            (!srv.protocol || STREQ_NULLABLE(srv.protocol, dns->srvs[ii].protocol)) &&
+            (!srv.target || STREQ_NULLABLE(srv.target, dns->srvs[ii].target))) {
+            foundCt++;
+            foundIdx = ii;
+        }
+    }
+
+    if (isAdd) {
+
+        if (foundCt > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("there is already at least one DNS SRV "
+                             "record matching all specified fields in network %s"),
+                           def->name);
+            goto cleanup;
+        }
+
+        /* add to beginning/end of list */
+        if (VIR_INSERT_ELEMENT(dns->srvs,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->nsrvs, dns->nsrvs, srv) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        if (foundCt == 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate a matching DNS SRV "
+                             "record in network %s"), def->name);
+            goto cleanup;
+        }
+        if (foundCt > 1) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("multiple DNS SRV records matching all specified "
+                             "fields were found in network %s"), def->name);
+            goto cleanup;
+        }
+
+        /* remove it */
+        virNetworkDNSSrvDefClear(&dns->srvs[foundIdx]);
+        VIR_DELETE_ELEMENT(dns->srvs, foundIdx, dns->nsrvs);
+
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkDNSSrvDefClear(&srv);
+    return ret;
+}
+
+static int
+virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
+                          unsigned int command ATTRIBUTE_UNUSED,
+                          int parentIndex ATTRIBUTE_UNUSED,
+                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          /* virNetworkUpdateFlags */
+                          unsigned int fflags ATTRIBUTE_UNUSED)
+{
+    int foundIdx, ret = -1;
+    virNetworkDNSDefPtr dns = &def->dns;
+    virNetworkDNSTxtDef txt;
+    bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
+                  command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
+
+    memset(&txt, 0, sizeof(txt));
+
+    if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("DNS TXT records cannot be modified, "
+                         "only added or deleted"));
+        goto cleanup;
+    }
+
+    if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "txt") < 0)
+        goto cleanup;
+
+    if (virNetworkDNSTxtDefParseXML(def->name, ctxt->node, &txt, !isAdd) < 0)
+        goto cleanup;
+
+    for (foundIdx = 0; foundIdx < dns->ntxts; foundIdx++) {
+        if (STREQ(txt.name, dns->txts[foundIdx].name))
+            break;
+    }
+
+    if (isAdd) {
+
+        if (foundIdx < dns->ntxts) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("there is already a DNS TXT record "
+                             "with name '%s' in network %s"),
+                           txt.name, def->name);
+            goto cleanup;
+        }
+
+        /* add to beginning/end of list */
+        if (VIR_INSERT_ELEMENT(dns->txts,
+                               command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
+                               ? 0 : dns->ntxts, dns->ntxts, txt) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+    } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
+
+        if (foundIdx == dns->ntxts) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("couldn't locate a matching DNS TXT "
+                             "record in network %s"), def->name);
+            goto cleanup;
+        }
+
+        /* remove it */
+        virNetworkDNSTxtDefClear(&dns->txts[foundIdx]);
+        VIR_DELETE_ELEMENT(dns->txts, foundIdx, dns->ntxts);
+
+    } else {
+        virNetworkDefUpdateUnknownCommand(command);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virNetworkDNSTxtDefClear(&txt);
+    return ret;
 }
 
 static int
