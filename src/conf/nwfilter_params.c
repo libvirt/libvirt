@@ -795,6 +795,27 @@ err_exit:
     return -1;
 }
 
+/* The general purpose function virNWFilterVarValueEqual returns a
+ * bool, but the comparison callback for virHashEqual (called below)
+ * needs to return an int of 0 for == and non-0 for !=
+ */
+static int
+virNWFilterVarValueCompare(const void *a, const void *b)
+{
+    return virNWFilterVarValueEqual((const virNWFilterVarValuePtr) a,
+                                    (const virNWFilterVarValuePtr) b) ? 0 : 1;
+}
+
+bool
+virNWFilterHashTableEqual(virNWFilterHashTablePtr a,
+                          virNWFilterHashTablePtr b)
+{
+    if (!(a || b))
+        return true;
+    if (!(a && b))
+        return false;
+    return virHashEqual(a->hashTable, b->hashTable, virNWFilterVarValueCompare);
+}
 
 static bool
 isValidVarName(const char *var)

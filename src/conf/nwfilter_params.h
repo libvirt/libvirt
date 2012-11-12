@@ -1,7 +1,7 @@
 /*
  * nwfilter_params.h: parsing and data maintenance of filter parameters
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -87,6 +87,8 @@ void *virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
                                       const char *name);
 int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
                                virNWFilterHashTablePtr dest);
+bool virNWFilterHashTableEqual(virNWFilterHashTablePtr a,
+                               virNWFilterHashTablePtr b);
 
 # define VALID_VARNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"

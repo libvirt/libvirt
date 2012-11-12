@@ -959,6 +959,7 @@ virNWFilterIPAddrMapShutdown;
 
 # nwfilter_params.h
 virNWFilterHashTableCreate;
+virNWFilterHashTableEqual;
 virNWFilterHashTableFree;
 virNWFilterHashTablePut;
 virNWFilterHashTablePutAll;

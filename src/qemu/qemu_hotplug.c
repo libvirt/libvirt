@@ -1330,6 +1330,43 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainChangeNetFilter(virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          virDomainNetDefPtr olddev,
+                          virDomainNetDefPtr newdev)
+{
+    /* make sure this type of device supports filters. */
+    switch (virDomainNetGetActualType(newdev)) {
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("filters not supported on interfaces of type %s"),
+                       virDomainNetTypeToString(virDomainNetGetActualType(newdev)));
+        return -1;
+    }
+
+    virDomainConfNWFilterTeardown(olddev);
+
+    if (virDomainConfNWFilterInstantiate(conn, vm->def->uuid, newdev) < 0) {
+        virErrorPtr errobj;
+
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("failed to add new filter rules to '%s' "
+                         "- attempting to restore old rules"),
+                       olddev->ifname);
+        errobj = virSaveLastError();
+        ignore_value(virDomainConfNWFilterInstantiate(conn, vm->def->uuid, olddev));
+        virSetError(errobj);
+        virFreeError(errobj);
+        return -1;
+    }
+    return 0;
+}
+
 int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,
@@ -1373,6 +1410,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     int oldType, newType;
     bool needReconnect = false;
     bool needBridgeChange = false;
+    bool needFilterChange = false;
     bool needLinkStateChange = false;
     bool needReplaceDevDef = false;
     int ret = -1;
@@ -1506,8 +1544,10 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
     /* (end of device info checks) */
 
-    if (STRNEQ_NULLABLE(olddev->filter, newdev->filter))
-        needReconnect = true;
+    if (STRNEQ_NULLABLE(olddev->filter, newdev->filter) ||
+        !virNWFilterHashTableEqual(olddev->filterparams, newdev->filterparams)) {
+        needFilterChange = true;
+    }
 
     /* bandwidth can be modified, and will be checked later */
     /* vlan can be modified, and will be checked later */
@@ -1665,7 +1705,16 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
             goto cleanup;
         /* we successfully switched to the new bridge, and we've
          * determined that the rest of newdev is equivalent to olddev,
-         * so move newdev into place, so that the  */
+         * so move newdev into place */
+        needReplaceDevDef = true;
+    }
+
+    if (needFilterChange) {
+        if (qemuDomainChangeNetFilter(dom->conn, vm, olddev, newdev) < 0)
+            goto cleanup;
+        /* we successfully switched to the new filter, and we've
+         * determined that the rest of newdev is equivalent to olddev,
+         * so move newdev into place */
         needReplaceDevDef = true;
     }
 
