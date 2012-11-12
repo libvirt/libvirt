@@ -85,6 +85,7 @@ virCgroupDenyDeviceMajor;
 virCgroupDenyDevicePath;
 virCgroupForDomain;
 virCgroupForDriver;
+virCgroupGetAppRoot;
 virCgroupForEmulator;
 virCgroupForVcpu;
 virCgroupFree;

@@ -965,6 +965,21 @@ int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
 }
 #endif
 
+/**
+* virCgroupGetAppRoot:
+*
+* @group: Pointer to returned virCgroupPtr
+*
+* Returns 0 on success
+*/
+int virCgroupGetAppRoot(virCgroupPtr *group)
+{
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+    return virCgroupNew("/", group);
+#else
+    return -ENXIO;
+#endif
+}
 
 /**
  * virCgroupForDomain:

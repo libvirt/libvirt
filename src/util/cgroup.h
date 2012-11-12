@@ -47,6 +47,8 @@ int virCgroupForDriver(const char *name,
                        int privileged,
                        int create);
 
+int virCgroupGetAppRoot(virCgroupPtr *group);
+
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,
                        virCgroupPtr *group,
