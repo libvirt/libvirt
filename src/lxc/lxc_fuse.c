@@ -30,26 +30,54 @@
 #include <mntent.h>
 
 #include "lxc_fuse.h"
+#include "lxc_cgroup.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "virfile.h"
+#include "buf.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 #if HAVE_FUSE
 
+static const char *fuse_meminfo_path = "/meminfo";
+
 static int lxcProcGetattr(const char *path, struct stat *stbuf)
 {
-    int res = 0;
+    int res;
+    char *mempath = NULL;
+    struct stat sb;
 
     memset(stbuf, 0, sizeof(struct stat));
+    if (virAsprintf(&mempath, "/proc/%s", path) < 0) {
+        virReportOOMError();
+        return -errno;
+    }
+
+    res = 0;
 
     if (STREQ(path, "/")) {
         stbuf->st_mode = S_IFDIR | 0755;
         stbuf->st_nlink = 2;
-    } else {
-        res = -ENOENT;
-    }
+    } else if (STREQ(path, fuse_meminfo_path)) {
+        if (stat(mempath, &sb) < 0) {
+            res = -errno;
+            goto cleanup;
+        }
 
+        stbuf->st_mode = sb.st_mode;
+        stbuf->st_nlink = 1;
+        stbuf->st_blksize = sb.st_blksize;
+        stbuf->st_blocks = sb.st_blocks;
+        stbuf->st_size = sb.st_size;
+        stbuf->st_atime = sb.st_atime;
+        stbuf->st_ctime = sb.st_ctime;
+        stbuf->st_mtime = sb.st_mtime;
+    } else
+        res = -ENOENT;
+
+cleanup:
+    VIR_FREE(mempath);
     return res;
 }
 
@@ -63,6 +91,7 @@ static int lxcProcReaddir(const char *path, void *buf,
 
     filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
+    filler(buf, fuse_meminfo_path + 1, NULL, 0);
 
     return 0;
 }
@@ -70,7 +99,127 @@ static int lxcProcReaddir(const char *path, void *buf,
 static int lxcProcOpen(const char *path ATTRIBUTE_UNUSED,
                        struct fuse_file_info *fi ATTRIBUTE_UNUSED)
 {
-    return -ENOENT;
+    if (!STREQ(path, fuse_meminfo_path))
+        return -ENOENT;
+
+    if ((fi->flags & 3) != O_RDONLY)
+        return -EACCES;
+
+    return 0;
+}
+
+static int lxcProcHostRead(char *path, char *buf, size_t size, off_t offset)
+{
+    int fd;
+    int res;
+
+    fd = open(path, O_RDONLY);
+    if (fd == -1)
+        return -errno;
+
+    if ((res = pread(fd, buf, size, offset)) < 0)
+        res = -errno;
+
+    VIR_FORCE_CLOSE(fd);
+    return res;
+}
+
+static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
+                              char *buf, size_t size, off_t offset)
+{
+    int copied = 0;
+    int res;
+    FILE *fd = NULL;
+    char *line = NULL;
+    size_t n;
+    struct virLXCMeminfo meminfo;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    virBufferPtr new_meminfo = &buffer;
+
+    if ((res = virLXCCgroupGetMeminfo(&meminfo)) < 0)
+        return res;
+
+    fd = fopen(hostpath, "r");
+    if (fd == NULL) {
+        virReportSystemError(errno, _("Cannot open %s"), hostpath);
+        res = -errno;
+        goto cleanup;
+    }
+
+    if (fseek(fd, offset, SEEK_SET) < 0) {
+        virReportSystemError(errno, "%s", _("fseek failed"));
+        res = -errno;
+        goto cleanup;
+    }
+
+    res = -1;
+    while (copied < size && getline(&line, &n, fd) > 0) {
+        char *ptr = strchr(line, ':');
+        if (ptr) {
+            *ptr = '\0';
+
+            if (STREQ(line, "MemTotal") &&
+                (def->mem.hard_limit || def->mem.max_balloon))
+                virBufferAsprintf(new_meminfo, "MemTotal:       %8llu KB\n",
+                                  meminfo.memtotal);
+            else if (STREQ(line, "MemFree") &&
+                       (def->mem.hard_limit || def->mem.max_balloon))
+                virBufferAsprintf(new_meminfo, "MemFree:        %8llu KB\n",
+                                  (meminfo.memtotal - meminfo.memusage));
+            else if (STREQ(line, "Buffers"))
+                virBufferAsprintf(new_meminfo, "Buffers:        %8d KB\n", 0);
+            else if (STREQ(line, "Cached"))
+                virBufferAsprintf(new_meminfo, "Cached:         %8llu KB\n",
+                                  meminfo.cached);
+            else if (STREQ(line, "Active"))
+                virBufferAsprintf(new_meminfo, "Active:         %8llu KB\n",
+                                  (meminfo.active_anon + meminfo.active_file));
+            else if (STREQ(line, "Inactive"))
+                virBufferAsprintf(new_meminfo, "Inactive:       %8llu KB\n",
+                                  (meminfo.inactive_anon + meminfo.inactive_file));
+            else if (STREQ(line, "Active(anon)"))
+                virBufferAsprintf(new_meminfo, "Active(anon):   %8llu KB\n",
+                                  meminfo.active_anon);
+            else if (STREQ(line, "Inactive(anon)"))
+                virBufferAsprintf(new_meminfo, "Inactive(anon): %8llu KB\n",
+                                  meminfo.inactive_anon);
+            else if (STREQ(line, "Active(file)"))
+                virBufferAsprintf(new_meminfo, "Active(file):   %8llu KB\n",
+                                  meminfo.active_file);
+            else if (STREQ(line, "Inactive(file)"))
+                virBufferAsprintf(new_meminfo, "Inactive(file): %8llu KB\n",
+                                  meminfo.inactive_file);
+            else if (STREQ(line, "Unevictable"))
+                virBufferAsprintf(new_meminfo, "Unevictable:    %8llu KB\n",
+                                  meminfo.unevictable);
+            else if (STREQ(line, "SwapTotal") && def->mem.swap_hard_limit)
+                virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu KB\n",
+                                  (meminfo.swaptotal - meminfo.memtotal));
+            else if (STREQ(line, "SwapFree") && def->mem.swap_hard_limit)
+                virBufferAsprintf(new_meminfo, "SwapFree:       %8llu KB\n",
+                                  (meminfo.swaptotal - meminfo.memtotal -
+                                   meminfo.swapusage + meminfo.memusage));
+            else {
+                *ptr = ':';
+                virBufferAdd(new_meminfo, line, -1);
+            }
+
+            if (virBufferError(new_meminfo))
+                goto cleanup;
+
+            copied += strlen(line);
+            if (copied > size)
+                copied = size;
+        }
+    }
+    res = copied;
+    memcpy(buf, virBufferCurrentContent(new_meminfo), copied);
+
+cleanup:
+    VIR_FREE(line);
+    virBufferFreeAndReset(new_meminfo);
+    VIR_FORCE_FCLOSE(fd);
+    return res;
 }
 
 static int lxcProcRead(const char *path ATTRIBUTE_UNUSED,
@@ -79,7 +228,26 @@ static int lxcProcRead(const char *path ATTRIBUTE_UNUSED,
                        off_t offset ATTRIBUTE_UNUSED,
                        struct fuse_file_info *fi ATTRIBUTE_UNUSED)
 {
-    return -ENOENT;
+    int res = -ENOENT;
+    char *hostpath = NULL;
+    struct fuse_context *context = NULL;
+    virDomainDefPtr def = NULL;
+
+    if (virAsprintf(&hostpath, "/proc/%s", path) < 0) {
+        virReportOOMError();
+        return -errno;
+    }
+
+    context = fuse_get_context();
+    def = (virDomainDefPtr)context->private_data;
+
+    if (STREQ(path, fuse_meminfo_path)) {
+        if ((res = lxcProcReadMeminfo(hostpath, def, buf, size, offset)) < 0)
+            res = lxcProcHostRead(hostpath, buf, size, offset);
+    }
+
+    VIR_FREE(hostpath);
+    return res;
 }
 
 static struct fuse_operations lxcProcOper = {

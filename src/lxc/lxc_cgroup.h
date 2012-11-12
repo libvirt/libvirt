@@ -23,7 +23,8 @@
 # define __VIR_LXC_CGROUP_H__
 
 # include "domain_conf.h"
+# include "lxc_fuse.h"
 
 int virLXCCgroupSetup(virDomainDefPtr def);
-
+int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo);
 #endif /* __VIR_LXC_CGROUP_H__ */
