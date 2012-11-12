@@ -2763,6 +2763,7 @@ with I<--current>.
 =item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
 [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
 [I<--metadata>] [I<--no-metadata>] [I<--leaves>] [I<--no-leaves>]
+[I<--inactive>] [I<--active>] [I<--disk-only>] [I<--internal>] [I<--external>]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
@@ -2789,7 +2790,7 @@ specified, the list will be filtered to just snapshots with
 children.  (Note that omitting both options does no filtering,
 while providing both options will either produce the same list
 or error out depending on whether the server recognizes the flags).
-These options are not compatible with I<--tree>.
+Filtering options are not compatible with I<--tree>.
 
 If I<--metadata> is specified, the list will be filtered to just
 snapshots that involve libvirt metadata, and thus would prevent
@@ -2797,6 +2798,20 @@ B<undefine> of a persistent domain, or be lost on B<destroy> of
 a transient domain.  Likewise, if I<--no-metadata> is specified,
 the list will be filtered to just snapshots that exist without
 the need for libvirt metadata.
+
+If I<--inactive> is specified, the list will be filtered to snapshots
+that were taken when the domain was shut off.  If I<--active> is
+specified, the list will be filtered to snapshots that were taken
+when the domain was running, and where the snapshot includes the
+memory state to revert to that running state.  If I<--disk-only> is
+specified, the list will be filtered to snapshots that were taken
+when the domain was running, but where the snapshot includes only
+disk state.
+
+If I<--internal> is specified, the list will be filtered to snapshots
+that use internal storage of existing disk images.  If I<--external>
+is specified, the list will be filtered to snapshots that use external
+files for disk images or memory state.
 
 =item B<snapshot-dumpxml> I<domain> I<snapshot> [I<--security-info>]
 

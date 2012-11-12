@@ -1189,6 +1189,13 @@ static const vshCmdOptDef opts_snapshot_list[] = {
      N_("list only snapshots that have metadata that would prevent undefine")},
     {"no-metadata", VSH_OT_BOOL, 0,
      N_("list only snapshots that have no metadata managed by libvirt")},
+    {"inactive", VSH_OT_BOOL, 0,
+     N_("filter by snapshots taken while inactive")},
+    {"active", VSH_OT_BOOL, 0,
+     N_("filter by snapshots taken while active (system checkpoints)")},
+    {"disk-only", VSH_OT_BOOL, 0, N_("filter by disk-only snapshots")},
+    {"internal", VSH_OT_BOOL, 0, N_("filter by internal snapshots")},
+    {"external", VSH_OT_BOOL, 0, N_("filter by external snapshots")},
     {"tree", VSH_OT_BOOL, 0, N_("list snapshots in a tree")},
     {"from", VSH_OT_DATA, 0, N_("limit list to children of given snapshot")},
     {"current", VSH_OT_BOOL, 0,
@@ -1216,8 +1223,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char timestr[100];
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
-    bool leaves = vshCommandOptBool(cmd, "leaves");
-    bool no_leaves = vshCommandOptBool(cmd, "no-leaves");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
     vshSnapshotListPtr snaplist = NULL;
@@ -1258,22 +1263,27 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
     }
-    if (leaves) {
-        if (tree) {
-            vshError(ctl, "%s",
-                     _("--leaves and --tree are mutually exclusive"));
-            goto cleanup;
-        }
-        flags |= VIR_DOMAIN_SNAPSHOT_LIST_LEAVES;
-    }
-    if (no_leaves) {
-        if (tree) {
-            vshError(ctl, "%s",
-                     _("--no-leaves and --tree are mutually exclusive"));
-            goto cleanup;
-        }
-        flags |= VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES;
-    }
+#define FILTER(option, flag)                                          \
+    do {                                                              \
+        if (vshCommandOptBool(cmd, option)) {                         \
+            if (tree) {                                               \
+                vshError(ctl,                                         \
+                         _("--%s and --tree are mutually exclusive"), \
+                         option);                                     \
+                goto cleanup;                                         \
+            }                                                         \
+            flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag;               \
+        }                                                             \
+    } while (0)
+
+    FILTER("leaves", LEAVES);
+    FILTER("no-leaves", NO_LEAVES);
+    FILTER("inactive", INACTIVE);
+    FILTER("active", ACTIVE);
+    FILTER("disk-only", DISK_ONLY);
+    FILTER("internal", INTERNAL);
+    FILTER("external", EXTERNAL);
+#undef FILTER
 
     if (vshCommandOptBool(cmd, "metadata")) {
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;

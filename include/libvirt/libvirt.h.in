@@ -3818,6 +3818,25 @@ typedef enum {
                                                         which have metadata */
     VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA = (1 << 4), /* Filter by snapshots
                                                         with no metadata */
+
+    VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE    = (1 << 5), /* Filter by snapshots
+                                                        taken while guest was
+                                                        shut off */
+    VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE      = (1 << 6), /* Filter by snapshots
+                                                        taken while guest was
+                                                        active, and with
+                                                        memory state */
+    VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY   = (1 << 7), /* Filter by snapshots
+                                                        taken while guest was
+                                                        active, but without
+                                                        memory state */
+
+    VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL    = (1 << 8), /* Filter by snapshots
+                                                        stored internal to
+                                                        disk images */
+    VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL    = (1 << 9), /* Filter by snapshots
+                                                        that use files external
+                                                        to disk images */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */

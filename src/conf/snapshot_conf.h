@@ -145,6 +145,15 @@ void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
                (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
                 VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
 
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS             \
+               (VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE       | \
+                VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY)
+
+# define VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION           \
+               (VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL     | \
+                VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL)
+
 # define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
                (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
