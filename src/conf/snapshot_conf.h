@@ -156,7 +156,9 @@ void virDomainSnapshotDropParent(virDomainSnapshotObjPtr snapshot);
 
 # define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL                \
                (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
-                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES    | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
+                VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
 
 int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                            virDomainSnapshotObjPtr from,

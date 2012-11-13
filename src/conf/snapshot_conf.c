@@ -745,6 +745,26 @@ static void virDomainSnapshotObjListCopyNames(void *payload,
     if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES) && !obj->nchildren)
         return;
 
+    if (data->flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) {
+        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE) &&
+            obj->def->state == VIR_DOMAIN_SHUTOFF)
+            return;
+        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
+            obj->def->state == VIR_DOMAIN_DISK_SNAPSHOT)
+            return;
+        if (!(data->flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE) &&
+            obj->def->state != VIR_DOMAIN_SHUTOFF &&
+            obj->def->state != VIR_DOMAIN_DISK_SNAPSHOT)
+            return;
+    }
+
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL) &&
+        virDomainSnapshotIsExternal(obj))
+        return;
+    if ((data->flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL) &&
+        !virDomainSnapshotIsExternal(obj))
+        return;
+
     if (data->names && data->count < data->maxnames &&
         !(data->names[data->count] = strdup(obj->def->name))) {
         data->error = true;
@@ -786,11 +806,17 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
         return 0;
     data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA;
 
-    /* For ease of coding the visitor, it is easier to zero the LEAVES
-     * group if both bits are set.  */
+    /* For ease of coding the visitor, it is easier to zero each group
+     * where all of the bits are set.  */
     if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES) ==
         VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES)
         data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES;
+    if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS) ==
+        VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS)
+        data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS;
+    if ((data.flags & VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION) ==
+        VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
+        data.flags &= ~VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS) {
         if (from->def)
