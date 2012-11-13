@@ -793,7 +793,10 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     virDomainSnapshotPtr snapshot = NULL;
     const char *name;
     char *doc = NULL;
-    char *tmp;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    char *state = NULL;
+    int external;
     char *parent = NULL;
     bool ret = false;
     int count;
@@ -835,18 +838,48 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     if (!doc)
         goto cleanup;
 
-    tmp = strstr(doc, "<state>");
-    if (!tmp) {
+    xmldoc = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt);
+    if (!xmldoc)
+        goto cleanup;
+
+    state = virXPathString("string(/domainsnapshot/state)", ctxt);
+    if (!state) {
         vshError(ctl, "%s",
                  _("unexpected problem reading snapshot xml"));
         goto cleanup;
     }
-    tmp += strlen("<state>");
-    vshPrint(ctl, "%-15s %.*s\n", _("State:"),
-             (int) (strchr(tmp, '<') - tmp), tmp);
+    vshPrint(ctl, "%-15s %s\n", _("State:"), state);
 
-    if (vshGetSnapshotParent(ctl, snapshot, &parent) < 0)
+    /* In addition to state, location is useful.  If the snapshot has
+     * a <memory> element, then the existence of snapshot='external'
+     * prior to <domain> is the deciding factor; for snapshots
+     * created prior to 1.0.1, a state of disk-only is the only
+     * external snapshot.  */
+    switch (virXPathBoolean("boolean(/domainsnapshot/memory)", ctxt)) {
+    case 1:
+        external = virXPathBoolean("boolean(/domainsnapshot/memory/@snapshot=external "
+                                   "| /domainsnapshot/disks/disk/@snapshot=external)",
+                                   ctxt);
+        break;
+    case 0:
+        external = STREQ(state, "disk-snapshot");
+        break;
+    default:
+        external = -1;
+        break;
+
+    }
+    if (external < 0) {
+        vshError(ctl, "%s",
+                 _("unexpected problem reading snapshot xml"));
         goto cleanup;
+    }
+    vshPrint(ctl, "%-15s %s\n", _("Location:"),
+             external ? _("external") : _("internal"));
+
+    /* Since we already have the XML, there's no need to call
+     * virDomainSnapshotGetParent */
+    parent = virXPathString("string(/domainsnapshot/parent/name)", ctxt);
     vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
 
     /* Children, Descendants.  After this point, the fallback to
@@ -858,8 +891,13 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     }
     flags = 0;
     count = virDomainSnapshotNumChildren(snapshot, flags);
-    if (count < 0)
+    if (count < 0) {
+        if (last_error->code == VIR_ERR_NO_SUPPORT) {
+            vshResetLibvirtError();
+            ret = true;
+        }
         goto cleanup;
+    }
     vshPrint(ctl, "%-15s %d\n", _("Children:"), count);
     flags = VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
     count = virDomainSnapshotNumChildren(snapshot, flags);
@@ -882,6 +920,9 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    VIR_FREE(state);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xmldoc);
     VIR_FREE(doc);
     VIR_FREE(parent);
     if (snapshot)
