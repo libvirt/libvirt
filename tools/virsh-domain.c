@@ -126,6 +126,27 @@ vshDomainVcpuStateToString(int state)
 }
 
 /*
+ * Determine number of CPU nodes present by trying
+ * virNodeGetCPUMap and falling back to virNodeGetInfo
+ * if needed.
+ */
+static int
+vshNodeGetCPUCount(virConnectPtr conn)
+{
+    int ret;
+    virNodeInfo nodeinfo;
+
+    if ((ret = virNodeGetCPUMap(conn, NULL, NULL, 0)) < 0) {
+        /* fall back to nodeinfo */
+        vshResetLibvirtError();
+        if (virNodeGetInfo(conn, &nodeinfo) == 0) {
+            ret = VIR_NODEINFO_MAXCPUS(nodeinfo);
+        }
+    }
+    return ret;
+}
+
+/*
  * "attach-device" command
  */
 static const vshCmdInfo info_attach_device[] = {
@@ -4497,7 +4518,6 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
-    virNodeInfo nodeinfo;
     virVcpuInfoPtr cpuinfo;
     unsigned char *cpumaps;
     int ncpus, maxcpu;
@@ -4508,7 +4528,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
         virDomainFree(dom);
         return false;
     }
@@ -4519,7 +4539,6 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
-    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
     cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
 
@@ -4645,7 +4664,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
-    virNodeInfo nodeinfo;
     int vcpu = -1;
     const char *cpulist = NULL;
     bool ret = true;
@@ -4695,7 +4713,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
         virDomainFree(dom);
         return false;
     }
@@ -4712,7 +4730,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
     /* Query mode: show CPU affinity information then exit.*/
@@ -4864,7 +4881,6 @@ static bool
 cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    virNodeInfo nodeinfo;
     const char *cpulist = NULL;
     bool ret = true;
     unsigned char *cpumap = NULL;
@@ -4905,12 +4921,11 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     }
     query = !cpulist;
 
-    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0) {
         virDomainFree(dom);
         return false;
     }
 
-    maxcpu = VIR_NODEINFO_MAXCPUS(nodeinfo);
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
     /* Query mode: show CPU affinity information then exit.*/
