@@ -1902,15 +1902,13 @@ qemuPrepareCpumap(struct qemud_driver *driver,
                   virBitmapPtr nodemask)
 {
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
-    virNodeInfo nodeinfo;
     virBitmapPtr cpumap = NULL;
-
-    if (nodeGetInfo(NULL, &nodeinfo) < 0)
-        return NULL;
 
     /* setaffinity fails if you set bits for CPUs which
      * aren't present, so we have to limit ourselves */
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    if ((hostcpus = nodeGetCPUCount()) < 0)
+        return NULL;
+
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 

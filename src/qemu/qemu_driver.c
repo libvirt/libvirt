@@ -4170,7 +4170,6 @@ qemudDomainGetVcpuPinInfo(virDomainPtr dom,
 
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virNodeInfo nodeinfo;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
     int maxcpu, hostcpus, vcpu, pcpu;
@@ -4206,9 +4205,9 @@ qemudDomainGetVcpuPinInfo(virDomainPtr dom,
     /* Coverity didn't realize that targetDef must be set if we got here.  */
     sa_assert(targetDef);
 
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+    if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
@@ -4421,7 +4420,6 @@ qemudDomainGetEmulatorPinInfo(virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virNodeInfo nodeinfo;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
     int maxcpu, hostcpus, pcpu;
@@ -4453,9 +4451,9 @@ qemudDomainGetEmulatorPinInfo(virDomainPtr dom,
     /* Coverity didn't realize that targetDef must be set if we got here. */
     sa_assert(targetDef);
 
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+    if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
@@ -4498,7 +4496,6 @@ qemudDomainGetVcpus(virDomainPtr dom,
                     int maplen) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virNodeInfo nodeinfo;
     int i, v, maxcpu, hostcpus;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -4524,10 +4521,9 @@ qemudDomainGetVcpus(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
+    if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;

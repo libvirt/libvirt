@@ -492,17 +492,15 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
 static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 {
     int hostcpus, maxcpu = CPU_SETSIZE;
-    virNodeInfo nodeinfo;
     virBitmapPtr cpumap, cpumapToSet;
 
     VIR_DEBUG("Setting CPU affinity");
 
-    if (nodeGetInfo(NULL, &nodeinfo) < 0)
-        return -1;
-
     /* setaffinity fails if you set bits for CPUs which
      * aren't present, so we have to limit ourselves */
-    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    if ((hostcpus = nodeGetCPUCount()) < 0)
+        return -1;
+
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
