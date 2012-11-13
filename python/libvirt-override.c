@@ -253,6 +253,39 @@ cleanup:
     return NULL;
 }
 
+/*
+ * Utility function to retrieve the number of node CPUs present.
+ * It first tries virGetNodeCPUMap, which will return the
+ * number reliably, if available.
+ * As a fallback and for compatibility with backlevel libvirt
+ * versions virGetNodeInfo will be called to calculate the
+ * CPU number, which has the potential to return a too small
+ * number if some host CPUs are offline.
+ */
+static int
+getPyNodeCPUCount(virConnectPtr conn) {
+    int i_retval;
+    virNodeInfo nodeinfo;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virNodeGetCPUMap(conn, NULL, NULL, 0);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (i_retval < 0) {
+        /* fallback: use nodeinfo */
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        i_retval = virNodeGetInfo(conn, &nodeinfo);
+        LIBVIRT_END_ALLOW_THREADS;
+        if (i_retval < 0)
+            goto cleanup;
+
+        i_retval = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    }
+
+cleanup:
+    return i_retval;
+}
+
 /************************************************************************
  *									*
  *		Statistics						*
@@ -1338,22 +1371,18 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     virDomainPtr domain;
     PyObject *pyobj_domain, *pyretval = NULL, *pycpuinfo = NULL, *pycpumap = NULL;
     PyObject *error = NULL;
-    virNodeInfo nodeinfo;
     virDomainInfo dominfo;
     virVcpuInfoPtr cpuinfo = NULL;
     unsigned char *cpumap = NULL;
     size_t cpumaplen, i;
-    int i_retval;
+    int i_retval, cpunum;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetVcpus",
                           &pyobj_domain))
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
-    LIBVIRT_END_ALLOW_THREADS;
-    if (i_retval < 0)
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
         return VIR_PY_INT_FAIL;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -1365,7 +1394,7 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
     if (VIR_ALLOC_N(cpuinfo, dominfo.nrVirtCpu) < 0)
         return PyErr_NoMemory();
 
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
     if (xalloc_oversized(dominfo.nrVirtCpu, cpumaplen) ||
         VIR_ALLOC_N(cpumap, dominfo.nrVirtCpu * cpumaplen) < 0) {
         error = PyErr_NoMemory();
@@ -1423,11 +1452,11 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
             goto cleanup;
     }
     for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
-        PyObject *info = PyTuple_New(VIR_NODEINFO_MAXCPUS(nodeinfo));
+        PyObject *info = PyTuple_New(cpunum);
         int j;
         if (info == NULL)
             goto cleanup;
-        for (j = 0 ; j < VIR_NODEINFO_MAXCPUS(nodeinfo) ; j++) {
+        for (j = 0 ; j < cpunum ; j++) {
             PyObject *item = NULL;
             if ((item = PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen, i, j))) == NULL ||
                 PyTuple_SetItem(info, j, item) < 0) {
@@ -1467,9 +1496,8 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     virDomainPtr domain;
     PyObject *pyobj_domain, *pycpumap;
     PyObject *ret = NULL;
-    virNodeInfo nodeinfo;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu, tuple_size;
+    int cpumaplen, i, vcpu, tuple_size, cpunum;
     int i_retval;
 
     if (!PyArg_ParseTuple(args, (char *)"OiO:virDomainPinVcpu",
@@ -1477,10 +1505,7 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
-    LIBVIRT_END_ALLOW_THREADS;
-    if (i_retval < 0)
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
         return VIR_PY_INT_FAIL;
 
     if (PyTuple_Check(pycpumap)) {
@@ -1492,7 +1517,7 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
        return ret;
     }
 
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
     if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
         return PyErr_NoMemory();
 
@@ -1509,7 +1534,7 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
             VIR_UNUSE_CPU(cpumap, i);
     }
 
-    for (; i < VIR_NODEINFO_MAXCPUS(nodeinfo); i++)
+    for (; i < cpunum; i++)
         VIR_UNUSE_CPU(cpumap, i);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -1534,9 +1559,8 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
     virDomainPtr domain;
     PyObject *pyobj_domain, *pycpumap;
     PyObject *ret = NULL;
-    virNodeInfo nodeinfo;
     unsigned char *cpumap;
-    int cpumaplen, i, vcpu, tuple_size;
+    int cpumaplen, i, vcpu, tuple_size, cpunum;
     unsigned int flags;
     int i_retval;
 
@@ -1545,10 +1569,7 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
-    LIBVIRT_END_ALLOW_THREADS;
-    if (i_retval < 0)
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
         return VIR_PY_INT_FAIL;
 
     if (PyTuple_Check(pycpumap)) {
@@ -1560,7 +1581,7 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
        return ret;
     }
 
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
     if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
         return PyErr_NoMemory();
 
@@ -1577,7 +1598,7 @@ libvirt_virDomainPinVcpuFlags(PyObject *self ATTRIBUTE_UNUSED,
             VIR_UNUSE_CPU(cpumap, i);
     }
 
-    for (; i < VIR_NODEINFO_MAXCPUS(nodeinfo); i++)
+    for (; i < cpunum; i++)
         VIR_UNUSE_CPU(cpumap, i);
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
@@ -1599,23 +1620,19 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
                                 PyObject *args) {
     virDomainPtr domain;
     PyObject *pyobj_domain, *pycpumaps = NULL;
-    virNodeInfo nodeinfo;
     virDomainInfo dominfo;
     unsigned char *cpumaps;
     size_t cpumaplen, vcpu, pcpu;
     unsigned int flags;
-    int i_retval;
+    int i_retval, cpunum;
 
     if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainGetVcpuPinInfo",
                           &pyobj_domain, &flags))
         return NULL;
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    i_retval = virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo);
-    LIBVIRT_END_ALLOW_THREADS;
-    if (i_retval < 0)
-        return VIR_PY_NONE;
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
+        return VIR_PY_INT_FAIL;
 
     LIBVIRT_BEGIN_ALLOW_THREADS;
     i_retval = virDomainGetInfo(domain, &dominfo);
@@ -1623,7 +1640,7 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
     if (i_retval < 0)
         return VIR_PY_NONE;
 
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
     if (xalloc_oversized(dominfo.nrVirtCpu, cpumaplen) ||
         VIR_ALLOC_N(cpumaps, dominfo.nrVirtCpu * cpumaplen) < 0)
         goto cleanup;
@@ -1639,11 +1656,11 @@ libvirt_virDomainGetVcpuPinInfo(PyObject *self ATTRIBUTE_UNUSED,
         goto cleanup;
 
     for (vcpu = 0; vcpu < dominfo.nrVirtCpu; vcpu++) {
-        PyObject *mapinfo = PyTuple_New(VIR_NODEINFO_MAXCPUS(nodeinfo));
+        PyObject *mapinfo = PyTuple_New(cpunum);
         if (mapinfo == NULL)
             goto cleanup;
 
-        for (pcpu = 0; pcpu < VIR_NODEINFO_MAXCPUS(nodeinfo); pcpu++) {
+        for (pcpu = 0; pcpu < cpunum; pcpu++) {
             PyTuple_SetItem(mapinfo, pcpu,
                             PyBool_FromLong(VIR_CPU_USABLE(cpumaps, cpumaplen, vcpu, pcpu)));
         }
