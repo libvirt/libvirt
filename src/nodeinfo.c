@@ -978,11 +978,35 @@ int
 nodeGetCPUCount(void)
 {
 #ifdef __linux__
-    /* XXX should we also work on older kernels, like RHEL5, that lack
-     * cpu/present and cpu/online files?  Those kernels also lack cpu
-     * hotplugging, so it would be a matter of finding the largest
-     * cpu/cpuNN directory, and returning NN + 1 */
-    return linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
+    /* To support older kernels that lack cpu/present, such as 2.6.18
+     * in RHEL5, we fall back to count cpu/cpuNN entries; this assumes
+     * that such kernels also lack hotplug, and therefore cpu/cpuNN
+     * will be consecutive.
+     */
+    char *cpupath = NULL;
+    int i = 0;
+
+    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/present")) {
+        i = linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
+    } else if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/cpu0")) {
+        do {
+            i++;
+            VIR_FREE(cpupath);
+            if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
+                            SYSFS_SYSTEM_PATH, i) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+        } while (virFileExists(cpupath));
+    } else {
+        /* no cpu/cpu0: we give up */
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("host cpu counting not supported on this node"));
+        return -1;
+    }
+
+    VIR_FREE(cpupath);
+    return i;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("host cpu counting not implemented on this platform"));
