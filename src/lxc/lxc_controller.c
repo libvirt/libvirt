@@ -1144,7 +1144,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 {
     virDomainFSDefPtr root = virDomainGetRootFilesystem(ctrl->def);
     char *mount_options = NULL;
-    char *opts;
+    char *opts = NULL;
     char *devpts = NULL;
     int ret = -1;
 
