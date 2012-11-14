@@ -435,7 +435,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
                 goto error;
             }
 
-            res->owners[res->nOwners-1] = (pid_t)owner;
+            res->owners[j] = (pid_t)owner;
         }
 
         if (virHashAddEntry(lockspace->resources, res->name, res) < 0) {
