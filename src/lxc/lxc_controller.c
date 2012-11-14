@@ -60,6 +60,7 @@
 #include "lxc_container.h"
 #include "lxc_cgroup.h"
 #include "lxc_protocol.h"
+#include "lxc_fuse.h"
 #include "virnetdev.h"
 #include "virnetdevveth.h"
 #include "memory.h"
@@ -130,6 +131,8 @@ struct _virLXCController {
     virNetServerProgramPtr prog;
     bool inShutdown;
     int timerShutdown;
+
+    virLXCFusePtr fuse;
 };
 
 #include "lxc_controller_dispatch.h"
@@ -242,6 +245,13 @@ static void virLXCControllerConsoleClose(virLXCControllerConsolePtr console)
 }
 
 
+static void
+virLXCControllerFreeFuse(virLXCControllerPtr ctrl)
+{
+    return lxcFreeFuse(&ctrl->fuse);
+}
+
+
 static void virLXCControllerFree(virLXCControllerPtr ctrl)
 {
     size_t i;
@@ -272,6 +282,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
         virEventRemoveTimeout(ctrl->timerShutdown);
 
     virObjectUnref(ctrl->server);
+    virLXCControllerFreeFuse(ctrl);
 
     VIR_FREE(ctrl);
 }
@@ -1244,6 +1255,12 @@ cleanup:
 
 
 static int
+virLXCControllerSetupFuse(virLXCControllerPtr ctrl)
+{
+    return lxcSetupFuse(&ctrl->fuse, ctrl->def);
+}
+
+static int
 virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
                               char **containerTTYPaths)
 {
@@ -1403,6 +1420,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
         goto cleanup;
 
     if (virLXCControllerSetupDevPTS(ctrl) < 0)
+        goto cleanup;
+
+    if (virLXCControllerSetupFuse(ctrl) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupConsoles(ctrl, containerTTYPaths) < 0)

@@ -28,6 +28,7 @@
 #include "lxc_process.h"
 #include "lxc_domain.h"
 #include "lxc_container.h"
+#include "lxc_fuse.h"
 #include "datatypes.h"
 #include "virfile.h"
 #include "virpidfile.h"

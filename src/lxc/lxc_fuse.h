@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2012 Fujitsu Limited.
+ *
+ * lxc_fuse.c: fuse filesystem support for libvirt lxc
+ *
+ * Authors:
+ *  Gao feng <gaofeng at cn.fujitsu.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef LXC_FUSE_H
+# define LXC_FUSE_H
+
+# define FUSE_USE_VERSION 26
+
+# include <config.h>
+# if HAVE_FUSE
+#  include <fuse.h>
+# endif
+
+# include "lxc_conf.h"
+# include "util.h"
+# include "memory.h"
+
+struct virLXCFuse {
+    virDomainDefPtr def;
+    virThread thread;
+    char *mountpoint;
+    struct fuse *fuse;
+    struct fuse_chan *ch;
+    virMutex lock;
+};
+typedef struct virLXCFuse *virLXCFusePtr;
+
+extern int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);
+extern void lxcFreeFuse(virLXCFusePtr *f);
+
+#endif /* LXC_FUSE_H */

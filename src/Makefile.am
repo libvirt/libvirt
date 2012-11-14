@@ -413,6 +413,7 @@ LXC_DRIVER_SOURCES =						\
 		lxc/lxc_domain.c lxc/lxc_domain.h		\
 		lxc/lxc_monitor.c lxc/lxc_monitor.h		\
 		lxc/lxc_process.c lxc/lxc_process.h		\
+		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
 		lxc/lxc_driver.c lxc/lxc_driver.h
 
 LXC_CONTROLLER_SOURCES =					\
@@ -421,6 +422,7 @@ LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
 		lxc/lxc_cgroup.c lxc/lxc_cgroup.h		\
+		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
 		lxc/lxc_controller.c
 
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES =			\
@@ -912,8 +914,9 @@ endif
 
 libvirt_driver_lxc_impl_la_CFLAGS = \
 		$(LIBNL_CFLAGS) \
+		$(FUSE_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_lxc_impl_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS)
+libvirt_driver_lxc_impl_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS) $(FUSE_LIBS)
 if HAVE_LIBBLKID
 libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)
@@ -1679,6 +1682,7 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD =			\
 		$(NUMACTL_LIBS) \
+		$(FUSE_LIBS) \
 		libvirt-net-rpc-server.la \
 		libvirt-net-rpc.la \
 		libvirt_security_manager.la \
@@ -1697,7 +1701,8 @@ endif
 libvirt_lxc_CFLAGS =				\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)                    \
-		$(LIBNL_CFLAGS)
+		$(LIBNL_CFLAGS)			\
+		$(FUSE_CFLAGS)
 if HAVE_LIBBLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
