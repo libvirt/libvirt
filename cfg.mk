@@ -696,6 +696,7 @@ ifeq (0,$(MAKELEVEL))
       cd '$(srcdir)';							\
       test -d .git || { echo 0; exit; };				\
       test -f po/Makevars || { echo 1; exit; };				\
+      test -f AUTHORS || { echo 1; exit; };				\
       actual=$$(git submodule status | $(_submodule_hash);		\
 		git hash-object bootstrap.conf;				\
 		git ls-tree -d HEAD gnulib/local | awk '{print $$3}';	\
