@@ -279,8 +279,8 @@ struct _virDomainDeviceInfo {
      * devices. */
     int rombar;         /* enum virDomainPciRombarMode */
     char *romfile;
-    /* bootIndex is only user for disk, network interface, and
-     * hostdev devices. */
+    /* bootIndex is only used for disk, network interface, hostdev
+     * and redirdev devices */
     int bootIndex;
 };
 

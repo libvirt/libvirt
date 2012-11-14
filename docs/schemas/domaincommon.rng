@@ -2779,6 +2779,9 @@
       <optional>
         <ref name="address"/>
       </optional>
+      <optional>
+        <ref name="deviceBoot"/>
+      </optional>
     </element>
   </define>
   <define name="redirfilter">

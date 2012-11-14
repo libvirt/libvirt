@@ -3504,6 +3504,16 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
         }
     }
 
+    if (dev->info.bootIndex) {
+        if (!qemuCapsGet(caps, QEMU_CAPS_USB_REDIR_BOOTINDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("USB redirection booting is not "
+                             "supported by this version of QEMU"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
+    }
+
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, caps) < 0)
         goto error;
 
@@ -3540,6 +3550,8 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                           dev->source.subsys.u.usb.device);
     }
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
+    if (dev->info->bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
 
     if (qemuBuildDeviceAddressStr(&buf, dev->info, caps) < 0)
         goto error;
@@ -6439,16 +6451,27 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         if (hostdev->info->bootIndex) {
             if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-                hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+                (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("booting from assigned devices is only"
-                                 " supported for PCI devices"));
+                                 " supported for PCI and USB devices"));
                 goto error;
-            } else if (!qemuCapsGet(caps, QEMU_CAPS_PCI_BOOTINDEX)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("booting from assigned PCI devices is not"
-                                 " supported with this version of qemu"));
-                goto error;
+            } else {
+                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                    !qemuCapsGet(caps, QEMU_CAPS_PCI_BOOTINDEX)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("booting from assigned PCI devices is not"
+                                     " supported with this version of qemu"));
+                    goto error;
+                }
+                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+                    !qemuCapsGet(caps, QEMU_CAPS_USB_HOST_BOOTINDEX)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("booting from assigned USB devices is not"
+                                     " supported with this version of qemu"));
+                    goto error;
+                }
             }
         }
 
