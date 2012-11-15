@@ -792,10 +792,8 @@ linuxParseCPUmax(const char *path)
     char *tmp;
     int ret = -1;
 
-    if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0) {
-        virReportOOMError();
+    if (virFileReadAll(path, 5 * VIR_DOMAIN_CPUMASK_LEN, &str) < 0)
         goto cleanup;
-    }
 
     tmp = str;
     do {
@@ -1024,15 +1022,30 @@ nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
     virBitmapPtr cpumap;
     int present;
 
-    present = linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
-    /* XXX should we also work on older kernels, like RHEL5, that lack
-     * cpu/present and cpu/online files?  Those kernels also lack cpu
-     * hotplugging, so it would be a matter of finding the largest
-     * cpu/cpuNN directory, and creating a map that size with all bits
-     * set.  */
+    present = nodeGetCPUCount();
     if (present < 0)
         return NULL;
-    cpumap = linuxParseCPUmap(present, SYSFS_SYSTEM_PATH "/cpu/online");
+
+    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/online")) {
+        cpumap = linuxParseCPUmap(present, SYSFS_SYSTEM_PATH "/cpu/online");
+    } else {
+        int i;
+
+        cpumap = virBitmapNew(present);
+        if (!cpumap) {
+            virReportOOMError();
+            return NULL;
+        }
+        for (i = 0; i < present; i++) {
+            int online = virNodeGetCpuValue(SYSFS_SYSTEM_PATH, i, "online", 1);
+            if (online < 0) {
+                virBitmapFree(cpumap);
+                return NULL;
+            }
+            if (online)
+                ignore_value(virBitmapSetBit(cpumap, i));
+        }
+    }
     if (max_id && cpumap)
         *max_id = present;
     return cpumap;
