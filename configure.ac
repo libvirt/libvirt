@@ -1223,6 +1223,13 @@ if test "x$with_sanlock" != "xno"; then
       AC_DEFINE_UNQUOTED([HAVE_SANLOCK_KILLPATH], 1,
         [whether Sanlock supports sanlock_killpath])
     fi
+
+    AC_CHECK_LIB([sanlock_client], [sanlock_inq_lockspace],
+                 [sanlock_inq_lockspace=yes], [sanlock_inq_lockspace=no])
+    if test "x$sanlock_inq_lockspace" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_INQ_LOCKSPACE], 1,
+        [whether sanlock supports sanlock_inq_lockspace])
+    fi
   fi
 fi
 AM_CONDITIONAL([HAVE_SANLOCK], [test "x$with_sanlock" = "xyes"])

@@ -184,6 +184,11 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     return 0;
 }
 
+/* How much ms sleep before retrying to add a lockspace? */
+#define LOCKSPACE_SLEEP 100
+/* How many times try adding a lockspace? */
+#define LOCKSPACE_RETRIES 10
+
 static int virLockManagerSanlockSetupLockspace(void)
 {
     int fd = -1;
@@ -192,6 +197,9 @@ static int virLockManagerSanlockSetupLockspace(void)
     struct sanlk_lockspace ls;
     char *path = NULL;
     char *dir = NULL;
+#ifndef HAVE_SANLOCK_INQ_LOCKSPACE
+    int retries = LOCKSPACE_RETRIES;
+#endif
 
     if (virAsprintf(&path, "%s/%s",
                     driver->autoDiskLeasePath,
@@ -318,11 +326,32 @@ static int virLockManagerSanlockSetupLockspace(void)
     }
 
     ls.host_id = driver->hostID;
-    /* Stage 2: Try to register the lockspace with the daemon.
-     * If the lockspace is already registered, we should get EEXIST back
-     * in which case we can just carry on with life
+    /* Stage 2: Try to register the lockspace with the daemon.  If the lockspace
+     * is already registered, we should get EEXIST back in which case we can
+     * just carry on with life. If EINPROGRESS is returned, we have two options:
+     * either call a sanlock API that blocks us until lockspace changes state,
+     * or we can fallback to polling.
      */
+#ifndef HAVE_SANLOCK_INQ_LOCKSPACE
+retry:
+#endif
     if ((rv = sanlock_add_lockspace(&ls, 0)) < 0) {
+        if (-rv == EINPROGRESS) {
+#ifdef HAVE_SANLOCK_INQ_LOCKSPACE
+            /* we have this function which blocks until lockspace change the
+             * state. It returns 0 if lockspace has been added, -ENOENT if it
+             * hasn't. XXX should we goto retry? */
+            VIR_DEBUG("Inquiring lockspace");
+            rv = sanlock_inq_lockspace(&ls, SANLK_INQ_WAIT);
+#else
+            /* fall back to polling */
+            if (retries--) {
+                usleep(LOCKSPACE_SLEEP * 1000);
+                VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
+                goto retry;
+            }
+#endif
+        }
         if (-rv != EEXIST) {
             if (rv <= -200)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
