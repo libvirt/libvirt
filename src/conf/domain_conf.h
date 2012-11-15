@@ -1943,6 +1943,8 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
                                 unsigned int *flags,
                                 virDomainDefPtr *persistentDef);
 
+virDomainDefPtr virDomainDefCopy(virCapsPtr caps, virDomainDefPtr src,
+                                 bool migratable);
 virDomainDefPtr
 virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom);
 

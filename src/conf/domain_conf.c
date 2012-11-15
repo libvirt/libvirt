@@ -1861,8 +1861,6 @@ virDomainObjSetDefTransient(virCapsPtr caps,
                             bool live)
 {
     int ret = -1;
-    char *xml = NULL;
-    virDomainDefPtr newDef = NULL;
 
     if (!virDomainObjIsActive(domain) && !live)
         return 0;
@@ -1873,17 +1871,11 @@ virDomainObjSetDefTransient(virCapsPtr caps,
     if (domain->newDef)
         return 0;
 
-    if (!(xml = virDomainDefFormat(domain->def, VIR_DOMAIN_XML_WRITE_FLAGS)))
+    if (!(domain->newDef = virDomainDefCopy(caps, domain->def, false)))
         goto out;
 
-    if (!(newDef = virDomainDefParseString(caps, xml, -1,
-                                           VIR_DOMAIN_XML_READ_FLAGS)))
-        goto out;
-
-    domain->newDef = newDef;
     ret = 0;
 out:
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -14917,22 +14909,39 @@ cleanup:
 }
 
 
+/* Copy src into a new definition; with the quality of the copy
+ * depending on the migratable flag (false for transitions between
+ * persistent and active, true for transitions across save files or
+ * snapshots).  */
 virDomainDefPtr
-virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom)
+virDomainDefCopy(virCapsPtr caps, virDomainDefPtr src, bool migratable)
 {
     char *xml;
-    virDomainDefPtr cur, ret;
+    virDomainDefPtr ret;
+    unsigned int write_flags = VIR_DOMAIN_XML_WRITE_FLAGS;
+    unsigned int read_flags = VIR_DOMAIN_XML_READ_FLAGS;
 
-    cur = virDomainObjGetPersistentDef(caps, dom);
+    if (migratable)
+        write_flags |= VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_MIGRATABLE;
 
-    xml = virDomainDefFormat(cur, VIR_DOMAIN_XML_WRITE_FLAGS);
+    /* Easiest to clone via a round-trip through XML.  */
+    xml = virDomainDefFormat(src, write_flags);
     if (!xml)
         return NULL;
 
-    ret = virDomainDefParseString(caps, xml, -1, VIR_DOMAIN_XML_READ_FLAGS);
+    ret = virDomainDefParseString(caps, xml, -1, read_flags);
 
     VIR_FREE(xml);
     return ret;
+}
+
+virDomainDefPtr
+virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom)
+{
+    virDomainDefPtr cur;
+
+    cur = virDomainObjGetPersistentDef(caps, dom);
+    return virDomainDefCopy(caps, cur, false);
 }
 
 

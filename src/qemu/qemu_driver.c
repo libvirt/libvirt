@@ -12189,23 +12189,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     /* Prepare to copy the snapshot inactive xml as the config of this
-     * domain.  Easiest way is by a round trip through xml.
+     * domain.
      *
      * XXX Should domain snapshots track live xml rather
      * than inactive xml?  */
     snap->def->current = true;
     if (snap->def->dom) {
-        char *xml;
-        if (!(xml = qemuDomainDefFormatXML(driver,
-                                           snap->def->dom,
-                                           VIR_DOMAIN_XML_INACTIVE |
-                                           VIR_DOMAIN_XML_SECURE |
-                                           VIR_DOMAIN_XML_MIGRATABLE)))
-            goto cleanup;
-        config = virDomainDefParseString(driver->caps, xml,
-                                         QEMU_EXPECTED_VIRT_TYPES,
-                                         VIR_DOMAIN_XML_INACTIVE);
-        VIR_FREE(xml);
+        config = virDomainDefCopy(driver->caps, snap->def->dom, true);
         if (!config)
             goto cleanup;
     }
