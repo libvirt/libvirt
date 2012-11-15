@@ -459,7 +459,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainSnapshotPtr edited = NULL;
-    const char *name;
+    const char *name = NULL;
     const char *edited_name;
     bool ret = false;
     unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
@@ -532,7 +532,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
-    if (!ret)
+    if (!ret && name)
         vshError(ctl, _("Failed to update %s"), name);
     if (edited)
         virDomainSnapshotFree(edited);
