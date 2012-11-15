@@ -293,6 +293,12 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                            memoryFile);
             goto cleanup;
         }
+        if (!memoryFile &&
+            def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("external memory snapshots require a filename"));
+            goto cleanup;
+        }
     } else if (memoryFile) {
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
