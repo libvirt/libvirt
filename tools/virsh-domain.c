@@ -2933,8 +2933,10 @@ doSave(void *opaque)
         goto out;
 
     if (xmlfile &&
-        virFileReadAll(xmlfile, 8192, &xml) < 0)
+        virFileReadAll(xmlfile, 8192, &xml) < 0) {
+        vshReportError(ctl);
         goto out;
+    }
 
     if (((flags || xml)
          ? virDomainSaveFlags(dom, to, xml, flags)
