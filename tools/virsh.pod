@@ -1124,14 +1124,11 @@ If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
 
 =item B<reboot> I<domain> [I<--mode acpi|agent>]
-=item B<restart> I<domain> [I<--mode acpi|agent>]
 
-Restart a domain.  Depending on the hypervisor, this may request a
-shutdown followed by a fresh boot, rather than triggering a software
-reboot.  The command returns as soon as it has requested the reboot
-action, and depending on the guest, there may be a significant delay
-before the domain actually reboots, or the request might even be
-ignored.
+Reboot a domain.  This acts just as if the domain had the B<reboot>
+command run from the console.  The command returns as soon as it has
+executed the reboot action, which may be significantly before the
+domain actually reboots.
 
 The exact behavior of a domain when it reboots is set by the
 I<on_reboot> parameter in the domain's XML definition.
@@ -1139,8 +1136,6 @@ I<on_reboot> parameter in the domain's XML definition.
 By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify C<acpi> or C<agent>.
-
-The command B<restart> is an alias for the older B<reboot>.
 
 =item B<reset> I<domain>
 
@@ -1528,7 +1523,6 @@ be hot-plugged the next time the domain is booted.  As such, it must only be
 used with the I<--config> flag, and not with the I<--live> flag.
 
 =item B<shutdown> I<domain> [I<--mode acpi|agent>]
-=item B<stop> I<domain> [I<--mode acpi|agent>]
 
 Gracefully shuts down a domain.  This coordinates with the domain OS
 to perform graceful shutdown, so there is no guarantee that it will
@@ -1547,11 +1541,7 @@ By default the hypervisor will try to pick a suitable shutdown
 method. To specify an alternative method, the I<--mode> parameter
 can specify C<acpi> or C<agent>.
 
-The command B<stop> is an alias for the older B<shutdown>.
-
 =item B<start> I<domain-name-or-uuid> [I<--console>] [I<--paused>]
-[I<--autodestroy>] [I<--bypass-cache>] [I<--force-boot>]
-=item B<boot> I<domain-name-or-uuid> [I<--console>] [I<--paused>]
 [I<--autodestroy>] [I<--bypass-cache>] [I<--force-boot>]
 
 Start a (previously defined) inactive domain, either from the last
@@ -1565,8 +1555,6 @@ exits.  If I<--bypass-cache> is specified, and managedsave state exists,
 the restore will avoid the file system cache, although this may slow
 down the operation.  If I<--force-boot> is specified, then any
 managedsave state is discarded and a fresh boot occurs.
-
-The command B<boot> is an alias for the older B<start>.
 
 =item B<suspend> I<domain>
 
