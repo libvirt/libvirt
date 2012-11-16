@@ -97,6 +97,8 @@ struct _virLXCControllerConsole {
     char fromHostBuf[1024];
     size_t fromContLen;
     char fromContBuf[1024];
+
+    virNetServerPtr server;
 };
 
 typedef struct _virLXCController virLXCController;
@@ -278,6 +280,7 @@ static int virLXCControllerAddConsole(virLXCControllerPtr ctrl,
         virReportOOMError();
         return -1;
     }
+    ctrl->consoles[ctrl->nconsoles-1].server = ctrl->server;
     ctrl->consoles[ctrl->nconsoles-1].hostFd = hostFd;
     ctrl->consoles[ctrl->nconsoles-1].hostWatch = -1;
 
@@ -664,12 +667,11 @@ static int lxcControllerClearCapabilities(void)
     return 0;
 }
 
-static bool quit = false;
 static bool wantReboot = false;
 static virMutex lock;
 
 
-static void virLXCControllerSignalChildIO(virNetServerPtr server ATTRIBUTE_UNUSED,
+static void virLXCControllerSignalChildIO(virNetServerPtr server,
                                           siginfo_t *info ATTRIBUTE_UNUSED,
                                           void *opaque)
 {
@@ -679,8 +681,8 @@ static void virLXCControllerSignalChildIO(virNetServerPtr server ATTRIBUTE_UNUSE
 
     ret = waitpid(-1, &status, WNOHANG);
     if (ret == ctrl->initpid) {
+        virNetServerQuit(server);
         virMutexLock(&lock);
-        quit = true;
         if (WIFSIGNALED(status) &&
             WTERMSIG(status) == SIGHUP)
             wantReboot = true;
@@ -732,7 +734,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                 VIR_DEBUG(":fail");
                 virReportSystemError(errno, "%s",
                                      _("Unable to add epoll fd"));
-                quit = true;
+                virNetServerQuit(console->server);
                 goto cleanup;
             }
             console->hostEpoll = events;
@@ -743,8 +745,8 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
         if (epoll_ctl(console->epollFd, EPOLL_CTL_DEL, console->hostFd, NULL) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to remove epoll fd"));
-                VIR_DEBUG(":fail");
-            quit = true;
+            VIR_DEBUG(":fail");
+            virNetServerQuit(console->server);
             goto cleanup;
         }
         console->hostEpoll = 0;
@@ -769,7 +771,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                 virReportSystemError(errno, "%s",
                                      _("Unable to add epoll fd"));
                 VIR_DEBUG(":fail");
-                quit = true;
+                virNetServerQuit(console->server);
                 goto cleanup;
             }
             console->contEpoll = events;
@@ -780,8 +782,8 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
         if (epoll_ctl(console->epollFd, EPOLL_CTL_DEL, console->contFd, NULL) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to remove epoll fd"));
-                VIR_DEBUG(":fail");
-            quit = true;
+            VIR_DEBUG(":fail");
+            virNetServerQuit(console->server);
             goto cleanup;
         }
         console->contEpoll = 0;
@@ -810,7 +812,7 @@ static void virLXCControllerConsoleEPoll(int watch, int fd, int events, void *op
                 continue;
             virReportSystemError(errno, "%s",
                                  _("Unable to wait on epoll"));
-            quit = true;
+            virNetServerQuit(console->server);
             goto cleanup;
         }
 
@@ -927,7 +929,7 @@ error:
     virEventRemoveHandle(console->contWatch);
     virEventRemoveHandle(console->hostWatch);
     console->contWatch = console->hostWatch = -1;
-    quit = true;
+    virNetServerQuit(console->server);
     virMutexUnlock(&lock);
 }
 
@@ -996,14 +998,7 @@ static int virLXCControllerMain(virLXCControllerPtr ctrl)
         }
     }
 
-    virMutexLock(&lock);
-    while (!quit) {
-        virMutexUnlock(&lock);
-        if (virEventRunDefaultImpl() < 0)
-            goto cleanup;
-        virMutexLock(&lock);
-    }
-    virMutexUnlock(&lock);
+    virNetServerRun(ctrl->server);
 
     err = virGetLastError();
     if (!err || err->code == VIR_ERR_OK)
