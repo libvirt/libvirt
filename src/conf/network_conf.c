@@ -47,6 +47,9 @@
 
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK
+#define NEXT_FREE_CLASS_ID 3
+/* currently, /sbin/tc implementation allows up to 16 bits for minor class size */
+#define CLASS_ID_BITMAP_SIZE (1<<16)
 
 VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
@@ -340,10 +343,25 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     virNetworkObjLock(network);
     network->def = def;
 
+    if (!(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    /* The first three class IDs are already taken */
+    ignore_value(virBitmapSetBit(network->class_id, 0));
+    ignore_value(virBitmapSetBit(network->class_id, 1));
+    ignore_value(virBitmapSetBit(network->class_id, 2));
+
+    network->def = def;
     nets->objs[nets->count] = network;
     nets->count++;
 
     return network;
+error:
+    virNetworkObjUnlock(network);
+    virNetworkObjFree(network);
+    return NULL;
 
 }
 

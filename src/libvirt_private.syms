@@ -1508,7 +1508,10 @@ virNetDevBandwidthClear;
 virNetDevBandwidthCopy;
 virNetDevBandwidthEqual;
 virNetDevBandwidthFree;
+virNetDevBandwidthPlug;
 virNetDevBandwidthSet;
+virNetDevBandwidthUnplug;
+virNetDevBandwidthUpdateRate;
 
 
 # virnetdevbridge.h

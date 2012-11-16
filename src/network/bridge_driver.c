@@ -122,6 +122,11 @@ static int networkShutdownNetworkExternal(struct network_driver *driver,
 static void networkReloadIptablesRules(struct network_driver *driver);
 static void networkRefreshDaemons(struct network_driver *driver);
 
+static int networkPlugBandwidth(virNetworkObjPtr net,
+                                virDomainNetDefPtr iface);
+static int networkUnplugBandwidth(virNetworkObjPtr net,
+                                  virDomainNetDefPtr iface);
+
 static struct network_driver *driverState = NULL;
 
 static char *
@@ -3683,6 +3688,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     enum virDomainNetType actualType = iface->type;
     virNetworkObjPtr network = NULL;
     virNetworkDefPtr netdef = NULL;
+    virNetDevBandwidthPtr bandwidth = NULL;
     virPortGroupDefPtr portgroup = NULL;
     virNetDevVPortProfilePtr virtport = iface->virtPortProfile;
     virNetDevVlanPtr vlan = NULL;
@@ -3721,7 +3727,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
      * (already in NetDef). Otherwise, if there is bandwidth info in
      * the portgroup, fill that into the ActualDef.
      */
-    if (portgroup && !iface->bandwidth) {
+
+    if (iface->bandwidth)
+        bandwidth = iface->bandwidth;
+    else if (portgroup && portgroup->bandwidth)
+        bandwidth = portgroup->bandwidth;
+
+    if (bandwidth) {
         if (!iface->data.network.actual
             && (VIR_ALLOC(iface->data.network.actual) < 0)) {
             virReportOOMError();
@@ -3729,7 +3741,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         }
 
         if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
-                                   portgroup->bandwidth) < 0)
+                                   bandwidth) < 0)
             goto error;
     }
 
@@ -3742,6 +3754,10 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         */
         if (iface->data.network.actual)
             iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+
+        if (networkPlugBandwidth(network, iface) < 0)
+            goto error;
+
     } else if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) &&
                netdef->bridge) {
 
@@ -4253,6 +4269,12 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
     }
     netdef = network->def;
 
+    if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE ||
+         netdef->forward.type == VIR_NETWORK_FORWARD_NAT ||
+         netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) &&
+        networkUnplugBandwidth(network, iface) < 0)
+        goto error;
+
     if ((!iface->data.network.actual) ||
         ((actualType != VIR_DOMAIN_NET_TYPE_DIRECT) &&
          (actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV))) {
@@ -4455,4 +4477,190 @@ cleanup:
 
 error:
     goto cleanup;
+}
+
+/**
+ * networkCheckBandwidth:
+ * @net: network QoS
+ * @iface: interface QoS
+ * @new_rate: new rate for non guaranteed class
+ *
+ * Returns: -1 if plugging would overcommit network QoS
+ *           0 if plugging is safe (@new_rate updated)
+ *           1 if no QoS is set (@new_rate untouched)
+ */
+static int
+networkCheckBandwidth(virNetworkObjPtr net,
+                      virDomainNetDefPtr iface,
+                      unsigned long long *new_rate)
+{
+    int ret = -1;
+    virNetDevBandwidthPtr netBand = net->def->bandwidth;
+    virNetDevBandwidthPtr ifaceBand = iface->bandwidth;
+    unsigned long long tmp_floor_sum = net->floor_sum;
+    unsigned long long tmp_new_rate = 0;
+    char ifmac[VIR_MAC_STRING_BUFLEN];
+
+    if (!ifaceBand || !ifaceBand->in || !ifaceBand->in->floor ||
+        !netBand || !netBand->in)
+        return 1;
+
+    virMacAddrFormat(&iface->mac, ifmac);
+
+    tmp_new_rate = netBand->in->average;
+    tmp_floor_sum += ifaceBand->in->floor;
+
+    /* check against peak */
+    if (netBand->in->peak) {
+        tmp_new_rate = netBand->in->peak;
+        if (tmp_floor_sum > netBand->in->peak) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Cannot plug '%s' interface into '%s' because it "
+                             "would overcommit 'peak' on network '%s'"),
+                           ifmac,
+                           net->def->bridge,
+                           net->def->name);
+            goto cleanup;
+        }
+    } else if (tmp_floor_sum > netBand->in->average) {
+        /* tmp_floor_sum can be between 'average' and 'peak' iff 'peak' is set.
+         * Otherwise, tmp_floor_sum must be below 'average'. */
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Cannot plug '%s' interface into '%s' because it "
+                         "would overcommit 'average' on network '%s'"),
+                       ifmac,
+                       net->def->bridge,
+                       net->def->name);
+        goto cleanup;
+    }
+
+    *new_rate = tmp_new_rate;
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+/**
+ * networkNextClassID:
+ * @net: network object
+ *
+ * Find next free class ID. @net is supposed
+ * to be locked already. If there is a free ID,
+ * it is marked as used and returned.
+ *
+ * Returns next free class ID or -1 if none is available.
+ */
+static ssize_t
+networkNextClassID(virNetworkObjPtr net)
+{
+    size_t ret = 0;
+    bool is_set = false;
+
+    while (virBitmapGetBit(net->class_id, ret, &is_set) == 0 && is_set)
+        ret++;
+
+    if (is_set || virBitmapSetBit(net->class_id, ret) < 0)
+        return -1;
+
+    return ret;
+}
+
+static int
+networkPlugBandwidth(virNetworkObjPtr net,
+                     virDomainNetDefPtr iface)
+{
+    int ret = -1;
+    int plug_ret;
+    unsigned long long new_rate = 0;
+    ssize_t class_id = 0;
+    char ifmac[VIR_MAC_STRING_BUFLEN];
+
+    if ((plug_ret = networkCheckBandwidth(net, iface, &new_rate)) < 0) {
+        /* helper reported error */
+        goto cleanup;
+    }
+
+    if (plug_ret > 0) {
+        /* no QoS needs to be set; claim success */
+        ret = 0;
+        goto cleanup;
+    }
+
+    virMacAddrFormat(&iface->mac, ifmac);
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
+        !iface->data.network.actual) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot set bandwidth on interface '%s' of type %d"),
+                       ifmac, iface->type);
+        goto cleanup;
+    }
+
+    /* generate new class_id */
+    if ((class_id = networkNextClassID(net)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not generate next class ID"));
+        goto cleanup;
+    }
+
+    plug_ret = virNetDevBandwidthPlug(net->def->bridge,
+                                      net->def->bandwidth,
+                                      &iface->mac,
+                                      iface->bandwidth,
+                                      class_id);
+    if (plug_ret < 0) {
+        ignore_value(virNetDevBandwidthUnplug(net->def->bridge, class_id));
+        goto cleanup;
+    }
+
+    /* QoS was set, generate new class ID */
+    iface->data.network.actual->class_id = class_id;
+    /* update sum of 'floor'-s of attached NICs */
+    net->floor_sum += iface->bandwidth->in->floor;
+    /* update rate for non guaranteed NICs */
+    new_rate -= net->floor_sum;
+    if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
+                                     net->def->bandwidth, new_rate) < 0)
+        VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
+                 net->def->bridge);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+static int
+networkUnplugBandwidth(virNetworkObjPtr net,
+                       virDomainNetDefPtr iface)
+{
+    int ret = 0;
+    unsigned long long new_rate;
+
+    if (iface->data.network.actual &&
+        iface->data.network.actual->class_id) {
+        /* we must remove class from bridge */
+        new_rate = net->def->bandwidth->in->average;
+
+        if (net->def->bandwidth->in->peak > 0)
+            new_rate = net->def->bandwidth->in->peak;
+
+        ret = virNetDevBandwidthUnplug(net->def->bridge,
+                                       iface->data.network.actual->class_id);
+        if (ret < 0)
+            goto cleanup;
+        /* update sum of 'floor'-s of attached NICs */
+        net->floor_sum -= iface->bandwidth->in->floor;
+        /* update rate for non guaranteed NICs */
+        new_rate -= net->floor_sum;
+        if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
+                                         net->def->bandwidth, new_rate) < 0)
+            VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
+                     net->def->bridge);
+        /* no class is associated any longer */
+        iface->data.network.actual->class_id = 0;
+    }
+
+cleanup:
+    return ret;
 }

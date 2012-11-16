@@ -809,6 +809,7 @@ struct _virDomainActualNetDef {
     virNetDevVPortProfilePtr virtPortProfile;
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
+    unsigned int class_id; /* class ID for bandwidth 'floor' */
 };
 
 /* Stores the virtual network interface configuration */

@@ -38,6 +38,7 @@
 # include "virnetdevvlan.h"
 # include "virmacaddr.h"
 # include "device_conf.h"
+# include "bitmap.h"
 
 enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -232,6 +233,9 @@ struct _virNetworkObj {
 
     virNetworkDefPtr def; /* The current definition */
     virNetworkDefPtr newDef; /* New definition to activate at shutdown */
+
+    virBitmapPtr class_id; /* bitmap of class IDs for QoS */
+    unsigned long long floor_sum; /* sum of all 'floor'-s of attached NICs */
 };
 
 typedef struct _virNetworkObjList virNetworkObjList;
