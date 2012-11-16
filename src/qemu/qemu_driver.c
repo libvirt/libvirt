@@ -9034,7 +9034,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->out));
         }
 
-        if (virNetDevBandwidthSet(net->ifname, newBandwidth) < 0) {
+        if (virNetDevBandwidthSet(net->ifname, newBandwidth, false) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot set bandwidth limits on %s"),
                            device);

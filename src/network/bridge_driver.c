@@ -2459,7 +2459,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
         VIR_FORCE_CLOSE(tapfd);
     }
 
-    if (virNetDevBandwidthSet(network->def->bridge, network->def->bandwidth) < 0) {
+    if (virNetDevBandwidthSet(network->def->bridge,
+                              network->def->bandwidth, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
                        network->def->bridge);

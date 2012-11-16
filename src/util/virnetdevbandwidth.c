@@ -45,17 +45,21 @@ virNetDevBandwidthFree(virNetDevBandwidthPtr def)
  * virNetDevBandwidthSet:
  * @ifname: on which interface
  * @bandwidth: rates to set (may be NULL)
+ * @hierarchical_class: whether to create hierarchical class
  *
  * This function enables QoS on specified interface
  * and set given traffic limits for both, incoming
  * and outgoing traffic. Any previous setting get
- * overwritten.
+ * overwritten. If @hierarchical_class is TRUE, create
+ * hierarchical class. It is used to guarantee minimal
+ * throughput ('floor' attribute in NIC).
  *
  * Return 0 on success, -1 otherwise.
  */
 int
 virNetDevBandwidthSet(const char *ifname,
-                      virNetDevBandwidthPtr bandwidth)
+                      virNetDevBandwidthPtr bandwidth,
+                      bool hierarchical_class)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -71,7 +75,7 @@ virNetDevBandwidthSet(const char *ifname,
 
     virNetDevBandwidthClear(ifname);
 
-    if (bandwidth->in) {
+    if (bandwidth->in && bandwidth->in->average) {
         if (virAsprintf(&average, "%llukbps", bandwidth->in->average) < 0)
             goto cleanup;
         if (bandwidth->in->peak &&
@@ -83,15 +87,89 @@ virNetDevBandwidthSet(const char *ifname,
 
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
-                             "handle", "1:", "htb", "default", "1", NULL);
+                             "handle", "1:", "htb", "default",
+                             hierarchical_class ? "2" : "1", NULL);
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
 
+        /* If we are creating a hierarchical class, all non guaranteed traffic
+         * goes to the 1:2 class which will adjust 'rate' dynamically as NICs
+         * with guaranteed throughput are plugged and unplugged. Class 1:1
+         * exists so we don't exceed the maximum limit for the network. For each
+         * NIC with guaranteed throughput a separate classid will be created.
+         * NB '1:' is just a shorter notation of '1:0'.
+         *
+         * To get a picture how this works:
+         *
+         * +-----+     +---------+     +-----------+      +-----------+     +-----+
+         * |     |     |  qdisc  |     | class 1:1 |      | class 1:2 |     |     |
+         * | NIC |     | def 1:2 |     |   rate    |      |   rate    |     | sfq |
+         * |     | --> |         | --> |   peak    | -+-> |   peak    | --> |     |
+         * +-----+     +---------+     +-----------+  |   +-----------+     +-----+
+         *                                            |
+         *                                            |   +-----------+     +-----+
+         *                                            |   | class 1:3 |     |     |
+         *                                            |   |   rate    |     | sfq |
+         *                                            +-> |   peak    | --> |     |
+         *                                            |   +-----------+     +-----+
+         *                                           ...
+         *                                            |   +-----------+     +-----+
+         *                                            |   | class 1:n |     |     |
+         *                                            |   |   rate    |     | sfq |
+         *                                            +-> |   peak    | --> |     |
+         *                                                +-----------+     +-----+
+         *
+         * After the routing decision, when is it clear a packet is to be sent
+         * via a particular NIC, it is sent to the root qdisc (queueing
+         * discipline). In this case HTB (Hierarchical Token Bucket). It has
+         * only one direct child class (with id 1:1) which shapes the overall
+         * rate that is sent through the NIC.  This class has at least one child
+         * (1:2) which is meant for all non-privileged (non guaranteed) traffic
+         * from all domains. Then, for each interface with guaranteed
+         * throughput, a separate class (1:n) is created. Imagine a class is a
+         * box. Whenever a packet ends up in a class it is stored in this box
+         * until the kernel sends it, then it is removed from box. Packets are
+         * placed into boxes based on rules (filters) - e.g. depending on
+         * destination IP/MAC address. If there is no rule to be applied, the
+         * root qdisc has a default where such packets go (1:2 in this case).
+         * Packets come in over and over again and boxes get filled more and
+         * more. Imagine that kernel sends packets just once a second. So it
+         * starts to traverse through this tree. It starts with the root qdisc
+         * and through 1:1 it gets to 1:2. It sends packets up to 1:2's 'rate'.
+         * Then it moves to 1:3 and again sends packets up to 1:3's 'rate'.  The
+         * whole process is repeated until 1:n is processed. So now we have
+         * ensured each class its guaranteed bandwidth. If the sum of sent data
+         * doesn't exceed the 'rate' in 1:1 class, we can go further and send
+         * more packets. The rest of available bandwidth is distributed to the
+         * 1:2,1:3...1:n classes by ratio of their 'rate'. As soon as the root
+         * 'rate' limit is reached or there are no more packets to send, we stop
+         * sending and wait another second. Each class has an SFQ qdisc which
+         * shuffles packets in boxes stochastically, so one sender cannot
+         * starve others.
+         *
+         * Therefore, whenever we want to plug in a new guaranteed interface, we
+         * need to create a new class and adjust the 'rate' of the 1:2 class.
+         * When unplugging we do the exact opposite - remove the associated
+         * class, and adjust the 'rate'.
+         *
+         * This description is rather long, but it is still a good idea to read
+         * it before you dig into the code.
+         */
+        if (hierarchical_class) {
+            virCommandFree(cmd);
+            cmd = virCommandNew(TC);
+            virCommandAddArgList(cmd, "class", "add", "dev", ifname, "parent",
+                                 "1:", "classid", "1:1", "htb", "rate", average,
+                                 "ceil", peak ? peak : average, NULL);
+            if (virCommandRun(cmd, NULL) < 0)
+                goto cleanup;
+        }
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd,"class", "add", "dev", ifname, "parent",
-                             "1:", "classid", "1:1", "htb", NULL);
-        virCommandAddArgList(cmd, "rate", average, NULL);
+                             hierarchical_class ? "1:1" : "1:", "classid",
+                             hierarchical_class ? "1:2" : "1:1", "htb",
+                             "rate", average, NULL);
 
         if (peak)
             virCommandAddArgList(cmd, "ceil", peak, NULL);
@@ -104,7 +182,8 @@ virNetDevBandwidthSet(const char *ifname,
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "parent",
-                             "1:1", "handle", "2:", "sfq", "perturb",
+                             hierarchical_class ? "1:2" : "1:1",
+                             "handle", "2:", "sfq", "perturb",
                              "10", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)

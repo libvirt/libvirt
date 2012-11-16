@@ -925,7 +925,7 @@ create_name:
         rc = 0;
     }
 
-    if (virNetDevBandwidthSet(cr_ifname, bandwidth) < 0) {
+    if (virNetDevBandwidthSet(cr_ifname, bandwidth, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot set bandwidth limits on %s"),
                        cr_ifname);

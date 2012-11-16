@@ -42,7 +42,9 @@ struct _virNetDevBandwidth {
 
 void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 
-int virNetDevBandwidthSet(const char *ifname, virNetDevBandwidthPtr bandwidth)
+int virNetDevBandwidthSet(const char *ifname,
+                          virNetDevBandwidthPtr bandwidth,
+                          bool hierarchical_class)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthClear(const char *ifname)
     ATTRIBUTE_NONNULL(1);
