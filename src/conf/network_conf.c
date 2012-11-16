@@ -1286,7 +1286,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
-        !(def->bandwidth = virNetDevBandwidthParse(bandwidth_node))) {
+        !(def->bandwidth = virNetDevBandwidthParse(bandwidth_node, -1))) {
         goto cleanup;
     }
 
@@ -1578,7 +1578,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     def->domain = virXPathString("string(./domain[1]/@name)", ctxt);
 
     if ((bandwidthNode = virXPathNode("./bandwidth", ctxt)) != NULL &&
-        (def->bandwidth = virNetDevBandwidthParse(bandwidthNode)) == NULL)
+        (def->bandwidth = virNetDevBandwidthParse(bandwidthNode, -1)) == NULL)
         goto error;
 
     vlanNode = virXPathNode("./vlan", ctxt);

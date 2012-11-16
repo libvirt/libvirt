@@ -28,7 +28,8 @@
 # include "buf.h"
 # include "xml.h"
 
-virNetDevBandwidthPtr virNetDevBandwidthParse(xmlNodePtr node)
+virNetDevBandwidthPtr virNetDevBandwidthParse(xmlNodePtr node,
+                                              int net_type)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
                              virBufferPtr buf)

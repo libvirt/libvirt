@@ -149,6 +149,11 @@
       </attribute>
     </optional>
     <optional>
+      <attribute name="floor">
+        <ref name="speed"/>
+      </attribute>
+    </optional>
+    <optional>
       <attribute name='burst'>
         <ref name="BurstSize"/>
       </attribute>

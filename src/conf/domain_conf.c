@@ -4823,7 +4823,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
     if (bandwidth_node &&
-        !(actual->bandwidth = virNetDevBandwidthParse(bandwidth_node)))
+        !(actual->bandwidth = virNetDevBandwidthParse(bandwidth_node,
+                                                      actual->type)))
         goto error;
 
     vlanNode = virXPathNode("./vlan", ctxt);
@@ -5011,7 +5012,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
                     goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "bandwidth")) {
-                if (!(def->bandwidth = virNetDevBandwidthParse(cur)))
+                if (!(def->bandwidth = virNetDevBandwidthParse(cur,
+                                                               def->type)))
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "vlan")) {
                 if (virNetDevVlanParse(cur, ctxt, &def->vlan) < 0)

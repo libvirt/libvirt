@@ -30,6 +30,7 @@ typedef virNetDevBandwidthRate *virNetDevBandwidthRatePtr;
 struct _virNetDevBandwidthRate {
     unsigned long long average;  /* kbytes/s */
     unsigned long long peak;     /* kbytes/s */
+    unsigned long long floor;    /* kbytes/s */
     unsigned long long burst;    /* kbytes */
 };
 
