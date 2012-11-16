@@ -352,3 +352,185 @@ virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
 
     return true;
 }
+
+/*
+ * virNetDevBandwidthPlug:
+ * @brname: name of the bridge
+ * @net_bandwidth: QoS settings on @brname
+ * @ifmac: MAC of interface
+ * @bandwidth: QoS settings for interface
+ * @id: unique ID (MUST be greater than 2)
+ *
+ * Set bridge part of interface QoS settings, e.g. guaranteed
+ * bandwidth.  @id is an unique ID (among @brname) from which
+ * other identifiers for class, qdisc and filter are derived.
+ * However, two classes were already set up (by
+ * virNetDevBandwidthSet). That's why this @id MUST be greater
+ * than 2. You may want to keep passed @id, as it is used later
+ * by virNetDevBandwidthUnplug.
+ *
+ * Returns:
+ * 0 if QoS set successfully
+ * -1 otherwise.
+ */
+int
+virNetDevBandwidthPlug(const char *brname,
+                       virNetDevBandwidthPtr net_bandwidth,
+                       const virMacAddrPtr ifmac_ptr,
+                       virNetDevBandwidthPtr bandwidth,
+                       unsigned int id)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    char *class_id = NULL;
+    char *qdisc_id = NULL;
+    char *filter_id = NULL;
+    char *floor = NULL;
+    char *ceil = NULL;
+    unsigned char ifmac[VIR_MAC_BUFLEN];
+    char ifmacStr[VIR_MAC_STRING_BUFLEN];
+    char *mac[2] = {NULL, NULL};
+
+    if (id <= 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %d"), id);
+        return -1;
+    }
+
+    virMacAddrGetRaw(ifmac_ptr, ifmac);
+    virMacAddrFormat(ifmac_ptr, ifmacStr);
+
+    if (!net_bandwidth || !net_bandwidth->in) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Bridge '%s' has no QoS set, therefore "
+                         "unable to set 'floor' on '%s'"),
+                       brname, ifmacStr);
+        return -1;
+    }
+
+    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
+        virAsprintf(&qdisc_id, "%x:", id) < 0 ||
+        virAsprintf(&filter_id, "%u", id) < 0 ||
+        virAsprintf(&mac[0], "0x%02x%02x%02x%02x", ifmac[2],
+                    ifmac[3], ifmac[4], ifmac[5]) < 0 ||
+        virAsprintf(&mac[1], "0x%02x%02x", ifmac[0], ifmac[1]) < 0 ||
+        virAsprintf(&floor, "%llukbps", bandwidth->in->floor) < 0 ||
+        virAsprintf(&ceil, "%llukbps", net_bandwidth->in->peak ?
+                    net_bandwidth->in->peak :
+                    net_bandwidth->in->average) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "class", "add", "dev", brname, "parent", "1:1",
+                         "classid", class_id, "htb", "rate", floor,
+                         "ceil", ceil, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    virCommandFree(cmd);
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "qdisc", "add", "dev", brname, "parent",
+                         class_id, "handle", qdisc_id, "sfq", "perturb",
+                         "10", NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    virCommandFree(cmd);
+    cmd = virCommandNew(TC);
+    /* Okay, this not nice. But since libvirt does not know anything about
+     * interface IP address(es), and tc fw filter simply refuse to use ebtables
+     * marks, we need to use u32 selector to match MAC address.
+     * If libvirt will ever know something, remove this FIXME
+     */
+    virCommandAddArgList(cmd, "filter", "add", "dev", brname, "protocol", "ip",
+                         "prio", filter_id, "u32",
+                         "match", "u16", "0x0800", "0xffff", "at", "-2",
+                         "match", "u32", mac[0], "0xffffffff", "at", "-12",
+                         "match", "u16", mac[1], "0xffff", "at", "-14",
+                         "flowid", class_id, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(mac[1]);
+    VIR_FREE(mac[0]);
+    VIR_FREE(ceil);
+    VIR_FREE(floor);
+    VIR_FREE(filter_id);
+    VIR_FREE(qdisc_id);
+    VIR_FREE(class_id);
+    virCommandFree(cmd);
+    return ret;
+}
+
+/*
+ * virNetDevBandwidthUnplug:
+ * @brname: from which bridge are we unplugging
+ * @id: unique identifier (MUST be greater than 2)
+ *
+ * Remove QoS settings from bridge.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virNetDevBandwidthUnplug(const char *brname,
+                         unsigned int id)
+{
+    int ret = -1;
+    int cmd_ret = 0;
+    virCommandPtr cmd = NULL;
+    char *class_id = NULL;
+    char *qdisc_id = NULL;
+    char *filter_id = NULL;
+
+    if (id <= 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %d"), id);
+        return -1;
+    }
+
+    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
+        virAsprintf(&qdisc_id, "%x:", id) < 0 ||
+        virAsprintf(&filter_id, "%u", id) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "qdisc", "del", "dev", brname,
+                         "handle", qdisc_id, NULL);
+
+    /* Don't threat tc errors as fatal, but
+     * try to remove as much as possible */
+    if (virCommandRun(cmd, &cmd_ret) < 0)
+        goto cleanup;
+
+    virCommandFree(cmd);
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "filter", "del", "dev", brname,
+                         "prio", filter_id, NULL);
+
+    if (virCommandRun(cmd, &cmd_ret) < 0)
+        goto cleanup;
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "class", "del", "dev", brname,
+                         "classid", class_id, NULL);
+
+    if (virCommandRun(cmd, &cmd_ret) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(filter_id);
+    VIR_FREE(qdisc_id);
+    VIR_FREE(class_id);
+    virCommandFree(cmd);
+    return ret;
+}

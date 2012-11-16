@@ -24,6 +24,7 @@
 # define __VIR_NETDEV_BANDWIDTH_H__
 
 # include "internal.h"
+# include "virmacaddr.h"
 
 typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
 typedef virNetDevBandwidthRate *virNetDevBandwidthRatePtr;
@@ -52,5 +53,18 @@ int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest, const virNetDevBandwidth
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 bool virNetDevBandwidthEqual(virNetDevBandwidthPtr a, virNetDevBandwidthPtr b);
+
+int virNetDevBandwidthPlug(const char *brname,
+                           virNetDevBandwidthPtr net_bandwidth,
+                           const virMacAddrPtr ifmac_ptr,
+                           virNetDevBandwidthPtr bandwidth,
+                           unsigned int id)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevBandwidthUnplug(const char *brname,
+                             unsigned int id)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_NETDEV_BANDWIDTH_H__ */

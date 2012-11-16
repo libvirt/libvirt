@@ -160,6 +160,7 @@ src/util/virinitctl.c
 src/util/virkeyfile.c
 src/util/virlockspace.c
 src/util/virnetdev.c
+src/util/virnetdevbandwidth.c
 src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c
 src/util/virnetdevopenvswitch.c
