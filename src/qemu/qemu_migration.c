@@ -660,7 +660,6 @@ qemuMigrationCookieGraphicsXMLParse(xmlXPathContextPtr ctxt)
     /* Optional */
     grap->tlsSubject = virXPathString("string(./graphics/cert[@info='subject']/@value)", ctxt);
 
-
     return grap;
 
 no_memory:
@@ -691,7 +690,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
     }
 
     optr->nnets = n;
-    if (VIR_ALLOC_N(optr->net, optr->nnets) <0)
+    if (VIR_ALLOC_N(optr->net, optr->nnets) < 0)
         goto no_memory;
 
     for (i = 0; i < n; i++) {
