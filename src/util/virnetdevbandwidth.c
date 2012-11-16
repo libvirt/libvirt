@@ -534,3 +534,52 @@ cleanup:
     virCommandFree(cmd);
     return ret;
 }
+
+/**
+ * virNetDevBandwidthUpdateRate:
+ * @ifname: interface name
+ * @classid: ID of class to update
+ * @new_rate: new rate
+ *
+ * This function updates the 'rate' attribute of HTB class.
+ * It can be used whenever a new interface is plugged to a
+ * bridge to adjust average throughput of non guaranteed
+ * NICs.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virNetDevBandwidthUpdateRate(const char *ifname,
+                             const char *class_id,
+                             virNetDevBandwidthPtr bandwidth,
+                             unsigned long long new_rate)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    char *rate = NULL;
+    char *ceil = NULL;
+
+    if (virAsprintf(&rate, "%llukbps", new_rate) < 0 ||
+        virAsprintf(&ceil, "%llukbps", bandwidth->in->peak ?
+                    bandwidth->in->peak :
+                    bandwidth->in->average) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    cmd = virCommandNew(TC);
+    virCommandAddArgList(cmd, "class", "change", "dev", ifname,
+                         "classid", class_id, "htb", "rate", rate,
+                         "ceil", ceil, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(rate);
+    VIR_FREE(ceil);
+    return ret;
+}

@@ -67,4 +67,10 @@ int virNetDevBandwidthUnplug(const char *brname,
                              unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevBandwidthUpdateRate(const char *ifname,
+                                 const char *class_id,
+                                 virNetDevBandwidthPtr bandwidth,
+                                 unsigned long long new_rate)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_NETDEV_BANDWIDTH_H__ */
