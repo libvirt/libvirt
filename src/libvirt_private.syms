@@ -875,6 +875,7 @@ virNetworkObjSetDefTransient;
 virNetworkObjUnlock;
 virNetworkObjUnsetDefTransient;
 virNetworkObjUpdate;
+virNetworkObjUpdateParseFile;
 virNetworkRemoveInactive;
 virNetworkSaveConfig;
 virNetworkSaveStatus;

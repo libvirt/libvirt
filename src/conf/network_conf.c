@@ -1825,6 +1825,79 @@ cleanup:
     return def;
 }
 
+int
+virNetworkObjUpdateParseFile(const char *filename,
+                             virNetworkObjPtr net)
+{
+    int ret = -1;
+    xmlDocPtr xml = NULL;
+    xmlNodePtr node = NULL;
+    virNetworkDefPtr tmp = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+
+    xml = virXMLParse(filename, NULL, _("(network status)"));
+    if (!xml)
+        return -1;
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    node = xmlDocGetRootElement(xml);
+    if (xmlStrEqual(node->name, BAD_CAST "networkstatus")) {
+        /* Newer network status file. Contains useful
+         * info which are not to be found in bare config XML */
+        char *class_id = NULL;
+        char *floor_sum = NULL;
+
+        ctxt->node = node;
+        class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt);
+        if (class_id &&
+            virBitmapParse(class_id, ',',
+                           &net->class_id, CLASS_ID_BITMAP_SIZE) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Malformed 'class_id' attribute: %s"),
+                           class_id);
+            VIR_FREE(class_id);
+            goto cleanup;
+        }
+        VIR_FREE(class_id);
+
+        floor_sum = virXPathString("string(./floor[1]/@sum)", ctxt);
+        if (floor_sum &&
+            virStrToLong_ull(floor_sum, NULL, 10, &net->floor_sum) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Malformed 'floor_sum' attribute: %s"),
+                           floor_sum);
+            VIR_FREE(floor_sum);
+        }
+        VIR_FREE(floor_sum);
+    }
+
+    node = virXPathNode("//network", ctxt);
+    if (!node) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find any 'network' element"));
+        goto cleanup;
+    }
+
+    ctxt->node = node;
+    tmp = virNetworkDefParseXML(ctxt);
+
+    if (tmp) {
+        net->newDef = net->def;
+        net->def = tmp;
+    }
+
+    ret = 0;
+
+cleanup:
+    xmlXPathFreeContext(ctxt);
+    return ret;
+}
+
 static int
 virNetworkDNSDefFormat(virBufferPtr buf,
                        virNetworkDNSDefPtr def)
@@ -2003,26 +2076,28 @@ virPortGroupDefFormat(virBufferPtr buf,
     return 0;
 }
 
-char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
+static int
+virNetworkDefFormatInternal(virBufferPtr buf,
+                            const virNetworkDefPtr def,
+                            unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ii;
 
-    virBufferAddLit(&buf, "<network");
+    virBufferAddLit(buf, "<network");
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0)) {
-        virBufferAsprintf(&buf, " connections='%d'", def->connections);
+        virBufferAsprintf(buf, " connections='%d'", def->connections);
     }
     if (def->ipv6nogw)
-        virBufferAddLit(&buf, " ipv6='yes'");
-    virBufferAddLit(&buf, ">\n");
-    virBufferAdjustIndent(&buf, 2);
-    virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
+        virBufferAddLit(buf, " ipv6='yes'");
+    virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
-    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
+    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
 
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         const char *dev = NULL;
@@ -2036,40 +2111,40 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
                            def->forward.type, def->name);
             goto error;
         }
-        virBufferAddLit(&buf, "<forward");
-        virBufferEscapeString(&buf, " dev='%s'", dev);
-        virBufferAsprintf(&buf, " mode='%s'", mode);
+        virBufferAddLit(buf, "<forward");
+        virBufferEscapeString(buf, " dev='%s'", dev);
+        virBufferAsprintf(buf, " mode='%s'", mode);
         if (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
             if (def->forward.managed)
-                virBufferAddLit(&buf, " managed='yes'");
+                virBufferAddLit(buf, " managed='yes'");
             else
-                virBufferAddLit(&buf, " managed='no'");
+                virBufferAddLit(buf, " managed='no'");
         }
-        virBufferAsprintf(&buf, "%s>\n",
+        virBufferAsprintf(buf, "%s>\n",
                           (def->forward.nifs || def->forward.npfs) ? "" : "/");
-        virBufferAdjustIndent(&buf, 2);
+        virBufferAdjustIndent(buf, 2);
 
         /* For now, hard-coded to at most 1 forward.pfs */
         if (def->forward.npfs)
-            virBufferEscapeString(&buf, "<pf dev='%s'/>\n",
+            virBufferEscapeString(buf, "<pf dev='%s'/>\n",
                                   def->forward.pfs[0].dev);
 
         if (def->forward.nifs &&
             (!def->forward.npfs || !(flags & VIR_NETWORK_XML_INACTIVE))) {
             for (ii = 0; ii < def->forward.nifs; ii++) {
                 if (def->forward.type != VIR_NETWORK_FORWARD_HOSTDEV) {
-                    virBufferEscapeString(&buf, "<interface dev='%s'",
+                    virBufferEscapeString(buf, "<interface dev='%s'",
                                           def->forward.ifs[ii].device.dev);
                     if (!(flags & VIR_NETWORK_XML_INACTIVE) &&
                         (def->forward.ifs[ii].connections > 0)) {
-                        virBufferAsprintf(&buf, " connections='%d'",
+                        virBufferAsprintf(buf, " connections='%d'",
                                           def->forward.ifs[ii].connections);
                     }
-                    virBufferAddLit(&buf, "/>\n");
+                    virBufferAddLit(buf, "/>\n");
                 }
                 else {
                     if (def->forward.ifs[ii].type ==  VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI) {
-                        if (virDevicePCIAddressFormat(&buf,
+                        if (virDevicePCIAddressFormat(buf,
                                                       def->forward.ifs[ii].device.pci,
                                                       true) < 0)
                             goto error;
@@ -2077,67 +2152,116 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
                 }
             }
         }
-        virBufferAdjustIndent(&buf, -2);
+        virBufferAdjustIndent(buf, -2);
         if (def->forward.npfs || def->forward.nifs)
-            virBufferAddLit(&buf, "</forward>\n");
+            virBufferAddLit(buf, "</forward>\n");
     }
 
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
          def->forward.type == VIR_NETWORK_FORWARD_NAT ||
          def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
 
-        virBufferAddLit(&buf, "<bridge");
+        virBufferAddLit(buf, "<bridge");
         if (def->bridge)
-            virBufferEscapeString(&buf, " name='%s'", def->bridge);
-        virBufferAsprintf(&buf, " stp='%s' delay='%ld' />\n",
+            virBufferEscapeString(buf, " name='%s'", def->bridge);
+        virBufferAsprintf(buf, " stp='%s' delay='%ld' />\n",
                           def->stp ? "on" : "off",
                           def->delay);
     } else if (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                def->bridge) {
-       virBufferEscapeString(&buf, "<bridge name='%s' />\n", def->bridge);
+        virBufferEscapeString(buf, "<bridge name='%s' />\n", def->bridge);
     }
 
 
     if (def->mac_specified) {
         char macaddr[VIR_MAC_STRING_BUFLEN];
         virMacAddrFormat(&def->mac, macaddr);
-        virBufferAsprintf(&buf, "<mac address='%s'/>\n", macaddr);
+        virBufferAsprintf(buf, "<mac address='%s'/>\n", macaddr);
     }
 
     if (def->domain)
-        virBufferAsprintf(&buf, "<domain name='%s'/>\n", def->domain);
+        virBufferAsprintf(buf, "<domain name='%s'/>\n", def->domain);
 
-    if (virNetworkDNSDefFormat(&buf, &def->dns) < 0)
+    if (virNetworkDNSDefFormat(buf, &def->dns) < 0)
         goto error;
 
-    if (virNetDevVlanFormat(&def->vlan, &buf) < 0)
+    if (virNetDevVlanFormat(&def->vlan, buf) < 0)
         goto error;
-    if (virNetDevBandwidthFormat(def->bandwidth, &buf) < 0)
+    if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
         goto error;
 
     for (ii = 0; ii < def->nips; ii++) {
-        if (virNetworkIpDefFormat(&buf, &def->ips[ii]) < 0)
+        if (virNetworkIpDefFormat(buf, &def->ips[ii]) < 0)
             goto error;
     }
 
-    if (virNetDevVPortProfileFormat(def->virtPortProfile, &buf) < 0)
+    if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
         goto error;
 
     for (ii = 0; ii < def->nPortGroups; ii++)
-        if (virPortGroupDefFormat(&buf, &def->portGroups[ii]) < 0)
+        if (virPortGroupDefFormat(buf, &def->portGroups[ii]) < 0)
             goto error;
 
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</network>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</network>\n");
+
+    return 0;
+
+error:
+    return -1;
+}
+
+char *
+virNetworkDefFormat(virNetworkDefPtr def,
+                    unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (virNetworkDefFormatInternal(&buf, def, flags) < 0)
+        goto error;
 
     if (virBufferError(&buf))
         goto no_memory;
 
     return virBufferContentAndReset(&buf);
 
- no_memory:
+no_memory:
     virReportOOMError();
-  error:
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+static char *
+virNetworkObjFormat(virNetworkObjPtr net,
+                    unsigned int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *class_id = virBitmapFormat(net->class_id);
+
+    if (!class_id)
+        goto no_memory;
+
+    virBufferAddLit(&buf, "<networkstatus>\n");
+    virBufferAsprintf(&buf, "  <class_id bitmap='%s'/>\n", class_id);
+    virBufferAsprintf(&buf, "  <floor sum='%llu'/>\n", net->floor_sum);
+    VIR_FREE(class_id);
+
+    virBufferAdjustIndent(&buf, 2);
+    if (virNetworkDefFormatInternal(&buf, net->def, flags) < 0)
+        goto error;
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</networkstatus>");
+
+    if (virBufferError(&buf))
+        goto no_memory;
+
+    return virBufferContentAndReset(&buf);
+
+no_memory:
+    virReportOOMError();
+error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -2209,9 +2333,10 @@ int virNetworkSaveStatus(const char *statusDir,
                          virNetworkObjPtr network)
 {
     int ret = -1;
+    int flags = 0;
     char *xml;
 
-    if (!(xml = virNetworkDefFormat(network->def, 0)))
+    if (!(xml = virNetworkObjFormat(network, flags)))
         goto cleanup;
 
     if (virNetworkSaveXML(statusDir, network->def, xml))

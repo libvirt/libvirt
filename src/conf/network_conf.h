@@ -282,6 +282,8 @@ virNetworkDefPtr virNetworkDefParseString(const char *xmlStr);
 virNetworkDefPtr virNetworkDefParseFile(const char *filename);
 virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root);
+int virNetworkObjUpdateParseFile(const char *filename,
+                                 virNetworkObjPtr net);
 
 char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags);
 

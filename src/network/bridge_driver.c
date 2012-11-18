@@ -259,7 +259,6 @@ networkFindActiveConfigs(struct network_driver *driver) {
 
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
-        virNetworkDefPtr tmp;
         char *config;
 
         virNetworkObjLock(obj);
@@ -277,12 +276,10 @@ networkFindActiveConfigs(struct network_driver *driver) {
         }
 
         /* Try and load the live config */
-        tmp = virNetworkDefParseFile(config);
+        if (virNetworkObjUpdateParseFile(config, obj) < 0)
+            VIR_WARN("Unable to update config of '%s' network",
+                     obj->def->name);
         VIR_FREE(config);
-        if (tmp) {
-            obj->newDef = obj->def;
-            obj->def = tmp;
-        }
 
         /* If bridge exists, then mark it active */
         if (obj->def->bridge &&
@@ -4617,6 +4614,14 @@ networkPlugBandwidth(virNetworkObjPtr net,
     iface->data.network.actual->class_id = class_id;
     /* update sum of 'floor'-s of attached NICs */
     net->floor_sum += iface->bandwidth->in->floor;
+    /* update status file */
+    if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
+        ignore_value(virBitmapClearBit(net->class_id, class_id));
+        net->floor_sum -= iface->bandwidth->in->floor;
+        iface->data.network.actual->class_id = 0;
+        ignore_value(virNetDevBandwidthUnplug(net->def->bridge, class_id));
+        goto cleanup;
+    }
     /* update rate for non guaranteed NICs */
     new_rate -= net->floor_sum;
     if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
@@ -4651,6 +4656,16 @@ networkUnplugBandwidth(virNetworkObjPtr net,
             goto cleanup;
         /* update sum of 'floor'-s of attached NICs */
         net->floor_sum -= iface->bandwidth->in->floor;
+        /* return class ID */
+        ignore_value(virBitmapClearBit(net->class_id,
+                                       iface->data.network.actual->class_id));
+        /* update status file */
+        if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
+            net->floor_sum += iface->bandwidth->in->floor;
+            ignore_value(virBitmapSetBit(net->class_id,
+                                         iface->data.network.actual->class_id));
+            goto cleanup;
+        }
         /* update rate for non guaranteed NICs */
         new_rate -= net->floor_sum;
         if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
