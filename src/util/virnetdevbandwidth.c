@@ -103,6 +103,15 @@ virNetDevBandwidthSet(const char *ifname,
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
+        virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "parent",
+                             "1:1", "handle", "2:", "sfq", "perturb",
+                             "10", NULL);
+
+        if (virCommandRun(cmd, NULL) < 0)
+            goto cleanup;
+
+        virCommandFree(cmd);
+        cmd = virCommandNew(TC);
         virCommandAddArgList(cmd,"filter", "add", "dev", ifname, "parent",
                              "1:0", "protocol", "ip", "handle", "1", "fw",
                              "flowid", "1", NULL);
