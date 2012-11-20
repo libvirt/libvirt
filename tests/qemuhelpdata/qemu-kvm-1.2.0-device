@@ -24,6 +24,7 @@ name "usb-net", bus usb-bus
 name "usb-hub", bus usb-bus
 name "ccid-card-emulated", bus ccid-bus, desc "emulated smartcard"
 name "ne2k_isa", bus ISA
+name "pci-assign", bus PCI
 name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
 name "pcnet", bus PCI
 name "lsi53c895a", bus PCI, alias "lsi"
@@ -95,8 +96,19 @@ name "usb-host", bus usb-bus
 name "ich9-ahci", bus PCI, alias "ahci"
 name "vt82c686b-usb-uhci", bus PCI
 name "usb-ehci", bus PCI
+name "testdev", bus ISA
 name "i6300esb", bus PCI
 name "virtio-scsi-pci", bus PCI
+pci-assign.host=pci-host-devaddr
+pci-assign.prefer_msi=on/off
+pci-assign.share_intx=on/off
+pci-assign.bootindex=int32
+pci-assign.configfd=string
+pci-assign.addr=pci-devfn
+pci-assign.romfile=string
+pci-assign.rombar=uint32
+pci-assign.multifunction=on/off
+pci-assign.command_serr_enable=on/off
 virtio-blk-pci.class=hex32
 virtio-blk-pci.drive=drive
 virtio-blk-pci.logical_block_size=blocksize
