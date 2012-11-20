@@ -1448,3 +1448,28 @@ qemuAgentArbitraryCommand(qemuAgentPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuAgentFSTrim(qemuAgentPtr mon,
+                unsigned long long minimum)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuAgentMakeCommand("guest-fstrim",
+                               "U:minimum", minimum,
+                               NULL);
+    if (!cmd)
+        return ret;
+
+    ret = qemuAgentCommand(mon, cmd, &reply,
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
+
+    if (reply && ret == 0)
+        ret = qemuAgentCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

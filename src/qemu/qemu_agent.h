@@ -83,4 +83,6 @@ int qemuAgentArbitraryCommand(qemuAgentPtr mon,
                               const char *cmd,
                               char **result,
                               int timeout);
+int qemuAgentFSTrim(qemuAgentPtr mon,
+                    unsigned long long minimum);
 #endif /* __QEMU_AGENT_H__ */

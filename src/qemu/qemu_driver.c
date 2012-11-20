@@ -14730,6 +14730,73 @@ cleanup:
     return result;
 }
 
+static int
+qemuDomainFSTrim(virDomainPtr dom,
+                 const char *mountPoint,
+                 unsigned long long minimum,
+                 unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
+
+    if (mountPoint) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Specifying mount point "
+                         "is not supported for now"));
+        return -1;
+    }
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!priv->agent) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("QEMU guest agent is not configured"));
+        goto cleanup;
+    }
+
+    if (priv->agentError) {
+        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                       _("QEMU guest agent is not "
+                         "available due to an error"));
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterAgent(driver, vm);
+    ret = qemuAgentFSTrim(priv->agent, minimum);
+    qemuDomainObjExitAgent(driver, vm);
+
+endjob:
+    if (qemuDomainObjEndJob(driver, vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -14903,6 +14970,7 @@ static virDriver qemuDriver = {
     .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
     .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
+    .domainFSTrim = qemuDomainFSTrim, /* 1.0.1 */
 };
 
 
