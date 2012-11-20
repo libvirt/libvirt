@@ -1,7 +1,7 @@
 /*
  * network_driver.h: core driver methods for managing networks
  *
- * Copyright (C) 2006, 2007, 2011 Red Hat, Inc.
+ * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,8 @@ int networkGetNetworkAddress(const char *netname, char **netaddr)
 
 int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
                                       virCommandPtr *cmdout, char *pidfile,
-                                      dnsmasqContext *dctx)
+                                      dnsmasqContext *dctx,
+                                      dnsmasqCapsPtr caps)
     ;
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
@@ -56,7 +57,7 @@ int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 #  define networkNotifyActualDevice(iface) (iface=iface, 0)
 #  define networkReleaseActualDevice(iface) (iface=iface, 0)
 #  define networkGetNetworkAddress(netname, netaddr) (-2)
-#  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx) 0
+#  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx, caps) 0
 # endif
 
 typedef char *(*networkDnsmasqLeaseFileNameFunc)(const char *netname);

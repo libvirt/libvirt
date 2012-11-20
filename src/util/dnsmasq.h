@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #ifndef __DNSMASQ_H__
 # define __DNSMASQ_H__
 
+# include "virobject.h"
 # include "virsocketaddr.h"
 
 typedef struct
@@ -65,6 +66,16 @@ typedef struct
     dnsmasqAddnHostsfile *addnhostsfile;
 } dnsmasqContext;
 
+typedef enum {
+   DNSMASQ_CAPS_BIND_DYNAMIC = 0, /* support for --bind-dynamic */
+
+   DNSMASQ_CAPS_LAST,             /* this must always be the last item */
+} dnsmasqCapsFlags;
+
+typedef struct _dnsmasqCaps dnsmasqCaps;
+typedef dnsmasqCaps *dnsmasqCapsPtr;
+
+
 dnsmasqContext * dnsmasqContextNew(const char *network_name,
                                    const char *config_dir);
 void             dnsmasqContextFree(dnsmasqContext *ctx);
@@ -79,4 +90,13 @@ int              dnsmasqSave(const dnsmasqContext *ctx);
 int              dnsmasqDelete(const dnsmasqContext *ctx);
 int              dnsmasqReload(pid_t pid);
 
+dnsmasqCapsPtr dnsmasqCapsNewFromBuffer(const char *buf,
+                                        const char *binaryPath);
+dnsmasqCapsPtr dnsmasqCapsNewFromFile(const char *dataPath,
+                                      const char *binaryPath);
+dnsmasqCapsPtr dnsmasqCapsNewFromBinary(const char *binaryPath);
+int dnsmasqCapsRefresh(dnsmasqCapsPtr *caps, const char *binaryPath);
+bool dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag);
+const char *dnsmasqCapsGetBinaryPath(dnsmasqCapsPtr caps);
+unsigned long dnsmasqCapsGetVersion(dnsmasqCapsPtr caps);
 #endif /* __DNSMASQ_H__ */

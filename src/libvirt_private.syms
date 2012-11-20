@@ -246,6 +246,13 @@ virDevicePCIAddressParseXML;
 # dnsmasq.h
 dnsmasqAddDhcpHost;
 dnsmasqAddHost;
+dnsmasqCapsGet;
+dnsmasqCapsGetBinaryPath;
+dnsmasqCapsGetVersion;
+dnsmasqCapsNewFromBuffer;
+dnsmasqCapsNewFromFile;
+dnsmasqCapsNewFromBinary;
+dnsmasqCapsRefresh;
 dnsmasqContextFree;
 dnsmasqContextNew;
 dnsmasqDelete;
