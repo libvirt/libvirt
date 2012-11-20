@@ -903,6 +903,11 @@ typedef int
                            unsigned char **cpumap,
                            unsigned int *online,
                            unsigned int flags);
+typedef int
+    (*virDrvDomainFSTrim)(virDomainPtr dom,
+                          const char *mountPoint,
+                          unsigned long long minimum,
+                          unsigned int flags);
 
 /**
  * _virDriver:
@@ -1094,6 +1099,7 @@ struct _virDriver {
     virDrvNodeGetMemoryParameters       nodeGetMemoryParameters;
     virDrvNodeSetMemoryParameters       nodeSetMemoryParameters;
     virDrvNodeGetCPUMap                 nodeGetCPUMap;
+    virDrvDomainFSTrim                  domainFSTrim;
 };
 
 typedef int

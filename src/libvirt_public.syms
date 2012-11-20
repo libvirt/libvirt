@@ -574,4 +574,9 @@ LIBVIRT_1.0.0 {
         virNodeGetCPUMap;
 } LIBVIRT_0.10.2;
 
+LIBVIRT_1.0.1 {
+    global:
+        virDomainFSTrim;
+} LIBVIRT_1.0.0;
+
 # .... define new API here using predicted next version number ....

@@ -4457,6 +4457,10 @@ int virDomainOpenGraphics(virDomainPtr dom,
 
 int virDomainInjectNMI(virDomainPtr domain, unsigned int flags);
 
+int virDomainFSTrim(virDomainPtr dom,
+                    const char *mountPoint,
+                    unsigned long long minimum,
+                    unsigned int flags);
 
 /**
  * virSchedParameterType:

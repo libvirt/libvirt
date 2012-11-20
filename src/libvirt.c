@@ -20224,3 +20224,58 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virDomainFSTrim:
+ * @dom: a domain object
+ * @mountPoint: which mount point trim
+ * @minimum: Minimum contiguous free range to discard in bytes
+ * @flags: extra flags, not used yet, so callers should always pass 0
+ *
+ * Calls FITRIM within the guest (hence guest agent may be
+ * required depending on hypervisor used). Either call it on each
+ * mounted filesystem (@mountPoint is NULL) or just on specified
+ * @mountPoint. @minimum tell that free ranges smaller than this
+ * may be ignored (this is a hint and the guest may not respect
+ * it).  By increasing this value, the fstrim operation will
+ * complete more quickly for filesystems with badly fragmented
+ * free space, although not all blocks will be discarded.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virDomainFSTrim(virDomainPtr dom,
+                const char *mountPoint,
+                unsigned long long minimum,
+                unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "mountPoint=%s, minimum=%llu, flags=%x",
+                     mountPoint, minimum, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dom->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dom->conn->driver->domainFSTrim) {
+        int ret = dom->conn->driver->domainFSTrim(dom, mountPoint,
+                                                  minimum, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dom->conn);
+    return -1;
+}
