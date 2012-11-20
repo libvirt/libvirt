@@ -2682,6 +2682,13 @@ struct remote_node_get_cpu_map_ret {
     int ret;
 };
 
+struct remote_domain_fstrim_args {
+    remote_nonnull_domain dom;
+    remote_string mountPoint;
+    unsigned hyper minimum;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -3026,7 +3033,8 @@ enum remote_procedure {
 
     REMOTE_PROC_NETWORK_UPDATE = 291, /* autogen autogen priority:high */
     REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292, /* autogen autogen */
-    REMOTE_PROC_NODE_GET_CPU_MAP = 293 /* skipgen skipgen */
+    REMOTE_PROC_NODE_GET_CPU_MAP = 293, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_FSTRIM = 294 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -44,6 +44,7 @@ sub fixup_name {
     $name =~ s/Os$/OS/;
     $name =~ s/Nmi$/NMI/;
     $name =~ s/Pm/PM/;
+    $name =~ s/Fstrim$/FSTrim/;
 
     return $name;
 }

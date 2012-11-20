@@ -2139,6 +2139,12 @@ struct remote_node_get_cpu_map_ret {
         u_int                      online;
         int                        ret;
 };
+struct remote_domain_fstrim_args {
+        remote_nonnull_domain      dom;
+        remote_string              mountPoint;
+        uint64_t                   minimum;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
         REMOTE_PROC_CLOSE = 2,
@@ -2433,4 +2439,5 @@ enum remote_procedure {
         REMOTE_PROC_NETWORK_UPDATE = 291,
         REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK = 292,
         REMOTE_PROC_NODE_GET_CPU_MAP = 293,
+        REMOTE_PROC_DOMAIN_FSTRIM = 294,
 };
