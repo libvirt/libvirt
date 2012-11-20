@@ -8381,8 +8381,12 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 !disk->dst)
                 goto no_memory;
 
-            if (virDomainDiskDefAssignAddress(caps, disk) < 0)
+            if (virDomainDiskDefAssignAddress(caps, disk) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot assign address for device name '%s'"),
+                               disk->dst);
                 goto error;
+            }
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto no_memory;
