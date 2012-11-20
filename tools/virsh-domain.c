@@ -8300,6 +8300,52 @@ cleanup:
     return ret;
 }
 
+static const vshCmdInfo info_domfstrim[] = {
+    {"help", N_("Invoke fstrim on domain's mounted filesystems.")},
+    {"desc", N_("Invoke fstrim on domain's mounted filesystems.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domfstrim[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"minimum", VSH_OT_INT, 0, N_("Just a hint to ignore contiguous "
+                                  "free ranges smaller than this (Bytes)")},
+    {"mountpoint", VSH_OT_DATA, 0, N_("which mount point to trim")},
+    {NULL, 0, 0, NULL}
+};
+static bool
+cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    unsigned long long minimum = 0;
+    const char *mountPoint = NULL;
+    unsigned int flags = 0;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (vshCommandOptULongLong(cmd, "minimum", &minimum) < 0) {
+        vshError(ctl, _("Unable to parse integer parameter minimum"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptString(cmd, "mountpoint", &mountPoint) < 0) {
+        vshError(ctl, _("Unable to parse mountpoint parameter"));
+        goto cleanup;
+    }
+
+    if (virDomainFSTrim(dom, mountPoint, minimum, flags) < 0) {
+        vshError(ctl, _("Unable to invoke fstrim"));
+        goto cleanup;
+    }
+
+    ret = true;
+
+cleanup:
+    return ret;
+}
+
 const vshCmdDef domManagementCmds[] = {
     {"attach-device", cmdAttachDevice, opts_attach_device,
      info_attach_device, 0},
@@ -8332,6 +8378,7 @@ const vshCmdDef domManagementCmds[] = {
     {"detach-interface", cmdDetachInterface, opts_detach_interface,
      info_detach_interface, 0},
     {"domdisplay", cmdDomDisplay, opts_domdisplay, info_domdisplay, 0},
+    {"domfstrim", cmdDomFSTrim, opts_domfstrim, info_domfstrim, 0},
     {"domhostname", cmdDomHostname, opts_domhostname, info_domhostname, 0},
     {"domid", cmdDomid, opts_domid, info_domid, 0},
     {"domif-setlink", cmdDomIfSetLink, opts_domif_setlink, info_domif_setlink, 0},
