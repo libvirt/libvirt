@@ -7312,11 +7312,13 @@ error:
 
 static virDomainRedirdevDefPtr
 virDomainRedirdevDefParseXML(const xmlNodePtr node,
+                             virBitmapPtr bootMap,
                              unsigned int flags)
 {
     xmlNodePtr cur;
     virDomainRedirdevDefPtr def;
     char *bus, *type = NULL;
+    int remaining;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -7348,25 +7350,20 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
     }
 
     cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
-                int remaining;
-
-                remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags,
-                                                          NULL, NULL, NULL, 0);
-                if (remaining != 0)
-                    goto error;
-            }
-        }
-        cur = cur->next;
-    }
+    /* boot gets parsed in virDomainDeviceInfoParseXML
+     * source gets parsed in virDomainChrSourceDefParseXML
+     * we don't know any of the elements that might remain */
+    remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags,
+                                              NULL, NULL, NULL, 0);
+    if (remaining < 0)
+        goto error;
 
     if (def->source.chr.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+                                    flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         goto error;
 
     if (def->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
@@ -7711,7 +7708,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "redirdev")) {
         dev->type = VIR_DOMAIN_DEVICE_REDIRDEV;
-        if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, flags)))
+        if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, NULL, flags)))
             goto error;
     } else {
         virReportError(VIR_ERR_XML_ERROR,
@@ -8295,7 +8292,8 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
 
     if (virXPathULong("count(./devices/disk[boot]"
                       "|./devices/interface[boot]"
-                      "|./devices/hostdev[boot])", ctxt, &deviceBoot) < 0) {
+                      "|./devices/hostdev[boot]"
+                      "|./devices/redirdev[boot])", ctxt, &deviceBoot) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot count boot devices"));
         goto cleanup;
@@ -10009,6 +10007,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
+                                                                        bootMap,
                                                                         flags);
         if (!redirdev)
             goto error;
@@ -13449,7 +13448,8 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "    <redirdev bus='%s'", bus);
     if (virDomainChrSourceDefFormat(buf, &def->source.chr, false, flags) < 0)
         return -1;
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info,
+                                  flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         return -1;
     virBufferAddLit(buf, "    </redirdev>\n");
 
