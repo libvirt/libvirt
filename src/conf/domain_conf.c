@@ -2999,8 +2999,12 @@ int
 virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
 {
     int idx = virDiskNameToIndex(def->dst);
-    if (idx < 0)
+    if (idx < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Unknown disk name '%s' and no address specified"),
+                       def->dst);
         return -1;
+    }
 
     switch (def->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
