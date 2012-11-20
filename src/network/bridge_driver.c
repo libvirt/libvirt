@@ -85,6 +85,7 @@ struct network_driver {
     char *networkConfigDir;
     char *networkAutostartDir;
     char *logDir;
+    dnsmasqCapsPtr dnsmasqCaps;
 };
 
 
@@ -219,7 +220,8 @@ networkFindActiveConfigs(struct network_driver *driver) {
                 char *radvdpidbase;
 
                 ignore_value(virPidFileReadIfAlive(NETWORK_PID_DIR, obj->def->name,
-                                                   &obj->dnsmasqPid, DNSMASQ));
+                                                   &obj->dnsmasqPid,
+                                                   dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
 
                 if (!(radvdpidbase = networkRadvdPidfileBasename(obj->def->name))) {
                     virReportOOMError();
@@ -314,6 +316,8 @@ networkStartup(int privileged) {
         goto out_of_memory;
     }
 
+    /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
+    driverState->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
     if (virNetworkLoadAllConfigs(&driverState->networks,
                                  driverState->networkConfigDir,
@@ -411,6 +415,8 @@ networkShutdown(void) {
     if (driverState->iptables)
         iptablesContextFree(driverState->iptables);
 
+    dnsmasqCapsFree(driverState->dnsmasqCaps);
+
     networkDriverUnlock(driverState);
     virMutexDestroy(&driverState->lock);
 
@@ -454,7 +460,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         virNetworkIpDefPtr ipdef,
                         const char *pidfile,
                         virCommandPtr cmd,
-                        dnsmasqContext *dctx)
+                        dnsmasqContext *dctx,
+                        dnsmasqCapsPtr caps ATTRIBUTE_UNUSED)
 {
     int r, ret = -1;
     int nbleases = 0;
@@ -679,7 +686,8 @@ cleanup:
 
 int
 networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout,
-                                  char *pidfile, dnsmasqContext *dctx)
+                                  char *pidfile, dnsmasqContext *dctx,
+                                  dnsmasqCapsPtr caps)
 {
     virCommandPtr cmd = NULL;
     int ret = -1, ii;
@@ -707,8 +715,8 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdou
     if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
         return 0;
 
-    cmd = virCommandNew(DNSMASQ);
-    if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd, dctx) < 0) {
+    cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
+    if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd, dctx, caps) < 0) {
         goto cleanup;
     }
 
@@ -722,7 +730,8 @@ cleanup:
 }
 
 static int
-networkStartDhcpDaemon(virNetworkObjPtr network)
+networkStartDhcpDaemon(struct network_driver *driver,
+                       virNetworkObjPtr network)
 {
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
@@ -758,7 +767,10 @@ networkStartDhcpDaemon(virNetworkObjPtr network)
     if (dctx == NULL)
         goto cleanup;
 
-    ret = networkBuildDhcpDaemonCommandLine(network, &cmd, pidfile, dctx);
+    dnsmasqCapsRefresh(&driver->dnsmasqCaps, false);
+
+    ret = networkBuildDhcpDaemonCommandLine(network, &cmd, pidfile,
+                                            dctx, driver->dnsmasqCaps);
     if (ret < 0)
         goto cleanup;
 
@@ -1824,7 +1836,8 @@ networkStartNetworkVirtual(struct network_driver *driver,
 
 
     /* start dnsmasq if there are any IP addresses (v4 or v6) */
-    if ((v4present || v6present) && networkStartDhcpDaemon(network) < 0)
+    if ((v4present || v6present) &&
+        networkStartDhcpDaemon(driver, network) < 0)
         goto err3;
 
     /* start radvd if there are any ipv6 addresses */

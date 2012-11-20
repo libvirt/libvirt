@@ -46,7 +46,9 @@ static int replaceTokens(char **buf, const char *token, const char *replacement)
     return 0;
 }
 
-static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
+static int
+testCompareXMLToArgvFiles(const char *inxml, const char *outargv, dnsmasqCapsPtr caps)
+{
     char *inXmlData = NULL;
     char *outArgvData = NULL;
     char *actual = NULL;
@@ -78,7 +80,7 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     if (dctx == NULL)
         goto fail;
 
-    if (networkBuildDhcpDaemonCommandLine(obj, &cmd, pidfile, dctx) < 0)
+    if (networkBuildDhcpDaemonCommandLine(obj, &cmd, pidfile, dctx, caps) < 0)
         goto fail;
 
     if (!(actual = virCommandToString(cmd)))
@@ -102,21 +104,27 @@ static int testCompareXMLToArgvFiles(const char *inxml, const char *outargv) {
     return ret;
 }
 
+typedef struct {
+    const char *name;
+    dnsmasqCapsPtr caps;
+} testInfo;
+
 static int
 testCompareXMLToArgvHelper(const void *data)
 {
     int result = -1;
+    const testInfo *info = data;
     char *inxml = NULL;
     char *outxml = NULL;
 
     if (virAsprintf(&inxml, "%s/networkxml2argvdata/%s.xml",
-                    abs_srcdir, (const char*)data) < 0 ||
+                    abs_srcdir, info->name) < 0 ||
         virAsprintf(&outxml, "%s/networkxml2argvdata/%s.argv",
-                    abs_srcdir, (const char*)data) < 0) {
+                    abs_srcdir, info->name) < 0) {
         goto cleanup;
     }
 
-    result = testCompareXMLToArgvFiles(inxml, outxml);
+    result = testCompareXMLToArgvFiles(inxml, outxml, info->caps);
 
 cleanup:
     VIR_FREE(inxml);
@@ -140,23 +148,34 @@ static int
 mymain(void)
 {
     int ret = 0;
+    dnsmasqCapsPtr restricted
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48", DNSMASQ);
+    dnsmasqCapsPtr full
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic", DNSMASQ);
 
     networkDnsmasqLeaseFileName = testDnsmasqLeaseFileName;
 
-#define DO_TEST(name) \
-    if (virtTestRun("Network XML-2-Argv " name, \
-                    1, testCompareXMLToArgvHelper, (name)) < 0) \
-        ret = -1
+#define DO_TEST(xname, xcaps)                                        \
+    do {                                                             \
+        static testInfo info;                                        \
+                                                                     \
+        info.name = xname;                                           \
+        info.caps = xcaps;                                           \
+        if (virtTestRun("Network XML-2-Argv " xname,                 \
+                        1, testCompareXMLToArgvHelper, &info) < 0) { \
+            ret = -1;                                                \
+        }                                                            \
+    } while (0)
 
-    DO_TEST("isolated-network");
-    DO_TEST("routed-network");
-    DO_TEST("nat-network");
-    DO_TEST("netboot-network");
-    DO_TEST("netboot-proxy-network");
-    DO_TEST("nat-network-dns-txt-record");
-    DO_TEST("nat-network-dns-srv-record");
-    DO_TEST("nat-network-dns-srv-record-minimal");
-    DO_TEST("nat-network-dns-hosts");
+    DO_TEST("isolated-network", restricted);
+    DO_TEST("netboot-network", restricted);
+    DO_TEST("netboot-proxy-network", restricted);
+    DO_TEST("nat-network-dns-srv-record-minimal", restricted);
+    DO_TEST("routed-network", full);
+    DO_TEST("nat-network", full);
+    DO_TEST("nat-network-dns-txt-record", full);
+    DO_TEST("nat-network-dns-srv-record", full);
+    DO_TEST("nat-network-dns-hosts", full);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

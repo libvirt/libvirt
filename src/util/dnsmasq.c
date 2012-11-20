@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2011 Red Hat, Inc.
+ * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -39,14 +39,20 @@
 
 #include "internal.h"
 #include "datatypes.h"
+#include "bitmap.h"
 #include "dnsmasq.h"
 #include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
+#define networkReportError(code, ...)                                   \
+    virReportErrorHelper(VIR_FROM_NETWORK, code, __FILE__,              \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
+
 #define DNSMASQ_HOSTSFILE_SUFFIX "hostsfile"
 #define DNSMASQ_ADDNHOSTSFILE_SUFFIX "addnhosts"
 
@@ -580,4 +586,260 @@ dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
 #endif /* WIN32 */
 
     return 0;
+}
+
+/*
+ * dnsmasqCapabilities functions - provide useful information about the
+ * version of dnsmasq on this machine.
+ *
+ */
+struct _dnsmasqCaps {
+    char *binaryPath;
+    bool noRefresh;
+    time_t mtime;
+    virBitmapPtr flags;
+    unsigned long version;
+};
+
+void
+dnsmasqCapsFree(dnsmasqCapsPtr caps)
+{
+    if (!caps)
+        return;
+    virBitmapFree(caps->flags);
+    VIR_FREE(caps->binaryPath);
+}
+
+static void
+dnsmasqCapsSet(dnsmasqCapsPtr caps,
+               dnsmasqCapsFlags flag)
+{
+    ignore_value(virBitmapSetBit(caps->flags, flag));
+}
+
+
+#define DNSMASQ_VERSION_STR "Dnsmasq version "
+
+static int
+dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
+{
+    const char *p;
+
+    caps->noRefresh = true;
+
+    p = STRSKIP(buf, DNSMASQ_VERSION_STR);
+    if (!p)
+       goto fail;
+    virSkipSpaces(&p);
+    if (virParseVersionString(p, &caps->version, true) < 0)
+        goto fail;
+
+    if (strstr(buf, "--bind-dynamic"))
+        dnsmasqCapsSet(caps, DNSMASQ_CAPS_BIND_DYNAMIC);
+
+    VIR_INFO("dnsmasq version is %d.%d, --bind-dynamic is %s",
+             (int)caps->version / 1000000, (int)(caps->version % 1000000) / 1000,
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)
+             ? "present" : "NOT present");
+    return 0;
+
+fail:
+    p = strchrnul(buf, '\n');
+    networkReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse %s version number in '%.*s'"),
+                       caps->binaryPath, (int) (p - buf), buf);
+    return -1;
+
+}
+
+static int
+dnsmasqCapsSetFromFile(dnsmasqCapsPtr caps, const char *path)
+{
+    int ret = -1;
+    char *buf = NULL;
+
+    if (virFileReadAll(path, 1024 * 1024, &buf) < 0)
+        goto cleanup;
+
+    ret = dnsmasqCapsSetFromBuffer(caps, buf);
+
+cleanup:
+    VIR_FREE(buf);
+    return ret;
+}
+
+static int
+dnsmasqCapsRefreshInternal(dnsmasqCapsPtr caps, bool force)
+{
+    int ret = -1;
+    struct stat sb;
+    virCommandPtr cmd = NULL;
+    char *help = NULL, *version = NULL, *complete = NULL;
+
+    if (!caps || caps->noRefresh)
+        return 0;
+
+    if (stat(caps->binaryPath, &sb) < 0) {
+        virReportSystemError(errno, _("Cannot check dnsmasq binary %s"),
+                             caps->binaryPath);
+        return -1;
+    }
+    if (!force && caps->mtime == sb.st_mtime) {
+        return 0;
+    }
+    caps->mtime = sb.st_mtime;
+
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so it's hard to feed back a useful error.
+     */
+    if (!virFileIsExecutable(caps->binaryPath)) {
+        virReportSystemError(errno, _("dnsmasq binary %s is not executable"),
+                             caps->binaryPath);
+        goto cleanup;
+    }
+
+    cmd = virCommandNewArgList(caps->binaryPath, "--version", NULL);
+    virCommandSetOutputBuffer(cmd, &version);
+    virCommandSetErrorBuffer(cmd, &version);
+    virCommandAddEnvPassCommon(cmd);
+    virCommandClearCaps(cmd);
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportSystemError(errno, _("failed to run '%s --version': %s"),
+                             caps->binaryPath, version);
+        goto cleanup;
+    }
+    virCommandFree(cmd);
+
+    cmd = virCommandNewArgList(caps->binaryPath, "--help", NULL);
+    virCommandSetOutputBuffer(cmd, &help);
+    virCommandSetErrorBuffer(cmd, &help);
+    virCommandAddEnvPassCommon(cmd);
+    virCommandClearCaps(cmd);
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportSystemError(errno, _("failed to run '%s --help': %s"),
+                             caps->binaryPath, help);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&complete, "%s\n%s", version, help) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = dnsmasqCapsSetFromBuffer(caps, complete);
+
+cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(help);
+    VIR_FREE(version);
+    VIR_FREE(complete);
+    return ret;
+}
+
+static dnsmasqCapsPtr
+dnsmasqCapsNewEmpty(const char *binaryPath)
+{
+    dnsmasqCapsPtr caps;
+
+    if (VIR_ALLOC(caps) < 0)
+        return NULL;
+    if (!(caps->flags = virBitmapAlloc(DNSMASQ_CAPS_LAST)))
+        goto error;
+    if (!(caps->binaryPath = strdup(binaryPath ? binaryPath : DNSMASQ)))
+        goto error;
+    return caps;
+
+error:
+    virReportOOMError();
+    dnsmasqCapsFree(caps);
+    return NULL;
+}
+
+dnsmasqCapsPtr
+dnsmasqCapsNewFromBuffer(const char *buf, const char *binaryPath)
+{
+    dnsmasqCapsPtr caps = dnsmasqCapsNewEmpty(binaryPath);
+
+    if (!caps)
+        return NULL;
+
+    if (dnsmasqCapsSetFromBuffer(caps, buf) < 0) {
+        dnsmasqCapsFree(caps);
+        return NULL;
+    }
+    return caps;
+}
+
+dnsmasqCapsPtr
+dnsmasqCapsNewFromFile(const char *dataPath, const char *binaryPath)
+{
+    dnsmasqCapsPtr caps = dnsmasqCapsNewEmpty(binaryPath);
+
+    if (!caps)
+        return NULL;
+
+    if (dnsmasqCapsSetFromFile(caps, dataPath) < 0) {
+        dnsmasqCapsFree(caps);
+        return NULL;
+    }
+    return caps;
+}
+
+dnsmasqCapsPtr
+dnsmasqCapsNewFromBinary(const char *binaryPath)
+{
+    dnsmasqCapsPtr caps = dnsmasqCapsNewEmpty(binaryPath);
+
+    if (!caps)
+        return NULL;
+
+    if (dnsmasqCapsRefreshInternal(caps, true) < 0) {
+        dnsmasqCapsFree(caps);
+        return NULL;
+    }
+    return caps;
+}
+
+/** dnsmasqCapsRefresh:
+ *
+ *   Refresh an existing caps object if the binary has changed. If
+ *   there isn't yet a caps object (if it's NULL), create a new one.
+ *
+ *   Returns 0 on success, -1 on failure
+ */
+int
+dnsmasqCapsRefresh(dnsmasqCapsPtr *caps, const char *binaryPath)
+{
+    if (!*caps) {
+        *caps = dnsmasqCapsNewFromBinary(binaryPath);
+        return *caps ? 0 : -1;
+    }
+    return dnsmasqCapsRefreshInternal(*caps, false);
+}
+
+const char *
+dnsmasqCapsGetBinaryPath(dnsmasqCapsPtr caps)
+{
+    return caps ? caps->binaryPath : DNSMASQ;
+}
+
+unsigned long
+dnsmasqCapsGetVersion(dnsmasqCapsPtr caps)
+{
+    if (caps)
+        return caps->version;
+    else
+        return 0;
+}
+
+bool
+dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
+{
+    bool b;
+
+    if (!caps || virBitmapGetBit(caps->flags, flag, &b) < 0)
+        return false;
+    else
+        return b;
 }
