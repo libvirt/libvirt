@@ -258,6 +258,7 @@ virDomainAuditCgroupPath;
 virDomainAuditDisk;
 virDomainAuditFS;
 virDomainAuditHostdev;
+virDomainAuditInit;
 virDomainAuditMemory;
 virDomainAuditNet;
 virDomainAuditNetDevice;

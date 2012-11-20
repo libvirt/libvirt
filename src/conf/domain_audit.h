@@ -31,6 +31,9 @@ void virDomainAuditStart(virDomainObjPtr vm,
                          const char *reason,
                          bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void virDomainAuditInit(virDomainObjPtr vm,
+                        pid_t pid)
+    ATTRIBUTE_NONNULL(1);
 void virDomainAuditStop(virDomainObjPtr vm,
                         const char *reason)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

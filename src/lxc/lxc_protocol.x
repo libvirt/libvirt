@@ -14,9 +14,14 @@ struct virLXCProtocolExitEventMsg {
     enum virLXCProtocolExitStatus status;
 };
 
+struct virLXCProtocolInitEventMsg {
+    unsigned hyper initpid;
+};
+
 const VIR_LXC_PROTOCOL_PROGRAM = 0x12341234;
 const VIR_LXC_PROTOCOL_PROGRAM_VERSION = 1;
 
 enum virLXCProtocolProcedure {
-    VIR_LXC_PROTOCOL_PROC_EXIT_EVENT = 1 /* skipgen skipgen */
+    VIR_LXC_PROTOCOL_PROC_EXIT_EVENT = 1, /* skipgen skipgen */
+    VIR_LXC_PROTOCOL_PROC_INIT_EVENT = 2 /* skipgen skipgen */
 };

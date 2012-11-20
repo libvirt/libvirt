@@ -605,6 +605,32 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     virDomainAuditLifecycle(vm, "start", reason, success);
 }
 
+void
+virDomainAuditInit(virDomainObjPtr vm,
+                   pid_t initpid)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    const char *virt;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN("OOM while encoding audit message");
+        return;
+    }
+
+    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
+        virt = "?";
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, true,
+              "virt=%s op=init %s uuid=%s vm-pid=%lld init-pid=%lld",
+              virt, vmname, uuidstr, (long long)vm->pid, (long long)initpid);
+
+    VIR_FREE(vmname);
+}
 
 void
 virDomainAuditStop(virDomainObjPtr vm, const char *reason)

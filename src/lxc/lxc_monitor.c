@@ -65,12 +65,20 @@ static void
 virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,
                              virNetClientPtr client,
                              void *evdata, void *opaque);
+static void
+virLXCMonitorHandleEventInit(virNetClientProgramPtr prog,
+                             virNetClientPtr client,
+                             void *evdata, void *opaque);
 
 static virNetClientProgramEvent virLXCProtocolEvents[] = {
     { VIR_LXC_PROTOCOL_PROC_EXIT_EVENT,
       virLXCMonitorHandleEventExit,
       sizeof(virLXCProtocolExitEventMsg),
       (xdrproc_t)xdr_virLXCProtocolExitEventMsg },
+    { VIR_LXC_PROTOCOL_PROC_INIT_EVENT,
+      virLXCMonitorHandleEventInit,
+      sizeof(virLXCProtocolInitEventMsg),
+      (xdrproc_t)xdr_virLXCProtocolInitEventMsg },
 };
 
 
@@ -85,6 +93,21 @@ virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     VIR_DEBUG("Event exit %d", msg->status);
     if (mon->cb.exitNotify)
         mon->cb.exitNotify(mon, msg->status, mon->vm);
+}
+
+
+static void
+virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                             virNetClientPtr client ATTRIBUTE_UNUSED,
+                             void *evdata, void *opaque)
+{
+    virLXCMonitorPtr mon = opaque;
+    virLXCProtocolInitEventMsg *msg = evdata;
+
+    VIR_DEBUG("Event init %llu",
+              (unsigned long long)msg->initpid);
+    if (mon->cb.initNotify)
+        mon->cb.initNotify(mon, (pid_t)msg->initpid, mon->vm);
 }
 
 

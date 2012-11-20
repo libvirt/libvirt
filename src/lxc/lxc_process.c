@@ -637,9 +637,17 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
               priv->stopReason, status);
 }
 
+static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+                                           pid_t initpid,
+                                           virDomainObjPtr vm)
+{
+    virDomainAuditInit(vm, initpid);
+}
+
 static virLXCMonitorCallbacks monitorCallbacks = {
     .eofNotify = virLXCProcessMonitorEOFNotify,
     .exitNotify = virLXCProcessMonitorExitNotify,
+    .initNotify = virLXCProcessMonitorInitNotify,
 };
 
 

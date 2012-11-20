@@ -40,10 +40,15 @@ typedef void (*virLXCMonitorCallbackExitNotify)(virLXCMonitorPtr mon,
                                                 virLXCProtocolExitStatus status,
                                                 virDomainObjPtr vm);
 
+typedef void (*virLXCMonitorCallbackInitNotify)(virLXCMonitorPtr mon,
+                                                pid_t pid,
+                                                virDomainObjPtr vm);
+
 struct _virLXCMonitorCallbacks {
     virLXCMonitorCallbackDestroy destroy;
     virLXCMonitorCallbackEOFNotify eofNotify;
     virLXCMonitorCallbackExitNotify exitNotify;
+    virLXCMonitorCallbackInitNotify initNotify;
 };
 
 virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,

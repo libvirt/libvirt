@@ -125,6 +125,7 @@ struct _virLXCController {
 
     /* Server socket */
     virNetServerPtr server;
+    bool firstClient;
     virNetServerClientPtr client;
     virNetServerProgramPtr prog;
     bool inShutdown;
@@ -134,6 +135,8 @@ struct _virLXCController {
 #include "lxc_controller_dispatch.h"
 
 static void virLXCControllerFree(virLXCControllerPtr ctrl);
+static int virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
+                                         pid_t initpid);
 
 static void virLXCControllerQuitTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 {
@@ -154,6 +157,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
         goto no_memory;
 
     ctrl->timerShutdown = -1;
+    ctrl->firstClient = true;
 
     if (!(ctrl->name = strdup(name)))
         goto no_memory;
@@ -591,6 +595,11 @@ static void *virLXCControllerClientPrivateNew(virNetServerClientPtr client,
     virNetServerClientSetCloseHook(client, virLXCControllerClientCloseHook);
     VIR_DEBUG("Got new client %p", client);
     ctrl->client = client;
+
+    if (ctrl->initpid && ctrl->firstClient)
+        virLXCControllerEventSendInit(ctrl, ctrl->initpid);
+    ctrl->firstClient = false;
+
     return dummy;
 }
 
@@ -1278,8 +1287,10 @@ virLXCControllerEventSend(virLXCControllerPtr ctrl,
 {
     virNetMessagePtr msg;
 
-    if (!ctrl->client)
+    if (!ctrl->client) {
+        VIR_WARN("Dropping event %d becuase libvirtd is not connected", procnr);
         return;
+    }
 
     VIR_DEBUG("Send event %d client=%p", procnr, ctrl->client);
     if (!(msg = virNetMessageNew(false)))
@@ -1342,6 +1353,24 @@ virLXCControllerEventSendExit(virLXCControllerPtr ctrl,
         virNetServerRun(ctrl->server);
     }
     VIR_DEBUG("Client has gone away");
+    return 0;
+}
+
+
+static int
+virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
+                              pid_t initpid)
+{
+    virLXCProtocolInitEventMsg msg;
+
+    VIR_DEBUG("Init pid %llu", (unsigned long long)initpid);
+    memset(&msg, 0, sizeof(msg));
+    msg.initpid = initpid;
+
+    virLXCControllerEventSend(ctrl,
+                              VIR_LXC_PROTOCOL_PROC_INIT_EVENT,
+                              (xdrproc_t)xdr_virLXCProtocolInitEventMsg,
+                              (void*)&msg);
     return 0;
 }
 
