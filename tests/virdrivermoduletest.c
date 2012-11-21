@@ -65,7 +65,10 @@ mymain(void)
     virDriverModuleInitialize(abs_builddir "/../src/.libs");
 
 #ifdef WITH_NETWORK
+# define USE_NETWORK "network"
     TEST("network", NULL);
+#else
+# define USE_NETWORK NULL
 #endif
 #ifdef WITH_STORAGE
     TEST("storage", NULL);
@@ -83,10 +86,10 @@ mymain(void)
     TEST("interface", NULL);
 #endif
 #ifdef WITH_QEMU
-    TEST("qemu", "network");
+    TEST("qemu", USE_NETWORK);
 #endif
 #ifdef WITH_LXC
-    TEST("lxc", "network");
+    TEST("lxc", USE_NETWORK);
 #endif
 #ifdef WITH_UML
     TEST("uml", NULL);

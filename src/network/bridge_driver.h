@@ -53,8 +53,8 @@ int networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
 #  define networkAllocateActualDevice(iface) 0
-#  define networkNotifyActualDevice(iface) 0
-#  define networkReleaseActualDevice(iface) 0
+#  define networkNotifyActualDevice(iface) (iface=iface, 0)
+#  define networkReleaseActualDevice(iface) (iface=iface, 0)
 #  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkBuildDhcpDaemonCommandLine(network, cmdout, pidfile, dctx) 0
 # endif
