@@ -454,6 +454,7 @@ static int
 virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
     virCommandPtr cmd = NULL;
     int ret = -1;
+    int rc;
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.nhost != 1) {
@@ -480,12 +481,8 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool) {
     }
 
     /* Short-circuit if already unmounted */
-    if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 1) {
-        if (ret < 0)
-            return -1;
-        else
-            return 0;
-    }
+    if ((rc = virStorageBackendFileSystemIsMounted(pool)) != 1)
+        return rc;
 
     cmd = virCommandNewArgList(UMOUNT,
                                pool->def->target.path,
