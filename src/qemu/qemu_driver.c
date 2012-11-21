@@ -1208,6 +1208,7 @@ qemuSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_XML_MIGRATABLE:
+    case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
         return 1;
     default:
         return 0;
@@ -9698,7 +9699,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                     st, dname, dom_xml);
+                                     st, dname, dom_xml, flags);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -9758,7 +9759,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     dname, dom_xml);
+                                     dname, dom_xml, flags);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -9900,7 +9901,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         asyncJob = QEMU_ASYNC_JOB_NONE;
     }
 
-    if (!virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
         goto endjob;
@@ -9909,8 +9910,8 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     /* Check if there is any ejected media.
      * We don't want to require them on the destination.
      */
-
-    if (qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
+    if (!(flags & VIR_MIGRATE_OFFLINE) &&
+        qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
         goto endjob;
 
     if (!(xml = qemuMigrationBegin(driver, vm, xmlin, dname,
@@ -9995,7 +9996,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     dname, dom_xml);
+                                     dname, dom_xml, flags);
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -10040,7 +10041,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
-                                     st, dname, dom_xml);
+                                     st, dname, dom_xml, flags);
     qemuDriverUnlock(driver);
 
 cleanup:

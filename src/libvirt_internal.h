@@ -105,6 +105,11 @@ enum {
      * Support for VIR_DOMAIN_XML_MIGRATABLE flag in domainGetXMLDesc
      */
     VIR_DRV_FEATURE_XML_MIGRATABLE = 11,
+
+    /*
+     * Support for offline migration.
+     */
+    VIR_DRV_FEATURE_MIGRATION_OFFLINE = 12,
 };
 
 

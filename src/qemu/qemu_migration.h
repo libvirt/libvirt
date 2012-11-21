@@ -36,7 +36,8 @@
      VIR_MIGRATE_NON_SHARED_DISK |              \
      VIR_MIGRATE_NON_SHARED_INC |               \
      VIR_MIGRATE_CHANGE_PROTECTION |            \
-     VIR_MIGRATE_UNSAFE)
+     VIR_MIGRATE_UNSAFE |                       \
+     VIR_MIGRATE_OFFLINE)
 
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,
@@ -97,7 +98,8 @@ int qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
                                int *cookieoutlen,
                                virStreamPtr st,
                                const char *dname,
-                               const char *dom_xml);
+                               const char *dom_xml,
+                               unsigned long flags);
 
 int qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                virConnectPtr dconn,
@@ -108,7 +110,8 @@ int qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                const char *uri_in,
                                char **uri_out,
                                const char *dname,
-                               const char *dom_xml);
+                               const char *dom_xml,
+                               unsigned long flags);
 
 int qemuMigrationPerform(virQEMUDriverPtr driver,
                          virConnectPtr conn,

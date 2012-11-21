@@ -4829,6 +4829,14 @@ virDomainMigrateVersion3(virDomainPtr domain,
     if (uri_out)
         uri = uri_out; /* Did domainMigratePrepare3 change URI? */
 
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        VIR_DEBUG("Offline migration, skipping Perform phase");
+        VIR_FREE(cookieout);
+        cookieoutlen = 0;
+        cancelled = 0;
+        goto finish;
+    }
+
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete. The src VM should remain
      * running, but in paused state until the destination can
@@ -5199,6 +5207,23 @@ virDomainMigrate(virDomainPtr domain,
         goto error;
     }
 
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the source host"));
+            goto error;
+        }
+        if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the destination host"));
+            goto error;
+        }
+    }
+
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
@@ -5404,6 +5429,23 @@ virDomainMigrate2(virDomainPtr domain,
         goto error;
     }
 
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the source host"));
+            goto error;
+        }
+        if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                      VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+            virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                            _("offline migration is not supported by "
+                              "the destination host"));
+            goto error;
+        }
+    }
+
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
@@ -5580,6 +5622,15 @@ virDomainMigrateToURI(virDomainPtr domain,
     }
 
     virCheckNonNullArgGoto(duri, error);
+
+    if (flags & VIR_MIGRATE_OFFLINE &&
+        !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                  VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+        virLibConnError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                        _("offline migration is not supported by "
+                          "the source host"));
+        goto error;
+    }
 
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,

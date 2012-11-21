@@ -6803,6 +6803,7 @@ static const vshCmdInfo info_migrate[] = {
 
 static const vshCmdOptDef opts_migrate[] = {
     {"live", VSH_OT_BOOL, 0, N_("live migration")},
+    {"offline", VSH_OT_BOOL, 0, N_("offline migration")},
     {"p2p", VSH_OT_BOOL, 0, N_("peer-2-peer migration")},
     {"direct", VSH_OT_BOOL, 0, N_("direct migration")},
     {"tunneled", VSH_OT_ALIAS, 0, "tunnelled"},
@@ -6887,6 +6888,10 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "unsafe"))
         flags |= VIR_MIGRATE_UNSAFE;
+
+    if (vshCommandOptBool(cmd, "offline")) {
+        flags |= VIR_MIGRATE_OFFLINE;
+    }
 
     if (xmlfile &&
         virFileReadAll(xmlfile, 8192, &xml) < 0) {

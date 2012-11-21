@@ -1092,6 +1092,7 @@ typedef enum {
                                                * whole migration process; this will be used automatically
                                                * when supported */
     VIR_MIGRATE_UNSAFE            = (1 << 9), /* force migration even if it is considered unsafe */
+    VIR_MIGRATE_OFFLINE           = (1 << 10), /* offline migrate */
 } virDomainMigrateFlags;
 
 /* Domain migration. */

@@ -1040,15 +1040,18 @@ I<--total> for only the total stats, I<start> for only the per-cpu
 stats of the CPUs from I<start>, I<count> for only I<count> CPUs'
 stats.
 
-=item B<migrate> [I<--live>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
+=item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
 I<domain> I<desturi> [I<migrateuri>] [I<dname>]
 [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
-Migrate domain to another host.  Add I<--live> for live migration; I<--p2p>
+Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
-for tunnelled migration.  I<--persistent> leaves the domain persistent on
+for tunnelled migration.  I<--offline> migrates domain definition without
+starting the domain on destination and without stopping it on source host.
+Offline migration may be used with inactive domains and it must be used with
+I<--persistent> option.  I<--persistent> leaves the domain persistent on
 destination host, I<--undefinesource> undefines the domain on the source host,
 and I<--suspend> leaves the domain paused on the destination host.
 I<--copy-storage-all> indicates migration with non-shared storage with full
