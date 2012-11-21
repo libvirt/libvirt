@@ -728,8 +728,13 @@ virStorageFileGetMetadataFromBuf(int format,
                 meta->backingStore = absolutePathFromBaseFile(path, backing);
                 if (meta->backingStore == NULL) {
                     /* the backing file is (currently) unavailable, treat this
-                     * file as standalone */
+                     * file as standalone:
+                     * backingStoreRaw is kept to mark broken image chains */
+                    meta->backingStoreIsFile = false;
                     backingFormat = VIR_STORAGE_FILE_NONE;
+                    VIR_WARN("Backing file '%s' of image '%s' is missing.",
+                             meta->backingStoreRaw, path);
+
                 }
             }
             VIR_FREE(backing);
