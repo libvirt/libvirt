@@ -930,7 +930,7 @@ no_memory:
  * @conn connection to report errors against
  * @pool storage pool to start
  *
- * Stops a directory or FS based storage pool.
+ * Stops a FS based storage pool.
  *
  *  - If it is a FS based pool, unmounts the unlying source device on the pool
  *  - Releases all cached data about volumes
@@ -940,8 +940,7 @@ static int
 virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
 {
-    if (pool->def->type != VIR_STORAGE_POOL_DIR &&
-        virStorageBackendFileSystemUnmount(pool) < 0)
+    if (virStorageBackendFileSystemUnmount(pool) < 0)
         return -1;
 
     return 0;
