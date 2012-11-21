@@ -2192,7 +2192,8 @@
       boot sequence. The per-device <code>boot</code> elements cannot be
       used together with general boot elements in
       <a href="#elementsOSBIOS">BIOS bootloader</a> section.
-      <span class="since">Since 0.8.8</span></dd>
+      <span class="since">Since 0.8.8</span> for PCI devices,
+      <span class="since">Since 1.0.1</span> for USB devices.
       <dt><code>rom</code></dt>
       <dd>The <code>rom</code> element is used to change how a PCI
         device's ROM is presented to the guest. The optional <code>bar</code>
@@ -2237,6 +2238,7 @@
   &lt;devices&gt;
     &lt;redirdev bus='usb' type='tcp'&gt;
       &lt;source mode='connect' host='localhost' service='4000'/&gt;
+      &lt;boot order='1'/&gt;
     &lt;/redirdev&gt;
     &lt;redirfilter&gt;
       &lt;usbdev class='0x08' vendor='0x1234' product='0xbeef' version='2.00' allow='yes'/&gt;
@@ -2264,7 +2266,16 @@
         such as <code>&lt;source&gt;</code>, may be required according
         to the given type, although a <code>&lt;target&gt;</code> sub-element
         is not required (since the consumer of the character device is
-        the hypervisor itself,rather than a device visible in the guest).
+        the hypervisor itself, rather than a device visible in the guest).
+      </dd>
+      <dt><code>boot</code></dt>
+
+      <dd>Specifies that the device is bootable.
+        The <code>order</code> attribute determines the order in which
+        devices will be tried during boot sequence. The per-device
+        <code>boot</code> elements cannot be used together with general
+        boot elements in  <a href="#elementsOSBIOS">BIOS bootloader</a> section.
+        (<span class="since">Since 1.0.1</span>)
       </dd>
       <dt><code>redirfilter</code></dt>
       <dd>The<code> redirfilter </code>element is used for creating the
