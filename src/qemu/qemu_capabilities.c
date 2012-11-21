@@ -205,7 +205,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "usb-serial", /* 125 */
               "usb-net",
               "add-fd",
-
+              "nbd-server",
     );
 
 struct _virQEMUCaps {
@@ -1940,6 +1940,8 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISK_SNAPSHOT);
         else if (STREQ(name, "add-fd"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_ADD_FD);
+        else if (STREQ(name, "nbd-server-start"))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_NBD_SERVER);
         VIR_FREE(name);
     }
     VIR_FREE(commands);
