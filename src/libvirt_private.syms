@@ -1465,6 +1465,7 @@ virSocketAddrFormatFull;
 virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;
+virSocketAddrIsPrivate;
 virSocketAddrMask;
 virSocketAddrMaskByPrefix;
 virSocketAddrParse;
