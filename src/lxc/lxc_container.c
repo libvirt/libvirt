@@ -1511,17 +1511,21 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
                                       virDomainFSDefPtr root,
                                       char **ttyPaths,
                                       size_t nttyPaths,
-                                      char *sec_mount_options)
+                                      virSecurityManagerPtr securityDriver)
 {
     struct lxcContainerCGroup *mounts = NULL;
     size_t nmounts = 0;
     int ret = -1;
-    char *cgroupRoot;
+    char *cgroupRoot = NULL;
+    char *sec_mount_options;
+
+    if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
+        return -1;
 
     /* Before pivoting we need to identify any
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
-        return -1;
+        goto cleanup;
 
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
     if (lxcContainerPivotRoot(root) < 0)
@@ -1577,6 +1581,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 cleanup:
     lxcContainerCGroupFree(mounts, nmounts);
     VIR_FREE(cgroupRoot);
+    VIR_FREE(sec_mount_options);
     return ret;
 }
 
@@ -1585,14 +1590,19 @@ cleanup:
    but with extra stuff mapped in */
 static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
                                         virDomainFSDefPtr root,
-                                        char *sec_mount_options)
+                                        virSecurityManagerPtr securityDriver)
 {
     int ret = -1;
     struct lxcContainerCGroup *mounts = NULL;
     size_t nmounts = 0;
-    char *cgroupRoot;
+    char *cgroupRoot = NULL;
+    char *sec_mount_options;
 
     VIR_DEBUG("def=%p", vmDef);
+
+    if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
+        return -1;
+
     /*
      * This makes sure that any new filesystems in the
      * host OS propagate to the container, but any
@@ -1601,25 +1611,25 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
     if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to make / slave"));
-        return -1;
+        goto cleanup;
     }
 
     if (root && root->readonly) {
         if (mount("", "/", NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Failed to make root readonly"));
-            return -1;
+            goto cleanup;
         }
     }
 
     VIR_DEBUG("Mounting config FS");
     if (lxcContainerMountAllFS(vmDef, "", false, sec_mount_options) < 0)
-        return -1;
+        goto cleanup;
 
     /* Before replacing /sys we need to identify any
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
-        return -1;
+        goto cleanup;
 
 #if HAVE_SELINUX
     /* Some versions of Linux kernel don't let you overmount
@@ -1653,6 +1663,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
 cleanup:
     lxcContainerCGroupFree(mounts, nmounts);
     VIR_FREE(cgroupRoot);
+    VIR_FREE(sec_mount_options);
     return ret;
 }
 
@@ -1684,21 +1695,15 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
                                    size_t nttyPaths,
                                    virSecurityManagerPtr securityDriver)
 {
-    int rc = -1;
-    char *sec_mount_options = NULL;
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
-    if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
-        return -1;
-
     if (root && root->src)
-        rc =  lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, sec_mount_options);
+        return  lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths,
+                                           securityDriver);
     else
-        rc = lxcContainerSetupExtraMounts(vmDef, root, sec_mount_options);
-
-    VIR_FREE(sec_mount_options);
-    return rc;
+        return lxcContainerSetupExtraMounts(vmDef, root,
+                                            securityDriver);
 }
 
 
