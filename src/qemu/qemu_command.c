@@ -1955,6 +1955,10 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
     disk->hosts[disk->nhosts-1].name = strdup(hostport);
     if (!disk->hosts[disk->nhosts-1].name)
         goto no_memory;
+
+    disk->hosts[disk->nhosts-1].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    disk->hosts[disk->nhosts-1].socket = NULL;
+
     return 0;
 
 no_memory:
@@ -7050,6 +7054,8 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                         virReportOOMError();
                         goto cleanup;
                     }
+                    def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+                    def->hosts->socket = NULL;
 
                     VIR_FREE(def->src);
                     def->src = NULL;
@@ -7103,6 +7109,8 @@ qemuParseCommandLineDisk(virCapsPtr caps,
                             virReportOOMError();
                             goto cleanup;
                         }
+                        def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+                        def->hosts->socket = NULL;
                         def->src = strdup(vdi);
                         if (!def->src) {
                             virReportOOMError();
@@ -8835,6 +8843,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 VIR_FREE(hosts);
                 goto no_memory;
             }
+            first_rbd_disk->hosts[first_rbd_disk->nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+            first_rbd_disk->hosts[first_rbd_disk->nhosts].socket = NULL;
+
             first_rbd_disk->nhosts++;
             token = strtok_r(NULL, ",", &saveptr);
         }

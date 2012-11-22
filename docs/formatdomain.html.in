@@ -1427,10 +1427,10 @@
         to the directory to use as the disk. If the disk <code>type</code>
         is "network", then the <code>protocol</code> attribute specifies
         the protocol to access to the requested image; possible values
-        are "nbd", "rbd", and "sheepdog".  If the <code>protocol</code>
-        attribute is "rbd" or "sheepdog", an additional
-        attribute <code>name</code> is mandatory to specify which
-        image will be used.  When the disk <code>type</code> is
+        are "nbd", "rbd", "sheepdog" or "gluster".  If the
+        <code>protocol</code> attribute is "rbd", "sheepdog" or "gluster", an
+        additional attribute <code>name</code> is mandatory to specify which
+        volume/image will be used.  When the disk <code>type</code> is
         "network", the <code>source</code> may have zero or
         more <code>host</code> sub-elements used to specify the hosts
         to connect.
@@ -1658,9 +1658,11 @@
         <span class='since'>Since 0.10.1</span>
       </dd>
       <dt><code>host</code></dt>
-      <dd>The <code>host</code> element has two attributes "name" and "port",
-        which specify the hostname and the port number. The meaning of this
-        element and the number of the elements depend on the protocol attribute.
+      <dd>The <code>host</code> element supports 4 attributes, viz.  "name",
+        "port", "transport" and "socket", which specify the hostname, the port
+         number, transport type and path to socket, respectively. The meaning
+         of this element and the number of the elements depend on the protocol
+         attribute.
         <table class="top_table">
           <tr>
             <th> Protocol </th>
@@ -1682,7 +1684,15 @@
             <td> one of the sheepdog servers (default is localhost:7000) </td>
             <td> zero or one </td>
           </tr>
+          <tr>
+            <td> gluster </td>
+            <td> a server running glusterd daemon </td>
+            <td> only one </td>
+          </tr>
         </table>
+        In case of gluster, valid values for transport attribute are tcp, rdma
+        or unix. If nothing is specified, tcp is assumed. If transport is unix,
+        socket attribute specifies path to unix socket.
       </dd>
       <dt><code>address</code></dt>
       <dd>If present, the <code>address</code> element ties the disk

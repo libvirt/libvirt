@@ -225,7 +225,13 @@ VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
 VIR_ENUM_IMPL(virDomainDiskProtocol, VIR_DOMAIN_DISK_PROTOCOL_LAST,
               "nbd",
               "rbd",
-              "sheepdog")
+              "sheepdog",
+              "gluster")
+
+VIR_ENUM_IMPL(virDomainDiskProtocolTransport, VIR_DOMAIN_DISK_PROTO_TRANS_LAST,
+              "tcp",
+              "unix",
+              "rdma")
 
 VIR_ENUM_IMPL(virDomainDiskSecretType, VIR_DOMAIN_DISK_SECRET_TYPE_LAST,
               "none",
@@ -1004,6 +1010,7 @@ void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def)
 
     VIR_FREE(def->name);
     VIR_FREE(def->port);
+    VIR_FREE(def->socket);
 }
 
 void virDomainControllerDefFree(virDomainControllerDefPtr def)
@@ -3520,6 +3527,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *source = NULL;
     char *target = NULL;
     char *protocol = NULL;
+    char *protocol_transport = NULL;
     char *trans = NULL;
     virDomainDiskHostDefPtr hosts = NULL;
     int nhosts = 0;
@@ -3626,19 +3634,49 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                             }
                             hosts[nhosts].name = NULL;
                             hosts[nhosts].port = NULL;
+                            hosts[nhosts].transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+                            hosts[nhosts].socket = NULL;
                             nhosts++;
 
-                            hosts[nhosts - 1].name = virXMLPropString(child, "name");
-                            if (!hosts[nhosts - 1].name) {
-                                virReportError(VIR_ERR_INTERNAL_ERROR,
-                                               "%s", _("missing name for host"));
+                            /* transport can be tcp (default), unix or rdma.  */
+                            protocol_transport = virXMLPropString(child, "transport");
+                            if (protocol_transport != NULL) {
+                                hosts[nhosts - 1].transport = virDomainDiskProtocolTransportTypeFromString(protocol_transport);
+                                if (hosts[nhosts - 1].transport < 0) {
+                                    virReportError(VIR_ERR_XML_ERROR,
+                                                   _("unknown protocol transport type '%s'"),
+                                                   protocol_transport);
+                                    goto error;
+                                }
+                            }
+                            hosts[nhosts - 1].socket = virXMLPropString(child, "socket");
+                            if (hosts[nhosts - 1].transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                                hosts[nhosts - 1].socket == NULL) {
+                                virReportError(VIR_ERR_XML_ERROR,
+                                               "%s", _("missing socket for unix transport"));
                                 goto error;
                             }
-                            hosts[nhosts - 1].port = virXMLPropString(child, "port");
-                            if (!hosts[nhosts - 1].port) {
-                                virReportError(VIR_ERR_INTERNAL_ERROR,
-                                               "%s", _("missing port for host"));
+                            if (hosts[nhosts - 1].transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX &&
+                                hosts[nhosts - 1].socket != NULL) {
+                                virReportError(VIR_ERR_XML_ERROR,
+                                               _("transport %s does not support socket attribute"),
+                                               protocol_transport);
                                 goto error;
+                            }
+                            VIR_FREE(protocol_transport);
+                            if (hosts[nhosts - 1].transport != VIR_DOMAIN_DISK_PROTO_TRANS_UNIX) {
+                                hosts[nhosts - 1].name = virXMLPropString(child, "name");
+                                if (!hosts[nhosts - 1].name) {
+                                    virReportError(VIR_ERR_XML_ERROR,
+                                                   "%s", _("missing name for host"));
+                                    goto error;
+                                }
+                                hosts[nhosts - 1].port = virXMLPropString(child, "port");
+                                if (!hosts[nhosts - 1].port) {
+                                    virReportError(VIR_ERR_XML_ERROR,
+                                                   "%s", _("missing port for host"));
+                                    goto error;
+                                }
                             }
                         }
                         child = child->next;
@@ -4230,6 +4268,7 @@ cleanup:
     }
     VIR_FREE(hosts);
     VIR_FREE(protocol);
+    VIR_FREE(protocol_transport);
     VIR_FREE(device);
     VIR_FREE(authUsername);
     VIR_FREE(usageType);
@@ -11997,10 +12036,22 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
                 virBufferAddLit(buf, ">\n");
                 for (i = 0; i < def->nhosts; i++) {
-                    virBufferEscapeString(buf, "        <host name='%s'",
-                                          def->hosts[i].name);
-                    virBufferEscapeString(buf, " port='%s'/>\n",
-                                          def->hosts[i].port);
+                    virBufferAddLit(buf, "        <host");
+                    if (def->hosts[i].name) {
+                        virBufferEscapeString(buf, " name='%s'", def->hosts[i].name);
+                    }
+                    if (def->hosts[i].port) {
+                        virBufferEscapeString(buf, " port='%s'",
+                                              def->hosts[i].port);
+                    }
+                    if (def->hosts[i].transport) {
+                        virBufferAsprintf(buf, " transport='%s'",
+                                          virDomainDiskProtocolTransportTypeToString(def->hosts[i].transport));
+                    }
+                    if (def->hosts[i].socket) {
+                        virBufferEscapeString(buf, " socket='%s'", def->hosts[i].socket);
+                    }
+                    virBufferAddLit(buf, "/>\n");
                 }
                 virBufferAddLit(buf, "      </source>\n");
             }

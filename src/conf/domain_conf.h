@@ -461,8 +461,17 @@ enum virDomainDiskProtocol {
     VIR_DOMAIN_DISK_PROTOCOL_NBD,
     VIR_DOMAIN_DISK_PROTOCOL_RBD,
     VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG,
+    VIR_DOMAIN_DISK_PROTOCOL_GLUSTER,
 
     VIR_DOMAIN_DISK_PROTOCOL_LAST
+};
+
+enum virDomainDiskProtocolTransport {
+    VIR_DOMAIN_DISK_PROTO_TRANS_TCP,
+    VIR_DOMAIN_DISK_PROTO_TRANS_UNIX,
+    VIR_DOMAIN_DISK_PROTO_TRANS_RDMA,
+
+    VIR_DOMAIN_DISK_PROTO_TRANS_LAST
 };
 
 enum virDomainDiskTray {
@@ -486,6 +495,8 @@ typedef virDomainDiskHostDef *virDomainDiskHostDefPtr;
 struct _virDomainDiskHostDef {
     char *name;
     char *port;
+    int transport; /* enum virDomainDiskProtocolTransport */
+    char *socket;  /* path to unix socket */
 };
 
 enum  virDomainDiskIo {
@@ -2196,6 +2207,7 @@ VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
+VIR_ENUM_DECL(virDomainDiskProtocolTransport)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
 VIR_ENUM_DECL(virDomainDiskTray)

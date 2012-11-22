@@ -1048,6 +1048,7 @@
                     <value>nbd</value>
                     <value>rbd</value>
                     <value>sheepdog</value>
+                    <value>gluster</value>
                   </choice>
                 </attribute>
                 <optional>
@@ -1055,12 +1056,32 @@
                 </optional>
                 <zeroOrMore>
                   <element name="host">
-                    <attribute name="name">
-                      <ref name="dnsName"/>
-                    </attribute>
-                    <attribute name="port">
-                      <ref name="unsignedInt"/>
-                    </attribute>
+                    <choice>
+                      <group>
+                        <optional>
+                          <attribute name="transport">
+                            <choice>
+                              <value>tcp</value>
+                              <value>rdma</value>
+                            </choice>
+                          </attribute>
+                        </optional>
+                        <attribute name="name">
+                          <ref name="dnsName"/>
+                        </attribute>
+                        <attribute name="port">
+                          <ref name="unsignedInt"/>
+                        </attribute>
+                      </group>
+                      <group>
+                        <attribute name="transport">
+                          <value>unix</value>
+                        </attribute>
+                        <attribute name="socket">
+                          <ref name="absFilePath"/>
+                        </attribute>
+                      </group>
+                    </choice>
                   </element>
                 </zeroOrMore>
                 <empty/>
