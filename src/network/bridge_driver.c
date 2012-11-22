@@ -495,7 +495,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * Needed to ensure dnsmasq uses same algorithm for processing
      * multiple namedriver entries in /etc/resolv.conf as GLibC.
      */
-    virCommandAddArgList(cmd, "--strict-order", "--bind-interfaces", NULL);
+    virCommandAddArg(cmd, "--strict-order");
 
     if (network->def->domain)
         virCommandAddArgPair(cmd, "--domain", network->def->domain);
@@ -510,9 +510,64 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     /* *no* conf file */
     virCommandAddArg(cmd, "--conf-file=");
 
-    virCommandAddArgList(cmd,
-                         "--except-interface", "lo",
-                         NULL);
+    if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)) {
+        /* using --bind-dynamic with only --interface (no
+         * --listen-address) prevents dnsmasq from responding to dns
+         * queries that arrive on some interface other than our bridge
+         * interface (in other words, requests originating somewhere
+         * other than one of the virtual guests connected directly to
+         * this network). This was added in response to CVE 2012-3411.
+         */
+        virCommandAddArgList(cmd,
+                             "--bind-dynamic",
+                             "--interface", network->def->bridge,
+                             NULL);
+    } else {
+        virCommandAddArgList(cmd,
+                             "--bind-interfaces",
+                             "--except-interface", "lo",
+                             NULL);
+        /*
+         * --interface does not actually work with dnsmasq < 2.47,
+         * due to DAD for ipv6 addresses on the interface.
+         *
+         * virCommandAddArgList(cmd, "--interface", network->def->bridge, NULL);
+         *
+         * So listen on all defined IPv[46] addresses
+         */
+        for (ii = 0;
+             (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+             ii++) {
+            char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
+
+            if (!ipaddr)
+                goto cleanup;
+            /* also part of CVE 2012-3411 - if the host's version of
+             * dnsmasq doesn't have --bind-dynamic, only allow listening on
+             * private/local IP addresses (see RFC1918/RFC3484/RFC4193)
+             */
+            if (!virSocketAddrIsPrivate(&tmpipdef->address)) {
+                unsigned long version = dnsmasqCapsGetVersion(caps);
+
+                networkReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Publicly routable address %s is "
+                                     "prohibited. The version of dnsmasq on "
+                                     "this host (%d.%d) doesn't support the "
+                                     "--bind-dynamic option, which is required "
+                                     "for safe operation on a publicly "
+                                     "routable subnet (see CVE-2012-3411). "
+                                     "You must either upgrade dnsmasq, or use "
+                                     "a private/local subnet range for this "
+                                     "network (as described "
+                                     "in RFC1918/RFC3484/RFC4193)."), ipaddr,
+                                   (int)version / 1000000,
+                                   (int)(version % 1000000) / 1000);
+                goto cleanup;
+            }
+            virCommandAddArgList(cmd, "--listen-address", ipaddr, NULL);
+            VIR_FREE(ipaddr);
+        }
+    }
 
     /* If this is an isolated network, set the default route option
      * (3) to be empty to avoid setting a default route that's
@@ -576,24 +631,6 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                 VIR_FREE(recordPriority);
             }
         }
-    }
-
-    /*
-     * --interface does not actually work with dnsmasq < 2.47,
-     * due to DAD for ipv6 addresses on the interface.
-     *
-     * virCommandAddArgList(cmd, "--interface", ipdef->bridge, NULL);
-     *
-     * So listen on all defined IPv[46] addresses
-     */
-    for (ii = 0;
-         (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
-         ii++) {
-        char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
-        if (!ipaddr)
-            goto cleanup;
-        virCommandAddArgList(cmd, "--listen-address", ipaddr, NULL);
-        VIR_FREE(ipaddr);
     }
 
     if (ipdef) {
