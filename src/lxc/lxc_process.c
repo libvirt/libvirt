@@ -637,11 +637,18 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
               priv->stopReason, status);
 }
 
+/* XXX a little evil */
+extern virLXCDriverPtr lxc_driver;
 static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
                                            pid_t initpid,
                                            virDomainObjPtr vm)
 {
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    priv->initpid = initpid;
     virDomainAuditInit(vm, initpid);
+
+    if (virDomainSaveStatus(lxc_driver->caps, lxc_driver->stateDir, vm) < 0)
+        VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 }
 
 static virLXCMonitorCallbacks monitorCallbacks = {

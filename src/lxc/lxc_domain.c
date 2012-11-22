@@ -24,6 +24,10 @@
 #include "lxc_domain.h"
 
 #include "memory.h"
+#include "logging.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_LXC
 
 static void *virLXCDomainObjPrivateAlloc(void)
 {
@@ -43,8 +47,36 @@ static void virLXCDomainObjPrivateFree(void *data)
 }
 
 
+static int virLXCDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+{
+    virLXCDomainObjPrivatePtr priv = data;
+
+    virBufferAsprintf(buf, "  <init pid='%llu'/>\n",
+                      (unsigned long long)priv->initpid);
+
+    return 0;
+}
+
+static int virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+{
+    virLXCDomainObjPrivatePtr priv = data;
+    unsigned long long thepid;
+
+    if (virXPathULongLong("string(./init[1]/@pid)", ctxt, &thepid) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_WARN("Failed to load init pid from state %s", err ? err->message : "null");
+        priv->initpid = 0;
+    } else {
+        priv->initpid = thepid;
+    }
+
+    return 0;
+}
+
 void virLXCDomainSetPrivateDataHooks(virCapsPtr caps)
 {
     caps->privateDataAllocFunc = virLXCDomainObjPrivateAlloc;
     caps->privateDataFreeFunc = virLXCDomainObjPrivateFree;
+    caps->privateDataXMLFormat = virLXCDomainObjPrivateXMLFormat;
+    caps->privateDataXMLParse = virLXCDomainObjPrivateXMLParse;
 }

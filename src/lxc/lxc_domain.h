@@ -34,6 +34,8 @@ struct _virLXCDomainObjPrivate {
     bool doneStopEvent;
     int stopReason;
     bool wantReboot;
+
+    pid_t initpid;
 };
 
 void virLXCDomainSetPrivateDataHooks(virCapsPtr caps);
