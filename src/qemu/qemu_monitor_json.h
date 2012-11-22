@@ -334,4 +334,7 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 char *qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon);
 
+int qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
+                                  const char *host,
+                                  unsigned int port);
 #endif /* QEMU_MONITOR_JSON_H */

@@ -4607,3 +4607,59 @@ no_memory:
     virReportOOMError();
     goto cleanup;
 }
+
+int
+qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
+                              const char *host,
+                              unsigned int port)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+    virJSONValuePtr addr = NULL;
+    char *port_str = NULL;
+
+    if (!(data = virJSONValueNewObject()) ||
+        !(addr = virJSONValueNewObject()) ||
+        (virAsprintf(&port_str, "%u", port) < 0)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* port is really expected as a string here by qemu */
+    if (virJSONValueObjectAppendString(data, "host", host) < 0 ||
+        virJSONValueObjectAppendString(data, "port", port_str) < 0 ||
+        virJSONValueObjectAppendString(addr, "type", "inet") < 0 ||
+        virJSONValueObjectAppend(addr, "data", data) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* From now on, @data is part of @addr */
+    data = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",
+                                           "a:addr", addr,
+                                           NULL)))
+        goto cleanup;
+
+    /* From now on, @addr is part of @cmd */
+    addr = NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(port_str);
+    virJSONValueFree(reply);
+    virJSONValueFree(cmd);
+    virJSONValueFree(addr);
+    virJSONValueFree(data);
+    return ret;
+}

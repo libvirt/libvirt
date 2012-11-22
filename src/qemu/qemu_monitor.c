@@ -3463,3 +3463,25 @@ int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
 
     return qemuMonitorJSONSetMigrationCapability(mon, capability);
 }
+
+int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
+                              const char *host,
+                              unsigned int port)
+{
+    VIR_DEBUG("mon=%p host=%s port=%u",
+              mon, host, port);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONNBDServerStart(mon, host, port);
+}
