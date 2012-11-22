@@ -183,6 +183,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-directsync");
     DO_TEST("disk-drive-cache-unsafe");
     DO_TEST("disk-drive-network-nbd");
+    DO_TEST("disk-drive-network-gluster");
     DO_TEST("disk-drive-network-rbd");
     /* older format using CEPH_ARGS env var */
     DO_TEST("disk-drive-network-rbd-ceph-env");
