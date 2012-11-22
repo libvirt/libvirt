@@ -358,18 +358,19 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (desc)
         virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
 
-    if (vshCommandOptString(cmd, "memspec", &memspec) < 0 ||
-        vshParseSnapshotMemspec(ctl, &buf, memspec) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (vshCommandOptString(cmd, "memspec", &memspec) < 0) {
+        vshError(ctl, _("memspec argument must not be empty"));
         goto cleanup;
     }
+
+    if (memspec && vshParseSnapshotMemspec(ctl, &buf, memspec) < 0)
+        goto cleanup;
+
     if (vshCommandOptBool(cmd, "diskspec")) {
         virBufferAddLit(&buf, "  <disks>\n");
         while ((opt = vshCommandOptArgv(cmd, opt))) {
-            if (vshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0) {
-                virBufferFreeAndReset(&buf);
+            if (vshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0)
                 goto cleanup;
-            }
         }
         virBufferAddLit(&buf, "  </disks>\n");
     }
@@ -390,6 +391,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     ret = vshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 
 cleanup:
+    virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
     if (dom)
         virDomainFree(dom);
