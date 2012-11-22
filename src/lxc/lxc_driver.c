@@ -2926,9 +2926,26 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
+    virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        disk = dev->data.disk;
+        if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("target %s already exists."), disk->dst);
+            return -1;
+        }
+        if (virDomainDiskInsert(vmdef, disk)) {
+            virReportOOMError();
+            return -1;
+        }
+        /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
+        dev->data.disk = NULL;
+        ret = 0;
+        break;
+
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
         if (virDomainNetInsert(vmdef, net) < 0) {
@@ -2998,11 +3015,23 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
+    virDomainDiskDefPtr disk, det_disk;
     virDomainNetDefPtr net;
     int idx;
     char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        disk = dev->data.disk;
+        if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("no target device %s"), disk->dst);
+            return -1;
+        }
+        virDomainDiskDefFree(det_disk);
+        ret = 0;
+        break;
+
     case VIR_DOMAIN_DEVICE_NET:
         net = dev->data.net;
         idx = virDomainNetFindIdx(vmdef, net);
