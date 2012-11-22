@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -189,6 +189,39 @@ virSocketAddrEqual(const virSocketAddrPtr s1, const virSocketAddrPtr s2)
                        &s2->data.inet6.sin6_addr.s6_addr,
                        sizeof(s1->data.inet6.sin6_addr.s6_addr)) == 0 &&
                 s1->data.inet6.sin6_port == s2->data.inet6.sin6_port);
+    }
+    return false;
+}
+
+/*
+ * virSocketAddrIsPrivate:
+ * @s: the location of the IP address
+ *
+ * Return true if this address is in its family's defined
+ * "private/local" address space. For IPv4, private addresses are in
+ * the range of 192.168.0.0/16, 172.16.0.0/16, or 10.0.0.0/8.  For
+ * IPv6, local addresses are in the range of FC00::/7 or FEC0::/10
+ * (that last one is deprecated, but still in use).
+ *
+ * See RFC1918, RFC3484, and RFC4193 for details.
+ */
+bool
+virSocketAddrIsPrivate(const virSocketAddrPtr addr)
+{
+    unsigned long val;
+
+    switch (addr->data.stor.ss_family) {
+    case AF_INET:
+       val = ntohl(addr->data.inet4.sin_addr.s_addr);
+
+       return ((val & 0xFFFF0000) == ((192L << 24) + (168 << 16)) ||
+               (val & 0xFFFF0000) == ((172L << 24) + (16  << 16)) ||
+               (val & 0xFF000000) == ((10L  << 24)));
+
+    case AF_INET6:
+        return ((addr->data.inet6.sin6_addr.s6_addr[0] & 0xFE) == 0xFC ||
+                ((addr->data.inet6.sin6_addr.s6_addr[0] & 0xFF) == 0xFE &&
+                 (addr->data.inet6.sin6_addr.s6_addr[1] & 0xC0) == 0xC0));
     }
     return false;
 }

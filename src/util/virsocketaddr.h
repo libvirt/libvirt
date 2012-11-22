@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -104,5 +104,6 @@ int virSocketAddrPrefixToNetmask(unsigned int prefix,
                                  int family);
 bool virSocketAddrEqual(const virSocketAddrPtr s1,
                         const virSocketAddrPtr s2);
+bool virSocketAddrIsPrivate(const virSocketAddrPtr addr);
 
 #endif /* __VIR_SOCKETADDR_H__ */
