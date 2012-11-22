@@ -4663,3 +4663,28 @@ cleanup:
     virJSONValueFree(data);
     return ret;
 }
+
+int
+qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
+                            const char *deviceID,
+                            bool writable)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-add",
+                                           "s:device", deviceID,
+                                           "b:writable", writable,
+                                           NULL)))
+        return ret;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

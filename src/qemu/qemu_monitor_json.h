@@ -337,4 +337,7 @@ char *qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon);
 int qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
                                   const char *host,
                                   unsigned int port);
+int qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
+                                const char *deviceID,
+                                bool writable);
 #endif /* QEMU_MONITOR_JSON_H */
