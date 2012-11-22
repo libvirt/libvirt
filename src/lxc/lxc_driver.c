@@ -30,6 +30,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <sys/poll.h>
 #include <unistd.h>
@@ -3092,6 +3093,136 @@ cleanup:
 
 
 static int
+lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDiskDefPtr def = dev->data.disk;
+    virCgroupPtr group = NULL;
+    int ret = -1;
+    char *dst;
+    struct stat sb;
+    bool created = false;
+    mode_t mode = 0;
+    char *tmpsrc = def->src;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach disk until init PID is known"));
+        goto cleanup;
+    }
+
+    if (def->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Can't setup disk for non-block device"));
+        goto cleanup;
+    }
+    if (def->src == NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Can't setup disk without media"));
+        goto cleanup;
+    }
+
+    if (virDomainDiskIndexByName(vm->def, def->dst, true) >= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("target %s already exists"), def->dst);
+        goto cleanup;
+    }
+
+    if (stat(def->src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"), def->src);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disk source %s must be a character/block device"),
+                       def->src);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
+                    (unsigned long long)priv->initpid, def->dst) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    mode = 0700;
+    if (S_ISCHR(sb.st_mode))
+        mode |= S_IFCHR;
+    else
+        mode |= S_IFBLK;
+
+    /* Yes, the device name we're creating may not
+     * actually correspond to the major:minor number
+     * we're using, but we've no other option at this
+     * time. Just have to hope that containerized apps
+     * don't get upset that the major:minor is different
+     * to that normally implied by the device name
+     */
+    VIR_DEBUG("Creating dev %s (%d,%d) from %s",
+              dst, major(sb.st_rdev), minor(sb.st_rdev), def->src);
+    if (mknod(dst, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             dst);
+        goto cleanup;
+    }
+    created = true;
+
+    /* Labelling normally operates on src, but we need
+     * to actally label the dst here, so hack the config */
+    def->src = dst;
+    if (virSecurityManagerSetImageLabel(driver->securityManager,
+                                        vm->def, def) < 0)
+        goto cleanup;
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (virCgroupAllowDevicePath(group, def->src,
+                                 (def->readonly ?
+                                  VIR_CGROUP_DEVICE_READ :
+                                  VIR_CGROUP_DEVICE_RW) |
+                                 VIR_CGROUP_DEVICE_MKNOD) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot allow device %s for domain %s"),
+                       def->src, vm->def->name);
+        goto cleanup;
+    }
+
+    virDomainDiskInsertPreAlloced(vm->def, def);
+
+    ret = 0;
+
+cleanup:
+    def->src = tmpsrc;
+    virDomainAuditDisk(vm, NULL, def->src, "attach", ret == 0);
+    if (group)
+        virCgroupFree(&group);
+    if (dst && created && ret < 0)
+        unlink(dst);
+    return ret;
+}
+
+
+static int
 lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
                           virDomainDeviceDefPtr dev)
@@ -3099,6 +3230,12 @@ lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
     int ret = -1;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = lxcDomainAttachDeviceDiskLive(driver, vm, dev);
+        if (!ret)
+            dev->data.disk = NULL;
+        break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("device type '%s' cannot be attached"),
@@ -3111,6 +3248,77 @@ lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
+lxcDomainDetachDeviceDiskLive(virLXCDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDiskDefPtr def = NULL;
+    virCgroupPtr group = NULL;
+    int i, ret = -1;
+    char *dst;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach disk until init PID is known"));
+        goto cleanup;
+    }
+
+    if ((i = virDomainDiskIndexByName(vm->def,
+                                      dev->data.disk->dst,
+                                      false)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("disk %s not found"), dev->data.disk->dst);
+        goto cleanup;
+    }
+
+    def = vm->def->disks[i];
+
+    if (virAsprintf(&dst, "/proc/%llu/root/dev/%s",
+                    (unsigned long long)priv->initpid, def->dst) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Unlinking %s (backed by %s)", dst, def->src);
+    if (unlink(dst) < 0 && errno != ENOENT) {
+        virDomainAuditDisk(vm, def->src, NULL, "detach", false);
+        virReportSystemError(errno,
+                             _("Unable to remove device %s"), dst);
+        goto cleanup;
+    }
+    virDomainAuditDisk(vm, def->src, NULL, "detach", true);
+
+    if (virCgroupDenyDevicePath(group, def->src, VIR_CGROUP_DEVICE_RWM) != 0)
+        VIR_WARN("cannot deny device %s for domain %s",
+                 def->src, vm->def->name);
+
+    virDomainDiskRemove(vm->def, i);
+    virDomainDiskDefFree(def);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(dst);
+    if (group)
+        virCgroupFree(&group);
+    return ret;
+}
+
+
+static int
 lxcDomainDetachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
                           virDomainDeviceDefPtr dev)
@@ -3118,6 +3326,10 @@ lxcDomainDetachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
     int ret = -1;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = lxcDomainDetachDeviceDiskLive(driver, vm, dev);
+        break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("device type '%s' cannot be detached"),
