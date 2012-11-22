@@ -141,6 +141,7 @@ int virEventPollAddHandle(int fd, int events,
 
 void virEventPollUpdateHandle(int watch, int events) {
     int i;
+    bool found = false;
     PROBE(EVENT_POLL_UPDATE_HANDLE,
           "watch=%d events=%d",
           watch, events);
@@ -156,10 +157,14 @@ void virEventPollUpdateHandle(int watch, int events) {
             eventLoop.handles[i].events =
                     virEventPollToNativeEvents(events);
             virEventPollInterruptLocked();
+            found = true;
             break;
         }
     }
     virMutexUnlock(&eventLoop.lock);
+
+    if (!found)
+        VIR_WARN("Got update for non-existent handle watch %d", watch);
 }
 
 /*
@@ -249,6 +254,7 @@ void virEventPollUpdateTimeout(int timer, int frequency)
 {
     unsigned long long now;
     int i;
+    bool found = false;
     PROBE(EVENT_POLL_UPDATE_TIMEOUT,
           "timer=%d frequency=%d",
           timer, frequency);
@@ -268,11 +274,17 @@ void virEventPollUpdateTimeout(int timer, int frequency)
             eventLoop.timeouts[i].frequency = frequency;
             eventLoop.timeouts[i].expiresAt =
                 frequency >= 0 ? frequency + now : 0;
+            VIR_DEBUG("Set timer freq=%d expires=%llu", frequency,
+                      eventLoop.timeouts[i].expiresAt);
             virEventPollInterruptLocked();
+            found = true;
             break;
         }
     }
     virMutexUnlock(&eventLoop.lock);
+
+    if (!found)
+        VIR_WARN("Got update for non-existent timer %d", timer);
 }
 
 /*
@@ -336,6 +348,7 @@ static int virEventPollCalculateTimeout(int *timeout) {
         if (virTimeMillisNow(&now) < 0)
             return -1;
 
+        EVENT_DEBUG("Schedule timeout then=%llu now=%llu", then, now);
         *timeout = then - now;
         if (*timeout < 0)
             *timeout = 0;
