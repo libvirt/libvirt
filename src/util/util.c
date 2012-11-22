@@ -2193,11 +2193,10 @@ int virDiskNameToIndex(const char *name) {
         return -1;
 
     for (i = 0; *ptr; i++) {
-        idx = (idx + (i < 1 ? 0 : 1)) * 26;
-
         if (!c_islower(*ptr))
             break;
 
+        idx = (idx + (i < 1 ? 0 : 1)) * 26;
         idx += *ptr - 'a';
         ptr++;
     }
