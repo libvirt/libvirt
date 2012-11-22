@@ -881,6 +881,21 @@ AppArmorSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
+
+static char *
+AppArmorGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                        virDomainDefPtr vm ATTRIBUTE_UNUSED)
+{
+    char *opts;
+
+    if (!(opts = strdup(""))) {
+        virReportOOMError();
+        return NULL;
+    }
+    return opts;
+}
+
+
 virSecurityDriver virAppArmorSecurityDriver = {
     .privateDataLen                     = 0,
     .name                               = SECURITY_APPARMOR_NAME,
@@ -918,4 +933,6 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainSetSecurityImageFDLabel      = AppArmorSetImageFDLabel,
     .domainSetSecurityTapFDLabel        = AppArmorSetTapFDLabel,
+
+    .domainGetSecurityMountOptions      = AppArmorGetMountOptions,
 };

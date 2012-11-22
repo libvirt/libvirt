@@ -486,10 +486,7 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
     if (mgr->drv->domainGetSecurityMountOptions)
         return mgr->drv->domainGetSecurityMountOptions(mgr, vm);
 
-    /*
-      I don't think this is an error, these should be optional
-      virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    */
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 

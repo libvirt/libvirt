@@ -1974,20 +1974,26 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
     char *opts = NULL;
     virSecurityLabelDefPtr secdef;
 
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
-        return NULL;
+    if ((secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME))) {
+        if (!secdef->imagelabel)
+            secdef->imagelabel = virSecuritySELinuxGenImageLabel(mgr, def);
 
-    if (! secdef->imagelabel)
-        secdef->imagelabel = virSecuritySELinuxGenImageLabel(mgr,def);
-
-    if (secdef->imagelabel) {
-        virAsprintf(&opts,
-                    ",context=\"%s\"",
-                    (const char*) secdef->imagelabel);
+        if (secdef->imagelabel &&
+            virAsprintf(&opts,
+                        ",context=\"%s\"",
+                        (const char*) secdef->imagelabel) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
     }
 
-    VIR_DEBUG("imageLabel=%s", secdef->imagelabel);
+    if (!opts &&
+        !(opts = strdup(""))) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    VIR_DEBUG("imageLabel=%s opts=%s", secdef->imagelabel, opts);
     return opts;
 }
 

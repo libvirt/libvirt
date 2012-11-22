@@ -571,7 +571,7 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
          */
 
         ignore_value(virAsprintf(&opts,
-                                 "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")));
+                                 "mode=755,size=65536%s", sec_mount_options));
         if (!opts) {
             virReportOOMError();
             goto cleanup;
@@ -1083,7 +1083,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
     char *data = NULL;
 
     if (virAsprintf(&data,
-                    "size=%lldk%s", fs->usage, (sec_mount_options ? sec_mount_options : "")) < 0) {
+                    "size=%lldk%s", fs->usage, sec_mount_options) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1456,7 +1456,7 @@ static int lxcContainerMountCGroups(struct lxcContainerCGroup *mounts,
     }
 
     if (virAsprintf(&opts,
-                    "mode=755,size=65536%s",(sec_mount_options ? sec_mount_options : "")) < 0) {
+                    "mode=755,size=65536%s", sec_mount_options) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -1689,7 +1689,9 @@ static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
     if (lxcContainerResolveSymlinks(vmDef) < 0)
         return -1;
 
-    sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef);
+    if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
+        return -1;
+
     if (root && root->src)
         rc =  lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths, sec_mount_options);
     else
