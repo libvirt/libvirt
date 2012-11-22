@@ -332,6 +332,8 @@ static int virEventPollCalculateTimeout(int *timeout) {
     EVENT_DEBUG("Calculate expiry of %zu timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
+        if (eventLoop.timeouts[i].deleted)
+            continue;
         if (eventLoop.timeouts[i].frequency < 0)
             continue;
 
