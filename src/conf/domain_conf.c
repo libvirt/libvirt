@@ -536,6 +536,10 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
+VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
+              "storage",
+              "misc")
+
 VIR_ENUM_IMPL(virDomainPciRombarMode,
               VIR_DOMAIN_PCI_ROMBAR_LAST,
               "default",
@@ -1442,6 +1446,17 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
      */
     if (def->parent.type == VIR_DOMAIN_DEVICE_NONE)
         virDomainDeviceInfoFree(def->info);
+
+    if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
+        switch (def->source.caps.type) {
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+            VIR_FREE(def->source.caps.u.storage.block);
+            break;
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+            VIR_FREE(def->source.caps.u.misc.chardev);
+            break;
+        }
+    }
 }
 
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
@@ -3025,6 +3040,71 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     ret = 0;
 error:
     VIR_FREE(managed);
+    return ret;
+}
+
+static int
+virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
+                                xmlXPathContextPtr ctxt,
+                                const char *type,
+                                virDomainHostdevDefPtr def)
+{
+    xmlNodePtr sourcenode;
+    int ret = -1;
+
+    /* @type is passed in from the caller rather than read from the
+     * xml document, because it is specified in different places for
+     * different kinds of defs - it is an attribute of
+     * <source>/<address> for an intelligent hostdev (<interface>),
+     * but an attribute of the toplevel element for a standard
+     * <hostdev>.  (the functions we're going to call expect address
+     * type to already be known).
+     */
+    if (type) {
+        if ((def->source.caps.type
+             = virDomainHostdevCapsTypeFromString(type)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown host device source address type '%s'"),
+                           type);
+            goto error;
+        }
+    } else {
+        virReportError(VIR_ERR_XML_ERROR,
+                       "%s", _("missing source address type"));
+        goto error;
+    }
+
+    if (!(sourcenode = virXPathNode("./source", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing <source> element in hostdev device"));
+        goto error;
+    }
+
+    switch (def->source.caps.type) {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+        if (!(def->source.caps.u.storage.block =
+              virXPathString("string(./source/block[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing <block> element in hostdev storage device"));
+            goto error;
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        if (!(def->source.caps.u.misc.chardev =
+              virXPathString("string(./source/char[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing <char> element in hostdev character device"));
+            goto error;
+        }
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("address type='%s' not supported in hostdev interfaces"),
+                       virDomainHostdevCapsTypeToString(def->source.caps.type));
+        goto error;
+    }
+    ret = 0;
+error:
     return ret;
 }
 
@@ -7384,6 +7464,11 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type, def, flags) < 0)
             goto error;
         break;
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        /* parse managed/mode/type, and the <source> element */
+        if (virDomainHostdevDefParseXMLCaps(node, ctxt, type, def) < 0)
+            goto error;
+        break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected hostdev mode %d"), def->mode);
@@ -7941,6 +8026,41 @@ virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
 
 
 static int
+virDomainHostdevMatchCapsStorage(virDomainHostdevDefPtr a,
+                                 virDomainHostdevDefPtr b)
+{
+    return STREQ_NULLABLE(a->source.caps.u.storage.block,
+                          b->source.caps.u.storage.block);
+}
+
+
+static int
+virDomainHostdevMatchCapsMisc(virDomainHostdevDefPtr a,
+                              virDomainHostdevDefPtr b)
+{
+    return STREQ_NULLABLE(a->source.caps.u.misc.chardev,
+                          b->source.caps.u.misc.chardev);
+}
+
+
+static int
+virDomainHostdevMatchCaps(virDomainHostdevDefPtr a,
+                          virDomainHostdevDefPtr b)
+{
+    if (a->source.caps.type != b->source.caps.type)
+        return 0;
+
+    switch (a->source.caps.type) {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+        return virDomainHostdevMatchCapsStorage(a, b);
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        return virDomainHostdevMatchCapsMisc(a, b);
+    }
+    return 0;
+}
+
+
+static int
 virDomainHostdevMatch(virDomainHostdevDefPtr a,
                       virDomainHostdevDefPtr b)
 {
@@ -7950,6 +8070,8 @@ virDomainHostdevMatch(virDomainHostdevDefPtr a,
     switch (a->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         return virDomainHostdevMatchSubsys(a, b);
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        return virDomainHostdevMatchCaps(a, b);
     }
     return 0;
 }
@@ -12517,6 +12639,35 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 }
 
 static int
+virDomainHostdevDefFormatCaps(virBufferPtr buf,
+                              virDomainHostdevDefPtr def)
+{
+    virBufferAddLit(buf, "<source>\n");
+
+    virBufferAdjustIndent(buf, 2);
+    switch (def->source.caps.type)
+    {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+        virBufferEscapeString(buf, "<block>%s</block>\n",
+                              def->source.caps.u.storage.block);
+        break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        virBufferEscapeString(buf, "<char>%s</char>\n",
+                              def->source.caps.u.misc.chardev);
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected hostdev type %d"),
+                       def->source.caps.type);
+        return -1;
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</source>\n");
+    return 0;
+}
+
+static int
 virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainActualNetDefPtr def,
                             unsigned int flags)
@@ -13588,19 +13739,37 @@ virDomainHostdevDefFormat(virBufferPtr buf,
             return -1;
         }
         break;
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        type = virDomainHostdevCapsTypeToString(def->source.caps.type);
+        if (!type) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected hostdev type %d"),
+                           def->source.caps.type);
+            return -1;
+        }
+        break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hostdev mode %d"), def->mode);
         return -1;
     }
 
-    virBufferAsprintf(buf, "    <hostdev mode='%s' type='%s' managed='%s'>\n",
-                      mode, type, def->managed ? "yes" : "no");
+    virBufferAsprintf(buf, "    <hostdev mode='%s' type='%s'",
+                      mode, type);
+    if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        virBufferAsprintf(buf, " managed='%s'>\n",
+                          def->managed ? "yes" : "no");
+    else
+        virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 6);
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         if (virDomainHostdevDefFormatSubsys(buf, def, flags, false) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        if (virDomainHostdevDefFormatCaps(buf, def) < 0)
             return -1;
         break;
     }

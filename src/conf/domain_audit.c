@@ -260,41 +260,83 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         virt = "?";
     }
 
-    switch (hostdev->source.subsys.type) {
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virAsprintf(&address, "%.4x:%.2x:%.2x.%.1x",
-                        hostdev->source.subsys.u.pci.domain,
-                        hostdev->source.subsys.u.pci.bus,
-                        hostdev->source.subsys.u.pci.slot,
-                        hostdev->source.subsys.u.pci.function) < 0) {
+    switch (hostdev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        switch (hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (virAsprintf(&address, "%.4x:%.2x:%.2x.%.1x",
+                            hostdev->source.subsys.u.pci.domain,
+                            hostdev->source.subsys.u.pci.bus,
+                            hostdev->source.subsys.u.pci.slot,
+                            hostdev->source.subsys.u.pci.function) < 0) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            if (virAsprintf(&address, "%.3d.%.3d",
+                            hostdev->source.subsys.u.usb.bus,
+                            hostdev->source.subsys.u.usb.device) < 0) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+            break;
+        default:
+            VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
+                     hostdev->source.subsys.type);
+            goto cleanup;
+        }
+
+        if (!(device = virAuditEncode("device", VIR_AUDIT_STR(address)))) {
             VIR_WARN("OOM while encoding audit message");
             goto cleanup;
         }
+
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=dev reason=%s %s uuid=%s bus=%s %s",
+                  virt, reason, vmname, uuidstr,
+                  virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type),
+                  device);
         break;
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (virAsprintf(&address, "%.3d.%.3d",
-                        hostdev->source.subsys.u.usb.bus,
-                        hostdev->source.subsys.u.usb.device) < 0) {
-            VIR_WARN("OOM while encoding audit message");
+
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        switch (hostdev->source.caps.type) {
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+            if (!(device = virAuditEncode("disk",
+                                          VIR_AUDIT_STR(hostdev->source.caps.u.storage.block)))) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+
+            VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                      "virt=%s resrc=hostdev reason=%s %s uuid=%s %s",
+                      virt, reason, vmname, uuidstr, device);
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+            if (!(device = virAuditEncode("chardev",
+                                          VIR_AUDIT_STR(hostdev->source.caps.u.misc.chardev)))) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+
+            VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                      "virt=%s resrc=hostdev reason=%s %s uuid=%s %s",
+                      virt, reason, vmname, uuidstr, device);
+            break;
+
+        default:
+            VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
+                     hostdev->source.caps.type);
             goto cleanup;
         }
         break;
+
     default:
-        VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
-                 hostdev->source.subsys.type);
+        VIR_WARN("Unexpected hostdev mode while encoding audit message: %d",
+                 hostdev->mode);
         goto cleanup;
     }
-
-    if (!(device = virAuditEncode("device", VIR_AUDIT_STR(address)))) {
-        VIR_WARN("OOM while encoding audit message");
-        goto cleanup;
-    }
-
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=dev reason=%s %s uuid=%s bus=%s %s",
-              virt, reason, vmname, uuidstr,
-              virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type),
-              device);
 
 cleanup:
     VIR_FREE(vmname);

@@ -2123,13 +2123,15 @@
       </dd>
     </dl>
 
-    <h4><a name="elementsUSB">USB and PCI devices</a></h4>
+    <h4><a name="elementsHostDev">Host device assignment</a></h4>
+
+    <h5><a href="elementsHostDevSubsys">USB / PCI devices</a></h5>
 
     <p>
       USB and PCI devices attached to the host can be passed through
-      to the guest using
-      the <code>hostdev</code> element. <span class="since">since after
-      0.4.4 for USB and 0.6.0 for PCI (KVM only)</span>:
+      to the guest using the <code>hostdev</code> element.
+      <span class="since">since after 0.4.4 for USB and 0.6.0 for PCI
+        (KVM only)</span>:
     </p>
 
 <pre>
@@ -2245,6 +2247,51 @@
       with <code>virsh
       nodedev-list</code>. <a href="#elementsAddress">See above</a> for
       more details on the address element.
+    </dl>
+
+
+    <h5><a href="elementsHostDevCaps">Block / character devices</a></h5>
+
+    <p>
+      Block / character devices from the host can be passed through
+      to the guest using the <code>hostdev</code> element. This is
+      only possible with container based virtualization.
+      <span class="since">since after 1.0.1 for LXC</span>:
+    </p>
+
+    <pre>
+...
+&lt;hostdev mode='capabilities' type='storage'&gt;
+  &lt;source&gt;
+    &lt;block&gt;/dev/sdf1&lt;/block&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+...
+    </pre>
+
+    <pre>
+...
+&lt;hostdev mode='capabilities' type='misc'&gt;
+  &lt;source&gt;
+    &lt;char&gt;/dev/input/event3&lt;/char&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+...
+    </pre>
+
+    <dl>
+      <dt><code>hostdev</code></dt>
+      <dd>The <code>hostdev</code> element is the main container for describing
+        host devices. For block/character device passthrough <code>mode</code> is
+        always "capabilities" and <code>type</code> is "block" for a block
+        device and "char" for a character device.
+      </dd>
+      <dt><code>source</code></dt>
+      <dd>The source element describes the device as seen from the host.
+        For block devices, the path to the block device in the host
+        OS is provided in the nested "block" element, while for character
+        devices the "char" element is used
+      </dd>
     </dl>
 
     <h4><a name="elementsRedir">Redirected devices</a></h4>

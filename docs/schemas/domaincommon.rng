@@ -2834,63 +2834,123 @@
       </zeroOrMore>
     </element>
   </define>
+
   <define name="hostdev">
     <element name="hostdev">
-      <optional>
-        <attribute name="mode">
-          <choice>
-            <value>subsystem</value>
-            <value>capabilities</value>
-          </choice>
-        </attribute>
-      </optional>
-      <attribute name="type">
-        <choice>
-          <value>usb</value>
-          <value>pci</value>
-        </choice>
-      </attribute>
-      <optional>
-        <attribute name="managed">
-          <choice>
-            <value>yes</value>
-            <value>no</value>
-          </choice>
-        </attribute>
-      </optional>
-      <group>
-        <element name="source">
-          <optional>
-            <ref name="startupPolicy"/>
-          </optional>
-          <choice>
-            <group>
-              <ref name="usbproduct"/>
-              <optional>
-                <ref name="usbaddress"/>
-              </optional>
-            </group>
-            <ref name="usbaddress"/>
-            <element name="address">
-              <ref name="pciaddress"/>
-            </element>
-          </choice>
-        </element>
-      </group>
-      <optional>
-        <ref name="deviceBoot"/>
-      </optional>
+      <choice>
+        <group>
+          <ref name="hostdevsubsys"/>
+        </group>
+        <group>
+          <ref name="hostdevcaps"/>
+        </group>
+      </choice>
       <optional>
         <ref name="alias"/>
       </optional>
       <optional>
-        <ref name="address"/>
+        <ref name="deviceBoot"/>
       </optional>
       <optional>
         <ref name="rom"/>
       </optional>
+      <optional>
+        <ref name="address"/>
+      </optional>
     </element>
   </define>
+
+  <define name="hostdevsubsys">
+    <optional>
+      <attribute name="mode">
+        <value>subsystem</value>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="managed">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+    </optional>
+    <choice>
+      <ref name="hostdevsubsyspci"/>
+      <ref name="hostdevsubsysusb"/>
+    </choice>
+  </define>
+
+  <define name="hostdevcaps">
+    <attribute name="mode">
+      <value>capabilities</value>
+    </attribute>
+    <choice>
+      <group>
+        <ref name="hostdevcapsstorage"/>
+      </group>
+      <group>
+        <ref name="hostdevcapsmisc"/>
+      </group>
+    </choice>
+  </define>
+
+
+  <define name="hostdevsubsyspci">
+    <attribute name="type">
+      <value>pci</value>
+    </attribute>
+    <element name="source">
+      <optional>
+        <ref name="startupPolicy"/>
+      </optional>
+      <element name="address">
+        <ref name="pciaddress"/>
+      </element>
+    </element>
+  </define>
+
+  <define name="hostdevsubsysusb">
+    <attribute name="type">
+      <value>usb</value>
+    </attribute>
+    <element name="source">
+      <optional>
+        <ref name="startupPolicy"/>
+      </optional>
+      <choice>
+        <group>
+          <ref name="usbproduct"/>
+          <optional>
+            <ref name="usbaddress"/>
+          </optional>
+        </group>
+        <ref name="usbaddress"/>
+      </choice>
+    </element>
+  </define>
+
+  <define name="hostdevcapsstorage">
+    <attribute name="type">
+      <value>storage</value>
+    </attribute>
+    <element name="source">
+      <element name="block">
+        <ref name="absFilePath"/>
+      </element>
+    </element>
+  </define>
+
+  <define name="hostdevcapsmisc">
+    <attribute name="type">
+      <value>misc</value>
+    </attribute>
+    <element name="source">
+      <element name="char">
+        <ref name="absFilePath"/>
+      </element>
+    </element>
+  </define>
+
   <define name="usbproduct">
     <element name="vendor">
       <attribute name="id">

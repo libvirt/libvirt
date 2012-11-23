@@ -121,6 +121,7 @@ mymain(void)
     setenv("PATH", "/bin", 1);
 
     DO_TEST("systemd");
+    DO_TEST("hostdev");
 
     virCapabilitiesFree(caps);
 

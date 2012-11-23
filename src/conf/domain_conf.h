@@ -383,6 +383,29 @@ struct _virDomainHostdevSubsys {
     } u;
 };
 
+
+enum virDomainHostdevCapsType {
+    VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE,
+    VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC,
+
+    VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
+};
+
+typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
+typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
+struct _virDomainHostdevCaps {
+    int type; /* enum virDOmainHostdevCapsType */
+    union {
+        struct {
+            char *block;
+        } storage;
+        struct {
+            char *chardev;
+        } misc;
+    } u;
+};
+
+
 /* basic device for direct passthrough */
 struct _virDomainHostdevDef {
     virDomainDeviceDef parent; /* higher level Def containing this */
@@ -392,12 +415,7 @@ struct _virDomainHostdevDef {
     unsigned int missing : 1;
     union {
         virDomainHostdevSubsys subsys;
-        struct {
-            /* TBD: struct capabilities see:
-             * https://www.redhat.com/archives/libvir-list/2008-July/msg00429.html
-             */
-            int dummy;
-        } caps;
+        virDomainHostdevCaps caps;
     } source;
     virDomainHostdevOrigStates origstates;
     virDomainDeviceInfoPtr info; /* Guest address */
@@ -2246,6 +2264,7 @@ VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
+VIR_ENUM_DECL(virDomainHostdevCaps)
 VIR_ENUM_DECL(virDomainPciRombarMode)
 VIR_ENUM_DECL(virDomainHub)
 VIR_ENUM_DECL(virDomainRedirdevBus)
