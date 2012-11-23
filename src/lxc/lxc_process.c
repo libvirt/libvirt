@@ -360,7 +360,7 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
                                              unsigned int *nveths,
                                              char ***veths)
 {
-    int ret = 0;
+    int ret = -1;
     char *res_ifname = NULL;
     virLXCDriverPtr driver = conn->privateData;
     virNetDevBandwidthPtr bw;
@@ -539,10 +539,10 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         }
     }
 
-    ret= 0;
+    ret = 0;
 
 cleanup:
-    if (ret != 0) {
+    if (ret < 0) {
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr iface = def->nets[i];
             virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(iface);
@@ -1031,7 +1031,7 @@ int virLXCProcessStart(virConnectPtr conn,
         }
     }
 
-    if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
+    if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) < 0)
         goto cleanup;
 
     /* Save the configuration for the controller */
