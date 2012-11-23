@@ -229,10 +229,6 @@ int virLXCCgroupSetup(virDomainDefPtr def)
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0);
     if (rc != 0) {
-        /* Skip all if no driver cgroup is configured */
-        if (rc == -ENXIO || rc == -ENOENT)
-            return 0;
-
         virReportSystemError(-rc, "%s",
                              _("Unable to get cgroup for driver"));
         goto cleanup;
