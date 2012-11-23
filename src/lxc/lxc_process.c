@@ -1292,7 +1292,7 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
     virLXCDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
-    VIR_DEBUG("Reconnect %d %d %d\n", vm->def->id, vm->pid, vm->state.state);
+    VIR_DEBUG("Reconnect id=%d pid=%d state=%d", vm->def->id, vm->pid, vm->state.state);
 
     priv = vm->privateData;
 
