@@ -1860,10 +1860,9 @@ pciGetPciConfigAddressFromSysfsDeviceLink(const char *device_link,
     device_path = canonicalize_file_name(device_link);
     if (device_path == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to resolve device link '%s': '%s'"),
-                       device_link, virStrerror(errno, errbuf,
-                       sizeof(errbuf)));
+        virReportSystemError(errno,
+                             _("Failed to resolve device link '%s'"),
+                             device_link);
         return ret;
     }
 
@@ -1941,10 +1940,9 @@ pciGetVirtualFunctions(const char *sysfs_path,
     dir = opendir(sysfs_path);
     if (dir == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open dir '%s': '%s'"),
-                       sysfs_path, virStrerror(errno, errbuf,
-                       sizeof(errbuf)));
+        virReportSystemError(errno,
+                             _("Failed to open dir '%s'"),
+                             sysfs_path);
         return ret;
     }
 
