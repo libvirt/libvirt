@@ -2951,30 +2951,15 @@ out:
 }
 
 static int
-virDomainHostdevPartsParse(xmlNodePtr node,
-                           xmlXPathContextPtr ctxt,
-                           const char *mode,
-                           const char *type,
-                           virDomainHostdevDefPtr def,
-                           unsigned int flags)
+virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt,
+                                  const char *type,
+                                  virDomainHostdevDefPtr def,
+                                  unsigned int flags)
 {
     xmlNodePtr sourcenode;
     char *managed = NULL;
     int ret = -1;
-
-    /* @mode is passed in separately from the caller, since an
-     * 'intelligent hostdev' has no place for 'mode' in the XML (it is
-     * always 'subsys').
-     */
-    if (mode) {
-        if ((def->mode=virDomainHostdevModeTypeFromString(mode)) < 0) {
-             virReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unknown hostdev mode '%s'"), mode);
-            goto error;
-        }
-    } else {
-        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-    }
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
@@ -4815,8 +4800,9 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
             virReportOOMError();
             goto error;
         }
-        if (virDomainHostdevPartsParse(node, ctxt, NULL, addrtype,
-                                       hostdev, flags) < 0) {
+        hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
+                                              hostdev, flags) < 0) {
             goto error;
         }
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -5205,8 +5191,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
             virReportOOMError();
             goto error;
         }
-        if (virDomainHostdevPartsParse(node, ctxt, NULL, addrtype,
-                                       hostdev, flags) < 0) {
+        hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
+                                              hostdev, flags) < 0) {
             goto error;
         }
         break;
@@ -7375,9 +7362,27 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
     if (!(def = virDomainHostdevDefAlloc()))
         goto error;
 
-    /* parse managed/mode/type, and the <source> element */
-    if (virDomainHostdevPartsParse(node, ctxt, mode, type, def, flags) < 0)
+    if (mode) {
+        if ((def->mode = virDomainHostdevModeTypeFromString(mode)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown hostdev mode '%s'"), mode);
+            goto error;
+        }
+    } else {
+        def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+    }
+
+    switch (def->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        /* parse managed/mode/type, and the <source> element */
+        if (virDomainHostdevDefParseXMLSubsys(node, ctxt, type, def, flags) < 0)
+            goto error;
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected hostdev mode %d"), def->mode);
         goto error;
+    }
 
     if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (virDomainDeviceInfoParseXML(node, bootMap, def->info,
@@ -12394,10 +12399,10 @@ virDomainFSDefFormat(virBufferPtr buf,
 }
 
 static int
-virDomainHostdevSourceFormat(virBufferPtr buf,
-                             virDomainHostdevDefPtr def,
-                             unsigned int flags,
-                             bool includeTypeInAddr)
+virDomainHostdevDefFormatSubsys(virBufferPtr buf,
+                                virDomainHostdevDefPtr def,
+                                unsigned int flags,
+                                bool includeTypeInAddr)
 {
     virBufferAddLit(buf, "<source");
     if (def->startupPolicy) {
@@ -12515,8 +12520,8 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        if (virDomainHostdevSourceFormat(buf, &def->data.hostdev.def,
-                                         flags, true) < 0) {
+        if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
+                                            flags, true) < 0) {
             return -1;
         }
         break;
@@ -12624,8 +12629,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        if (virDomainHostdevSourceFormat(buf, &def->data.hostdev.def,
-                                         flags, true) < 0) {
+        if (virDomainHostdevDefFormatSubsys(buf, &def->data.hostdev.def,
+                                            flags, true) < 0) {
             return -1;
         }
         break;
@@ -13520,19 +13525,25 @@ virDomainHostdevDefFormat(virBufferPtr buf,
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     const char *type;
 
-    if (!mode || def->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+    if (!mode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hostdev mode %d"), def->mode);
         return -1;
     }
 
-    type = virDomainHostdevSubsysTypeToString(def->source.subsys.type);
-    if (!type ||
-        (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
-         def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)) {
+    switch (def->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        type = virDomainHostdevSubsysTypeToString(def->source.subsys.type);
+        if (!type) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected hostdev type %d"),
+                           def->source.subsys.type);
+            return -1;
+        }
+        break;
+    default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected hostdev type %d"),
-                       def->source.subsys.type);
+                       _("unexpected hostdev mode %d"), def->mode);
         return -1;
     }
 
@@ -13540,8 +13551,12 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                       mode, type, def->managed ? "yes" : "no");
 
     virBufferAdjustIndent(buf, 6);
-    if (virDomainHostdevSourceFormat(buf, def, flags, false) < 0)
-        return -1;
+    switch (def->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        if (virDomainHostdevDefFormatSubsys(buf, def, flags, false) < 0)
+            return -1;
+        break;
+    }
     virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, def->info,
