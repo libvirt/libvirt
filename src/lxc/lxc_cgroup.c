@@ -224,7 +224,8 @@ int virLXCCgroupSetup(virDomainDefPtr def)
 {
     virCgroupPtr driver = NULL;
     virCgroupPtr cgroup = NULL;
-    int rc = -1;
+    int ret = -1;
+    int rc;
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0);
     if (rc != 0) {
@@ -234,7 +235,7 @@ int virLXCCgroupSetup(virDomainDefPtr def)
 
         virReportSystemError(-rc, "%s",
                              _("Unable to get cgroup for driver"));
-        return rc;
+        goto cleanup;
     }
 
     rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
@@ -262,11 +263,14 @@ int virLXCCgroupSetup(virDomainDefPtr def)
         virReportSystemError(-rc,
                              _("Unable to add task %d to cgroup for domain %s"),
                              getpid(), def->name);
+        goto cleanup;
     }
+
+    ret = 0;
 
 cleanup:
     virCgroupFree(&cgroup);
     virCgroupFree(&driver);
 
-    return rc;
+    return ret;
 }
