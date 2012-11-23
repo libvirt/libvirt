@@ -1199,6 +1199,10 @@ cleanup:
         VIR_FREE(veths[i]);
     }
     if (rc != 0) {
+        if (vm->newDef) {
+            virDomainDefFree(vm->newDef);
+            vm->newDef = NULL;
+        }
         if (priv->monitor) {
             virObjectUnref(priv->monitor);
             priv->monitor = NULL;
