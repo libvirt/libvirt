@@ -62,6 +62,7 @@
 #include "uuid.h"
 #include "virfile.h"
 #include "command.h"
+#include "hostusb.h"
 #include "virnetdev.h"
 #include "virprocess.h"
 
@@ -1311,6 +1312,124 @@ static int lxcContainerSetupAllDisks(virDomainDefPtr vmDef,
 }
 
 
+static int lxcContainerSetupHostdevSubsysUSB(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
+                                             virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
+                                             const char *dstprefix ATTRIBUTE_UNUSED,
+                                             virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    char *src = NULL;
+    char *dstdir = NULL;
+    char *dstfile = NULL;
+    struct stat sb;
+    mode_t mode;
+
+    if (virAsprintf(&dstdir, USB_DEVFS "/%03d",
+                    def->source.subsys.u.usb.bus) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dstfile, "%s/%03d",
+                    dstdir,
+                    def->source.subsys.u.usb.device) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&src, "%s/%s", dstprefix, dstfile) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (stat(src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"), src);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("USB source %s was not a character device"),
+                       src);
+        goto cleanup;
+    }
+
+    mode = 0700 | S_IFCHR;
+
+    if (virFileMakePath(dstdir) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create %s"), dstdir);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              dstfile, major(sb.st_rdev), minor(sb.st_rdev));
+    if (mknod(dstfile, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             dstfile);
+        goto cleanup;
+    }
+
+    if (virSecurityManagerSetHostdevLabel(securityDriver, vmDef, def, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(src);
+    VIR_FREE(dstfile);
+    VIR_FREE(dstdir);
+    return ret;
+}
+
+
+static int lxcContainerSetupHostdevSubsys(virDomainDefPtr vmDef,
+                                          virDomainHostdevDefPtr def,
+                                          const char *dstprefix,
+                                          virSecurityManagerPtr securityDriver)
+{
+    switch (def->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        return lxcContainerSetupHostdevSubsysUSB(vmDef, def, dstprefix, securityDriver);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device mode %s"),
+                       virDomainHostdevSubsysTypeToString(def->source.subsys.type));
+        return -1;
+    }
+}
+
+
+static int lxcContainerSetupAllHostdevs(virDomainDefPtr vmDef,
+                                        const char *dstprefix,
+                                        virSecurityManagerPtr securityDriver)
+{
+    size_t i;
+    VIR_DEBUG("Setting up hostdevs %s", dstprefix);
+
+    for (i = 0 ; i < vmDef->nhostdevs ; i++) {
+        virDomainHostdevDefPtr def = vmDef->hostdevs[i];
+        switch (def->mode) {
+        case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+            if (lxcContainerSetupHostdevSubsys(vmDef, def, dstprefix, securityDriver) < 0)
+                return -1;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported host device mode %s"),
+                           virDomainHostdevModeTypeToString(def->mode));
+            return -1;
+        }
+    }
+
+    VIR_DEBUG("Setup all hostdevs");
+    return 0;
+}
+
+
 static int lxcContainerGetSubtree(const char *prefix,
                                   char ***mountsret,
                                   size_t *nmountsret)
@@ -1710,7 +1829,11 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerSetupAllDisks(vmDef, "/.oldroot", securityDriver) < 0)
         goto cleanup;
 
-    /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
+    /* Sets up any extra host devices from guest config */
+    if (lxcContainerSetupAllHostdevs(vmDef, "/.oldroot", securityDriver) < 0)
+        goto cleanup;
+
+   /* Gets rid of all remaining mounts from host OS, including /.oldroot itself */
     if (lxcContainerUnmountSubtree("/.oldroot", true) < 0)
         goto cleanup;
 

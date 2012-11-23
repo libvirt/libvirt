@@ -35,6 +35,7 @@
 # include "cgroup.h"
 # include "security/security_manager.h"
 # include "configmake.h"
+# include "hostusb.h"
 
 # define LXC_DRIVER_NAME "LXC"
 
@@ -64,6 +65,8 @@ struct _virLXCDriver {
     char *logDir;
     int log_libvirtd;
     int have_netns;
+
+    usbDeviceList *activeUsbHostdevs;
 
     virDomainEventStatePtr domainEventState;
 

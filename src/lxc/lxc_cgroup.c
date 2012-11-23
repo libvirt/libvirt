@@ -291,6 +291,49 @@ struct _virLXCCgroupDevicePolicy {
 };
 
 
+int
+virLXCSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+                               const char *path,
+                               void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    VIR_DEBUG("Process path '%s' for USB device", path);
+    rc = virCgroupAllowDevicePath(cgroup, path,
+                                  VIR_CGROUP_DEVICE_RW);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to allow device %s"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virLXCTeardownHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+                                  const char *path,
+                                  void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    VIR_DEBUG("Process path '%s' for USB device", path);
+    rc = virCgroupDenyDevicePath(cgroup, path,
+                                 VIR_CGROUP_DEVICE_RW);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to deny device %s"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
@@ -365,6 +408,27 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                  def->fss[i]->src, def->name);
             goto cleanup;
         }
+    }
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        usbDevice *usb;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+        if (hostdev->missing)
+            continue;
+
+        if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+                                hostdev->source.subsys.u.usb.device,
+                                NULL)) == NULL)
+            goto cleanup;
+
+        if (usbDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
+                                 cgroup) < 0)
+            goto cleanup;
     }
 
     rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,

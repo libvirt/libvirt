@@ -44,6 +44,7 @@
 #include "logging.h"
 #include "command.h"
 #include "hooks.h"
+#include "lxc_hostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -255,6 +256,8 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     driver->nactive--;
     if (!driver->nactive && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
+
+    virLXCDomainReAttachHostDevices(driver, vm->def);
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr iface = vm->def->nets[i];
@@ -978,6 +981,11 @@ int virLXCProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    /* Must be run before security labelling */
+    VIR_DEBUG("Preparing host devices");
+    if (virLXCPrepareHostDevices(driver, vm->def) < 0)
+        goto cleanup;
+
     /* Here we open all the PTYs we need on the host OS side.
      * The LXC controller will open the guest OS side PTYs
      * and forward I/O between them.
@@ -1309,6 +1317,9 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
         driver->nactive++;
 
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
+            goto error;
+
+        if (virLXCUpdateActiveUsbHostdevs(driver, vm->def) < 0)
             goto error;
 
         if (virSecurityManagerReserveLabel(driver->securityManager,

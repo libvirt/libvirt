@@ -57,6 +57,7 @@ src/locking/lock_manager.c
 src/locking/sanlock_helper.c
 src/lxc/lxc_cgroup.c
 src/lxc/lxc_fuse.c
+src/lxc/lxc_hostdev.c
 src/lxc/lxc_container.c
 src/lxc/lxc_conf.c
 src/lxc/lxc_controller.c

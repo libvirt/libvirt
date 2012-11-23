@@ -456,6 +456,7 @@ LXC_DRIVER_SOURCES =						\
 		lxc/lxc_container.c lxc/lxc_container.h		\
 		lxc/lxc_cgroup.c lxc/lxc_cgroup.h		\
 		lxc/lxc_domain.c lxc/lxc_domain.h		\
+		lxc/lxc_hostdev.c lxc/lxc_hostdev.h		\
 		lxc/lxc_monitor.c lxc/lxc_monitor.h		\
 		lxc/lxc_process.c lxc/lxc_process.h		\
 		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
