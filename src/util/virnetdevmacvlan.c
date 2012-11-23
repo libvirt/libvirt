@@ -176,8 +176,8 @@ virNetDevMacVLanCreate(const char *ifname,
 
         default:
             virReportSystemError(-err->error,
-                                 _("error creating %s type of interface"),
-                                 type);
+                                 _("error creating %s type of interface attach to %s"),
+                                 type, srcdev);
             goto cleanup;
         }
         break;
