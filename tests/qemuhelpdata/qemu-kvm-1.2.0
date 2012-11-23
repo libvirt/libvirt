@@ -126,7 +126,7 @@ Network options:
                 connect the user mode network stack to VLAN 'n', configure its
                 DHCP server and enabled optional services
 -net tap[,vlan=n][,name=str][,fd=h][,ifname=name][,script=file][,downscript=dfile][,helper=helper][,sndbuf=nbytes][,vnet_hdr=on|off][,vhost=on|off][,vhostfd=h][,vhostforce=on|off]
-                connect the host TAP network interface to VLAN 'n'
+                connect the host TAP network interface to VLAN 'n' 
                 use network scripts 'file' (default=/etc/qemu-ifup)
                 to configure it and 'dfile' (default=/etc/qemu-ifdown)
                 to deconfigure it
