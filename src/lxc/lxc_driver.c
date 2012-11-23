@@ -2922,52 +2922,112 @@ cleanup:
 
 
 static int
-lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
+    virDomainNetDefPtr net;
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        if (virDomainNetInsert(vmdef, net) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        dev->data.net = NULL;
+        ret = 0;
+        break;
+
     default:
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("persistent attach of device is not supported"));
          break;
     }
 
+cleanup:
     return ret;
 }
 
 
 static int
-lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef ATTRIBUTE_UNUSED,
+lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
+    virDomainNetDefPtr net;
+    int idx;
+    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        idx = virDomainNetFindIdx(vmdef, net);
+        if (idx == -2) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("multiple devices matching mac address %s found"),
+                           virMacAddrFormat(&net->mac, mac));
+            goto cleanup;
+        } else if (idx < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("no matching network device was found"));
+            goto cleanup;
+        }
+
+        virDomainNetDefFree(vmdef->nets[idx]);
+
+        vmdef->nets[idx] = net;
+        dev->data.net = NULL;
+        ret = 0;
+
+        break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("persistent update of device is not supported"));
         break;
     }
 
+cleanup:
     return ret;
 }
 
 
 static int
-lxcDomainDetachDeviceConfig(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
+lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
+    virDomainNetDefPtr net;
+    int idx;
+    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        net = dev->data.net;
+        idx = virDomainNetFindIdx(vmdef, net);
+        if (idx == -2) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("multiple devices matching mac address %s found"),
+                           virMacAddrFormat(&net->mac, mac));
+            goto cleanup;
+        } else if (idx < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("no matching network device was found"));
+            goto cleanup;
+        }
+        /* this is guaranteed to succeed */
+        virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
+        ret = 0;
+        break;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("persistent detach of device is not supported"));
         break;
     }
 
+cleanup:
     return ret;
 }
 
