@@ -708,6 +708,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         return -1;
     }
 
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
     if (vol->target.path != NULL) {
         /* A target path passed to CreateVol has no meaning */
         VIR_FREE(vol->target.path);
