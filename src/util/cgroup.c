@@ -1189,10 +1189,10 @@ int virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
     return ret;
 }
 #else
-        int
- virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                  const char *path ATTRIBUTE_UNUSED,
-                                  unsigned int weight ATTRIBUTE_UNUSED)
+int
+virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
+                              const char *path ATTRIBUTE_UNUSED,
+                              unsigned int weight ATTRIBUTE_UNUSED)
 {
     return -ENOSYS;
 }
