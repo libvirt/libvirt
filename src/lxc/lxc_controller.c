@@ -1649,7 +1649,8 @@ int main(int argc, char *argv[])
 
 cleanup:
     virPidFileDelete(LXC_STATE_DIR, name);
-    virLXCControllerDeleteInterfaces(ctrl);
+    if (ctrl)
+        virLXCControllerDeleteInterfaces(ctrl);
     for (i = 0 ; i < nttyFDs ; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     VIR_FREE(ttyFDs);
