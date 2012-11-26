@@ -3222,9 +3222,141 @@ cleanup:
 }
 
 
+/* XXX conn required for network -> bridge resolution */
 static int
-lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
-                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+lxcDomainAttachDeviceNetLive(virConnectPtr conn,
+                             virDomainObjPtr vm,
+                             virDomainNetDefPtr net)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+    int actualType;
+    char *veth = NULL;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach disk until init PID is known"));
+        goto cleanup;
+    }
+
+    /* preallocate new slot for device */
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    /* If appropriate, grab a physical device from the configured
+     * network's pool of devices, or resolve bridge device name
+     * to the one defined in the network definition.
+     */
+    if (networkAllocateActualDevice(net) < 0)
+        return -1;
+
+    actualType = virDomainNetGetActualType(net);
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE: {
+        const char *brname = virDomainNetGetActualBridgeName(net);
+        if (!brname) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No bridge name specified"));
+            goto cleanup;
+        }
+        if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
+                                                        vm->def,
+                                                        net,
+                                                        brname)))
+            goto cleanup;
+    }   break;
+    case VIR_DOMAIN_NET_TYPE_NETWORK: {
+        virNetworkPtr network;
+        char *brname = NULL;
+        bool fail = false;
+        int active;
+        virErrorPtr errobj;
+
+        if (!(network = virNetworkLookupByName(conn,
+                                               net->data.network.name)))
+            goto cleanup;
+
+        active = virNetworkIsActive(network);
+        if (active != 1) {
+            fail = true;
+            if (active == 0)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Network '%s' is not active."),
+                               net->data.network.name);
+        }
+
+        if (!fail) {
+            brname = virNetworkGetBridgeName(network);
+            if (brname == NULL)
+                fail = true;
+        }
+
+        /* Make sure any above failure is preserved */
+        errobj = virSaveLastError();
+        virNetworkFree(network);
+        virSetError(errobj);
+        virFreeError(errobj);
+
+        if (fail)
+            goto cleanup;
+
+        if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
+                                                        vm->def,
+                                                        net,
+                                                        brname))) {
+            VIR_FREE(brname);
+            goto cleanup;
+        }
+        VIR_FREE(brname);
+    }   break;
+    case VIR_DOMAIN_NET_TYPE_DIRECT: {
+        if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
+                                                       vm->def,
+                                                       net)))
+            goto cleanup;
+    }   break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Network device type is not supported"));
+        goto cleanup;
+    }
+
+    if (virNetDevSetNamespace(veth, priv->initpid) < 0) {
+        virDomainAuditNet(vm, NULL, net, "attach", false);
+        goto cleanup;
+    }
+
+    virDomainAuditNet(vm, NULL, net, "attach", true);
+
+    ret = 0;
+
+cleanup:
+    if (!ret) {
+        vm->def->nets[vm->def->nnets++] = net;
+    } else if (veth) {
+        switch (actualType) {
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+            ignore_value(virNetDevVethDelete(veth));
+            break;
+
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            ignore_value(virNetDevMacVLanDelete(veth));
+            break;
+        }
+    }
+
+    return ret;
+}
+
+
+static int
+lxcDomainAttachDeviceLive(virConnectPtr conn,
+                          virLXCDriverPtr driver,
+                          virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
     int ret = -1;
@@ -3234,6 +3366,13 @@ lxcDomainAttachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
         ret = lxcDomainAttachDeviceDiskLive(driver, vm, dev);
         if (!ret)
             dev->data.disk = NULL;
+        break;
+
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = lxcDomainAttachDeviceNetLive(conn, vm,
+                                           dev->data.net);
+        if (!ret)
+            dev->data.net = NULL;
         break;
 
     default:
@@ -3319,8 +3458,74 @@ cleanup:
 
 
 static int
-lxcDomainDetachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
-                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
+                             virDomainDeviceDefPtr dev)
+{
+    int detachidx, ret = -1;
+    virDomainNetDefPtr detach = NULL;
+    char mac[VIR_MAC_STRING_BUFLEN];
+    virNetDevVPortProfilePtr vport = NULL;
+
+    detachidx = virDomainNetFindIdx(vm->def, dev->data.net);
+    if (detachidx == -2) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("multiple devices matching mac address %s found"),
+                       virMacAddrFormat(&dev->data.net->mac, mac));
+        goto cleanup;
+    } else if (detachidx < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("network device %s not found"),
+                       virMacAddrFormat(&dev->data.net->mac, mac));
+        goto cleanup;
+    }
+    detach = vm->def->nets[detachidx];
+
+    switch (virDomainNetGetActualType(detach)) {
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (virNetDevVethDelete(detach->ifname) < 0) {
+            virDomainAuditNet(vm, detach, NULL, "detach", false);
+            goto cleanup;
+        }
+        break;
+
+        /* It'd be nice to support this, but with macvlan
+         * once assigned to a container nothing exists on
+         * the host side. Further the container can change
+         * the mac address of NIC name, so we can't easily
+         * find out which guest NIC it maps to
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        */
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only bridged veth devices can be detached"));
+        goto cleanup;
+    }
+
+    virDomainAuditNet(vm, detach, NULL, "detach", true);
+
+    virDomainConfNWFilterTeardown(detach);
+
+    vport = virDomainNetGetActualVirtPortProfile(detach);
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+        ignore_value(virNetDevOpenvswitchRemovePort(
+                        virDomainNetGetActualBridgeName(detach),
+                        detach->ifname));
+    ret = 0;
+cleanup:
+    if (!ret) {
+        networkReleaseActualDevice(detach);
+        virDomainNetRemove(vm->def, detachidx);
+        virDomainNetDefFree(detach);
+    }
+    return ret;
+}
+
+
+static int
+lxcDomainDetachDeviceLive(virLXCDriverPtr driver,
+                          virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
     int ret = -1;
@@ -3328,6 +3533,10 @@ lxcDomainDetachDeviceLive(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         ret = lxcDomainDetachDeviceDiskLive(driver, vm, dev);
+        break;
+
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = lxcDomainDetachDeviceNetLive(vm, dev);
         break;
 
     default:
@@ -3449,7 +3658,7 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
 
         switch (action) {
         case LXC_DEVICE_ATTACH:
-            ret = lxcDomainAttachDeviceLive(driver, vm, dev_copy);
+            ret = lxcDomainAttachDeviceLive(dom->conn, driver, vm, dev_copy);
             break;
         case LXC_DEVICE_DETACH:
             ret = lxcDomainDetachDeviceLive(driver, vm, dev_copy);
