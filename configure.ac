@@ -718,16 +718,14 @@ if test "$with_libxl" != "no" ; then
     fi
     CFLAGS="$CFLAGS $LIBXL_CFLAGS"
     LIBS="$LIBS $LIBXL_LIBS"
-    AC_CHECK_LIB([xenlight], [libxl_domain_create_new], [
+    AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
         with_libxl=yes
-        LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl"
+        LIBXL_LIBS="$LIBXL_LIBS -lxenlight"
     ],[
         if test "$with_libxl" = "yes"; then
             fail=1
         fi
         with_libxl=no
-    ],[
-        -lxenstore -lxenctrl -lxenguest -luuid -lutil -lblktapctl
     ])
 fi
 
@@ -735,7 +733,7 @@ LIBS="$old_LIBS"
 CFLAGS="$old_CFLAGS"
 
 if test $fail = 1; then
-    AC_MSG_ERROR([You must install the libxl Library to compile libxenlight driver with -lxl])
+    AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.2 to compile libxenlight driver with -lxl])
 fi
 
 if test "$with_libxl" = "yes"; then

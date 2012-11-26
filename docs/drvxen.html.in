@@ -53,6 +53,14 @@
         the <code>/etc/xen</code> directory. It is important not to place
         any other non-config files in this directory.
       </li>
+      <li>
+        <strong>libxl</strong>: Starting with Xen 4.2, the legacy XenD/xm
+        toolstack is deprecated in favor of libxl, also commonly called
+        libxenlight.  libvirt supports this new Xen toolstack via the
+        libxl driver.  If XenD is enabled, the legacy xen driver consisting
+        of the above mentioned channels will be used.  If XenD is disabled,
+        the libxl driver will be used.
+      </li>
     </ul>
 
     <h2><a name="uri">Connections to Xen driver</a></h2>

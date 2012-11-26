@@ -189,8 +189,8 @@
 %endif
 %endif
 
-# Fedora doesn't have new enough Xen for libxl until F16
-%if 0%{?fedora} && 0%{?fedora} < 16
+# Fedora doesn't have new enough Xen for libxl until F18
+%if 0%{?fedora} && 0%{?fedora} < 18
 %define with_libxl 0
 %endif
 

@@ -36,11 +36,13 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "virfile.h"
+#include "virstring.h"
 #include "memory.h"
 #include "uuid.h"
 #include "capabilities.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
+#include "libxl_utils.h"
 #include "storage_file.h"
 
 
@@ -360,16 +362,34 @@ libxlMakeCapabilitiesInternal(const char *hostmachine,
 }
 
 static int
-libxlMakeDomCreateInfo(virDomainDefPtr def, libxl_domain_create_info *c_info)
+libxlMakeDomCreateInfo(libxlDriverPrivatePtr driver,
+                       virDomainDefPtr def,
+                       libxl_domain_create_info *c_info)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    libxl_init_create_info(c_info);
+    libxl_domain_create_info_init(c_info);
 
-    c_info->hvm = STREQ(def->os.type, "hvm");
+    if (STREQ(def->os.type, "hvm"))
+        c_info->type = LIBXL_DOMAIN_TYPE_HVM;
+    else
+        c_info->type = LIBXL_DOMAIN_TYPE_PV;
+
     if ((c_info->name = strdup(def->name)) == NULL) {
         virReportOOMError();
         goto error;
+    }
+
+    if (def->nseclabels &&
+        def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_STATIC) {
+        if (libxl_flask_context_to_sid(driver->ctx,
+                                       def->seclabels[0]->label,
+                                       strlen(def->seclabels[0]->label),
+                                       &c_info->ssidref)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("libxenlight failed to resolve security label '%s'"),
+                           def->seclabels[0]->label);
+        }
     }
 
     virUUIDFormat(def->uuid, uuidstr);
@@ -382,7 +402,7 @@ libxlMakeDomCreateInfo(virDomainDefPtr def, libxl_domain_create_info *c_info)
     return 0;
 
 error:
-    libxl_domain_create_info_destroy(c_info);
+    libxl_domain_create_info_dispose(c_info);
     return -1;
 }
 
@@ -393,26 +413,14 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
     int hvm = STREQ(def->os.type, "hvm");
     int i;
 
-    /* Currently, libxenlight only supports 32 vcpus per domain.
-     * cur_vcpus member of struct libxl_domain_build_info is defined
-     * as an int, but its semantic is a bitmap of online vcpus, so
-     * only 32 can be represented.
-     */
-    if (def->maxvcpus > 32 || def->vcpus > 32) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("This version of libxenlight only supports 32 "
-                         "vcpus per domain"));
-        return -1;
-    }
+    libxl_domain_build_info_init(b_info);
 
-    libxl_init_build_info(b_info, &d_config->c_info);
-
-    b_info->hvm = hvm;
-    b_info->max_vcpus = def->maxvcpus;
-    if (def->vcpus == 32)
-        b_info->cur_vcpus = (uint32_t) -1;
+    if (hvm)
+        libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_HVM);
     else
-        b_info->cur_vcpus = (1 << def->vcpus) - 1;
+        libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PV);
+    b_info->max_vcpus = def->maxvcpus;
+    libxl_bitmap_set((&b_info->avail_vcpus), def->vcpus);
     if (def->clock.ntimers > 0 &&
         def->clock.timers[0]->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         switch (def->clock.timers[0]->mode) {
@@ -426,16 +434,20 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
                 b_info->tsc_mode = 1;
         }
     }
+    b_info->sched_params.weight = 1000;
     b_info->max_memkb = def->mem.max_balloon;
     b_info->target_memkb = def->mem.cur_balloon;
     if (hvm) {
-        b_info->u.hvm.pae = def->features & (1 << VIR_DOMAIN_FEATURE_PAE);
-        b_info->u.hvm.apic = def->features & (1 << VIR_DOMAIN_FEATURE_APIC);
-        b_info->u.hvm.acpi = def->features & (1 << VIR_DOMAIN_FEATURE_ACPI);
+        libxl_defbool_set(&b_info->u.hvm.pae,
+                          def->features & (1 << VIR_DOMAIN_FEATURE_PAE));
+        libxl_defbool_set(&b_info->u.hvm.apic,
+                          def->features & (1 << VIR_DOMAIN_FEATURE_APIC));
+        libxl_defbool_set(&b_info->u.hvm.acpi,
+                          def->features & (1 << VIR_DOMAIN_FEATURE_ACPI));
         for (i = 0; i < def->clock.ntimers; i++) {
             if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
                 def->clock.timers[i]->present == 1) {
-                b_info->u.hvm.hpet = 1;
+                libxl_defbool_set(&b_info->u.hvm.hpet, 1);
             }
         }
 
@@ -446,7 +458,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
          * 256 pages (1MB) per vcpu, plus 1 page per MiB of RAM for the P2M map,
          * plus 1 page per MiB of RAM to shadow the resident processes.
          */
-        b_info->shadow_memkb = 4 * (256 * b_info->cur_vcpus +
+        b_info->shadow_memkb = 4 * (256 * libxl_bitmap_count_set(&b_info->avail_vcpus) +
                                     2 * (b_info->max_memkb / 1024));
     } else {
         if (def->os.bootloader) {
@@ -456,10 +468,9 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
             }
         }
         if (def->os.bootloaderArgs) {
-            if ((b_info->u.pv.bootloader_args = strdup(def->os.bootloaderArgs)) == NULL) {
-                virReportOOMError();
+            if (!(b_info->u.pv.bootloader_args =
+                  virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
                 goto error;
-            }
         }
         if (def->os.cmdline) {
             if ((b_info->u.pv.cmdline = strdup(def->os.cmdline)) == NULL) {
@@ -469,14 +480,14 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
         }
         if (def->os.kernel) {
             /* libxl_init_build_info() sets kernel.path = strdup("hvmloader") */
-            VIR_FREE(b_info->kernel.path);
-            if ((b_info->kernel.path = strdup(def->os.kernel)) == NULL) {
+            VIR_FREE(b_info->u.pv.kernel);
+            if ((b_info->u.pv.kernel = strdup(def->os.kernel)) == NULL) {
                 virReportOOMError();
                 goto error;
             }
         }
         if (def->os.initrd) {
-            if ((b_info->u.pv.ramdisk.path = strdup(def->os.initrd)) == NULL) {
+            if ((b_info->u.pv.ramdisk = strdup(def->os.initrd)) == NULL) {
                 virReportOOMError();
                 goto error;
             }
@@ -486,13 +497,12 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
     return 0;
 
 error:
-    libxl_domain_build_info_destroy(b_info);
+    libxl_domain_build_info_dispose(b_info);
     return -1;
 }
 
 int
-libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
-              libxl_device_disk *x_disk)
+libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
     if (l_disk->src && (x_disk->pdev_path = strdup(l_disk->src)) == NULL) {
         virReportOOMError();
@@ -509,22 +519,22 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
             STREQ(l_disk->driverName, "tap2")) {
             switch (l_disk->format) {
             case VIR_STORAGE_FILE_QCOW:
-                x_disk->format = DISK_FORMAT_QCOW;
-                x_disk->backend = DISK_BACKEND_QDISK;
+                x_disk->format = LIBXL_DISK_FORMAT_QCOW;
+                x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
                 break;
             case VIR_STORAGE_FILE_QCOW2:
-                x_disk->format = DISK_FORMAT_QCOW2;
-                x_disk->backend = DISK_BACKEND_QDISK;
+                x_disk->format = LIBXL_DISK_FORMAT_QCOW2;
+                x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
                 break;
             case VIR_STORAGE_FILE_VHD:
-                x_disk->format = DISK_FORMAT_VHD;
-                x_disk->backend = DISK_BACKEND_TAP;
+                x_disk->format = LIBXL_DISK_FORMAT_VHD;
+                x_disk->backend = LIBXL_DISK_BACKEND_TAP;
                 break;
             case VIR_STORAGE_FILE_NONE:
                 /* No subtype specified, default to raw/tap */
             case VIR_STORAGE_FILE_RAW:
-                x_disk->format = DISK_FORMAT_RAW;
-                x_disk->backend = DISK_BACKEND_TAP;
+                x_disk->format = LIBXL_DISK_FORMAT_RAW;
+                x_disk->backend = LIBXL_DISK_BACKEND_TAP;
                 break;
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -533,11 +543,11 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
                 return -1;
             }
         } else if (STREQ(l_disk->driverName, "file")) {
-            x_disk->format = DISK_FORMAT_RAW;
-            x_disk->backend = DISK_BACKEND_TAP;
+            x_disk->format = LIBXL_DISK_FORMAT_RAW;
+            x_disk->backend = LIBXL_DISK_BACKEND_TAP;
         } else if (STREQ(l_disk->driverName, "phy")) {
-            x_disk->format = DISK_FORMAT_RAW;
-            x_disk->backend = DISK_BACKEND_PHY;
+            x_disk->format = LIBXL_DISK_FORMAT_RAW;
+            x_disk->backend = LIBXL_DISK_BACKEND_PHY;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight does not support disk driver %s"),
@@ -546,12 +556,12 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
         }
     } else {
         /* No driverName - default to raw/tap?? */
-        x_disk->format = DISK_FORMAT_RAW;
-        x_disk->backend = DISK_BACKEND_TAP;
+        x_disk->format = LIBXL_DISK_FORMAT_RAW;
+        x_disk->backend = LIBXL_DISK_BACKEND_TAP;
     }
 
-    /* How to set unpluggable? */
-    x_disk->unpluggable = 1;
+    /* XXX is this right? */
+    x_disk->removable = 1;
     x_disk->readwrite = !l_disk->readonly;
     x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
     if (l_disk->transient) {
@@ -559,8 +569,6 @@ libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_disk,
                        _("libxenlight does not support transient disks"));
         return -1;
     }
-
-    x_disk->domid = def->id;
 
     return 0;
 }
@@ -579,7 +587,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     }
 
     for (i = 0; i < ndisks; i++) {
-        if (libxlMakeDisk(def, l_disks[i], &x_disks[i]) < 0)
+        if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
             goto error;
     }
 
@@ -590,19 +598,19 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
 
 error:
     for (i = 0; i < ndisks; i++)
-        libxl_device_disk_destroy(&x_disks[i]);
+        libxl_device_disk_dispose(&x_disks[i]);
     VIR_FREE(x_disks);
     return -1;
 }
 
 int
-libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
-             libxl_device_nic *x_nic)
+libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic)
 {
-    // TODO: Where is mtu stored?
-    //x_nics[i].mtu = 1492;
+    /* TODO: Where is mtu stored?
+     *
+     * x_nics[i].mtu = 1492;
+     */
 
-    x_nic->domid = def->id;
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
     if (l_nic->model && !STREQ(l_nic->model, "netfront")) {
@@ -610,9 +618,9 @@ libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
             virReportOOMError();
             return -1;
         }
-        x_nic->nictype = NICTYPE_IOEMU;
+        x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
     } else {
-        x_nic->nictype = NICTYPE_VIF;
+        x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
     if (l_nic->ifname && (x_nic->ifname = strdup(l_nic->ifname)) == NULL) {
@@ -659,48 +667,49 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
     for (i = 0; i < nnics; i++) {
         x_nics[i].devid = i;
 
-        if (libxlMakeNic(def, l_nics[i], &x_nics[i]))
+        if (libxlMakeNic(l_nics[i], &x_nics[i]))
             goto error;
     }
 
-    d_config->vifs = x_nics;
-    d_config->num_vifs = nnics;
+    d_config->nics = x_nics;
+    d_config->num_nics = nnics;
 
     return 0;
 
 error:
     for (i = 0; i < nnics; i++)
-        libxl_device_nic_destroy(&x_nics[i]);
+        libxl_device_nic_dispose(&x_nics[i]);
     VIR_FREE(x_nics);
     return -1;
 }
 
 int
-libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
-             virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb)
+libxlMakeVfb(libxlDriverPrivatePtr driver,
+             virDomainGraphicsDefPtr l_vfb,
+             libxl_device_vfb *x_vfb)
 {
     int port;
     const char *listenAddr;
 
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-            x_vfb->sdl = 1;
+            libxl_defbool_set(&x_vfb->sdl.enable, 1);
             if (l_vfb->data.sdl.display &&
-                (x_vfb->display = strdup(l_vfb->data.sdl.display)) == NULL) {
+                (x_vfb->sdl.display = strdup(l_vfb->data.sdl.display)) == NULL) {
                 virReportOOMError();
                 return -1;
             }
             if (l_vfb->data.sdl.xauth &&
-                (x_vfb->xauthority =
+                (x_vfb->sdl.xauthority =
                     strdup(l_vfb->data.sdl.xauth)) == NULL) {
                 virReportOOMError();
                 return -1;
             }
             break;
         case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            x_vfb->vnc = 1;
+            libxl_defbool_set(&x_vfb->vnc.enable, 1);
             /* driver handles selection of free port */
-            x_vfb->vncunused = 0;
+            libxl_defbool_set(&x_vfb->vnc.findunused, 0);
             if (l_vfb->data.vnc.autoport) {
                 port = libxlNextFreeVncPort(driver, LIBXL_VNC_PORT_MIN);
                 if (port < 0) {
@@ -710,13 +719,13 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
                 }
                 l_vfb->data.vnc.port = port;
             }
-            x_vfb->vncdisplay = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;
+            x_vfb->vnc.display = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;
 
             listenAddr = virDomainGraphicsListenGetAddress(l_vfb, 0);
             if (listenAddr) {
                 /* libxl_device_vfb_init() does strdup("127.0.0.1") */
-                VIR_FREE(x_vfb->vnclisten);
-                if ((x_vfb->vnclisten = strdup(listenAddr)) == NULL) {
+                VIR_FREE(x_vfb->vnc.listen);
+                if ((x_vfb->vnc.listen = strdup(listenAddr)) == NULL) {
                     virReportOOMError();
                     return -1;
                 }
@@ -729,13 +738,14 @@ libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
             }
             break;
     }
-    x_vfb->domid = def->id;
+
     return 0;
 }
 
 static int
 libxlMakeVfbList(libxlDriverPrivatePtr driver,
-                 virDomainDefPtr def, libxl_domain_config *d_config)
+                 virDomainDefPtr def,
+                 libxl_domain_config *d_config)
 {
     virDomainGraphicsDefPtr *l_vfbs = def->graphics;
     int nvfbs = def->ngraphics;
@@ -757,10 +767,10 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
     }
 
     for (i = 0; i < nvfbs; i++) {
-        libxl_device_vfb_init(&x_vfbs[i], i);
-        libxl_device_vkb_init(&x_vkbs[i], i);
+        libxl_device_vfb_init(&x_vfbs[i]);
+        libxl_device_vkb_init(&x_vkbs[i]);
 
-        if (libxlMakeVfb(driver, def, l_vfbs[i], &x_vfbs[i]) < 0)
+        if (libxlMakeVfb(driver, l_vfbs[i], &x_vfbs[i]) < 0)
             goto error;
     }
 
@@ -772,145 +782,11 @@ libxlMakeVfbList(libxlDriverPrivatePtr driver,
 
 error:
     for (i = 0; i < nvfbs; i++) {
-        libxl_device_vfb_destroy(&x_vfbs[i]);
-        libxl_device_vkb_destroy(&x_vkbs[i]);
+        libxl_device_vfb_dispose(&x_vfbs[i]);
+        libxl_device_vkb_dispose(&x_vkbs[i]);
     }
     VIR_FREE(x_vfbs);
     VIR_FREE(x_vkbs);
-    return -1;
-}
-
-static int
-libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
-{
-    const char *type = virDomainChrTypeToString(def->source.type);
-
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unexpected chr device type"));
-        return -1;
-    }
-
-    switch (def->source.type) {
-        case VIR_DOMAIN_CHR_TYPE_NULL:
-        case VIR_DOMAIN_CHR_TYPE_STDIO:
-        case VIR_DOMAIN_CHR_TYPE_VC:
-        case VIR_DOMAIN_CHR_TYPE_PTY:
-            if (virAsprintf(buf, "%s", type) < 0) {
-                virReportOOMError();
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_CHR_TYPE_FILE:
-        case VIR_DOMAIN_CHR_TYPE_PIPE:
-            if (virAsprintf(buf, "%s:%s", type,
-                            def->source.data.file.path) < 0) {
-                virReportOOMError();
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_CHR_TYPE_DEV:
-            if (virAsprintf(buf, "%s", def->source.data.file.path) < 0) {
-                virReportOOMError();
-                return -1;
-            }
-            break;
-    }
-
-    return 0;
-}
-
-static int
-libxlMakeDeviceModelInfo(virDomainDefPtr def, libxl_domain_config *d_config)
-{
-    libxl_device_model_info *dm_info = &d_config->dm_info;
-    int i;
-    char b_order[VIR_DOMAIN_BOOT_LAST+1];
-
-    libxl_init_dm_info(dm_info, &d_config->c_info, &d_config->b_info);
-
-    if (d_config->b_info.hvm) {
-        /* HVM-specific device model info */
-        dm_info->type = XENFV;
-        if (def->os.nBootDevs > 0) {
-            VIR_FREE(dm_info->boot);
-            for (i = 0; i < def->os.nBootDevs; i++) {
-                switch (def->os.bootDevs[i]) {
-                    case VIR_DOMAIN_BOOT_FLOPPY:
-                        b_order[i] = 'a';
-                        break;
-                    default:
-                    case VIR_DOMAIN_BOOT_DISK:
-                        b_order[i] = 'c';
-                        break;
-                    case VIR_DOMAIN_BOOT_CDROM:
-                        b_order[i] = 'd';
-                        break;
-                    case VIR_DOMAIN_BOOT_NET:
-                        b_order[i] = 'n';
-                        break;
-                }
-            }
-            b_order[def->os.nBootDevs] = '\0';
-            if ((dm_info->boot = strdup(b_order)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        }
-        if (def->serials &&
-            (libxlMakeChrdevStr(def->serials[0], &dm_info->serial) < 0))
-            goto error;
-    } else {
-        /* PV-specific device model info */
-        dm_info->type = XENPV;
-    }
-
-    /* Build qemu graphics options from previously parsed vfb */
-    if (d_config->num_vfbs > 0) {
-        if (d_config->vfbs[0].vnc) {
-            dm_info->vnc = 1;
-            /* driver handles selection of free port */
-            dm_info->vncunused = 0;
-            if (d_config->vfbs[0].vnclisten) {
-                VIR_FREE(dm_info->vnclisten);
-                if ((dm_info->vnclisten =
-                     strdup(d_config->vfbs[0].vnclisten)) == NULL) {
-                    virReportOOMError();
-                    goto error;
-                }
-            }
-            if (d_config->vfbs[0].keymap &&
-                (dm_info->keymap = strdup(d_config->vfbs[0].keymap)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-            dm_info->vncdisplay = d_config->vfbs[0].vncdisplay;
-            if (d_config->vfbs[0].vncpasswd &&
-                (dm_info->vncpasswd =
-                 strdup(d_config->vfbs[0].vncpasswd)) == NULL) {
-                virReportOOMError();
-                goto error;
-            }
-        } else if (d_config->vfbs[0].sdl) {
-            dm_info->sdl = 1;
-            dm_info->vnc = 0;
-        }
-    } else if (d_config->num_vfbs == 0) {
-        dm_info->nographic = 1;
-        dm_info->vnc = 0;
-    }
-
-    // TODO
-    //dm_info->usb = ;
-    //dm_info->usbdevice = ;
-    //dm_info->soundhw = ;
-
-    return 0;
-
-error:
-    libxl_device_model_info_destroy(dm_info);
     return -1;
 }
 
@@ -947,7 +823,7 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
                        virDomainDefPtr def, libxl_domain_config *d_config)
 {
 
-    if (libxlMakeDomCreateInfo(def, &d_config->c_info) < 0)
+    if (libxlMakeDomCreateInfo(driver, def, &d_config->c_info) < 0)
         return -1;
 
     if (libxlMakeDomBuildInfo(def, d_config) < 0) {
@@ -966,10 +842,6 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
         goto error;
     }
 
-    if (libxlMakeDeviceModelInfo(def, d_config) < 0) {
-        goto error;
-    }
-
     d_config->on_reboot = def->onReboot;
     d_config->on_poweroff = def->onPoweroff;
     d_config->on_crash = def->onCrash;
@@ -977,6 +849,6 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
     return 0;
 
 error:
-    libxl_domain_config_destroy(d_config);
+    libxl_domain_config_dispose(d_config);
     return -1;
 }

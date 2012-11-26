@@ -58,7 +58,7 @@ struct _libxlDriverPrivate {
     FILE *logger_file;
     xentoollog_logger *logger;
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
-    libxl_ctx ctx;
+    libxl_ctx *ctx;
 
     virBitmapPtr reservedVNCPorts;
 
@@ -82,10 +82,8 @@ typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
 typedef libxlDomainObjPrivate *libxlDomainObjPrivatePtr;
 struct _libxlDomainObjPrivate {
     /* per domain libxl ctx */
-    libxl_ctx ctx;
-    libxl_waiter *dWaiter;
-    int waiterFD;
-    int eventHdl;
+    libxl_ctx *ctx;
+    libxl_evgen_domain_death *deathW;
 };
 
 # define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"
@@ -105,13 +103,11 @@ virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
 
 int
-libxlMakeDisk(virDomainDefPtr def, virDomainDiskDefPtr l_dev,
-              libxl_device_disk *x_dev);
+libxlMakeDisk(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
 int
-libxlMakeNic(virDomainDefPtr def, virDomainNetDefPtr l_nic,
-             libxl_device_nic *x_nic);
+libxlMakeNic(virDomainNetDefPtr l_nic, libxl_device_nic *x_nic);
 int
-libxlMakeVfb(libxlDriverPrivatePtr driver, virDomainDefPtr def,
+libxlMakeVfb(libxlDriverPrivatePtr driver,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
 
 int
