@@ -4429,6 +4429,8 @@ qemuBuildGraphicsCommandLine(struct qemud_driver *driver,
                              qemuCapsPtr caps,
                              virDomainGraphicsDefPtr graphics)
 {
+    int i;
+
     if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
 
@@ -4685,7 +4687,7 @@ qemuBuildGraphicsCommandLine(struct qemud_driver *driver,
             break;
         }
 
-        for (int i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
             int mode = graphics->data.spice.channels[i];
             switch (mode) {
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:

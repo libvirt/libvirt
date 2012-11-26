@@ -2078,8 +2078,9 @@ qemuProcessInitPasswords(virConnectPtr conn,
 {
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int i;
 
-    for (int i = 0 ; i < vm->def->ngraphics; ++i) {
+    for (i = 0 ; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             ret = qemuDomainChangeGraphicsPasswords(driver, vm,
@@ -2098,8 +2099,6 @@ qemuProcessInitPasswords(virConnectPtr conn,
         goto cleanup;
 
     if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
-        int i;
-
         for (i = 0 ; i < vm->def->ndisks ; i++) {
             char *secret;
             size_t secretLen;
