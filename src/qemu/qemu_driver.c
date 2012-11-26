@@ -787,7 +787,9 @@ qemuStartup(int privileged) {
         goto error;
 
     qemu_driver->capsCache = qemuCapsCacheNew(qemu_driver->libDir,
-                                              qemu_driver->stateDir);
+                                              qemu_driver->stateDir,
+                                              qemu_driver->user,
+                                              qemu_driver->group);
     if (!qemu_driver->capsCache)
         goto error;
 

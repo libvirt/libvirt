@@ -223,6 +223,8 @@ struct _qemuCapsCache {
     virHashTablePtr binaries;
     char *libDir;
     char *runDir;
+    uid_t runUid;
+    gid_t runGid;
 };
 
 
@@ -241,9 +243,37 @@ static int qemuCapsOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(qemuCaps)
 
+struct _qemuCapsHookData {
+    uid_t runUid;
+    gid_t runGid;
+};
+typedef struct _qemuCapsHookData qemuCapsHookData;
+typedef qemuCapsHookData *qemuCapsHookDataPtr;
+
+static int qemuCapsHook(void * data)
+{
+    int ret;
+    qemuCapsHookDataPtr hookData = data;
+
+    if (!hookData) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("QEMU uid:gid not specified by caller"));
+        ret = -1;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Switch QEMU uid:gid to %d:%d",
+              hookData->runUid, hookData->runGid);
+    ret = virSetUIDGID(hookData->runUid, hookData->runGid);
+
+cleanup:
+    return ret;
+}
+
 static virCommandPtr
 qemuCapsProbeCommand(const char *qemu,
-                     qemuCapsPtr caps)
+                     qemuCapsPtr caps,
+                     qemuCapsHookDataPtr hookData)
 {
     virCommandPtr cmd = virCommandNew(qemu);
 
@@ -256,6 +286,7 @@ qemuCapsProbeCommand(const char *qemu,
 
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
+    virCommandSetPreExecHook(cmd, qemuCapsHook, hookData);
 
     return cmd;
 }
@@ -342,7 +373,7 @@ no_memory:
 }
 
 static int
-qemuCapsProbeMachineTypes(qemuCapsPtr caps)
+qemuCapsProbeMachineTypes(qemuCapsPtr caps, qemuCapsHookDataPtr hookData)
 {
     char *output;
     int ret = -1;
@@ -359,7 +390,7 @@ qemuCapsProbeMachineTypes(qemuCapsPtr caps)
         return -1;
     }
 
-    cmd = qemuCapsProbeCommand(caps->binary, caps);
+    cmd = qemuCapsProbeCommand(caps->binary, caps, hookData);
     virCommandAddArgList(cmd, "-M", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
@@ -498,7 +529,7 @@ cleanup:
 }
 
 static int
-qemuCapsProbeCPUModels(qemuCapsPtr caps)
+qemuCapsProbeCPUModels(qemuCapsPtr caps, qemuCapsHookDataPtr hookData)
 {
     char *output = NULL;
     int ret = -1;
@@ -516,7 +547,7 @@ qemuCapsProbeCPUModels(qemuCapsPtr caps)
         return 0;
     }
 
-    cmd = qemuCapsProbeCommand(caps->binary, caps);
+    cmd = qemuCapsProbeCommand(caps->binary, caps, hookData);
     virCommandAddArgList(cmd, "-cpu", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
@@ -1530,7 +1561,8 @@ qemuCapsParseDeviceStr(qemuCapsPtr caps, const char *str)
 
 static int
 qemuCapsExtractDeviceStr(const char *qemu,
-                         qemuCapsPtr caps)
+                         qemuCapsPtr caps,
+                         qemuCapsHookDataPtr hookData)
 {
     char *output = NULL;
     virCommandPtr cmd;
@@ -1544,7 +1576,7 @@ qemuCapsExtractDeviceStr(const char *qemu,
      * understand '-device name,?', and always exits with status 1 for
      * the simpler '-device ?', so this function is really only useful
      * if -help includes "device driver,?".  */
-    cmd = qemuCapsProbeCommand(qemu, caps);
+    cmd = qemuCapsProbeCommand(qemu, caps, hookData);
     virCommandAddArgList(cmd,
                          "-device", "?",
                          "-device", "pci-assign,?",
@@ -2094,7 +2126,7 @@ int qemuCapsProbeQMP(qemuCapsPtr caps,
 #define QEMU_SYSTEM_PREFIX "qemu-system-"
 
 static int
-qemuCapsInitHelp(qemuCapsPtr caps)
+qemuCapsInitHelp(qemuCapsPtr caps, uid_t runUid, gid_t runGid)
 {
     virCommandPtr cmd = NULL;
     unsigned int is_kvm;
@@ -2102,6 +2134,7 @@ qemuCapsInitHelp(qemuCapsPtr caps)
     int ret = -1;
     const char *tmp;
     struct utsname ut;
+    qemuCapsHookData hookData;
 
     VIR_DEBUG("caps=%p", caps);
 
@@ -2123,7 +2156,9 @@ qemuCapsInitHelp(qemuCapsPtr caps)
         goto cleanup;
     }
 
-    cmd = qemuCapsProbeCommand(caps->binary, NULL);
+    hookData.runUid = runUid;
+    hookData.runGid = runGid;
+    cmd = qemuCapsProbeCommand(caps->binary, NULL, &hookData);
     virCommandAddArgList(cmd, "-help", NULL);
     virCommandSetOutputBuffer(cmd, &help);
 
@@ -2153,13 +2188,13 @@ qemuCapsInitHelp(qemuCapsPtr caps)
      * understands the 0.13.0+ notion of "-device driver,".  */
     if (qemuCapsGet(caps, QEMU_CAPS_DEVICE) &&
         strstr(help, "-device driver,?") &&
-        qemuCapsExtractDeviceStr(caps->binary, caps) < 0)
+        qemuCapsExtractDeviceStr(caps->binary, caps, &hookData) < 0)
         goto cleanup;
 
-    if (qemuCapsProbeCPUModels(caps) < 0)
+    if (qemuCapsProbeCPUModels(caps, &hookData) < 0)
         goto cleanup;
 
-    if (qemuCapsProbeMachineTypes(caps) < 0)
+    if (qemuCapsProbeMachineTypes(caps, &hookData) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2242,7 +2277,9 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
 static int
 qemuCapsInitQMP(qemuCapsPtr caps,
                 const char *libDir,
-                const char *runDir)
+                const char *runDir,
+                uid_t runUid,
+                gid_t runGid)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -2254,6 +2291,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     char *monarg = NULL;
     char *monpath = NULL;
     char *pidfile = NULL;
+    qemuCapsHookData hookData;
 
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
      * domain called "capabilities"
@@ -2289,11 +2327,14 @@ qemuCapsInitQMP(qemuCapsPtr caps,
                                "-nographic",
                                "-M", "none",
                                "-qmp", monarg,
-                               "-pidfile", pidfile,
-                               "-daemonize",
                                NULL);
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
+    hookData.runUid = runUid;
+    hookData.runGid = runGid;
+    virCommandSetPreExecHook(cmd, qemuCapsHook, &hookData);
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandDaemonize(cmd);
 
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
@@ -2410,7 +2451,9 @@ cleanup:
 
 qemuCapsPtr qemuCapsNewForBinary(const char *binary,
                                  const char *libDir,
-                                 const char *runDir)
+                                 const char *runDir,
+                                 uid_t runUid,
+                                 gid_t runGid)
 {
     qemuCapsPtr caps = qemuCapsNew();
     struct stat sb;
@@ -2438,11 +2481,11 @@ qemuCapsPtr qemuCapsNewForBinary(const char *binary,
         goto error;
     }
 
-    if ((rv = qemuCapsInitQMP(caps, libDir, runDir)) < 0)
+    if ((rv = qemuCapsInitQMP(caps, libDir, runDir, runUid, runGid)) < 0)
         goto error;
 
     if (!caps->usedQMP &&
-        qemuCapsInitHelp(caps) < 0)
+        qemuCapsInitHelp(caps, runUid, runGid) < 0)
         goto error;
 
     return caps;
@@ -2478,7 +2521,8 @@ qemuCapsHashDataFree(void *payload, const void *key ATTRIBUTE_UNUSED)
 
 
 qemuCapsCachePtr
-qemuCapsCacheNew(const char *libDir, const char *runDir)
+qemuCapsCacheNew(const char *libDir, const char *runDir,
+                 uid_t runUid, gid_t runGid)
 {
     qemuCapsCachePtr cache;
 
@@ -2501,6 +2545,9 @@ qemuCapsCacheNew(const char *libDir, const char *runDir)
         virReportOOMError();
         goto error;
     }
+
+    cache->runUid = runUid;
+    cache->runGid = runGid;
 
     return cache;
 
@@ -2526,7 +2573,8 @@ qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary)
     if (!ret) {
         VIR_DEBUG("Creating capabilities for %s",
                   binary);
-        ret = qemuCapsNewForBinary(binary, cache->libDir, cache->runDir);
+        ret = qemuCapsNewForBinary(binary, cache->libDir, cache->runDir,
+                                   cache->runUid, cache->runGid);
         if (ret) {
             VIR_DEBUG("Caching capabilities %p for %s",
                       ret, binary);
