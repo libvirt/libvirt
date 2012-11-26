@@ -2377,6 +2377,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
         goto cleanup;
     }
 
+    caps->version = major * 1000000 + minor * 1000 + micro;
     caps->usedQMP = true;
 
     qemuCapsInitQMPBasic(caps);
