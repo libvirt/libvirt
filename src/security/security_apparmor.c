@@ -742,8 +742,8 @@ AppArmorReserveSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def,
-                                virDomainHostdevDefPtr dev)
-
+                                virDomainHostdevDefPtr dev,
+                                const char *vroot)
 {
     struct SDPDOP *ptr;
     int ret = -1;
@@ -770,7 +770,8 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device);
+                                      dev->source.subsys.u.usb.device,
+                                      vroot);
 
         if (!usb)
             goto done;
@@ -808,7 +809,8 @@ done:
 static int
 AppArmorRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr def,
-                                    virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
+                                    virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED,
+                                    const char *vroot ATTRIBUTE_UNUSED)
 
 {
     const virSecurityLabelDefPtr secdef =

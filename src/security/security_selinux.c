@@ -1161,7 +1161,8 @@ virSecuritySELinuxSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
 static int
 virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                           virDomainDefPtr def,
-                                          virDomainHostdevDefPtr dev)
+                                          virDomainHostdevDefPtr dev,
+                                          const char *vroot)
 
 {
     virSecurityLabelDefPtr secdef;
@@ -1185,7 +1186,8 @@ virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
             return 0;
 
         usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device);
+                           dev->source.subsys.u.usb.device,
+                           vroot);
         if (!usb)
             goto done;
 
@@ -1238,7 +1240,8 @@ virSecuritySELinuxRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
 static int
 virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                               virDomainDefPtr def,
-                                              virDomainHostdevDefPtr dev)
+                                              virDomainHostdevDefPtr dev,
+                                              const char *vroot)
 
 {
     virSecurityLabelDefPtr secdef;
@@ -1262,7 +1265,8 @@ virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUT
             return 0;
 
         usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device);
+                           dev->source.subsys.u.usb.device,
+                           vroot);
         if (!usb)
             goto done;
 
@@ -1504,7 +1508,8 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     for (i = 0 ; i < def->nhostdevs ; i++) {
         if (virSecuritySELinuxRestoreSecurityHostdevLabel(mgr,
                                                           def,
-                                                          def->hostdevs[i]) < 0)
+                                                          def->hostdevs[i],
+                                                          NULL) < 0)
             rc = -1;
     }
     for (i = 0 ; i < def->ndisks ; i++) {
@@ -1874,8 +1879,9 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     for (i = 0 ; i < def->nhostdevs ; i++) {
         if (virSecuritySELinuxSetSecurityHostdevLabel(mgr,
-                                           def,
-                                           def->hostdevs[i]) < 0)
+                                                      def,
+                                                      def->hostdevs[i],
+                                                      NULL) < 0)
             return -1;
     }
 

@@ -29,15 +29,18 @@ typedef struct _usbDevice usbDevice;
 typedef struct _usbDeviceList usbDeviceList;
 
 usbDevice *usbGetDevice(unsigned int bus,
-                        unsigned int devno);
+                        unsigned int devno,
+                        const char *vroot);
 
 int usbFindDeviceByBus(unsigned int bus,
                        unsigned int devno,
+                       const char *vroot,
                        bool mandatory,
                        usbDevice **usb);
 
 int usbFindDeviceByVendor(unsigned int vendor,
                           unsigned int product,
+                          const char *vroot,
                           bool mandatory,
                           usbDeviceList **devices);
 
@@ -45,6 +48,7 @@ int usbFindDevice(unsigned int vendor,
                   unsigned int product,
                   unsigned int bus,
                   unsigned int devno,
+                  const char *vroot,
                   bool mandatory,
                   usbDevice **usb);
 

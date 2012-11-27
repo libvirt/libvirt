@@ -1105,7 +1105,8 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
         }
 
         if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                                hostdev->source.subsys.u.usb.device)) == NULL)
+                                hostdev->source.subsys.u.usb.device,
+                                NULL)) == NULL)
             goto error;
 
         data.vm = vm;
@@ -1173,7 +1174,7 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
     }
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
-                                          vm->def, hostdev) < 0)
+                                          vm->def, hostdev, NULL) < 0)
         goto cleanup;
 
     switch (hostdev->source.subsys.type) {
@@ -1201,7 +1202,7 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
 
 error:
     if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                              vm->def, hostdev) < 0)
+                                              vm->def, hostdev, NULL) < 0)
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
 cleanup:
@@ -2394,7 +2395,7 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
     if (ret < 0)
         return -1;
 
-    usb = usbGetDevice(subsys->u.usb.bus, subsys->u.usb.device);
+    usb = usbGetDevice(subsys->u.usb.bus, subsys->u.usb.device, NULL);
     if (usb) {
         usbDeviceListDel(driver->activeUsbHostdevs, usb);
         usbFreeDevice(usb);
@@ -2445,7 +2446,7 @@ int qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 
     if (!ret) {
         if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                                  vm->def, detach) < 0) {
+                                                  vm->def, detach, NULL) < 0) {
             VIR_WARN("Failed to restore host device labelling");
         }
         virDomainHostdevRemove(vm->def, idx);

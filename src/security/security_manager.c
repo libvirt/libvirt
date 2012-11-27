@@ -275,10 +275,11 @@ int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
 
 int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr vm,
-                                          virDomainHostdevDefPtr dev)
+                                          virDomainHostdevDefPtr dev,
+                                          const char *vroot)
 {
     if (mgr->drv->domainRestoreSecurityHostdevLabel)
-        return mgr->drv->domainRestoreSecurityHostdevLabel(mgr, vm, dev);
+        return mgr->drv->domainRestoreSecurityHostdevLabel(mgr, vm, dev, vroot);
 
     virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
@@ -286,10 +287,11 @@ int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
 
 int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr vm,
-                                      virDomainHostdevDefPtr dev)
+                                      virDomainHostdevDefPtr dev,
+                                      const char *vroot)
 {
     if (mgr->drv->domainSetSecurityHostdevLabel)
-        return mgr->drv->domainSetSecurityHostdevLabel(mgr, vm, dev);
+        return mgr->drv->domainSetSecurityHostdevLabel(mgr, vm, dev, vroot);
 
     virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;

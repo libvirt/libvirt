@@ -61,10 +61,12 @@ typedef int (*virSecurityDomainSetImageLabel) (virSecurityManagerPtr mgr,
                                                virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainRestoreHostdevLabel) (virSecurityManagerPtr mgr,
                                                      virDomainDefPtr def,
-                                                     virDomainHostdevDefPtr dev);
+                                                     virDomainHostdevDefPtr dev,
+                                                     const char *vroot);
 typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
-                                                 virDomainHostdevDefPtr dev);
+                                                 virDomainHostdevDefPtr dev,
+                                                 const char *vroot);
 typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityManagerPtr mgr,
                                                     virDomainDefPtr def,
                                                     const char *savefile);

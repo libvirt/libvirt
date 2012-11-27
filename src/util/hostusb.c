@@ -101,6 +101,7 @@ usbDeviceSearch(unsigned int vendor,
                 unsigned int product,
                 unsigned int bus,
                 unsigned int devno,
+                const char *vroot,
                 unsigned int flags)
 {
     DIR *dir = NULL;
@@ -160,7 +161,7 @@ usbDeviceSearch(unsigned int vendor,
             found = true;
         }
 
-        usb = usbGetDevice(found_bus, found_devno);
+        usb = usbGetDevice(found_bus, found_devno, vroot);
         if (!usb)
             goto cleanup;
 
@@ -189,6 +190,7 @@ cleanup:
 int
 usbFindDeviceByVendor(unsigned int vendor,
                       unsigned product,
+                      const char *vroot,
                       bool mandatory,
                       usbDeviceList **devices)
 {
@@ -196,6 +198,7 @@ usbFindDeviceByVendor(unsigned int vendor,
     int count;
 
     if (!(list = usbDeviceSearch(vendor, product, 0 , 0,
+                                 vroot,
                                  USB_DEVICE_FIND_BY_VENDOR)))
         return -1;
 
@@ -226,12 +229,14 @@ usbFindDeviceByVendor(unsigned int vendor,
 int
 usbFindDeviceByBus(unsigned int bus,
                    unsigned devno,
+                   const char *vroot,
                    bool mandatory,
                    usbDevice **usb)
 {
     usbDeviceList *list;
 
     if (!(list = usbDeviceSearch(0, 0, bus, devno,
+                                 vroot,
                                  USB_DEVICE_FIND_BY_BUS)))
         return -1;
 
@@ -265,13 +270,15 @@ usbFindDevice(unsigned int vendor,
               unsigned int product,
               unsigned int bus,
               unsigned int devno,
+              const char *vroot,
               bool mandatory,
               usbDevice **usb)
 {
     usbDeviceList *list;
 
     unsigned int flags = USB_DEVICE_FIND_BY_VENDOR|USB_DEVICE_FIND_BY_BUS;
-    if (!(list = usbDeviceSearch(vendor, product, bus, devno, flags)))
+    if (!(list = usbDeviceSearch(vendor, product, bus, devno,
+                                 vroot, flags)))
         return -1;
 
     if (list->count == 0) {
@@ -301,7 +308,8 @@ usbFindDevice(unsigned int vendor,
 
 usbDevice *
 usbGetDevice(unsigned int bus,
-             unsigned int devno)
+             unsigned int devno,
+             const char *vroot)
 {
     usbDevice *dev;
 
@@ -321,7 +329,8 @@ usbGetDevice(unsigned int bus,
         usbFreeDevice(dev);
         return NULL;
     }
-    if (virAsprintf(&dev->path, USB_DEVFS "%03d/%03d",
+    if (virAsprintf(&dev->path, "%s" USB_DEVFS "%03d/%03d",
+                    vroot ? vroot : "",
                     dev->bus, dev->dev) < 0) {
         virReportOOMError();
         usbFreeDevice(dev);

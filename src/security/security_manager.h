@@ -71,10 +71,12 @@ int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDiskDefPtr disk);
 int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
-                                          virDomainHostdevDefPtr dev);
+                                          virDomainHostdevDefPtr dev,
+                                          const char *vroot);
 int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
-                                      virDomainHostdevDefPtr dev);
+                                      virDomainHostdevDefPtr dev,
+                                      const char *vroot);
 int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr def,
                                          const char *savefile);

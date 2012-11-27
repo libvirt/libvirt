@@ -290,7 +290,8 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                 continue;
 
             if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                                    hostdev->source.subsys.u.usb.device)) == NULL)
+                                    hostdev->source.subsys.u.usb.device,
+                                    NULL)) == NULL)
                 goto cleanup;
 
             if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,

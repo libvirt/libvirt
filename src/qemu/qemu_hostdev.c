@@ -179,7 +179,8 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
             continue;
 
         usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                           hostdev->source.subsys.u.usb.device);
+                           hostdev->source.subsys.u.usb.device,
+                           NULL);
         if (!usb) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
                      hostdev->source.subsys.u.usb.bus,
@@ -653,6 +654,7 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
 
     if (vendor && bus) {
         rc = usbFindDevice(vendor, product, bus, device,
+                           NULL,
                            autoAddress ? false : mandatory,
                            usb);
         if (rc < 0) {
@@ -673,7 +675,7 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
     if (vendor) {
         usbDeviceList *devs;
 
-        rc = usbFindDeviceByVendor(vendor, product, mandatory, &devs);
+        rc = usbFindDeviceByVendor(vendor, product, NULL, mandatory, &devs);
         if (rc < 0)
             return -1;
 
@@ -713,7 +715,7 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                      bus, device);
         }
     } else if (!vendor && bus) {
-        if (usbFindDeviceByBus(bus, device, mandatory, usb) < 0)
+        if (usbFindDeviceByBus(bus, device, NULL, mandatory, usb) < 0)
             return -1;
     }
 
@@ -934,7 +936,8 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
             continue;
 
         usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                           hostdev->source.subsys.u.usb.device);
+                           hostdev->source.subsys.u.usb.device,
+                           NULL);
 
         if (!usb) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",

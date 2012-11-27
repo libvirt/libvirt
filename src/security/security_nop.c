@@ -84,14 +84,16 @@ static int virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE
 
 static int virSecurityDomainRestoreHostdevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                    virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                                   virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
+                                                   virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED,
+                                                   const char *vroot ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
 static int virSecurityDomainSetHostdevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                               virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
+                                               virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED,
+                                               const char *vroot ATTRIBUTE_UNUSED)
 {
     return 0;
 }

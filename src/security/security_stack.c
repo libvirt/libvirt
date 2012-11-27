@@ -236,7 +236,8 @@ virSecurityStackRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
-                                        virDomainHostdevDefPtr dev)
+                                        virDomainHostdevDefPtr dev,
+                                        const char *vroot)
 
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -244,7 +245,10 @@ virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerSetHostdevLabel(item->securityManager, vm, dev) < 0)
+        if (virSecurityManagerSetHostdevLabel(item->securityManager,
+                                              vm,
+                                              dev,
+                                              vroot) < 0)
             rc = -1;
     }
 
@@ -255,14 +259,18 @@ virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
                                             virDomainDefPtr vm,
-                                            virDomainHostdevDefPtr dev)
+                                            virDomainHostdevDefPtr dev,
+                                            const char *vroot)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerRestoreHostdevLabel(item->securityManager, vm, dev) < 0)
+        if (virSecurityManagerRestoreHostdevLabel(item->securityManager,
+                                                  vm,
+                                                  dev,
+                                                  vroot) < 0)
             rc = -1;
     }
 
