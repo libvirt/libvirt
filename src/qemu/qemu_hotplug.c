@@ -2091,6 +2091,8 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
 
     virDomainDiskRemove(vm->def, i);
 
+    dev->data.disk->backingChain = detach->backingChain;
+    detach->backingChain = NULL;
     virDomainDiskDefFree(detach);
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
