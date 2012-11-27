@@ -47,4 +47,12 @@ void virLXCProcessAutostartAll(virLXCDriverPtr driver);
 int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms);
 
+char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
+                                         virDomainDefPtr vm,
+                                         virDomainNetDefPtr net,
+                                         const char *brname);
+char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
+                                        virDomainDefPtr def,
+                                        virDomainNetDefPtr net);
+
 #endif /* __LXC_PROCESS_H__ */

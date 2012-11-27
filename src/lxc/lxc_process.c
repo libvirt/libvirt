@@ -297,14 +297,12 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 }
 
 
-static int virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
-                                              virDomainDefPtr vm,
-                                              virDomainNetDefPtr net,
-                                              const char *brname,
-                                              unsigned int *nveths,
-                                              char ***veths)
+char *virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
+                                         virDomainDefPtr vm,
+                                         virDomainNetDefPtr net,
+                                         const char *brname)
 {
-    int ret = -1;
+    char *ret = NULL;
     char *parentVeth;
     char *containerVeth = NULL;
     const virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
@@ -318,24 +316,17 @@ static int virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
     if (net->ifname == NULL)
         net->ifname = parentVeth;
 
-    if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
-        virReportOOMError();
-        VIR_FREE(containerVeth);
-        goto cleanup;
-    }
-    (*veths)[(*nveths)] = containerVeth;
-    (*nveths)++;
-
     if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
         goto cleanup;
 
-    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-        ret = virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac,
-                                          vm->uuid, vport, virDomainNetGetActualVlan(net));
-    else
-        ret = virNetDevBridgeAddPort(brname, parentVeth);
-    if (ret < 0)
-        goto cleanup;
+    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+        if (virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac,
+                                        vm->uuid, vport, virDomainNetGetActualVlan(net)) < 0)
+            goto cleanup;
+    } else {
+        if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
+            goto cleanup;
+    }
 
     if (virNetDevSetOnline(parentVeth, true) < 0)
         goto cleanup;
@@ -353,20 +344,18 @@ static int virLXCProcessSetupInterfaceBridged(virConnectPtr conn,
         virDomainConfNWFilterInstantiate(conn, vm->uuid, net) < 0)
         goto cleanup;
 
-    ret = 0;
+    ret = containerVeth;
 
 cleanup:
     return ret;
 }
 
 
-static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
-                                             virDomainDefPtr def,
-                                             virDomainNetDefPtr net,
-                                             unsigned int *nveths,
-                                             char ***veths)
+char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
+                                        virDomainDefPtr def,
+                                        virDomainNetDefPtr net)
 {
-    int ret = -1;
+    char *ret = NULL;
     char *res_ifname = NULL;
     virLXCDriverPtr driver = conn->privateData;
     virNetDevBandwidthPtr bw;
@@ -381,7 +370,7 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     if (bw) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unable to set network bandwidth on direct interfaces"));
-        return -1;
+        return NULL;
     }
 
     /* XXX how todo port profiles ?
@@ -395,14 +384,8 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     if (prof) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unable to set port profile on direct interfaces"));
-        return -1;
+        return NULL;
     }
-
-    if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-    (*veths)[(*nveths)] = NULL;
 
     if (virNetDevMacVLanCreateWithVPortProfile(
             net->ifname, &net->mac,
@@ -416,10 +399,7 @@ static int virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             virDomainNetGetActualBandwidth(net)) < 0)
         goto cleanup;
 
-    (*veths)[(*nveths)] = res_ifname;
-    (*nveths)++;
-
-    ret = 0;
+    ret = res_ifname;
 
 cleanup:
     return ret;
@@ -441,19 +421,25 @@ cleanup:
  */
 static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                                         virDomainDefPtr def,
-                                        unsigned int *nveths,
+                                        size_t *nveths,
                                         char ***veths)
 {
     int ret = -1;
     size_t i;
 
     for (i = 0 ; i < def->nnets ; i++) {
+        char *veth = NULL;
         /* If appropriate, grab a physical device from the configured
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
         if (networkAllocateActualDevice(def->nets[i]) < 0)
             goto cleanup;
+
+        if (VIR_EXPAND_N(*veths, *nveths, 1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
 
         switch (virDomainNetGetActualType(def->nets[i])) {
         case VIR_DOMAIN_NET_TYPE_NETWORK: {
@@ -491,12 +477,10 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
             if (fail)
                 goto cleanup;
 
-            if (virLXCProcessSetupInterfaceBridged(conn,
-                                                   def,
-                                                   def->nets[i],
-                                                   brname,
-                                                   nveths,
-                                                   veths) < 0) {
+            if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
+                                                            def,
+                                                            def->nets[i],
+                                                            brname))) {
                 VIR_FREE(brname);
                 goto cleanup;
             }
@@ -510,21 +494,17 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                                _("No bridge name specified"));
                 goto cleanup;
             }
-            if (virLXCProcessSetupInterfaceBridged(conn,
-                                                   def,
-                                                   def->nets[i],
-                                                   brname,
-                                                   nveths,
-                                                   veths) < 0)
+            if (!(veth = virLXCProcessSetupInterfaceBridged(conn,
+                                                            def,
+                                                            def->nets[i],
+                                                            brname)))
                 goto cleanup;
         }   break;
 
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            if (virLXCProcessSetupInterfaceDirect(conn,
-                                                  def,
-                                                  def->nets[i],
-                                                  nveths,
-                                                  veths) < 0)
+            if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
+                                                           def,
+                                                           def->nets[i])))
                 goto cleanup;
             break;
 
@@ -542,6 +522,8 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                                ));
             goto cleanup;
         }
+
+        (*veths)[(*nveths)-1] = veth;
     }
 
     ret = 0;
@@ -923,7 +905,7 @@ int virLXCProcessStart(virConnectPtr conn,
     size_t i;
     char *logfile = NULL;
     int logfd = -1;
-    unsigned int nveths = 0;
+    size_t nveths = 0;
     char **veths = NULL;
     int handshakefds[2] = { -1, -1 };
     off_t pos = -1;
