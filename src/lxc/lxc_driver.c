@@ -39,6 +39,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
+#include "lxc_cgroup.h"
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_domain.h"
@@ -3354,6 +3355,174 @@ cleanup:
 
 
 static int
+lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
+                                          virDomainObjPtr vm,
+                                          virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainHostdevDefPtr def = dev->data.hostdev;
+    int ret = -1;
+    char *vroot = NULL;
+    char *src = NULL;
+    char *dstdir = NULL;
+    char *dstfile = NULL;
+    struct stat sb;
+    mode_t mode;
+    bool created = false;
+    usbDevice *usb = NULL;
+    virCgroupPtr group = NULL;
+
+    if (virDomainHostdevFind(vm->def, def, NULL) >= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("host USB device already exists"));
+        return -1;
+    }
+
+    if (virAsprintf(&vroot, "/proc/%llu/root",
+                    (unsigned long long)priv->initpid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dstdir, "%s/dev/bus/%03d",
+                    vroot,
+                    def->source.subsys.u.usb.bus) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dstfile, "%s/%03d",
+                    dstdir,
+                    def->source.subsys.u.usb.device) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&src, "/dev/bus/usb/%03d/%03d",
+                    def->source.subsys.u.usb.bus,
+                    def->source.subsys.u.usb.device) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (!(usb = usbGetDevice(def->source.subsys.u.usb.bus,
+                             def->source.subsys.u.usb.device, vroot)))
+        goto cleanup;
+
+    if (stat(src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"), src);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("USB source %s was not a character device"),
+                       src);
+        goto cleanup;
+    }
+
+    mode = 0700 | S_IFCHR;
+
+    if (virFileMakePath(dstdir) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create %s"), dstdir);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              dstfile, major(sb.st_rdev), minor(sb.st_rdev));
+    if (mknod(dstfile, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             dstfile);
+        goto cleanup;
+    }
+    created = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, def, vroot) < 0)
+        goto cleanup;
+
+    if (usbDeviceFileIterate(usb,
+                             virLXCSetupHostUsbDeviceCgroup,
+                             &group) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virDomainAuditHostdev(vm, def, "attach", ret == 0);
+    if (ret < 0 && created)
+        unlink(dstfile);
+
+    usbFreeDevice(usb);
+    virCgroupFree(&group);
+    VIR_FREE(src);
+    VIR_FREE(dstfile);
+    VIR_FREE(dstdir);
+    VIR_FREE(vroot);
+    return ret;
+}
+
+
+static int
+lxcDomainAttachDeviceHostdevSubsysLive(virLXCDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDeviceDefPtr dev)
+{
+    switch (dev->data.hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        return lxcDomainAttachDeviceHostdevSubsysUSBLive(driver, vm, dev);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device type %s"),
+                       virDomainHostdevSubsysTypeToString(dev->data.hostdev->source.subsys.type));
+        return -1;
+    }
+}
+
+
+static int
+lxcDomainAttachDeviceHostdevLive(virLXCDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach hostdev until init PID is known"));
+        return -1;
+    }
+
+    switch (dev->data.hostdev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        return lxcDomainAttachDeviceHostdevSubsysLive(driver, vm, dev);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device mode %s"),
+                       virDomainHostdevModeTypeToString(dev->data.hostdev->mode));
+        return -1;
+    }
+}
+
+
+static int
 lxcDomainAttachDeviceLive(virConnectPtr conn,
                           virLXCDriverPtr driver,
                           virDomainObjPtr vm,
@@ -3373,6 +3542,12 @@ lxcDomainAttachDeviceLive(virConnectPtr conn,
                                            dev->data.net);
         if (!ret)
             dev->data.net = NULL;
+        break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        ret = lxcDomainAttachDeviceHostdevLive(driver, vm, dev);
+        if (!ret)
+            dev->data.disk = NULL;
         break;
 
     default:
@@ -3524,6 +3699,130 @@ cleanup:
 
 
 static int
+lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainHostdevDefPtr def = NULL;
+    virCgroupPtr group = NULL;
+    int idx, ret = -1;
+    char *dst;
+    char *vroot;
+    usbDevice *usb = NULL;
+
+    if ((idx = virDomainHostdevFind(vm->def,
+                                    dev->data.hostdev,
+                                    &def)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("usb device not found"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&vroot, "/proc/%llu/root",
+                    (unsigned long long)priv->initpid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dst, "%s/dev/bus/usb/%03d/%03d",
+                    vroot,
+                    def->source.subsys.u.usb.bus,
+                    def->source.subsys.u.usb.device) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (!(usb = usbGetDevice(def->source.subsys.u.usb.bus,
+                             def->source.subsys.u.usb.device, vroot)))
+        goto cleanup;
+
+    VIR_DEBUG("Unlinking %s", dst);
+    if (unlink(dst) < 0 && errno != ENOENT) {
+        virDomainAuditHostdev(vm, def, "detach", false);
+        virReportSystemError(errno,
+                             _("Unable to remove device %s"), dst);
+        goto cleanup;
+    }
+    virDomainAuditHostdev(vm, def, "detach", true);
+
+    if (usbDeviceFileIterate(usb,
+                             virLXCTeardownHostUsbDeviceCgroup,
+                             &group) < 0)
+        VIR_WARN("cannot deny device %s for domain %s",
+                 dst, vm->def->name);
+
+    usbDeviceListDel(driver->activeUsbHostdevs, usb);
+
+    virDomainHostdevRemove(vm->def, idx);
+    virDomainHostdevDefFree(def);
+
+    ret = 0;
+
+cleanup:
+    usbFreeDevice(usb);
+    VIR_FREE(dst);
+    virCgroupFree(&group);
+    return ret;
+}
+
+static int
+lxcDomainDetachDeviceHostdevSubsysLive(virLXCDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDeviceDefPtr dev)
+{
+    switch (dev->data.hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        return lxcDomainDetachDeviceHostdevUSBLive(driver, vm, dev);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device type %s"),
+                       virDomainHostdevSubsysTypeToString(dev->data.hostdev->source.subsys.type));
+        return -1;
+    }
+}
+
+
+static int
+lxcDomainDetachDeviceHostdevLive(virLXCDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach hostdev until init PID is known"));
+        return -1;
+    }
+
+    switch (dev->data.hostdev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        return lxcDomainDetachDeviceHostdevSubsysLive(driver, vm, dev);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device mode %s"),
+                       virDomainHostdevModeTypeToString(dev->data.hostdev->mode));
+        return -1;
+    }
+}
+
+
+static int
 lxcDomainDetachDeviceLive(virLXCDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
@@ -3537,6 +3836,10 @@ lxcDomainDetachDeviceLive(virLXCDriverPtr driver,
 
     case VIR_DOMAIN_DEVICE_NET:
         ret = lxcDomainDetachDeviceNetLive(vm, dev);
+        break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        ret = lxcDomainDetachDeviceHostdevLive(driver, vm, dev);
         break;
 
     default:
