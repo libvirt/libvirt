@@ -1328,6 +1328,30 @@ error:
     goto cleanup;
 }
 
+
+static void
+qemuMigrationStopNBDServer(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuMigrationCookiePtr mig)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!mig->nbd)
+        return;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        return;
+
+    if (qemuMonitorNBDServerStop(priv->mon) < 0)
+        VIR_WARN("Unable to stop NBD server");
+
+    qemuDomainObjExitMonitor(driver, vm);
+
+    virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+    priv->nbdPort = 0;
+}
+
 /* Validate whether the domain is safe to migrate.  If vm is NULL,
  * then this is being run in the v2 Prepare stage on the destination
  * (where we only have the target xml); if vm is provided, then this
@@ -3802,6 +3826,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                 if (qemuDomainMigrateOPDRelocate(driver, vm, mig) < 0)
                     VIR_WARN("unable to provide network data for relocation");
         }
+
+        qemuMigrationStopNBDServer(driver, vm, mig);
 
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             virDomainDefPtr vmdef;
