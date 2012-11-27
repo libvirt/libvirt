@@ -162,24 +162,9 @@ cleanup:
  */
 int virNetDevVethDelete(const char *veth)
 {
-    int rc;
     const char *argv[] = {"ip", "link", "del", veth, NULL};
-    int cmdResult = 0;
 
     VIR_DEBUG("veth: %s", veth);
 
-    rc = virRun(argv, &cmdResult);
-
-    if (rc != 0 ||
-        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
-        /*
-         * Prevent overwriting an error log which may be set
-         * where an actual failure occurs.
-         */
-        VIR_DEBUG("Failed to delete '%s' (%d)",
-                  veth, WEXITSTATUS(cmdResult));
-        rc = -1;
-    }
-
-    return rc;
+    return virRun(argv, NULL);
 }
