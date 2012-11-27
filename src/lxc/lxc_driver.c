@@ -2928,6 +2928,7 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     int ret = -1;
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
+    virDomainHostdevDefPtr hostdev;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -2953,6 +2954,21 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             goto cleanup;
         }
         dev->data.net = NULL;
+        ret = 0;
+        break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        hostdev = dev->data.hostdev;
+        if (virDomainHostdevFind(vmdef, hostdev, NULL) >= 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("device is already in the domain configuration"));
+            return -1;
+        }
+        if (virDomainHostdevInsert(vmdef, hostdev) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+        dev->data.hostdev = NULL;
         ret = 0;
         break;
 
@@ -3017,6 +3033,7 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     int ret = -1;
     virDomainDiskDefPtr disk, det_disk;
     virDomainNetDefPtr net;
+    virDomainHostdevDefPtr hostdev, det_hostdev;
     int idx;
     char mac[VIR_MAC_STRING_BUFLEN];
 
@@ -3049,6 +3066,19 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
         ret = 0;
         break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV: {
+        hostdev = dev->data.hostdev;
+        if ((idx = virDomainHostdevFind(vmdef, hostdev, &det_hostdev)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("device not present in domain configuration"));
+            return -1;
+        }
+        virDomainHostdevRemove(vmdef, idx);
+        virDomainHostdevDefFree(det_hostdev);
+        ret = 0;
+        break;
+    }
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
