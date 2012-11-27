@@ -468,7 +468,6 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Network '%s' is not active."),
                                    def->nets[i]->data.network.name);
-                goto cleanup;
             }
 
             if (!fail) {
