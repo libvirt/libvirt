@@ -1162,9 +1162,9 @@ qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
 /*
  * obj must be locked before calling, qemud_driver must be unlocked
  *
- * To be called immediately before any QEMU agent API call
- * Must have already either called qemuDomainObjBeginJob() and checked
- * that the VM is still active;
+ * To be called immediately before any QEMU agent API call.
+ * Must have already called qemuDomainObjBeginJob() and checked
+ * that the VM is still active.
  *
  * To be followed with qemuDomainObjExitAgent() once complete
  */
@@ -1187,8 +1187,8 @@ void qemuDomainObjExitAgent(struct qemud_driver *driver,
 /*
  * obj must be locked before calling, qemud_driver must be locked
  *
- * To be called immediately before any QEMU agent API call
- * Must have already either called qemuDomainObjBeginJobWithDriver() and
+ * To be called immediately before any QEMU agent API call.
+ * Must have already called qemuDomainObjBeginJobWithDriver() and
  * checked that the VM is still active; may not be used for nested async jobs.
  *
  * To be followed with qemuDomainObjExitAgentWithDriver() once complete
