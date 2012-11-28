@@ -890,7 +890,8 @@ static int qemuAgentSend(qemuAgentPtr mon,
                 ret = -2;
             } else {
                 virReportSystemError(errno, "%s",
-                                     _("Unable to wait on monitor condition"));
+                                     _("Unable to wait on agent monitor "
+                                       "condition"));
             }
             goto cleanup;
         }
@@ -1124,17 +1125,17 @@ qemuAgentCheckError(virJSONValuePtr cmd,
         char *replystr = virJSONValueToString(reply, false);
 
         /* Log the full JSON formatted command & error */
-        VIR_DEBUG("unable to execute QEMU command %s: %s",
+        VIR_DEBUG("unable to execute QEMU agent command %s: %s",
                   cmdstr, replystr);
 
         /* Only send the user the command name + friendly error */
         if (!error)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to execute QEMU command '%s'"),
+                           _("unable to execute QEMU agent command '%s'"),
                            qemuAgentCommandName(cmd));
         else
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to execute QEMU command '%s': %s"),
+                           _("unable to execute QEMU agent command '%s': %s"),
                            qemuAgentCommandName(cmd),
                            qemuAgentStringifyError(error));
 
@@ -1148,7 +1149,7 @@ qemuAgentCheckError(virJSONValuePtr cmd,
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   cmdstr, replystr);
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to execute QEMU command '%s'"),
+                       _("unable to execute QEMU agent command '%s'"),
                        qemuAgentCommandName(cmd));
         VIR_FREE(cmdstr);
         VIR_FREE(replystr);
