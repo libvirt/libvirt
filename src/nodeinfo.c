@@ -1058,14 +1058,15 @@ nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
 
 #ifdef __linux__
 static int
-nodeSetMemoryParameterValue(const char *field,
-                            virTypedParameterPtr param)
+nodeSetMemoryParameterValue(virTypedParameterPtr param)
 {
     char *path = NULL;
     char *strval = NULL;
     int ret = -1;
     int rc = -1;
 
+    char *field = strchr(param->field, '_');
+    field++;
     if (virAsprintf(&path, "%s/%s",
                     SYSFS_MEMORY_SHARED_PATH, field) < 0) {
         virReportOOMError();
@@ -1080,7 +1081,7 @@ nodeSetMemoryParameterValue(const char *field,
     }
 
     if ((rc = virFileWriteStr(path, strval, 0)) < 0) {
-        virReportSystemError(-rc, _("failed to set %s"), field);
+        virReportSystemError(-rc, _("failed to set %s"), param->field);
         goto cleanup;
     }
 
@@ -1089,6 +1090,38 @@ cleanup:
     VIR_FREE(path);
     VIR_FREE(strval);
     return ret;
+}
+
+static bool
+nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
+                                   int nparams)
+{
+    char *path = NULL;
+    int i;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        char *field = strchr(param->field, '_');
+        field++;
+        if (virAsprintf(&path, "%s/%s",
+                        SYSFS_MEMORY_SHARED_PATH, field) < 0) {
+            virReportOOMError();
+            return false;
+        }
+
+        if (!virFileExists(path)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Parameter '%s' is not supported by "
+                             "this kernel"), param->field);
+            VIR_FREE(path);
+            return false;
+        }
+
+        VIR_FREE(path);
+    }
+
+    return true;
 }
 #endif
 
@@ -1101,8 +1134,8 @@ nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(0, -1);
 
 #ifdef __linux__
-    int ret = 0;
     int i;
+    int rc;
 
     if (virTypedParameterArrayValidate(params, nparams,
                                        VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
@@ -1114,34 +1147,18 @@ nodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
                                        NULL) < 0)
         return -1;
 
+    if (!nodeMemoryParametersIsAllSupported(params, nparams))
+        return -1;
+
     for (i = 0; i < nparams; i++) {
-        virTypedParameterPtr param = &params[i];
+        rc = nodeSetMemoryParameterValue(&params[i]);
 
-        if (STREQ(param->field,
-                  VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN)) {
-            ret = nodeSetMemoryParameterValue("pages_to_scan", param);
-
-            /* Out of memory */
-            if (ret == -2)
-                return -1;
-        } else if (STREQ(param->field,
-                         VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS)) {
-            ret = nodeSetMemoryParameterValue("sleep_millisecs", param);
-
-            /* Out of memory */
-            if (ret == -2)
-                return -1;
-        } else if (STREQ(param->field,
-                         VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES)) {
-            ret = nodeSetMemoryParameterValue("merge_across_nodes", param);
-
-            /* Out of memory */
-            if (ret == -2)
-                return -1;
-        }
+        /* Out of memory */
+        if (rc == -2)
+            return -1;
     }
 
-    return ret;
+    return 0;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node set memory parameters not implemented"
@@ -1164,6 +1181,11 @@ nodeGetMemoryParameterValue(const char *field,
     if (virAsprintf(&path, "%s/%s",
                     SYSFS_MEMORY_SHARED_PATH, field) < 0) {
         virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!virFileExists(path)) {
+        ret = -2;
         goto cleanup;
     }
 
@@ -1217,6 +1239,7 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
     unsigned long long pages_volatile;
     unsigned long long full_scans = 0;
     int i;
+    int ret;
 
     if ((*nparams) == 0) {
         *nparams = NODE_MEMORY_PARAMETERS_NUM;
@@ -1228,8 +1251,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         switch (i) {
         case 0:
-            if (nodeGetMemoryParameterValue("pages_to_scan",
-                                            &pages_to_scan) < 0)
+            ret = nodeGetMemoryParameterValue("pages_to_scan", &pages_to_scan);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
@@ -1239,8 +1264,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 1:
-            if (nodeGetMemoryParameterValue("sleep_millisecs",
-                                            &sleep_millisecs) < 0)
+            ret = nodeGetMemoryParameterValue("sleep_millisecs", &sleep_millisecs);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
@@ -1250,8 +1277,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 2:
-            if (nodeGetMemoryParameterValue("pages_shared",
-                                            &pages_shared) < 0)
+            ret = nodeGetMemoryParameterValue("pages_shared", &pages_shared);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_SHARED,
@@ -1261,8 +1290,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 3:
-            if (nodeGetMemoryParameterValue("pages_sharing",
-                                            &pages_sharing) < 0)
+            ret = nodeGetMemoryParameterValue("pages_sharing", &pages_sharing);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_SHARING,
@@ -1272,8 +1303,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 4:
-            if (nodeGetMemoryParameterValue("pages_unshared",
-                                            &pages_unshared) < 0)
+            ret = nodeGetMemoryParameterValue("pages_unshared", &pages_unshared);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED,
@@ -1283,8 +1316,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 5:
-            if (nodeGetMemoryParameterValue("pages_volatile",
-                                            &pages_volatile) < 0)
+            ret = nodeGetMemoryParameterValue("pages_volatile", &pages_volatile);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE,
@@ -1294,8 +1329,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 6:
-            if (nodeGetMemoryParameterValue("full_scans",
-                                            &full_scans) < 0)
+            ret = nodeGetMemoryParameterValue("full_scans", &full_scans);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_FULL_SCANS,
@@ -1305,8 +1342,10 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
             break;
 
         case 7:
-            if (nodeGetMemoryParameterValue("merge_across_nodes",
-                                            &merge_across_nodes) < 0)
+            ret = nodeGetMemoryParameterValue("merge_across_nodes", &merge_across_nodes);
+            if (ret == -2)
+                continue;
+            else if (ret == -1)
                 return -1;
 
             if (virTypedParameterAssign(param, VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,

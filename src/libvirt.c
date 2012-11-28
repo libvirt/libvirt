@@ -6746,10 +6746,10 @@ error:
  * @nparams: pointer to number of memory parameters; input and output
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Get all node memory parameters.  On input, @nparams gives the size
- * of the @params array; on output, @nparams gives how many slots were
- * filled with parameter information, which might be less but will
- * not exceed the input value.
+ * Get all node memory parameters (parameters unsupported by OS will be
+ * omitted).  On input, @nparams gives the size of the @params array;
+ * on output, @nparams gives how many slots were filled with parameter
+ * information, which might be less but will not exceed the input value.
  *
  * As a special case, calling with @params as NULL and @nparams as 0 on
  * input will cause @nparams on output to contain the number of parameters
@@ -6811,7 +6811,8 @@ error:
  *           value nparams of virDomainGetSchedulerType)
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Change all or a subset of the node memory tunables.
+ * Change all or a subset of the node memory tunables. The function
+ * fails if not all of the tunables are supported.
  *
  * Note that it's not recommended to use this function while the
  * outside tuning program is running (such as ksmtuned under Linux),
