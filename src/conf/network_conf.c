@@ -1175,6 +1175,12 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
 
     /* grab raw data from XML */
     def->name = virXPathString("string(./@name)", ctxt);
+    if (!def->name) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing required name attribute in portgroup"));
+        goto error;
+    }
+
     isDefault = virXPathString("string(./@default)", ctxt);
     def->isDefault = isDefault && STRCASEEQ(isDefault, "yes");
 
