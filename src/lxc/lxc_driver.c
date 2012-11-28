@@ -57,6 +57,7 @@
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"
+#include "virinitctl.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
@@ -2762,6 +2763,179 @@ lxcListAllDomains(virConnectPtr conn,
     return ret;
 }
 
+static int
+lxcDomainShutdownFlags(virDomainPtr dom,
+                       unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virLXCDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    char *vroot = NULL;
+    int ret = -1;
+    int rc;
+
+    virCheckFlags(VIR_DOMAIN_SHUTDOWN_INITCTL |
+                  VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    if (priv->initpid == 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Init process ID is not yet known"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&vroot, "/proc/%llu/root",
+                    (unsigned long long)priv->initpid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (flags == 0 ||
+        (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
+        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF,
+                                        vroot)) < 0) {
+            goto cleanup;
+        }
+        if (rc == 0 && flags != 0 &&
+            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("Container does not provide an initctl pipe"));
+            goto cleanup;
+        }
+    } else {
+        rc = 0;
+    }
+
+    if (rc == 0 &&
+        (flags == 0 ||
+         (flags & VIR_DOMAIN_SHUTDOWN_SIGNAL))) {
+        if (kill(priv->initpid, SIGTERM) < 0 &&
+            errno != ESRCH) {
+            virReportSystemError(errno,
+                                 _("Unable to send SIGTERM to init pid %llu"),
+                                 (unsigned long long)priv->initpid);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(vroot);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
+lxcDomainShutdown(virDomainPtr dom)
+{
+    return lxcDomainShutdownFlags(dom, 0);
+}
+
+static int
+lxcDomainReboot(virDomainPtr dom,
+                unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virLXCDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    char *vroot = NULL;
+    int ret = -1;
+    int rc;
+
+    virCheckFlags(VIR_DOMAIN_REBOOT_INITCTL |
+                  VIR_DOMAIN_REBOOT_SIGNAL, -1);
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    if (priv->initpid == 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Init process ID is not yet known"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&vroot, "/proc/%llu/root",
+                    (unsigned long long)priv->initpid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (flags == 0 ||
+        (flags & VIR_DOMAIN_REBOOT_INITCTL)) {
+        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_REBOOT,
+                                        vroot)) < 0) {
+            goto cleanup;
+        }
+        if (rc == 0 && flags != 0 &&
+            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("Container does not provide an initctl pipe"));
+            goto cleanup;
+        }
+    } else {
+        rc = 0;
+    }
+
+    if (rc == 0 &&
+        (flags == 0 ||
+         (flags & VIR_DOMAIN_REBOOT_SIGNAL))) {
+        if (kill(priv->initpid, SIGHUP) < 0 &&
+            errno != ESRCH) {
+            virReportSystemError(errno,
+                                 _("Unable to send SIGTERM to init pid %llu"),
+                                 (unsigned long long)priv->initpid);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(vroot);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -2831,6 +3005,9 @@ static virDriver lxcDriver = {
     .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
+    .domainShutdown = lxcDomainShutdown, /* 1.0.1 */
+    .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */
+    .domainReboot = lxcDomainReboot, /* 1.0.1 */
 };
 
 static virStateDriver lxcStateDriver = {
