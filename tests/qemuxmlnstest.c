@@ -21,7 +21,7 @@
 # include "testutilsqemu.h"
 
 static const char *abs_top_srcdir;
-static struct qemud_driver driver;
+static virQEMUDriver driver;
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,

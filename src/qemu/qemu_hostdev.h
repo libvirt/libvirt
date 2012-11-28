@@ -27,11 +27,11 @@
 # include "qemu_conf.h"
 # include "domain_conf.h"
 
-int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
+int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
-int qemuUpdateActiveUsbHostdevs(struct qemud_driver *driver,
+int qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
                                 virDomainDefPtr def);
-int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
+int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
@@ -39,18 +39,18 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
 int qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                              bool mandatory,
                              usbDevice **usb);
-int qemuPrepareHostdevUSBDevices(struct qemud_driver *driver,
+int qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  usbDeviceList *list);
-int qemuPrepareHostDevices(struct qemud_driver *driver,
+int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            bool coldBoot);
-void qemuReattachPciDevice(pciDevice *dev, struct qemud_driver *driver);
-void qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
+void qemuReattachPciDevice(pciDevice *dev, virQEMUDriverPtr driver);
+void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
                                       const char *name,
                                       virDomainHostdevDefPtr *hostdevs,
                                       int nhostdevs);
-void qemuDomainReAttachHostDevices(struct qemud_driver *driver,
+void qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
                                    virDomainDefPtr def);
 int qemuDomainHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev);
 int qemuDomainHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,

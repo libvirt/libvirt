@@ -34,7 +34,7 @@ struct _qemuCgroupData {
 };
 typedef struct _qemuCgroupData qemuCgroupData;
 
-bool qemuCgroupControllerActive(struct qemud_driver *driver,
+bool qemuCgroupControllerActive(virQEMUDriverPtr driver,
                                 int controller);
 int qemuSetupDiskCgroup(virDomainObjPtr vm,
                         virCgroupPtr cgroup,
@@ -45,7 +45,7 @@ int qemuTeardownDiskCgroup(virDomainObjPtr vm,
 int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,
                                  const char *path,
                                  void *opaque);
-int qemuSetupCgroup(struct qemud_driver *driver,
+int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virBitmapPtr nodemask);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
@@ -56,14 +56,14 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            int nvcpupin,
                            int vcpuid);
 int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virBitmapPtr cpumask);
-int qemuSetupCgroupForVcpu(struct qemud_driver *driver, virDomainObjPtr vm);
-int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
+int qemuSetupCgroupForVcpu(virQEMUDriverPtr driver, virDomainObjPtr vm);
+int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virBitmapPtr nodemask);
-int qemuRemoveCgroup(struct qemud_driver *driver,
+int qemuRemoveCgroup(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      int quiet);
-int qemuAddToCgroup(struct qemud_driver *driver,
+int qemuAddToCgroup(virQEMUDriverPtr driver,
                     virDomainDefPtr def);
 
 #endif /* __QEMU_CGROUP_H__ */

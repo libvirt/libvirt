@@ -25,22 +25,22 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
-int qemuProcessPrepareMonitorChr(struct qemud_driver *driver,
+int qemuProcessPrepareMonitorChr(virQEMUDriverPtr driver,
                                  virDomainChrSourceDefPtr monConfig,
                                  const char *vm);
 
-int qemuProcessStartCPUs(struct qemud_driver *driver,
+int qemuProcessStartCPUs(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virConnectPtr conn,
                          virDomainRunningReason reason,
                          enum qemuDomainAsyncJob asyncJob);
-int qemuProcessStopCPUs(struct qemud_driver *driver,
+int qemuProcessStopCPUs(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         virDomainPausedReason reason,
                         enum qemuDomainAsyncJob asyncJob);
 
-void qemuProcessAutostartAll(struct qemud_driver *driver);
-void qemuProcessReconnectAll(virConnectPtr conn, struct qemud_driver *driver);
+void qemuProcessAutostartAll(virQEMUDriverPtr driver);
+void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);
 
 int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
 
@@ -51,7 +51,7 @@ typedef enum {
 } qemuProcessStartFlags;
 
 int qemuProcessStart(virConnectPtr conn,
-                     struct qemud_driver *driver,
+                     virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *migrateFrom,
                      int stdin_fd,
@@ -65,13 +65,13 @@ typedef enum {
     VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,
 } qemuProcessStopFlags;
 
-void qemuProcessStop(struct qemud_driver *driver,
+void qemuProcessStop(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      virDomainShutoffReason reason,
                      unsigned int flags);
 
 int qemuProcessAttach(virConnectPtr conn,
-                      struct qemud_driver *driver,
+                      virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       pid_t pid,
                       const char *pidfile,
@@ -84,19 +84,19 @@ typedef enum {
    VIR_QEMU_PROCESS_KILL_NOCHECK = 1 << 2, /* bypass the running vm check */
 } virQemuProcessKillMode;
 
-int qemuProcessKill(struct qemud_driver *driver,
+int qemuProcessKill(virQEMUDriverPtr driver,
                     virDomainObjPtr vm, unsigned int flags);
 
-int qemuProcessAutoDestroyInit(struct qemud_driver *driver);
-void qemuProcessAutoDestroyShutdown(struct qemud_driver *driver);
-int qemuProcessAutoDestroyAdd(struct qemud_driver *driver,
+int qemuProcessAutoDestroyInit(virQEMUDriverPtr driver);
+void qemuProcessAutoDestroyShutdown(virQEMUDriverPtr driver);
+int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virConnectPtr conn);
-int qemuProcessAutoDestroyRemove(struct qemud_driver *driver,
+int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm);
-bool qemuProcessAutoDestroyActive(struct qemud_driver *driver,
+bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm);
-virBitmapPtr qemuPrepareCpumap(struct qemud_driver *driver,
+virBitmapPtr qemuPrepareCpumap(virQEMUDriverPtr driver,
                                virBitmapPtr nodemask);
 
 #endif /* __QEMU_PROCESS_H__ */

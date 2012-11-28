@@ -34,7 +34,7 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 int
-networkAddEbtablesRules(struct qemud_driver *driver) {
+networkAddEbtablesRules(virQEMUDriverPtr driver) {
     int err;
 
     /* Set forward policy to DROP */
@@ -50,7 +50,7 @@ networkAddEbtablesRules(struct qemud_driver *driver) {
 
 
 int
-networkDisableAllFrames(struct qemud_driver *driver) {
+networkDisableAllFrames(virQEMUDriverPtr driver) {
     int err;
 
     /* add default rules */
@@ -64,7 +64,7 @@ networkDisableAllFrames(struct qemud_driver *driver) {
 }
 
 int
-networkAllowMacOnPort(struct qemud_driver *driver,
+networkAllowMacOnPort(virQEMUDriverPtr driver,
                       const char * ifname,
                       const virMacAddrPtr mac) {
 
@@ -85,7 +85,7 @@ networkAllowMacOnPort(struct qemud_driver *driver,
 
 
 int
-networkDisallowMacOnPort(struct qemud_driver *driver,
+networkDisallowMacOnPort(virQEMUDriverPtr driver,
                          const char * ifname,
                          const virMacAddrPtr mac) {
 

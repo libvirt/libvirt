@@ -139,7 +139,7 @@ uname_normalize(struct utsname *ut)
 /**
  * qemuPhysIfaceConnect:
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
- * @driver: pointer to the qemud_driver
+ * @driver: pointer to the driver instance
  * @net: pointer to he VM's interface description with direct device type
  * @qemuCaps: flags for qemu
  * @vmop: VM operation type
@@ -148,7 +148,7 @@ uname_normalize(struct utsname *ut)
  */
 int
 qemuPhysIfaceConnect(virDomainDefPtr def,
-                     struct qemud_driver *driver,
+                     virQEMUDriverPtr driver,
                      virDomainNetDefPtr net,
                      qemuCapsPtr caps,
                      enum virNetDevVPortProfileOp vmop)
@@ -197,7 +197,7 @@ error:
 int
 qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virConnectPtr conn,
-                        struct qemud_driver *driver,
+                        virQEMUDriverPtr driver,
                         virDomainNetDefPtr net,
                         qemuCapsPtr caps)
 {
@@ -3197,7 +3197,7 @@ error:
 
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
-                    struct qemud_driver *driver,
+                    virQEMUDriverPtr driver,
                     qemuCapsPtr caps,
                     char type_sep,
                     int vlan,
@@ -4242,7 +4242,7 @@ error:
 
 
 static int
-qemuBuildCpuArgStr(const struct qemud_driver *driver,
+qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
                    const virDomainDefPtr def,
                    const char *emulator,
                    qemuCapsPtr caps,
@@ -4571,7 +4571,7 @@ error:
 }
 
 static int
-qemuBuildGraphicsCommandLine(struct qemud_driver *driver,
+qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
                              virCommandPtr cmd,
                              virDomainDefPtr def,
                              qemuCapsPtr caps,
@@ -4913,7 +4913,7 @@ error:
  */
 virCommandPtr
 qemuBuildCommandLine(virConnectPtr conn,
-                     struct qemud_driver *driver,
+                     virQEMUDriverPtr driver,
                      virDomainDefPtr def,
                      virDomainChrSourceDefPtr monitor_chr,
                      bool monitor_json,

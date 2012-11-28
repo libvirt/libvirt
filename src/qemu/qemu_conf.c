@@ -62,17 +62,17 @@ struct _qemuDriverCloseDef {
     qemuDriverCloseCallback cb;
 };
 
-void qemuDriverLock(struct qemud_driver *driver)
+void qemuDriverLock(virQEMUDriverPtr driver)
 {
     virMutexLock(&driver->lock);
 }
-void qemuDriverUnlock(struct qemud_driver *driver)
+void qemuDriverUnlock(virQEMUDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
 
 
-int qemuLoadDriverConfig(struct qemud_driver *driver,
+int qemuLoadDriverConfig(virQEMUDriverPtr driver,
                          const char *filename) {
     virConfPtr conf;
     virConfValuePtr p;
@@ -587,7 +587,7 @@ qemuDriverCloseCallbackFree(void *payload,
 }
 
 int
-qemuDriverCloseCallbackInit(struct qemud_driver *driver)
+qemuDriverCloseCallbackInit(virQEMUDriverPtr driver)
 {
     driver->closeCallbacks = virHashCreate(5, qemuDriverCloseCallbackFree);
     if (!driver->closeCallbacks)
@@ -597,13 +597,13 @@ qemuDriverCloseCallbackInit(struct qemud_driver *driver)
 }
 
 void
-qemuDriverCloseCallbackShutdown(struct qemud_driver *driver)
+qemuDriverCloseCallbackShutdown(virQEMUDriverPtr driver)
 {
     virHashFree(driver->closeCallbacks);
 }
 
 int
-qemuDriverCloseCallbackSet(struct qemud_driver *driver,
+qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virConnectPtr conn,
                            qemuDriverCloseCallback cb)
@@ -649,7 +649,7 @@ qemuDriverCloseCallbackSet(struct qemud_driver *driver,
 }
 
 int
-qemuDriverCloseCallbackUnset(struct qemud_driver *driver,
+qemuDriverCloseCallbackUnset(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              qemuDriverCloseCallback cb)
 {
@@ -675,7 +675,7 @@ qemuDriverCloseCallbackUnset(struct qemud_driver *driver,
 }
 
 qemuDriverCloseCallback
-qemuDriverCloseCallbackGet(struct qemud_driver *driver,
+qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virConnectPtr conn)
 {
@@ -696,7 +696,7 @@ qemuDriverCloseCallbackGet(struct qemud_driver *driver,
 }
 
 struct qemuDriverCloseCallbackData {
-    struct qemud_driver *driver;
+    virQEMUDriverPtr driver;
     virConnectPtr conn;
 };
 
@@ -735,7 +735,7 @@ qemuDriverCloseCallbackRun(void *payload,
 }
 
 void
-qemuDriverCloseCallbackRunAll(struct qemud_driver *driver,
+qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
                               virConnectPtr conn)
 {
     struct qemuDriverCloseCallbackData data = {

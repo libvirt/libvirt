@@ -50,7 +50,7 @@
 
 
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
-                                   struct qemud_driver *driver,
+                                   virQEMUDriverPtr driver,
                                    virDomainDefPtr def,
                                    virDomainChrSourceDefPtr monitor_chr,
                                    bool monitor_json,
@@ -70,7 +70,7 @@ qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
-                           struct qemud_driver *driver,
+                           virQEMUDriverPtr driver,
                            qemuCapsPtr caps,
                            char type_sep,
                            int vlan,
@@ -146,13 +146,13 @@ char * qemuBuildRedirdevDevStr(virDomainDefPtr def,
 
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virConnectPtr conn,
-                            struct qemud_driver *driver,
+                            virQEMUDriverPtr driver,
                             virDomainNetDefPtr net,
                             qemuCapsPtr caps)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
-                         struct qemud_driver *driver,
+                         virQEMUDriverPtr driver,
                          virDomainNetDefPtr net,
                          qemuCapsPtr caps,
                          enum virNetDevVPortProfileOp vmop);

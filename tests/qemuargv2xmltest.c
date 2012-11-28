@@ -16,7 +16,7 @@
 
 # include "testutilsqemu.h"
 
-static struct qemud_driver driver;
+static virQEMUDriver driver;
 
 static int blankProblemElements(char *data)
 {

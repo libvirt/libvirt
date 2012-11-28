@@ -22,7 +22,7 @@
 # include "testutilsqemu.h"
 
 static const char *abs_top_srcdir;
-static struct qemud_driver driver;
+static virQEMUDriver driver;
 
 static unsigned char *
 fakeSecretGetValue(virSecretPtr obj ATTRIBUTE_UNUSED,

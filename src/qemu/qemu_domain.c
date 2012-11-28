@@ -117,7 +117,7 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 
 
 /* driver must be locked before calling */
-void qemuDomainEventQueue(struct qemud_driver *driver,
+void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virDomainEventPtr event)
 {
     virDomainEventStateQueue(driver->domainEventState, event);
@@ -661,7 +661,7 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
 }
 
 static void
-qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj)
+qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     if (!virDomainObjIsActive(obj)) {
         /* don't write the state file yet, it will be written once the domain
@@ -674,7 +674,7 @@ qemuDomainObjSaveJob(struct qemud_driver *driver, virDomainObjPtr obj)
 }
 
 void
-qemuDomainObjSetJobPhase(struct qemud_driver *driver,
+qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
                          virDomainObjPtr obj,
                          int phase)
 {
@@ -712,7 +712,7 @@ qemuDomainObjSetAsyncJobMask(virDomainObjPtr obj,
 }
 
 void
-qemuDomainObjDiscardAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
+qemuDomainObjDiscardAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
@@ -758,7 +758,7 @@ qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
  * locked or not.
  */
 static int ATTRIBUTE_NONNULL(1)
-qemuDomainObjBeginJobInternal(struct qemud_driver *driver,
+qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                               bool driver_locked,
                               virDomainObjPtr obj,
                               enum qemuDomainJob job,
@@ -860,7 +860,7 @@ error:
 }
 
 /*
- * obj must be locked before calling, qemud_driver must NOT be locked
+ * obj must be locked before calling, driver must NOT be locked
  *
  * This must be called by anything that will change the VM state
  * in any way, or anything that will use the QEMU monitor.
@@ -868,7 +868,7 @@ error:
  * Upon successful return, the object will have its ref count increased,
  * successful calls must be followed by EndJob eventually
  */
-int qemuDomainObjBeginJob(struct qemud_driver *driver,
+int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
                           enum qemuDomainJob job)
 {
@@ -876,7 +876,7 @@ int qemuDomainObjBeginJob(struct qemud_driver *driver,
                                          QEMU_ASYNC_JOB_NONE);
 }
 
-int qemuDomainObjBeginAsyncJob(struct qemud_driver *driver,
+int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
 {
@@ -885,7 +885,7 @@ int qemuDomainObjBeginAsyncJob(struct qemud_driver *driver,
 }
 
 /*
- * obj and qemud_driver must be locked before calling.
+ * obj and driver must be locked before calling.
  *
  * This must be called by anything that will change the VM state
  * in any way, or anything that will use the QEMU monitor.
@@ -893,7 +893,7 @@ int qemuDomainObjBeginAsyncJob(struct qemud_driver *driver,
  * Upon successful return, the object will have its ref count increased,
  * successful calls must be followed by EndJob eventually
  */
-int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
+int qemuDomainObjBeginJobWithDriver(virQEMUDriverPtr driver,
                                     virDomainObjPtr obj,
                                     enum qemuDomainJob job)
 {
@@ -907,7 +907,7 @@ int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                          QEMU_ASYNC_JOB_NONE);
 }
 
-int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
+int qemuDomainObjBeginAsyncJobWithDriver(virQEMUDriverPtr driver,
                                          virDomainObjPtr obj,
                                          enum qemuDomainAsyncJob asyncJob)
 {
@@ -916,7 +916,7 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
 }
 
 /*
- * obj must be locked before calling, qemud_driver does not matter
+ * obj must be locked before calling, driver does not matter
  *
  * To be called after completing the work associated with the
  * earlier qemuDomainBeginJob() call
@@ -924,7 +924,7 @@ int qemuDomainObjBeginAsyncJobWithDriver(struct qemud_driver *driver,
  * Returns true if @obj was still referenced, false if it was
  * disposed of.
  */
-bool qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
+bool qemuDomainObjEndJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
     enum qemuDomainJob job = priv->job.active;
@@ -944,7 +944,7 @@ bool qemuDomainObjEndJob(struct qemud_driver *driver, virDomainObjPtr obj)
 }
 
 bool
-qemuDomainObjEndAsyncJob(struct qemud_driver *driver, virDomainObjPtr obj)
+qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
@@ -972,7 +972,7 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
 }
 
 static int
-qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
+qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
                                   bool driver_locked,
                                   virDomainObjPtr obj,
                                   enum qemuDomainAsyncJob asyncJob)
@@ -1015,7 +1015,7 @@ qemuDomainObjEnterMonitorInternal(struct qemud_driver *driver,
 }
 
 static void ATTRIBUTE_NONNULL(1)
-qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
+qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
                                  bool driver_locked,
                                  virDomainObjPtr obj)
 {
@@ -1045,7 +1045,7 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
 }
 
 /*
- * obj must be locked before calling, qemud_driver must be unlocked
+ * obj must be locked before calling, driver must be unlocked
  *
  * To be called immediately before any QEMU monitor API call
  * Must have already either called qemuDomainObjBeginJob() and checked
@@ -1053,25 +1053,25 @@ qemuDomainObjExitMonitorInternal(struct qemud_driver *driver,
  *
  * To be followed with qemuDomainObjExitMonitor() once complete
  */
-void qemuDomainObjEnterMonitor(struct qemud_driver *driver,
+void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
                                virDomainObjPtr obj)
 {
     ignore_value(qemuDomainObjEnterMonitorInternal(driver, false, obj,
                                                    QEMU_ASYNC_JOB_NONE));
 }
 
-/* obj must NOT be locked before calling, qemud_driver must be unlocked
+/* obj must NOT be locked before calling, driver must be unlocked
  *
  * Should be paired with an earlier qemuDomainObjEnterMonitor() call
  */
-void qemuDomainObjExitMonitor(struct qemud_driver *driver,
+void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
                               virDomainObjPtr obj)
 {
     qemuDomainObjExitMonitorInternal(driver, false, obj);
 }
 
 /*
- * obj must be locked before calling, qemud_driver must be locked
+ * obj must be locked before calling, driver must be locked
  *
  * To be called immediately before any QEMU monitor API call
  * Must have already either called qemuDomainObjBeginJobWithDriver() and
@@ -1079,7 +1079,7 @@ void qemuDomainObjExitMonitor(struct qemud_driver *driver,
  *
  * To be followed with qemuDomainObjExitMonitorWithDriver() once complete
  */
-void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
+void qemuDomainObjEnterMonitorWithDriver(virQEMUDriverPtr driver,
                                          virDomainObjPtr obj)
 {
     ignore_value(qemuDomainObjEnterMonitorInternal(driver, true, obj,
@@ -1087,7 +1087,7 @@ void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
 }
 
 /*
- * obj and qemud_driver must be locked before calling
+ * obj and driver must be locked before calling
  *
  * To be called immediately before any QEMU monitor API call.
  * Must have already either called qemuDomainObjBeginJobWithDriver()
@@ -1100,19 +1100,19 @@ void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver,
  * started (probably because the vm exited in the meantime).
  */
 int
-qemuDomainObjEnterMonitorAsync(struct qemud_driver *driver,
+qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
 {
     return qemuDomainObjEnterMonitorInternal(driver, true, obj, asyncJob);
 }
 
-/* obj must NOT be locked before calling, qemud_driver must be unlocked,
+/* obj must NOT be locked before calling, driver must be unlocked,
  * and will be locked after returning
  *
  * Should be paired with an earlier qemuDomainObjEnterMonitorWithDriver() call
  */
-void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
+void qemuDomainObjExitMonitorWithDriver(virQEMUDriverPtr driver,
                                         virDomainObjPtr obj)
 {
     qemuDomainObjExitMonitorInternal(driver, true, obj);
@@ -1121,7 +1121,7 @@ void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver,
 
 
 static int
-qemuDomainObjEnterAgentInternal(struct qemud_driver *driver,
+qemuDomainObjEnterAgentInternal(virQEMUDriverPtr driver,
                                 bool driver_locked,
                                 virDomainObjPtr obj)
 {
@@ -1138,7 +1138,7 @@ qemuDomainObjEnterAgentInternal(struct qemud_driver *driver,
 }
 
 static void ATTRIBUTE_NONNULL(1)
-qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
+qemuDomainObjExitAgentInternal(virQEMUDriverPtr driver,
                                bool driver_locked,
                                virDomainObjPtr obj)
 {
@@ -1160,7 +1160,7 @@ qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
 }
 
 /*
- * obj must be locked before calling, qemud_driver must be unlocked
+ * obj must be locked before calling, driver must be unlocked
  *
  * To be called immediately before any QEMU agent API call.
  * Must have already called qemuDomainObjBeginJob() and checked
@@ -1168,24 +1168,24 @@ qemuDomainObjExitAgentInternal(struct qemud_driver *driver,
  *
  * To be followed with qemuDomainObjExitAgent() once complete
  */
-void qemuDomainObjEnterAgent(struct qemud_driver *driver,
+void qemuDomainObjEnterAgent(virQEMUDriverPtr driver,
                              virDomainObjPtr obj)
 {
     ignore_value(qemuDomainObjEnterAgentInternal(driver, false, obj));
 }
 
-/* obj must NOT be locked before calling, qemud_driver must be unlocked
+/* obj must NOT be locked before calling, driver must be unlocked
  *
  * Should be paired with an earlier qemuDomainObjEnterAgent() call
  */
-void qemuDomainObjExitAgent(struct qemud_driver *driver,
+void qemuDomainObjExitAgent(virQEMUDriverPtr driver,
                             virDomainObjPtr obj)
 {
     qemuDomainObjExitAgentInternal(driver, false, obj);
 }
 
 /*
- * obj must be locked before calling, qemud_driver must be locked
+ * obj must be locked before calling, driver must be locked
  *
  * To be called immediately before any QEMU agent API call.
  * Must have already called qemuDomainObjBeginJobWithDriver() and
@@ -1193,24 +1193,24 @@ void qemuDomainObjExitAgent(struct qemud_driver *driver,
  *
  * To be followed with qemuDomainObjExitAgentWithDriver() once complete
  */
-void qemuDomainObjEnterAgentWithDriver(struct qemud_driver *driver,
+void qemuDomainObjEnterAgentWithDriver(virQEMUDriverPtr driver,
                                        virDomainObjPtr obj)
 {
     ignore_value(qemuDomainObjEnterAgentInternal(driver, true, obj));
 }
 
-/* obj must NOT be locked before calling, qemud_driver must be unlocked,
+/* obj must NOT be locked before calling, driver must be unlocked,
  * and will be locked after returning
  *
  * Should be paired with an earlier qemuDomainObjEnterAgentWithDriver() call
  */
-void qemuDomainObjExitAgentWithDriver(struct qemud_driver *driver,
+void qemuDomainObjExitAgentWithDriver(virQEMUDriverPtr driver,
                                       virDomainObjPtr obj)
 {
     qemuDomainObjExitAgentInternal(driver, true, obj);
 }
 
-void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
+void qemuDomainObjEnterRemoteWithDriver(virQEMUDriverPtr driver,
                                         virDomainObjPtr obj)
 {
     virObjectRef(obj);
@@ -1218,7 +1218,7 @@ void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
     qemuDriverUnlock(driver);
 }
 
-void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
+void qemuDomainObjExitRemoteWithDriver(virQEMUDriverPtr driver,
                                        virDomainObjPtr obj)
 {
     qemuDriverLock(driver);
@@ -1228,7 +1228,7 @@ void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
 
 
 int
-qemuDomainDefFormatBuf(struct qemud_driver *driver,
+qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                        virDomainDefPtr def,
                        unsigned int flags,
                        virBuffer *buf)
@@ -1307,7 +1307,7 @@ cleanup:
     return ret;
 }
 
-char *qemuDomainDefFormatXML(struct qemud_driver *driver,
+char *qemuDomainDefFormatXML(virQEMUDriverPtr driver,
                              virDomainDefPtr def,
                              unsigned int flags)
 {
@@ -1327,7 +1327,7 @@ char *qemuDomainDefFormatXML(struct qemud_driver *driver,
     return virBufferContentAndReset(&buf);
 }
 
-char *qemuDomainFormatXML(struct qemud_driver *driver,
+char *qemuDomainFormatXML(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           unsigned int flags)
 {
@@ -1342,7 +1342,7 @@ char *qemuDomainFormatXML(struct qemud_driver *driver,
 }
 
 char *
-qemuDomainDefFormatLive(struct qemud_driver *driver,
+qemuDomainDefFormatLive(virQEMUDriverPtr driver,
                         virDomainDefPtr def,
                         bool inactive,
                         bool compatible)
@@ -1358,7 +1358,7 @@ qemuDomainDefFormatLive(struct qemud_driver *driver,
 }
 
 
-void qemuDomainObjTaint(struct qemud_driver *driver,
+void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         enum virDomainTaintFlags taint,
                         int logFD)
@@ -1392,7 +1392,7 @@ void qemuDomainObjTaint(struct qemud_driver *driver,
 }
 
 
-void qemuDomainObjCheckTaint(struct qemud_driver *driver,
+void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
                              int logFD)
 {
@@ -1421,7 +1421,7 @@ void qemuDomainObjCheckTaint(struct qemud_driver *driver,
 }
 
 
-void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
+void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainObjPtr obj,
                                  virDomainDiskDefPtr disk,
                                  int logFD)
@@ -1435,7 +1435,7 @@ void qemuDomainObjCheckDiskTaint(struct qemud_driver *driver,
 }
 
 
-void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
+void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,
                                 virDomainNetDefPtr net,
                                 int logFD)
@@ -1451,7 +1451,7 @@ void qemuDomainObjCheckNetTaint(struct qemud_driver *driver,
 
 
 static int
-qemuDomainOpenLogHelper(struct qemud_driver *driver,
+qemuDomainOpenLogHelper(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         int oflags,
                         mode_t mode)
@@ -1500,7 +1500,7 @@ cleanup:
 
 
 int
-qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm,
+qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     bool append)
 {
     int oflags;
@@ -1517,7 +1517,7 @@ qemuDomainCreateLog(struct qemud_driver *driver, virDomainObjPtr vm,
 
 
 int
-qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos)
+qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm, off_t pos)
 {
     int fd;
     off_t off;
@@ -1550,7 +1550,7 @@ qemuDomainOpenLog(struct qemud_driver *driver, virDomainObjPtr vm, off_t pos)
 }
 
 
-int qemuDomainAppendLog(struct qemud_driver *driver,
+int qemuDomainAppendLog(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         int logFD,
                         const char *fmt, ...)
@@ -1590,7 +1590,7 @@ cleanup:
 
 /* Locate an appropriate 'qemu-img' binary.  */
 const char *
-qemuFindQemuImgBinary(struct qemud_driver *driver)
+qemuFindQemuImgBinary(virQEMUDriverPtr driver)
 {
     if (!driver->qemuImgBinary) {
         driver->qemuImgBinary = virFindFileInPath("kvm-img");
@@ -1648,7 +1648,7 @@ cleanup:
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 static int
-qemuDomainSnapshotForEachQcow2Raw(struct qemud_driver *driver,
+qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
                                   virDomainDefPtr def,
                                   const char *name,
                                   const char *op,
@@ -1719,7 +1719,7 @@ qemuDomainSnapshotForEachQcow2Raw(struct qemud_driver *driver,
 /* The domain is expected to be locked and inactive. Return -1 on normal
  * failure, 1 if we skipped a disk due to try_all.  */
 int
-qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
+qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainSnapshotObjPtr snap,
                                const char *op,
@@ -1738,7 +1738,7 @@ qemuDomainSnapshotForEachQcow2(struct qemud_driver *driver,
 
 /* Discard one snapshot (or its metadata), without reparenting any children.  */
 int
-qemuDomainSnapshotDiscard(struct qemud_driver *driver,
+qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainSnapshotObjPtr snap,
                           bool update_current,
@@ -1821,7 +1821,7 @@ void qemuDomainSnapshotDiscardAll(void *payload,
 }
 
 int
-qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
+qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm)
 {
     struct qemu_snap_remove rem;
@@ -1841,7 +1841,7 @@ qemuDomainSnapshotDiscardAllMetadata(struct qemud_driver *driver,
  * be no remaining references to vm.
  */
 void
-qemuDomainRemoveInactive(struct qemud_driver *driver,
+qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
     char *snapDir;
@@ -1864,7 +1864,7 @@ qemuDomainRemoveInactive(struct qemud_driver *driver,
 }
 
 void
-qemuDomainSetFakeReboot(struct qemud_driver *driver,
+qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         bool value)
 {
@@ -1880,7 +1880,7 @@ qemuDomainSetFakeReboot(struct qemud_driver *driver,
 }
 
 int
-qemuDomainCheckDiskPresence(struct qemud_driver *driver,
+qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             bool cold_boot)
 {
@@ -2002,7 +2002,7 @@ qemuDomainCleanupRemove(virDomainObjPtr vm,
 }
 
 void
-qemuDomainCleanupRun(struct qemud_driver *driver,
+qemuDomainCleanupRun(virQEMUDriverPtr driver,
                      virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2022,7 +2022,7 @@ qemuDomainCleanupRun(struct qemud_driver *driver,
 }
 
 int
-qemuDomainDetermineDiskChain(struct qemud_driver *driver,
+qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainDiskDefPtr disk,
                              bool force)
 {

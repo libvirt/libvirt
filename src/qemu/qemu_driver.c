@@ -139,7 +139,7 @@ static void processWatchdogEvent(void *data, void *opaque);
 static int qemuShutdown(void);
 
 static int qemuDomainObjStart(virConnectPtr conn,
-                              struct qemud_driver *driver,
+                              virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               unsigned int flags);
 
@@ -150,7 +150,7 @@ static void qemuDomainManagedSaveLoad(void *payload,
                                       void *opaque);
 
 
-struct qemud_driver *qemu_driver = NULL;
+virQEMUDriverPtr qemu_driver = NULL;
 
 
 static void
@@ -183,7 +183,7 @@ static virNWFilterCallbackDriver qemuCallbackDriver = {
 
 
 struct qemuAutostartData {
-    struct qemud_driver *driver;
+    virQEMUDriverPtr driver;
     virConnectPtr conn;
 };
 
@@ -193,7 +193,7 @@ struct qemuAutostartData {
 static virDomainObjPtr
 qemuDomObjFromDomain(virDomainPtr domain)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -287,7 +287,7 @@ cleanup:
 
 
 static void
-qemuAutostartDomains(struct qemud_driver *driver)
+qemuAutostartDomains(virQEMUDriverPtr driver)
 {
     /* XXX: Figure out a better way todo this. The domain
      * startup code needs a connection handle in order
@@ -309,7 +309,7 @@ qemuAutostartDomains(struct qemud_driver *driver)
 }
 
 static int
-qemuSecurityInit(struct qemud_driver *driver)
+qemuSecurityInit(virQEMUDriverPtr driver)
 {
     char **names;
     virSecurityManagerPtr mgr = NULL;
@@ -378,7 +378,7 @@ error:
 
 
 static virCapsPtr
-qemuCreateCapabilities(struct qemud_driver *driver)
+qemuCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i;
     virCapsPtr caps;
@@ -939,7 +939,7 @@ error:
 
 static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
 {
-    struct qemud_driver *driver = opaque;
+    virQEMUDriverPtr driver = opaque;
 
     if (newVM) {
         virDomainEventPtr event =
@@ -1133,7 +1133,7 @@ static virDrvOpenStatus qemuOpen(virConnectPtr conn,
 }
 
 static int qemuClose(virConnectPtr conn) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
 
     /* Get rid of callbacks registered for this conn */
     qemuDriverLock(driver);
@@ -1209,7 +1209,7 @@ static int kvmGetMaxVCPUs(void) {
 static char *
 qemuGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(0, NULL);
@@ -1249,7 +1249,7 @@ static int qemuGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type
 
 
 static char *qemuGetCapabilities(virConnectPtr conn) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virCapsPtr caps = NULL;
     char *xml = NULL;
 
@@ -1351,7 +1351,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 
 static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
                                          int id) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
@@ -1376,7 +1376,7 @@ cleanup:
 
 static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
                                            const unsigned char *uuid) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
@@ -1403,7 +1403,7 @@ cleanup:
 
 static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
                                            const char *name) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
@@ -1429,7 +1429,7 @@ cleanup:
 
 static int qemuDomainIsActive(virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
@@ -1453,7 +1453,7 @@ cleanup:
 
 static int qemuDomainIsPersistent(virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
@@ -1477,7 +1477,7 @@ cleanup:
 
 static int qemuDomainIsUpdated(virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
@@ -1500,7 +1500,7 @@ cleanup:
 }
 
 static int qemuGetVersion(virConnectPtr conn, unsigned long *version) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -1518,7 +1518,7 @@ cleanup:
 }
 
 static int qemuListDomains(virConnectPtr conn, int *ids, int nids) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int n;
 
     qemuDriverLock(driver);
@@ -1529,7 +1529,7 @@ static int qemuListDomains(virConnectPtr conn, int *ids, int nids) {
 }
 
 static int qemuNumDomains(virConnectPtr conn) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int n;
 
     qemuDriverLock(driver);
@@ -1564,7 +1564,7 @@ qemuCanonicalizeMachine(virDomainDefPtr def, qemuCapsPtr caps)
 
 static virDomainPtr qemuDomainCreate(virConnectPtr conn, const char *xml,
                                      unsigned int flags) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
@@ -1660,7 +1660,7 @@ cleanup:
 
 
 static int qemuDomainSuspend(virDomainPtr dom) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
@@ -1743,7 +1743,7 @@ cleanup:
 
 
 static int qemuDomainResume(virDomainPtr dom) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
@@ -1805,7 +1805,7 @@ cleanup:
 }
 
 static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -1887,7 +1887,7 @@ static int qemuDomainShutdown(virDomainPtr dom)
 static int
 qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -1981,7 +1981,7 @@ cleanup:
 static int
 qemuDomainReset(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -2044,7 +2044,7 @@ static int
 qemuDomainDestroyFlags(virDomainPtr dom,
                        unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
@@ -2129,7 +2129,7 @@ qemuDomainDestroy(virDomainPtr dom)
 }
 
 static char *qemuDomainGetOSType(virDomainPtr dom) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *type = NULL;
 
@@ -2157,7 +2157,7 @@ cleanup:
 static unsigned long long
 qemuDomainGetMaxMemory(virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     unsigned long long ret = 0;
 
@@ -2183,7 +2183,7 @@ cleanup:
 
 static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                                     unsigned int flags) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef = NULL;
@@ -2290,7 +2290,7 @@ static int qemuDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
 
 static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -2348,7 +2348,7 @@ static int qemuDomainSendKey(virDomainPtr domain,
                              int nkeycodes,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -2413,7 +2413,7 @@ cleanup:
 static int qemuDomainGetInfo(virDomainPtr dom,
                              virDomainInfoPtr info)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     int err;
@@ -2501,7 +2501,7 @@ qemuDomainGetState(virDomainPtr dom,
                    int *reason,
                    unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -2533,7 +2533,7 @@ qemuDomainGetControlInfo(virDomainPtr dom,
                           virDomainControlInfoPtr info,
                           unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
@@ -2678,7 +2678,7 @@ qemuCompressProgramName(int compress)
 /* Internal function to properly create or open existing files, with
  * ownership affected by qemu driver setup.  */
 static int
-qemuOpenFile(struct qemud_driver *driver, const char *path, int oflags,
+qemuOpenFile(virQEMUDriverPtr driver, const char *path, int oflags,
              bool *needUnlink, bool *bypassSecurityDriver)
 {
     struct stat sb;
@@ -2794,7 +2794,7 @@ cleanup:
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
 static int
-qemuDomainSaveMemory(struct qemud_driver *driver,
+qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *path,
                      const char *domXML,
@@ -2925,7 +2925,7 @@ cleanup:
  * this returns (whether returning success or failure).
  */
 static int
-qemuDomainSaveInternal(struct qemud_driver *driver, virDomainPtr dom,
+qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
                        virDomainObjPtr vm, const char *path,
                        int compressed, const char *xmlin, unsigned int flags)
 {
@@ -3064,7 +3064,7 @@ static int
 qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int compressed;
     int ret = -1;
     virDomainObjPtr vm = NULL;
@@ -3127,7 +3127,7 @@ qemuDomainSave(virDomainPtr dom, const char *path)
 }
 
 static char *
-qemuDomainManagedSavePath(struct qemud_driver *driver, virDomainObjPtr vm) {
+qemuDomainManagedSavePath(virQEMUDriverPtr driver, virDomainObjPtr vm) {
     char *ret;
 
     if (virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name) < 0) {
@@ -3141,7 +3141,7 @@ qemuDomainManagedSavePath(struct qemud_driver *driver, virDomainObjPtr vm) {
 static int
 qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *name = NULL;
     int ret = -1;
@@ -3200,7 +3200,7 @@ qemuDomainManagedSaveLoad(void *payload,
                           void *opaque)
 {
     virDomainObjPtr vm = payload;
-    struct qemud_driver *driver = opaque;
+    virQEMUDriverPtr driver = opaque;
     char *name;
 
     virDomainObjLock(vm);
@@ -3218,7 +3218,7 @@ cleanup:
 static int
 qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
@@ -3246,7 +3246,7 @@ cleanup:
 static int
 qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     char *name = NULL;
@@ -3278,7 +3278,7 @@ cleanup:
     return ret;
 }
 
-static int qemuDumpToFd(struct qemud_driver *driver, virDomainObjPtr vm,
+static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         int fd, enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -3306,7 +3306,7 @@ static int qemuDumpToFd(struct qemud_driver *driver, virDomainObjPtr vm,
 }
 
 static int
-doCoreDump(struct qemud_driver *driver,
+doCoreDump(virQEMUDriverPtr driver,
            virDomainObjPtr vm,
            const char *path,
            enum qemu_save_formats compress,
@@ -3372,7 +3372,7 @@ cleanup:
 }
 
 static enum qemu_save_formats
-getCompressionType(struct qemud_driver *driver)
+getCompressionType(virQEMUDriverPtr driver)
 {
     int compress = QEMU_SAVE_FORMAT_RAW;
 
@@ -3404,7 +3404,7 @@ static int qemuDomainCoreDump(virDomainPtr dom,
                               const char *path,
                               unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int resume = 0, paused = 0;
@@ -3516,7 +3516,7 @@ qemuDomainScreenshot(virDomainPtr dom,
                      unsigned int screen,
                      unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     char *tmp = NULL;
@@ -3610,7 +3610,7 @@ static void processWatchdogEvent(void *data, void *opaque)
 {
     int ret;
     struct qemuDomainWatchdogEvent *wdEvent = data;
-    struct qemud_driver *driver = opaque;
+    virQEMUDriverPtr driver = opaque;
 
     qemuDriverLock(driver);
     virDomainObjLock(wdEvent->vm);
@@ -3677,7 +3677,7 @@ unlock:
     VIR_FREE(wdEvent);
 }
 
-static int qemuDomainHotplugVcpus(struct qemud_driver *driver,
+static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   unsigned int nvcpus)
 {
@@ -3874,7 +3874,7 @@ static int
 qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                         unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef;
     const char * type;
@@ -3989,7 +3989,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                        int maplen,
                        unsigned int flags) {
 
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef = NULL;
     virCgroupPtr cgroup_dom = NULL;
@@ -4173,7 +4173,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
                          int maplen,
                          unsigned int flags) {
 
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
@@ -4261,7 +4261,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
                       int maplen,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virCgroupPtr cgroup_dom = NULL;
     virCgroupPtr cgroup_emulator = NULL;
@@ -4423,7 +4423,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
                              int maplen,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
@@ -4499,7 +4499,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
                    int maxinfo,
                    unsigned char *cpumaps,
                    int maplen) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int i, v, maxcpu, hostcpus;
     int ret = -1;
@@ -4596,7 +4596,7 @@ cleanup:
 static int
 qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
@@ -4641,7 +4641,7 @@ qemuDomainGetMaxVcpus(virDomainPtr dom)
 
 static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
 {
-    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -4700,7 +4700,7 @@ cleanup:
 static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
                                           virSecurityLabelPtr* seclabels)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int i, ret = -1;
 
@@ -4772,7 +4772,7 @@ cleanup:
 static int qemuNodeGetSecurityModel(virConnectPtr conn,
                                     virSecurityModelPtr secmodel)
 {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     char *p;
     int ret = 0;
 
@@ -4814,7 +4814,7 @@ cleanup:
  * not represent any changes (no error raised), -3 if corrupt image was
  * unlinked (no error raised), and opened fd on success.  */
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-qemuDomainSaveImageOpen(struct qemud_driver *driver,
+qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         struct qemu_save_header *ret_header,
@@ -4959,7 +4959,7 @@ error:
 
 static int ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6)
 qemuDomainSaveImageStartVM(virConnectPtr conn,
-                           struct qemud_driver *driver,
+                           virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            int *fd,
                            const struct qemu_save_header *header,
@@ -5077,7 +5077,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                        const char *dxml,
                        unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     int fd = -1;
@@ -5150,7 +5150,7 @@ static char *
 qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
                               unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     char *ret = NULL;
     virDomainDefPtr def = NULL;
     int fd = -1;
@@ -5180,7 +5180,7 @@ static int
 qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
                              const char *dxml, unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
     virDomainDefPtr def = NULL;
     int fd = -1;
@@ -5252,7 +5252,7 @@ cleanup:
  * and -1 on failure with error raised.  */
 static int
 qemuDomainObjRestore(virConnectPtr conn,
-                     struct qemud_driver *driver,
+                     virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *path,
                      bool start_paused,
@@ -5306,7 +5306,7 @@ cleanup:
 static char *qemuDomainGetXMLDesc(virDomainPtr dom,
                                   unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
     unsigned long long balloon;
@@ -5380,7 +5380,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
                                      const char *config,
                                      unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
@@ -5417,7 +5417,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
                                    const char *xmlData,
                                    unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig;
     qemuCapsPtr caps = NULL;
@@ -5543,7 +5543,7 @@ cleanup:
 
 static int qemuListDefinedDomains(virConnectPtr conn,
                                   char **const names, int nnames) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int n;
 
     qemuDriverLock(driver);
@@ -5553,7 +5553,7 @@ static int qemuListDefinedDomains(virConnectPtr conn,
 }
 
 static int qemuNumDefinedDomains(virConnectPtr conn) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int n;
 
     qemuDriverLock(driver);
@@ -5566,7 +5566,7 @@ static int qemuNumDefinedDomains(virConnectPtr conn) {
 
 static int
 qemuDomainObjStart(virConnectPtr conn,
-                   struct qemud_driver *driver,
+                   virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    unsigned int flags)
 {
@@ -5644,7 +5644,7 @@ cleanup:
 static int
 qemuDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -5696,7 +5696,7 @@ qemuDomainStart(virDomainPtr dom)
 }
 
 static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def;
     virDomainDefPtr def_backup = NULL;
     virDomainObjPtr vm = NULL;
@@ -5801,7 +5801,7 @@ static int
 qemuDomainUndefineFlags(virDomainPtr dom,
                         unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     char *name = NULL;
@@ -5901,7 +5901,7 @@ qemuDomainUndefine(virDomainPtr dom)
 
 static int
 qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
-                               struct qemud_driver *driver,
+                               virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -5973,7 +5973,7 @@ end:
 }
 
 static int
-qemuDomainAttachDeviceControllerLive(struct qemud_driver *driver,
+qemuDomainAttachDeviceControllerLive(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDeviceDefPtr dev)
 {
@@ -5998,7 +5998,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
                            virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
 
     switch (dev->type) {
@@ -6055,7 +6055,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainDetachDeviceDiskLive(struct qemud_driver *driver,
+qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -6085,7 +6085,7 @@ qemuDomainDetachDeviceDiskLive(struct qemud_driver *driver,
 }
 
 static int
-qemuDomainDetachDeviceControllerLive(struct qemud_driver *driver,
+qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDeviceDefPtr dev)
 {
@@ -6109,7 +6109,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
                            virDomainPtr dom)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
 
     switch (dev->type) {
@@ -6140,7 +6140,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
 static int
 qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
                               virDomainDeviceDefPtr dev,
-                              struct qemud_driver *driver,
+                              virQEMUDriverPtr driver,
                               bool force)
 {
     virDomainDiskDefPtr disk = dev->data.disk;
@@ -6193,7 +6193,7 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
                            virDomainPtr dom,
                            bool force)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
 
     switch (dev->type) {
@@ -6491,7 +6491,7 @@ static int
 qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                             unsigned int flags, int action)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
@@ -6685,7 +6685,7 @@ static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
 
 static int qemuDomainGetAutostart(virDomainPtr dom,
                                   int *autostart) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -6712,7 +6712,7 @@ cleanup:
 
 static int qemuDomainSetAutostart(virDomainPtr dom,
                                   int autostart) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
@@ -6815,7 +6815,7 @@ cleanup:
 static char *qemuGetSchedulerType(virDomainPtr dom,
                                   int *nparams)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     char *ret = NULL;
     int rc;
 
@@ -6979,7 +6979,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                              int nparams,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -7132,7 +7132,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                              int *nparams,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i, j;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -7318,7 +7318,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                               int nparams,
                               unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virDomainDefPtr persistentDef = NULL;
     virCgroupPtr group = NULL;
@@ -7487,7 +7487,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
                               int *nparams,
                               unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -7647,7 +7647,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                             int nparams,
                             unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virDomainDefPtr persistentDef = NULL;
     virCgroupPtr group = NULL;
@@ -7796,7 +7796,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                             int *nparams,
                             unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -7993,7 +7993,7 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
                                 int nparams,
                                 unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -8274,7 +8274,7 @@ qemuGetSchedulerParametersFlags(virDomainPtr dom,
                                 int *nparams,
                                 unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     unsigned long long shares;
@@ -8434,7 +8434,7 @@ qemuDomainBlockResize(virDomainPtr dom,
                       unsigned long long size,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1, i;
@@ -8525,7 +8525,7 @@ qemuDomainBlockStats(virDomainPtr dom,
                      const char *path,
                      struct _virDomainBlockStats *stats)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -8602,7 +8602,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                           int *nparams,
                           unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i, tmp, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -8779,7 +8779,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
                          const char *path,
                          struct _virDomainInterfaceStats *stats)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int i;
     int ret = -1;
@@ -8841,7 +8841,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                                  int nparams,
                                  unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -9015,7 +9015,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
                                  int *nparams,
                                  unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     int i;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
@@ -9136,7 +9136,7 @@ qemuDomainMemoryStats(virDomainPtr dom,
                       unsigned int nr_stats,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -9196,7 +9196,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
                     void *buffer,
                     unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int fd = -1, ret = -1;
     const char *actual;
@@ -9263,7 +9263,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
                      void *buffer,
                      unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *tmp = NULL;
     int fd = -1, ret = -1;
@@ -9356,7 +9356,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
                                   const char *path,
                                   virDomainBlockInfoPtr info,
                                   unsigned int flags) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     int fd = -1;
@@ -9511,7 +9511,7 @@ qemuDomainEventRegister(virConnectPtr conn,
                         void *opaque,
                         virFreeCallback freecb)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret;
 
     qemuDriverLock(driver);
@@ -9528,7 +9528,7 @@ static int
 qemuDomainEventDeregister(virConnectPtr conn,
                           virConnectDomainEventCallback callback)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret;
 
     qemuDriverLock(driver);
@@ -9549,7 +9549,7 @@ qemuDomainEventRegisterAny(virConnectPtr conn,
                            void *opaque,
                            virFreeCallback freecb)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret;
 
     qemuDriverLock(driver);
@@ -9568,7 +9568,7 @@ static int
 qemuDomainEventDeregisterAny(virConnectPtr conn,
                              int callbackID)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret;
 
     qemuDriverLock(driver);
@@ -9598,7 +9598,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
                                unsigned long resource ATTRIBUTE_UNUSED,
                                const char *dom_xml)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9652,7 +9652,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
                           unsigned long resource ATTRIBUTE_UNUSED,
                           const char *dom_xml)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9708,7 +9708,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
                          const char *dname,
                          unsigned long resource)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     const char *dconnuri = NULL;
@@ -9764,7 +9764,7 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
                          unsigned long flags,
                          int retcode)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
@@ -9805,7 +9805,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
                         const char *dname,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
     char *xml = NULL;
     enum qemuDomainAsyncJob asyncJob;
@@ -9900,7 +9900,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                           unsigned long resource ATTRIBUTE_UNUSED,
                           const char *dom_xml)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9947,7 +9947,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                 unsigned long resource ATTRIBUTE_UNUSED,
                                 const char *dom_xml)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9993,7 +9993,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                           const char *dname,
                           unsigned long resource)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -10032,7 +10032,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
                          unsigned long flags,
                          int cancelled)
 {
-    struct qemud_driver *driver = dconn->privateData;
+    virQEMUDriverPtr driver = dconn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
@@ -10063,7 +10063,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
                           unsigned long flags,
                           int cancelled)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     enum qemuMigrationJobPhase phase;
@@ -10162,7 +10162,7 @@ out:
 static int
 qemuNodeDeviceDettach(virNodeDevicePtr dev)
 {
-    struct qemud_driver *driver = dev->conn->privateData;
+    virQEMUDriverPtr driver = dev->conn->privateData;
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
@@ -10193,7 +10193,7 @@ out:
 static int
 qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 {
-    struct qemud_driver *driver = dev->conn->privateData;
+    virQEMUDriverPtr driver = dev->conn->privateData;
     pciDevice *pci;
     pciDevice *other;
     unsigned domain, bus, slot, function;
@@ -10237,7 +10237,7 @@ out:
 static int
 qemuNodeDeviceReset(virNodeDevicePtr dev)
 {
-    struct qemud_driver *driver = dev->conn->privateData;
+    virQEMUDriverPtr driver = dev->conn->privateData;
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
@@ -10267,7 +10267,7 @@ qemuCPUCompare(virConnectPtr conn,
                const char *xmlDesc,
                unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret = VIR_CPU_COMPARE_ERROR;
 
     virCheckFlags(0, VIR_CPU_COMPARE_ERROR);
@@ -10309,7 +10309,7 @@ qemuCPUBaseline(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int qemuDomainGetJobInfo(virDomainPtr dom,
                                 virDomainJobInfoPtr info) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -10359,7 +10359,7 @@ cleanup:
 
 
 static int qemuDomainAbortJob(virDomainPtr dom) {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -10419,7 +10419,7 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
                                 unsigned long long downtime,
                                 unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
@@ -10475,7 +10475,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
                              unsigned long bandwidth,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
@@ -10532,7 +10532,7 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
                              unsigned long *bandwidth,
                              unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
@@ -10573,7 +10573,7 @@ typedef enum {
  * are all aware of each new file before it is added to a chain, and
  * can revoke access to a file no longer needed in a chain.  */
 static int
-qemuDomainPrepareDiskChainElement(struct qemud_driver *driver,
+qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virCgroupPtr cgroup,
                                   virDomainDiskDefPtr disk,
@@ -10624,7 +10624,7 @@ cleanup:
 
 /* this function expects the driver lock to be held by the caller */
 static int
-qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
+qemuDomainSnapshotFSFreeze(virQEMUDriverPtr driver,
                            virDomainObjPtr vm) {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int freezed;
@@ -10649,7 +10649,7 @@ qemuDomainSnapshotFSFreeze(struct qemud_driver *driver,
 }
 
 static int
-qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
+qemuDomainSnapshotFSThaw(virQEMUDriverPtr driver,
                          virDomainObjPtr vm, bool report)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -10684,7 +10684,7 @@ qemuDomainSnapshotFSThaw(struct qemud_driver *driver,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotCreateInactiveInternal(struct qemud_driver *driver,
+qemuDomainSnapshotCreateInactiveInternal(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virDomainSnapshotObjPtr snap)
 {
@@ -10693,7 +10693,7 @@ qemuDomainSnapshotCreateInactiveInternal(struct qemud_driver *driver,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotCreateInactiveExternal(struct qemud_driver *driver,
+qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virDomainSnapshotObjPtr snap,
                                          bool reuse)
@@ -10808,7 +10808,7 @@ cleanup:
 /* The domain is expected to be locked and active. */
 static int
 qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
-                                       struct qemud_driver *driver,
+                                       virQEMUDriverPtr driver,
                                        virDomainObjPtr *vmptr,
                                        virDomainSnapshotObjPtr snap,
                                        unsigned int flags)
@@ -11040,7 +11040,7 @@ cleanup:
 
 /* The domain is expected to hold monitor lock.  */
 static int
-qemuDomainSnapshotCreateSingleDiskActive(struct qemud_driver *driver,
+qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virCgroupPtr cgroup,
                                          virDomainSnapshotDiskDefPtr snap,
@@ -11134,7 +11134,7 @@ cleanup:
  * counterpart to qemuDomainSnapshotCreateSingleDiskActive, called
  * only on a failed transaction. */
 static void
-qemuDomainSnapshotUndoSingleDiskActive(struct qemud_driver *driver,
+qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virCgroupPtr cgroup,
                                        virDomainDiskDefPtr origdisk,
@@ -11178,7 +11178,7 @@ cleanup:
 
 /* The domain is expected to be locked and active. */
 static int
-qemuDomainSnapshotCreateDiskActive(struct qemud_driver *driver,
+qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainSnapshotObjPtr snap,
                                    unsigned int flags,
@@ -11291,7 +11291,7 @@ cleanup:
 
 static int
 qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
-                                       struct qemud_driver *driver,
+                                       virQEMUDriverPtr driver,
                                        virDomainObjPtr *vmptr,
                                        virDomainSnapshotObjPtr snap,
                                        unsigned int flags)
@@ -11448,7 +11448,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
                             unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
     virDomainSnapshotObjPtr snap = NULL;
@@ -12089,7 +12089,7 @@ cleanup:
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuDomainSnapshotRevertInactive(struct qemud_driver *driver,
+qemuDomainSnapshotRevertInactive(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainSnapshotObjPtr snap)
 {
@@ -12101,7 +12101,7 @@ qemuDomainSnapshotRevertInactive(struct qemud_driver *driver,
 static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                       unsigned int flags)
 {
-    struct qemud_driver *driver = snapshot->domain->conn->privateData;
+    virQEMUDriverPtr driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainSnapshotObjPtr snap = NULL;
@@ -12433,7 +12433,7 @@ cleanup:
 }
 
 struct snap_reparent {
-    struct qemud_driver *driver;
+    virQEMUDriverPtr driver;
     virDomainSnapshotObjPtr parent;
     virDomainObjPtr vm;
     int err;
@@ -12475,7 +12475,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
 static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                                     unsigned int flags)
 {
-    struct qemud_driver *driver = snapshot->domain->conn->privateData;
+    virQEMUDriverPtr driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainSnapshotObjPtr snap = NULL;
@@ -12586,7 +12586,7 @@ cleanup:
 static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
                                     char **result, unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -12646,7 +12646,7 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
                                      unsigned int pid_value,
                                      unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
     virDomainPtr dom = NULL;
@@ -12853,7 +12853,7 @@ cleanup:
  * either success or failure.  */
 static int
 qemuDomainBlockPivot(virConnectPtr conn,
-                     struct qemud_driver *driver, virDomainObjPtr vm,
+                     virQEMUDriverPtr driver, virDomainObjPtr vm,
                      const char *device, virDomainDiskDefPtr disk)
 {
     int ret = -1;
@@ -13012,7 +13012,7 @@ qemuDomainBlockJobImpl(virDomainPtr dom, const char *path, const char *base,
                        unsigned long bandwidth, virDomainBlockJobInfoPtr info,
                        int mode, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -13209,7 +13209,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
                     const char *dest, const char *format,
                     unsigned long bandwidth, unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     char *device = NULL;
@@ -13423,7 +13423,7 @@ qemuDomainBlockCommit(virDomainPtr dom, const char *path, const char *base,
                       const char *top, unsigned long bandwidth,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm = NULL;
     char *device = NULL;
@@ -13570,7 +13570,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
                        int fd,
                        unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ret = -1;
@@ -13640,7 +13640,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                          int nparams,
                          unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr persistentDef = NULL;
@@ -13812,7 +13812,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
                          int *nparams,
                          unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr persistentDef = NULL;
@@ -13947,7 +13947,7 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
                         unsigned int nerrors,
                         unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -14034,7 +14034,7 @@ qemuDomainSetMetadata(virDomainPtr dom,
                       const char *uri ATTRIBUTE_UNUSED,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef;
     int ret = -1;
@@ -14133,7 +14133,7 @@ qemuDomainGetMetadata(virDomainPtr dom,
                       const char *uri ATTRIBUTE_UNUSED,
                       unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr def;
     char *ret = NULL;
@@ -14421,7 +14421,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
                 unsigned int ncpus,
                 unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
     int ret = -1;
@@ -14476,7 +14476,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned long long duration,
                                unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
@@ -14584,7 +14584,7 @@ static int
 qemuDomainPMWakeup(virDomainPtr dom,
                    unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -14640,7 +14640,7 @@ qemuListAllDomains(virConnectPtr conn,
                    virDomainPtr **domains,
                    unsigned int flags)
 {
-    struct qemud_driver *driver = conn->privateData;
+    virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
@@ -14658,7 +14658,7 @@ qemuDomainAgentCommand(virDomainPtr domain,
                        int timeout,
                        unsigned int flags)
 {
-    struct qemud_driver *driver = domain->conn->privateData;
+    virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     char *result = NULL;
@@ -14734,7 +14734,7 @@ qemuDomainFSTrim(virDomainPtr dom,
                  unsigned long long minimum,
                  unsigned int flags)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;

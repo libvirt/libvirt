@@ -24,14 +24,14 @@
 # define __QEMUD_BRIDGE_FILTER_H__
 
 
-int networkAllowMacOnPort(struct qemud_driver *driver,
+int networkAllowMacOnPort(virQEMUDriverPtr driver,
                           const char * ifname,
                           const virMacAddrPtr mac);
-int networkDisallowMacOnPort(struct qemud_driver *driver,
+int networkDisallowMacOnPort(virQEMUDriverPtr driver,
                              const char * ifname,
                              const virMacAddrPtr mac);
-int networkDisableAllFrames(struct qemud_driver *driver);
-int networkAddEbtablesRules(struct qemud_driver *driver);
+int networkDisableAllFrames(virQEMUDriverPtr driver);
+int networkAddEbtablesRules(virQEMUDriverPtr driver);
 
 
 #endif /* __QEMUD_BRIDGE_FILTER_H__ */

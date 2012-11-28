@@ -16,7 +16,7 @@
 # include "qemu/qemu_domain.h"
 # include "testutilsqemu.h"
 
-static struct qemud_driver driver;
+static virQEMUDriver driver;
 
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)

@@ -49,7 +49,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-int qemuDomainChangeEjectableMedia(struct qemud_driver *driver,
+int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
                                    bool force)
@@ -158,7 +158,7 @@ error:
 }
 
 int
-qemuDomainCheckEjectableMedia(struct qemud_driver *driver,
+qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              enum qemuDomainAsyncJob asyncJob)
 {
@@ -201,7 +201,7 @@ cleanup:
 
 
 int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
-                                  struct qemud_driver *driver,
+                                  virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk)
 {
@@ -315,7 +315,7 @@ error:
 }
 
 
-int qemuDomainAttachPciControllerDevice(struct qemud_driver *driver,
+int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virDomainControllerDefPtr controller)
 {
@@ -387,7 +387,7 @@ cleanup:
 
 
 static virDomainControllerDefPtr
-qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
+qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          int controller)
 {
@@ -434,7 +434,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
 
 
 int qemuDomainAttachSCSIDisk(virConnectPtr conn,
-                             struct qemud_driver *driver,
+                             virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 {
@@ -560,7 +560,7 @@ error:
 
 
 int qemuDomainAttachUsbMassstorageDevice(virConnectPtr conn,
-                                         struct qemud_driver *driver,
+                                         virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          virDomainDiskDefPtr disk)
 {
@@ -655,7 +655,7 @@ error:
 
 /* XXX conn required for network -> bridge resolution */
 int qemuDomainAttachNetDevice(virConnectPtr conn,
-                              struct qemud_driver *driver,
+                              virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net)
 {
@@ -935,7 +935,7 @@ no_memory:
 }
 
 
-int qemuDomainAttachHostPciDevice(struct qemud_driver *driver,
+int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)
 {
@@ -1028,7 +1028,7 @@ error:
 }
 
 
-int qemuDomainAttachRedirdevDevice(struct qemud_driver *driver,
+int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr redirdev)
 {
@@ -1072,7 +1072,7 @@ error:
 
 }
 
-int qemuDomainAttachHostUsbDevice(struct qemud_driver *driver,
+int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)
 {
@@ -1137,7 +1137,7 @@ error:
     return -1;
 }
 
-int qemuDomainAttachHostDevice(struct qemud_driver *driver,
+int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
@@ -1330,7 +1330,7 @@ cleanup:
     return ret;
 }
 
-int qemuDomainChangeNetLinkState(struct qemud_driver *driver,
+int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,
                                  int linkstate)
@@ -1362,7 +1362,7 @@ cleanup:
 }
 
 int
-qemuDomainChangeNet(struct qemud_driver *driver,
+qemuDomainChangeNet(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virDomainPtr dom,
                     virDomainDeviceDefPtr dev)
@@ -1732,7 +1732,7 @@ static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
 
 
 int
-qemuDomainChangeGraphics(struct qemud_driver *driver,
+qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainGraphicsDefPtr dev)
 {
@@ -1918,7 +1918,7 @@ static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
 }
 
 
-int qemuDomainDetachPciDiskDevice(struct qemud_driver *driver,
+int qemuDomainDetachPciDiskDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev)
 {
@@ -2024,7 +2024,7 @@ cleanup:
     return ret;
 }
 
-int qemuDomainDetachDiskDevice(struct qemud_driver *driver,
+int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -2164,7 +2164,7 @@ static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
     }
 }
 
-int qemuDomainDetachPciControllerDevice(struct qemud_driver *driver,
+int qemuDomainDetachPciControllerDevice(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virDomainDeviceDefPtr dev)
 {
@@ -2239,7 +2239,7 @@ cleanup:
 }
 
 static int
-qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
+qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr detach)
 {
@@ -2309,7 +2309,7 @@ qemuDomainDetachHostPciDevice(struct qemud_driver *driver,
 }
 
 static int
-qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
+qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainHostdevDefPtr detach)
 {
@@ -2349,7 +2349,7 @@ qemuDomainDetachHostUsbDevice(struct qemud_driver *driver,
 }
 
 static
-int qemuDomainDetachThisHostDevice(struct qemud_driver *driver,
+int qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainHostdevDefPtr detach,
                                    int idx)
@@ -2398,7 +2398,7 @@ int qemuDomainDetachThisHostDevice(struct qemud_driver *driver,
 }
 
 /* search for a hostdev matching dev and detach it */
-int qemuDomainDetachHostDevice(struct qemud_driver *driver,
+int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -2453,7 +2453,7 @@ int qemuDomainDetachHostDevice(struct qemud_driver *driver,
 }
 
 int
-qemuDomainDetachNetDevice(struct qemud_driver *driver,
+qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
@@ -2590,7 +2590,7 @@ cleanup:
 }
 
 int
-qemuDomainChangeGraphicsPasswords(struct qemud_driver *driver,
+qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   int type,
                                   virDomainGraphicsAuthDefPtr auth,
@@ -2656,7 +2656,7 @@ cleanup:
     return ret;
 }
 
-int qemuDomainAttachLease(struct qemud_driver *driver,
+int qemuDomainAttachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease)
 {
@@ -2673,7 +2673,7 @@ int qemuDomainAttachLease(struct qemud_driver *driver,
     return 0;
 }
 
-int qemuDomainDetachLease(struct qemud_driver *driver,
+int qemuDomainDetachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease)
 {
