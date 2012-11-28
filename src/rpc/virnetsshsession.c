@@ -412,6 +412,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
             break;
         case LIBSSH2_HOSTKEY_TYPE_DSS:
             keyType = LIBSSH2_KNOWNHOST_KEY_SSHDSS;
+            break;
 
         case LIBSSH2_HOSTKEY_TYPE_UNKNOWN:
         default:
