@@ -1443,6 +1443,64 @@ cleanup:
 }
 
 
+static int lxcContainerSetupHostdevCapsMisc(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
+                                            virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
+                                            const char *dstprefix ATTRIBUTE_UNUSED,
+                                            virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+{
+    char *src = NULL;
+    int ret = -1;
+    struct stat sb;
+    mode_t mode;
+
+    if (def->source.caps.u.misc.chardev == NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Missing storage host block path"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&src, "%s/%s", dstprefix, def->source.caps.u.misc.chardev) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (stat(src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"),
+                             src);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Storage source %s must be a character device"),
+                       def->source.caps.u.misc.chardev);
+        goto cleanup;
+    }
+
+    mode = 0700 | S_IFCHR;
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              def->source.caps.u.misc.chardev,
+              major(sb.st_rdev), minor(sb.st_rdev));
+    if (mknod(def->source.caps.u.misc.chardev, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             def->source.caps.u.misc.chardev);
+        goto cleanup;
+    }
+
+    if (virSecurityManagerSetHostdevLabel(securityDriver, vmDef, def, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(src);
+    return ret;
+}
+
+
 static int lxcContainerSetupHostdevSubsys(virDomainDefPtr vmDef,
                                           virDomainHostdevDefPtr def,
                                           const char *dstprefix,
@@ -1469,6 +1527,9 @@ static int lxcContainerSetupHostdevCaps(virDomainDefPtr vmDef,
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
         return lxcContainerSetupHostdevCapsStorage(vmDef, def, dstprefix, securityDriver);
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        return lxcContainerSetupHostdevCapsMisc(vmDef, def, dstprefix, securityDriver);
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

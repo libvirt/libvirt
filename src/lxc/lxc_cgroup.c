@@ -439,6 +439,13 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                              VIR_CGROUP_DEVICE_MKNOD) < 0)
                     goto cleanup;
                 break;
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+                if (virCgroupAllowDevicePath(cgroup,
+                                             hostdev->source.caps.u.misc.chardev,
+                                             VIR_CGROUP_DEVICE_RW |
+                                             VIR_CGROUP_DEVICE_MKNOD) < 0)
+                    goto cleanup;
+                break;
             default:
                 break;
             }
