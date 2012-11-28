@@ -62,6 +62,7 @@ struct _virSecuritySELinuxData {
     char *file_context;
     char *content_context;
     virHashTablePtr mcs;
+    bool skipAllLabel;
 };
 
 struct _virSecuritySELinuxCallbackData {
@@ -364,6 +365,8 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     virConfPtr selinux_conf;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
+    data->skipAllLabel = true;
+
     selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0);
     if (!selinux_conf) {
         virReportSystemError(errno,
@@ -438,6 +441,8 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 {
     char *ptr;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
+
+    data->skipAllLabel = false;
 
     if (virFileReadAll(selinux_virtual_domain_context_path(), MAX_CONTEXT, &(data->domain_context)) < 0) {
         virReportSystemError(errno,
@@ -1478,11 +1483,12 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
 
 
 static int
-virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
                                           int migrated ATTRIBUTE_UNUSED)
 {
     virSecurityLabelDefPtr secdef;
+    virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
     int i;
     int rc = 0;
 
@@ -1492,7 +1498,7 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
     if (secdef == NULL)
         return -1;
 
-    if (secdef->norelabel)
+    if (secdef->norelabel || data->skipAllLabel)
         return 0;
 
     for (i = 0 ; i < def->nhostdevs ; i++) {
@@ -1850,7 +1856,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
     if (secdef == NULL)
         return -1;
 
-    if (secdef->norelabel)
+    if (secdef->norelabel || data->skipAllLabel)
         return 0;
 
     for (i = 0 ; i < def->ndisks ; i++) {
