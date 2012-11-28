@@ -2598,7 +2598,7 @@ cleanup:
 
 verify(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
 
-enum qemu_save_formats {
+typedef enum {
     QEMU_SAVE_FORMAT_RAW = 0,
     QEMU_SAVE_FORMAT_GZIP = 1,
     QEMU_SAVE_FORMAT_BZIP2 = 2,
@@ -2613,7 +2613,7 @@ enum qemu_save_formats {
        Do not change or re-use numbers. */
 
     QEMU_SAVE_FORMAT_LAST
-};
+} virQEMUSaveFormat;
 
 VIR_ENUM_DECL(qemuSaveCompression)
 VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
@@ -2623,7 +2623,9 @@ VIR_ENUM_IMPL(qemuSaveCompression, QEMU_SAVE_FORMAT_LAST,
               "xz",
               "lzop")
 
-struct qemu_save_header {
+typedef struct _virQEMUSaveHeader virQEMUSaveHeader;
+typedef virQEMUSaveHeader *virQEMUSaveHeaderPtr;
+struct _virQEMUSaveHeader {
     char magic[sizeof(QEMU_SAVE_MAGIC)-1];
     uint32_t version;
     uint32_t xml_len;
@@ -2633,7 +2635,7 @@ struct qemu_save_header {
 };
 
 static inline void
-bswap_header(struct qemu_save_header *hdr) {
+bswap_header(virQEMUSaveHeaderPtr hdr) {
     hdr->version = bswap_32(hdr->version);
     hdr->xml_len = bswap_32(hdr->xml_len);
     hdr->was_running = bswap_32(hdr->was_running);
@@ -2644,7 +2646,7 @@ bswap_header(struct qemu_save_header *hdr) {
 /* return -errno on failure, or 0 on success */
 static int
 qemuDomainSaveHeader(int fd, const char *path, const char *xml,
-                     struct qemu_save_header *header)
+                     virQEMUSaveHeaderPtr header)
 {
     int ret = 0;
 
@@ -2666,7 +2668,7 @@ endjob:
     return ret;
 }
 
-/* Given a enum qemu_save_formats compression level, return the name
+/* Given a virQEMUSaveFormat compression level, return the name
  * of the program to run, or NULL if no program is needed.  */
 static const char *
 qemuCompressProgramName(int compress)
@@ -2803,7 +2805,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      unsigned int flags,
                      enum qemuDomainAsyncJob asyncJob)
 {
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
     bool bypassSecurityDriver = false;
     bool needUnlink = false;
     int ret = -1;
@@ -3045,7 +3047,7 @@ cleanup:
 }
 
 /* Returns true if a compression program is available in PATH */
-static bool qemuCompressProgramAvailable(enum qemu_save_formats compress)
+static bool qemuCompressProgramAvailable(virQEMUSaveFormat compress)
 {
     const char *prog;
     char *c;
@@ -3309,7 +3311,7 @@ static int
 doCoreDump(virQEMUDriverPtr driver,
            virDomainObjPtr vm,
            const char *path,
-           enum qemu_save_formats compress,
+           virQEMUSaveFormat compress,
            unsigned int dump_flags)
 {
     int fd = -1;
@@ -3371,7 +3373,7 @@ cleanup:
     return ret;
 }
 
-static enum qemu_save_formats
+static virQEMUSaveFormat
 getCompressionType(virQEMUDriverPtr driver)
 {
     int compress = QEMU_SAVE_FORMAT_RAW;
@@ -4817,14 +4819,14 @@ static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
-                        struct qemu_save_header *ret_header,
+                        virQEMUSaveHeaderPtr ret_header,
                         bool bypass_cache,
                         virFileWrapperFdPtr *wrapperFd,
                         const char *xmlin, int state, bool edit,
                         bool unlink_corrupt)
 {
     int fd = -1;
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
     char *xml = NULL;
     virDomainDefPtr def = NULL;
     int oflags = edit ? O_RDWR : O_RDONLY;
@@ -4962,7 +4964,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            int *fd,
-                           const struct qemu_save_header *header,
+                           const virQEMUSaveHeaderPtr header,
                            const char *path,
                            bool start_paused)
 {
@@ -5082,7 +5084,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     virDomainObjPtr vm = NULL;
     int fd = -1;
     int ret = -1;
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
     virFileWrapperFdPtr wrapperFd = NULL;
     int state = -1;
 
@@ -5154,7 +5156,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     char *ret = NULL;
     virDomainDefPtr def = NULL;
     int fd = -1;
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
 
     /* We only take subset of virDomainDefFormat flags.  */
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
@@ -5184,7 +5186,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     int ret = -1;
     virDomainDefPtr def = NULL;
     int fd = -1;
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
     char *xml = NULL;
     size_t len;
     int state = -1;
@@ -5261,7 +5263,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     int fd = -1;
     int ret = -1;
-    struct qemu_save_header header;
+    virQEMUSaveHeader header;
     virFileWrapperFdPtr wrapperFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header,
@@ -12432,7 +12434,10 @@ cleanup:
     return ret;
 }
 
-struct snap_reparent {
+
+typedef struct _virQEMUSnapReparent virQEMUSnapReparent;
+typedef virQEMUSnapReparent *virQEMUSnapReparentPtr;
+struct _virQEMUSnapReparent {
     virQEMUDriverPtr driver;
     virDomainSnapshotObjPtr parent;
     virDomainObjPtr vm;
@@ -12446,7 +12451,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
                                    void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
-    struct snap_reparent *rep = data;
+    virQEMUSnapReparentPtr rep = data;
 
     if (rep->err < 0) {
         return;
@@ -12480,8 +12485,8 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     int ret = -1;
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    struct qemu_snap_remove rem;
-    struct snap_reparent rep;
+    virQEMUSnapRemove rem;
+    virQEMUSnapReparent rep;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
     int external = 0;
 

@@ -1809,7 +1809,7 @@ void qemuDomainSnapshotDiscardAll(void *payload,
                                   void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
-    struct qemu_snap_remove *curr = data;
+    virQEMUSnapRemovePtr curr = data;
     int err;
 
     if (snap->def->current)
@@ -1824,7 +1824,7 @@ int
 qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm)
 {
-    struct qemu_snap_remove rem;
+    virQEMUSnapRemove rem;
 
     rem.driver = driver;
     rem.vm = vm;

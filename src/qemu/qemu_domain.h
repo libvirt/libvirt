@@ -318,7 +318,9 @@ int qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                               bool update_current,
                               bool metadata_only);
 
-struct qemu_snap_remove {
+typedef struct _virQEMUSnapRemove virQEMUSnapRemove;
+typedef virQEMUSnapRemove *virQEMUSnapRemovePtr;
+struct _virQEMUSnapRemove {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;
     int err;
