@@ -1158,25 +1158,14 @@ virSecuritySELinuxSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
     return virSecuritySELinuxSetFilecon(file, secdef->imagelabel);
 }
 
+
 static int
-virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                          virDomainDefPtr def,
-                                          virDomainHostdevDefPtr dev,
-                                          const char *vroot)
+virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
+                                                virDomainHostdevDefPtr dev,
+                                                const char *vroot)
 
 {
-    virSecurityLabelDefPtr secdef;
     int ret = -1;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
-        return -1;
-
-    if (secdef->norelabel)
-        return 0;
-
-    if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-        return 0;
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
@@ -1222,6 +1211,32 @@ done:
 
 
 static int
+virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                          virDomainDefPtr def,
+                                          virDomainHostdevDefPtr dev,
+                                          const char *vroot)
+
+{
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (secdef == NULL)
+        return -1;
+
+    if (secdef->norelabel)
+        return 0;
+
+    switch (dev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        return virSecuritySELinuxSetSecurityHostdevSubsysLabel(def, dev, vroot);
+
+    default:
+        return 0;
+    }
+}
+
+
+static int
 virSecuritySELinuxRestoreSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
                                           const char *file,
                                           void *opaque ATTRIBUTE_UNUSED)
@@ -1237,25 +1252,13 @@ virSecuritySELinuxRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
     return virSecuritySELinuxRestoreSecurityFileLabel(file);
 }
 
+
 static int
-virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                              virDomainDefPtr def,
-                                              virDomainHostdevDefPtr dev,
-                                              const char *vroot)
+virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virDomainHostdevDefPtr dev,
+                                                    const char *vroot)
 
 {
-    virSecurityLabelDefPtr secdef;
     int ret = -1;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (secdef == NULL)
-        return -1;
-
-    if (secdef->norelabel)
-        return 0;
-
-    if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-        return 0;
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
@@ -1298,6 +1301,32 @@ virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUT
 
 done:
     return ret;
+}
+
+
+static int
+virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                              virDomainDefPtr def,
+                                              virDomainHostdevDefPtr dev,
+                                              const char *vroot)
+
+{
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (secdef == NULL)
+        return -1;
+
+    if (secdef->norelabel)
+        return 0;
+
+    switch (dev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        return virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(dev, vroot);
+
+    default:
+        return 0;
+    }
 }
 
 
