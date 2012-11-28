@@ -515,12 +515,14 @@ udevIfaceScanDirFilter(const struct dirent *entry)
 static void
 udevIfaceFreeIfaceDef(virInterfaceDef *ifacedef)
 {
+    int i;
+
     if (!ifacedef)
         return;
 
     if (ifacedef->type == VIR_INTERFACE_TYPE_BRIDGE) {
         VIR_FREE(ifacedef->data.bridge.delay);
-        for (int i = 0; i < ifacedef->data.bridge.nbItf; i++) {
+        for (i = 0; i < ifacedef->data.bridge.nbItf; i++) {
             udevIfaceFreeIfaceDef(ifacedef->data.bridge.itf[i]);
         }
         VIR_FREE(ifacedef->data.bridge.itf);
@@ -547,6 +549,7 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
     char *vlan_parent_dev = NULL;
     struct dirent **member_list = NULL;
     int member_count = 0;
+    int i;
 
     /* Allocate our interface definition structure */
     if (VIR_ALLOC(ifacedef) < 0) {
@@ -679,7 +682,7 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
         }
         ifacedef->data.bridge.nbItf = member_count;
 
-        for (int i= 0; i < member_count; i++) {
+        for (i = 0; i < member_count; i++) {
             ifacedef->data.bridge.itf[i] =
                 udevIfaceGetIfaceDef(udev, member_list[i]->d_name);
             VIR_FREE(member_list[i]);
@@ -698,7 +701,7 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
 
 cleanup:
     udev_device_unref(dev);
-    for (int i = 0; i < member_count; i++) {
+    for (i = 0; i < member_count; i++) {
         VIR_FREE(member_list[i]);
     }
     VIR_FREE(member_list);
