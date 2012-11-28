@@ -814,7 +814,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
  */
 int virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
 {
-    if (controller < 0 || controller > VIR_CGROUP_CONTROLLER_LAST)
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
         return -EINVAL;
 
     if (!group->controllers[controller].mountPoint)
