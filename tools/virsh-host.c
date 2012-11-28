@@ -965,35 +965,39 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     unsigned int shm_pages_to_scan = 0;
     unsigned int shm_sleep_millisecs = 0;
     unsigned int shm_merge_across_nodes = 0;
+    bool has_shm_pages_to_scan = false;
+    bool has_shm_sleep_millisecs = false;
+    bool has_shm_merge_across_nodes = false;
     bool ret = false;
+    int rc = -1;
     int i = 0;
 
-    if (vshCommandOptUInt(cmd, "shm-pages-to-scan",
-                          &shm_pages_to_scan) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-pages-to-scan",
+                                &shm_pages_to_scan)) < 0) {
         vshError(ctl, "%s", _("invalid shm-pages-to-scan number"));
         return false;
+    } else if (rc > 0) {
+        nparams++;
+        has_shm_pages_to_scan = true;
     }
 
-    if (vshCommandOptUInt(cmd, "shm-sleep-millisecs",
-                          &shm_sleep_millisecs) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-sleep-millisecs",
+                                &shm_sleep_millisecs)) < 0) {
         vshError(ctl, "%s", _("invalid shm-sleep-millisecs number"));
         return false;
+    } else if (rc > 0) {
+        nparams++;
+        has_shm_sleep_millisecs = true;
     }
 
-    if (vshCommandOptUInt(cmd, "shm-merge-across-nodes",
-                          &shm_merge_across_nodes) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-merge-across-nodes",
+                                &shm_merge_across_nodes)) < 0) {
         vshError(ctl, "%s", _("invalid shm-merge-across-nodes number"));
         return false;
+    } else if (rc > 0) {
+        nparams++;
+        has_shm_merge_across_nodes = true;
     }
-
-    if (shm_pages_to_scan)
-        nparams++;
-
-    if (shm_sleep_millisecs)
-        nparams++;
-
-    if (shm_merge_across_nodes)
-        nparams++;
 
     if (nparams == 0) {
         /* Get the number of memory parameters */
@@ -1030,7 +1034,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
         /* Set the memory parameters */
         params = vshCalloc(ctl, nparams, sizeof(*params));
 
-        if (i < nparams && shm_pages_to_scan) {
+        if (i < nparams && has_shm_pages_to_scan) {
             if (virTypedParameterAssign(&params[i++],
                                         VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
                                         VIR_TYPED_PARAM_UINT,
@@ -1038,7 +1042,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
                 goto error;
         }
 
-        if (i < nparams && shm_sleep_millisecs) {
+        if (i < nparams && has_shm_sleep_millisecs) {
             if (virTypedParameterAssign(&params[i++],
                                         VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
                                         VIR_TYPED_PARAM_UINT,
@@ -1046,7 +1050,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
                 goto error;
         }
 
-        if (i < nparams && shm_merge_across_nodes) {
+        if (i < nparams && has_shm_merge_across_nodes) {
             if (virTypedParameterAssign(&params[i++],
                                         VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
                                         VIR_TYPED_PARAM_UINT,
