@@ -1211,6 +1211,65 @@ done:
 
 
 static int
+virSecuritySELinuxSetSecurityHostdevCapsLabel(virDomainDefPtr def,
+                                              virDomainHostdevDefPtr dev,
+                                              const char *vroot)
+{
+    int ret = -1;
+    virSecurityLabelDefPtr secdef;
+    char *path;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (secdef == NULL)
+        return -1;
+
+    switch (dev->source.caps.type) {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE: {
+        if (vroot) {
+            if (virAsprintf(&path, "%s/%s", vroot,
+                            dev->source.caps.u.storage.block) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+        } else {
+            if (!(path = strdup(dev->source.caps.u.storage.block))) {
+                virReportOOMError();
+                return -1;
+            }
+        }
+        ret = virSecuritySELinuxSetFilecon(path, secdef->imagelabel);
+        VIR_FREE(path);
+        break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC: {
+        if (vroot) {
+            if (virAsprintf(&path, "%s/%s", vroot,
+                            dev->source.caps.u.misc.chardev) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+        } else {
+            if (!(path = strdup(dev->source.caps.u.misc.chardev))) {
+                virReportOOMError();
+                return -1;
+            }
+        }
+        ret = virSecuritySELinuxSetFilecon(path, secdef->imagelabel);
+        VIR_FREE(path);
+        break;
+    }
+
+    default:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
 virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                           virDomainDefPtr def,
                                           virDomainHostdevDefPtr dev,
@@ -1229,6 +1288,9 @@ virSecuritySELinuxSetSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
     switch (dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         return virSecuritySELinuxSetSecurityHostdevSubsysLabel(def, dev, vroot);
+
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        return virSecuritySELinuxSetSecurityHostdevCapsLabel(def, dev, vroot);
 
     default:
         return 0;
@@ -1305,6 +1367,59 @@ done:
 
 
 static int
+virSecuritySELinuxRestoreSecurityHostdevCapsLabel(virDomainHostdevDefPtr dev,
+                                                  const char *vroot)
+{
+    int ret = -1;
+    char *path;
+
+    switch (dev->source.caps.type) {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE: {
+        if (vroot) {
+            if (virAsprintf(&path, "%s/%s", vroot,
+                            dev->source.caps.u.storage.block) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+        } else {
+            if (!(path = strdup(dev->source.caps.u.storage.block))) {
+                virReportOOMError();
+                return -1;
+            }
+        }
+        ret = virSecuritySELinuxRestoreSecurityFileLabel(path);
+        VIR_FREE(path);
+        break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC: {
+        if (vroot) {
+            if (virAsprintf(&path, "%s/%s", vroot,
+                            dev->source.caps.u.misc.chardev) < 0) {
+                virReportOOMError();
+                return -1;
+            }
+        } else {
+            if (!(path = strdup(dev->source.caps.u.misc.chardev))) {
+                virReportOOMError();
+                return -1;
+            }
+        }
+        ret = virSecuritySELinuxRestoreSecurityFileLabel(path);
+        VIR_FREE(path);
+        break;
+    }
+
+    default:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
 virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                               virDomainDefPtr def,
                                               virDomainHostdevDefPtr dev,
@@ -1323,6 +1438,9 @@ virSecuritySELinuxRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr ATTRIBUT
     switch (dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         return virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(dev, vroot);
+
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+        return virSecuritySELinuxRestoreSecurityHostdevCapsLabel(dev, vroot);
 
     default:
         return 0;
