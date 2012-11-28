@@ -369,7 +369,7 @@ virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 void
 virFileWrapperFdCatchError(virFileWrapperFdPtr wfd)
 {
-    if (wfd->err_msg)
+    if (wfd && wfd->err_msg)
         VIR_WARN("iohelper reports: %s", wfd->err_msg);
 }
 
