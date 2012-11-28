@@ -3592,6 +3592,119 @@ cleanup:
 
 
 static int
+lxcDomainAttachDeviceHostdevMiscLive(virLXCDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainHostdevDefPtr def = dev->data.hostdev;
+    virCgroupPtr group = NULL;
+    int ret = -1;
+    char *dst = NULL;
+    char *vroot = NULL;
+    struct stat sb;
+    bool created = false;
+    mode_t mode = 0;
+
+    if (!def->source.caps.u.misc.chardev) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Missing storage block path"));
+        goto cleanup;
+    }
+
+    if (virDomainHostdevFind(vm->def, def, NULL) >= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("host device already exists"));
+        return -1;
+    }
+
+    if (stat(def->source.caps.u.misc.chardev, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"),
+                             def->source.caps.u.misc.chardev);
+        goto cleanup;
+    }
+
+    if (!S_ISCHR(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Hostdev source %s must be a block device"),
+                       def->source.caps.u.misc.chardev);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&vroot, "/proc/%llu/root",
+                    (unsigned long long)priv->initpid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dst, "%s/%s",
+                    vroot,
+                    def->source.caps.u.misc.chardev) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    mode = 0700 | S_IFCHR;
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              def->source.caps.u.misc.chardev,
+              major(sb.st_rdev), minor(sb.st_rdev));
+    if (mknod(dst, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             dst);
+        goto cleanup;
+    }
+    created = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, def, vroot) < 0)
+        goto cleanup;
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (virCgroupAllowDevicePath(group, def->source.caps.u.misc.chardev,
+                                 VIR_CGROUP_DEVICE_RW |
+                                 VIR_CGROUP_DEVICE_MKNOD) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot allow device %s for domain %s"),
+                       def->source.caps.u.misc.chardev, vm->def->name);
+        goto cleanup;
+    }
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = def;
+
+    ret = 0;
+
+cleanup:
+    virDomainAuditHostdev(vm, def, "attach", ret == 0);
+    if (group)
+        virCgroupFree(&group);
+    if (dst && created && ret < 0)
+        unlink(dst);
+    VIR_FREE(dst);
+    VIR_FREE(vroot);
+    return ret;
+}
+
+
+static int
 lxcDomainAttachDeviceHostdevSubsysLive(virLXCDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainDeviceDefPtr dev)
@@ -3617,6 +3730,9 @@ lxcDomainAttachDeviceHostdevCapsLive(virLXCDriverPtr driver,
     switch (dev->data.hostdev->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
         return lxcDomainAttachDeviceHostdevStorageLive(driver, vm, dev);
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        return lxcDomainAttachDeviceHostdevMiscLive(driver, vm, dev);
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3985,6 +4101,77 @@ cleanup:
 
 
 static int
+lxcDomainDetachDeviceHostdevMiscLive(virLXCDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDeviceDefPtr dev)
+{
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virDomainHostdevDefPtr def = NULL;
+    virCgroupPtr group = NULL;
+    int i, ret = -1;
+    char *dst = NULL;
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Cannot attach disk until init PID is known"));
+        goto cleanup;
+    }
+
+    if ((i = virDomainHostdevFind(vm->def,
+                                  dev->data.hostdev,
+                                  &def)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("hostdev %s not found"),
+                       dev->data.hostdev->source.caps.u.misc.chardev);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dst, "/proc/%llu/root/%s",
+                    (unsigned long long)priv->initpid,
+                    def->source.caps.u.misc.chardev) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!lxcCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("devices cgroup isn't mounted"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &group, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find cgroup for domain %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Unlinking %s", dst);
+    if (unlink(dst) < 0 && errno != ENOENT) {
+        virDomainAuditHostdev(vm, def, "detach", false);
+        virReportSystemError(errno,
+                             _("Unable to remove device %s"), dst);
+        goto cleanup;
+    }
+    virDomainAuditHostdev(vm, def, "detach", true);
+
+    if (virCgroupDenyDevicePath(group, def->source.caps.u.misc.chardev, VIR_CGROUP_DEVICE_RWM) != 0)
+        VIR_WARN("cannot deny device %s for domain %s",
+                 def->source.caps.u.misc.chardev, vm->def->name);
+
+    virDomainHostdevRemove(vm->def, i);
+    virDomainHostdevDefFree(def);
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(dst);
+    if (group)
+        virCgroupFree(&group);
+    return ret;
+}
+
+
+static int
 lxcDomainDetachDeviceHostdevSubsysLive(virLXCDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainDeviceDefPtr dev)
@@ -4010,6 +4197,9 @@ lxcDomainDetachDeviceHostdevCapsLive(virLXCDriverPtr driver,
     switch (dev->data.hostdev->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
         return lxcDomainDetachDeviceHostdevStorageLive(driver, vm, dev);
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+        return lxcDomainDetachDeviceHostdevMiscLive(driver, vm, dev);
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
