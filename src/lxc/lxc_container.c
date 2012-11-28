@@ -1385,6 +1385,64 @@ cleanup:
 }
 
 
+static int lxcContainerSetupHostdevCapsStorage(virDomainDefPtr vmDef ATTRIBUTE_UNUSED,
+                                               virDomainHostdevDefPtr def ATTRIBUTE_UNUSED,
+                                               const char *dstprefix ATTRIBUTE_UNUSED,
+                                               virSecurityManagerPtr securityDriver ATTRIBUTE_UNUSED)
+{
+    char *src = NULL;
+    int ret = -1;
+    struct stat sb;
+    mode_t mode;
+
+    if (def->source.caps.u.storage.block == NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Missing storage host block path"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&src, "%s/%s", dstprefix, def->source.caps.u.storage.block) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (stat(src, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"),
+                             src);
+        goto cleanup;
+    }
+
+    if (!S_ISBLK(sb.st_mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Storage source %s must be a block device"),
+                       def->source.caps.u.storage.block);
+        goto cleanup;
+    }
+
+    mode = 0700 | S_IFBLK;
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              def->source.caps.u.storage.block,
+              major(sb.st_rdev), minor(sb.st_rdev));
+    if (mknod(def->source.caps.u.storage.block, mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create device %s"),
+                             def->source.caps.u.storage.block);
+        goto cleanup;
+    }
+
+    if (virSecurityManagerSetHostdevLabel(securityDriver, vmDef, def, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(src);
+    return ret;
+}
+
+
 static int lxcContainerSetupHostdevSubsys(virDomainDefPtr vmDef,
                                           virDomainHostdevDefPtr def,
                                           const char *dstprefix,
@@ -1403,6 +1461,24 @@ static int lxcContainerSetupHostdevSubsys(virDomainDefPtr vmDef,
 }
 
 
+static int lxcContainerSetupHostdevCaps(virDomainDefPtr vmDef,
+                                        virDomainHostdevDefPtr def,
+                                        const char *dstprefix,
+                                        virSecurityManagerPtr securityDriver)
+{
+    switch (def->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+        return lxcContainerSetupHostdevCapsStorage(vmDef, def, dstprefix, securityDriver);
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported host device mode %s"),
+                       virDomainHostdevCapsTypeToString(def->source.subsys.type));
+        return -1;
+    }
+}
+
+
 static int lxcContainerSetupAllHostdevs(virDomainDefPtr vmDef,
                                         const char *dstprefix,
                                         virSecurityManagerPtr securityDriver)
@@ -1415,6 +1491,10 @@ static int lxcContainerSetupAllHostdevs(virDomainDefPtr vmDef,
         switch (def->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
             if (lxcContainerSetupHostdevSubsys(vmDef, def, dstprefix, securityDriver) < 0)
+                return -1;
+            break;
+        case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+            if (lxcContainerSetupHostdevCaps(vmDef, def, dstprefix, securityDriver) < 0)
                 return -1;
             break;
         default:

@@ -414,21 +414,37 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         usbDevice *usb;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
-            continue;
-        if (hostdev->missing)
-            continue;
+        switch (hostdev->mode) {
+        case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+            if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+                continue;
+            if (hostdev->missing)
+                continue;
 
-        if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                                hostdev->source.subsys.u.usb.device,
-                                NULL)) == NULL)
-            goto cleanup;
+            if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+                                    hostdev->source.subsys.u.usb.device,
+                                    NULL)) == NULL)
+                goto cleanup;
 
-        if (usbDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
-                                 cgroup) < 0)
-            goto cleanup;
+            if (usbDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
+                                     cgroup) < 0)
+                goto cleanup;
+            break;
+        case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+            switch (hostdev->source.caps.type) {
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+                if (virCgroupAllowDevicePath(cgroup,
+                                             hostdev->source.caps.u.storage.block,
+                                             VIR_CGROUP_DEVICE_RW |
+                                             VIR_CGROUP_DEVICE_MKNOD) < 0)
+                    goto cleanup;
+                break;
+            default:
+                break;
+            }
+        default:
+            break;
+        }
     }
 
     rc = virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
