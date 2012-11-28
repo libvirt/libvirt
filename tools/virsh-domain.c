@@ -4101,9 +4101,9 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
 
     if (mode) {
         if (STREQ(mode, "acpi")) {
-            flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
+            flags |= VIR_DOMAIN_REBOOT_ACPI_POWER_BTN;
         } else if (STREQ(mode, "agent")) {
-            flags |= VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
+            flags |= VIR_DOMAIN_REBOOT_GUEST_AGENT;
         } else {
             vshError(ctl, _("Unknown mode %s value, expecting 'acpi' or 'agent'"), mode);
             return false;

@@ -1893,8 +1893,8 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     qemuDomainObjPrivatePtr priv;
     bool useAgent = false;
 
-    virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
-                  VIR_DOMAIN_SHUTDOWN_GUEST_AGENT , -1);
+    virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
+                  VIR_DOMAIN_REBOOT_GUEST_AGENT , -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1910,8 +1910,8 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     priv = vm->privateData;
 
-    if ((flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT) ||
-        (!(flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
+    if ((flags & VIR_DOMAIN_REBOOT_GUEST_AGENT) ||
+        (!(flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN) &&
          priv->agent))
         useAgent = true;
 

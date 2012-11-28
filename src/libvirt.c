@@ -3305,8 +3305,8 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     }
 
     /* At most one of these two flags should be set.  */
-    if ((flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) &&
-        (flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT)) {
+    if ((flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN) &&
+        (flags & VIR_DOMAIN_REBOOT_GUEST_AGENT)) {
         virReportInvalidArg(flags, "%s",
                             _("flags for acpi power button and guest agent are mutually exclusive"));
         goto error;
