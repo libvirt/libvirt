@@ -813,13 +813,13 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
      */
     if (!xmlSetProp(if_node, BAD_CAST "type", BAD_CAST if_type)) {
         vshError(ctl, _("Failed to set new slave interface type to '%s' in xml document"),
-                 if_name);
+                 if_type);
         goto cleanup;
     }
 
     if (!xmlSetProp(if_node, BAD_CAST "name", BAD_CAST if_name)) {
         vshError(ctl, _("Failed to set new slave interface name to '%s' in xml document"),
-            br_name);
+                 if_name);
         goto cleanup;
     }
 
