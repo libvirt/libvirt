@@ -573,12 +573,12 @@ virNWFilterSnoopReqNew(const char *ifkey)
 {
     virNWFilterSnoopReqPtr req;
 
-    if (ifkey == NULL || strlen(ifkey) != VIR_IFKEY_LEN - 1) {
+    if (ifkey == NULL || (ifkey && (strlen(ifkey) != VIR_IFKEY_LEN - 1))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterSnoopReqNew called with invalid "
                          "key \"%s\" (%zu)"),
                        ifkey ? ifkey : "",
-                       strlen(ifkey));
+                       ifkey ? strlen(ifkey) : 0);
         return NULL;
     }
 
