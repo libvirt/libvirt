@@ -347,6 +347,41 @@ error:
     return ret;
 }
 
+static int test7(const void *v ATTRIBUTE_UNUSED)
+{
+    virBitmapPtr bitmap;
+    size_t i;
+    size_t maxBit[] = {
+        1, 8, 31, 32, 63, 64, 95, 96, 127, 128, 159, 160
+    };
+    size_t nmaxBit = 12;
+
+    for (i = 0; i < nmaxBit; i++) {
+        bitmap = virBitmapNew(maxBit[i]);
+        if (!bitmap)
+            goto error;
+
+        if (virBitmapIsAllSet(bitmap))
+            goto error;
+
+        ignore_value(virBitmapSetBit(bitmap, 1));
+        if (virBitmapIsAllSet(bitmap))
+            goto error;
+
+        virBitmapSetAll(bitmap);
+        if (!virBitmapIsAllSet(bitmap))
+            goto error;
+
+        virBitmapFree(bitmap);
+    }
+
+    return 0;
+
+error:
+    virBitmapFree(bitmap);
+    return -1;
+}
+
 static int
 mymain(void)
 {
@@ -363,6 +398,8 @@ mymain(void)
     if (virtTestRun("test5", 1, test5, NULL) < 0)
         ret = -1;
     if (virtTestRun("test6", 1, test6, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("test7", 1, test7, NULL) < 0)
         ret = -1;
 
 
