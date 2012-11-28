@@ -3258,7 +3258,9 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
     saved_node = ctxt->node;
 
     /* Allocate a security labels based on XML */
-    if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) == 0)
+    if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) < 0)
+        goto error;
+    if (n == 0)
         return 0;
 
     if (VIR_ALLOC_N(def->seclabels, n) < 0) {
@@ -3345,7 +3347,9 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     virSecurityLabelDefPtr vmDef = NULL;
     char *model, *relabel, *label;
 
-    if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) == 0)
+    if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) < 0)
+        goto error;
+    if (n == 0)
         return 0;
 
     if (VIR_ALLOC_N(seclabels, n) < 0) {
