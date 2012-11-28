@@ -1363,6 +1363,10 @@ virFileTouch;
 virFileUpdatePerm;
 
 
+# virinitctl.h
+virInitctlSetRunLevel;
+
+
 # virkeycode.h
 virKeycodeSetTypeFromString;
 virKeycodeSetTypeToString;

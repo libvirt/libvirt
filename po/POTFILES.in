@@ -153,6 +153,7 @@ src/util/virauthconfig.c
 src/util/virdbus.c
 src/util/virfile.c
 src/util/virhash.c
+src/util/virinitctl.c
 src/util/virkeyfile.c
 src/util/virlockspace.c
 src/util/virnetdev.c
