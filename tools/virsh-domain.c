@@ -4046,8 +4046,13 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
             flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
         } else if (STREQ(mode, "agent")) {
             flags |= VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
+        } else if (STREQ(mode, "initctl")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_INITCTL;
+        } else if (STREQ(mode, "signal")) {
+            flags |= VIR_DOMAIN_SHUTDOWN_SIGNAL;
         } else {
-            vshError(ctl, _("Unknown mode %s value, expecting 'acpi' or 'agent'"), mode);
+            vshError(ctl, _("Unknown mode %s value, expecting "
+                            "'acpi', 'agent', 'initctl' or 'signal'"), mode);
             return false;
         }
     }
@@ -4104,8 +4109,13 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
             flags |= VIR_DOMAIN_REBOOT_ACPI_POWER_BTN;
         } else if (STREQ(mode, "agent")) {
             flags |= VIR_DOMAIN_REBOOT_GUEST_AGENT;
+        } else if (STREQ(mode, "initctl")) {
+            flags |= VIR_DOMAIN_REBOOT_INITCTL;
+        } else if (STREQ(mode, "signal")) {
+            flags |= VIR_DOMAIN_REBOOT_SIGNAL;
         } else {
-            vshError(ctl, _("Unknown mode %s value, expecting 'acpi' or 'agent'"), mode);
+            vshError(ctl, _("Unknown mode %s value, expecting "
+                            "'acpi', 'agent', 'initctl' or 'signal'"), mode);
             return false;
         }
     }
