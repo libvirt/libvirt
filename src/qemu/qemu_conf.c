@@ -74,10 +74,11 @@ void qemuDriverUnlock(virQEMUDriverPtr driver)
 
 int qemuLoadDriverConfig(virQEMUDriverPtr driver,
                          const char *filename) {
-    virConfPtr conf;
+    virConfPtr conf = NULL;
     virConfValuePtr p;
-    char *user;
-    char *group;
+    char *user = NULL;
+    char *group = NULL;
+    int ret = -1;
     int i;
 
     /* Setup critical defaults */
@@ -86,28 +87,21 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     driver->dynamicOwnership = 1;
     driver->clearEmulatorCapabilities = 1;
 
-    if (!(driver->vncListen = strdup("127.0.0.1"))) {
-        virReportOOMError();
-        return -1;
-    }
+    if (!(driver->vncListen = strdup("127.0.0.1")))
+        goto no_memory;
 
     driver->remotePortMin = QEMU_REMOTE_PORT_MIN;
     driver->remotePortMax = QEMU_REMOTE_PORT_MAX;
 
-    if (!(driver->vncTLSx509certdir = strdup(SYSCONFDIR "/pki/libvirt-vnc"))) {
-        virReportOOMError();
-        return -1;
-    }
+    if (!(driver->vncTLSx509certdir = strdup(SYSCONFDIR "/pki/libvirt-vnc")))
+        goto no_memory;
 
-    if (!(driver->spiceListen = strdup("127.0.0.1"))) {
-        virReportOOMError();
-        return -1;
-    }
+    if (!(driver->spiceListen = strdup("127.0.0.1")))
+        goto no_memory;
+
     if (!(driver->spiceTLSx509certdir
-          = strdup(SYSCONFDIR "/pki/libvirt-spice"))) {
-        virReportOOMError();
-        return -1;
-    }
+          = strdup(SYSCONFDIR "/pki/libvirt-spice")))
+        goto no_memory;
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
     /* For privileged driver, try and find hugepage mount automatically.
@@ -118,14 +112,13 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
         if (errno != ENOENT) {
             virReportSystemError(errno, "%s",
                                  _("unable to find hugetlbfs mountpoint"));
-            return -1;
+            goto cleanup;
         }
     }
 #endif
 
-    if (!(driver->lockManager =
-          virLockManagerPluginNew("nop", NULL, 0)))
-        return -1;
+    if (!(driver->lockManager = virLockManagerPluginNew("nop", NULL, 0)))
+        goto cleanup;
 
     driver->keepAliveInterval = 5;
     driver->keepAliveCount = 5;
@@ -136,22 +129,19 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
      */
     if (access(filename, R_OK) == -1) {
         VIR_INFO("Could not read qemu config file %s", filename);
-        return 0;
+        ret = 0;
+        goto cleanup;
     }
 
-    conf = virConfReadFile(filename, 0);
-    if (!conf) {
-        return -1;
-    }
-
+    if (!(conf = virConfReadFile(filename, 0)))
+        goto cleanup;
 
 #define CHECK_TYPE(name,typ)                          \
     if (p && p->type != (typ)) {                      \
         virReportError(VIR_ERR_INTERNAL_ERROR,        \
                        "%s: %s: expected type " #typ, \
                        filename, (name));             \
-        virConfFree(conf);                            \
-        return -1;                                    \
+        goto cleanup;                                 \
     }
 
 #define GET_VALUE_LONG(NAME, VAR)     \
@@ -165,11 +155,8 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     CHECK_TYPE(NAME, VIR_CONF_STRING);     \
     if (p && p->str) {                     \
         VIR_FREE(VAR);                     \
-        if (!(VAR = strdup(p->str))) {     \
-            virReportOOMError();           \
-            virConfFree(conf);             \
-            return -1;                     \
-        }                                  \
+        if (!(VAR = strdup(p->str)))       \
+            goto no_memory;                \
     }
 
     GET_VALUE_LONG("vnc_auto_unix_socket", driver->vncAutoUnixSocket);
@@ -190,36 +177,27 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
         /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR(_("security_driver be a list of strings"));
-                virConfFree(conf);
-                return -1;
+                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                               _("security_driver must be a list of strings"));
+                goto cleanup;
             }
         }
 
-        if (VIR_ALLOC_N(driver->securityDriverNames, len + 1) < 0) {
-            virReportOOMError();
-            virConfFree(conf);
-            return -1;
-        }
+        if (VIR_ALLOC_N(driver->securityDriverNames, len + 1) < 0)
+            goto no_memory;
 
         for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
-            driver->securityDriverNames[i] = strdup(pp->str);
-            if (driver->securityDriverNames == NULL) {
-                virReportOOMError();
-                virConfFree(conf);
-                return -1;
-            }
+            if (!(driver->securityDriverNames[i] = strdup(pp->str)))
+                goto no_memory;
         }
         driver->securityDriverNames[len] = NULL;
     } else {
         CHECK_TYPE("security_driver", VIR_CONF_STRING);
         if (p && p->str) {
             if (VIR_ALLOC_N(driver->securityDriverNames, 2) < 0 ||
-                !(driver->securityDriverNames[0] = strdup(p->str))) {
-                virReportOOMError();
-                virConfFree(conf);
-                return -1;
-            }
+                !(driver->securityDriverNames[0] = strdup(p->str)))
+                goto no_memory;
+
             driver->securityDriverNames[1] = NULL;
         }
     }
@@ -242,8 +220,7 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
                        _("%s: remote_display_port_min: port must be greater "
                          "than or equal to %d"),
                         filename, QEMU_REMOTE_PORT_MIN);
-        virConfFree(conf);
-        return -1;
+        goto cleanup;
     }
 
     GET_VALUE_LONG("remote_display_port_max", driver->remotePortMax);
@@ -253,8 +230,7 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
                         _("%s: remote_display_port_max: port must be between "
                           "the minimal port and %d"),
                        filename, QEMU_REMOTE_PORT_MAX);
-        virConfFree(conf);
-        return -1;
+        goto cleanup;
     }
     /* increasing the value by 1 makes all the loops going through
     the bitmap (i = remotePortMin; i < remotePortMax; i++), work as
@@ -265,38 +241,24 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("%s: remote_display_port_min: min port must not be "
                           "greater than max port"), filename);
-        virConfFree(conf);
-        return -1;
+        goto cleanup;
     }
 
     p = virConfGetValue(conf, "user");
     CHECK_TYPE("user", VIR_CONF_STRING);
-    if (!(user = strdup(p && p->str ? p->str : QEMU_USER))) {
-        virReportOOMError();
-        virConfFree(conf);
-        return -1;
-    }
-    if (virGetUserID(user, &driver->user) < 0) {
-        VIR_FREE(user);
-        virConfFree(conf);
-        return -1;
-    }
-    VIR_FREE(user);
+    if (!(user = strdup(p && p->str ? p->str : QEMU_USER)))
+        goto no_memory;
 
+    if (virGetUserID(user, &driver->user) < 0)
+        goto cleanup;
 
     p = virConfGetValue(conf, "group");
     CHECK_TYPE("group", VIR_CONF_STRING);
-    if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP))) {
-        virReportOOMError();
-        virConfFree(conf);
-        return -1;
-    }
-    if (virGetGroupID(group, &driver->group) < 0) {
-        VIR_FREE(group);
-        virConfFree(conf);
-        return -1;
-    }
-    VIR_FREE(group);
+    if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP)))
+        goto no_memory;
+
+    if (virGetGroupID(group, &driver->group) < 0)
+        goto cleanup;
 
     GET_VALUE_LONG("dynamic_ownership", driver->dynamicOwnership);
 
@@ -307,15 +269,16 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             int ctl;
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR(_("cgroup_controllers must be a list of strings"));
-                virConfFree(conf);
-                return -1;
+                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                               _("cgroup_controllers must be a "
+                                 "list of strings"));
+                goto cleanup;
             }
-            ctl = virCgroupControllerTypeFromString(pp->str);
-            if (ctl < 0) {
-                VIR_ERROR(_("Unknown cgroup controller '%s'"), pp->str);
-                virConfFree(conf);
-                return -1;
+
+            if ((ctl = virCgroupControllerTypeFromString(pp->str)) < 0) {
+                virReportError(VIR_ERR_CONF_SYNTAX,
+                               _("Unknown cgroup controller '%s'"), pp->str);
+                goto cleanup;
             }
             driver->cgroupControllers |= (1 << ctl);
         }
@@ -342,24 +305,18 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
         virConfValuePtr pp;
         for (pp = p->list; pp; pp = pp->next)
             len++;
-        if (VIR_ALLOC_N(driver->cgroupDeviceACL, 1+len) < 0) {
-            virReportOOMError();
-            virConfFree(conf);
-            return -1;
-        }
+        if (VIR_ALLOC_N(driver->cgroupDeviceACL, 1+len) < 0)
+            goto no_memory;
+
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
-                VIR_ERROR(_("cgroup_device_acl must be a list of strings"));
-                virConfFree(conf);
-                return -1;
+                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                               _("cgroup_device_acl must be a "
+                                 "list of strings"));
+                goto cleanup;
             }
-            driver->cgroupDeviceACL[i] = strdup(pp->str);
-            if (driver->cgroupDeviceACL[i] == NULL) {
-                virReportOOMError();
-                virConfFree(conf);
-                return -1;
-            }
-
+            if (!(driver->cgroupDeviceACL[i] = strdup(pp->str)))
+                goto no_memory;
         }
         driver->cgroupDeviceACL[i] = NULL;
     }
@@ -381,16 +338,14 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
             virReportSystemError(errno,
                                  _("failed to enable mac filter in '%s'"),
                                  __FILE__);
-            virConfFree(conf);
-            return -1;
+            goto cleanup;
         }
 
         if ((errno = networkDisableAllFrames(driver))) {
             virReportSystemError(errno,
                          _("failed to add rule to drop all frames in '%s'"),
                                  __FILE__);
-            virConfFree(conf);
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -406,11 +361,9 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     if (p && p->str) {
         char *lockConf;
         virLockManagerPluginUnref(driver->lockManager);
-        if (virAsprintf(&lockConf, "%s/libvirt/qemu-%s.conf", SYSCONFDIR, p->str) < 0) {
-            virReportOOMError();
-            virConfFree(conf);
-            return -1;
-        }
+        if (virAsprintf(&lockConf, "%s/libvirt/qemu-%s.conf", SYSCONFDIR, p->str) < 0)
+            goto no_memory;
+
         if (!(driver->lockManager =
               virLockManagerPluginNew(p->str, lockConf, 0)))
             VIR_ERROR(_("Failed to load lock manager %s"), p->str);
@@ -422,8 +375,17 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     GET_VALUE_LONG("keepalive_count", driver->keepAliveCount);
     GET_VALUE_LONG("seccomp_sandbox", driver->seccompSandbox);
 
+    ret = 0;
+
+cleanup:
+    VIR_FREE(user);
+    VIR_FREE(group);
     virConfFree(conf);
-    return 0;
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
 }
 #undef GET_VALUE_LONG
 #undef GET_VALUE_STRING
