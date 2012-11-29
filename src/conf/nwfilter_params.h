@@ -57,6 +57,8 @@ const char *virNWFilterVarValueGetSimple(const virNWFilterVarValuePtr val);
 const char *virNWFilterVarValueGetNthValue(virNWFilterVarValuePtr val,
                                            unsigned int idx);
 unsigned int virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr);
+bool virNWFilterVarValueEqual(const virNWFilterVarValuePtr a,
+                              const virNWFilterVarValuePtr b);
 int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 

@@ -189,6 +189,37 @@ virNWFilterVarValueGetCardinality(const virNWFilterVarValuePtr val)
     return 0;
 }
 
+bool
+virNWFilterVarValueEqual(const virNWFilterVarValuePtr a,
+                         const virNWFilterVarValuePtr b)
+{
+    unsigned int card, i, j;
+    const char *s;
+
+    if (!a || !b)
+        return false;
+
+    card = virNWFilterVarValueGetCardinality(a);
+    if (card != virNWFilterVarValueGetCardinality(b))
+        return false;
+
+    /* brute force O(n^2) comparison */
+    for (i = 0; i < card; i++) {
+        bool eq = false;
+
+        s = virNWFilterVarValueGetNthValue(a, i);
+        for (j = 0; j < card; j++) {
+            if (STREQ_NULLABLE(s, virNWFilterVarValueGetNthValue(b, j))) {
+                 eq = true;
+                 break;
+            }
+        }
+        if (!eq)
+            return false;
+    }
+    return true;
+}
+
 int
 virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
 {
