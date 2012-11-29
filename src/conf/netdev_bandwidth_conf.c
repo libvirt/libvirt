@@ -96,7 +96,7 @@ virNetDevBandwidthPtr
 virNetDevBandwidthParse(xmlNodePtr node)
 {
     virNetDevBandwidthPtr def = NULL;
-    xmlNodePtr cur = node->children;
+    xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
 
     if (VIR_ALLOC(def) < 0) {
@@ -109,6 +109,8 @@ virNetDevBandwidthParse(xmlNodePtr node)
                        _("invalid argument supplied"));
         goto error;
     }
+
+    cur = node->children;
 
     while (cur) {
         if (cur->type == XML_ELEMENT_NODE) {
