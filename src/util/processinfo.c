@@ -139,7 +139,7 @@ realloc:
     }
 
     *map = virBitmapNew(maxcpu);
-    if (!map) {
+    if (!*map) {
         virReportOOMError();
         return -1;
     }
