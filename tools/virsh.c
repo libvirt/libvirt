@@ -1562,19 +1562,19 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             !(cmd->def->flags & VSH_CMD_FLAG_NOCONNECT))
             vshReconnect(ctl);
 
+        if (enable_timing)
+            GETTIMEOFDAY(&before);
+
         if ((cmd->def->flags & VSH_CMD_FLAG_NOCONNECT) ||
             vshConnectionUsability(ctl, ctl->conn)) {
-            if (enable_timing)
-                GETTIMEOFDAY(&before);
-
             ret = cmd->def->handler(ctl, cmd);
-
-            if (enable_timing)
-                GETTIMEOFDAY(&after);
         } else {
             /* connection is not usable, return error */
             ret = false;
         }
+
+        if (enable_timing)
+            GETTIMEOFDAY(&after);
 
         /* try to automatically catch disconnections */
         if (!ret &&
