@@ -218,7 +218,7 @@ int virNetMessageEncodeHeader(virNetMessagePtr msg)
     msg->bufferLength = VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX;
     if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0) {
         virReportOOMError();
-        goto cleanup;
+        return ret;
     }
     msg->bufferOffset = 0;
 
