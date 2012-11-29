@@ -935,7 +935,7 @@ virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                        unsigned int flags)
 {
     int count = virDomainSnapshotObjListNum(snapshots, from, flags);
-    virDomainSnapshotPtr *list;
+    virDomainSnapshotPtr *list = NULL;
     char **names;
     int ret = -1;
     int i;
