@@ -242,7 +242,7 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
 
     if (ret != 0) {
         virReportSystemError(errno, "%s",
-                             _("monitor socket did not show up."));
+                             _("monitor socket did not show up"));
         goto error;
     }
 
