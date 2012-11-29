@@ -20229,18 +20229,19 @@ error:
 /**
  * virDomainFSTrim:
  * @dom: a domain object
- * @mountPoint: which mount point trim
+ * @mountPoint: which mount point to trim
  * @minimum: Minimum contiguous free range to discard in bytes
  * @flags: extra flags, not used yet, so callers should always pass 0
  *
  * Calls FITRIM within the guest (hence guest agent may be
  * required depending on hypervisor used). Either call it on each
  * mounted filesystem (@mountPoint is NULL) or just on specified
- * @mountPoint. @minimum tell that free ranges smaller than this
+ * @mountPoint. @minimum hints that free ranges smaller than this
  * may be ignored (this is a hint and the guest may not respect
  * it).  By increasing this value, the fstrim operation will
  * complete more quickly for filesystems with badly fragmented
  * free space, although not all blocks will be discarded.
+ * If @minimum is not zero, the command may fail.
  *
  * Returns 0 on success, -1 otherwise.
  */
