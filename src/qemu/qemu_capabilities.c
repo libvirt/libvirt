@@ -2345,8 +2345,10 @@ qemuCapsInitQMP(qemuCapsPtr caps,
         goto cleanup;
     }
 
-    if (!(mon = qemuMonitorOpen(NULL, &config, true, &callbacks)))
+    if (!(mon = qemuMonitorOpen(NULL, &config, true, &callbacks))) {
+        ret = 0;
         goto cleanup;
+    }
 
     qemuMonitorLock(mon);
 
