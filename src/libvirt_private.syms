@@ -1761,6 +1761,12 @@ virSetErrorLogPriorityFunc;
 virStrerror;
 
 
+# virstring.h
+virStringSplit;
+virStringJoin;
+virStringFreeList;
+
+
 # virtime.h
 virTimeFieldsNow;
 virTimeFieldsNowRaw;

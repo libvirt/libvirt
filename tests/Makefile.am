@@ -93,7 +93,9 @@ test_programs = virshtest sockettest \
 	utiltest virnettlscontexttest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
-	virbitmaptest
+	virbitmaptest \
+	virstringtest \
+	$(NULL)
 
 if WITH_SECDRIVER_SELINUX
 test_programs += securityselinuxtest
@@ -536,6 +538,11 @@ virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
 virtimetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virtimetest_LDADD = $(LDADDS)
+
+virstringtest_SOURCES = \
+	virstringtest.c testutils.h testutils.c
+virstringtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virstringtest_LDADD = $(LDADDS)
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
