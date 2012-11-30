@@ -4036,20 +4036,20 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     const char *mode = NULL;
     int flags = 0;
     int rv;
-    char **modes, **tmp;
+    char **modes = NULL, **tmp;
 
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
         return false;
     }
 
-    if (!(modes = virStringSplit(mode, ",", 0))) {
+    if (mode && !(modes = virStringSplit(mode, ",", 0))) {
         vshError(ctl, "%s", _("Cannot parse mode string"));
         return false;
     }
 
     tmp = modes;
-    while (*tmp) {
+    while (tmp && *tmp) {
         mode = *tmp;
         if (STREQ(mode, "acpi")) {
             flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
@@ -4112,20 +4112,20 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     const char *mode = NULL;
     int flags = 0;
-    char **modes, **tmp;
+    char **modes = NULL, **tmp;
 
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
         return false;
     }
 
-    if (!(modes = virStringSplit(mode, ",", 0))) {
+    if (mode && !(modes = virStringSplit(mode, ",", 0))) {
         vshError(ctl, "%s", _("Cannot parse mode string"));
         return false;
     }
 
     tmp = modes;
-    while (*tmp) {
+    while (tmp && *tmp) {
         mode = *tmp;
         if (STREQ(mode, "acpi")) {
             flags |= VIR_DOMAIN_REBOOT_ACPI_POWER_BTN;
