@@ -491,10 +491,8 @@ int qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
     /* Loop 5: Now mark all the devices as active */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
-            pciFreeDevice(dev);
+        if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0)
             goto inactivedevs;
-        }
     }
 
     /* Loop 6: Now remove the devices from inactive list. */
