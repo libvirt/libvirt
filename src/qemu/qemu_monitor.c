@@ -2408,7 +2408,7 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
                                  int vlan,
                                  const char *netname)
 {
-    int ret;
+    int ret = -1;
     VIR_DEBUG("mon=%p netname=%s",
           mon, netname);
 
@@ -2541,7 +2541,7 @@ int qemuMonitorAttachDrive(qemuMonitorPtr mon,
           mon, drivestr,
           controllerAddr->domain, controllerAddr->bus,
           controllerAddr->slot, controllerAddr->function);
-    int ret;
+    int ret = 1;
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
