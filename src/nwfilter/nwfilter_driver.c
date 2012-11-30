@@ -174,8 +174,10 @@ nwfilterDriverStartup(bool privileged)
     sysbus = virDBusGetSystemBus();
 #endif /* HAVE_DBUS */
 
-    if (VIR_ALLOC(driverState) < 0)
-        goto alloc_err_exit;
+    if (VIR_ALLOC(driverState) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     if (virMutexInit(&driverState->lock) < 0)
         goto err_free_driverstate;
@@ -247,10 +249,7 @@ error:
     nwfilterDriverUnlock(driverState);
     nwfilterDriverShutdown();
 
-alloc_err_exit:
     return -1;
-
-    nwfilterDriverUnlock(driverState);
 
 err_techdrivers_shutdown:
     virNWFilterTechDriversShutdown();
