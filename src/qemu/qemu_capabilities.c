@@ -292,6 +292,23 @@ qemuCapsProbeCommand(const char *qemu,
 }
 
 
+static void
+qemuSetDefaultMachine(qemuCapsPtr caps,
+                      size_t defIdx)
+{
+    char *name = caps->machineTypes[defIdx];
+    char *alias = caps->machineAliases[defIdx];
+
+    memmove(caps->machineTypes + 1,
+            caps->machineTypes,
+            sizeof(caps->machineTypes[0]) * defIdx);
+    memmove(caps->machineAliases + 1,
+            caps->machineAliases,
+            sizeof(caps->machineAliases[0]) * defIdx);
+    caps->machineTypes[0] = name;
+    caps->machineAliases[0] = alias;
+}
+
 /* Format is:
  * <machine> <desc> [(default)|(alias of <canonical>)]
  */
@@ -352,18 +369,8 @@ qemuCapsParseMachineTypesStr(const char *output,
     } while ((p = next));
 
 
-    if (defIdx != 0) {
-        char *name = caps->machineTypes[defIdx];
-        char *alias = caps->machineAliases[defIdx];
-        memmove(caps->machineTypes + 1,
-                caps->machineTypes,
-                sizeof(caps->machineTypes[0]) * defIdx);
-        memmove(caps->machineAliases + 1,
-                caps->machineAliases,
-                sizeof(caps->machineAliases[0]) * defIdx);
-        caps->machineTypes[0] = name;
-        caps->machineAliases[0] = alias;
-    }
+    if (defIdx)
+        qemuSetDefaultMachine(caps, defIdx);
 
     return 0;
 
@@ -2020,6 +2027,7 @@ qemuCapsProbeQMPMachineTypes(qemuCapsPtr caps,
     int nmachines = 0;
     int ret = -1;
     size_t i;
+    size_t defIdx = 0;
 
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
         goto cleanup;
@@ -2049,7 +2057,13 @@ qemuCapsProbeQMPMachineTypes(qemuCapsPtr caps,
                 goto cleanup;
             }
         }
+        if (machines[i]->isDefault)
+            defIdx = i;
     }
+    caps->nmachineTypes = nmachines;
+
+    if (defIdx)
+        qemuSetDefaultMachine(caps, defIdx);
 
     ret = 0;
 
