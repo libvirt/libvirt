@@ -163,7 +163,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     }
 
     /* Denied */
-    VIR_ERROR(_("SASL client %s not allowed in whitelist"), identity);
+    VIR_ERROR(_("SASL client identity '%s' not allowed in whitelist"), identity);
 
     /* This is the most common error: make it informative. */
     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
