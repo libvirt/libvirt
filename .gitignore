@@ -170,6 +170,7 @@
 /tests/virlockspacetest
 /tests/virnet*test
 /tests/virshtest
+/tests/virstringtest
 /tests/virtimetest
 /tests/viruritest
 /tests/vmx2xmltest
