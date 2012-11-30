@@ -537,7 +537,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (duration <= 0) {
+    if (duration < 0) {
         vshError(ctl, "%s", _("Invalid duration"));
         return false;
     }
