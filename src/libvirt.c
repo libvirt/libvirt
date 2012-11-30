@@ -6713,7 +6713,8 @@ virNodeSuspendForDuration(virConnectPtr conn,
                           unsigned int flags)
 {
 
-    VIR_DEBUG("conn=%p, target=%d, duration=%lld", conn, target, duration);
+    VIR_DEBUG("conn=%p, target=%d, duration=%lld, flags=%x",
+              conn, target, duration, flags);
 
     virResetLastError();
 
@@ -20233,7 +20234,7 @@ virDomainGetHostname(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain);
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
 
     virResetLastError();
 
