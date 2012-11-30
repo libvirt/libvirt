@@ -3246,7 +3246,7 @@ virDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain);
+    VIR_DOMAIN_DEBUG(domain, "flags=%u", flags);
 
     virResetLastError();
 
