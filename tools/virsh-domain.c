@@ -48,6 +48,7 @@
 #include "virfile.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"
+#include "virstring.h"
 #include "virsh-domain-monitor.h"
 #include "virterror_internal.h"
 #include "virtypedparam.h"
@@ -4029,19 +4030,27 @@ static const vshCmdOptDef opts_shutdown[] = {
 static bool
 cmdShutdown(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    bool ret = true;
+    virDomainPtr dom = NULL;
+    bool ret = false;
     const char *name;
     const char *mode = NULL;
     int flags = 0;
     int rv;
+    char **modes, **tmp;
 
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
         return false;
     }
 
-    if (mode) {
+    if (!(modes = virStringSplit(mode, ",", 0))) {
+        vshError(ctl, "%s", _("Cannot parse mode string"));
+        return false;
+    }
+
+    tmp = modes;
+    while (*tmp) {
+        mode = *tmp;
         if (STREQ(mode, "acpi")) {
             flags |= VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN;
         } else if (STREQ(mode, "agent")) {
@@ -4053,12 +4062,13 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshError(ctl, _("Unknown mode %s value, expecting "
                             "'acpi', 'agent', 'initctl' or 'signal'"), mode);
-            return false;
+            goto cleanup;
         }
+        tmp++;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
-        return false;
+        goto cleanup;
 
     if (flags)
         rv = virDomainShutdownFlags(dom, flags);
@@ -4068,10 +4078,14 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("Domain %s is being shutdown\n"), name);
     } else {
         vshError(ctl, _("Failed to shutdown domain %s"), name);
-        ret = false;
+        goto cleanup;
     }
 
-    virDomainFree(dom);
+    ret = true;
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    virStringFreeList(modes);
     return ret;
 }
 
@@ -4093,18 +4107,26 @@ static const vshCmdOptDef opts_reboot[] = {
 static bool
 cmdReboot(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    bool ret = true;
+    virDomainPtr dom = NULL;
+    bool ret = false;
     const char *name;
     const char *mode = NULL;
     int flags = 0;
+    char **modes, **tmp;
 
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Invalid type"));
         return false;
     }
 
-    if (mode) {
+    if (!(modes = virStringSplit(mode, ",", 0))) {
+        vshError(ctl, "%s", _("Cannot parse mode string"));
+        return false;
+    }
+
+    tmp = modes;
+    while (*tmp) {
+        mode = *tmp;
         if (STREQ(mode, "acpi")) {
             flags |= VIR_DOMAIN_REBOOT_ACPI_POWER_BTN;
         } else if (STREQ(mode, "agent")) {
@@ -4116,21 +4138,26 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
         } else {
             vshError(ctl, _("Unknown mode %s value, expecting "
                             "'acpi', 'agent', 'initctl' or 'signal'"), mode);
-            return false;
+            goto cleanup;
         }
+        tmp++;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
-        return false;
+        goto cleanup;
 
     if (virDomainReboot(dom, flags) == 0) {
         vshPrint(ctl, _("Domain %s is being rebooted\n"), name);
     } else {
         vshError(ctl, _("Failed to reboot domain %s"), name);
-        ret = false;
+        goto cleanup;
     }
 
-    virDomainFree(dom);
+    ret = true;
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    virStringFreeList(modes);
     return ret;
 }
 
