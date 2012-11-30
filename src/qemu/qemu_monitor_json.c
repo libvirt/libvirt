@@ -2094,44 +2094,9 @@ cleanup:
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
                           int cpu, int online)
 {
-    int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("cpu_set",
-                                                     "U:cpu", (unsigned long long)cpu,
-                                                     "s:state", online ? "online" : "offline",
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("cpu_set command not found, trying HMP");
-        ret = qemuMonitorTextSetCPU(mon, cpu, online);
-        goto cleanup;
-    }
-
-    if (ret == 0) {
-        /* XXX See if CPU soft-failed due to lack of ACPI */
-#if 0
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
-            qemuMonitorJSONHasError(reply, "KVMMissingCap"))
-            goto cleanup;
-#endif
-
-        /* See if any other fatal error occurred */
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-        /* Real success */
-        if (ret == 0)
-            ret = 1;
-    }
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    /* XXX Update to use QMP, if QMP ever adds support for cpu hotplug */
+    VIR_DEBUG("no QMP support for cpu_set, trying HMP");
+    return qemuMonitorTextSetCPU(mon, cpu, online);
 }
 
 
@@ -2674,52 +2639,6 @@ int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddHostNetwork(qemuMonitorPtr mon,
-                                  const char *netstr)
-{
-    int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("host_net_add",
-                                                     "s:device", netstr,
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
-int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
-                                     int vlan,
-                                     const char *netname)
-{
-    int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("host_net_remove",
-                                                     "i:vlan", vlan,
-                                                     "s:device", netname,
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
 int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr)
 {
@@ -2886,74 +2805,6 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
-static int
-qemuMonitorJSONGetGuestDriveAddress(virJSONValuePtr reply,
-                                    virDomainDeviceDriveAddress *driveAddr)
-{
-    virJSONValuePtr addr;
-
-    addr = virJSONValueObjectGet(reply, "return");
-    if (!addr || addr->type != VIR_JSON_TYPE_OBJECT) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("drive_add reply was missing device address"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "bus", &driveAddr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("drive_add reply was missing device bus number"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "unit", &driveAddr->unit) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("drive_add reply was missing device unit number"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
-                               const char *drivestr,
-                               virDevicePCIAddress* controllerAddr,
-                               virDomainDeviceDriveAddress* driveAddr)
-{
-    int ret;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    char *dev;
-
-    if (virAsprintf(&dev, "%.2x:%.2x.%.1x",
-                    controllerAddr->bus, controllerAddr->slot, controllerAddr->function) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cmd = qemuMonitorJSONMakeCommand("drive_add",
-                                     "s:pci_addr", dev,
-                                     "s:opts", drivestr,
-                                     NULL);
-    VIR_FREE(dev);
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret == 0 &&
-        qemuMonitorJSONGetGuestDriveAddress(reply, driveAddr) < 0)
-        ret = -1;
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                       qemuMonitorPCIAddress **addrs ATTRIBUTE_UNUSED)
 {
@@ -3025,32 +2876,9 @@ cleanup:
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("drive_add",
-                                     "s:pci_addr", "dummy",
-                                     "s:opts", drivestr,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply) < 0))
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("drive_add command not found, trying HMP");
-        ret = qemuMonitorTextAddDrive(mon, drivestr);
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONCheckError(cmd, reply);
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    /* XXX Update to use QMP, if QMP ever adds support for drive_add */
+    VIR_DEBUG("drive_add command not found, trying HMP");
+    return qemuMonitorTextAddDrive(mon, drivestr);
 }
 
 
@@ -3058,42 +2886,19 @@ int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
                             const char *drivestr)
 {
     int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
 
-    VIR_DEBUG("JSONDriveDel drivestr=%s", drivestr);
-    cmd = qemuMonitorJSONMakeCommand("drive_del",
-                                     "s:id", drivestr,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("drive_del command not found, trying HMP");
-        if ((ret = qemuMonitorTextDriveDel(mon, drivestr)) < 0) {
-            virErrorPtr err = virGetLastError();
-            if (err && err->code == VIR_ERR_OPERATION_UNSUPPORTED) {
-                VIR_ERROR("%s",
-                          _("deleting disk is not supported.  "
-                            "This may leak data if disk is reassigned"));
-                ret = 1;
-                virResetLastError();
-            }
+    /* XXX Update to use QMP, if QMP ever adds support for drive_del */
+    VIR_DEBUG("drive_del command not found, trying HMP");
+    if ((ret = qemuMonitorTextDriveDel(mon, drivestr)) < 0) {
+        virErrorPtr err = virGetLastError();
+        if (err && err->code == VIR_ERR_OPERATION_UNSUPPORTED) {
+            VIR_ERROR("%s",
+                      _("deleting disk is not supported.  "
+                        "This may leak data if disk is reassigned"));
+            ret = 1;
+            virResetLastError();
         }
-    } else if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
-        /* NB: device not found errors mean the drive was
-         * auto-deleted and we ignore the error */
-        ret = 0;
-    } else {
-        ret = qemuMonitorJSONCheckError(cmd, reply);
     }
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -3131,89 +2936,23 @@ int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
 
 int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("savevm",
-                                     "s:name", name,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("savevm command not found, trying HMP");
-        ret = qemuMonitorTextCreateSnapshot(mon, name);
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONCheckError(cmd, reply);
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    /* XXX Update to use QMP, if QMP ever adds support for savevm */
+    VIR_DEBUG("savevm command not found, trying HMP");
+    return qemuMonitorTextCreateSnapshot(mon, name);
 }
 
 int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("loadvm",
-                                     "s:name", name,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("loadvm command not found, trying HMP");
-        ret = qemuMonitorTextLoadSnapshot(mon, name);
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONCheckError(cmd, reply);
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    /* XXX Update to use QMP, if QMP ever adds support for loadvm */
+    VIR_DEBUG("loadvm command not found, trying HMP");
+    return qemuMonitorTextLoadSnapshot(mon, name);
 }
 
 int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("delvm",
-                                     "s:name", name,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("delvm command not found, trying HMP");
-        ret = qemuMonitorTextDeleteSnapshot(mon, name);
-        goto cleanup;
-    }
-
-    ret = qemuMonitorJSONCheckError(cmd, reply);
-
-cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    /* XXX Update to use QMP, if QMP ever adds support for delvm */
+    VIR_DEBUG("delvm command not found, trying HMP");
+    return qemuMonitorTextDeleteSnapshot(mon, name);
 }
 
 int

@@ -179,13 +179,6 @@ int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
 int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
                                    const char *fdname);
 
-int qemuMonitorJSONAddHostNetwork(qemuMonitorPtr mon,
-                                  const char *netstr);
-
-int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
-                                     int vlan,
-                                     const char *netname);
-
 int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr);
 
@@ -198,11 +191,6 @@ int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
                                            virDevicePCIAddress *guestAddr);
-
-int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
-                               const char *drivestr,
-                               virDevicePCIAddress *controllerAddr,
-                               virDomainDeviceDriveAddress *driveAddr);
 
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
                                       qemuMonitorPCIAddress **addrs);

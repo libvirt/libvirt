@@ -2387,7 +2387,8 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONAddHostNetwork(mon, netstr);
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor should be using AddNetdev"));
     else
         ret = qemuMonitorTextAddHostNetwork(mon, netstr);
 
@@ -2418,7 +2419,8 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONRemoveHostNetwork(mon, vlan, netname);
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor should be using RemoveNetdev"));
     else
         ret = qemuMonitorTextRemoveHostNetwork(mon, vlan, netname);
     return ret;
@@ -2548,7 +2550,8 @@ int qemuMonitorAttachDrive(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONAttachDrive(mon, drivestr, controllerAddr, driveAddr);
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("JSON monitor should be using AddDrive"));
     else
         ret = qemuMonitorTextAttachDrive(mon, drivestr, controllerAddr, driveAddr);
 
