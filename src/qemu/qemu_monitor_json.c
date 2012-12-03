@@ -2986,12 +2986,6 @@ qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
         if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
             goto cleanup;
 
-        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            VIR_DEBUG("blockdev-snapshot-sync command not found, trying HMP");
-            ret = qemuMonitorTextDiskSnapshot(mon, device, file);
-            goto cleanup;
-        }
-
         ret = qemuMonitorJSONCheckError(cmd, reply);
     }
 

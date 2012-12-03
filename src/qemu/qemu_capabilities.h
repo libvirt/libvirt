@@ -155,6 +155,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_DRIVE_MIRROR       = 115, /* drive-mirror monitor command */
     QEMU_CAPS_USB_REDIR_BOOTINDEX = 116, /* usb-redir.bootindex */
     QEMU_CAPS_USB_HOST_BOOTINDEX = 117, /* usb-host.bootindex */
+    QEMU_CAPS_DISK_SNAPSHOT      = 118, /* blockdev-snapshot-sync command */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

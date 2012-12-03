@@ -193,6 +193,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "drive-mirror", /* 115 */
               "usb-redir.bootindex",
               "usb-host.bootindex",
+              "blockdev-snapshot-sync",
     );
 
 struct _qemuCaps {
@@ -1948,6 +1949,8 @@ qemuCapsProbeQMPCommands(qemuCapsPtr caps,
             qemuCapsSet(caps, QEMU_CAPS_VNC);
         else if (STREQ(name, "drive-mirror"))
             qemuCapsSet(caps, QEMU_CAPS_DRIVE_MIRROR);
+        else if (STREQ(name, "blockdev-snapshot-sync"))
+            qemuCapsSet(caps, QEMU_CAPS_DISK_SNAPSHOT);
         VIR_FREE(name);
     }
     VIR_FREE(commands);

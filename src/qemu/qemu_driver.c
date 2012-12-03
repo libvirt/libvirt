@@ -11281,6 +11281,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             virReportOOMError();
             goto cleanup;
         }
+    } else if (!qemuCapsGet(priv->caps, QEMU_CAPS_DISK_SNAPSHOT)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("live disk snapshot not supported with this "
+                         "QEMU binary"));
+        goto cleanup;
     }
 
     /* No way to roll back if first disk succeeds but later disks

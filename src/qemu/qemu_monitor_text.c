@@ -2958,43 +2958,6 @@ cleanup:
     return ret;
 }
 
-int
-qemuMonitorTextDiskSnapshot(qemuMonitorPtr mon, const char *device,
-                            const char *file)
-{
-    char *cmd = NULL;
-    char *reply = NULL;
-    int ret = -1;
-    char *safename;
-
-    if (!(safename = qemuMonitorEscapeArg(file)) ||
-        virAsprintf(&cmd, "snapshot_blkdev %s \"%s\"", device, safename) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (qemuMonitorHMPCommand(mon, cmd, &reply))
-        goto cleanup;
-
-    if (strstr(reply, "error while creating qcow2") != NULL ||
-        strstr(reply, "unknown command:") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to take snapshot: %s"), reply);
-        goto cleanup;
-    }
-
-    /* XXX Should we scrape 'info block' output for
-     * 'device:... file=name backing_file=oldname' to make sure the
-     * command succeeded?  */
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(safename);
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
-    return ret;
-}
 
 int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
                                     char **reply)

@@ -217,10 +217,6 @@ int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
-int qemuMonitorTextDiskSnapshot(qemuMonitorPtr mon,
-                                const char *device,
-                                const char *file);
-
 int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
                                     char **reply);
 
