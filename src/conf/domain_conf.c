@@ -14814,11 +14814,12 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
         return iface->data.bridge.brname;
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return NULL;
-    if (!iface->data.network.actual)
-        return NULL;
-    return iface->data.network.actual->data.bridge.brname;
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        return iface->data.network.actual->data.bridge.brname;
+    }
+    return NULL;
 }
 
 const char *
@@ -14826,11 +14827,12 @@ virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.direct.linkdev;
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return NULL;
-    if (!iface->data.network.actual)
-        return NULL;
-    return iface->data.network.actual->data.direct.linkdev;
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        return iface->data.network.actual->data.direct.linkdev;
+    }
+    return NULL;
 }
 
 int
@@ -14838,11 +14840,12 @@ virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.direct.mode;
-    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return 0;
-    if (!iface->data.network.actual)
-        return 0;
-    return iface->data.network.actual->data.direct.mode;
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual &&
+        iface->data.network.actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        return iface->data.network.actual->data.direct.mode;
+    }
+    return 0;
 }
 
 virDomainHostdevDefPtr
