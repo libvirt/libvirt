@@ -37,9 +37,9 @@
  * returns -1 if the file handle cannot be registered, 0 upon success
  */
 int virEventPollAddHandle(int fd, int events,
-                            virEventHandleCallback cb,
-                            void *opaque,
-                            virFreeCallback ff);
+                          virEventHandleCallback cb,
+                          void *opaque,
+                          virFreeCallback ff);
 
 /**
  * virEventPollUpdateHandle: change event set for a monitored file handle
@@ -74,9 +74,9 @@ int virEventPollRemoveHandle(int watch);
  * integer timer id upon success
  */
 int virEventPollAddTimeout(int frequency,
-                             virEventTimeoutCallback cb,
-                             void *opaque,
-                             virFreeCallback ff);
+                           virEventTimeoutCallback cb,
+                           void *opaque,
+                           virFreeCallback ff);
 
 /**
  * virEventPollUpdateTimeout: change frequency for a timer
