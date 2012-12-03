@@ -169,6 +169,7 @@ struct _virStoragePoolAuthCephx {
     struct {
             unsigned char uuid[VIR_UUID_BUFLEN];
             char *usage;
+            bool uuidUsable;
     } secret;
 };
 

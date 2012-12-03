@@ -449,10 +449,20 @@ virStoragePoolDefParseAuthCephx(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    if (virUUIDParse(uuid, auth->secret.uuid) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("invalid auth secret uuid"));
-        return -1;
+    if (uuid != NULL) {
+        if (auth->secret.usage != NULL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("either auth secret uuid or usage expected"));
+            return -1;
+        }
+        if (virUUIDParse(uuid, auth->secret.uuid) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           "%s", _("invalid auth secret uuid"));
+            return -1;
+        }
+        auth->secret.uuidUsable = true;
+    } else {
+        auth->secret.uuidUsable = false;
     }
 
     return 0;
@@ -967,7 +977,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                           src->auth.cephx.username);
 
         virBufferAsprintf(buf,"      %s", "<secret");
-        if (src->auth.cephx.secret.uuid != NULL) {
+        if (src->auth.cephx.secret.uuidUsable) {
             virUUIDFormat(src->auth.cephx.secret.uuid, uuid);
             virBufferAsprintf(buf," uuid='%s'", uuid);
         }
