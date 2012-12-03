@@ -1199,18 +1199,19 @@ do_open(const char *name,
             goto failed;
         }
 
-        VIR_DEBUG("trying driver %d (%s) ...",
-              i, virDriverTab[i]->name);
+        VIR_DEBUG("trying driver %d (%s) ...", i, virDriverTab[i]->name);
         res = virDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("driver %d %s returned %s",
-              i, virDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) goto failed;
-        else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->driver = virDriverTab[i];
             break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
+            goto failed;
         }
     }
 
@@ -1225,14 +1226,15 @@ do_open(const char *name,
     for (i = 0; i < virNetworkDriverTabCount; i++) {
         res = virNetworkDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("network driver %d %s returned %s",
-              i, virNetworkDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virNetworkDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->networkDriver = virNetworkDriverTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
@@ -1240,14 +1242,15 @@ do_open(const char *name,
     for (i = 0; i < virInterfaceDriverTabCount; i++) {
         res = virInterfaceDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("interface driver %d %s returned %s",
-              i, virInterfaceDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virInterfaceDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->interfaceDriver = virInterfaceDriverTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
@@ -1256,14 +1259,15 @@ do_open(const char *name,
     for (i = 0; i < virStorageDriverTabCount; i++) {
         res = virStorageDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("storage driver %d %s returned %s",
-              i, virStorageDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-         } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virStorageDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->storageDriver = virStorageDriverTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
@@ -1272,14 +1276,15 @@ do_open(const char *name,
     for (i = 0; i < virDeviceMonitorTabCount; i++) {
         res = virDeviceMonitorTab[i]->open(ret, auth, flags);
         VIR_DEBUG("node driver %d %s returned %s",
-              i, virDeviceMonitorTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-        } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virDeviceMonitorTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->deviceMonitor = virDeviceMonitorTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
@@ -1288,14 +1293,15 @@ do_open(const char *name,
     for (i = 0; i < virSecretDriverTabCount; i++) {
         res = virSecretDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("secret driver %d %s returned %s",
-              i, virSecretDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-         } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virSecretDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->secretDriver = virSecretDriverTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
@@ -1304,14 +1310,15 @@ do_open(const char *name,
     for (i = 0; i < virNWFilterDriverTabCount; i++) {
         res = virNWFilterDriverTab[i]->open(ret, auth, flags);
         VIR_DEBUG("nwfilter driver %d %s returned %s",
-              i, virNWFilterDriverTab[i]->name,
-              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-        if (res == VIR_DRV_OPEN_ERROR) {
-            break;
-         } else if (res == VIR_DRV_OPEN_SUCCESS) {
+                  i, virNWFilterDriverTab[i]->name,
+                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+
+        if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->nwfilterDriver = virNWFilterDriverTab[i];
+            break;
+        } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
         }
     }
