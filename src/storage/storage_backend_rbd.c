@@ -70,13 +70,11 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr *ptr,
             goto cleanup;
         }
 
-        if (pool->def->source.auth.cephx.secret.uuid != NULL) {
+        if (pool->def->source.auth.cephx.secret.uuidUsable) {
             virUUIDFormat(pool->def->source.auth.cephx.secret.uuid, secretUuid);
             VIR_DEBUG("Looking up secret by UUID: %s", secretUuid);
             secret = virSecretLookupByUUIDString(conn, secretUuid);
-        }
-
-        if (pool->def->source.auth.cephx.secret.usage != NULL) {
+        } else if (pool->def->source.auth.cephx.secret.usage != NULL) {
             VIR_DEBUG("Looking up secret by usage: %s",
                       pool->def->source.auth.cephx.secret.usage);
             secret = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_CEPH,
