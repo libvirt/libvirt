@@ -240,6 +240,15 @@ virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
         virDefaultErrorFunc(error);
 }
 
+/* Store a libvirt error that is from a helper API that doesn't raise errors
+ * so it doesn't get overwritten */
+void
+vshSaveLibvirtError(void)
+{
+    virFreeError(last_error);
+    last_error = virSaveLastError();
+}
+
 /*
  * Reset libvirt error on graceful fallback paths
  */

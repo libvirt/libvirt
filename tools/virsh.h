@@ -346,6 +346,7 @@ struct _vshCtrlData {
 extern virErrorPtr last_error;
 void vshReportError(vshControl *ctl);
 void vshResetLibvirtError(void);
+void vshSaveLibvirtError(void);
 
 /* allocation wrappers */
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);

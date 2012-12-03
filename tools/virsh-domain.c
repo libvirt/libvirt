@@ -3512,8 +3512,10 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
             if (virTypedParameterAssign(&(params[nparams++]),
                                         param->field,
                                         param->type,
-                                        val) < 0)
+                                        val) < 0) {
+                vshSaveLibvirtError();
                 goto cleanup;
+            }
 
             continue;
         }
@@ -3523,8 +3525,10 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
             if (virTypedParameterAssignFromStr(&(params[nparams++]),
                                                param->field,
                                                param->type,
-                                               set_val) < 0)
+                                               set_val) < 0) {
+                vshSaveLibvirtError();
                 goto cleanup;
+            }
 
             continue;
         }
