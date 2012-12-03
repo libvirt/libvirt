@@ -250,11 +250,9 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param, const char *name,
         }
         break;
     case VIR_TYPED_PARAM_BOOLEAN:
-        if (STRCASEEQ(val, "true") ||
-            STREQ(val, "1")) {
+        if (STRCASEEQ(val, "true") || STREQ(val, "1")) {
             param->value.b = true;
-        } else if (STRCASEEQ(val, "false") ||
-                 STREQ(val, "0")) {
+        } else if (STRCASEEQ(val, "false") || STREQ(val, "0")) {
             param->value.b = false;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,

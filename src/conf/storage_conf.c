@@ -441,7 +441,7 @@ virStoragePoolDefParseAuthChap(xmlXPathContextPtr ctxt,
 
 static int
 virStoragePoolDefParseAuthCephx(xmlXPathContextPtr ctxt,
-                               virStoragePoolAuthCephxPtr auth) {
+                                virStoragePoolAuthCephxPtr auth) {
     char *uuid = NULL;
     auth->username = virXPathString("string(./auth/@username)", ctxt);
     if (auth->username == NULL) {

@@ -3576,8 +3576,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
     if (schedulertype != NULL) {
-        vshPrint(ctl, "%-15s: %s\n", _("Scheduler"),
-             schedulertype);
+        vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), schedulertype);
         VIR_FREE(schedulertype);
     } else {
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), _("Unknown"));
