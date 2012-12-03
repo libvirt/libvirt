@@ -32,7 +32,7 @@
 # include "domain_event.h"
 # include "capabilities.h"
 # include "threads.h"
-# include "cgroup.h"
+# include "vircgroup.h"
 # include "security/security_manager.h"
 # include "configmake.h"
 # include "hostusb.h"

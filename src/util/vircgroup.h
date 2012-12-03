@@ -1,5 +1,5 @@
 /*
- * cgroup.h: Interface to tools for managing cgroups
+ * vircgroup.h: methods for managing control cgroups
  *
  * Copyright (C) 2011-2012 Red Hat, Inc.
  * Copyright IBM Corp. 2008
@@ -22,8 +22,8 @@
  *  Dan Smith <danms@us.ibm.com>
  */
 
-#ifndef CGROUP_H
-# define CGROUP_H
+#ifndef __VIR_CGROUP_H__
+# define __VIR_CGROUP_H__
 
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
@@ -164,4 +164,4 @@ int virCgroupKill(virCgroupPtr group, int signum);
 int virCgroupKillRecursive(virCgroupPtr group, int signum);
 int virCgroupKillPainfully(virCgroupPtr group);
 
-#endif /* CGROUP_H */
+#endif /* __VIR_CGROUP_H__ */

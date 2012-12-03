@@ -25,7 +25,7 @@
 # define __VIR_DOMAIN_AUDIT_H__
 
 # include "domain_conf.h"
-# include "cgroup.h"
+# include "vircgroup.h"
 
 void virDomainAuditStart(virDomainObjPtr vm,
                          const char *reason,

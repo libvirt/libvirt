@@ -1,5 +1,5 @@
 /*
- * cgroup.c: Tools for managing cgroups
+ * vircgroup.c: methods for managing control cgroups
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright IBM Corp. 2008
@@ -40,7 +40,7 @@
 #include "internal.h"
 #include "util.h"
 #include "memory.h"
-#include "cgroup.h"
+#include "vircgroup.h"
 #include "logging.h"
 #include "virfile.h"
 #include "virhash.h"

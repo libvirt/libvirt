@@ -27,7 +27,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
-#include "cgroup.h"
+#include "vircgroup.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

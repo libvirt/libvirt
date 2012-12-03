@@ -34,7 +34,7 @@
 # include "domain_event.h"
 # include "threads.h"
 # include "security/security_manager.h"
-# include "cgroup.h"
+# include "vircgroup.h"
 # include "pci.h"
 # include "hostusb.h"
 # include "cpu_conf.h"
