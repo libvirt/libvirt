@@ -184,6 +184,11 @@ struct _virNetworkDef {
     virMacAddr mac; /* mac address of bridge device */
     bool mac_specified;
 
+    /* specified if ip6tables rules added
+     * when no ipv6 gateway addresses specified.
+     */
+    bool ipv6nogw;
+
     int forwardType;    /* One of virNetworkForwardType constants */
     int managed;        /* managed attribute for hostdev mode */
 

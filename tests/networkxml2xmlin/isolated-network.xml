@@ -1,4 +1,4 @@
-<network>
+<network ipv6='no'>
   <name>private</name>
   <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
   <bridge name="virbr2" />

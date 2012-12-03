@@ -1593,14 +1593,22 @@ networkRemoveRoutingIptablesRules(struct network_driver *driver,
     }
 }
 
-/* Add all once/network rules required for IPv6 (if any IPv6 addresses are defined) */
+/* Add all once/network rules required for IPv6.
+
+ * If no IPv6 addresses are defined and <network ipv6='yes'> is
+ * specified, then allow IPv6 commuinications between guests connected
+ * to this network. If any IPv6 addresses are defined, then add all
+ * rules for regular operation (including inter-guest communication).
+ */
 static int
 networkAddGeneralIp6tablesRules(struct network_driver *driver,
                                virNetworkObjPtr network)
 {
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
+        !network->def->ipv6nogw) {
         return 0;
+    }
 
     /* Catch all rules to block forwarding to/from bridges */
 
@@ -1628,6 +1636,10 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
                        network->def->bridge);
         goto err3;
     }
+
+    /* if no IPv6 addresses are defined, we are done. */
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
+        return 0;
 
     /* allow DNS over IPv6 */
     if (iptablesAddTcpInput(driver->iptables, AF_INET6,
@@ -1665,11 +1677,17 @@ static void
 networkRemoveGeneralIp6tablesRules(struct network_driver *driver,
                                   virNetworkObjPtr network)
 {
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0))
+    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
+                !network->def->ipv6nogw)
         return;
+    if (virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+        iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+        iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+    }
 
-    iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
-    iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
+    /* the following rules are there if no IPv6 address has been defined
+     * but network->def->ipv6nogw == true
+     */
     iptablesRemoveForwardAllowCross(driver->iptables, AF_INET6, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, AF_INET6, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, AF_INET6, network->def->bridge);

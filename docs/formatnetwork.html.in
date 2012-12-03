@@ -33,7 +33,7 @@
     </p>
 
     <pre>
-      &lt;network&gt;
+      &lt;network ipv6='yes'&gt;
         &lt;name&gt;default&lt;/name&gt;
         &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
         ...</pre>
@@ -52,6 +52,12 @@
         The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new network, a random
         UUID is generated. <span class="since">Since 0.3.0</span></dd>
+      <dt><code>ipv6='yes'</code></dt>
+      <dd>The new, optional parameter <code>ipv6='yes'</code> enables
+        a network definition with no IPv6 gateway addresses specified
+        to have guest-to-guest communications.  For further information,
+        see the example below for the example with no gateway addresses.
+        <span class="since">Since 1.0.1</span></dd>
     </dl>
 
     <h3><a name="elementsConnect">Connectivity</a></h3>
@@ -771,6 +777,26 @@
           &lt;interface dev="eth23"/&gt;
           &lt;interface dev="eth24"/&gt;
         &lt;/forward&gt;
+      &lt;/network&gt;</pre>
+
+    <h3><a name="examplesNoGateway">Network config with no gateway addresses</a></h3>
+
+    <p>
+    A valid network definition can contain no IPv4 or IPv6 addresses.  Such a definition
+    can be used for a "very private" or "very isolated" network since it will not be
+    possible to communicate with the virtualization host via this network.  However,
+    this virtual network interface can be used for communication between virtual guest
+    systems.  This works for IPv4 and <span class="since">(Since 1.0.1)</span> IPv6.
+    However, the new ipv6='yes' must be added for guest-to-guest IPv6
+    communication.
+    </p>
+
+    <pre>
+      &lt;network ipv6='yes'&gt;
+        &lt;name&gt;nogw&lt;/name&gt;
+        &lt;uuid&gt;7a3b7497-1ec7-8aef-6d5c-38dff9109e93&lt;/uuid&gt;
+        &lt;bridge name="virbr2" stp="on" delay="0" /&gt;
+        &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
       &lt;/network&gt;</pre>
 
   </body>

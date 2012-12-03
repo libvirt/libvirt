@@ -1,0 +1,6 @@
+<network ipv6='yes'>
+  <name>empty</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9c</uuid>
+  <bridge name='virbr7' />
+  <mac address='52:54:00:17:3F:47'/>
+</network>

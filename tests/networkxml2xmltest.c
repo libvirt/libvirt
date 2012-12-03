@@ -92,6 +92,7 @@ mymain(void)
     } while (0)
 #define DO_TEST(name) DO_TEST_FULL(name, 0)
 
+    DO_TEST("empty-allow-ipv6");
     DO_TEST("isolated-network");
     DO_TEST("routed-network");
     DO_TEST("nat-network");

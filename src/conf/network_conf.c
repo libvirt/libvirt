@@ -1226,6 +1226,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr virtPortNode = NULL;
     xmlNodePtr forwardNode = NULL;
     int nIps, nPortGroups, nForwardIfs, nForwardPfs, nForwardAddrs;
+    char *ipv6nogwStr = NULL;
     char *forwardDev = NULL;
     char *forwardManaged = NULL;
     char *type = NULL;
@@ -1262,6 +1263,22 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         }
         VIR_FREE(tmp);
         def->uuid_specified = true;
+    }
+
+    /* check if definitions with no IPv6 gateway addresses is to
+     * allow guest-to-guest communications.
+     */
+    ipv6nogwStr = virXPathString("string(./@ipv6)", ctxt);
+    if (ipv6nogwStr) {
+        if (STREQ(ipv6nogwStr, "yes")) {
+            def->ipv6nogw = true;
+        } else if (STRNEQ(ipv6nogwStr, "no")) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid ipv6 setting '%s' in network '%s'"),
+                           ipv6nogwStr, def->name);
+            goto error;
+        }
+        VIR_FREE(ipv6nogwStr);
     }
 
     /* Parse network domain information */
@@ -1591,6 +1608,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     VIR_FREE(portGroupNodes);
     VIR_FREE(forwardIfNodes);
     VIR_FREE(forwardPfNodes);
+    VIR_FREE(ipv6nogwStr);
     VIR_FREE(forwardDev);
     ctxt->node = save;
     return NULL;
@@ -1839,6 +1857,8 @@ char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags)
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0)) {
         virBufferAsprintf(&buf, " connections='%d'", def->connections);
     }
+    if (def->ipv6nogw)
+        virBufferAddLit(&buf, " ipv6='yes'");
     virBufferAddLit(&buf, ">\n");
     virBufferAdjustIndent(&buf, 2);
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
