@@ -70,8 +70,9 @@ if test -d .git; then
             echo "set env-var CLEAN_SUBMODULE to discard gnulib changes" 2>&1
             exit 1 ;;
     esac
+    # Keep this test in sync with cfg.mk:_update_required
     if test "$t" = "$(cat $curr_status 2>/dev/null)" \
-        && test -f "po/Makevars"; then
+        && test -f "po/Makevars" && test -f AUTHORS; then
         # good, it's up to date, all we need is autoreconf
         autoreconf -if
     else
