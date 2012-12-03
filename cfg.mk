@@ -691,6 +691,8 @@ ifeq (0,$(MAKELEVEL))
   #  b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib (v0.0-2286-gb653eda)
   # $ cat .git-module-status
   # b653eda3ac4864de205419d9f41eec267cb89eeb
+  #
+  # Keep this logic in sync with autogen.sh.
   _submodule_hash = sed 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
       cd '$(srcdir)';							\
