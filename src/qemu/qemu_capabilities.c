@@ -2298,7 +2298,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     virCommandPtr cmd = NULL;
     qemuMonitorPtr mon = NULL;
     int major, minor, micro;
-    char *package;
+    char *package = NULL;
     int status = 0;
     virDomainChrSourceDef config;
     char *monarg = NULL;
@@ -2442,6 +2442,7 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(monarg);
     VIR_FREE(monpath);
+    VIR_FREE(package);
 
     if (pidfile) {
         char ebuf[1024];
