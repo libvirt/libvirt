@@ -1478,6 +1478,72 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
 }
 
 static int
+parallelsApplyDisksParams(parallelsDomObjPtr pdom,
+                          virDomainDiskDefPtr *olddisks, int nold,
+                          virDomainDiskDefPtr *newdisks, int nnew)
+{
+    /* TODO: allow creating and removing disks */
+    if (nold != nnew) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Adding and removing disks is not supported"));
+        return -1;
+    }
+
+    for (int i = 0; i < nold; i++) {
+        virDomainDiskDefPtr newdisk = NULL;
+        virDomainDiskDefPtr olddisk = olddisks[i];
+        for (int j = 0; j < nnew; j++) {
+            if (STREQ_NULLABLE(newdisks[j]->dst, olddisk->dst)) {
+                newdisk = newdisks[j];
+                break;
+            }
+        }
+
+        if (!newdisk) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("There is no disk with source '%s' "
+                             "in the specified config"), olddisks[i]->serial);
+            return -1;
+        }
+
+        if (olddisk->bus != newdisk->bus ||
+            olddisk->info.addr.drive.target != newdisk->info.addr.drive.target ||
+            !STREQ_NULLABLE(olddisk->src, newdisk->src)) {
+
+            char prlname[16];
+            char strpos[16];
+            const char *strbus;
+
+            prlname[15] = '\0';
+            snprintf(prlname, 15, "hdd%d", virDiskNameToIndex(newdisk->dst));
+
+            strpos[15] = '\0';
+            snprintf(strpos, 15, "%d", newdisk->info.addr.drive.target);
+
+            switch (newdisk->bus) {
+            case VIR_DOMAIN_DISK_BUS_IDE:
+                strbus = "ide";
+                break;
+            case VIR_DOMAIN_DISK_BUS_SATA:
+                strbus = "sata";
+                break;
+            case VIR_DOMAIN_DISK_BUS_SCSI:
+                strbus = "scsi";
+                break;
+            }
+            if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                                "--device-set", prlname,
+                                "--iface", strbus,
+                                "--position", strpos,
+                                "--image", newdisk->src, NULL))
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
 parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
 {
     char buf[32];
@@ -1676,8 +1742,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
                                    new->graphics, new->ngraphics) < 0)
         return -1;
 
-    if (new->ndisks != 0 || new->ncontrollers != 0 ||
-        new->nfss != 0 || new->nnets != 0 ||
+    if (new->nfss != 0 || new->nnets != 0 ||
         new->nsounds != 0 || new->nhostdevs != 0 ||
         new->nredirdevs != 0 || new->nsmartcards != 0 ||
         new->nparallels || new->nchannels != 0 ||
@@ -1712,6 +1777,10 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     if (parallelsApplyVideoParams(pdom, old->videos, old->nvideos,
                                    new->videos, new->nvideos) < 0)
         return -1;
+    if (parallelsApplyDisksParams(pdom, old->disks, old->ndisks,
+                                  new->disks, new->ndisks) < 0)
+        return -1;
+
     return 0;
 }
 
