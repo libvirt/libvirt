@@ -1554,33 +1554,34 @@ pciDeviceListCount(pciDeviceList *list)
 }
 
 pciDevice *
+pciDeviceListStealIndex(pciDeviceList *list,
+                        int idx)
+{
+    pciDevice *ret;
+
+    if (idx < 0 || idx >= list->count)
+        return NULL;
+
+    ret = list->devs[idx];
+
+    if (idx != --list->count) {
+        memmove(&list->devs[idx],
+                &list->devs[idx + 1],
+                sizeof(*list->devs) * (list->count - idx));
+    }
+
+    if (VIR_REALLOC_N(list->devs, list->count) < 0) {
+        ; /* not fatal */
+    }
+
+    return ret;
+}
+
+pciDevice *
 pciDeviceListSteal(pciDeviceList *list,
                    pciDevice *dev)
 {
-    pciDevice *ret = NULL;
-    int i;
-
-    for (i = 0; i < list->count; i++) {
-        if (list->devs[i]->domain   != dev->domain ||
-            list->devs[i]->bus      != dev->bus    ||
-            list->devs[i]->slot     != dev->slot   ||
-            list->devs[i]->function != dev->function)
-            continue;
-
-        ret = list->devs[i];
-
-        if (i != --list->count)
-            memmove(&list->devs[i],
-                    &list->devs[i+1],
-                    sizeof(*list->devs) * (list->count-i));
-
-        if (VIR_REALLOC_N(list->devs, list->count) < 0) {
-            ; /* not fatal */
-        }
-
-        break;
-    }
-    return ret;
+    return pciDeviceListStealIndex(list, pciDeviceListFindIndex(list, dev));
 }
 
 void
@@ -1592,8 +1593,8 @@ pciDeviceListDel(pciDeviceList *list,
         pciFreeDevice(ret);
 }
 
-pciDevice *
-pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
+int
+pciDeviceListFindIndex(pciDeviceList *list, pciDevice *dev)
 {
     int i;
 
@@ -1602,8 +1603,19 @@ pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
             list->devs[i]->bus      == dev->bus    &&
             list->devs[i]->slot     == dev->slot   &&
             list->devs[i]->function == dev->function)
-            return list->devs[i];
-    return NULL;
+            return i;
+    return -1;
+}
+
+pciDevice *
+pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
+{
+    int i;
+
+    if ((i = pciDeviceListFindIndex(list, dev)) >= 0)
+        return list->devs[i];
+    else
+        return NULL;
 }
 
 

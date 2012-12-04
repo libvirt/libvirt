@@ -75,10 +75,14 @@ pciDevice *    pciDeviceListGet (pciDeviceList *list,
 int            pciDeviceListCount (pciDeviceList *list);
 pciDevice *    pciDeviceListSteal (pciDeviceList *list,
                                    pciDevice *dev);
+pciDevice *    pciDeviceListStealIndex(pciDeviceList *list,
+                                       int idx);
 void           pciDeviceListDel  (pciDeviceList *list,
                                   pciDevice *dev);
 pciDevice *    pciDeviceListFind (pciDeviceList *list,
                                   pciDevice *dev);
+int            pciDeviceListFindIndex(pciDeviceList *list,
+                                      pciDevice *dev);
 
 /*
  * Callback that will be invoked once for each file
