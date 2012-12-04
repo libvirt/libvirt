@@ -6299,8 +6299,8 @@ qemuDomainAttachDeviceConfig(qemuCapsPtr caps,
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("target %s already exists."), disk->dst);
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("target %s already exists"), disk->dst);
             return -1;
         }
         if (virDomainDiskInsert(vmdef, disk)) {
@@ -6330,7 +6330,7 @@ qemuDomainAttachDeviceConfig(qemuCapsPtr caps,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         hostdev = dev->data.hostdev;
         if (virDomainHostdevFind(vmdef, hostdev, NULL) >= 0) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("device is already in the domain configuration"));
             return -1;
         }
@@ -6346,7 +6346,7 @@ qemuDomainAttachDeviceConfig(qemuCapsPtr caps,
     case VIR_DOMAIN_DEVICE_LEASE:
         lease = dev->data.lease;
         if (virDomainLeaseIndex(vmdef, lease) >= 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Lease %s in lockspace %s already exists"),
                            lease->key, NULLSTR(lease->lockspace));
             return -1;
@@ -6362,7 +6362,7 @@ qemuDomainAttachDeviceConfig(qemuCapsPtr caps,
         controller = dev->data.controller;
         if (virDomainControllerFind(vmdef, controller->type,
                                     controller->idx) > 0) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Target already exists"));
             return -1;
         }
