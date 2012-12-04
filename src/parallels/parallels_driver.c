@@ -1499,22 +1499,94 @@ parallelsApplyVideoParams(parallelsDomObjPtr pdom,
     return 0;
 }
 
-static int
-parallelsApplyDisksParams(parallelsDomObjPtr pdom,
-                          virDomainDiskDefPtr *olddisks, int nold,
-                          virDomainDiskDefPtr *newdisks, int nnew)
+static int parallelsAddHddByVolume(parallelsDomObjPtr pdom,
+                                   virDomainDiskDefPtr disk,
+                                   virStoragePoolObjPtr pool,
+                                   virStorageVolDefPtr voldef)
 {
-    /* TODO: allow creating and removing disks */
-    if (nold != nnew) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Adding and removing disks is not supported"));
+    int ret = -1;
+    const char *strbus;
+
+    virCommandPtr cmd = virCommandNewArgList(PRLCTL, "set", pdom->uuid,
+                                             "--device-add", "hdd", NULL);
+    virCommandAddArgFormat(cmd, "--size=%lluM", voldef->capacity >> 20);
+
+    if (!(strbus = parallelsGetDiskBusName(disk->bus))) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Invalid disk bus: %d"), disk->bus);
+        goto cleanup;
+    }
+
+    virCommandAddArgFormat(cmd, "--iface=%s", strbus);
+
+    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+        virCommandAddArgFormat(cmd, "--position=%d",
+                               disk->info.addr.drive.target);
+
+    if (virCommandRun(cmd, NULL))
+        goto cleanup;
+
+    if (parallelsStorageVolumeDefRemove(pool, voldef))
+        goto cleanup;
+
+    ret = 0;
+cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
+static int parallelsAddHdd(virConnectPtr conn,
+                           parallelsDomObjPtr pdom,
+                           virDomainDiskDefPtr disk)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virStorageVolDefPtr voldef = NULL;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolPtr vol = NULL;
+    int ret = -1;
+
+    if (!(vol = parallelsStorageVolumeLookupByPathLocked(conn, disk->src))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find volume with path '%s'"), disk->src);
         return -1;
     }
 
-    for (int i = 0; i < nold; i++) {
+    pool = virStoragePoolObjFindByName(&privconn->pools, vol->pool);
+    if (!pool) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find storage pool with name '%s'"),
+                       vol->pool);
+        goto cleanup;
+    }
+
+    voldef = virStorageVolDefFindByPath(pool, disk->src);
+    if (!voldef) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find storage volume definition for path '%s'"),
+                       disk->src);
+        goto cleanup;
+    }
+
+    ret = parallelsAddHddByVolume(pdom, disk, pool, voldef);
+
+cleanup:
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+    virObjectUnref(vol);
+    return ret;
+}
+
+static int
+parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
+                          virDomainDiskDefPtr *olddisks, int nold,
+                          virDomainDiskDefPtr *newdisks, int nnew)
+{
+    int i, j;
+
+    for (i = 0; i < nold; i++) {
         virDomainDiskDefPtr newdisk = NULL;
         virDomainDiskDefPtr olddisk = olddisks[i];
-        for (int j = 0; j < nnew; j++) {
+        for (j = 0; j < nnew; j++) {
             if (STREQ_NULLABLE(newdisks[j]->dst, olddisk->dst)) {
                 newdisk = newdisks[j];
                 break;
@@ -1544,7 +1616,7 @@ parallelsApplyDisksParams(parallelsDomObjPtr pdom,
 
             if (!(strbus = parallelsGetDiskBusName(newdisk->bus))) {
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                               _("Unsupported disk bus: %d", newdisk->bus));
+                               _("Unsupported disk bus: %d"), newdisk->bus);
                 return -1;
             }
 
@@ -1557,11 +1629,24 @@ parallelsApplyDisksParams(parallelsDomObjPtr pdom,
         }
     }
 
+    for (i = 0; i < nnew; i++) {
+        virDomainDiskDefPtr newdisk = newdisks[i];
+        bool found = false;
+        for (j = 0; j < nold; j++)
+            if (STREQ_NULLABLE(olddisks[j]->dst, newdisk->dst))
+                found = true;
+        if (found)
+            continue;
+
+        if (parallelsAddHdd(conn, pdom, newdisk))
+            return -1;
+    }
+
     return 0;
 }
 
 static int
-parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
+parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr new)
 {
     char buf[32];
 
@@ -1794,7 +1879,7 @@ parallelsApplyChanges(virDomainObjPtr dom, virDomainDefPtr new)
     if (parallelsApplyVideoParams(pdom, old->videos, old->nvideos,
                                    new->videos, new->nvideos) < 0)
         return -1;
-    if (parallelsApplyDisksParams(pdom, old->disks, old->ndisks,
+    if (parallelsApplyDisksParams(conn, pdom, old->disks, old->ndisks,
                                   new->disks, new->ndisks) < 0)
         return -1;
 
@@ -1928,7 +2013,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (dupVM == 1) {
         olddom = virDomainFindByUUID(&privconn->domains, def->uuid);
-        if (parallelsApplyChanges(olddom, def) < 0) {
+        if (parallelsApplyChanges(conn, olddom, def) < 0) {
             virDomainObjUnlock(olddom);
             goto cleanup;
         }
