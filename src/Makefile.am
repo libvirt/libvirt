@@ -1771,6 +1771,9 @@ if WITH_UML
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
 endif
+if WITH_XEN
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
+endif
 if WITH_NETWORK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
@@ -1816,6 +1819,9 @@ endif
 if WITH_UML
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/uml" ||:
+endif
+if WITH_XEN
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
 endif
 if WITH_NETWORK
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
