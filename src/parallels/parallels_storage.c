@@ -253,10 +253,57 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
     return pool;
 }
 
+static int parallelsDiskDescParseNode(xmlDocPtr xml,
+                                      xmlNodePtr root,
+                                      virStorageVolDefPtr def)
+{
+    xmlXPathContextPtr ctxt = NULL;
+    int ret;
+
+    if (STRNEQ((const char *)root->name, "Parallels_disk_image")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       "%s", _("unknown root element for storage pool"));
+        goto cleanup;
+    }
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctxt->node = root;
+
+    if (virXPathULongLong("string(./Disk_Parameters/Disk_size)",
+                          ctxt, &def->capacity))
+        ret = -1;
+
+    def->capacity <<= 9;
+    def->allocation = def->capacity;
+cleanup:
+    xmlXPathFreeContext(ctxt);
+    return ret;
+
+}
+
+static int parallelsDiskDescParse(const char *path, virStorageVolDefPtr def)
+{
+    xmlDocPtr xml;
+    int ret = -1;
+
+    if (!(xml = virXMLParse(path, NULL, NULL)))
+        return -1;
+
+    ret = parallelsDiskDescParseNode(xml, xmlDocGetRootElement(xml), def);
+    xmlFreeDoc(xml);
+    return ret;
+}
+
 static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
                                   virDomainObjPtr dom,
                                   const char *diskName,
-                                  const char *diskPath)
+                                  const char *diskPath,
+                                  const char *diskDescPath)
 {
     virStorageVolDefPtr def = NULL;
 
@@ -268,6 +315,8 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
         goto no_memory;
 
     def->type = VIR_STORAGE_VOL_FILE;
+
+    parallelsDiskDescParse(diskDescPath, def);
 
     if (!(def->target.path = realpath(diskPath, NULL)))
         goto no_memory;
@@ -334,7 +383,8 @@ static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
 
         /* here we know, that ent->d_name is a disk image directory */
 
-        if (parallelsAddDiskVolume(pool, dom, ent->d_name, diskPath))
+        if (parallelsAddDiskVolume(pool, dom, ent->d_name,
+                                   diskPath, diskDescPath))
             goto cleanup;
 
     }
