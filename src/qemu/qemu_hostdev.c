@@ -546,10 +546,8 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     }
 
     /* Loop 9: Now steal all the devices from pcidevs */
-    while (pciDeviceListCount(pcidevs) > 0) {
-        pciDevice *dev = pciDeviceListGet(pcidevs, 0);
-        pciDeviceListSteal(pcidevs, dev);
-    }
+    while (pciDeviceListCount(pcidevs) > 0)
+        pciDeviceListStealIndex(pcidevs, 0);
 
     ret = 0;
     goto cleanup;
@@ -818,7 +816,8 @@ void qemuReattachPciDevice(pciDevice *dev, virQEMUDriverPtr driver)
      * successfully, it must have been inactive.
      */
     if (!pciDeviceGetManaged(dev)) {
-        pciDeviceListAdd(driver->inactivePciHostdevs, dev);
+        if (pciDeviceListAdd(driver->inactivePciHostdevs, dev) < 0)
+            pciFreeDevice(dev);
         return;
     }
 
@@ -835,6 +834,7 @@ void qemuReattachPciDevice(pciDevice *dev, virQEMUDriverPtr driver)
                   err ? err->message : _("unknown error"));
         virResetError(err);
     }
+    pciFreeDevice(dev);
 }
 
 
@@ -905,8 +905,8 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
         }
     }
 
-    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
-        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+    while (pciDeviceListCount(pcidevs) > 0) {
+        pciDevice *dev = pciDeviceListStealIndex(pcidevs, 0);
         qemuReattachPciDevice(dev, driver);
     }
 
