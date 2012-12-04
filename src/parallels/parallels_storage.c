@@ -114,32 +114,13 @@ cleanup:
 
 }
 
-static virDrvOpenStatus
-parallelsStorageOpen(virConnectPtr conn,
-                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                     unsigned int flags)
+static int parallelsLoadPools(virConnectPtr conn)
 {
-    char *base = NULL;
-    virStorageDriverStatePtr storageState;
-    bool privileged = (geteuid() == 0);
     parallelsConnPtr privconn = conn->privateData;
+    virStorageDriverStatePtr storageState = conn->storagePrivateData;
+    bool privileged = (geteuid() == 0);
+    char *base = NULL;
     size_t i;
-
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
-
-    if (STRNEQ(conn->driver->name, "Parallels"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (VIR_ALLOC(storageState) < 0) {
-        virReportOOMError();
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-    if (virMutexInit(&storageState->lock) < 0) {
-        VIR_FREE(storageState);
-        return VIR_DRV_OPEN_ERROR;
-    }
-    parallelsStorageLock(storageState);
 
     if (privileged) {
         if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
@@ -194,16 +175,47 @@ parallelsStorageOpen(virConnectPtr conn,
         virStoragePoolObjUnlock(privconn->pools.objs[i]);
     }
 
-    parallelsStorageUnlock(storageState);
-
-    conn->storagePrivateData = storageState;
-
-    return VIR_DRV_OPEN_SUCCESS;
+    return 0;
 
 out_of_memory:
     virReportOOMError();
 error:
     VIR_FREE(base);
+    return -1;
+}
+
+static virDrvOpenStatus
+parallelsStorageOpen(virConnectPtr conn,
+                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                     unsigned int flags)
+{
+    virStorageDriverStatePtr storageState;
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    if (STRNEQ(conn->driver->name, "Parallels"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (VIR_ALLOC(storageState) < 0) {
+        virReportOOMError();
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (virMutexInit(&storageState->lock) < 0) {
+        VIR_FREE(storageState);
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    conn->storagePrivateData = storageState;
+    parallelsStorageLock(storageState);
+
+    if (parallelsLoadPools(conn))
+        goto error;
+
+    parallelsStorageUnlock(storageState);
+
+    return VIR_DRV_OPEN_SUCCESS;
+
+error:
     parallelsStorageUnlock(storageState);
     parallelsStorageClose(conn);
     return -1;
