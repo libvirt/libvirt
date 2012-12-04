@@ -13,7 +13,7 @@
 # define _LIBVIR_SEXPR_H_
 
 # include "internal.h"
-# include "buf.h"
+# include "virbuffer.h"
 
 enum sexpr_type {
     SEXPR_NIL,

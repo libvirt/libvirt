@@ -31,7 +31,7 @@
 #include <fcntl.h>
 
 #include "virterror_internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "conf.h"
 #include "util.h"
 #include "c-ctype.h"

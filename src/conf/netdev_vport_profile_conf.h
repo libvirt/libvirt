@@ -25,7 +25,7 @@
 
 # include "internal.h"
 # include "virnetdevvportprofile.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "xml.h"
 
 typedef enum {

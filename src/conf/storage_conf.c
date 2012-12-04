@@ -40,7 +40,7 @@
 
 #include "xml.h"
 #include "uuid.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "memory.h"
 #include "virfile.h"

@@ -30,7 +30,7 @@
 
 #include "internal.h"
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "logging.h"
 #include "virterror_internal.h"

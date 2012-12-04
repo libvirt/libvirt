@@ -46,7 +46,7 @@
 
 #include "uml_driver.h"
 #include "uml_conf.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "nodeinfo.h"
 #include "stats_linux.h"

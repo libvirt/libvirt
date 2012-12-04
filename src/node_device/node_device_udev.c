@@ -36,7 +36,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "pci.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV

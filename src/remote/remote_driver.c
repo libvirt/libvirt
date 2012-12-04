@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "domain_event.h"
 #include "driver.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "remote_driver.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"

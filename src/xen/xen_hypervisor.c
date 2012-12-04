@@ -73,7 +73,7 @@
 #include "stats_linux.h"
 #include "block_stats.h"
 #include "xend_internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "capabilities.h"
 #include "memory.h"
 #include "threads.h"

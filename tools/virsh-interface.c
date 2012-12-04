@@ -32,7 +32,7 @@
 #include <libxml/xmlsave.h>
 
 #include "internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "util.h"
 #include "xml.h"

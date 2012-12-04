@@ -31,7 +31,7 @@
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 

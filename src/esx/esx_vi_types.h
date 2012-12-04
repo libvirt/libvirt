@@ -23,7 +23,7 @@
 #ifndef __ESX_VI_TYPES_H__
 # define __ESX_VI_TYPES_H__
 
-# include "buf.h"
+# include "virbuffer.h"
 
 typedef enum _esxVI_Type esxVI_Type;
 typedef struct _esxVI_Object esxVI_Object;

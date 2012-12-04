@@ -25,7 +25,7 @@
 #ifndef __HYPERV_WMI_H__
 # define __HYPERV_WMI_H__
 
-# include "buf.h"
+# include "virbuffer.h"
 # include "hyperv_private.h"
 # include "hyperv_wmi_classes.h"
 # include "openwsman.h"

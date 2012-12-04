@@ -23,7 +23,7 @@
 # define __VIRTLOG_H_
 
 # include "internal.h"
-# include "buf.h"
+# include "virbuffer.h"
 
 /*
  * To be made public

@@ -31,7 +31,7 @@
 # include "util.h"
 # include "virhash.h"
 # include "xml.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "virsocketaddr.h"
 # include "virmacaddr.h"
 

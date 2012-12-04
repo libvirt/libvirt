@@ -24,7 +24,7 @@
 # define NWFILTER_PARAMS_H
 
 # include "virhash.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "virmacaddr.h"
 
 enum virNWFilterVarValueType {

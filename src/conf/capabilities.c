@@ -26,7 +26,7 @@
 #include <strings.h>
 
 #include "capabilities.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "util.h"
 #include "uuid.h"

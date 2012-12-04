@@ -7,7 +7,7 @@
 #include "internal.h"
 #include "util.h"
 #include "testutils.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 
 #define TEST_ERROR(...)                             \

@@ -32,7 +32,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "memory.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "logging.h"
 #include "viruri.h"
 #include "xenapi_driver_private.h"

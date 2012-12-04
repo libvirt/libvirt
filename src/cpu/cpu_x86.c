@@ -31,7 +31,7 @@
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
-#include "buf.h"
+#include "virbuffer.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_CPU

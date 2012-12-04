@@ -23,7 +23,7 @@
 # include "capabilities.h"
 # include "domain_conf.h"
 # include "driver.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "viruri.h"
 
 int

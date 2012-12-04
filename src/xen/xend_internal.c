@@ -37,7 +37,7 @@
 #include "util.h"
 #include "sexpr.h"
 #include "xen_sxpr.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "uuid.h"
 #include "xen_driver.h"
 #include "xen_hypervisor.h"

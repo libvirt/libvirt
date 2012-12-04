@@ -43,7 +43,7 @@
 #include "util.h"
 #include "threads.h"
 #include "virterror_internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "logging.h"
 #include "command.h"
 #include "virrandom.h"

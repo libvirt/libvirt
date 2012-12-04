@@ -25,7 +25,7 @@
 # define __VIR_CPU_CONF_H__
 
 # include "util.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "xml.h"
 # include "virbitmap.h"
 # include "virarch.h"

@@ -24,7 +24,7 @@
 # define __VIR_STORAGE_ENCRYPTION_H__
 
 # include "internal.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "util.h"
 
 # include <libxml/tree.h>

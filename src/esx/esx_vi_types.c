@@ -27,7 +27,7 @@
 #include <libxml/parser.h>
 #include <libxml/xpathInternals.h>
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "datatypes.h"
 #include "memory.h"
 #include "logging.h"

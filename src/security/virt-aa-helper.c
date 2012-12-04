@@ -40,7 +40,7 @@
 #include <locale.h>
 
 #include "internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "memory.h"
 #include "command.h"

@@ -26,7 +26,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "cpu_conf.h"
 #include "domain_conf.h"
 

@@ -33,7 +33,7 @@
 #include "internal.h"
 #include "xml.h"
 #include "memory.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "testutils.h"
 #include "cpu_conf.h"
 #include "cpu/cpu.h"

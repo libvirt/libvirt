@@ -41,7 +41,7 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virprocess.h"
-#include "buf.h"
+#include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

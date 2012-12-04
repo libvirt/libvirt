@@ -24,7 +24,7 @@
 
 # include "internal.h"
 # include "util.h"
-# include "buf.h"
+# include "virbuffer.h"
 
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;

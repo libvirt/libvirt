@@ -1,5 +1,5 @@
 /*
- * buf.h: buffers for libvirt
+ * virbuffer.h: buffers for libvirt
  *
  * Copyright (C) 2005-2008, 2011, 2012 Red Hat, Inc.
  *

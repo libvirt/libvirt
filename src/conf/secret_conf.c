@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include "internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "datatypes.h"
 #include "logging.h"
 #include "memory.h"

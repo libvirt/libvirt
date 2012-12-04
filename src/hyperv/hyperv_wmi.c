@@ -31,7 +31,7 @@
 #include "memory.h"
 #include "util.h"
 #include "uuid.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "hyperv_private.h"
 #include "hyperv_wmi.h"
 

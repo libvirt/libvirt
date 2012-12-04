@@ -41,7 +41,7 @@
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "c-ctype.h"
 #include "virfile.h"
 

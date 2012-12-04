@@ -32,7 +32,7 @@
 
 #include "virbitmap.h"
 #include "memory.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "c-ctype.h"
 #include "count-one-bits.h"

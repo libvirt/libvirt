@@ -1,5 +1,5 @@
 /*
- * buf.c: buffers for libvirt
+ * virbuffer.c: buffers for libvirt
  *
  * Copyright (C) 2005-2008, 2010-2012 Red Hat, Inc.
  *
@@ -30,7 +30,7 @@
 
 #define __VIR_BUFFER_C__
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 
 

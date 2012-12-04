@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"

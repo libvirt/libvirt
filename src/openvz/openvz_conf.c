@@ -46,7 +46,7 @@
 #include "openvz_conf.h"
 #include "openvz_util.h"
 #include "uuid.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "util.h"
 #include "nodeinfo.h"

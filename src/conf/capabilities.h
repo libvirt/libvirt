@@ -25,7 +25,7 @@
 # define __VIR_CAPABILITIES_H
 
 # include "internal.h"
-# include "buf.h"
+# include "virbuffer.h"
 # include "cpu_conf.h"
 # include "virarch.h"
 # include "virmacaddr.h"

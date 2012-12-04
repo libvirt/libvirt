@@ -27,7 +27,7 @@
 
 #include "internal.h"
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "memory.h"
 #include "storage_conf.h"
 #include "storage_encryption_conf.h"

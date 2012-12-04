@@ -50,7 +50,7 @@
 #include "network_conf.h"
 #include "device_conf.h"
 #include "driver.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "virpidfile.h"
 #include "util.h"
 #include "command.h"

@@ -39,7 +39,7 @@
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "logging.h"
 #include "nwfilter_conf.h"
 #include "storage_file.h"

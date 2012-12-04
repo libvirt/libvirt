@@ -39,7 +39,7 @@
 #include "driver.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
-#include "buf.h"
+#include "virbuffer.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

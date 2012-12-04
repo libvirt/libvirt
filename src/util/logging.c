@@ -44,7 +44,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "threads.h"
 #include "virfile.h"
 #include "virtime.h"

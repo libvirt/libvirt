@@ -48,7 +48,7 @@
 #include "datatypes.h"
 #include "openvz_driver.h"
 #include "openvz_util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "openvz_conf.h"
 #include "nodeinfo.h"

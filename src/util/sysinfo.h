@@ -26,7 +26,7 @@
 
 # include "internal.h"
 # include "util.h"
-# include "buf.h"
+# include "virbuffer.h"
 
 enum virSysinfoType {
     VIR_SYSINFO_SMBIOS,

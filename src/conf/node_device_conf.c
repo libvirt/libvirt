@@ -34,7 +34,7 @@
 #include "memory.h"
 #include "xml.h"
 #include "util.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "uuid.h"
 #include "pci.h"
 #include "virrandom.h"

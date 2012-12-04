@@ -38,7 +38,7 @@
 
 #include "internal.h"
 #include "virbitmap.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "c-ctype.h"
 #include "conf/domain_conf.h"
 #include "console.h"

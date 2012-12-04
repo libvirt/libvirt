@@ -30,7 +30,7 @@
 
 #include "internal.h"
 
-#include "buf.h"
+#include "virbuffer.h"
 #include "sysinfo.h"
 #include "testutils.h"
 #include "util.h"

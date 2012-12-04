@@ -43,7 +43,7 @@
 #include "xen_sxpr.h"
 #include "xen_xm.h"
 #include "virhash.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "uuid.h"
 #include "util.h"
 #include "memory.h"

@@ -77,7 +77,7 @@
 #include "dirname.h"
 #include "virterror_internal.h"
 #include "logging.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "util.h"
 #include "storage_file.h"
 #include "memory.h"

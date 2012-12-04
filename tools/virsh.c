@@ -56,7 +56,7 @@
 #include "internal.h"
 #include "virterror_internal.h"
 #include "base64.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "console.h"
 #include "util.h"
 #include "memory.h"

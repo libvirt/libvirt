@@ -34,7 +34,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virfile.h"
-#include "buf.h"
+#include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

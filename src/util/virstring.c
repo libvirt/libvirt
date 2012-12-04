@@ -23,7 +23,7 @@
 
 #include "virstring.h"
 #include "memory.h"
-#include "buf.h"
+#include "virbuffer.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
