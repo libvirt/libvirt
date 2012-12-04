@@ -72,6 +72,8 @@
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
+#define IS_CT(def)  (STREQ_NULLABLE(def->os.type, "exe"))
+
 static int parallelsClose(virConnectPtr conn);
 
 void
@@ -298,6 +300,119 @@ cleanup:
 }
 
 static int
+parallelsGetHddInfo(virDomainDefPtr def,
+                    virDomainDiskDefPtr disk,
+                    const char *key,
+                    virJSONValuePtr value)
+{
+    const char *tmp;
+    unsigned int idx;
+
+    disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+
+    if (virJSONValueObjectHasKey(value, "real") == 1) {
+        disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+
+        if (!(tmp = virJSONValueObjectGetString(value, "real"))) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (!(disk->src = strdup(tmp))) {
+            virReportOOMError();
+            return -1;
+        }
+    } else {
+        disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
+
+        if (!(tmp = virJSONValueObjectGetString(value, "image"))) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (!(disk->src = strdup(tmp))) {
+            virReportOOMError();
+            return -1;
+        }
+    }
+
+    tmp = virJSONValueObjectGetString(value, "port");
+    if (!tmp && !IS_CT(def)) {
+        parallelsParseError();
+        return -1;
+    }
+
+    if (tmp) {
+        if (STRPREFIX(tmp, "ide")) {
+            disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        } else if (STRPREFIX(tmp, "sata")) {
+            disk->bus = VIR_DOMAIN_DISK_BUS_SATA;
+        } else if (STRPREFIX(tmp, "scsi")) {
+            disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        } else {
+            parallelsParseError();
+            return -1;
+        }
+
+        char *colonp;
+        unsigned int pos;
+
+        if (!(colonp = strchr(tmp, ':'))) {
+            parallelsParseError();
+            return -1;
+        }
+
+        if (virStrToLong_ui(colonp + 1, NULL, 10, &pos) < 0) {
+            parallelsParseError();
+            return -1;
+        }
+
+        disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        disk->info.addr.drive.target = pos;
+    } else {
+        /* Actually there are no disk devices in containers, but in
+         * in Parallels Cloud Server we mount disk images as container's
+         * root fs during start, so it looks like a disk device. */
+        disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+    }
+
+    if (virStrToLong_ui(key + strlen("hdd"), NULL, 10, &idx) < 0) {
+        parallelsParseError();
+        return -1;
+    }
+
+    if (!(disk->dst = virIndexToDiskName(idx, "sd")))
+        return -1;
+
+    return 0;
+}
+
+static int
+parallelsAddHddInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
+{
+    virDomainDiskDefPtr disk = NULL;
+
+    if (VIR_ALLOC(disk) < 0)
+        goto no_memory;
+
+    if (parallelsGetHddInfo(def, disk, key, value))
+        goto error;
+
+    if (VIR_REALLOC_N(def->disks, def->ndisks + 1) < 0)
+        goto no_memory;
+
+    def->disks[def->ndisks++] = disk;
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+error:
+    virDomainDiskDefFree(disk);
+    return -1;
+}
+
+static int
 parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
 {
     int n;
@@ -324,6 +439,9 @@ parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
             }
         } else if (STREQ(key, "video")) {
             if (parallelsAddVideoInfo(def, value))
+                goto cleanup;
+        } else if (STRPREFIX(key, "hdd")) {
+            if (parallelsAddHddInfo(def, key, value))
                 goto cleanup;
         }
     }
