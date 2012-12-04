@@ -86,13 +86,14 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
 {
     DIR *dir;
     struct dirent *ent;
-    char *path;
+    char *path = NULL;
+    int ret = -1;
 
     if (!(dir = opendir(pool->def->target.path))) {
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              pool->def->target.path);
-        goto cleanup;
+        return -1;
     }
 
     while ((ent = readdir(dir)) != NULL) {
@@ -100,18 +101,21 @@ parallelsFindVolumes(virStoragePoolObjPtr pool)
             continue;
 
         if (!(path = virFileBuildPath(pool->def->target.path,
-                                      ent->d_name, NULL)))
-            goto no_memory;
+                                      ent->d_name, NULL))) {
+            virReportOOMError();
+            goto cleanup;
+        }
         if (!parallelsStorageVolumeDefine(pool, NULL, path, false))
             goto cleanup;
+
         VIR_FREE(path);
     }
 
-    return 0;
-no_memory:
-    virReportOOMError();
+    ret = 0;
 cleanup:
-    return -1;
+    VIR_FREE(path);
+    closedir(dir);
+    return ret;
 
 }
 
