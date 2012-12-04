@@ -4819,6 +4819,17 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
                                        hostdev, flags) < 0) {
             goto error;
         }
+    } else if (actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        char *class_id = virXPathString("string(./class/@id)", ctxt);
+        if (class_id &&
+            virStrToLong_ui(class_id, NULL, 10, &actual->class_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to parse class id '%s'"),
+                           class_id);
+            VIR_FREE(class_id);
+            goto error;
+        }
+        VIR_FREE(class_id);
     }
 
     bandwidth_node = virXPathNode("./bandwidth", ctxt);
@@ -12511,6 +12522,8 @@ virDomainActualNetDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
+        if (def->class_id)
+            virBufferAsprintf(buf, "<class id='%u'/>", def->class_id);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
