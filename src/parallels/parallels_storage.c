@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/statvfs.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <libgen.h>
 
 #include "datatypes.h"
@@ -250,6 +253,101 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
     return pool;
 }
 
+static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
+                                  virDomainObjPtr dom,
+                                  const char *diskName,
+                                  const char *diskPath)
+{
+    virStorageVolDefPtr def = NULL;
+
+    if (VIR_ALLOC(def))
+        goto no_memory;
+
+    virAsprintf(&def->name, "%s-%s", dom->def->name, diskName);
+    if (!def->name)
+        goto no_memory;
+
+    def->type = VIR_STORAGE_VOL_FILE;
+
+    if (!(def->target.path = realpath(diskPath, NULL)))
+        goto no_memory;
+
+    if (!(def->key = strdup(def->target.path)))
+        goto no_memory;
+
+    if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0)
+        goto no_memory;
+
+    pool->volumes.objs[pool->volumes.count++] = def;
+
+    return 0;
+no_memory:
+    virStorageVolDefFree(def);
+    virReportOOMError();
+    return -1;
+}
+
+static int parallelsFindVmVolumes(virStoragePoolObjPtr pool,
+                                  virDomainObjPtr dom)
+{
+    parallelsDomObjPtr pdom = dom->privateData;
+    DIR *dir;
+    struct dirent *ent;
+    char *diskPath = NULL, *diskDescPath = NULL;
+    struct stat sb;
+    int ret = -1;
+
+    if (!(dir = opendir(pdom->home))) {
+        virReportSystemError(errno,
+                             _("cannot open path '%s'"),
+                             pdom->home);
+        goto cleanup;
+    }
+
+    while ((ent = readdir(dir)) != NULL) {
+        VIR_FREE(diskPath);
+        VIR_FREE(diskDescPath);
+
+        if (!(diskPath = virFileBuildPath(pdom->home, ent->d_name, NULL))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (lstat(diskPath, &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot stat path '%s'"),
+                                 ent->d_name);
+            goto cleanup;
+        }
+
+        if (!S_ISDIR(sb.st_mode))
+            continue;
+
+        if (!(diskDescPath = virFileBuildPath(diskPath,
+                                              "DiskDescriptor", ".xml"))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (access(diskDescPath, F_OK))
+            continue;
+
+        /* here we know, that ent->d_name is a disk image directory */
+
+        if (parallelsAddDiskVolume(pool, dom, ent->d_name, diskPath))
+            goto cleanup;
+
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(diskPath);
+    VIR_FREE(diskDescPath);
+    closedir(dir);
+    return ret;
+
+}
+
 static void
 parallelsPoolsAdd(void *payload,
                   const void *name ATTRIBUTE_UNUSED,
@@ -259,8 +357,15 @@ parallelsPoolsAdd(void *payload,
     virDomainObjPtr dom = payload;
     virStoragePoolObjPtr pool;
 
-    if (!(pool = parallelsPoolAddByDomain(data->conn, dom)))
+    if (!(pool = parallelsPoolAddByDomain(data->conn, dom))) {
         data->failed = true;
+        return;
+    }
+
+    if (parallelsFindVmVolumes(pool, dom)) {
+        data->failed = true;
+        return;
+    }
 
     return;
 }
