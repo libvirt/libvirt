@@ -118,29 +118,13 @@ static int parallelsLoadPools(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     virStorageDriverStatePtr storageState = conn->storagePrivateData;
-    bool privileged = (geteuid() == 0);
     char *base = NULL;
     size_t i;
 
-    if (privileged) {
-        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
-            goto out_of_memory;
-    } else {
-        char *userdir = virGetUserDirectory();
+    if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
+        goto out_of_memory;
 
-        if (!userdir)
-            goto error;
-
-        if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
-            VIR_FREE(userdir);
-            goto out_of_memory;
-        }
-        VIR_FREE(userdir);
-    }
-
-    /* Configuration paths are either ~/.libvirt/storage/... (session) or
-     * /etc/libvirt/storage/... (system).
-     */
+    /* Configuration path is /etc/libvirt/parallels-storage/... . */
     if (virAsprintf(&storageState->configDir,
                     "%s/parallels-storage", base) == -1)
         goto out_of_memory;
