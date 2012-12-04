@@ -6029,7 +6029,7 @@ libvirt_virConnectCloseCallbackDispatch(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     Py_DECREF(pyobj_cbData);
 
-    if(!pyobj_ret) {
+    if (!pyobj_ret) {
         DEBUG("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
         PyErr_Print();
     } else {
