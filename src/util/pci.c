@@ -58,9 +58,7 @@ struct _pciDevice {
     char          id[PCI_ID_LEN];     /* product vendor */
     char          *path;
     const char    *used_by;           /* The domain which uses the device */
-    int           fd;
 
-    unsigned      initted;
     unsigned      pcie_cap_pos;
     unsigned      pci_pm_cap_pos;
     unsigned      has_flr : 1;
@@ -166,44 +164,51 @@ struct _pciDeviceList {
                                  PCI_EXT_CAP_ACS_UF)
 
 static int
-pciOpenConfig(pciDevice *dev)
+pciConfigOpen(pciDevice *dev, bool fatal)
 {
     int fd;
 
-    if (dev->fd > 0)
-        return 0;
-
     fd = open(dev->path, O_RDWR);
+
     if (fd < 0) {
-        char ebuf[1024];
-        VIR_WARN("Failed to open config space file '%s': %s",
-                 dev->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+        if (fatal) {
+            virReportSystemError(errno,
+                                 _("Failed to open config space file '%s'"),
+                                 dev->path);
+        } else {
+            char ebuf[1024];
+            VIR_WARN("Failed to open config space file '%s': %s",
+                     dev->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
         return -1;
     }
+
     VIR_DEBUG("%s %s: opened %s", dev->id, dev->name, dev->path);
-    dev->fd = fd;
-    return 0;
+    return fd;
 }
 
 static void
-pciCloseConfig(pciDevice *dev)
+pciConfigClose(pciDevice *dev, int cfgfd)
 {
-    if (!dev)
-        return;
-
-    VIR_FORCE_CLOSE(dev->fd);
+    if (VIR_CLOSE(cfgfd) < 0) {
+        char ebuf[1024];
+        VIR_WARN("Failed to close config space file '%s': %s",
+                 dev->path, virStrerror(errno, ebuf, sizeof(ebuf)));
+    }
 }
 
+
 static int
-pciRead(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
+pciRead(pciDevice *dev,
+        int cfgfd,
+        unsigned pos,
+        uint8_t *buf,
+        unsigned buflen)
 {
     memset(buf, 0, buflen);
 
-    if (pciOpenConfig(dev) < 0)
-        return -1;
-
-    if (lseek(dev->fd, pos, SEEK_SET) != pos ||
-        saferead(dev->fd, buf, buflen) != buflen) {
+    if (lseek(cfgfd, pos, SEEK_SET) != pos ||
+        saferead(cfgfd, buf, buflen) != buflen) {
         char ebuf[1024];
         VIR_WARN("Failed to read from '%s' : %s", dev->path,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
@@ -213,37 +218,38 @@ pciRead(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
 }
 
 static uint8_t
-pciRead8(pciDevice *dev, unsigned pos)
+pciRead8(pciDevice *dev, int cfgfd, unsigned pos)
 {
     uint8_t buf;
-    pciRead(dev, pos, &buf, sizeof(buf));
+    pciRead(dev, cfgfd, pos, &buf, sizeof(buf));
     return buf;
 }
 
 static uint16_t
-pciRead16(pciDevice *dev, unsigned pos)
+pciRead16(pciDevice *dev, int cfgfd, unsigned pos)
 {
     uint8_t buf[2];
-    pciRead(dev, pos, &buf[0], sizeof(buf));
+    pciRead(dev, cfgfd, pos, &buf[0], sizeof(buf));
     return (buf[0] << 0) | (buf[1] << 8);
 }
 
 static uint32_t
-pciRead32(pciDevice *dev, unsigned pos)
+pciRead32(pciDevice *dev, int cfgfd, unsigned pos)
 {
     uint8_t buf[4];
-    pciRead(dev, pos, &buf[0], sizeof(buf));
+    pciRead(dev, cfgfd, pos, &buf[0], sizeof(buf));
     return (buf[0] << 0) | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
 }
 
 static int
-pciWrite(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
+pciWrite(pciDevice *dev,
+         int cfgfd,
+         unsigned pos,
+         uint8_t *buf,
+         unsigned buflen)
 {
-    if (pciOpenConfig(dev) < 0)
-        return -1;
-
-    if (lseek(dev->fd, pos, SEEK_SET) != pos ||
-        safewrite(dev->fd, buf, buflen) != buflen) {
+    if (lseek(cfgfd, pos, SEEK_SET) != pos ||
+        safewrite(cfgfd, buf, buflen) != buflen) {
         char ebuf[1024];
         VIR_WARN("Failed to write to '%s' : %s", dev->path,
                  virStrerror(errno, ebuf, sizeof(ebuf)));
@@ -253,17 +259,17 @@ pciWrite(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
 }
 
 static void
-pciWrite16(pciDevice *dev, unsigned pos, uint16_t val)
+pciWrite16(pciDevice *dev, int cfgfd, unsigned pos, uint16_t val)
 {
     uint8_t buf[2] = { (val >> 0), (val >> 8) };
-    pciWrite(dev, pos, &buf[0], sizeof(buf));
+    pciWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
 }
 
 static void
-pciWrite32(pciDevice *dev, unsigned pos, uint32_t val)
+pciWrite32(pciDevice *dev, int cfgfd, unsigned pos, uint32_t val)
 {
     uint8_t buf[4] = { (val >> 0), (val >> 8), (val >> 16), (val >> 14) };
-    pciWrite(dev, pos, &buf[0], sizeof(buf));
+    pciWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
 }
 
 typedef int (*pciIterPredicate)(pciDevice *, pciDevice *, void *);
@@ -343,16 +349,16 @@ pciIterDevices(pciIterPredicate predicate,
 }
 
 static uint8_t
-pciFindCapabilityOffset(pciDevice *dev, unsigned capability)
+pciFindCapabilityOffset(pciDevice *dev, int cfgfd, unsigned capability)
 {
     uint16_t status;
     uint8_t pos;
 
-    status = pciRead16(dev, PCI_STATUS);
+    status = pciRead16(dev, cfgfd, PCI_STATUS);
     if (!(status & PCI_STATUS_CAP_LIST))
         return 0;
 
-    pos = pciRead8(dev, PCI_CAPABILITY_LIST);
+    pos = pciRead8(dev, cfgfd, PCI_CAPABILITY_LIST);
 
     /* Zero indicates last capability, capabilities can't
      * be in the config space header and 0xff is returned
@@ -362,14 +368,14 @@ pciFindCapabilityOffset(pciDevice *dev, unsigned capability)
      * capabilities here.
      */
     while (pos >= PCI_CONF_HEADER_LEN && pos != 0xff) {
-        uint8_t capid = pciRead8(dev, pos);
+        uint8_t capid = pciRead8(dev, cfgfd, pos);
         if (capid == capability) {
             VIR_DEBUG("%s %s: found cap 0x%.2x at 0x%.2x",
                       dev->id, dev->name, capability, pos);
             return pos;
         }
 
-        pos = pciRead8(dev, pos + 1);
+        pos = pciRead8(dev, cfgfd, pos + 1);
     }
 
     VIR_DEBUG("%s %s: failed to find cap 0x%.2x", dev->id, dev->name, capability);
@@ -378,7 +384,9 @@ pciFindCapabilityOffset(pciDevice *dev, unsigned capability)
 }
 
 static unsigned int
-pciFindExtendedCapabilityOffset(pciDevice *dev, unsigned capability)
+pciFindExtendedCapabilityOffset(pciDevice *dev,
+                                int cfgfd,
+                                unsigned capability)
 {
     int ttl;
     unsigned int pos;
@@ -389,7 +397,7 @@ pciFindExtendedCapabilityOffset(pciDevice *dev, unsigned capability)
     pos = PCI_EXT_CAP_BASE;
 
     while (ttl > 0 && pos >= PCI_EXT_CAP_BASE) {
-        header = pciRead32(dev, pos);
+        header = pciRead32(dev, cfgfd, pos);
 
         if ((header & PCI_EXT_CAP_ID_MASK) == capability)
             return pos;
@@ -405,7 +413,7 @@ pciFindExtendedCapabilityOffset(pciDevice *dev, unsigned capability)
  * not have FLR, 1 if it does, and -1 on error
  */
 static int
-pciDetectFunctionLevelReset(pciDevice *dev)
+pciDetectFunctionLevelReset(pciDevice *dev, int cfgfd)
 {
     uint32_t caps;
     uint8_t pos;
@@ -419,7 +427,7 @@ pciDetectFunctionLevelReset(pciDevice *dev)
      * on SR-IOV NICs at the moment.
      */
     if (dev->pcie_cap_pos) {
-        caps = pciRead32(dev, dev->pcie_cap_pos + PCI_EXP_DEVCAP);
+        caps = pciRead32(dev, cfgfd, dev->pcie_cap_pos + PCI_EXP_DEVCAP);
         if (caps & PCI_EXP_DEVCAP_FLR) {
             VIR_DEBUG("%s %s: detected PCIe FLR capability", dev->id, dev->name);
             return 1;
@@ -430,9 +438,9 @@ pciDetectFunctionLevelReset(pciDevice *dev)
      * the same thing, except for conventional PCI
      * devices. This is not common yet.
      */
-    pos = pciFindCapabilityOffset(dev, PCI_CAP_ID_AF);
+    pos = pciFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_AF);
     if (pos) {
-        caps = pciRead16(dev, pos + PCI_AF_CAP);
+        caps = pciRead16(dev, cfgfd, pos + PCI_AF_CAP);
         if (caps & PCI_AF_CAP_FLR) {
             VIR_DEBUG("%s %s: detected PCI FLR capability", dev->id, dev->name);
             return 1;
@@ -468,13 +476,13 @@ pciDetectFunctionLevelReset(pciDevice *dev)
  * internal reset, not just a soft reset.
  */
 static unsigned
-pciDetectPowerManagementReset(pciDevice *dev)
+pciDetectPowerManagementReset(pciDevice *dev, int cfgfd)
 {
     if (dev->pci_pm_cap_pos) {
         uint32_t ctl;
 
         /* require the NO_SOFT_RESET bit is clear */
-        ctl = pciRead32(dev, dev->pci_pm_cap_pos + PCI_PM_CTRL);
+        ctl = pciRead32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL);
         if (!(ctl & PCI_PM_CTRL_NO_SOFT_RESET)) {
             VIR_DEBUG("%s %s: detected PM reset capability", dev->id, dev->name);
             return 1;
@@ -524,30 +532,37 @@ pciIsParent(pciDevice *dev, pciDevice *check, void *data)
     uint16_t device_class;
     uint8_t header_type, secondary, subordinate;
     pciDevice **best = data;
+    int ret = 0;
+    int fd;
 
     if (dev->domain != check->domain)
         return 0;
 
-    /* Is it a bridge? */
-    device_class = pciRead16(check, PCI_CLASS_DEVICE);
-    if (device_class != PCI_CLASS_BRIDGE_PCI)
+    if ((fd = pciConfigOpen(check, false)) < 0)
         return 0;
+
+    /* Is it a bridge? */
+    device_class = pciRead16(check, fd, PCI_CLASS_DEVICE);
+    if (device_class != PCI_CLASS_BRIDGE_PCI)
+        goto cleanup;
 
     /* Is it a plane? */
-    header_type = pciRead8(check, PCI_HEADER_TYPE);
+    header_type = pciRead8(check, fd, PCI_HEADER_TYPE);
     if ((header_type & PCI_HEADER_TYPE_MASK) != PCI_HEADER_TYPE_BRIDGE)
-        return 0;
+        goto cleanup;
 
-    secondary   = pciRead8(check, PCI_SECONDARY_BUS);
-    subordinate = pciRead8(check, PCI_SUBORDINATE_BUS);
+    secondary   = pciRead8(check, fd, PCI_SECONDARY_BUS);
+    subordinate = pciRead8(check, fd, PCI_SUBORDINATE_BUS);
 
     VIR_DEBUG("%s %s: found parent device %s", dev->id, dev->name, check->name);
 
     /* if the secondary bus exactly equals the device's bus, then we found
      * the direct parent.  No further work is necessary
      */
-    if (dev->bus == secondary)
-        return 1;
+    if (dev->bus == secondary) {
+        ret = 1;
+        goto cleanup;
+    }
 
     /* otherwise, SRIOV allows VFs to be on different busses then their PFs.
      * In this case, what we need to do is look for the "best" match; i.e.
@@ -557,25 +572,38 @@ pciIsParent(pciDevice *dev, pciDevice *check, void *data)
         if (*best == NULL) {
             *best = pciGetDevice(check->domain, check->bus, check->slot,
                                  check->function);
-            if (*best == NULL)
-                return -1;
-        }
-        else {
+            if (*best == NULL) {
+                ret = -1;
+                goto cleanup;
+            }
+        } else {
             /* OK, we had already recorded a previous "best" match for the
              * parent.  See if the current device is more restrictive than the
              * best, and if so, make it the new best
              */
-            if (secondary > pciRead8(*best, PCI_SECONDARY_BUS)) {
+            int bestfd;
+            uint8_t best_secondary;
+
+            if ((bestfd = pciConfigOpen(*best, false)) < 0)
+                goto cleanup;
+            best_secondary = pciRead8(*best, bestfd, PCI_SECONDARY_BUS);
+            pciConfigClose(*best, bestfd);
+
+            if (secondary > best_secondary) {
                 pciFreeDevice(*best);
                 *best = pciGetDevice(check->domain, check->bus, check->slot,
                                      check->function);
-                if (*best == NULL)
-                    return -1;
+                if (*best == NULL) {
+                    ret = -1;
+                    goto cleanup;
+                }
             }
         }
     }
 
-    return 0;
+cleanup:
+    pciConfigClose(check, fd);
+    return ret;
 }
 
 static int
@@ -598,12 +626,14 @@ pciGetParentDevice(pciDevice *dev, pciDevice **parent)
  */
 static int
 pciTrySecondaryBusReset(pciDevice *dev,
+                        int cfgfd,
                         pciDeviceList *inactiveDevs)
 {
     pciDevice *parent, *conflict;
     uint8_t config_space[PCI_CONF_LEN];
     uint16_t ctl;
     int ret = -1;
+    int parentfd;
 
     /* Refuse to do a secondary bus reset if there are other
      * devices/functions behind the bus are used by the host
@@ -625,6 +655,8 @@ pciTrySecondaryBusReset(pciDevice *dev,
                        dev->name);
         return -1;
     }
+    if ((parentfd = pciConfigOpen(parent, true)) < 0)
+        goto out;
 
     VIR_DEBUG("%s %s: doing a secondary bus reset", dev->id, dev->name);
 
@@ -632,7 +664,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
      * for the supplied device since we refuse to do a reset if there
      * are multiple devices/functions
      */
-    if (pciRead(dev, 0, config_space, PCI_CONF_LEN) < 0) {
+    if (pciRead(dev, cfgfd, 0, config_space, PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read PCI config space for %s"),
                        dev->name);
@@ -642,24 +674,27 @@ pciTrySecondaryBusReset(pciDevice *dev,
     /* Read the control register, set the reset flag, wait 200ms,
      * unset the reset flag and wait 200ms.
      */
-    ctl = pciRead16(dev, PCI_BRIDGE_CONTROL);
+    ctl = pciRead16(dev, cfgfd, PCI_BRIDGE_CONTROL);
 
-    pciWrite16(parent, PCI_BRIDGE_CONTROL, ctl | PCI_BRIDGE_CTL_RESET);
-
-    usleep(200 * 1000); /* sleep 200ms */
-
-    pciWrite16(parent, PCI_BRIDGE_CONTROL, ctl);
+    pciWrite16(parent, parentfd, PCI_BRIDGE_CONTROL,
+               ctl | PCI_BRIDGE_CTL_RESET);
 
     usleep(200 * 1000); /* sleep 200ms */
 
-    if (pciWrite(dev, 0, config_space, PCI_CONF_LEN) < 0) {
+    pciWrite16(parent, parentfd, PCI_BRIDGE_CONTROL, ctl);
+
+    usleep(200 * 1000); /* sleep 200ms */
+
+    if (pciWrite(dev, cfgfd, 0, config_space, PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to restore PCI config space for %s"),
                        dev->name);
         goto out;
     }
     ret = 0;
+
 out:
+    pciConfigClose(parent, parentfd);
     pciFreeDevice(parent);
     return ret;
 }
@@ -669,7 +704,7 @@ out:
  * above we require the device supports a full internal reset.
  */
 static int
-pciTryPowerManagementReset(pciDevice *dev)
+pciTryPowerManagementReset(pciDevice *dev, int cfgfd)
 {
     uint8_t config_space[PCI_CONF_LEN];
     uint32_t ctl;
@@ -678,7 +713,7 @@ pciTryPowerManagementReset(pciDevice *dev)
         return -1;
 
     /* Save and restore the device's config space. */
-    if (pciRead(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
+    if (pciRead(dev, cfgfd, 0, &config_space[0], PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read PCI config space for %s"),
                        dev->name);
@@ -687,18 +722,20 @@ pciTryPowerManagementReset(pciDevice *dev)
 
     VIR_DEBUG("%s %s: doing a power management reset", dev->id, dev->name);
 
-    ctl = pciRead32(dev, dev->pci_pm_cap_pos + PCI_PM_CTRL);
+    ctl = pciRead32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL);
     ctl &= ~PCI_PM_CTRL_STATE_MASK;
 
-    pciWrite32(dev, dev->pci_pm_cap_pos + PCI_PM_CTRL, ctl|PCI_PM_CTRL_STATE_D3hot);
+    pciWrite32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL,
+               ctl | PCI_PM_CTRL_STATE_D3hot);
 
     usleep(10 * 1000); /* sleep 10ms */
 
-    pciWrite32(dev, dev->pci_pm_cap_pos + PCI_PM_CTRL, ctl|PCI_PM_CTRL_STATE_D0);
+    pciWrite32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL,
+               ctl | PCI_PM_CTRL_STATE_D0);
 
     usleep(10 * 1000); /* sleep 10ms */
 
-    if (pciWrite(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
+    if (pciWrite(dev, cfgfd, 0, &config_space[0], PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to restore PCI config space for %s"),
                        dev->name);
@@ -709,25 +746,18 @@ pciTryPowerManagementReset(pciDevice *dev)
 }
 
 static int
-pciInitDevice(pciDevice *dev)
+pciInitDevice(pciDevice *dev, int cfgfd)
 {
     int flr;
 
-    if (pciOpenConfig(dev) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to open config space file '%s'"),
-                             dev->path);
-        return -1;
-    }
-
-    dev->pcie_cap_pos   = pciFindCapabilityOffset(dev, PCI_CAP_ID_EXP);
-    dev->pci_pm_cap_pos = pciFindCapabilityOffset(dev, PCI_CAP_ID_PM);
-    flr = pciDetectFunctionLevelReset(dev);
+    dev->pcie_cap_pos   = pciFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP);
+    dev->pci_pm_cap_pos = pciFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM);
+    flr = pciDetectFunctionLevelReset(dev, cfgfd);
     if (flr < 0)
         return flr;
     dev->has_flr        = flr;
-    dev->has_pm_reset   = pciDetectPowerManagementReset(dev);
-    dev->initted        = 1;
+    dev->has_pm_reset   = pciDetectPowerManagementReset(dev, cfgfd);
+
     return 0;
 }
 
@@ -737,6 +767,7 @@ pciResetDevice(pciDevice *dev,
                pciDeviceList *inactiveDevs)
 {
     int ret = -1;
+    int fd;
 
     if (activeDevs && pciDeviceListFind(activeDevs, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -744,25 +775,30 @@ pciResetDevice(pciDevice *dev,
         return -1;
     }
 
-    if (!dev->initted && pciInitDevice(dev) < 0)
+    if ((fd = pciConfigOpen(dev, true)) < 0)
         return -1;
+
+    if (pciInitDevice(dev, fd) < 0)
+        goto cleanup;
 
     /* KVM will perform FLR when starting and stopping
      * a guest, so there is no need for us to do it here.
      */
-    if (dev->has_flr)
-        return 0;
+    if (dev->has_flr) {
+        ret = 0;
+        goto cleanup;
+    }
 
     /* If the device supports PCI power management reset,
      * that's the next best thing because it only resets
      * the function, not the whole device.
      */
     if (dev->has_pm_reset)
-        ret = pciTryPowerManagementReset(dev);
+        ret = pciTryPowerManagementReset(dev, fd);
 
     /* Bus reset is not an option with the root bus */
     if (ret < 0 && dev->bus != 0)
-        ret = pciTrySecondaryBusReset(dev, inactiveDevs);
+        ret = pciTrySecondaryBusReset(dev, fd, inactiveDevs);
 
     if (ret < 0) {
         virErrorPtr err = virGetLastError();
@@ -772,6 +808,8 @@ pciResetDevice(pciDevice *dev,
                        err ? err->message : _("no FLR, PM reset or bus reset available"));
     }
 
+cleanup:
+    pciConfigClose(dev, fd);
     return ret;
 }
 
@@ -1342,7 +1380,6 @@ pciGetDevice(unsigned domain,
         return NULL;
     }
 
-    dev->fd       = -1;
     dev->domain   = domain;
     dev->bus      = bus;
     dev->slot     = slot;
@@ -1407,7 +1444,6 @@ pciFreeDevice(pciDevice *dev)
     if (!dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
-    pciCloseConfig(dev);
     VIR_FREE(dev->path);
     VIR_FREE(dev);
 }
@@ -1677,32 +1713,43 @@ pciDeviceDownstreamLacksACS(pciDevice *dev)
     uint16_t flags;
     uint16_t ctrl;
     unsigned int pos;
+    int fd;
+    int ret = 0;
 
-    if (!dev->initted && pciInitDevice(dev) < 0)
+    if ((fd = pciConfigOpen(dev, true)) < 0)
         return -1;
 
-    pos = dev->pcie_cap_pos;
-    if (!pos || pciRead16(dev, PCI_CLASS_DEVICE) != PCI_CLASS_BRIDGE_PCI)
-        return 0;
-
-    flags = pciRead16(dev, pos + PCI_EXP_FLAGS);
-    if (((flags & PCI_EXP_FLAGS_TYPE) >> 4) != PCI_EXP_TYPE_DOWNSTREAM)
-        return 0;
-
-    pos = pciFindExtendedCapabilityOffset(dev, PCI_EXT_CAP_ID_ACS);
-    if (!pos) {
-        VIR_DEBUG("%s %s: downstream port lacks ACS", dev->id, dev->name);
-        return 1;
+    if (pciInitDevice(dev, fd) < 0) {
+        ret = -1;
+        goto cleanup;
     }
 
-    ctrl = pciRead16(dev, pos + PCI_EXT_ACS_CTRL);
+    pos = dev->pcie_cap_pos;
+    if (!pos || pciRead16(dev, fd, PCI_CLASS_DEVICE) != PCI_CLASS_BRIDGE_PCI)
+        goto cleanup;
+
+    flags = pciRead16(dev, fd, pos + PCI_EXP_FLAGS);
+    if (((flags & PCI_EXP_FLAGS_TYPE) >> 4) != PCI_EXP_TYPE_DOWNSTREAM)
+        goto cleanup;
+
+    pos = pciFindExtendedCapabilityOffset(dev, fd, PCI_EXT_CAP_ID_ACS);
+    if (!pos) {
+        VIR_DEBUG("%s %s: downstream port lacks ACS", dev->id, dev->name);
+        ret = 1;
+        goto cleanup;
+    }
+
+    ctrl = pciRead16(dev, fd, pos + PCI_EXT_ACS_CTRL);
     if ((ctrl & PCI_EXT_CAP_ACS_ENABLED) != PCI_EXT_CAP_ACS_ENABLED) {
         VIR_DEBUG("%s %s: downstream port has ACS disabled",
                   dev->id, dev->name);
-        return 1;
+        ret = 1;
+        goto cleanup;
     }
 
-    return 0;
+cleanup:
+    pciConfigClose(dev, fd);
+    return ret;
 }
 
 static int
