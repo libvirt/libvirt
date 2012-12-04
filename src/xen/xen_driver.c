@@ -432,6 +432,7 @@ clean:
         if (priv->opened[i])
             drivers[i]->xenClose(conn);
     virMutexDestroy(&priv->lock);
+    VIR_FREE(priv->saveDir);
     VIR_FREE(priv);
     conn->privateData = NULL;
     return ret;
