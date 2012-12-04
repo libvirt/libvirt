@@ -6136,9 +6136,8 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
             ret = qemuDomainDetachPciDiskDevice(driver, vm, dev);
-        else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)
-            ret = qemuDomainDetachDiskDevice(driver, vm, dev);
-        else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB)
+        else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
+                 disk->bus == VIR_DOMAIN_DISK_BUS_USB)
             ret = qemuDomainDetachDiskDevice(driver, vm, dev);
         else
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
