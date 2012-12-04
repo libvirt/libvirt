@@ -720,7 +720,7 @@ void virNetServerAutoShutdown(virNetServerPtr srv,
 }
 
 
-#ifdef HAVE_DBUS
+#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
 static void virNetServerGotInhibitReply(DBusPendingCall *pending,
                                         void *opaque)
 {
@@ -809,7 +809,7 @@ void virNetServerAddShutdownInhibition(virNetServerPtr srv)
 
     VIR_DEBUG("srv=%p inhibitions=%zu", srv, srv->autoShutdownInhibitions);
 
-#ifdef HAVE_DBUS
+#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
     if (srv->autoShutdownInhibitions == 1)
         virNetServerCallInhibit(srv,
                                 "shutdown",
