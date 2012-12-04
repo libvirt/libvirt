@@ -468,33 +468,6 @@ networkReload(void) {
     return 0;
 }
 
-/**
- * networkActive:
- *
- * Checks if the QEmu daemon is active, i.e. has an active domain or
- * an active network
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-networkActive(void) {
-    unsigned int i;
-    int active = 0;
-
-    if (!driverState)
-        return 0;
-
-    networkDriverLock(driverState);
-    for (i = 0 ; i < driverState->networks.count ; i++) {
-        virNetworkObjPtr net = driverState->networks.objs[i];
-        virNetworkObjLock(net);
-        if (virNetworkObjIsActive(net))
-            active = 1;
-        virNetworkObjUnlock(net);
-    }
-    networkDriverUnlock(driverState);
-    return active;
-}
 
 /**
  * networkShutdown:
@@ -3357,7 +3330,6 @@ static virStateDriver networkStateDriver = {
     .initialize  = networkStartup,
     .cleanup = networkShutdown,
     .reload = networkReload,
-    .active = networkActive,
 };
 
 int networkRegister(void) {

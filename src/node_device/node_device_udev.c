@@ -1723,13 +1723,6 @@ static int udevDeviceMonitorReload(void)
 }
 
 
-static int udevDeviceMonitorActive(void)
-{
-    /* Always ready to deal with a shutdown */
-    return 0;
-}
-
-
 static virDrvOpenStatus udevNodeDrvOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         unsigned int flags)
@@ -1772,7 +1765,6 @@ static virStateDriver udevStateDriver = {
     .initialize = udevDeviceMonitorStartup, /* 0.7.3 */
     .cleanup = udevDeviceMonitorShutdown, /* 0.7.3 */
     .reload = udevDeviceMonitorReload, /* 0.7.3 */
-    .active = udevDeviceMonitorActive, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)

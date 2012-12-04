@@ -202,33 +202,6 @@ storageDriverReload(void) {
     return 0;
 }
 
-/**
- * virStorageActive:
- *
- * Checks if the storage driver is active, i.e. has an active pool
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-storageDriverActive(void) {
-    unsigned int i;
-    int active = 0;
-
-    if (!driverState)
-        return 0;
-
-    storageDriverLock(driverState);
-
-    for (i = 0 ; i < driverState->pools.count ; i++) {
-        virStoragePoolObjLock(driverState->pools.objs[i]);
-        if (virStoragePoolObjIsActive(driverState->pools.objs[i]))
-            active = 1;
-        virStoragePoolObjUnlock(driverState->pools.objs[i]);
-    }
-
-    storageDriverUnlock(driverState);
-    return active;
-}
 
 /**
  * virStorageShutdown:
@@ -2445,7 +2418,6 @@ static virStateDriver stateDriver = {
     .initialize = storageDriverStartup,
     .cleanup = storageDriverShutdown,
     .reload = storageDriverReload,
-    .active = storageDriverActive,
 };
 
 int storageRegister(void) {

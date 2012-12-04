@@ -304,27 +304,6 @@ nwfilterDriverReload(void) {
     return 0;
 }
 
-/**
- * virNWFilterActive:
- *
- * Checks if the nwfilter driver is active, i.e. has an active nwfilter
- *
- * Returns 1 if active, 0 otherwise
- */
-static int
-nwfilterDriverActive(void) {
-    int ret;
-
-    if (!driverState)
-        return 0;
-
-    nwfilterDriverLock(driverState);
-    ret = driverState->nwfilters.count ? 1 : 0;
-    ret |= driverState->watchingFirewallD;
-    nwfilterDriverUnlock(driverState);
-
-    return ret;
-}
 
 /**
  * virNWFilterIsWatchingFirewallD:
@@ -695,7 +674,6 @@ static virStateDriver stateDriver = {
     .initialize = nwfilterDriverStartup,
     .cleanup = nwfilterDriverShutdown,
     .reload = nwfilterDriverReload,
-    .active = nwfilterDriverActive,
 };
 
 
