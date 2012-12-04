@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/statvfs.h>
+#include <libgen.h>
 
 #include "datatypes.h"
 #include "memory.h"
@@ -114,12 +115,159 @@ cleanup:
 
 }
 
+struct parallelsPoolsAddData {
+    virConnectPtr conn;
+    bool failed;
+};
+
+/*
+ * Generate unique pool name by path
+ */
+static char *parallelsMakePoolName(virConnectPtr conn, const char *path)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    char *name;
+
+    for (unsigned int i = 0; i < UINT_MAX; i++) {
+        bool found = false;
+
+        if (!(name = strdup(path))) {
+            virReportOOMError();
+            return NULL;
+        }
+
+        if (i == 0)
+            name = strdup(path);
+        else
+            virAsprintf(&name, "%s-%u", path, i);
+
+        if (!name) {
+            virReportOOMError();
+            return 0;
+        }
+
+        for (int j = 0; j < strlen(name); j++)
+            if (name[j] == '/')
+                name[j] = '-';
+
+        for (int j = 0; j < privconn->pools.count; j++) {
+            if (STREQ(name, privconn->pools.objs[j]->def->name)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            return name;
+
+        VIR_FREE(name);
+    }
+
+    return NULL;
+}
+
+static virStoragePoolObjPtr
+parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    virStoragePoolObjListPtr pools = &privconn->pools;
+    virStoragePoolDefPtr def;
+    virStoragePoolObjPtr pool = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        goto no_memory;
+
+    if (!(def->name = parallelsMakePoolName(conn, path)))
+        goto error;
+
+    if (VIR_ALLOC_N(def->uuid, VIR_UUID_BUFLEN))
+        goto no_memory;
+
+    if (virUUIDGenerate(def->uuid)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Can't generate UUID"));
+        goto error;
+    }
+
+    def->type = VIR_STORAGE_POOL_DIR;
+    def->target.path = strdup(path);
+
+    if (!(pool = virStoragePoolObjAssignDef(pools, def)))
+        goto error;
+
+    if (virStoragePoolObjSaveDef(conn->storagePrivateData, pool, def) < 0) {
+        virStoragePoolObjRemove(pools, pool);
+        goto error;
+    }
+
+    virStoragePoolObjUnlock(pool);
+
+    return pool;
+no_memory:
+    virReportOOMError();
+error:
+    virStoragePoolDefFree(def);
+    if (pool)
+        virStoragePoolObjUnlock(pool);
+    return NULL;
+}
+
+/*
+ * Create pool of type VIR_STORAGE_POOL_DIR with
+ * path to the VM, if it's not exists.
+ */
+static virStoragePoolObjPtr
+parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
+{
+    parallelsConnPtr privconn = conn->privateData;
+    parallelsDomObjPtr pdom = dom->privateData;
+    virStoragePoolObjListPtr pools = &privconn->pools;
+    char *poolPath;
+    virStoragePoolObjPtr pool = NULL;
+
+    if (!(poolPath = strdup(pdom->home))) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    poolPath = dirname(poolPath);
+
+    for (int j = 0; j < pools->count; j++) {
+        if (STREQ(poolPath, pools->objs[j]->def->target.path)) {
+            pool = pools->objs[j];
+            break;
+        }
+    }
+
+    if (!pool)
+        pool = parallelsPoolCreateByPath(conn, poolPath);
+
+    VIR_FREE(poolPath);
+    return pool;
+}
+
+static void
+parallelsPoolsAdd(void *payload,
+                  const void *name ATTRIBUTE_UNUSED,
+                  void *opaque)
+{
+    struct parallelsPoolsAddData *data = (struct parallelsPoolsAddData *)opaque;
+    virDomainObjPtr dom = payload;
+    virStoragePoolObjPtr pool;
+
+    if (!(pool = parallelsPoolAddByDomain(data->conn, dom)))
+        data->failed = true;
+
+    return;
+}
+
 static int parallelsLoadPools(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     virStorageDriverStatePtr storageState = conn->storagePrivateData;
     char *base = NULL;
     size_t i;
+    struct parallelsPoolsAddData data;
 
     if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
         goto out_of_memory;
@@ -142,6 +290,13 @@ static int parallelsLoadPools(virConnectPtr conn)
                        _("Failed to load pool configs"));
         goto error;
     }
+
+    data.conn = conn;
+    data.failed = false;
+    virHashForEach(privconn->domains.objs, parallelsPoolsAdd, &data);
+
+    if (data.failed)
+        goto error;
 
     for (i = 0; i < privconn->pools.count; i++) {
         virStoragePoolObjLock(privconn->pools.objs[i]);

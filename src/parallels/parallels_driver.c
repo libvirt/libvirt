@@ -104,6 +104,7 @@ parallelsDomObjFreePrivate(void *p)
         return;
 
     VIR_FREE(pdom->uuid);
+    VIR_FREE(pdom->home);
     VIR_FREE(p);
 };
 
@@ -664,6 +665,14 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
     if (!(pdom->uuid = strdup(tmp)))
+        goto no_memory;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "Home"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(pdom->home = strdup(tmp)))
         goto no_memory;
 
     if (!(tmp = virJSONValueObjectGetString(jobj, "OS")))
