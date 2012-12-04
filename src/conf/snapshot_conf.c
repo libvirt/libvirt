@@ -29,7 +29,7 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "buf.h"
 #include "count-one-bits.h"
 #include "datatypes.h"

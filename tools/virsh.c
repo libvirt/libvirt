@@ -69,7 +69,7 @@
 #include "command.h"
 #include "virkeycode.h"
 #include "virnetdevbandwidth.h"
-#include "util/bitmap.h"
+#include "virbitmap.h"
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
 

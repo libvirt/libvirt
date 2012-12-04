@@ -23,7 +23,7 @@
 # define __VIR_PROCESSINFO_H__
 
 # include "internal.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 
 int virProcessInfoSetAffinity(pid_t pid, virBitmapPtr map);
 

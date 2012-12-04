@@ -39,7 +39,7 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "dnsmasq.h"
 #include "util.h"
 #include "command.h"

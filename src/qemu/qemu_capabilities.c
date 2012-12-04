@@ -35,7 +35,7 @@
 #include "cpu/cpu.h"
 #include "domain_conf.h"
 #include "command.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "virnodesuspend.h"
 #include "qemu_monitor.h"
 

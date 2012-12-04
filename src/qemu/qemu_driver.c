@@ -91,7 +91,7 @@
 #include "virnodesuspend.h"
 #include "virtime.h"
 #include "virtypedparam.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

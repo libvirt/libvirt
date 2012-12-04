@@ -1,5 +1,5 @@
 /*
- * bitmap.h: Simple bitmap operations
+ * virbitmap.h: Simple bitmap operations
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "memory.h"
 #include "buf.h"
 #include "util.h"

@@ -27,7 +27,7 @@
 # include "util.h"
 # include "buf.h"
 # include "xml.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 # include "virarch.h"
 
 # define VIR_CPU_VENDOR_ID_LENGTH 12

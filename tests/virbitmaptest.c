@@ -21,7 +21,7 @@
 
 #include "testutils.h"
 
-#include "bitmap.h"
+#include "virbitmap.h"
 
 static int test1(const void *data ATTRIBUTE_UNUSED)
 {

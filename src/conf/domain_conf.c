@@ -44,14 +44,13 @@
 #include "nwfilter_conf.h"
 #include "storage_file.h"
 #include "virfile.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "count-one-bits.h"
 #include "secret_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
 #include "device_conf.h"
-#include "bitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

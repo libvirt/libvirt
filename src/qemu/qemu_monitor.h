@@ -28,7 +28,7 @@
 # include "internal.h"
 
 # include "domain_conf.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 # include "virhash.h"
 # include "json.h"
 # include "device_conf.h"

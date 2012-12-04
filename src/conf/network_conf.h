@@ -38,7 +38,7 @@
 # include "virnetdevvlan.h"
 # include "virmacaddr.h"
 # include "device_conf.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 
 enum virNetworkForwardType {
     VIR_NETWORK_FORWARD_NONE   = 0,

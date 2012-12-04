@@ -34,7 +34,7 @@
 # include "domain_event.h"
 # include "capabilities.h"
 # include "configmake.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 
 
 # define LIBXL_VNC_PORT_MIN  5900

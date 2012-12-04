@@ -1,5 +1,5 @@
 /*
- * bitmap.h: Simple bitmap operations
+ * virbitmap.h: Simple bitmap operations
  *
  * Copyright (C) 2012 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.

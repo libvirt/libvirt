@@ -37,7 +37,7 @@
 #include <libxml/xmlsave.h>
 
 #include "internal.h"
-#include "bitmap.h"
+#include "virbitmap.h"
 #include "buf.h"
 #include "c-ctype.h"
 #include "conf/domain_conf.h"

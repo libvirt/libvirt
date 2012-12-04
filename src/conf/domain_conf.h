@@ -46,7 +46,7 @@
 # include "virnetdevvlan.h"
 # include "virobject.h"
 # include "device_conf.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 # include "storage_file.h"
 
 /* forward declarations of all device types, required by

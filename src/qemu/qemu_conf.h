@@ -39,7 +39,7 @@
 # include "hostusb.h"
 # include "cpu_conf.h"
 # include "driver.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 # include "command.h"
 # include "threadpool.h"
 # include "locking/lock_manager.h"

@@ -28,7 +28,7 @@
 # include "internal.h"
 
 # include "qemu_monitor.h"
-# include "bitmap.h"
+# include "virbitmap.h"
 
 int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              const char *data,
