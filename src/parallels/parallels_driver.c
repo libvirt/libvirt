@@ -76,6 +76,19 @@
 
 static int parallelsClose(virConnectPtr conn);
 
+static const char * parallelsGetDiskBusName(int bus) {
+    switch (bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        return "ide";
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        return "sata";
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        return "scsi";
+    default:
+        return NULL;
+    }
+}
+
 void
 parallelsDriverLock(parallelsConnPtr driver)
 {
@@ -1529,17 +1542,12 @@ parallelsApplyDisksParams(parallelsDomObjPtr pdom,
             strpos[15] = '\0';
             snprintf(strpos, 15, "%d", newdisk->info.addr.drive.target);
 
-            switch (newdisk->bus) {
-            case VIR_DOMAIN_DISK_BUS_IDE:
-                strbus = "ide";
-                break;
-            case VIR_DOMAIN_DISK_BUS_SATA:
-                strbus = "sata";
-                break;
-            case VIR_DOMAIN_DISK_BUS_SCSI:
-                strbus = "scsi";
-                break;
+            if (!(strbus = parallelsGetDiskBusName(newdisk->bus))) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                               _("Unsupported disk bus: %d", newdisk->bus));
+                return -1;
             }
+
             if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
                                 "--device-set", prlname,
                                 "--iface", strbus,
