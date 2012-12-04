@@ -4,7 +4,6 @@
 
 # libvirt_internal.h
 virRegisterStateDriver;
-virStateActive;
 virStateCleanup;
 virStateInitialize;
 virStateReload;
