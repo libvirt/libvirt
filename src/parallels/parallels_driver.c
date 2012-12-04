@@ -1576,6 +1576,22 @@ cleanup:
     return ret;
 }
 
+static int parallelsRemoveHdd(parallelsDomObjPtr pdom,
+                              virDomainDiskDefPtr disk)
+{
+    char prlname[16];
+
+    prlname[15] = '\0';
+    snprintf(prlname, 15, "hdd%d", virDiskNameToIndex(disk->dst));
+
+    if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                        "--device-del", prlname,
+                        "--detach-only", NULL))
+        return -1;
+
+    return 0;
+}
+
 static int
 parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
                           virDomainDiskDefPtr *olddisks, int nold,
@@ -1594,10 +1610,14 @@ parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
         }
 
         if (!newdisk) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("There is no disk with source '%s' "
-                             "in the specified config"), olddisks[i]->serial);
-            return -1;
+            if (parallelsRemoveHdd(pdom, olddisk)) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                               _("Can't remove disk '%s' "
+                                 "in the specified config"), olddisks[i]->serial);
+                return -1;
+            }
+
+            continue;
         }
 
         if (olddisk->bus != newdisk->bus ||
