@@ -62,5 +62,7 @@ void parallelsDriverLock(parallelsConnPtr driver);
 void parallelsDriverUnlock(parallelsConnPtr driver);
 virStorageVolPtr parallelsStorageVolumeLookupByPathLocked(virConnectPtr conn,
                                                           const char *path);
+int parallelsStorageVolumeDefRemove(virStoragePoolObjPtr privpool,
+                                    virStorageVolDefPtr privvol);
 
 #endif

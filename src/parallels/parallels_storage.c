@@ -1443,42 +1443,12 @@ cleanup:
     return ret;
 }
 
-static int
-parallelsStorageVolumeDelete(virStorageVolPtr vol, unsigned int flags)
+int parallelsStorageVolumeDefRemove(virStoragePoolObjPtr privpool,
+                                    virStorageVolDefPtr privvol)
 {
-    parallelsConnPtr privconn = vol->conn->privateData;
-    virStoragePoolObjPtr privpool;
-    virStorageVolDefPtr privvol;
-    size_t i;
     int ret = -1;
     char *xml_path = NULL;
-
-    virCheckFlags(0, -1);
-
-    parallelsDriverLock(privconn);
-    privpool = virStoragePoolObjFindByName(&privconn->pools, vol->pool);
-    parallelsDriverUnlock(privconn);
-
-    if (privpool == NULL) {
-        parallelsPoolNotFoundError(vol->pool);
-        goto cleanup;
-    }
-
-
-    privvol = virStorageVolDefFindByName(privpool, vol->name);
-
-    if (privvol == NULL) {
-        virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("no storage vol with matching name '%s'"), vol->name);
-        goto cleanup;
-    }
-
-    if (!virStoragePoolObjIsActive(privpool)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("storage pool '%s' is not active"), vol->pool);
-        goto cleanup;
-    }
-
+    size_t i;
 
     privpool->def->allocation -= privvol->allocation;
     privpool->def->available = (privpool->def->capacity -
@@ -1513,12 +1483,56 @@ parallelsStorageVolumeDelete(virStorageVolPtr vol, unsigned int flags)
             break;
         }
     }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(xml_path);
+    return ret;
+}
+
+static int
+parallelsStorageVolumeDelete(virStorageVolPtr vol, unsigned int flags)
+{
+    parallelsConnPtr privconn = vol->conn->privateData;
+    virStoragePoolObjPtr privpool;
+    virStorageVolDefPtr privvol;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    parallelsDriverLock(privconn);
+    privpool = virStoragePoolObjFindByName(&privconn->pools, vol->pool);
+    parallelsDriverUnlock(privconn);
+
+    if (privpool == NULL) {
+        parallelsPoolNotFoundError(vol->pool);
+        goto cleanup;
+    }
+
+
+    privvol = virStorageVolDefFindByName(privpool, vol->name);
+
+    if (privvol == NULL) {
+        virReportError(VIR_ERR_NO_STORAGE_VOL,
+                       _("no storage vol with matching name '%s'"), vol->name);
+        goto cleanup;
+    }
+
+    if (!virStoragePoolObjIsActive(privpool)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is not active"), vol->pool);
+        goto cleanup;
+    }
+
+
+    if (parallelsStorageVolumeDefRemove(privpool, privvol))
+        goto cleanup;
+
     ret = 0;
 
 cleanup:
     if (privpool)
         virStoragePoolObjUnlock(privpool);
-    VIR_FREE(xml_path);
     return ret;
 }
 
