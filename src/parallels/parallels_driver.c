@@ -2013,20 +2013,6 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (dupVM == 1) {
         olddom = virDomainFindByUUID(&privconn->domains, def->uuid);
-        if (parallelsApplyChanges(conn, olddom, def) < 0) {
-            virDomainObjUnlock(olddom);
-            goto cleanup;
-        }
-        virDomainObjUnlock(olddom);
-
-        if (!(dom = virDomainAssignDef(privconn->caps,
-                                       &privconn->domains, def, false))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Can't allocate domobj"));
-            goto cleanup;
-        }
-
-        def = NULL;
     } else {
         if (STREQ(def->os.type, "hvm")) {
             if (parallelsCreateVm(conn, def))
@@ -2041,14 +2027,29 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
         }
         if (parallelsLoadDomains(privconn, def->name))
             goto cleanup;
-        dom = virDomainFindByName(&privconn->domains, def->name);
-        if (!dom) {
+        olddom = virDomainFindByName(&privconn->domains, def->name);
+        if (!olddom) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Domain for '%s' is not defined after creation"),
                            def->name ? def->name : _("(unnamed)"));
             goto cleanup;
         }
     }
+
+    if (parallelsApplyChanges(conn, olddom, def) < 0) {
+        virDomainObjUnlock(olddom);
+        goto cleanup;
+    }
+    virDomainObjUnlock(olddom);
+
+    if (!(dom = virDomainAssignDef(privconn->caps,
+                                   &privconn->domains, def, false))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Can't allocate domobj"));
+        goto cleanup;
+    }
+
+    def = NULL;
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
     if (ret)
