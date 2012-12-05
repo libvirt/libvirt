@@ -993,6 +993,10 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
 
     virObjectUnref(priv->tls);
     priv->tls = NULL;
+    virNetClientSetCloseCallback(priv->client,
+                                 NULL,
+                                 NULL,
+                                 NULL);
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
     priv->client = NULL;
