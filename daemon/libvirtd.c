@@ -846,6 +846,10 @@ static void daemonRunStateInit(void *opaque)
 {
     virNetServerPtr srv = opaque;
 
+    /* Since driver initialization can take time inhibit daemon shutdown until
+       we're done so clients get a chance to connect */
+    daemonInhibitCallback(true, srv);
+
     /* Start the stateful HV drivers
      * This is deliberately done after telling the parent process
      * we're ready, since it can take a long time and this will
@@ -856,8 +860,7 @@ static void daemonRunStateInit(void *opaque)
         VIR_ERROR(_("Driver state initialization failed"));
         /* Ensure the main event loop quits */
         kill(getpid(), SIGTERM);
-        virObjectUnref(srv);
-        return;
+        goto cleanup;
     }
 
 #ifdef HAVE_DBUS
@@ -879,9 +882,10 @@ static void daemonRunStateInit(void *opaque)
         }
     }
 #endif
-
     /* Only now accept clients from network */
     virNetServerUpdateServices(srv, true);
+cleanup:
+    daemonInhibitCallback(false, srv);
     virObjectUnref(srv);
 }
 
