@@ -2622,9 +2622,18 @@ virGetGroupIDByName(const char *name, gid_t *gid)
     }
 
     if (rc != 0) {
-        virReportSystemError(rc, _("Failed to get group record for name '%s'"),
-                             name);
-        goto cleanup;
+       /* We explicitly test for the known error values returned by
+        * getgrnam_r as the manpage says:
+        * ERRORS
+        *   0 or ENOENT or ESRCH or EBADF or EPERM or ...
+        *         The given name or gid was not found.
+        */
+       if ((rc == EINTR) || (rc == EIO) || (rc == EMFILE) ||
+           (rc == ENFILE) || (rc == ENOMEM)) {
+           virReportSystemError(rc, _("Failed to get group record for name '%s'"),
+                                name);
+           goto cleanup;
+       }
     }
 
     if (!gr) {
