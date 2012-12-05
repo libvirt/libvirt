@@ -124,6 +124,8 @@ static const vshCmdOptDef opts_vol_create_as[] = {
      N_("the backing volume if taking a snapshot")},
     {"backing-vol-format", VSH_OT_STRING, 0,
      N_("format of backing volume if taking a snapshot")},
+    {"prealloc-metadata", VSH_OT_BOOL, 0, N_("preallocate metadata (for qcow2 "
+                                             "instead of full allocation)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -146,7 +148,10 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
     unsigned long long capacity, allocation = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    unsigned long flags = 0;
 
+    if (vshCommandOptBool(cmd, "prealloc-metadata"))
+        flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                      VSH_BYNAME)))
         return false;
@@ -256,7 +261,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
     xml = virBufferContentAndReset(&buf);
-    vol = virStorageVolCreateXML(pool, xml, 0);
+    vol = virStorageVolCreateXML(pool, xml, flags);
     VIR_FREE(xml);
     virStoragePoolFree(pool);
 
@@ -287,6 +292,8 @@ static const vshCmdInfo info_vol_create[] = {
 static const vshCmdOptDef opts_vol_create[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML vol description")},
+    {"prealloc-metadata", VSH_OT_BOOL, 0, N_("preallocate metadata (for qcow2 "
+                                             "instead of full allocation)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -297,8 +304,11 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     virStorageVolPtr vol;
     const char *from = NULL;
     bool ret = true;
+    unsigned int flags = 0;
     char *buffer;
 
+    if (vshCommandOptBool(cmd, "prealloc-metadata"))
+        flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
                                            VSH_BYNAME)))
         return false;
@@ -314,7 +324,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vol = virStorageVolCreateXML(pool, buffer, 0);
+    vol = virStorageVolCreateXML(pool, buffer, flags);
     VIR_FREE(buffer);
     virStoragePoolFree(pool);
 
@@ -343,6 +353,8 @@ static const vshCmdOptDef opts_vol_create_from[] = {
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML vol description")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("input vol name or key")},
     {"inputpool", VSH_OT_STRING, 0, N_("pool name or uuid of the input volume's pool")},
+    {"prealloc-metadata", VSH_OT_BOOL, 0, N_("preallocate metadata (for qcow2 "
+                                             "instead of full allocation)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -354,10 +366,13 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     char *buffer = NULL;
+    unsigned int flags = 0;
 
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         goto cleanup;
 
+    if (vshCommandOptBool(cmd, "prealloc-metadata"))
+        flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
     if (vshCommandOptString(cmd, "file", &from) <= 0) {
         goto cleanup;
     }
@@ -370,7 +385,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    newvol = virStorageVolCreateXMLFrom(pool, buffer, inputvol, 0);
+    newvol = virStorageVolCreateXMLFrom(pool, buffer, inputvol, flags);
 
     if (newvol != NULL) {
         vshPrint(ctl, _("Vol %s created from input vol %s\n"),
@@ -434,6 +449,8 @@ static const vshCmdOptDef opts_vol_clone[] = {
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("orig vol name or key")},
     {"newname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("clone name")},
     {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"prealloc-metadata", VSH_OT_BOOL, 0, N_("preallocate metadata (for qcow2 "
+                                             "instead of full allocation)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -446,9 +463,13 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     char *origxml = NULL;
     xmlChar *newxml = NULL;
     bool ret = false;
+    unsigned int flags = 0;
 
     if (!(origvol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         goto cleanup;
+
+    if (vshCommandOptBool(cmd, "prealloc-metadata"))
+        flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
 
     origpool = virStoragePoolLookupByVolume(origvol);
     if (!origpool) {
@@ -469,7 +490,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml, origvol, 0);
+    newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml, origvol, flags);
 
     if (newvol != NULL) {
         vshPrint(ctl, _("Vol %s cloned from %s\n"),
