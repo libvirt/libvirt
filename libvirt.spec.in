@@ -712,6 +712,8 @@ Requires(postun): systemd-units
 %if %{with_numad}
 Requires: numad
 %endif
+# libvirtd depends on 'messagebus' service
+Requires: dbus
 
 %description daemon
 Server side daemon required to manage the virtualization capabilities
