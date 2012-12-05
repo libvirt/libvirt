@@ -37,7 +37,8 @@ typedef int (*virStorageBackendStopPool)(virConnectPtr conn, virStoragePoolObjPt
 typedef int (*virStorageBackendDeletePool)(virConnectPtr conn, virStoragePoolObjPtr pool, unsigned int flags);
 
 typedef int (*virStorageBackendBuildVol)(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool, virStorageVolDefPtr vol);
+                                         virStoragePoolObjPtr pool, virStorageVolDefPtr vol,
+                                         unsigned int flags);
 typedef int (*virStorageBackendCreateVol)(virConnectPtr conn, virStoragePoolObjPtr pool, virStorageVolDefPtr vol);
 typedef int (*virStorageBackendRefreshVol)(virConnectPtr conn, virStoragePoolObjPtr pool, virStorageVolDefPtr vol);
 typedef int (*virStorageBackendDeleteVol)(virConnectPtr conn, virStoragePoolObjPtr pool, virStorageVolDefPtr vol, unsigned int flags);

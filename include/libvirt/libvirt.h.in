@@ -2906,6 +2906,10 @@ virStorageVolPtr        virStorageVolLookupByPath       (virConnectPtr conn,
 const char*             virStorageVolGetName            (virStorageVolPtr vol);
 const char*             virStorageVolGetKey             (virStorageVolPtr vol);
 
+typedef enum {
+    VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0,
+} virStorageVolCreateFlags;
+
 virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,
                                                          const char *xmldesc,
                                                          unsigned int flags);

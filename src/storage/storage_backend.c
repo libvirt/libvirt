@@ -668,8 +668,11 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     bool do_encryption = (vol->target.encryption != NULL);
     unsigned long long int size_arg;
+    bool preallocate = false;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
 
     const char *type = virStorageFileFormatTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
@@ -697,10 +700,22 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                        inputvol->target.format);
         return -1;
     }
+    if (preallocate && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation only available with qcow2"));
+        return -1;
+    }
 
     if (vol->backingStore.path) {
         int accessRetCode = -1;
         char *absolutePath = NULL;
+
+        if (preallocate) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("metadata preallocation conflicts with backing"
+                             " store"));
+            return -1;
+        }
 
         /* XXX: Not strictly required: qemu-img has an option a different
          * backing store, not really sure what use it serves though, and it
@@ -796,14 +811,15 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         virCommandAddArgList(cmd, "convert", "-f", inputType, "-O", type,
                              inputPath, vol->target.path, NULL);
 
-        if (do_encryption) {
-            if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
-                virCommandAddArgList(cmd, "-o", "encryption=on", NULL);
-            } else {
-                virCommandAddArg(cmd, "-e");
-            }
+        if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS &&
+            (do_encryption || preallocate)) {
+            virCommandAddArg(cmd, "-o");
+            virCommandAddArgFormat(cmd, "%s%s%s", do_encryption ? "encryption=on" : "",
+                                   (do_encryption && preallocate) ? "," : "",
+                                   preallocate ? "preallocation=metadata" : "");
+        } else if (do_encryption) {
+            virCommandAddArg(cmd, "-e");
         }
-
     } else if (vol->backingStore.path) {
         virCommandAddArgList(cmd, "create", "-f", type,
                              "-b", vol->backingStore.path, NULL);
@@ -840,12 +856,14 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                              vol->target.path, NULL);
         virCommandAddArgFormat(cmd, "%lluK", size_arg);
 
-        if (do_encryption) {
-            if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS) {
-                virCommandAddArgList(cmd, "-o", "encryption=on", NULL);
-            } else {
-                virCommandAddArg(cmd, "-e");
-            }
+        if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS &&
+            (do_encryption || preallocate)) {
+            virCommandAddArg(cmd, "-o");
+            virCommandAddArgFormat(cmd, "%s%s%s", do_encryption ? "encryption=on" : "",
+                                   (do_encryption && preallocate) ? "," : "",
+                                   preallocate ? "preallocation=metadata" : "");
+        } else if (do_encryption) {
+            virCommandAddArg(cmd, "-e");
         }
     }
 

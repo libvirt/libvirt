@@ -1052,7 +1052,8 @@ static int
 _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                      virStoragePoolObjPtr pool,
                                      virStorageVolDefPtr vol,
-                                     virStorageVolDefPtr inputvol)
+                                     virStorageVolDefPtr inputvol,
+                                     unsigned int flags)
 {
     virStorageBackendBuildVolFrom create_func;
     int tool_type;
@@ -1085,7 +1086,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         return -1;
     }
 
-    if (create_func(conn, pool, vol, inputvol, 0) < 0)
+    if (create_func(conn, pool, vol, inputvol, flags) < 0)
         return -1;
     return 0;
 }
@@ -1098,8 +1099,11 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
 static int
 virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                     virStoragePoolObjPtr pool,
-                                    virStorageVolDefPtr vol) {
-    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL);
+                                    virStorageVolDefPtr vol,
+                                    unsigned int flags) {
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL, flags);
 }
 
 /*
@@ -1112,9 +1116,9 @@ virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
                                         virStorageVolDefPtr inputvol,
                                         unsigned int flags)
 {
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
 
-    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol);
+    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol, flags);
 }
 
 /**

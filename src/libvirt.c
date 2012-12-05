@@ -13382,11 +13382,16 @@ virStorageVolGetKey(virStorageVolPtr vol)
  * virStorageVolCreateXML:
  * @pool: pointer to storage pool
  * @xmlDesc: description of volume to create
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStorageVolCreateFlags
  *
  * Create a storage volume within a pool based
  * on an XML description. Not all pools support
- * creation of volumes
+ * creation of volumes.
+ *
+ * Since 1.0.1 VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA
+ * in flags can be used to get higher performance with
+ * qcow2 image files which don't support full preallocation,
+ * by creating a sparse image file with metadata.
  *
  * Returns the storage volume, or NULL on error
  */
@@ -13433,12 +13438,17 @@ error:
  * @pool: pointer to parent pool for the new volume
  * @xmlDesc: description of volume to create
  * @clonevol: storage volume to use as input
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStorageVolCreateFlags
  *
  * Create a storage volume in the parent pool, using the
  * 'clonevol' volume as input. Information for the new
  * volume (name, perms)  are passed via a typical volume
  * XML description.
+ *
+ * Since 1.0.1 VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA
+ * in flags can be used to get higher performance with
+ * qcow2 image files which don't support full preallocation,
+ * by creating a sparse image file with metadata.
  *
  * Returns the storage volume, or NULL on error
  */

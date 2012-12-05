@@ -1348,7 +1348,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
     virStorageVolDefPtr voldef = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
@@ -1425,7 +1425,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
         voldef->building = 1;
         virStoragePoolObjUnlock(pool);
 
-        buildret = backend->buildVol(obj->conn, pool, buildvoldef);
+        buildret = backend->buildVol(obj->conn, pool, buildvoldef, flags);
 
         storageDriverLock(driver);
         virStoragePoolObjLock(pool);
@@ -1473,7 +1473,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
     virStorageVolPtr ret = NULL, volobj = NULL;
     int buildret;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
