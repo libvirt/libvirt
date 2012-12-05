@@ -268,7 +268,7 @@ pciWrite16(pciDevice *dev, int cfgfd, unsigned pos, uint16_t val)
 static void
 pciWrite32(pciDevice *dev, int cfgfd, unsigned pos, uint32_t val)
 {
-    uint8_t buf[4] = { (val >> 0), (val >> 8), (val >> 16), (val >> 14) };
+    uint8_t buf[4] = { (val >> 0), (val >> 8), (val >> 16), (val >> 24) };
     pciWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
 }
 
