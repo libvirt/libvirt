@@ -337,7 +337,6 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 
     if (remain) {
         if (track_allocation_progress) {
-
             while (remain) {
                 /* Allocate in chunks of 512MiB: big-enough chunk
                  * size and takes approx. 9s on ext3. A progress
@@ -363,7 +362,6 @@ createRawFile(int fd, virStorageVolDefPtr vol,
                 goto cleanup;
             }
         }
-
     }
 
     if (fsync(fd) < 0) {
