@@ -857,6 +857,7 @@ virNetworkDefParseString;
 virNetworkDeleteConfig;
 virNetworkFindByName;
 virNetworkFindByUUID;
+virNetworkForwardTypeToString;
 virNetworkIpDefNetmask;
 virNetworkIpDefPrefix;
 virNetworkList;

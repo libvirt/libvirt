@@ -2751,6 +2751,35 @@ networkValidate(struct network_driver *driver,
             return -1;
 
         virNetworkSetBridgeMacAddr(def);
+    } else {
+        /* They are also the only types that currently support setting
+         * an IP address for the host-side device (bridge)
+         */
+        if (virNetworkDefGetIpByIndex(def, AF_UNSPEC, 0)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <ip> element in network %s "
+                             "with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forwardType));
+            return -1;
+        }
+        if (def->dns &&
+            (def->dns->ntxtrecords || def->dns->nhosts || def->dns->nsrvrecords)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <dns> element in network %s "
+                             "with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forwardType));
+            return -1;
+        }
+        if (def->domain) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <domain> element in network %s "
+                             "with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forwardType));
+            return -1;
+        }
     }
 
     /* We only support dhcp on one IPv4 address per defined network */

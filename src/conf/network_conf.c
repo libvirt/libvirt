@@ -1594,6 +1594,15 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                                def->name);
                 goto error;
             }
+            if (def->bridge && (def->nForwardIfs || nForwardPfs)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("A network with forward mode='%s' can specify "
+                                 "a  bridge name or a forward dev, but not "
+                                 "both (network '%s')"),
+                               virNetworkForwardTypeToString(def->forwardType),
+                               def->name);
+                goto error;
+            }
             break;
         }
     }
