@@ -1006,6 +1006,13 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    if (virFileExists(vol->target.path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume target path '%s' already exists"),
+                       vol->target.path);
+        return -1;
+    }
+
     VIR_FREE(vol->key);
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
