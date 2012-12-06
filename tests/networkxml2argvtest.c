@@ -152,6 +152,8 @@ mymain(void)
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48", DNSMASQ);
     dnsmasqCapsPtr full
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic", DNSMASQ);
+    dnsmasqCapsPtr dhcpv6
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
 
     networkDnsmasqLeaseFileName = testDnsmasqLeaseFileName;
 
@@ -172,10 +174,13 @@ mymain(void)
     DO_TEST("netboot-proxy-network", restricted);
     DO_TEST("nat-network-dns-srv-record-minimal", restricted);
     DO_TEST("routed-network", full);
-    DO_TEST("nat-network", full);
+    DO_TEST("nat-network", dhcpv6);
     DO_TEST("nat-network-dns-txt-record", full);
     DO_TEST("nat-network-dns-srv-record", full);
     DO_TEST("nat-network-dns-hosts", full);
+    DO_TEST("dhcp6-network", dhcpv6);
+    DO_TEST("dhcp6-nat-network", dhcpv6);
+    DO_TEST("dhcp6host-routed-network", dhcpv6);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

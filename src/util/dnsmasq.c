@@ -293,11 +293,15 @@ hostsfileFree(dnsmasqHostsfile *hostsfile)
     VIR_FREE(hostsfile);
 }
 
+/* Note:  There are many additional dhcp-host specifications
+ * supported by dnsmasq.  There are only the basic ones.
+ */
 static int
 hostsfileAdd(dnsmasqHostsfile *hostsfile,
              const char *mac,
              virSocketAddr *ip,
-             const char *name)
+             const char *name,
+             bool ipv6)
 {
     char *ipstr = NULL;
     if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
@@ -306,16 +310,24 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
     if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;
 
-    if (name) {
-        if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
-                        mac, ipstr, name) < 0) {
+    /* the first test determines if it is a dhcpv6 host */
+    if (ipv6) {
+        if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,[%s]",
+                        name, ipstr) < 0)
             goto alloc_error;
-        }
+    }
+    else if (name && mac) {
+        if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
+                        mac, ipstr, name) < 0)
+            goto alloc_error;
+    } else if (name && !mac){
+        if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s",
+                        name, ipstr) < 0)
+            goto alloc_error;
     } else {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s",
-                        mac, ipstr) < 0) {
+                        mac, ipstr) < 0)
             goto alloc_error;
-        }
     }
     VIR_FREE(ipstr);
 
@@ -496,9 +508,10 @@ int
 dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                    const char *mac,
                    virSocketAddr *ip,
-                   const char *name)
+                   const char *name,
+                   bool ipv6)
 {
-    return hostsfileAdd(ctx->hostsfile, mac, ip, name);
+    return hostsfileAdd(ctx->hostsfile, mac, ip, name, ipv6);
 }
 
 /*

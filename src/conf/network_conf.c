@@ -654,6 +654,7 @@ cleanup:
 
 static int
 virNetworkDHCPHostDefParseXML(const char *networkName,
+                              const virNetworkIpDefPtr def,
                               xmlNodePtr node,
                               virNetworkDHCPHostDefPtr host,
                               bool partialOkay)
@@ -665,6 +666,13 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
 
     mac = virXMLPropString(node, "mac");
     if (mac != NULL) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid to specify MAC address '%s' "
+                             "in network '%s' IPv6 static host definition"),
+                           mac, networkName);
+            goto cleanup;
+        }
         if (virMacAddrParse(mac, &addr) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Cannot parse MAC address '%s' in network '%s'"),
@@ -707,10 +715,20 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
                            networkName);
         }
     } else {
-        /* normal usage - you need at least one MAC address or one host name */
-        if (!(mac || name)) {
+        /* normal usage - you need at least name (IPv6) or one of MAC
+         * address or name (IPv4)
+         */
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
+            if (!name) {
+                virReportError(VIR_ERR_XML_ERROR,
+                           _("Static host definition in IPv6 network '%s' "
+                             "must have name attribute"),
+                           networkName);
+                goto cleanup;
+            }
+        } else if (!(mac || name)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Static host definition in network '%s' "
+                           _("Static host definition in IPv4 network '%s' "
                              "must have mac or name attribute"),
                            networkName);
             goto cleanup;
@@ -769,15 +787,16 @@ virNetworkDHCPDefParseXML(const char *networkName,
                 virReportOOMError();
                 return -1;
             }
-            if (virNetworkDHCPHostDefParseXML(networkName, cur,
+            if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
                                               &def->hosts[def->nhosts],
                                               false) < 0) {
                 return -1;
             }
             def->nhosts++;
 
-        } else if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "bootp")) {
+        } else if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) &&
+                   cur->type == XML_ELEMENT_NODE &&
+                   xmlStrEqual(cur->name, BAD_CAST "bootp")) {
             char *file;
             char *server;
             virSocketAddr inaddr;
@@ -1189,30 +1208,29 @@ virNetworkIPDefParseXML(const char *networkName,
         }
     }
 
-    if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
-        /* parse IPv4-related info */
-        cur = node->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
-                result = virNetworkDHCPDefParseXML(networkName, cur, def);
-                if (result)
-                    goto cleanup;
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
+            if (virNetworkDHCPDefParseXML(networkName, cur, def) < 0)
+                goto cleanup;
+        } else if (cur->type == XML_ELEMENT_NODE &&
+                   xmlStrEqual(cur->name, BAD_CAST "tftp")) {
+            char *root;
 
-            } else if (cur->type == XML_ELEMENT_NODE &&
-                       xmlStrEqual(cur->name, BAD_CAST "tftp")) {
-                char *root;
-
-                if (!(root = virXMLPropString(cur, "root"))) {
-                    cur = cur->next;
-                    continue;
-                }
-
-                def->tftproot = (char *)root;
+            if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported <tftp> element in an IPv6 element in network '%s'"),
+                               networkName);
+                goto cleanup;
             }
-
-            cur = cur->next;
+            if (!(root = virXMLPropString(cur, "root"))) {
+                cur = cur->next;
+                continue;
+            }
+            def->tftproot = (char *)root;
         }
+        cur = cur->next;
     }
 
     result = 0;
@@ -2494,11 +2512,9 @@ virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
     /* first find which ip element's dhcp host list to work on */
     if (parentIndex >= 0) {
         ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, parentIndex);
-        if (!(ipdef &&
-              VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))) {
+        if (!(ipdef)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("couldn't update dhcp host entry - "
-                             "no <ip family='ipv4'> "
+                           _("couldn't update dhcp host entry - no <ip> "
                              "element found at index %d in network '%s'"),
                            parentIndex, def->name);
         }
@@ -2511,17 +2527,17 @@ virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
          ii++) {
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET) &&
-            (ipdef->nranges || ipdef->nhosts)) {
+        if (ipdef->nranges || ipdef->nhosts)
             break;
-        }
     }
-    if (!ipdef)
+    if (!ipdef) {
         ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
+        if (!ipdef)
+            ipdef = virNetworkDefGetIpByIndex(def, AF_INET6, 0);
+    }
     if (!ipdef) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("couldn't update dhcp host entry - "
-                         "no <ip family='ipv4'> "
+                       _("couldn't update dhcp host entry - no <ip> "
                          "element found in network '%s'"), def->name);
     }
     return ipdef;
@@ -2551,8 +2567,10 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     /* parse the xml into a virNetworkDHCPHostDef */
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
-        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, false) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
+                                          ctxt->node, &host, false) < 0) {
             goto cleanup;
+        }
 
         /* search for the entry with this (mac|name),
          * and update the IP+(mac|name) */
@@ -2584,8 +2602,10 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     } else if ((command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST) ||
                (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
-        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, true) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
+                                          ctxt->node, &host, true) < 0) {
             goto cleanup;
+        }
 
         /* log error if an entry with same name/address/ip already exists */
         for (ii = 0; ii < ipdef->nhosts; ii++) {
@@ -2618,8 +2638,10 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
         }
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
-        if (virNetworkDHCPHostDefParseXML(def->name, ctxt->node, &host, false) < 0)
+        if (virNetworkDHCPHostDefParseXML(def->name, ipdef,
+                                          ctxt->node, &host, false) < 0) {
             goto cleanup;
+        }
 
         /* find matching entry - all specified attributes must match */
         for (ii = 0; ii < ipdef->nhosts; ii++) {

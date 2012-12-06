@@ -82,7 +82,8 @@ void             dnsmasqContextFree(dnsmasqContext *ctx);
 int              dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                                     const char *mac,
                                     virSocketAddr *ip,
-                                    const char *name);
+                                    const char *name,
+                                    bool ipv6);
 int              dnsmasqAddHost(dnsmasqContext *ctx,
                                 virSocketAddr *ip,
                                 const char *name);
@@ -99,4 +100,18 @@ int dnsmasqCapsRefresh(dnsmasqCapsPtr *caps, const char *binaryPath);
 bool dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag);
 const char *dnsmasqCapsGetBinaryPath(dnsmasqCapsPtr caps);
 unsigned long dnsmasqCapsGetVersion(dnsmasqCapsPtr caps);
+
+# define DNSMASQ_DHCPv6_MAJOR_REQD 2
+# define DNSMASQ_DHCPv6_MINOR_REQD 64
+# define DNSMASQ_RA_MAJOR_REQD 2
+# define DNSMASQ_RA_MINOR_REQD 64
+
+# define DNSMASQ_DHCPv6_SUPPORT(CAPS)        \
+    (dnsmasqCapsGetVersion(CAPS) >=          \
+     (DNSMASQ_DHCPv6_MAJOR_REQD * 1000000) + \
+     (DNSMASQ_DHCPv6_MINOR_REQD * 1000))
+# define DNSMASQ_RA_SUPPORT(CAPS)            \
+    (dnsmasqCapsGetVersion(CAPS) >=          \
+     (DNSMASQ_RA_MAJOR_REQD * 1000000) +     \
+     (DNSMASQ_RA_MINOR_REQD * 1000))
 #endif /* __DNSMASQ_H__ */

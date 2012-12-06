@@ -1,0 +1,19 @@
+<network>
+  <name>local</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward dev='eth1' mode='route'/>
+  <bridge name='virbr1' stp='on' delay='0' />
+  <mac address='12:34:56:78:9A:BC'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <dhcp>
+      <host mac='00:16:3e:77:e2:ed' name='a.example.com' ip='192.168.122.10' />
+      <host mac='00:16:3e:3e:a9:1a' name='b.example.com' ip='192.168.122.11' />
+    </dhcp>
+  </ip>
+  <ip family='ipv6' address='2001:db8:ac10:fd01::1' prefix='64'>
+    <dhcp>
+      <host name='ralph' ip='2001:db8:ac10:fd01::1:20' />
+      <host name='paul' ip='2001:db8:ac10:fd01::1:21' />
+    </dhcp>
+  </ip>
+</network>

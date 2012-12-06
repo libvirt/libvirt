@@ -1,3 +1,4 @@
+
 /*
  * bridge_driver.c: core driver methods for managing network
  *
@@ -564,19 +565,34 @@ cleanup:
     return ret;
 }
 
+    /* the following does not build a file, it builds a list
+     * which is later saved into a file
+     */
+
 static int
-networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
-                             virNetworkIpDefPtr ipdef,
+networkBuildDnsmasqDhcpHostsList(dnsmasqContext *dctx,
+                                 virNetworkIpDefPtr ipdef)
+{
+    unsigned int i;
+    bool ipv6 = false;
+
+    if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
+        ipv6 = true;
+    for (i = 0; i < ipdef->nhosts; i++) {
+        virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
+        if (VIR_SOCKET_ADDR_VALID(&host->ip))
+            if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name, ipv6) < 0)
+                return -1;
+    }
+
+    return 0;
+}
+
+static int
+networkBuildDnsmasqHostsList(dnsmasqContext *dctx,
                              virNetworkDNSDefPtr dnsdef)
 {
     unsigned int i, j;
-
-    for (i = 0; i < ipdef->nhosts; i++) {
-        virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
-        if ((host->mac) && VIR_SOCKET_ADDR_VALID(&host->ip))
-            if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name) < 0)
-                return -1;
-    }
 
     if (dnsdef) {
         for (i = 0; i < dnsdef->nhosts; i++) {
@@ -595,7 +611,6 @@ networkBuildDnsmasqHostsfile(dnsmasqContext *dctx,
 
 static int
 networkBuildDnsmasqArgv(virNetworkObjPtr network,
-                        virNetworkIpDefPtr ipdef,
                         const char *pidfile,
                         virCommandPtr cmd,
                         dnsmasqContext *dctx,
@@ -609,7 +624,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     char *recordWeight = NULL;
     char *recordPriority = NULL;
     virNetworkDNSDefPtr dns = &network->def->dns;
-    virNetworkIpDefPtr tmpipdef;
+    virNetworkIpDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
+    bool ipv6SLAAC;
 
     /*
      * NB, be careful about syntax for dnsmasq options in long format.
@@ -634,14 +650,17 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * Needed to ensure dnsmasq uses same algorithm for processing
      * multiple namedriver entries in /etc/resolv.conf as GLibC.
      */
-    virCommandAddArg(cmd, "--strict-order");
+    virCommandAddArgList(cmd, "--strict-order",
+                              "--domain-needed",
+                              NULL);
 
-    if (network->def->domain)
+    if (network->def->domain) {
         virCommandAddArgPair(cmd, "--domain", network->def->domain);
+        virCommandAddArg(cmd, "--expand-hosts");
+    }
     /* need to specify local even if no domain specified */
     virCommandAddArgFormat(cmd, "--local=/%s/",
                            network->def->domain ? network->def->domain : "");
-    virCommandAddArg(cmd, "--domain-needed");
 
     if (pidfile)
         virCommandAddArgPair(cmd, "--pid-file", pidfile);
@@ -763,7 +782,60 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         }
     }
 
-    if (ipdef) {
+    /* Find the first dhcp for both IPv4 and IPv6 */
+    for (ii = 0, ipv4def = NULL, ipv6def = NULL, ipv6SLAAC = false;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, ii));
+         ii++) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
+            if (ipdef->nranges || ipdef->nhosts) {
+                if (ipv4def) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("For IPv4, multiple DHCP definitions cannot "
+                          "be specified."));
+                    goto cleanup;
+                } else {
+                    ipv4def = ipdef;
+                }
+            }
+        }
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
+            if (ipdef->nranges || ipdef->nhosts) {
+                if (!DNSMASQ_DHCPv6_SUPPORT(caps)) {
+                    unsigned long version = dnsmasqCapsGetVersion(caps);
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("The version of dnsmasq on this host (%d.%d) doesn't "
+                              "adequately support IPv6 dhcp range or dhcp host "
+                              "specification.  Version %d.%d or later is required."),
+                            (int)version / 1000000, (int)(version % 1000000) / 1000,
+                            DNSMASQ_DHCPv6_MAJOR_REQD, DNSMASQ_DHCPv6_MINOR_REQD);
+                    goto cleanup;
+                }
+                if (ipv6def) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("For IPv6, multiple DHCP definitions cannot "
+                          "be specified."));
+                    goto cleanup;
+                } else {
+                    ipv6def = ipdef;
+                }
+            } else {
+                ipv6SLAAC = true;
+            }
+        }
+    }
+
+    if (ipv6def && ipv6SLAAC) {
+        VIR_WARN("For IPv6, when DHCP is specified for one address, then "
+                 "state-full Router Advertising will occur.  The additional "
+                  "IPv6 addresses specified require manually configured guest "
+                  "network to work properly since both state-full (DHCP) "
+                  "and state-less (SLAAC) addressing are not supported "
+                  "on the same network interface.");
+    }
+
+    ipdef = ipv4def ? ipv4def : ipv6def;
+
+    while (ipdef) {
         for (r = 0 ; r < ipdef->nranges ; r++) {
             char *saddr = virSocketAddrFormat(&ipdef->ranges[r].start);
             if (!saddr)
@@ -784,7 +856,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         /*
          * For static-only DHCP, i.e. with no range but at least one host element,
          * we have to add a special --dhcp-range option to enable the service in
-         * dnsmasq.
+         * dnsmasq. (this is for dhcp-hosts= support)
          */
         if (!ipdef->nranges && ipdef->nhosts) {
             char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
@@ -795,61 +867,91 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             VIR_FREE(bridgeaddr);
         }
 
-        if (ipdef->nranges > 0) {
-            char *leasefile = networkDnsmasqLeaseFileName(network->def->name);
-            if (!leasefile)
-                goto cleanup;
-            virCommandAddArgFormat(cmd, "--dhcp-leasefile=%s", leasefile);
-            VIR_FREE(leasefile);
-            virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
-        }
-
-        if (ipdef->nranges || ipdef->nhosts)
-            virCommandAddArg(cmd, "--dhcp-no-override");
-
-        /* add domain to any non-qualified hostnames in /etc/hosts or addn-hosts */
-        if (network->def->domain)
-            virCommandAddArg(cmd, "--expand-hosts");
-
-        if (networkBuildDnsmasqHostsfile(dctx, ipdef, &network->def->dns) < 0)
+        if (networkBuildDnsmasqDhcpHostsList(dctx, ipdef) < 0)
             goto cleanup;
 
-        /* Even if there are currently no static hosts, if we're
-         * listening for DHCP, we should write a 0-length hosts
-         * file to allow for runtime additions.
-         */
-        if (ipdef->nranges || ipdef->nhosts)
-            virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                                 dctx->hostsfile->path);
+        /* Note: the following is IPv4 only */
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
+            if (ipdef->nranges || ipdef->nhosts)
+                virCommandAddArg(cmd, "--dhcp-no-override");
 
-        /* Likewise, always create this file and put it on the commandline, to allow for
-         * for runtime additions.
-         */
-        virCommandAddArgPair(cmd, "--addn-hosts",
-                             dctx->addnhostsfile->path);
+            if (ipdef->tftproot) {
+                virCommandAddArgList(cmd, "--enable-tftp",
+                                     "--tftp-root", ipdef->tftproot,
+                                     NULL);
+            }
 
-        if (ipdef->tftproot) {
-            virCommandAddArgList(cmd, "--enable-tftp",
-                                 "--tftp-root", ipdef->tftproot,
-                                 NULL);
-        }
-        if (ipdef->bootfile) {
-            virCommandAddArg(cmd, "--dhcp-boot");
-            if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
-                char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
+            if (ipdef->bootfile) {
+                virCommandAddArg(cmd, "--dhcp-boot");
+                if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
+                    char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
 
-                if (!bootserver)
-                    goto cleanup;
-                virCommandAddArgFormat(cmd, "%s%s%s",
+                    if (!bootserver) {
+                        virReportOOMError();
+                        goto cleanup;
+                    }
+                    virCommandAddArgFormat(cmd, "%s%s%s",
                                        ipdef->bootfile, ",,", bootserver);
-                VIR_FREE(bootserver);
-            } else {
-                virCommandAddArg(cmd, ipdef->bootfile);
+                    VIR_FREE(bootserver);
+                } else {
+                    virCommandAddArg(cmd, ipdef->bootfile);
+                }
+            }
+        }
+        ipdef = (ipdef == ipv6def) ? NULL : ipv6def;
+    }
+
+    if (nbleases > 0) {
+        char *leasefile = networkDnsmasqLeaseFileName(network->def->name);
+        if (!leasefile) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        virCommandAddArgFormat(cmd, "--dhcp-leasefile=%s", leasefile);
+        VIR_FREE(leasefile);
+        virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
+    }
+
+    /* this is done once per interface */
+    if (networkBuildDnsmasqHostsList(dctx, dns) < 0)
+       goto cleanup;
+
+    /* Even if there are currently no static hosts, if we're
+     * listening for DHCP, we should write a 0-length hosts
+     * file to allow for runtime additions.
+     */
+    if (ipv4def || ipv6def)
+        virCommandAddArgPair(cmd, "--dhcp-hostsfile",
+                             dctx->hostsfile->path);
+
+    /* Likewise, always create this file and put it on the commandline,
+     * to allow for runtime additions.
+     */
+    virCommandAddArgPair(cmd, "--addn-hosts",
+                         dctx->addnhostsfile->path);
+
+    /* Are we doing RA instead of radvd? */
+    if (DNSMASQ_RA_SUPPORT(caps)) {
+        if (ipv6def)
+            virCommandAddArg(cmd, "--enable-ra");
+        else {
+            for (ii = 0;
+                (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
+                ii++) {
+                if (!(ipdef->nranges || ipdef->nhosts)) {
+                    char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
+                    if (!bridgeaddr)
+                        goto cleanup;
+                    virCommandAddArgFormat(cmd, "--dhcp-range=%s,ra-only",
+                                           bridgeaddr);
+                    VIR_FREE(bridgeaddr);
+                }
             }
         }
     }
 
     ret = 0;
+
 cleanup:
     VIR_FREE(record);
     VIR_FREE(recordPort);
@@ -864,33 +966,12 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdou
                                   dnsmasqCapsPtr caps)
 {
     virCommandPtr cmd = NULL;
-    int ret = -1, ii;
-    virNetworkIpDefPtr ipdef;
+    int ret = -1;
 
     network->dnsmasqPid = -1;
 
-    /* Look for first IPv4 address that has dhcp defined. */
-    /* We support dhcp config on 1 IPv4 interface only. */
-    for (ii = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
-         ii++) {
-        if (ipdef->nranges || ipdef->nhosts)
-            break;
-    }
-    /* If no IPv4 addresses had dhcp info, pick the first (if there were any). */
-    if (!ipdef)
-        ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
-
-    /* If there are no IP addresses at all (v4 or v6), return now, since
-     * there won't be any address for dnsmasq to listen on anyway.
-     * If there are any addresses, even if no dhcp ranges or static entries,
-     * we should continue and run dnsmasq, just for the DNS capabilities.
-     */
-    if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
-        return 0;
-
     cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
-    if (networkBuildDnsmasqArgv(network, ipdef, pidfile, cmd, dctx, caps) < 0) {
+    if (networkBuildDnsmasqArgv(network, pidfile, cmd, dctx, caps) < 0) {
         goto cleanup;
     }
 
@@ -911,11 +992,9 @@ networkStartDhcpDaemon(struct network_driver *driver,
     char *pidfile = NULL;
     int ret = -1;
     dnsmasqContext *dctx = NULL;
-    virNetworkIpDefPtr ipdef;
-    int i;
 
     if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0)) {
-        /* no IPv6 addresses, so we don't need to run radvd */
+        /* no IP addresses, so we don't need to run */
         ret = 0;
         goto cleanup;
     }
@@ -956,18 +1035,6 @@ networkStartDhcpDaemon(struct network_driver *driver,
     if (ret < 0)
         goto cleanup;
 
-    /* populate dnsmasq hosts file */
-    for (i = 0; (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i)); i++) {
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET) &&
-            (ipdef->nranges || ipdef->nhosts)) {
-            if (networkBuildDnsmasqHostsfile(dctx, ipdef,
-                                             &network->def->dns) < 0)
-                goto cleanup;
-
-            break;
-        }
-    }
-
     ret = dnsmasqSave(dctx);
     if (ret < 0)
         goto cleanup;
@@ -1000,7 +1067,8 @@ cleanup:
 
 /* networkRefreshDhcpDaemon:
  *  Update dnsmasq config files, then send a SIGHUP so that it rereads
- *  them.
+ *  them.   This only works for the dhcp-hostsfile and the
+ *  addn-hosts file.
  *
  *  Returns 0 on success, -1 on failure.
  */
@@ -1009,34 +1077,51 @@ networkRefreshDhcpDaemon(struct network_driver *driver,
                          virNetworkObjPtr network)
 {
     int ret = -1, ii;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIpDefPtr ipdef, ipv4def, ipv6def;
     dnsmasqContext *dctx = NULL;
+
+    /* if no IP addresses specified, nothing to do */
+    if (virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
+        return 0;
 
     /* if there's no running dnsmasq, just start it */
     if (network->dnsmasqPid <= 0 || (kill(network->dnsmasqPid, 0) < 0))
         return networkStartDhcpDaemon(driver, network);
 
-    /* Look for first IPv4 address that has dhcp defined. */
-    /* We support dhcp config on 1 IPv4 interface only. */
+    VIR_INFO("Refreshing dnsmasq for network %s", network->def->bridge);
+    if (!(dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR)))
+        goto cleanup;
+
+    /* Look for first IPv4 address that has dhcp defined.
+     * We only support dhcp-host config on one IPv4 subnetwork
+     * and on one IPv6 subnetwork.
+     */
+    ipv4def = NULL;
     for (ii = 0;
          (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, ii));
          ii++) {
-        if (ipdef->nranges || ipdef->nhosts)
-            break;
+        if (!ipv4def && (ipdef->nranges || ipdef->nhosts))
+            ipv4def = ipdef;
     }
     /* If no IPv4 addresses had dhcp info, pick the first (if there were any). */
     if (!ipdef)
         ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
 
-    if (!ipdef) {
-        /* no <ip> elements, so nothing to do */
-        return 0;
+    ipv6def = NULL;
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
+         ii++) {
+        if (!ipv6def && (ipdef->nranges || ipdef->nhosts))
+            ipv6def = ipdef;
     }
 
-    if (!(dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR)))
-        goto cleanup;
+    if (ipv4def && (networkBuildDnsmasqDhcpHostsList(dctx, ipv4def) < 0))
+           goto cleanup;
 
-    if (networkBuildDnsmasqHostsfile(dctx, ipdef, &network->def->dns) < 0)
+    if (ipv6def && (networkBuildDnsmasqDhcpHostsList(dctx, ipv6def) < 0))
+           goto cleanup;
+
+    if (networkBuildDnsmasqHostsList(dctx, &network->def->dns) < 0)
        goto cleanup;
 
     if ((ret = dnsmasqSave(dctx)) < 0)
@@ -1069,15 +1154,38 @@ networkRestartDhcpDaemon(struct network_driver *driver,
     return networkStartDhcpDaemon(driver, network);
 }
 
+static char radvd1[] = "  AdvOtherConfigFlag off;\n\n";
+static char radvd2[] = "    AdvAutonomous off;\n";
+static char radvd3[] = "    AdvOnLink on;\n"
+                       "    AdvAutonomous on;\n"
+                       "    AdvRouterAddr off;\n";
+
 static int
 networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 {
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int ret = -1, ii;
     virNetworkIpDefPtr ipdef;
-    bool v6present = false;
+    bool v6present = false, dhcp6 = false;
 
     *configstr = NULL;
+
+    /* Check if DHCPv6 is needed */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
+         ii++) {
+        v6present = true;
+        if (ipdef->nranges || ipdef->nhosts) {
+            dhcp6 = true;
+            break;
+        }
+    }
+
+    /* If there are no IPv6 addresses, then we are done */
+    if (!v6present) {
+        ret = 0;
+        goto cleanup;
+    }
 
     /* create radvd config file appropriate for this network;
      * IgnoreIfMissing allows radvd to start even when the bridge is down
@@ -1085,11 +1193,12 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
     virBufferAsprintf(&configbuf, "interface %s\n"
                       "{\n"
                       "  AdvSendAdvert on;\n"
-                      "  AdvManagedFlag off;\n"
-                      "  AdvOtherConfigFlag off;\n"
                       "  IgnoreIfMissing on;\n"
-                      "\n",
-                      network->def->bridge);
+                      "  AdvManagedFlag %s;\n"
+                      "%s",
+                      network->def->bridge,
+                      dhcp6 ? "on" : "off",
+                      dhcp6 ? "\n" : radvd1);
 
     /* add a section for each IPv6 address in the config */
     for (ii = 0;
@@ -1098,7 +1207,6 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
         int prefix;
         char *netaddr;
 
-        v6present = true;
         prefix = virNetworkIpDefPrefix(ipdef);
         if (prefix < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1110,12 +1218,9 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
             goto cleanup;
         virBufferAsprintf(&configbuf,
                           "  prefix %s/%d\n"
-                          "  {\n"
-                          "    AdvOnLink on;\n"
-                          "    AdvAutonomous on;\n"
-                          "    AdvRouterAddr off;\n"
-                          "  };\n",
-                          netaddr, prefix);
+                          "  {\n%s  };\n",
+                          netaddr, prefix,
+                          dhcp6 ? radvd2 : radvd3);
         VIR_FREE(netaddr);
     }
 
@@ -1181,7 +1286,8 @@ cleanup:
 }
 
 static int
-networkStartRadvd(virNetworkObjPtr network)
+networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
+                        virNetworkObjPtr network)
 {
     char *pidfile = NULL;
     char *radvdpidbase = NULL;
@@ -1190,6 +1296,12 @@ networkStartRadvd(virNetworkObjPtr network)
     int ret = -1;
 
     network->radvdPid = -1;
+
+    /* Is dnsmasq handling RA? */
+    if (DNSMASQ_RA_SUPPORT(driver->dnsmasqCaps)) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
@@ -1267,9 +1379,27 @@ static int
 networkRefreshRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
                     virNetworkObjPtr network)
 {
+    char *radvdpidbase;
+
+    /* Is dnsmasq handling RA? */
+    if (DNSMASQ_RA_SUPPORT(driver->dnsmasqCaps)) {
+        if (network->radvdPid <= 0)
+            return 0;
+        /* radvd should not be running but in case it is */
+        if ((networkKillDaemon(network->radvdPid, "radvd",
+                               network->def->name) >= 0) &&
+            ((radvdpidbase = networkRadvdPidfileBasename(network->def->name))
+             != NULL)) {
+            virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+            VIR_FREE(radvdpidbase);
+        }
+        network->radvdPid = -1;
+        return 0;
+    }
+
     /* if there's no running radvd, just start it */
     if (network->radvdPid <= 0 || (kill(network->radvdPid, 0) < 0))
-        return networkStartRadvd(network);
+        return networkStartRadvd(driver, network);
 
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
@@ -1296,7 +1426,7 @@ networkRestartRadvd(struct network_driver *driver,
          * since there's really no better recovery to be done than to
          * just push ahead (and that may be exactly what's needed).
          */
-        if ((networkKillDaemon(network->dnsmasqPid, "radvd",
+        if ((networkKillDaemon(network->radvdPid, "radvd",
                                network->def->name) >= 0) &&
             ((radvdpidbase = networkRadvdPidfileBasename(network->def->name))
              != NULL)) {
@@ -1590,11 +1720,9 @@ networkRemoveRoutingIptablesRules(struct network_driver *driver,
 }
 
 /* Add all once/network rules required for IPv6.
-
  * If no IPv6 addresses are defined and <network ipv6='yes'> is
- * specified, then allow IPv6 commuinications between guests connected
- * to this network. If any IPv6 addresses are defined, then add all
- * rules for regular operation (including inter-guest communication).
+ * specified, then allow IPv6 commuinications between virtual systems.
+ * If any IPv6 addresses are defined, then add the rules for regular operation.
  */
 static int
 networkAddGeneralIp6tablesRules(struct network_driver *driver,
@@ -1654,9 +1782,19 @@ networkAddGeneralIp6tablesRules(struct network_driver *driver,
         goto err5;
     }
 
+    if (iptablesAddUdpInput(driver->iptables, AF_INET6,
+                            network->def->bridge, 547) < 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("failed to add ip6tables rule to allow DHCP6 requests from '%s'"),
+                       network->def->bridge);
+        goto err6;
+    }
+
     return 0;
 
     /* unwind in reverse order from the point of failure */
+err6:
+    iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
 err5:
     iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
 err4:
@@ -1674,9 +1812,11 @@ networkRemoveGeneralIp6tablesRules(struct network_driver *driver,
                                   virNetworkObjPtr network)
 {
     if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0) &&
-                !network->def->ipv6nogw)
+        !network->def->ipv6nogw) {
         return;
+    }
     if (virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+        iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 547);
         iptablesRemoveUdpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
         iptablesRemoveTcpInput(driver->iptables, AF_INET6, network->def->bridge, 53);
     }
@@ -2268,7 +2408,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         goto err3;
 
     /* start radvd if there are any ipv6 addresses */
-    if (v6present && networkStartRadvd(network) < 0)
+    if (v6present && networkStartRadvd(driver, network) < 0)
         goto err4;
 
     /* DAD has happened (dnsmasq waits for it), dnsmasq is now bound to the
@@ -2729,8 +2869,7 @@ networkValidate(struct network_driver *driver,
     bool vlanUsed, vlanAllowed, badVlanUse = false;
     virPortGroupDefPtr defaultPortGroup = NULL;
     virNetworkIpDefPtr ipdef;
-    bool ipv4def = false;
-    int i;
+    bool ipv4def = false, ipv6def = false;
 
     /* check for duplicate networks */
     if (virNetworkObjIsDuplicate(&driver->networks, def, check_active) < 0)
@@ -2777,17 +2916,36 @@ networkValidate(struct network_driver *driver,
         }
     }
 
-    /* We only support dhcp on one IPv4 address per defined network */
-    for (i = 0; (ipdef = virNetworkDefGetIpByIndex(def, AF_INET, i)); i++) {
-        if (ipdef->nranges || ipdef->nhosts) {
-            if (ipv4def) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Multiple dhcp sections found. "
+    /* We only support dhcp on one IPv4 address and
+     * on one IPv6 address per defined network
+     */
+    for (ii = 0;
+         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, ii));
+         ii++) {
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
+            if (ipdef->nranges || ipdef->nhosts) {
+                if (ipv4def) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Multiple IPv4 dhcp sections found -- "
                                  "dhcp is supported only for a "
                                  "single IPv4 address on each network"));
-                return -1;
-            } else {
-                ipv4def = true;
+                    return -1;
+                } else {
+                    ipv4def = true;
+                }
+            }
+        }
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
+            if (ipdef->nranges || ipdef->nhosts) {
+                if (ipv6def) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Multiple IPv6 dhcp sections found -- "
+                                 "dhcp is supported only for a "
+                                 "single IPv6 address on each network"));
+                    return -1;
+                } else {
+                    ipv6def = true;
+                }
             }
         }
     }

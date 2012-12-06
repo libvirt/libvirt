@@ -218,7 +218,7 @@
               </zeroOrMore>
               <zeroOrMore>
                 <element name="host">
-                  <attribute name="ip"><ref name="ipv4Addr"/></attribute>
+                  <attribute name="ip"><ref name="ipAddr"/></attribute>
                   <oneOrMore>
                     <element name="hostname"><ref name="dnsName"/></element>
                   </oneOrMore>
@@ -272,15 +272,17 @@
               <element name="dhcp">
                 <zeroOrMore>
                   <element name="range">
-                    <attribute name="start"><ref name="ipv4Addr"/></attribute>
-                    <attribute name="end"><ref name="ipv4Addr"/></attribute>
+                    <attribute name="start"><ref name="ipAddr"/></attribute>
+                    <attribute name="end"><ref name="ipAddr"/></attribute>
                   </element>
                 </zeroOrMore>
                 <zeroOrMore>
                   <element name="host">
-                    <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                    <optional>
+                      <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                    </optional>
                     <attribute name="name"><text/></attribute>
-                    <attribute name="ip"><ref name="ipv4Addr"/></attribute>
+                    <attribute name="ip"><ref name="ipAddr"/></attribute>
                   </element>
                 </zeroOrMore>
                 <optional>

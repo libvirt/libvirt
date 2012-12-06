@@ -7,9 +7,9 @@
 --interface virbr0 \
 --dhcp-range 192.168.122.2,192.168.122.254 \
 --dhcp-no-override \
+--dhcp-range 2001:db8:ac10:fd01::1:10,2001:db8:ac10:fd01::1:ff \
 --dhcp-leasefile=/var/lib/libvirt/dnsmasq/default.leases \
---dhcp-lease-max=253 \
+--dhcp-lease-max=493 \
 --dhcp-hostsfile=/var/lib/libvirt/dnsmasq/default.hostsfile \
 --addn-hosts=/var/lib/libvirt/dnsmasq/default.addnhosts \
---dhcp-range=2001:db8:ac10:fe01::1,ra-only \
---dhcp-range=2001:db8:ac10:fd01::1,ra-only\
+--enable-ra\

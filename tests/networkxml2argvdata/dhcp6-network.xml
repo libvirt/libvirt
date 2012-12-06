@@ -1,0 +1,14 @@
+<network>
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward dev='eth1' mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0' />
+  <domain name='mynet'/>
+  <ip family='ipv6' address='2001:db8:ac10:fd01::1' prefix='64'>
+    <dhcp>
+      <range start='2001:db8:ac10:fd01::1:10' end='2001:db8:ac10:fd01::1:ff' />
+      <host name='ralph' ip='2001:db8:ac10:fd01::1:20' />
+      <host name='paul' ip='2001:db8:ac10:fd01::1:21' />
+    </dhcp>
+  </ip>
+</network>
