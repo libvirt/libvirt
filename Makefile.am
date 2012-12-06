@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2011 Red Hat, Inc.
+## Copyright (C) 2005-2012 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 LCOV = lcov
@@ -35,20 +35,20 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc
 
 NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
-	-@(if [ -x $(XSLTPROC) ] ; then				\
+	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then			\
 	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl	\
 	     $(top_srcdir)/docs/news.html.in			\
 	   | perl -0777 -pe 's/\n\n+$$/\n/'			\
 	   | perl -pe 's/[ \t]+$$//'				\
-	   > $@-t && mv $@-t $@ ; fi );
+	   > $@-t && mv $@-t $@ ; fi
 
 $(top_srcdir)/HACKING: $(top_srcdir)/docs/hacking1.xsl $(top_srcdir)/docs/hacking2.xsl \
                        $(top_srcdir)/docs/wrapstring.xsl $(top_srcdir)/docs/hacking.html.in
-	-@(if [ -x $(XSLTPROC) ] ; then \
+	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	   $(XSLTPROC) --nonet $(top_srcdir)/docs/hacking1.xsl $(top_srcdir)/docs/hacking.html.in | \
 	   $(XSLTPROC) --nonet $(top_srcdir)/docs/hacking2.xsl - \
 	   | perl -0777 -pe 's/\n\n+$$/\n/' \
-	   > $@-t && mv $@-t $@ ; fi );
+	   > $@-t && mv $@-t $@ ; fi;
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)
@@ -86,7 +86,7 @@ dist-hook: gen-ChangeLog gen-AUTHORS
 gen_start_date = 2009-07-04
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
-	if test -d .git; then					\
+	$(AM_V_GEN)if test -d .git; then			\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog		\
 	    --since=$(gen_start_date) > $(distdir)/cl-t;	\
 	  rm -f $(distdir)/ChangeLog;				\
@@ -95,7 +95,7 @@ gen-ChangeLog:
 
 .PHONY: gen-AUTHORS
 gen-AUTHORS:
-	if test -d .git; then \
+	$(AM_V_GEN)if test -d .git; then \
 	    out="`git log --pretty=format:'%aN <%aE>' | sort -u`" && \
 	    cat $(srcdir)/AUTHORS.in | perl -p -e "s/#authorslist#/$$out/" > \
 	      $(distdir)/AUTHORS-tmp && \
