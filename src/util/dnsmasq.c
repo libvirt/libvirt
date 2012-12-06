@@ -715,7 +715,6 @@ dnsmasqCapsRefreshInternal(dnsmasqCapsPtr caps, bool force)
 
     cmd = virCommandNewArgList(caps->binaryPath, "--version", NULL);
     virCommandSetOutputBuffer(cmd, &version);
-    virCommandSetErrorBuffer(cmd, &version);
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
     if (virCommandRun(cmd, NULL) < 0) {
@@ -727,7 +726,6 @@ dnsmasqCapsRefreshInternal(dnsmasqCapsPtr caps, bool force)
 
     cmd = virCommandNewArgList(caps->binaryPath, "--help", NULL);
     virCommandSetOutputBuffer(cmd, &help);
-    virCommandSetErrorBuffer(cmd, &help);
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
     if (virCommandRun(cmd, NULL) < 0) {
