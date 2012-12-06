@@ -602,6 +602,8 @@ struct _virDomainDiskDef {
 
     char *serial;
     char *wwn;
+    char *vendor;
+    char *product;
     int cachemode;
     int error_policy;  /* enum virDomainDiskErrorPolicy */
     int rerror_policy; /* enum virDomainDiskErrorPolicy */

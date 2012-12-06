@@ -1298,6 +1298,7 @@ virSetUIDGID;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
+virStrIsPrint;
 virStrToDouble;
 virStrToLong_i;
 virStrToLong_l;

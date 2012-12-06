@@ -905,6 +905,20 @@
           <ref name="wwn"/>
         </element>
       </optional>
+      <optional>
+        <element name="vendor">
+          <data type="string">
+            <param name="pattern">[x20-x7E]{0,8}</param>
+          </data>
+        </element>
+      </optional>
+      <optional>
+        <element name="product">
+          <data type="string">
+            <param name="pattern">[x20-x7E]{0,16}</param>
+          </data>
+        </element>
+      </optional>
     </interleave>
   </define>
   <define name="snapshot">

@@ -985,6 +985,8 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->mirror);
     VIR_FREE(def->auth.username);
     VIR_FREE(def->wwn);
+    VIR_FREE(def->vendor);
+    VIR_FREE(def->product);
     if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE)
         VIR_FREE(def->auth.secret.usage);
     virStorageEncryptionFree(def->encryption);
@@ -3505,6 +3507,8 @@ cleanup:
     goto cleanup;
 }
 
+#define VENDOR_LEN  8
+#define PRODUCT_LEN 16
 
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
@@ -3558,6 +3562,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *logical_block_size = NULL;
     char *physical_block_size = NULL;
     char *wwn = NULL;
+    char *vendor = NULL;
+    char *product = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -3926,6 +3932,36 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
                 if (!virValidateWWN(wwn))
                     goto error;
+            } else if (!vendor &&
+                       xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+                vendor = (char *)xmlNodeGetContent(cur);
+
+                if (strlen(vendor) > VENDOR_LEN) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("disk vendor is more than 8 characters"));
+                    goto error;
+                }
+
+                if (!virStrIsPrint(vendor)) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("disk vendor is not printable string"));
+                    goto error;
+                }
+            } else if (!product &&
+                       xmlStrEqual(cur->name, BAD_CAST "product")) {
+                product = (char *)xmlNodeGetContent(cur);
+
+                if (strlen(vendor) > PRODUCT_LEN) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("disk product is more than 16 characters"));
+                    goto error;
+                }
+
+                if (!virStrIsPrint(product)) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("disk product is not printable string"));
+                    goto error;
+                }
             } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 /* boot is parsed as part of virDomainDeviceInfoParseXML */
             }
@@ -4222,6 +4258,10 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     serial = NULL;
     def->wwn = wwn;
     wwn = NULL;
+    def->vendor = vendor;
+    vendor = NULL;
+    def->product = product;
+    product = NULL;
 
     if (driverType) {
         def->format = virStorageFileFormatTypeFromString(driverType);
@@ -4296,6 +4336,8 @@ cleanup:
     VIR_FREE(logical_block_size);
     VIR_FREE(physical_block_size);
     VIR_FREE(wwn);
+    VIR_FREE(vendor);
+    VIR_FREE(product);
 
     ctxt->node = save_ctxt;
     return def;
@@ -12144,6 +12186,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "      <transient/>\n");
     virBufferEscapeString(buf, "      <serial>%s</serial>\n", def->serial);
     virBufferEscapeString(buf, "      <wwn>%s</wwn>\n", def->wwn);
+    virBufferEscapeString(buf, "      <vendor>%s</vendor>\n", def->vendor);
+    virBufferEscapeString(buf, "      <product>%s</product>\n", def->product);
     if (def->encryption) {
         virBufferAdjustIndent(buf, 6);
         if (virStorageEncryptionFormat(buf, def->encryption) < 0)

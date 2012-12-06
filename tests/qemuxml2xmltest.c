@@ -239,6 +239,8 @@ mymain(void)
     DO_TEST("seclabel-none");
     DO_TEST("numad-static-vcpu-no-numatune");
 
+    DO_TEST("disk-scsi-disk-vpd");
+
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");
     DO_TEST_DIFFERENT("channel-virtio-auto");

@@ -1657,6 +1657,18 @@
         of 16 hexadecimal digits.
         <span class='since'>Since 0.10.1</span>
       </dd>
+      <dt><code>vendor</code></dt>
+      <dd>If present, this element specifies the vendor of a virtual hard
+        disk or CD-ROM device. It must not be longer than 8 printable
+        characters.
+        <span class='since'>Since 1.0.1</span>
+      </dd>
+      <dt><code>product</code></dt>
+      <dd>If present, this element specifies the product of a virtual hard
+        disk or CD-ROM device. It must not be longer than 16 printable
+        characters.
+        <span class='since'>Since 1.0.1</span>
+      </dd>
       <dt><code>host</code></dt>
       <dd>The <code>host</code> element supports 4 attributes, viz.  "name",
         "port", "transport" and "socket", which specify the hostname, the port

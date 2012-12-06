@@ -2576,6 +2576,13 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         }
     }
 
+    if ((disk->vendor || disk->product) &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only scsi disk supports vendor and product"));
+            goto error;
+    }
+
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         /* make sure that both the bus and the qemu binary support
          *  type='lun' (SG_IO).
@@ -2601,6 +2608,12 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if (disk->wwn) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn is not supported for lun device"));
+            goto error;
+        }
+        if (disk->vendor || disk->product) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting vendor or product is not supported "
+                             "for lun device"));
             goto error;
         }
     }
@@ -2649,6 +2662,17 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn for scsi disk is not supported "
                              "by this QEMU"));
+            goto error;
+        }
+
+        /* Properties wwn, vendor and product were introduced in the
+         * same QEMU release (1.2.0).
+         */
+        if ((disk->vendor || disk->product) &&
+            !qemuCapsGet(caps, QEMU_CAPS_SCSI_DISK_WWN)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting vendor or product for scsi disk is not "
+                             "supported by this QEMU"));
             goto error;
         }
 
@@ -2796,6 +2820,12 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
 
     if (disk->wwn)
         virBufferAsprintf(&opt, ",wwn=%s", disk->wwn);
+
+    if (disk->vendor)
+        virBufferAsprintf(&opt, ",vendor=%s", disk->vendor);
+
+    if (disk->product)
+        virBufferAsprintf(&opt, ",product=%s", disk->product);
 
     if (virBufferError(&opt)) {
         virReportOOMError();
