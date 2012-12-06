@@ -1,7 +1,7 @@
 /*
  * console.c: A dumb serial console client
  *
- * Copyright (C) 2007, 2010 Red Hat, Inc.
+ * Copyright (C) 2007, 2010, 2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,8 @@
 # define __VIR_CONSOLE_H__
 
 # ifndef WIN32
+
+#  include <termios.h>
 
 int vshRunConsole(virDomainPtr dom,
                   const char *dev_name,

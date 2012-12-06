@@ -30,7 +30,6 @@
 #include <poll.h>
 #include <signal.h>
 #include <sys/time.h>
-#include <termios.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

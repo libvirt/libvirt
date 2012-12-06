@@ -42,7 +42,6 @@
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <strings.h>
-#include <termios.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
