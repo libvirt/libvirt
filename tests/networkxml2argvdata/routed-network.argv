@@ -1,8 +1,0 @@
-@DNSMASQ@ \
---strict-order \
---domain-needed \
---local=// \
---conf-file= \
---bind-dynamic \
---interface virbr1 \
---addn-hosts=/var/lib/libvirt/dnsmasq/local.addnhosts\

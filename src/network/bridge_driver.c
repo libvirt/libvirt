@@ -138,6 +138,16 @@ networkDnsmasqLeaseFileNameFunc networkDnsmasqLeaseFileName =
     networkDnsmasqLeaseFileNameDefault;
 
 static char *
+networkDnsmasqConfigFileName(const char *netname)
+{
+    char *conffile;
+
+    ignore_value(virAsprintf(&conffile, DNSMASQ_STATE_DIR "/%s.conf",
+                             netname));
+    return conffile;
+}
+
+static char *
 networkRadvdPidfileBasename(const char *netname)
 {
     /* this is simple but we want to be sure it's consistently done */
@@ -164,6 +174,7 @@ networkRemoveInactive(struct network_driver *driver,
 {
     char *leasefile = NULL;
     char *radvdconfigfile = NULL;
+    char *configfile = NULL;
     char *radvdpidbase = NULL;
     dnsmasqContext *dctx = NULL;
     virNetworkDefPtr def = virNetworkObjGetPersistentDef(net);
@@ -183,9 +194,13 @@ networkRemoveInactive(struct network_driver *driver,
     if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
         goto no_memory;
 
+    if (!(configfile = networkDnsmasqConfigFileName(def->name)))
+        goto no_memory;
+
     /* dnsmasq */
     dnsmasqDelete(dctx);
     unlink(leasefile);
+    unlink(configfile);
 
     /* radvd */
     unlink(radvdconfigfile);
@@ -198,6 +213,7 @@ networkRemoveInactive(struct network_driver *driver,
 
 cleanup:
     VIR_FREE(leasefile);
+    VIR_FREE(configfile);
     VIR_FREE(radvdconfigfile);
     VIR_FREE(radvdpidbase);
     dnsmasqContextFree(dctx);
@@ -609,13 +625,14 @@ networkBuildDnsmasqHostsList(dnsmasqContext *dctx,
 }
 
 
-static int
-networkBuildDnsmasqArgv(virNetworkObjPtr network,
+int
+networkDnsmasqConfContents(virNetworkObjPtr network,
                         const char *pidfile,
-                        virCommandPtr cmd,
+                        char **configstr,
                         dnsmasqContext *dctx,
                         dnsmasqCapsPtr caps ATTRIBUTE_UNUSED)
 {
+    virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int r, ret = -1;
     int nbleases = 0;
     int ii;
@@ -627,46 +644,48 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     virNetworkIpDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
     bool ipv6SLAAC;
 
+    *configstr = NULL;
+
     /*
-     * NB, be careful about syntax for dnsmasq options in long format.
+     * All dnsmasq parameters are put into a configuration file, except the
+     * command line --conf-file=parameter which specifies the location of
+     * configuration file.
      *
-     * If the flag has a mandatory argument, it can be given using
-     * either syntax:
-     *
-     *     --foo bar
-     *     --foo=bar
-     *
-     * If the flag has a optional argument, it *must* be given using
-     * the syntax:
-     *
-     *     --foo=bar
-     *
-     * It is hard to determine whether a flag is optional or not,
-     * without reading the dnsmasq source :-( The manpage is not
-     * very explicit on this.
+     * All dnsmasq conf-file parameters must be specified as "foo=bar"
+     * as oppose to "--foo bar" which was acceptable on the command line.
      */
 
     /*
      * Needed to ensure dnsmasq uses same algorithm for processing
      * multiple namedriver entries in /etc/resolv.conf as GLibC.
      */
-    virCommandAddArgList(cmd, "--strict-order",
-                              "--domain-needed",
-                              NULL);
 
-    if (network->def->domain) {
-        virCommandAddArgPair(cmd, "--domain", network->def->domain);
-        virCommandAddArg(cmd, "--expand-hosts");
-    }
-    /* need to specify local even if no domain specified */
-    virCommandAddArgFormat(cmd, "--local=/%s/",
-                           network->def->domain ? network->def->domain : "");
+    /* create dnsmasq config file appropriate for this network */
+    virBufferAsprintf(&configbuf,
+                              "##WARNING:  THIS IS AN AUTO-GENERATED FILE. "
+                              "CHANGES TO IT ARE LIKELY TO BE\n"
+                              "##OVERWRITTEN AND LOST.  Changes to this "
+                              "configuration should be made using:\n"
+                              "##    virsh net-edit %s\n"
+                              "## of other applications using the libvirt API.\n"
+                              "##\n## dnsmasq conf file created by libvirt\n"
+                              "strict-order\n"
+                              "domain-needed\n",
+                              network->def->name);
 
-    if (pidfile)
-        virCommandAddArgPair(cmd, "--pid-file", pidfile);
+     if (network->def->domain) {
+        virBufferAsprintf(&configbuf,
+                 "domain=%s\n"
+                 "expand-hosts\n",
+                 network->def->domain);
+     }
+     /* need to specify local even if no domain specified */
+    virBufferAsprintf(&configbuf,
+                "local=/%s/\n",
+                network->def->domain ? network->def->domain : "");
 
-    /* *no* conf file */
-    virCommandAddArg(cmd, "--conf-file=");
+     if (pidfile)
+        virBufferAsprintf(&configbuf, "pid-file=%s\n", pidfile);
 
     if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)) {
         /* using --bind-dynamic with only --interface (no
@@ -676,15 +695,14 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
          * other than one of the virtual guests connected directly to
          * this network). This was added in response to CVE 2012-3411.
          */
-        virCommandAddArgList(cmd,
-                             "--bind-dynamic",
-                             "--interface", network->def->bridge,
-                             NULL);
+        virBufferAsprintf(&configbuf,
+                             "bind-dynamic\n"
+                             "interface=%s\n",
+                             network->def->bridge);
     } else {
-        virCommandAddArgList(cmd,
-                             "--bind-interfaces",
-                             "--except-interface", "lo",
-                             NULL);
+        virBufferAddLit(&configbuf,
+                             "bind-interfaces\n"
+                             "except-interface=lo\n");
         /*
          * --interface does not actually work with dnsmasq < 2.47,
          * due to DAD for ipv6 addresses on the interface.
@@ -701,7 +719,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             if (!ipaddr)
                 goto cleanup;
             /* also part of CVE 2012-3411 - if the host's version of
-             * dnsmasq doesn't have --bind-dynamic, only allow listening on
+             * dnsmasq doesn't have bind-dynamic, only allow listening on
              * private/local IP addresses (see RFC1918/RFC3484/RFC4193)
              */
             if (!virSocketAddrIsPrivate(&tmpipdef->address)) {
@@ -710,7 +728,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Publicly routable address %s is prohibited. "
                                  "The version of dnsmasq on this host (%d.%d) doesn't "
-                                 "support the --bind-dynamic option, which is required "
+                                 "support the bind-dynamic option, which is required "
                                  "for safe operation on a publicly routable subnet "
                                  "(see CVE-2012-3411). You must either upgrade dnsmasq, "
                                  "or use a private/local subnet range for this network "
@@ -718,27 +736,27 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                                (int)version / 1000000, (int)(version % 1000000) / 1000);
                 goto cleanup;
             }
-            virCommandAddArgList(cmd, "--listen-address", ipaddr, NULL);
+            virBufferAsprintf(&configbuf, "listen-address=%s\n", ipaddr);
             VIR_FREE(ipaddr);
         }
     }
 
     /* If this is an isolated network, set the default route option
      * (3) to be empty to avoid setting a default route that's
-     * guaranteed to not work, and set --no-resolv so that no dns
+     * guaranteed to not work, and set no-resolv so that no dns
      * requests are forwarded on to the dns server listed in the
      * host's /etc/resolv.conf (since this could be used as a channel
      * to build a connection to the outside).
      */
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NONE) {
-        virCommandAddArgList(cmd, "--dhcp-option=3",
-                             "--no-resolv", NULL);
+        virBufferAddLit(&configbuf, "dhcp-option=3\n"
+                                      "no-resolv\n");
     }
 
     for (ii = 0; ii < dns->ntxts; ii++) {
-        virCommandAddArgFormat(cmd, "--txt-record=%s,%s",
-                               dns->txts[ii].name,
-                               dns->txts[ii].value);
+        virBufferAsprintf(&configbuf, "txt-record=%s,%s\n",
+                          dns->txts[ii].name,
+                          dns->txts[ii].value);
     }
 
     for (ii = 0; ii < dns->nsrvs; ii++) {
@@ -774,7 +792,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                 goto cleanup;
             }
 
-            virCommandAddArgPair(cmd, "--srv-host", record);
+            virBufferAsprintf(&configbuf, "srv-host=%s\n", record);
             VIR_FREE(record);
             VIR_FREE(recordPort);
             VIR_FREE(recordWeight);
@@ -845,8 +863,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                 VIR_FREE(saddr);
                 goto cleanup;
             }
-            virCommandAddArg(cmd, "--dhcp-range");
-            virCommandAddArgFormat(cmd, "%s,%s", saddr, eaddr);
+            virBufferAsprintf(&configbuf, "dhcp-range=%s,%s\n",
+                                        saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
             nbleases += virSocketAddrGetRange(&ipdef->ranges[r].start,
@@ -862,8 +880,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
             if (!bridgeaddr)
                 goto cleanup;
-            virCommandAddArg(cmd, "--dhcp-range");
-            virCommandAddArgFormat(cmd, "%s,static", bridgeaddr);
+            virBufferAsprintf(&configbuf, "dhcp-range=%s,static\n", bridgeaddr);
             VIR_FREE(bridgeaddr);
         }
 
@@ -873,16 +890,14 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         /* Note: the following is IPv4 only */
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts)
-                virCommandAddArg(cmd, "--dhcp-no-override");
+                virBufferAddLit(&configbuf, "dhcp-no-override\n");
 
             if (ipdef->tftproot) {
-                virCommandAddArgList(cmd, "--enable-tftp",
-                                     "--tftp-root", ipdef->tftproot,
-                                     NULL);
+                virBufferAddLit(&configbuf, "enable-tftp\n");
+                virBufferAsprintf(&configbuf, "tftp-root=%s\n", ipdef->tftproot);
             }
 
             if (ipdef->bootfile) {
-                virCommandAddArg(cmd, "--dhcp-boot");
                 if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
                     char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
 
@@ -890,11 +905,11 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         virReportOOMError();
                         goto cleanup;
                     }
-                    virCommandAddArgFormat(cmd, "%s%s%s",
+                    virBufferAsprintf(&configbuf, "dhcp-boot=%s%s%s\n",
                                        ipdef->bootfile, ",,", bootserver);
                     VIR_FREE(bootserver);
                 } else {
-                    virCommandAddArg(cmd, ipdef->bootfile);
+                    virBufferAsprintf(&configbuf, "dhcp-boot=%s\n", ipdef->bootfile);
                 }
             }
         }
@@ -907,9 +922,9 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
             virReportOOMError();
             goto cleanup;
         }
-        virCommandAddArgFormat(cmd, "--dhcp-leasefile=%s", leasefile);
+        virBufferAsprintf(&configbuf, "dhcp-leasefile=%s\n", leasefile);
         VIR_FREE(leasefile);
-        virCommandAddArgFormat(cmd, "--dhcp-lease-max=%d", nbleases);
+        virBufferAsprintf(&configbuf, "dhcp-lease-max=%d\n", nbleases);
     }
 
     /* this is done once per interface */
@@ -921,19 +936,19 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
      * file to allow for runtime additions.
      */
     if (ipv4def || ipv6def)
-        virCommandAddArgPair(cmd, "--dhcp-hostsfile",
-                             dctx->hostsfile->path);
+            virBufferAsprintf(&configbuf, "dhcp-hostsfile=%s\n",
+                                 dctx->hostsfile->path);
 
-    /* Likewise, always create this file and put it on the commandline,
-     * to allow for runtime additions.
+    /* Likewise, always create this file and put it on the commandline, to allow for
+     * for runtime additions.
      */
-    virCommandAddArgPair(cmd, "--addn-hosts",
-                         dctx->addnhostsfile->path);
+    virBufferAsprintf(&configbuf, "addn-hosts=%s\n",
+                       dctx->addnhostsfile->path);
 
     /* Are we doing RA instead of radvd? */
     if (DNSMASQ_RA_SUPPORT(caps)) {
         if (ipv6def)
-            virCommandAddArg(cmd, "--enable-ra");
+            virBufferAddLit(&configbuf, "enable-ra\n");
         else {
             for (ii = 0;
                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
@@ -942,17 +957,21 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                     char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
                     if (!bridgeaddr)
                         goto cleanup;
-                    virCommandAddArgFormat(cmd, "--dhcp-range=%s,ra-only",
-                                           bridgeaddr);
+                    virBufferAsprintf(&configbuf,
+                                      "dhcp-range=%s,ra-only\n", bridgeaddr);
                     VIR_FREE(bridgeaddr);
                 }
             }
         }
     }
 
+    if (!(*configstr = virBufferContentAndReset(&configbuf)))
+        goto cleanup;
+
     ret = 0;
 
 cleanup:
+    virBufferFreeAndReset(&configbuf);
     VIR_FREE(record);
     VIR_FREE(recordPort);
     VIR_FREE(recordWeight);
@@ -960,20 +979,40 @@ cleanup:
     return ret;
 }
 
-int
+/* build the dnsmasq command line */
+static int
 networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout,
                                   char *pidfile, dnsmasqContext *dctx,
                                   dnsmasqCapsPtr caps)
 {
     virCommandPtr cmd = NULL;
     int ret = -1;
+    char *configfile = NULL;
+    char *configstr = NULL;
 
     network->dnsmasqPid = -1;
 
-    cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
-    if (networkBuildDnsmasqArgv(network, pidfile, cmd, dctx, caps) < 0) {
+    if (networkDnsmasqConfContents(network, pidfile, &configstr, dctx, caps) < 0)
+        goto cleanup;
+    if (!configstr)
+        goto cleanup;
+
+    /* construct the filename */
+    if (!(configfile = networkDnsmasqConfigFileName(network->def->name))) {
+        virReportOOMError();
         goto cleanup;
     }
+
+    /* Write the file */
+    if (virFileWriteStr(configfile, configstr, 0600) < 0) {
+        virReportSystemError(errno,
+                         _("couldn't write dnsmasq config file '%s'"),
+                         configfile);
+        goto cleanup;
+    }
+
+    cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
+    virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
 
     if (cmdout)
         *cmdout = cmd;
@@ -1298,7 +1337,7 @@ networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
     network->radvdPid = -1;
 
     /* Is dnsmasq handling RA? */
-    if (DNSMASQ_RA_SUPPORT(driver->dnsmasqCaps)) {
+   if (DNSMASQ_RA_SUPPORT(driver->dnsmasqCaps)) {
         ret = 0;
         goto cleanup;
     }
