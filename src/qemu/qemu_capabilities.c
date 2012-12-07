@@ -2046,19 +2046,14 @@ qemuCapsProbeQMPMachineTypes(qemuCapsPtr caps,
 
     for (i = 0 ; i < nmachines ; i++) {
         if (machines[i]->alias) {
-            if (!(caps->machineAliases[i] = strdup(machines[i]->name))) {
+            if (!(caps->machineAliases[i] = strdup(machines[i]->alias))) {
                 virReportOOMError();
                 goto cleanup;
             }
-            if (!(caps->machineTypes[i] = strdup(machines[i]->alias))) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else {
-            if (!(caps->machineTypes[i] = strdup(machines[i]->name))) {
-                virReportOOMError();
-                goto cleanup;
-            }
+        }
+        if (!(caps->machineTypes[i] = strdup(machines[i]->name))) {
+            virReportOOMError();
+            goto cleanup;
         }
         if (machines[i]->isDefault)
             defIdx = i;
