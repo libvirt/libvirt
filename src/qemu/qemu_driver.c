@@ -3006,16 +3006,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is marked for auto destroy"));
+    if (!qemuMigrationIsAllowed(driver, vm, vm->def, false))
         goto cleanup;
-    }
-    if (virDomainHasDiskMirror(vm)) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block copy job"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
                                              QEMU_ASYNC_JOB_SAVE) < 0)
