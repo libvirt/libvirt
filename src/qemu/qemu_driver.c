@@ -11430,6 +11430,10 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
 
     /* do the memory snapshot if necessary */
     if (memory) {
+        /* check if migration is possible */
+        if (!qemuMigrationIsAllowed(driver, vm, vm->def, false))
+            goto endjob;
+
         /* allow the migration job to be cancelled or the domain to be paused */
         qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK |
                                      JOB_MASK(QEMU_JOB_SUSPEND) |
