@@ -1011,9 +1011,9 @@ error:
  * assume that checking on source is sufficient to prevent ever
  * talking to the destination in the first place, we are stuck with
  * the fact that older servers did not do checks on the source. */
-static bool
+bool
 qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                       virDomainDefPtr def)
+                       virDomainDefPtr def, bool remote)
 {
     int nsnapshots;
     bool forbid;
@@ -1025,16 +1025,24 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
                            "%s", _("domain is marked for auto destroy"));
             return false;
         }
-        if ((nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL,
-                                                      0))) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot migrate domain with %d snapshots"),
-                           nsnapshots);
-            return false;
+
+        /* perform these checks only when migrating to remote hosts */
+        if (remote) {
+            nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
+            if (nsnapshots < 0)
+                return false;
+
+            if (nsnapshots > 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("cannot migrate domain with %d snapshots"),
+                               nsnapshots);
+                return false;
+            }
         }
+
         if (virDomainHasDiskMirror(vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot migrate domain with active block job"));
+                           _("domain has an active block job"));
             return false;
         }
 
@@ -1055,8 +1063,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
     }
     if (forbid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain with assigned non-USB host devices "
-                         "cannot be migrated"));
+                       _("domain has assigned non-USB host devices"));
         return false;
     }
 
@@ -1428,7 +1435,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL))
+    if (!qemuMigrationIsAllowed(driver, vm, NULL, true))
         goto cleanup;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
@@ -1567,7 +1574,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, NULL, def))
+    if (!qemuMigrationIsAllowed(driver, NULL, def, true))
         goto cleanup;
 
     /* Target domain name, maybe renamed. */
@@ -3005,7 +3012,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL))
+    if (!qemuMigrationIsAllowed(driver, vm, NULL, true))
         goto endjob;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
