@@ -500,7 +500,8 @@ umlStartup(int privileged)
     if (virFileMakePath(uml_driver->monitorDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create monitor directory %s: %s"),
-                  uml_driver->monitorDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  uml_driver->monitorDir,
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 
@@ -508,6 +509,10 @@ umlStartup(int privileged)
     if (inotify_add_watch(uml_driver->inotifyFD,
                           uml_driver->monitorDir,
                           IN_CREATE | IN_MODIFY | IN_DELETE) < 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create inotify watch on %s: %s"),
+                  uml_driver->monitorDir,
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
 
