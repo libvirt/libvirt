@@ -1934,6 +1934,9 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %endif
 
 %changelog
+* Sun Dec 09 2012 Cole Robinson <crobinso@redhat.com> - 0.10.2.2-1
+- Stable release 0.10.2.2
+
 * Sat Oct 27 2012 Cole Robinson <crobinso@redhat.com> - 0.10.2.1-1
 - Stable release 0.10.2.1
 
