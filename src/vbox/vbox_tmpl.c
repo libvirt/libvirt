@@ -34,7 +34,6 @@
 
 #include <config.h>
 
-#include <sys/utsname.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -823,20 +822,18 @@ cleanup:
 
 
 static int vboxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                  const char *arch ATTRIBUTE_UNUSED)
+                                  virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
 
 
-static virCapsPtr vboxCapsInit(void) {
-    struct utsname utsname;
+static virCapsPtr vboxCapsInit(void)
+{
     virCapsPtr caps;
     virCapsGuestPtr guest;
 
-    uname(&utsname);
-
-    if ((caps = virCapabilitiesNew(utsname.machine,
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
         goto no_memory;
 
@@ -847,8 +844,7 @@ static virCapsPtr vboxCapsInit(void) {
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "hvm",
-                                         utsname.machine,
-                                         sizeof(void *) * CHAR_BIT,
+                                         caps->host.arch,
                                          NULL,
                                          NULL,
                                          0,
@@ -2230,7 +2226,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
         machine->vtbl->GetAccessible(machine, &accessible);
         if (accessible) {
             int i = 0;
-            struct utsname utsname;
             PRBool PAEEnabled                   = PR_FALSE;
             PRBool ACPIEnabled                  = PR_FALSE;
             PRBool IOAPICEnabled                = PR_FALSE;
@@ -2312,8 +2307,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
             def->os.type = strdup("hvm");
 
-            uname(&utsname);
-            def->os.arch = strdup(utsname.machine);
+            def->os.arch = virArchFromHost();
 
             def->os.nBootDevs = 0;
             for (i = 0; (i < VIR_DOMAIN_BOOT_LAST) && (i < maxBootPosition); i++) {
@@ -3785,7 +3779,7 @@ vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
     int i = 0;
 
     VIR_DEBUG("def->os.type             %s", def->os.type);
-    VIR_DEBUG("def->os.arch             %s", def->os.arch);
+    VIR_DEBUG("def->os.arch             %s", virArchToString(def->os.arch));
     VIR_DEBUG("def->os.machine          %s", def->os.machine);
     VIR_DEBUG("def->os.nBootDevs        %zu", def->os.nBootDevs);
     VIR_DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);

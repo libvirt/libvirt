@@ -2299,24 +2299,26 @@ static int userns_supported(void)
 #endif
 }
 
-const char *lxcContainerGetAlt32bitArch(const char *arch)
+virArch lxcContainerGetAlt32bitArch(virArch arch)
 {
     /* Any Linux 64bit arch which has a 32bit
      * personality available should be listed here */
-    if (STREQ(arch, "x86_64"))
-        return "i686";
-    if (STREQ(arch, "s390x"))
-        return "s390";
-    if (STREQ(arch, "ppc64"))
-        return "ppc";
-    if (STREQ(arch, "parisc64"))
-        return "parisc";
-    if (STREQ(arch, "sparc64"))
-        return "sparc";
-    if (STREQ(arch, "mips64"))
-        return "mips";
+    if (arch == VIR_ARCH_X86_64)
+        return VIR_ARCH_I686;
+    if (arch == VIR_ARCH_S390X)
+        return VIR_ARCH_S390;
+    if (arch == VIR_ARCH_PPC64)
+        return VIR_ARCH_PPC;
+    if (arch == VIR_ARCH_PARISC64)
+        return VIR_ARCH_PARISC;
+    if (arch == VIR_ARCH_SPARC64)
+        return VIR_ARCH_SPARC;
+    if (arch == VIR_ARCH_MIPS64)
+        return VIR_ARCH_MIPS;
+    if (arch == VIR_ARCH_MIPS64EL)
+        return VIR_ARCH_MIPSEL;
 
-    return NULL;
+    return VIR_ARCH_NONE;
 }
 
 

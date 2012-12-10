@@ -40,7 +40,6 @@
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/utsname.h>
 #include <sys/wait.h>
 
 #include "virterror_internal.h"
@@ -170,20 +169,17 @@ error:
 
 
 static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                    const char *arch ATTRIBUTE_UNUSED)
+                                    virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
 }
 
 virCapsPtr openvzCapsInit(void)
 {
-    struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
 
-    uname(&utsname);
-
-    if ((caps = virCapabilitiesNew(utsname.machine,
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
         goto no_memory;
 
@@ -194,8 +190,7 @@ virCapsPtr openvzCapsInit(void)
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
-                                         utsname.machine,
-                                         sizeof(void*) == 4 ? 32 : 64,
+                                         caps->host.arch,
                                          NULL,
                                          NULL,
                                          0,

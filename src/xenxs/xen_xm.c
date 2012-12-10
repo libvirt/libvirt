@@ -263,7 +263,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     virDomainGraphicsDefPtr graphics = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
     int i;
-    const char *defaultArch, *defaultMachine;
+    const char *defaultMachine;
     int vmlocaltime = 0;
     unsigned long count;
     char *script = NULL;
@@ -290,15 +290,16 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
     if (!(def->os.type = strdup(hvm ? "hvm" : "xen")))
         goto no_memory;
 
-    defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type, virDomainVirtTypeToString(def->virtType));
-    if (defaultArch == NULL) {
+    def->os.arch =
+        virCapabilitiesDefaultGuestArch(caps,
+                                        def->os.type,
+                                        virDomainVirtTypeToString(def->virtType));
+    if (!def->os.arch) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no supported architecture for os type '%s'"),
                        def->os.type);
         goto cleanup;
     }
-    if (!(def->os.arch = strdup(defaultArch)))
-        goto no_memory;
 
     defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
                                                         def->os.type,

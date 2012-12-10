@@ -65,7 +65,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
 char *
 qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
                        qemuCapsPtr caps,
-                       char *os_arch,
+                       virArch arch,
                        char *machine);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */

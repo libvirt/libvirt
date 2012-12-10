@@ -31,7 +31,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/utsname.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <paths.h>
@@ -59,7 +58,6 @@
 
 #define PRLCTL                      "prlctl"
 #define PRLSRVCTL                   "prlsrvctl"
-#define PARALLELS_DEFAULT_ARCH      "x86_64"
 
 #define parallelsDomNotFoundError(domain)                                \
     do {                                                                 \
@@ -100,7 +98,7 @@ parallelsDriverUnlock(parallelsConnPtr driver)
 
 static int
 parallelsDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                            const char *arch ATTRIBUTE_UNUSED)
+                            virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
@@ -123,10 +121,9 @@ parallelsBuildCapabilities(void)
 {
     virCapsPtr caps;
     virCapsGuestPtr guest;
-    struct utsname utsname;
-    uname(&utsname);
 
-    if ((caps = virCapabilitiesNew(utsname.machine, 0, 0)) == NULL)
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
+                                   0, 0)) == NULL)
         goto no_memory;
 
     if (nodeCapsInitNUMA(caps) < 0)
@@ -135,8 +132,9 @@ parallelsBuildCapabilities(void)
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]) {
                                 0x42, 0x1C, 0x00});
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", PARALLELS_DEFAULT_ARCH,
-                                         64, "parallels",
+    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
+                                         VIR_ARCH_X86_64,
+                                         "parallels",
                                          NULL, 0, NULL)) == NULL)
         goto no_memory;
 
@@ -144,8 +142,9 @@ parallelsBuildCapabilities(void)
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto no_memory;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe", PARALLELS_DEFAULT_ARCH,
-                                         64, "parallels",
+    if ((guest = virCapabilitiesAddGuest(caps, "exe",
+                                         VIR_ARCH_X86_64,
+                                         "parallels",
                                          NULL, 0, NULL)) == NULL)
         goto no_memory;
 
@@ -792,8 +791,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
             goto no_memory;
     }
 
-    if (!(def->os.arch = strdup(PARALLELS_DEFAULT_ARCH)))
-        goto no_memory;
+    def->os.arch = VIR_ARCH_X86_64;
 
     if (VIR_ALLOC(pdom) < 0)
         goto no_memory;
@@ -2103,7 +2101,7 @@ parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr n
      * other paramenters are null and boot devices config is default */
 
     if (!STREQ_NULLABLE(old->os.type, new->os.type) ||
-        !STREQ_NULLABLE(old->os.arch, new->os.arch) ||
+        old->os.arch != new->os.arch ||
         new->os.machine != NULL || new->os.bootmenu != 0 ||
         new->os.kernel != NULL || new->os.initrd != NULL ||
         new->os.cmdline != NULL || new->os.root != NULL ||

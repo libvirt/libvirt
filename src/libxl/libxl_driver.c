@@ -26,7 +26,6 @@
 
 #include <config.h>
 
-#include <sys/utsname.h>
 #include <math.h>
 #include <libxl.h>
 #include <fcntl.h>
@@ -320,7 +319,7 @@ libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 {
     libxl_physinfo phy_info;
     const libxl_version_info* ver_info;
-    struct utsname utsname;
+    virArch hostarch = virArchFromHost();
 
     if (libxl_get_physinfo(driver->ctx, &phy_info)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -334,14 +333,10 @@ libxlDoNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
         return -1;
     }
 
-    uname(&utsname);
-    if (virStrncpy(info->model,
-                   utsname.machine,
-                   strlen(utsname.machine),
-                   sizeof(info->model)) == NULL) {
+    if (virStrcpyStatic(info->model, virArchToString(hostarch)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("machine type %s too big for destination"),
-                       utsname.machine);
+                       virArchToString(hostarch));
         return -1;
     }
 

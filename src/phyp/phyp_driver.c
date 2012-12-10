@@ -40,7 +40,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <fcntl.h>
-#include <sys/utsname.h>
 #include <domain_event.h>
 
 #include "internal.h"
@@ -289,7 +288,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
 
 
 static int phypDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                  const char *arch ATTRIBUTE_UNUSED)
+                                  virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
@@ -298,13 +297,11 @@ static int phypDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 static virCapsPtr
 phypCapsInit(void)
 {
-    struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
 
-    uname(&utsname);
-
-    if ((caps = virCapabilitiesNew(utsname.machine, 0, 0)) == NULL)
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
+                                   0, 0)) == NULL)
         goto no_memory;
 
     /* Some machines have problematic NUMA toplogy causing
@@ -323,8 +320,7 @@ phypCapsInit(void)
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "linux",
-                                         utsname.machine,
-                                         sizeof(int) == 4 ? 32 : 8,
+                                         caps->host.arch,
                                          NULL, NULL, 0, NULL)) == NULL)
         goto no_memory;
 

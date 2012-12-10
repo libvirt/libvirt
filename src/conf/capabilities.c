@@ -42,14 +42,14 @@ VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,
 
 /**
  * virCapabilitiesNew:
- * @arch: host machine architecture
+ * @hostarch: host machine architecture
  * @offlineMigrate: non-zero if offline migration is available
  * @liveMigrate: non-zero if live migration is available
  *
  * Allocate a new capabilities object
  */
 virCapsPtr
-virCapabilitiesNew(const char *arch,
+virCapabilitiesNew(virArch hostarch,
                    int offlineMigrate,
                    int liveMigrate)
 {
@@ -58,16 +58,11 @@ virCapabilitiesNew(const char *arch,
     if (VIR_ALLOC(caps) < 0)
         return NULL;
 
-    if ((caps->host.arch = strdup(arch)) == NULL)
-        goto no_memory;
+    caps->host.arch = hostarch;
     caps->host.offlineMigrate = offlineMigrate;
     caps->host.liveMigrate = liveMigrate;
 
     return caps;
-
- no_memory:
-    virCapabilitiesFree(caps);
-    return NULL;
 }
 
 static void
@@ -125,7 +120,6 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 
     VIR_FREE(guest->ostype);
 
-    VIR_FREE(guest->arch.name);
     VIR_FREE(guest->arch.defaultInfo.emulator);
     VIR_FREE(guest->arch.defaultInfo.loader);
     for (i = 0 ; i < guest->arch.defaultInfo.nmachines ; i++)
@@ -179,8 +173,6 @@ virCapabilitiesFree(virCapsPtr caps) {
     for (i = 0 ; i < caps->host.nmigrateTrans ; i++)
         VIR_FREE(caps->host.migrateTrans[i]);
     VIR_FREE(caps->host.migrateTrans);
-
-    VIR_FREE(caps->host.arch);
 
     for (i = 0; i < caps->host.nsecModels; i++) {
         VIR_FREE(caps->host.secModels[i].model);
@@ -353,7 +345,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
  * virCapabilitiesAddGuest:
  * @caps: capabilities to extend
  * @ostype: guest operating system type ('hvm' or 'xen')
- * @arch: guest CPU architecture ('i686', or 'x86_64', etc)
+ * @arch: guest CPU architecture
  * @wordsize: number of bits in CPU word
  * @emulator: path to default device emulator for arch/ostype
  * @loader: path to default BIOS loader for arch/ostype
@@ -367,8 +359,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
 virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
                         const char *ostype,
-                        const char *arch,
-                        int wordsize,
+                        virArch arch,
                         const char *emulator,
                         const char *loader,
                         int nmachines,
@@ -382,9 +373,8 @@ virCapabilitiesAddGuest(virCapsPtr caps,
     if ((guest->ostype = strdup(ostype)) == NULL)
         goto no_memory;
 
-    if ((guest->arch.name = strdup(arch)) == NULL)
-        goto no_memory;
-    guest->arch.wordsize = wordsize;
+    guest->arch.id = arch;
+    guest->arch.wordsize = virArchGetWordSize(arch);
 
     if (emulator &&
         (guest->arch.defaultInfo.emulator = strdup(emulator)) == NULL)
@@ -505,18 +495,18 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
 /**
  * virCapabilitiesSupportsGuestArch:
  * @caps: capabilities to query
- * @arch: Architecture to search for (eg, 'i686', 'x86_64')
+ * @arch: Architecture to search for
  *
  * Returns non-zero if the capabilities support the
  * requested architecture
  */
 extern int
 virCapabilitiesSupportsGuestArch(virCapsPtr caps,
-                                 const char *arch)
+                                 virArch arch)
 {
     int i;
     for (i = 0 ; i < caps->nguests ; i++) {
-        if (STREQ(caps->guests[i]->arch.name, arch))
+        if (caps->guests[i]->arch.id == arch)
             return 1;
     }
     return 0;
@@ -548,7 +538,7 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
  * virCapabilitiesSupportsGuestOSTypeArch:
  * @caps: capabilities to query
  * @ostype: OS type to search for (eg 'hvm', 'xen')
- * @arch: Architecture to search for (eg, 'i686', 'x86_64')
+ * @arch: Architecture to search for
  *
  * Returns non-zero if the capabilities support the
  * requested operating system type
@@ -556,12 +546,12 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
 extern int
 virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
                                        const char *ostype,
-                                       const char *arch)
+                                       virArch arch)
 {
     int i;
     for (i = 0 ; i < caps->nguests ; i++) {
         if (STREQ(caps->guests[i]->ostype, ostype) &&
-            STREQ(caps->guests[i]->arch.name, arch))
+            caps->guests[i]->arch.id == arch)
             return 1;
     }
     return 0;
@@ -576,28 +566,35 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
  * Returns the first architecture able to run the
  * requested operating system type
  */
-extern const char *
+extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 const char *ostype,
                                 const char *domain)
 {
     int i, j;
-    const char *arch = NULL;
+
+    /* First try to find one matching host arch */
     for (i = 0 ; i < caps->nguests ; i++) {
         if (STREQ(caps->guests[i]->ostype, ostype)) {
             for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
-                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain)) {
-                    /* Use the first match... */
-                    if (!arch)
-                        arch = caps->guests[i]->arch.name;
-                    /* ...unless we can match the host's architecture. */
-                    if (STREQ(caps->guests[i]->arch.name, caps->host.arch))
-                        return caps->guests[i]->arch.name;
-                }
+                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain) &&
+                    caps->guests[i]->arch.id == caps->host.arch)
+                    return caps->guests[i]->arch.id;
             }
         }
     }
-    return arch;
+
+    /* Otherwise find the first match */
+    for (i = 0 ; i < caps->nguests ; i++) {
+        if (STREQ(caps->guests[i]->ostype, ostype)) {
+            for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
+                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain))
+                    return caps->guests[i]->arch.id;
+            }
+        }
+    }
+
+    return VIR_ARCH_NONE;
 }
 
 /**
@@ -614,7 +611,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    const char *ostype,
-                                   const char *arch,
+                                   virArch arch,
                                    const char *domain)
 {
     int i;
@@ -623,11 +620,12 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
         virCapsGuestPtr guest = caps->guests[i];
         int j;
 
-        if (!STREQ(guest->ostype, ostype) || !STREQ(guest->arch.name, arch))
+        if (!STREQ(guest->ostype, ostype) ||
+            guest->arch.id != arch)
             continue;
 
         for (j = 0; j < guest->arch.ndomains; j++) {
-            virCapsGuestDomainPtr dom= guest->arch.domains[j];
+            virCapsGuestDomainPtr dom = guest->arch.domains[j];
 
             if (!STREQ(dom->type, domain))
                 continue;
@@ -659,14 +657,14 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     const char *ostype,
-                                    const char *arch,
+                                    virArch arch,
                                     const char *domain)
 {
     int i, j;
     for (i = 0 ; i < caps->nguests ; i++) {
         char *emulator;
         if (STREQ(caps->guests[i]->ostype, ostype) &&
-            STREQ(caps->guests[i]->arch.name, arch)) {
+            caps->guests[i]->arch.id == arch) {
             emulator = caps->guests[i]->arch.defaultInfo.emulator;
             for (j = 0 ; j < caps->guests[i]->arch.ndomains ; j++) {
                 if (STREQ(caps->guests[i]->arch.domains[j]->type, domain)) {
@@ -703,8 +701,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAsprintf(&xml,"    <uuid>%s</uuid>\n", host_uuid);
     }
     virBufferAddLit(&xml, "    <cpu>\n");
-    virBufferAsprintf(&xml, "      <arch>%s</arch>\n",
-                      caps->host.arch);
+    if (caps->host.arch)
+        virBufferAsprintf(&xml, "      <arch>%s</arch>\n",
+                          virArchToString(caps->host.arch));
 
     if (caps->host.nfeatures) {
         virBufferAddLit(&xml, "      <features>\n");
@@ -788,8 +787,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "  <guest>\n");
         virBufferAsprintf(&xml, "    <os_type>%s</os_type>\n",
                           caps->guests[i]->ostype);
-        virBufferAsprintf(&xml, "    <arch name='%s'>\n",
-                          caps->guests[i]->arch.name);
+        if (caps->guests[i]->arch.id)
+            virBufferAsprintf(&xml, "    <arch name='%s'>\n",
+                              virArchToString(caps->guests[i]->arch.id));
         virBufferAsprintf(&xml, "      <wordsize>%d</wordsize>\n",
                           caps->guests[i]->arch.wordsize);
         if (caps->guests[i]->arch.defaultInfo.emulator)

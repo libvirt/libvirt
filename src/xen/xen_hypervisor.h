@@ -62,7 +62,7 @@ int     xenHypervisorGetVersion         (virConnectPtr conn,
                                          unsigned long *hvVer);
 virCapsPtr
         xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
-                                              const char *hostmachine,
+                                              virArch hostarch,
                                               FILE *cpuinfo,
                                               FILE *capabilities);
 char *

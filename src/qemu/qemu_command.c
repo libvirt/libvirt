@@ -46,7 +46,6 @@
 #include "device_conf.h"
 #include "storage_file.h"
 
-#include <sys/utsname.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -517,7 +516,7 @@ qemuSetScsiControllerModel(virDomainDefPtr def,
             return -1;
         }
     } else {
-        if (STREQ(def->os.arch, "ppc64") &&
+        if ((def->os.arch == VIR_ARCH_PPC64) &&
             STREQ(def->os.machine, "pseries")) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
         } else if (qemuCapsGet(caps, QEMU_CAPS_SCSI_LSI)) {
@@ -807,7 +806,8 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets ; i++) {
-        if (STRPREFIX(def->os.arch, "s390") &&
+        if ((def->os.arch == VIR_ARCH_S390 ||
+             def->os.arch == VIR_ARCH_S390X) &&
             def->nets[i]->model == NULL) {
             def->nets[i]->model = strdup("virtio");
         }
@@ -924,7 +924,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0 ; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
-            STREQ(def->os.arch, "ppc64") &&
+            (def->os.arch == VIR_ARCH_PPC64) &&
             STREQ(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
@@ -3011,7 +3011,7 @@ qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
     model = def->model;
 
     if (model == -1) {
-        if (STREQ(domainDef->os.arch, "ppc64"))
+        if (domainDef->os.arch == VIR_ARCH_PPC64)
             model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
         else
             model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
@@ -4338,7 +4338,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
 
     *hasHwVirt = false;
 
-    if (STREQ(def->os.arch, "i686"))
+    if (def->os.arch == VIR_ARCH_I686)
         default_model = "qemu32";
     else
         default_model = "qemu64";
@@ -4450,7 +4450,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
          *  1. guest OS is i686
          *  2. emulator is qemu-system-x86_64
          */
-        if (STREQ(def->os.arch, "i686") &&
+        if (def->os.arch == VIR_ARCH_I686 &&
             ((hostarch == VIR_ARCH_X86_64 &&
               strstr(emulator, "kvm")) ||
              strstr(emulator, "x86_64"))) {
@@ -6962,13 +6962,13 @@ qemuBuildCommandLine(virConnectPtr conn,
  */
 char *
 qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
-                       qemuCapsPtr caps,
-                       char *os_arch,
-                       char *machine)
+                      qemuCapsPtr caps,
+                      virArch arch,
+                      char *machine)
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if (STREQ(os_arch, "ppc64") && STREQ(machine, "pseries")) {
+    if ((arch == VIR_ARCH_PPC64) && STREQ(machine, "pseries")) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
@@ -8198,7 +8198,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
         }
     } while ((p = next));
 
-    if (STREQ(dom->os.arch, "x86_64")) {
+    if (dom->os.arch == VIR_ARCH_X86_64) {
         bool is_32bit = false;
         if (cpu) {
             union cpuData *cpuData = NULL;
@@ -8216,8 +8216,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
         }
 
         if (is_32bit) {
-            VIR_FREE(dom->os.arch);
-            dom->os.arch = strdup("i686");
+            dom->os.arch = VIR_ARCH_I686;
         }
     }
     VIR_FREE(model);
@@ -8415,16 +8414,15 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     else
         path = strstr(def->emulator, "qemu");
     if (def->virtType == VIR_DOMAIN_VIRT_KVM)
-        def->os.arch = strdup(caps->host.cpu->arch);
+        def->os.arch = caps->host.arch;
     else if (path &&
              STRPREFIX(path, "qemu-system-"))
-        def->os.arch = strdup(path + strlen("qemu-system-"));
+        def->os.arch = virArchFromString(path + strlen("qemu-system-"));
     else
-        def->os.arch = strdup("i686");
-    if (!def->os.arch)
-        goto no_memory;
+        def->os.arch = VIR_ARCH_I686;
 
-    if (STREQ(def->os.arch, "i686")||STREQ(def->os.arch, "x86_64"))
+    if ((def->os.arch == VIR_ARCH_I686) ||
+        (def->os.arch == VIR_ARCH_X86_64))
         def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI)
         /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
 #define WANT_VALUE()                                                   \

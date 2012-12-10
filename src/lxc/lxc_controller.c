@@ -29,7 +29,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <sys/utsname.h>
 #include <sys/personality.h>
 #include <unistd.h>
 #include <paths.h>
@@ -1077,17 +1076,15 @@ static int virLXCControllerDeleteInterfaces(virLXCControllerPtr ctrl)
 
 static int lxcSetPersonality(virDomainDefPtr def)
 {
-    struct utsname utsname;
-    const char *altArch;
+    virArch altArch;
 
-    uname(&utsname);
-
-    altArch = lxcContainerGetAlt32bitArch(utsname.machine);
+    altArch = lxcContainerGetAlt32bitArch(virArchFromHost());
     if (altArch &&
-        STREQ(def->os.arch, altArch)) {
+        (def->os.arch == altArch)) {
         if (personality(PER_LINUX32) < 0) {
             virReportSystemError(errno, _("Unable to request personality for %s on %s"),
-                                 altArch, utsname.machine);
+                                 virArchToString(altArch),
+                                 virArchToString(virArchFromHost()));
             return -1;
         }
     }

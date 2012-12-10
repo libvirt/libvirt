@@ -63,6 +63,6 @@ int lxcContainerStart(virDomainDefPtr def,
 
 int lxcContainerAvailable(int features);
 
-const char *lxcContainerGetAlt32bitArch(const char *arch);
+virArch lxcContainerGetAlt32bitArch(virArch arch);
 
 #endif /* LXC_CONTAINER_H */

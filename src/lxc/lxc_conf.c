@@ -26,8 +26,6 @@
 /* includes */
 #include <config.h>
 
-#include <sys/utsname.h>
-
 #include "lxc_conf.h"
 #include "nodeinfo.h"
 #include "virterror_internal.h"
@@ -43,7 +41,7 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 static int lxcDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                 const char *arch ATTRIBUTE_UNUSED)
+                                 virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
 }
@@ -52,14 +50,11 @@ static int lxcDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 /* Functions */
 virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
 {
-    struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
-    const char *altArch;
+    virArch altArch;
 
-    uname(&utsname);
-
-    if ((caps = virCapabilitiesNew(utsname.machine,
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
         goto error;
 
@@ -88,8 +83,7 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
-                                         utsname.machine,
-                                         sizeof(void*) == 4 ? 32 : 64,
+                                         caps->host.arch,
                                          LIBEXECDIR "/libvirt_lxc",
                                          NULL,
                                          0,
@@ -105,11 +99,10 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
         goto error;
 
     /* On 64-bit hosts, we can use personality() to request a 32bit process */
-    if ((altArch = lxcContainerGetAlt32bitArch(utsname.machine)) != NULL) {
+    if ((altArch = lxcContainerGetAlt32bitArch(caps->host.arch)) != VIR_ARCH_NONE) {
         if ((guest = virCapabilitiesAddGuest(caps,
                                              "exe",
                                              altArch,
-                                             32,
                                              LIBEXECDIR "/libvirt_lxc",
                                              NULL,
                                              0,

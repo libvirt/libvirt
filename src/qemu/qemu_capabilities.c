@@ -582,17 +582,20 @@ cleanup:
 
 
 static char *
-qemuCapsFindBinaryForArch(const char *hostarch,
-                          const char *guestarch)
+qemuCapsFindBinaryForArch(virArch hostarch,
+                          virArch guestarch)
 {
     char *ret;
 
-    if (STREQ(guestarch, "i686")) {
+    /* Some special cases where libvirt's canonical
+     * guestarch string form can't match qemu's binary
+     */
+    if (guestarch == VIR_ARCH_I686) {
         ret = virFindFileInPath("qemu-system-i386");
         if (ret && !virFileIsExecutable(ret))
             VIR_FREE(ret);
 
-        if (!ret && STREQ(hostarch, "x86_64")) {
+        if (!ret && hostarch == VIR_ARCH_X86_64) {
             ret = virFindFileInPath("qemu-system-x86_64");
             if (ret && !virFileIsExecutable(ret))
                 VIR_FREE(ret);
@@ -600,11 +603,12 @@ qemuCapsFindBinaryForArch(const char *hostarch,
 
         if (!ret)
             ret = virFindFileInPath("qemu");
-    } else if (STREQ(guestarch, "itanium")) {
+    } else if (guestarch == VIR_ARCH_ITANIUM) {
         ret = virFindFileInPath("qemu-system-ia64");
     } else {
+        /* Default case we have matching arch strings */
         char *bin;
-        if (virAsprintf(&bin, "qemu-system-%s", guestarch) < 0) {
+        if (virAsprintf(&bin, "qemu-system-%s", virArchToString(guestarch)) < 0) {
             virReportOOMError();
             return NULL;
         }
@@ -616,26 +620,15 @@ qemuCapsFindBinaryForArch(const char *hostarch,
     return ret;
 }
 
-static int
-qemuCapsGetArchWordSize(const char *guestarch)
-{
-    if (STREQ(guestarch, "i686") ||
-        STREQ(guestarch, "ppc") ||
-        STREQ(guestarch, "sparc") ||
-        STREQ(guestarch, "mips") ||
-        STREQ(guestarch, "mipsel"))
-        return 32;
-    return 64;
-}
 
 static bool
-qemuCapsIsValidForKVM(const char *hostarch,
-                      const char *guestarch)
+qemuCapsIsValidForKVM(virArch hostarch,
+                      virArch guestarch)
 {
-    if (STREQ(hostarch, guestarch))
+    if (hostarch == guestarch)
         return true;
-    if (STREQ(hostarch, "x86_64") &&
-        STREQ(guestarch, "i686"))
+    if (hostarch == VIR_ARCH_X86_64 &&
+        guestarch == VIR_ARCH_I686)
         return true;
     return false;
 }
@@ -643,8 +636,8 @@ qemuCapsIsValidForKVM(const char *hostarch,
 static int
 qemuCapsInitGuest(virCapsPtr caps,
                   qemuCapsCachePtr cache,
-                  const char *hostarch,
-                  const char *guestarch)
+                  virArch hostarch,
+                  virArch guestarch)
 {
     virCapsGuestPtr guest;
     int i;
@@ -725,7 +718,6 @@ qemuCapsInitGuest(virCapsPtr caps,
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "hvm",
                                          guestarch,
-                                         qemuCapsGetArchWordSize(guestarch),
                                          binary,
                                          NULL,
                                          nmachines,
@@ -783,13 +775,13 @@ qemuCapsInitGuest(virCapsPtr caps,
 
     }
 
-    if ((STREQ(guestarch, "i686") ||
-         STREQ(guestarch, "x86_64")) &&
+    if (((guestarch == VIR_ARCH_I686) ||
+         (guestarch == VIR_ARCH_X86_64)) &&
         (virCapabilitiesAddGuestFeature(guest, "acpi", 1, 1) == NULL ||
          virCapabilitiesAddGuestFeature(guest, "apic", 1, 0) == NULL))
         goto error;
 
-    if (STREQ(guestarch, "i686") &&
+    if ((guestarch == VIR_ARCH_I686) &&
         (virCapabilitiesAddGuestFeature(guest, "pae", 1, 0) == NULL ||
          virCapabilitiesAddGuestFeature(guest, "nonpae", 1, 0) == NULL))
         goto error;
@@ -813,15 +805,16 @@ error:
 
 static int
 qemuCapsInitCPU(virCapsPtr caps,
-                const char *arch)
+                virArch arch)
 {
     virCPUDefPtr cpu = NULL;
     union cpuData *data = NULL;
     virNodeInfo nodeinfo;
     int ret = -1;
+    const char *archstr = virArchToString(arch);
 
     if (VIR_ALLOC(cpu) < 0
-        || !(cpu->arch = strdup(arch))) {
+        || !(cpu->arch = strdup(archstr))) {
         virReportOOMError();
         goto error;
     }
@@ -835,14 +828,14 @@ qemuCapsInitCPU(virCapsPtr caps,
     cpu->threads = nodeinfo.threads;
     caps->host.cpu = cpu;
 
-    if (!(data = cpuNodeData(arch))
+    if (!(data = cpuNodeData(archstr))
         || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
         goto cleanup;
 
     ret = 0;
 
 cleanup:
-    cpuDataFree(arch, data);
+    cpuDataFree(archstr, data);
 
     return ret;
 
@@ -853,9 +846,10 @@ error:
 
 
 static int qemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                  const char *arch)
+                                  virArch arch)
 {
-    if (STRPREFIX(arch, "s390"))
+    if (arch == VIR_ARCH_S390 ||
+        arch == VIR_ARCH_S390X)
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
     else
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
@@ -864,21 +858,10 @@ static int qemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 
 virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
 {
-    struct utsname utsname;
     virCapsPtr caps;
     int i;
-    const char *const arches[] = {
-        "i686", "x86_64", "arm",
-        "microblaze", "microblazeel",
-        "mips", "mipsel", "sparc",
-        "ppc", "ppc64", "itanium",
-        "s390x"
-    };
 
-    /* Really, this never fails - look at the man-page. */
-    uname(&utsname);
-
-    if ((caps = virCapabilitiesNew(utsname.machine,
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    1, 1)) == NULL)
         goto error;
 
@@ -894,7 +877,7 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
-    if (qemuCapsInitCPU(caps, utsname.machine) < 0)
+    if (qemuCapsInitCPU(caps, virArchFromHost()) < 0)
         VIR_WARN("Failed to get host CPU");
 
     /* Add the power management features of the host */
@@ -905,11 +888,14 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     virCapabilitiesAddHostMigrateTransport(caps,
                                            "tcp");
 
-    /* First the pure HVM guests */
-    for (i = 0 ; i < ARRAY_CARDINALITY(arches) ; i++)
+    /* QEMU can support pretty much every arch that exists,
+     * so just probe for them all - we gracefully fail
+     * if a qemu-system-$ARCH binary can't be found
+     */
+    for (i = 0 ; i < VIR_ARCH_LAST ; i++)
         if (qemuCapsInitGuest(caps, cache,
-                              utsname.machine,
-                              arches[i]) < 0)
+                              virArchFromHost(),
+                              i) < 0)
             goto error;
 
     /* QEMU Requires an emulator in the XML */
@@ -1622,7 +1608,6 @@ cleanup:
     return ret;
 }
 
-
 static void
 uname_normalize(struct utsname *ut)
 {
@@ -1637,24 +1622,24 @@ uname_normalize(struct utsname *ut)
         ut->machine[1] = '6';
 }
 
+
 int qemuCapsGetDefaultVersion(virCapsPtr caps,
                               qemuCapsCachePtr capsCache,
                               unsigned int *version)
 {
     const char *binary;
-    struct utsname ut;
     qemuCapsPtr qemucaps;
 
     if (*version > 0)
         return 0;
 
-    uname_normalize(&ut);
     if ((binary = virCapabilitiesDefaultGuestEmulator(caps,
                                                       "hvm",
-                                                      ut.machine,
+                                                      virArchFromHost(),
                                                       "qemu")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find suitable emulator for %s"), ut.machine);
+                       _("Cannot find suitable emulator for %s"),
+                       virArchToString(virArchFromHost()));
         return -1;
     }
 

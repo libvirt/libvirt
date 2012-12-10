@@ -1522,14 +1522,9 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     }
 
     if (guestOS != NULL && virFileHasSuffix(guestOS, "-64")) {
-        def->os.arch = strdup("x86_64");
+        def->os.arch = VIR_ARCH_X86_64;
     } else {
-        def->os.arch = strdup("i686");
-    }
-
-    if (def->os.arch == NULL) {
-        virReportOOMError();
-        goto cleanup;
+        def->os.arch = VIR_ARCH_I686;
     }
 
     /* vmx:smbios.reflecthost -> def:os.smbios_mode */
@@ -3069,14 +3064,15 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
                       virtualHW_version);
 
     /* def:os.arch -> vmx:guestOS */
-    if (def->os.arch == NULL || STRCASEEQ(def->os.arch, "i686")) {
+    if (def->os.arch == VIR_ARCH_I686) {
         virBufferAddLit(&buffer, "guestOS = \"other\"\n");
-    } else if (STRCASEEQ(def->os.arch, "x86_64")) {
+    } else if (def->os.arch == VIR_ARCH_X86_64) {
         virBufferAddLit(&buffer, "guestOS = \"other-64\"\n");
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting domain XML attribute 'arch' of entry 'os/type' "
-                         "to be 'i686' or 'x86_64' but found '%s'"), def->os.arch);
+                         "to be 'i686' or 'x86_64' but found '%s'"),
+                       virArchToString(def->os.arch));
         goto cleanup;
     }
 

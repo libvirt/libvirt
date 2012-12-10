@@ -1709,7 +1709,6 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->redirdevs);
 
     VIR_FREE(def->os.type);
-    VIR_FREE(def->os.arch);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
     for (i = 0 ; def->os.initargv && def->os.initargv[i] ; i++)
@@ -8525,7 +8524,7 @@ static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
     if (!emulator) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no emulator for domain %s os type %s on architecture %s"),
-                       type, def->os.type, def->os.arch);
+                       type, def->os.type, virArchToString(def->os.arch));
         return NULL;
     }
 
@@ -9581,12 +9580,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
 
-    def->os.arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
-    if (def->os.arch) {
+    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
+    if (tmp) {
+        virArch arch = virArchFromString(tmp);
+        if (!arch) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown architecture %s"),
+                           tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+
         if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("No guest options available for arch '%s'"),
-                           def->os.arch);
+                           virArchToString(def->os.arch));
             goto error;
         }
 
@@ -9595,19 +9603,19 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                                     def->os.arch)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("No os type '%s' available for arch '%s'"),
-                           def->os.type, def->os.arch);
+                           def->os.type, virArchToString(def->os.arch));
             goto error;
         }
     } else {
-        const char *defaultArch = virCapabilitiesDefaultGuestArch(caps, def->os.type, virDomainVirtTypeToString(def->virtType));
-        if (defaultArch == NULL) {
+        def->os.arch =
+            virCapabilitiesDefaultGuestArch(caps,
+                                            def->os.type,
+                                            virDomainVirtTypeToString(def->virtType));
+        if (!def->os.arch) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("no supported architecture for os type '%s'"),
                            def->os.type);
             goto error;
-        }
-        if (!(def->os.arch = strdup(defaultArch))) {
-            goto no_memory;
         }
     }
 
@@ -10235,7 +10243,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         def->memballoon = memballoon;
         VIR_FREE(nodes);
-    } else if (!STREQ(def->os.arch,"s390x")) {
+    } else if (def->os.arch != VIR_ARCH_S390 &&
+               def->os.arch != VIR_ARCH_S390X) {
         /* TODO: currently no balloon support on s390 -> no default balloon */
         if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
             def->virtType == VIR_DOMAIN_VIRT_QEMU ||
@@ -11407,10 +11416,11 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
                        dst->os.type, src->os.type);
         goto cleanup;
     }
-    if (STRNEQ(src->os.arch, dst->os.arch)) {
+    if (src->os.arch != dst->os.arch){
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain architecture %s does not match source %s"),
-                       dst->os.arch, src->os.arch);
+                       virArchToString(dst->os.arch),
+                       virArchToString(src->os.arch));
         goto cleanup;
     }
     if (STRNEQ(src->os.machine, dst->os.machine)) {
@@ -14181,7 +14191,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAddLit(buf, "    <type");
     if (def->os.arch)
-        virBufferAsprintf(buf, " arch='%s'", def->os.arch);
+        virBufferAsprintf(buf, " arch='%s'", virArchToString(def->os.arch));
     if (def->os.machine)
         virBufferAsprintf(buf, " machine='%s'", def->os.machine);
     /*

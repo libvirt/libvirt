@@ -29,7 +29,6 @@
 #include <libxl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/utsname.h>
 
 #include "internal.h"
 #include "logging.h"
@@ -53,7 +52,7 @@
 
 
 struct guest_arch {
-    const char *model;
+    virArch arch;
     int bits;
     int hvm;
     int pae;
@@ -156,9 +155,8 @@ libxlBuildCapabilities(const char *hostmachine,
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              guest_archs[i].hvm ? "hvm" : "xen",
-                                             guest_archs[i].model,
-                                             guest_archs[i].bits,
-                                             (STREQ(hostmachine, "x86_64") ?
+                                             guest_archs[i].arch,
+                                             ((hostarch == VIR_ARCH_X86_64) ?
                                               "/usr/lib64/xen/bin/qemu-dm" :
                                               "/usr/lib/xen/bin/qemu-dm"),
                                              (guest_archs[i].hvm ?
@@ -230,7 +228,7 @@ libxlBuildCapabilities(const char *hostmachine,
 }
 
 static virCapsPtr
-libxlMakeCapabilitiesInternal(const char *hostmachine,
+libxlMakeCapabilitiesInternal(virArch hostarch,
                               libxl_physinfo *phy_info,
                               char *capabilities)
 {
@@ -285,12 +283,11 @@ libxlMakeCapabilitiesInternal(const char *hostmachine,
         if (regexec(&xen_cap_rec, token, sizeof(subs) / sizeof(subs[0]),
                     subs, 0) == 0) {
             int hvm = STRPREFIX(&token[subs[1].rm_so], "hvm");
-            const char *model;
-            int bits, pae = 0, nonpae = 0, ia64_be = 0;
+            virArch arch;
+            int pae = 0, nonpae = 0, ia64_be = 0;
 
             if (STRPREFIX(&token[subs[2].rm_so], "x86_32")) {
-                model = "i686";
-                bits = 32;
+                arch = VIR_ARCH_I686;
                 if (subs[3].rm_so != -1 &&
                     STRPREFIX(&token[subs[3].rm_so], "p"))
                     pae = 1;
@@ -298,26 +295,24 @@ libxlMakeCapabilitiesInternal(const char *hostmachine,
                     nonpae = 1;
             }
             else if (STRPREFIX(&token[subs[2].rm_so], "x86_64")) {
-                model = "x86_64";
-                bits = 64;
+                arch = VIR_ARCH_X86_64;
             }
             else if (STRPREFIX(&token[subs[2].rm_so], "ia64")) {
-                model = "ia64";
-                bits = 64;
+                arch = VIR_ARCH_ITANIUM;
                 if (subs[3].rm_so != -1 &&
                     STRPREFIX(&token[subs[3].rm_so], "be"))
                     ia64_be = 1;
             }
             else if (STRPREFIX(&token[subs[2].rm_so], "powerpc64")) {
-                model = "ppc64";
-                bits = 64;
+                arch = VIR_ARCH_PPC64;
             } else {
+                /* XXX arm ? */
                 continue;
             }
 
             /* Search for existing matching (model,hvm) tuple */
             for (i = 0 ; i < nr_guest_archs ; i++) {
-                if (STREQ(guest_archs[i].model, model) &&
+                if ((guest_archs[i].arch == arch) &&
                     guest_archs[i].hvm == hvm) {
                     break;
                 }
@@ -330,7 +325,7 @@ libxlMakeCapabilitiesInternal(const char *hostmachine,
             if (i == nr_guest_archs)
                 nr_guest_archs++;
 
-            guest_archs[i].model = model;
+            guest_archs[i].arch = arch;
             guest_archs[i].bits = bits;
             guest_archs[i].hvm = hvm;
 
@@ -347,7 +342,7 @@ libxlMakeCapabilitiesInternal(const char *hostmachine,
         }
     }
 
-    if ((caps = libxlBuildCapabilities(hostmachine,
+    if ((caps = libxlBuildCapabilities(hostarch,
                                        host_pae,
                                        guest_archs,
                                        nr_guest_archs)) == NULL)
@@ -825,7 +820,6 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 {
     libxl_physinfo phy_info;
     const libxl_version_info *ver_info;
-    struct utsname utsname;
 
     regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
 
@@ -841,9 +835,7 @@ libxlMakeCapabilities(libxl_ctx *ctx)
         return NULL;
     }
 
-    uname(&utsname);
-
-    return libxlMakeCapabilitiesInternal(utsname.machine,
+    return libxlMakeCapabilitiesInternal(virArchFromHost(),
                                          &phy_info,
                                          ver_info->capabilities);
 }

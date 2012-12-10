@@ -27,6 +27,7 @@
 # include "internal.h"
 # include "buf.h"
 # include "cpu_conf.h"
+# include "virarch.h"
 # include "virmacaddr.h"
 
 # include <libxml/xpath.h>
@@ -65,8 +66,8 @@ struct _virCapsGuestDomain {
 typedef struct _virCapsGuestArch virCapsGuestArch;
 typedef virCapsGuestArch *virCapsGuestArchptr;
 struct _virCapsGuestArch {
-    char *name;
-    int wordsize;
+    virArch id;
+    unsigned int wordsize;
     virCapsGuestDomainInfo defaultInfo;
     size_t ndomains;
     size_t ndomains_max;
@@ -101,7 +102,7 @@ struct _virCapsHostSecModel {
 typedef struct _virCapsHost virCapsHost;
 typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
-    char *arch;
+    virArch arch;
     size_t nfeatures;
     size_t nfeatures_max;
     char **features;
@@ -150,7 +151,7 @@ struct _virCaps {
     unsigned int emulatorRequired : 1;
     const char *defaultDiskDriverName;
     int defaultDiskDriverType; /* enum virStorageFileFormat */
-    int (*defaultConsoleTargetType)(const char *ostype, const char *arch);
+    int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
     void *(*privateDataAllocFunc)(void);
     void (*privateDataFreeFunc)(void *);
     int (*privateDataXMLFormat)(virBufferPtr, void *);
@@ -163,7 +164,7 @@ struct _virCaps {
 
 
 extern virCapsPtr
-virCapabilitiesNew(const char *arch,
+virCapabilitiesNew(virArch hostarch,
                    int offlineMigrate,
                    int liveMigrate);
 
@@ -218,8 +219,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
 extern virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
                         const char *ostype,
-                        const char *arch,
-                        int wordsize,
+                        virArch arch,
                         const char *emulator,
                         const char *loader,
                         int nmachines,
@@ -241,29 +241,29 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
 
 extern int
 virCapabilitiesSupportsGuestArch(virCapsPtr caps,
-                                 const char *arch);
+                                 virArch arch);
 extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
                                    const char *ostype);
 extern int
 virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
                                        const char *ostype,
-                                       const char *arch);
+                                       virArch arch);
 
 
-extern const char *
+extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 const char *ostype,
                                 const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    const char *ostype,
-                                   const char *arch,
+                                   virArch arch,
                                    const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     const char *ostype,
-                                    const char *arch,
+                                    virArch arch,
                                     const char *domain);
 
 extern char *
