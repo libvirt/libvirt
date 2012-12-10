@@ -1268,13 +1268,13 @@ qemuDomainNetGetBridgeName(virConnectPtr conn, virDomainNetDefPtr net)
         virNetworkFree(network);
         virSetError(errobj);
         virFreeError(errobj);
-        goto cleanup;
 
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Interface type %d has no bridge name"),
+                       virDomainNetGetActualType(net));
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Network type %d is not supported"),
-                   virDomainNetGetActualType(net));
 cleanup:
     return brname;
 }
