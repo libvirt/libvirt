@@ -32,6 +32,7 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "util.h"
+#include "virarch.h"
 #include "virfile.h"
 #include "uuid.h"
 #include "c-ctype.h"
@@ -129,21 +130,6 @@ VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "local",
               "local",
               "handle");
-
-
-static void
-uname_normalize(struct utsname *ut)
-{
-    uname(ut);
-
-    /* Map i386, i486, i586 to i686.  */
-    if (ut->machine[0] == 'i' &&
-        ut->machine[1] != '\0' &&
-        ut->machine[2] == '8' &&
-        ut->machine[3] == '6' &&
-        ut->machine[4] == '\0')
-        ut->machine[1] = '6';
-}
 
 
 /**
@@ -4332,7 +4318,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
                    const virDomainDefPtr def,
                    const char *emulator,
                    qemuCapsPtr caps,
-                   const struct utsname *ut,
+                   virArch hostarch,
                    char **opt,
                    bool *hasHwVirt,
                    bool migrating)
@@ -4465,7 +4451,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
          *  2. emulator is qemu-system-x86_64
          */
         if (STREQ(def->os.arch, "i686") &&
-            ((STREQ(ut->machine, "x86_64") &&
+            ((hostarch == VIR_ARCH_X86_64 &&
               strstr(emulator, "kvm")) ||
              strstr(emulator, "x86_64"))) {
             virBufferAdd(&buf, default_model, -1);
@@ -5010,7 +4996,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                      enum virNetDevVPortProfileOp vmop)
 {
     int i, j;
-    struct utsname ut;
     int disableKQEMU = 0;
     int enableKQEMU = 0;
     int disableKVM = 0;
@@ -5028,7 +5013,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     int spice = 0;
     int usbcontroller = 0;
     bool usblegacy = false;
-    uname_normalize(&ut);
     int contOrder[] = {
         /* We don't add an explicit IDE or FD controller because the
          * provided PIIX4 device already includes one. It isn't possible to
@@ -5039,6 +5023,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
         VIR_DOMAIN_CONTROLLER_TYPE_CCID,
     };
+    virArch hostarch = virArchFromHost();
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "caps=%p migrateFrom=%s migrateFD=%d "
@@ -5125,7 +5110,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
 
     if (qemuBuildCpuArgStr(driver, def, emulator, caps,
-                           &ut, &cpu, &hasHwVirt, !!migrateFrom) < 0)
+                           hostarch, &cpu, &hasHwVirt, !!migrateFrom) < 0)
         goto error;
 
     if (cpu) {
