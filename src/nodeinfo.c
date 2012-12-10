@@ -47,6 +47,7 @@
 #include "virterror_internal.h"
 #include "count-one-bits.h"
 #include "intprops.h"
+#include "virarch.h"
 #include "virfile.h"
 #include "virtypedparam.h"
 
@@ -841,13 +842,11 @@ error:
 }
 #endif
 
-int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
-    struct utsname info;
+int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo)
+{
+    virArch hostarch = virArchFromHost();
 
-    memset(nodeinfo, 0, sizeof(*nodeinfo));
-    uname(&info);
-
-    if (virStrcpyStatic(nodeinfo->model, info.machine) == NULL)
+    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) == NULL)
         return -1;
 
 #ifdef __linux__
