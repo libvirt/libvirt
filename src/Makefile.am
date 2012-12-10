@@ -80,6 +80,7 @@ UTIL_SOURCES =							\
 		util/threadpool.c util/threadpool.h		\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
+		util/virarch.h util/virarch.c			\
 		util/viratomic.h util/viratomic.c		\
 		util/viraudit.c util/viraudit.h			\
 		util/virauth.c util/virauth.h			\
