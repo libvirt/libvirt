@@ -810,9 +810,14 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets ; i++) {
+        if (STRPREFIX(def->os.arch, "s390") &&
+            def->nets[i]->model == NULL) {
+            def->nets[i]->model = strdup("virtio");
+        }
         if (STREQ(def->nets[i]->model,"virtio") &&
-            def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             def->nets[i]->info.type = type;
+        }
     }
 
     for (i = 0; i < def->ncontrollers ; i++) {
