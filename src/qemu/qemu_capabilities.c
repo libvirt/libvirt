@@ -2283,6 +2283,7 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
     qemuCapsSet(caps, QEMU_CAPS_WAKEUP);
     qemuCapsSet(caps, QEMU_CAPS_NO_USER_CONFIG);
     qemuCapsSet(caps, QEMU_CAPS_NETDEV_BRIDGE);
+    qemuCapsSet(caps, QEMU_CAPS_SECCOMP_SANDBOX);
 }
 
 
