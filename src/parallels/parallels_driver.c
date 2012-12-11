@@ -1776,6 +1776,173 @@ parallelsApplyDisksParams(virConnectPtr conn, parallelsDomObjPtr pdom,
     return 0;
 }
 
+static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
+                                     virDomainNetDefPtr oldnet,
+                                     virDomainNetDefPtr newnet)
+{
+    bool create = false;
+    bool is_changed = false;
+    virCommandPtr cmd;
+    char strmac[VIR_MAC_STRING_BUFLEN];
+    int i;
+
+    if (!oldnet) {
+        create = true;
+        if (VIR_ALLOC(oldnet) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+    }
+
+    if (!create && oldnet->type != newnet->type) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Changing network type is not supported"));
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(oldnet->model, newnet->model)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Changing network device model is not supported"));
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(oldnet->data.network.portgroup,
+                        newnet->data.network.portgroup)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Changing network portgroup is not supported"));
+        return -1;
+    }
+
+    if (!virNetDevVPortProfileEqual(oldnet->virtPortProfile,
+                                    newnet->virtPortProfile)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Changing virtual port profile is not supported"));
+        return -1;
+    }
+
+    if (newnet->tune.sndbuf_specified) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Setting send buffer size is not supported"));
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(oldnet->script, newnet->script)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Setting startup script is not supported"));
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(oldnet->filter, newnet->filter)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Changing filter params is not supported"));
+        return -1;
+    }
+
+    if (newnet->bandwidth != NULL) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Setting bandwidth params is not supported"));
+        return -1;
+    }
+
+    for (i = 0; i < sizeof(newnet->vlan); i++) {
+        if (((char *)&newnet->vlan)[i] != 0) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Setting vlan params is not supported"));
+            return -1;
+        }
+    }
+
+    /* Here we know, that there are no differences, that are forbidden.
+     * Check is something changed, if no - do nothing */
+
+    if (create) {
+        cmd = virCommandNewArgList(PRLCTL, "set", pdom->uuid,
+                                   "--device-add", "net", NULL);
+    } else {
+        cmd = virCommandNewArgList(PRLCTL, "set", pdom->uuid,
+                                   "--device-set", newnet->ifname, NULL);
+    }
+
+    if (virMacAddrCmp(&oldnet->mac, &newnet->mac)) {
+        virMacAddrFormat(&newnet->mac, strmac);
+        virCommandAddArgFormat(cmd, "--mac=%s", strmac);
+        is_changed = true;
+    }
+
+    if (!STREQ_NULLABLE(oldnet->data.network.name, newnet->data.network.name)) {
+        virCommandAddArgFormat(cmd, "--network=%s", newnet->data.network.name);
+        is_changed = true;
+    }
+
+    if (oldnet->linkstate != newnet->linkstate) {
+        if (newnet->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
+            virCommandAddArgFormat(cmd, "--connect");
+        } else if (newnet->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+            virCommandAddArgFormat(cmd, "--disconnect");
+        }
+        is_changed = true;
+    }
+
+    if (!create && !is_changed) {
+        /* nothing changed - no need to run prlctl */
+        return 0;
+    }
+
+    if (virCommandRun(cmd, NULL))
+        return -1;
+
+    return 0;
+}
+
+static int
+parallelsApplyIfacesParams(parallelsDomObjPtr pdom,
+                            virDomainNetDefPtr *oldnets, int nold,
+                            virDomainNetDefPtr *newnets, int nnew)
+{
+    int i, j;
+    virDomainNetDefPtr newnet;
+    virDomainNetDefPtr oldnet;
+    bool found;
+
+    for (i = 0; i < nold; i++) {
+        newnet = NULL;
+        oldnet = oldnets[i];
+        for (j = 0; j < nnew; j++) {
+            if (STREQ_NULLABLE(newnets[j]->ifname, oldnet->ifname)) {
+                newnet = newnets[j];
+                break;
+            }
+        }
+
+        if (!newnet) {
+            if (parallelsCmdRun(PRLCTL, "set", pdom->uuid,
+                                "--device-del", oldnet->ifname, NULL) < 0)
+                return -1;
+
+            continue;
+        }
+
+        if (parallelsApplyIfaceParams(pdom, oldnet, newnet) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < nnew; i++) {
+        newnet = newnets[i];
+        found = false;
+
+        for (j = 0; j < nold; j++)
+            if (STREQ_NULLABLE(oldnets[j]->ifname, newnet->ifname))
+                found = true;
+        if (found)
+            continue;
+
+        if (parallelsApplyIfaceParams(pdom, NULL, newnet))
+            return -1;
+    }
+
+    return 0;
+}
+
 static int
 parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr new)
 {
@@ -1975,7 +2142,7 @@ parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr n
                                    new->graphics, new->ngraphics) < 0)
         return -1;
 
-    if (new->nfss != 0 || new->nnets != 0 ||
+    if (new->nfss != 0 ||
         new->nsounds != 0 || new->nhostdevs != 0 ||
         new->nredirdevs != 0 || new->nsmartcards != 0 ||
         new->nparallels || new->nchannels != 0 ||
@@ -2012,6 +2179,9 @@ parallelsApplyChanges(virConnectPtr conn, virDomainObjPtr dom, virDomainDefPtr n
         return -1;
     if (parallelsApplyDisksParams(conn, pdom, old->disks, old->ndisks,
                                   new->disks, new->ndisks) < 0)
+        return -1;
+    if (parallelsApplyIfacesParams(pdom, old->nets, old->nnets,
+                                  new->nets, new->nnets) < 0)
         return -1;
 
     return 0;
