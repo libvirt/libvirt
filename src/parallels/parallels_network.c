@@ -30,6 +30,7 @@
 #include "parallels_utils.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
+#define PARALLELS_ROUTED_NETWORK_UUID   "eb593dd1-6846-45b0-84a0-de0729286982"
 
 #define parallelsParseError()                                                  \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
@@ -250,6 +251,45 @@ cleanup:
     return NULL;
 }
 
+static virNetworkObjPtr
+parallelsAddRoutedNetwork(parallelsConnPtr privconn)
+{
+    virNetworkObjPtr net;
+    virNetworkDefPtr def;
+
+    if (VIR_ALLOC(def) < 0)
+        goto no_memory;
+
+    def->forward.type = VIR_NETWORK_FORWARD_ROUTE;
+
+    if (!(def->name = strdup(PARALLELS_ROUTED_NETWORK_NAME)))
+        goto no_memory;
+
+    if (virUUIDParse(PARALLELS_ROUTED_NETWORK_UUID, def->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Can't parse UUID"));
+        goto cleanup;
+    }
+    def->uuid_specified = 1;
+
+    if (!(net = virNetworkAssignDef(&privconn->networks, def, false))) {
+        virNetworkDefFree(def);
+        goto cleanup;
+    }
+    net->active = 1;
+    net->persistent = 1;
+    net->autostart = 1;
+    virNetworkObjUnlock(net);
+
+    return net;
+
+no_memory:
+    virReportOOMError();
+cleanup:
+    virNetworkDefFree(def);
+    return NULL;
+}
+
 static int parallelsLoadNetworks(parallelsConnPtr privconn)
 {
     virJSONValuePtr jobj, jobj2;
@@ -282,6 +322,9 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
             goto cleanup;
 
     }
+
+    if (!parallelsAddRoutedNetwork(privconn))
+        goto cleanup;
 
     ret = 0;
 
