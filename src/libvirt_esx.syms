@@ -3,5 +3,5 @@
 #
 
 esxUtil_EscapeDatastoreItem;
-esxVI_DateTime_ConvertToCalendarTime;
 esxUtil_ParseDatastorePath;
+esxVI_DateTime_ConvertToCalendarTime;

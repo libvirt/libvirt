@@ -326,6 +326,8 @@ check-symfile: libvirt.syms libvirt.la
 else
 check-symfile:
 endif
+check-symsorting:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl $(USED_SYM_FILES)
 
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
@@ -349,7 +351,7 @@ else !WITH_REMOTE
 check-protocol:
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS) check-symfile.pl
-check-local: check-protocol check-symfile
+check-local: check-protocol check-symfile check-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
