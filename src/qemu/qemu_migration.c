@@ -2884,7 +2884,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
     virConnectPtr dconn = NULL;
     bool p2p;
     virErrorPtr orig_err = NULL;
-    bool offline;
+    bool offline = false;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, flags=%lx, dname=%s, resource=%lu",
