@@ -187,11 +187,20 @@ struct qemuAutostartData {
     virConnectPtr conn;
 };
 
-
-/* Looks up the domain object and unlocks the driver. The returned domain
- * object is locked and the caller is responsible for unlocking it. */
+/**
+ * qemuDomObjFromDomainDriver:
+ * @domain: Domain pointer that has to be looked up
+ * @drv: Pointer to virQEMUDriverPtr to return the driver object
+ *
+ * This function looks up @domain in the domain list and returns the
+ * appropriate virDomainObjPtr. On successful lookup, both driver and domain
+ * object are returned locked.
+ *
+ * Returns the domain object if it's found and the driver. Both are locked.
+ * In case of failure NULL is returned and the driver isn't locked.
+ */
 static virDomainObjPtr
-qemuDomObjFromDomain(virDomainPtr domain)
+qemuDomObjFromDomainDriver(virDomainPtr domain, virQEMUDriverPtr *drv)
 {
     virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm;
@@ -199,16 +208,42 @@ qemuDomObjFromDomain(virDomainPtr domain)
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
-    qemuDriverUnlock(driver);
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
+        qemuDriverUnlock(driver);
+        *drv = NULL;
+        return NULL;
     }
 
+    *drv = driver;
     return vm;
 }
 
+/**
+ * qemuDomObjFromDomain:
+ * @domain: Domain pointer that has to be looked up
+ *
+ * This function looks up @domain and returns the appropriate
+ * virDomainObjPtr. The driver is unlocked after the call.
+ *
+ * Returns the domain object which is locked on success, NULL
+ * otherwise. The driver remains unlocked after the call.
+ */
+static virDomainObjPtr
+qemuDomObjFromDomain(virDomainPtr domain)
+{
+    virDomainObjPtr vm;
+    virQEMUDriverPtr driver;
+
+    if (!(vm = qemuDomObjFromDomainDriver(domain, &driver)))
+        return NULL;
+
+    qemuDriverUnlock(driver);
+
+    return vm;
+}
 
 /* Looks up the domain object from snapshot and unlocks the driver. The
  * returned domain object is locked and the caller is responsible for
