@@ -482,13 +482,34 @@ parallelsGetNetInfo(virDomainNetDefPtr net,
         goto error;
     }
 
-    if (!(tmp = virJSONValueObjectGetString(value, "network"))) {
-        parallelsParseError();
-        goto error;
-    }
 
-    if (!(net->data.network.name = strdup(tmp))) {
-        virReportOOMError();
+    if (virJSONValueObjectHasKey(value, "network")) {
+        if (!(tmp = virJSONValueObjectGetString(value, "network"))) {
+            parallelsParseError();
+            goto error;
+        }
+
+        if (!(net->data.network.name = strdup(tmp))) {
+            virReportOOMError();
+            goto error;
+        }
+    } else if (virJSONValueObjectHasKey(value, "type")) {
+        if (!(tmp = virJSONValueObjectGetString(value, "type"))) {
+            parallelsParseError();
+            goto error;
+        }
+
+        if (!STREQ(tmp, "routed")) {
+            parallelsParseError();
+            goto error;
+        }
+
+        if (!(net->data.network.name = strdup(PARALLELS_ROUTED_NETWORK_NAME))) {
+            virReportOOMError();
+            goto error;
+        }
+    } else {
+        parallelsParseError();
         goto error;
     }
 
@@ -1866,7 +1887,14 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
     }
 
     if (!STREQ_NULLABLE(oldnet->data.network.name, newnet->data.network.name)) {
-        virCommandAddArgFormat(cmd, "--network=%s", newnet->data.network.name);
+        if (STREQ_NULLABLE(newnet->data.network.name,
+                           PARALLELS_ROUTED_NETWORK_NAME)) {
+            virCommandAddArgFormat(cmd, "--type=routed");
+        } else {
+            virCommandAddArgFormat(cmd, "--network=%s",
+                                   newnet->data.network.name);
+        }
+
         is_changed = true;
     }
 
