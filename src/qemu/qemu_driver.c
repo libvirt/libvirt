@@ -11376,6 +11376,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *xml = NULL;
     bool memory = snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+    bool memory_unlink = false;
     bool atomic = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC);
     bool transaction = qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION);
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
@@ -11442,6 +11443,9 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
                                         resume, 0,
                                         QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto endjob;
+
+        /* the memory image was created, remove it on errors */
+        memory_unlink = true;
 
         /* forbid any further manipulation */
         qemuDomainObjSetAsyncJobMask(vm, DEFAULT_JOB_MASK);
@@ -11513,6 +11517,8 @@ endjob:
 
 cleanup:
     VIR_FREE(xml);
+    if (memory_unlink && ret < 0)
+        unlink(snap->def->file);
 
     return ret;
 }
