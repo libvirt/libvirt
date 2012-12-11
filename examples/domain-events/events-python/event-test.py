@@ -490,7 +490,7 @@ def myDomainEventPMWakeupCallback(conn, dom, reason, opaque):
 def myDomainEventPMSuspendCallback(conn, dom, reason, opaque):
     print "myDomainEventPMSuspendCallback: Domain %s(%s) system pmsuspend" % (
             dom.name(), dom.ID())
-def myDomainEventBalloonChangeCallback(conn, dom, utcoffset, actual):
+def myDomainEventBalloonChangeCallback(conn, dom, actual, opaque):
     print "myDomainEventBalloonChangeCallback: Domain %s(%s) %d" % (dom.name(), dom.ID(), actual)
 def myDomainEventPMSuspendDiskCallback(conn, dom, reason, opaque):
     print "myDomainEventPMSuspendDiskCallback: Domain %s(%s) system pmsuspend_disk" % (
