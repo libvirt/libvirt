@@ -114,8 +114,6 @@ struct _virNetworkDNSDef {
     virNetworkDNSSrvDefPtr srvs;
 };
 
-typedef struct _virNetworkDNSDef *virNetworkDNSDefPtr;
-
 typedef struct _virNetworkIpDef virNetworkIpDef;
 typedef virNetworkIpDef *virNetworkIpDefPtr;
 struct _virNetworkIpDef {
