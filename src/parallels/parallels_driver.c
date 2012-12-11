@@ -69,10 +69,6 @@
                        _("no domain with matching uuid '%s'"), uuidstr); \
     } while (0)
 
-#define parallelsParseError()                                                  \
-    virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
-                     __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
-
 #define IS_CT(def)  (STREQ_NULLABLE(def->os.type, "exe"))
 
 static int parallelsClose(virConnectPtr conn);

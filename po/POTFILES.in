@@ -77,6 +77,7 @@ src/openvz/openvz_driver.c
 src/openvz/openvz_util.c
 src/parallels/parallels_driver.c
 src/parallels/parallels_utils.c
+src/parallels/parallels_utils.h
 src/parallels/parallels_storage.c
 src/phyp/phyp_driver.c
 src/qemu/qemu_agent.c

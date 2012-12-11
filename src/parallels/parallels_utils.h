@@ -30,6 +30,10 @@
 # include "conf/domain_event.h"
 # include "json.h"
 
+# define parallelsParseError()                                                 \
+    virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
+                     __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
+
 struct _parallelsConn {
     virMutex lock;
     virDomainObjList domains;
