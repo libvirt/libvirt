@@ -3224,7 +3224,8 @@ qemuDomainSave(virDomainPtr dom, const char *path)
 }
 
 static char *
-qemuDomainManagedSavePath(virQEMUDriverPtr driver, virDomainObjPtr vm) {
+qemuDomainManagedSavePath(virQEMUDriverPtr driver, virDomainObjPtr vm)
+{
     char *ret;
 
     if (virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name) < 0) {
@@ -3262,8 +3263,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    name = qemuDomainManagedSavePath(driver, vm);
-    if (name == NULL)
+    if (!(name = qemuDomainManagedSavePath(driver, vm)))
         goto cleanup;
 
     VIR_INFO("Saving state to %s", name);
@@ -3334,8 +3334,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     if (!(vm = qemuDomObjFromDomainDriver(dom, &driver)))
         return -1;
 
-    name = qemuDomainManagedSavePath(driver, vm);
-    if (name == NULL)
+    if (!(name = qemuDomainManagedSavePath(driver, vm)))
         goto cleanup;
 
     ret = unlink(name);
