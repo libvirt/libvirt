@@ -3238,8 +3238,8 @@ qemuDomainManagedSavePath(virQEMUDriverPtr driver, virDomainObjPtr vm) {
 static int
 qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm = NULL;
+    virQEMUDriverPtr driver;
+    virDomainObjPtr vm;
     char *name = NULL;
     int ret = -1;
     int compressed;
@@ -3248,15 +3248,8 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
-    qemuDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = qemuDomObjFromDomainDriver(dom, &driver)))
+        return -1;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3315,50 +3308,31 @@ cleanup:
 static int
 qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    int ret = -1;
+    int ret;
 
     virCheckFlags(0, -1);
 
-    qemuDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
 
     ret = vm->hasManagedSave;
-
-cleanup:
-    if (vm)
-        virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
+    virDomainObjUnlock(vm);
     return ret;
 }
 
 static int
 qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm = NULL;
+    virQEMUDriverPtr driver;
+    virDomainObjPtr vm;
     int ret = -1;
     char *name = NULL;
 
     virCheckFlags(0, -1);
 
-    qemuDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = qemuDomObjFromDomainDriver(dom, &driver)))
+        return -1;
 
     name = qemuDomainManagedSavePath(driver, vm);
     if (name == NULL)
@@ -3369,8 +3343,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     VIR_FREE(name);
-    if (vm)
-        virDomainObjUnlock(vm);
+    virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
 }
