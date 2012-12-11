@@ -73,6 +73,7 @@ struct _virLockManagerLockDaemonDriver {
     bool requireLeaseForDisks;
 
     char *fileLockSpaceDir;
+    char *lvmLockSpaceDir;
 };
 
 static virLockManagerLockDaemonDriverPtr driver = NULL;
@@ -128,6 +129,17 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     if (p && p->str) {
         VIR_FREE(driver->fileLockSpaceDir);
         if (!(driver->fileLockSpaceDir = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue(conf, "lvm_lockspace_dir");
+    CHECK_TYPE("lvm_lockspace_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->lvmLockSpaceDir);
+        if (!(driver->lvmLockSpaceDir = strdup(p->str))) {
             virReportOOMError();
             virConfFree(conf);
             return -1;
@@ -371,8 +383,11 @@ static int virLockManagerLockDaemonInit(unsigned int version,
         if (driver->fileLockSpaceDir &&
             virLockManagerLockDaemonSetupLockspace(driver->fileLockSpaceDir) < 0)
             goto error;
-    }
 
+        if (driver->lvmLockSpaceDir &&
+            virLockManagerLockDaemonSetupLockspace(driver->lvmLockSpaceDir) < 0)
+            goto error;
+    }
 
     return 0;
 
@@ -546,6 +561,26 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             return 0;
         }
 
+        /* XXX we should somehow pass in TYPE=BLOCK info
+         * from the domain_lock code, instead of assuming /dev
+         */
+        if (STRPREFIX(name, "/dev") &&
+            driver->lvmLockSpaceDir) {
+            VIR_DEBUG("Trying to find an LVM UUID for %s", name);
+            if (virStorageFileGetLVMKey(name, &newName) < 0)
+                goto error;
+
+            if (newName) {
+                VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
+                if (!(newLockspace = strdup(driver->lvmLockSpaceDir)))
+                    goto no_memory;
+                autoCreate = true;
+                break;
+            }
+            virResetLastError();
+            /* Fallback to generic non-block code */
+        }
+
         if (driver->fileLockSpaceDir) {
             if (!(newLockspace = strdup(driver->fileLockSpaceDir)))
                 goto no_memory;
@@ -623,6 +658,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
 no_memory:
     virReportOOMError();
+error:
     VIR_FREE(newLockspace);
     VIR_FREE(newName);
     return -1;
