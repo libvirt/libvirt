@@ -50,6 +50,7 @@
 #include "configmake.h"
 #include "storage_file.h"
 #include "nodeinfo.h"
+#include "c-ctype.h"
 
 #include "parallels_driver.h"
 #include "parallels_utils.h"
@@ -426,6 +427,113 @@ error:
     return -1;
 }
 
+static inline unsigned char hex2int(char c)
+{
+    if (c <= '9')
+        return c - '0';
+    else
+        return 10 + c - 'A';
+}
+
+/*
+ * Parse MAC address in format XXXXXXXXXXXX.
+ */
+static int
+parallelsMacAddrParse(const char *str, virMacAddrPtr addr)
+{
+    int i;
+
+    if (strlen(str) != 12)
+        goto error;
+
+    for (i = 0; i < 6; i++) {
+        if (!c_isxdigit(str[2 * i]) || !c_isxdigit(str[2 * i + 1]))
+            goto error;
+
+        addr->addr[i] = (hex2int(str[2 * i]) << 4) + hex2int(str[2 * i + 1]);
+    }
+
+    return 0;
+error:
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("Invalid MAC address format '%s'"), str);
+    return -1;
+}
+
+static int
+parallelsGetNetInfo(virDomainNetDefPtr net,
+                    const char *key,
+                    virJSONValuePtr value)
+{
+    const char *tmp;
+
+    /* use device name, shown by prlctl as target device
+     * for identifying network adapter in virDomainDefineXML */
+    if (!(net->ifname = strdup(key))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+
+    if (!(tmp = virJSONValueObjectGetString(value, "mac"))) {
+        parallelsParseError();
+        return -1;
+    }
+
+    if (parallelsMacAddrParse(tmp, &net->mac) < 0) {
+        parallelsParseError();
+        goto error;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(value, "network"))) {
+        parallelsParseError();
+        goto error;
+    }
+
+    if (!(net->data.network.name = strdup(tmp))) {
+        virReportOOMError();
+        goto error;
+    }
+
+    net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
+    if (virJSONValueObjectHasKey(value, "state")) {
+        tmp = virJSONValueObjectGetString(value, "state");
+        if STREQ(tmp, "disconnected")
+            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
+    }
+
+    return 0;
+
+error:
+    return -1;
+}
+
+static int
+parallelsAddNetInfo(virDomainDefPtr def, const char *key, virJSONValuePtr value)
+{
+    virDomainNetDefPtr net = NULL;
+
+    if (VIR_ALLOC(net) < 0)
+        goto no_memory;
+
+    if (parallelsGetNetInfo(net, key, value))
+        goto error;
+
+    if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
+        goto no_memory;
+
+    def->nets[def->nnets - 1] = net;
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+error:
+    virDomainNetDefFree(net);
+    return -1;
+}
+
 static int
 parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
 {
@@ -456,6 +564,9 @@ parallelsAddDomainHardware(virDomainDefPtr def, virJSONValuePtr jobj)
                 goto cleanup;
         } else if (STRPREFIX(key, "hdd")) {
             if (parallelsAddHddInfo(def, key, value))
+                goto cleanup;
+        } else if (STRPREFIX(key, "net")) {
+            if (parallelsAddNetInfo(def, key, value))
                 goto cleanup;
         }
     }
