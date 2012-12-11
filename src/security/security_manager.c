@@ -508,3 +508,13 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
     list[1] = NULL;
     return list;
 }
+
+int virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    const char *path)
+{
+    if (mgr->drv->domainSetSecurityHugepages)
+        return mgr->drv->domainSetSecurityHugepages(mgr, vm, path);
+
+    return 0;
+}

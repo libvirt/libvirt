@@ -100,6 +100,9 @@ typedef int (*virSecurityDomainSetTapFDLabel) (virSecurityManagerPtr mgr,
                                                int fd);
 typedef char *(*virSecurityDomainGetMountOptions) (virSecurityManagerPtr mgr,
                                                          virDomainDefPtr def);
+typedef int (*virSecurityDomainSetHugepages) (virSecurityManagerPtr mgr,
+                                                         virDomainDefPtr def,
+                                                         const char *path);
 
 struct _virSecurityDriver {
     size_t privateDataLen;
@@ -140,6 +143,7 @@ struct _virSecurityDriver {
     virSecurityDomainSetTapFDLabel domainSetSecurityTapFDLabel;
 
     virSecurityDomainGetMountOptions domainGetSecurityMountOptions;
+    virSecurityDomainSetHugepages domainSetSecurityHugepages;
 };
 
 virSecurityDriverPtr virSecurityDriverLookup(const char *name,

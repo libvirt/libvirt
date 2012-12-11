@@ -112,5 +112,8 @@ char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                               virDomainDefPtr vm);
 virSecurityManagerPtr*
 virSecurityManagerGetNested(virSecurityManagerPtr mgr);
+int virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr sec,
+                                  const char *hugepages_path);
 
 #endif /* VIR_SECURITY_MANAGER_H__ */

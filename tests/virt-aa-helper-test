@@ -316,6 +316,9 @@ testme "0" "initrd is /initrd.img" "-r -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<graphics*,<graphics type='sdl' display=':0.0' xauth='/home/myself/.Xauthority'/>,g" "$template_xml" > "$test_xml"
 testme "0" "sdl Xauthority" "-r -u $valid_uuid" "$test_xml"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
+testme "0" "hugepages" "-r -u $valid_uuid -F /run/hugepages/kvm/\*\*" "$test_xml"
+
 testme "0" "help" "-h"
 
 echo "" >$output

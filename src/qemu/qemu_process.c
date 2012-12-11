@@ -3482,6 +3482,15 @@ int qemuProcessStart(virConnectPtr conn,
     }
     virDomainAuditSecurityLabel(vm, true);
 
+    if (driver->hugepage_path && vm->def->mem.hugepage_backed) {
+        if (virSecurityManagerSetHugepages(driver->securityManager,
+                    vm->def, driver->hugepage_path) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Unable to set huge path in security driver"));
+            goto cleanup;
+        }
+    }
+
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
