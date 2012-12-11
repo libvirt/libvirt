@@ -11494,7 +11494,8 @@ endjob:
                            _("resuming after snapshot failed"));
         }
 
-        return -1;
+        ret = -1;
+        goto cleanup;
     }
     if (vm && thaw != 0 &&
         qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
