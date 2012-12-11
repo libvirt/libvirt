@@ -30,7 +30,8 @@ typedef virLockManagerPlugin *virLockManagerPluginPtr;
 
 void virLockManagerSetPluginDir(const char *dir);
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
-                                                const char *configFile,
+                                                const char *driverName,
+                                                const char *configDir,
                                                 unsigned int flags);
 void virLockManagerPluginRef(virLockManagerPluginPtr plugin);
 void virLockManagerPluginUnref(virLockManagerPluginPtr plugin);

@@ -79,8 +79,9 @@ struct _virQEMUDriver {
 
     virDomainObjList domains;
 
-    /* These four directories are ones libvirtd uses (so must be root:root
+    /* These five directories are ones libvirtd uses (so must be root:root
      * to avoid security risk from QEMU processes */
+    char *configBaseDir;
     char *configDir;
     char *autostartDir;
     char *logDir;

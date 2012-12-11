@@ -116,7 +116,10 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     }
 #endif
 
-    if (!(driver->lockManager = virLockManagerPluginNew("nop", NULL, 0)))
+    if (!(driver->lockManager = virLockManagerPluginNew("nop",
+                                                        "qemu",
+                                                        driver->configBaseDir,
+                                                        0)))
         goto cleanup;
 
     driver->keepAliveInterval = 5;
@@ -358,15 +361,10 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
     p = virConfGetValue(conf, "lock_manager");
     CHECK_TYPE("lock_manager", VIR_CONF_STRING);
     if (p && p->str) {
-        char *lockConf;
         virLockManagerPluginUnref(driver->lockManager);
-        if (virAsprintf(&lockConf, "%s/libvirt/qemu-%s.conf", SYSCONFDIR, p->str) < 0)
-            goto no_memory;
-
         if (!(driver->lockManager =
-              virLockManagerPluginNew(p->str, lockConf, 0)))
+              virLockManagerPluginNew(p->str, "qemu", driver->configBaseDir, 0)))
             VIR_ERROR(_("Failed to load lock manager %s"), p->str);
-        VIR_FREE(lockConf);
     }
 
     GET_VALUE_LONG("max_queued", driver->max_queued);

@@ -128,7 +128,8 @@ static void virLockManagerLogParams(size_t nparams,
  */
 #if HAVE_DLFCN_H
 virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
-                                                const char *configFile,
+                                                const char *driverName,
+                                                const char *configDir,
                                                 unsigned int flags)
 {
     void *handle = NULL;
@@ -136,6 +137,16 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     virLockManagerPluginPtr plugin = NULL;
     const char *moddir = getenv("LIBVIRT_LOCK_MANAGER_PLUGIN_DIR");
     char *modfile = NULL;
+    char *configFile = NULL;
+
+    VIR_DEBUG("name=%s driverName=%s configDir=%s flags=%x",
+              name, driverName, configDir, flags);
+
+    if (virAsprintf(&configFile, "%s/%s-%s.conf",
+                    configDir, driverName, name) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
 
     if (STREQ(name, "nop")) {
         driver = &virLockDriverNop;
@@ -147,7 +158,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
 
         if (virAsprintf(&modfile, "%s/%s.so", moddir, name) < 0) {
             virReportOOMError();
-            return NULL;
+            goto cleanup;
         }
 
         if (access(modfile, R_OK) < 0) {
@@ -188,10 +199,12 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
         goto cleanup;
     }
 
+    VIR_FREE(configFile);
     VIR_FREE(modfile);
     return plugin;
 
 cleanup:
+    VIR_FREE(configFile);
     VIR_FREE(plugin);
     VIR_FREE(modfile);
     if (handle)
@@ -201,7 +214,8 @@ cleanup:
 #else /* !HAVE_DLFCN_H */
 virLockManagerPluginPtr
 virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
-                        const char *configFile ATTRIBUTE_UNUSED,
+                        const char *driverName ATTRIBUTE_UNUSED,
+                        const char *configDir ATTRIBUTE_UNUSED,
                         unsigned int flags_unused ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

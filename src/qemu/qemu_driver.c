@@ -649,7 +649,7 @@ qemuStartup(bool privileged,
             virStateInhibitCallback callback,
             void *opaque)
 {
-    char *base = NULL;
+    char *base;
     char *driverConf = NULL;
     int rc;
     virConnectPtr conn = NULL;
@@ -692,8 +692,9 @@ qemuStartup(bool privileged,
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
+        if ((qemu_driver->configBaseDir = strdup(SYSCONFDIR "/libvirt")) == NULL)
             goto out_of_memory;
+        base = qemu_driver->configBaseDir;
 
         if (virAsprintf(&qemu_driver->stateDir,
                       "%s/run/libvirt/qemu", LOCALSTATEDIR) == -1)
@@ -743,9 +744,9 @@ qemuStartup(bool privileged,
         }
         VIR_FREE(rundir);
 
-        base = virGetUserConfigDirectory();
-        if (!base)
+        if (!(qemu_driver->configBaseDir = virGetUserConfigDirectory()))
             goto error;
+        base = qemu_driver->configBaseDir;
         if (virAsprintf(&qemu_driver->libDir, "%s/qemu/lib", base) == -1)
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->saveDir, "%s/qemu/save", base) == -1)
@@ -794,8 +795,6 @@ qemuStartup(bool privileged,
         virAsprintf(&qemu_driver->configDir, "%s/qemu", base) < 0 ||
         virAsprintf(&qemu_driver->autostartDir, "%s/qemu/autostart", base) < 0)
         goto out_of_memory;
-
-    VIR_FREE(base);
 
     rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1);
     if (rc < 0) {
@@ -969,7 +968,6 @@ error:
         qemuDriverUnlock(qemu_driver);
     if (conn)
         virConnectClose(conn);
-    VIR_FREE(base);
     VIR_FREE(driverConf);
     VIR_FREE(membase);
     VIR_FREE(mempath);
@@ -1109,6 +1107,7 @@ qemuShutdown(void) {
 
     qemuDriverCloseCallbackShutdown(qemu_driver);
 
+    VIR_FREE(qemu_driver->configBaseDir);
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
     VIR_FREE(qemu_driver->logDir);
