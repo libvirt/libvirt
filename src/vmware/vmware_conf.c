@@ -63,7 +63,6 @@ vmwareCapsInit(void)
     virCapsGuestPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
     union cpuData *data = NULL;
-    const char *hostarch = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)
@@ -91,8 +90,7 @@ vmwareCapsInit(void)
         goto error;
     }
 
-    hostarch = virArchToString(caps->host.arch);
-    if (!(cpu->arch = strdup(hostarch))) {
+    if (!(cpu->arch = caps->host.arch)) {
         virReportOOMError();
         goto error;
     }
@@ -109,9 +107,9 @@ vmwareCapsInit(void)
      *  - Host CPU is x86_64 with virtualization extensions
      */
     if (caps->host.arch == VIR_ARCH_X86_64 ||
-        (cpuHasFeature(hostarch, data, "lm") &&
-         (cpuHasFeature(hostarch, data, "vmx") ||
-          cpuHasFeature(hostarch, data, "svm")))) {
+        (cpuHasFeature(caps->host.arch, data, "lm") &&
+         (cpuHasFeature(caps->host.arch, data, "vmx") ||
+          cpuHasFeature(caps->host.arch, data, "svm")))) {
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              "hvm",
@@ -129,7 +127,7 @@ vmwareCapsInit(void)
 
 cleanup:
     virCPUDefFree(cpu);
-    cpuDataFree(hostarch, data);
+    cpuDataFree(caps->host.arch, data);
 
     return caps;
 

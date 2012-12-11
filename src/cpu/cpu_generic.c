@@ -64,7 +64,8 @@ genericCompare(virCPUDefPtr host,
     unsigned int i;
     unsigned int reqfeatures;
 
-    if ((cpu->arch && STRNEQ(host->arch, cpu->arch)) ||
+    if (((cpu->arch != VIR_ARCH_NONE) &&
+         (host->arch != cpu->arch)) ||
         STRNEQ(host->model, cpu->model))
         return VIR_CPU_COMPARE_INCOMPATIBLE;
 
@@ -139,11 +140,11 @@ genericBaseline(virCPUDefPtr *cpus,
     }
 
     if (VIR_ALLOC(cpu) < 0 ||
-        !(cpu->arch = strdup(cpus[0]->arch)) ||
         !(cpu->model = strdup(cpus[0]->model)) ||
         VIR_ALLOC_N(features, cpus[0]->nfeatures) < 0)
         goto no_memory;
 
+    cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_HOST;
 
     count = nfeatures = cpus[0]->nfeatures;
@@ -153,10 +154,11 @@ genericBaseline(virCPUDefPtr *cpus,
     for (i = 1; i < ncpus; i++) {
         virHashTablePtr hash;
 
-        if (STRNEQ(cpu->arch, cpus[i]->arch)) {
+        if (cpu->arch != cpus[i]->arch) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("CPUs have incompatible architectures: '%s' != '%s'"),
-                           cpu->arch, cpus[i]->arch);
+                           virArchToString(cpu->arch),
+                           virArchToString(cpus[i]->arch));
             goto error;
         }
 

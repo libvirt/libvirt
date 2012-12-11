@@ -40,7 +40,7 @@
 
 static const struct cpuX86cpuid cpuidNull = { 0, 0, 0, 0, 0 };
 
-static const char *archs[] = { "i686", "x86_64" };
+static const virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
 
 struct x86_vendor {
     char *name;
@@ -1165,22 +1165,23 @@ x86Compute(virCPUDefPtr host,
     enum compare_result result;
     unsigned int i;
 
-    if (cpu->arch != NULL) {
+    if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
 
         for (i = 0; i < ARRAY_CARDINALITY(archs); i++) {
-            if (STREQ(archs[i], cpu->arch)) {
+            if (archs[i] == cpu->arch) {
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            VIR_DEBUG("CPU arch %s does not match host arch", cpu->arch);
+            VIR_DEBUG("CPU arch %s does not match host arch",
+                      virArchToString(cpu->arch));
             if (message &&
                 virAsprintf(message,
                             _("CPU arch %s does not match host arch"),
-                            cpu->arch) < 0)
+                            virArchToString(cpu->arch)) < 0)
                 goto no_memory;
             return VIR_CPU_COMPARE_INCOMPATIBLE;
         }
@@ -1643,9 +1644,10 @@ x86Baseline(virCPUDefPtr *cpus,
     if (!(base_model = x86ModelFromCPU(cpus[0], map, VIR_CPU_FEATURE_REQUIRE)))
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0 ||
-        !(cpu->arch = strdup(cpus[0]->arch)))
+    if (VIR_ALLOC(cpu) < 0)
         goto no_memory;
+
+    cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
@@ -1712,8 +1714,6 @@ x86Baseline(virCPUDefPtr *cpus,
 
     if (!outputVendor)
         VIR_FREE(cpu->vendor);
-
-    VIR_FREE(cpu->arch);
 
 cleanup:
     x86ModelFree(base_model);

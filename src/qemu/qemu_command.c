@@ -4409,10 +4409,10 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
             virBufferAddLit(&buf, "host");
         } else {
             if (VIR_ALLOC(guest) < 0 ||
-                !(guest->arch = strdup(host->arch)) ||
                 (cpu->vendor_id && !(guest->vendor_id = strdup(cpu->vendor_id))))
                 goto no_memory;
 
+            guest->arch = host->arch;
             if (cpu->match == VIR_CPU_MATCH_MINIMUM)
                 preferred = host->model;
             else
@@ -8204,13 +8204,13 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             union cpuData *cpuData = NULL;
             int ret;
 
-            ret = cpuEncode("x86_64", cpu, NULL, &cpuData,
+            ret = cpuEncode(VIR_ARCH_X86_64, cpu, NULL, &cpuData,
                             NULL, NULL, NULL, NULL);
             if (ret < 0)
                 goto error;
 
-            is_32bit = (cpuHasFeature("x86_64", cpuData, "lm") != 1);
-            cpuDataFree("x86_64", cpuData);
+            is_32bit = (cpuHasFeature(VIR_ARCH_X86_64, cpuData, "lm") != 1);
+            cpuDataFree(VIR_ARCH_X86_64, cpuData);
         } else if (model) {
             is_32bit = STREQ(model, "qemu32");
         }

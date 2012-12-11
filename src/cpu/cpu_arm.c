@@ -28,7 +28,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-static const char *archs[] = { "armv7l" };
+static const virArch archs[] = { VIR_ARCH_ARMV7L };
 
 static union cpuData *
 ArmNodeData(void)

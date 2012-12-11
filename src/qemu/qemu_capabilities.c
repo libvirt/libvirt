@@ -811,13 +811,13 @@ qemuCapsInitCPU(virCapsPtr caps,
     union cpuData *data = NULL;
     virNodeInfo nodeinfo;
     int ret = -1;
-    const char *archstr = virArchToString(arch);
 
-    if (VIR_ALLOC(cpu) < 0
-        || !(cpu->arch = strdup(archstr))) {
+    if (VIR_ALLOC(cpu) < 0) {
         virReportOOMError();
         goto error;
     }
+
+    cpu->arch = arch;
 
     if (nodeGetInfo(NULL, &nodeinfo))
         goto error;
@@ -828,14 +828,14 @@ qemuCapsInitCPU(virCapsPtr caps,
     cpu->threads = nodeinfo.threads;
     caps->host.cpu = cpu;
 
-    if (!(data = cpuNodeData(archstr))
+    if (!(data = cpuNodeData(arch))
         || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
         goto cleanup;
 
     ret = 0;
 
 cleanup:
-    cpuDataFree(archstr, data);
+    cpuDataFree(arch, data);
 
     return ret;
 

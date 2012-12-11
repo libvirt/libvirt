@@ -26,6 +26,7 @@
 
 # include "virterror_internal.h"
 # include "datatypes.h"
+# include "virarch.h"
 # include "conf/cpu_conf.h"
 # include "cpu_x86_data.h"
 # include "cpu_ppc_data.h"
@@ -88,7 +89,7 @@ typedef int
 
 struct cpuArchDriver {
     const char *name;
-    const char **arch;
+    const virArch *arch;
     unsigned int narch;
     cpuArchCompare      compare;
     cpuArchDecode       decode;
@@ -118,7 +119,7 @@ cpuDecode   (virCPUDefPtr cpu,
              const char *preferred);
 
 extern int
-cpuEncode   (const char *arch,
+cpuEncode   (virArch arch,
              const virCPUDefPtr cpu,
              union cpuData **forced,
              union cpuData **required,
@@ -128,11 +129,11 @@ cpuEncode   (const char *arch,
              union cpuData **vendor);
 
 extern void
-cpuDataFree (const char *arch,
+cpuDataFree (virArch arch,
              union cpuData *data);
 
 extern union cpuData *
-cpuNodeData (const char *arch);
+cpuNodeData (virArch arch);
 
 extern virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
@@ -157,7 +158,7 @@ cpuUpdate   (virCPUDefPtr guest,
              const virCPUDefPtr host);
 
 extern int
-cpuHasFeature(const char *arch,
+cpuHasFeature(virArch arch,
               const union cpuData *data,
               const char *feature);
 

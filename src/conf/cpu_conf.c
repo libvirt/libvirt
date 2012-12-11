@@ -79,7 +79,6 @@ virCPUDefFree(virCPUDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->arch);
     virCPUDefFreeModel(def);
 
     for (i = 0 ; i < def->ncells ; i++) {
@@ -149,9 +148,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
     copy->sockets = cpu->sockets;
     copy->cores = cpu->cores;
     copy->threads = cpu->threads;
-
-    if (cpu->arch && !(copy->arch = strdup(cpu->arch)))
-        goto no_memory;
+    copy->arch = cpu->arch;
 
     if (virCPUDefCopyModel(copy, cpu, false) < 0)
         goto error;
@@ -273,12 +270,19 @@ virCPUDefParseXML(const xmlNodePtr node,
     }
 
     if (def->type == VIR_CPU_TYPE_HOST) {
-        def->arch = virXPathString("string(./arch[1])", ctxt);
-        if (!def->arch) {
+        char *arch = virXPathString("string(./arch[1])", ctxt);
+        if (!arch) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Missing CPU architecture"));
             goto error;
         }
+        if ((def->arch = virArchFromString(arch)) == VIR_ARCH_NONE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown architecture %s"), arch);
+            VIR_FREE(arch);
+            goto error;
+        }
+        VIR_FREE(arch);
     }
 
     if (!(def->model = virXPathString("string(./model[1])", ctxt)) &&
@@ -554,7 +558,8 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     if (def->arch)
-        virBufferAsprintf(buf, "  <arch>%s</arch>\n", def->arch);
+        virBufferAsprintf(buf, "  <arch>%s</arch>\n",
+                          virArchToString(def->arch));
 
     virBufferAdjustIndent(buf, 2);
     if (virCPUDefFormatBuf(buf, def, flags) < 0)
@@ -734,10 +739,11 @@ virCPUDefIsEqual(virCPUDefPtr src,
         goto cleanup;
     }
 
-    if (STRNEQ_NULLABLE(src->arch, dst->arch)) {
+    if (src->arch != dst->arch) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target CPU arch %s does not match source %s"),
-                       NULLSTR(dst->arch), NULLSTR(src->arch));
+                       virArchToString(dst->arch),
+                       virArchToString(src->arch));
         goto cleanup;
     }
 
