@@ -35,6 +35,158 @@
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
+#define SYSFS_NET_DIR "/sys/class/net"
+
+static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj)
+{
+    const char *ifname;
+    char *bridgeLink = NULL;
+    char *bridgePath = NULL;
+    char *bridgeAddressPath = NULL;
+    char *bridgeAddress = NULL;
+    int len = 0;
+    int ret = -1;
+
+    if (!(ifname = virJSONValueObjectGetString(jobj, "Bound To"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&bridgeLink, "%s/%s/brport/bridge",
+                    SYSFS_NET_DIR, ifname) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileResolveLink(bridgeLink, &bridgePath) < 0) {
+        virReportSystemError(errno, _("cannot read link '%s'"), bridgeLink);
+        goto cleanup;
+    }
+
+    if (!(def->bridge = strdup(basename(bridgePath)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&bridgeAddressPath, "%s/%s/brport/bridge/address",
+                    SYSFS_NET_DIR, ifname) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = virFileReadAll(bridgeAddressPath, 18, &bridgeAddress)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Error reading file '%s'"), bridgeAddressPath);
+
+        goto cleanup;
+    }
+
+    if (len < VIR_MAC_STRING_BUFLEN) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Error reading MAC from '%s'"), bridgeAddressPath);
+    }
+
+    bridgeAddress[VIR_MAC_STRING_BUFLEN - 1] = '\0';
+    if (virMacAddrParse(bridgeAddress, &def->mac) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Can't parse MAC '%s'"), bridgeAddress);
+        goto cleanup;
+    }
+    def->mac_specified = 1;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(bridgeLink);
+    VIR_FREE(bridgePath);
+    VIR_FREE(bridgeAddress);
+    VIR_FREE(bridgeAddressPath);
+    return ret;
+}
+
+static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
+{
+    const char *tmp;
+    virJSONValuePtr jobj = NULL, jobj2;
+    int ret = -1;
+
+    if (VIR_EXPAND_N(def->ips, def->nips, 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    jobj = parallelsParseOutput("prlsrvctl", "net", "info", "-j", name, NULL);
+
+    if (!jobj) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(jobj2 = virJSONValueObjectGet(jobj, "Parallels adapter"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(def->ips[0].family = strdup("ipv4"))) {
+        virReportOOMError();
+        goto cleanup;
+    };
+    if (!(tmp = virJSONValueObjectGetString(jobj2, "IP address"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virSocketAddrParseIPv4(&def->ips[0].address, tmp) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(jobj2, "Subnet mask"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virSocketAddrParseIPv4(&def->ips[0].netmask, tmp) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(jobj2 = virJSONValueObjectGet(jobj, "DHCPv4 server"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (VIR_EXPAND_N(def->ips[0].ranges, def->ips[0].nranges, 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(jobj2, "IP scope start address"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virSocketAddrParseIPv4(&def->ips[0].ranges[0].start, tmp) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (!(tmp = virJSONValueObjectGetString(jobj2, "IP scope end address"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (virSocketAddrParseIPv4(&def->ips[0].ranges[0].end, tmp) < 0) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virJSONValueFree(jobj);
+    return ret;
+}
+
 static virNetworkObjPtr
 parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
 {
@@ -60,6 +212,26 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     md5_buffer(tmp, strlen(tmp), md5);
     memcpy(def->uuid, md5, VIR_UUID_BUFLEN);
     def->uuid_specified = 1;
+
+    if (!(tmp = virJSONValueObjectGetString(jobj, "Type"))) {
+        parallelsParseError();
+        goto cleanup;
+    }
+
+    if (STREQ(tmp, "bridged")) {
+        def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
+
+        if (parallelsGetBridgedNetInfo(def, jobj) < 0)
+            goto cleanup;
+    } else if (STREQ(tmp, "host-only")) {
+        def->forward.type = VIR_NETWORK_FORWARD_NONE;
+
+        if (parallelsGetHostOnlyNetInfo(def, def->name) < 0)
+            goto cleanup;
+    } else {
+        parallelsParseError();
+        goto cleanup;
+    }
 
     if (!(net = virNetworkAssignDef(&privconn->networks, def, false))) {
         virNetworkDefFree(def);
