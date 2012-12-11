@@ -1192,7 +1192,7 @@ int virStorageFileIsClusterFS(const char *path)
 }
 
 #ifdef LVS
-const char *virStorageFileGetLVMKey(const char *path)
+char *virStorageFileGetLVMKey(const char *path)
 {
     /*
      *  # lvs --noheadings --unbuffered --nosuffix --options "uuid" LVNAME
@@ -1237,7 +1237,7 @@ cleanup:
     return key;
 }
 #else
-const char *virStorageFileGetLVMKey(const char *path)
+char *virStorageFileGetLVMKey(const char *path)
 {
     virReportSystemError(ENOSYS, _("Unable to get LVM key for %s"), path);
     return NULL;
@@ -1245,7 +1245,7 @@ const char *virStorageFileGetLVMKey(const char *path)
 #endif
 
 #ifdef HAVE_UDEV
-const char *virStorageFileGetSCSIKey(const char *path)
+char *virStorageFileGetSCSIKey(const char *path)
 {
     char *key = NULL;
     virCommandPtr cmd = virCommandNewArgList(
@@ -1275,7 +1275,7 @@ cleanup:
     return key;
 }
 #else
-const char *virStorageFileGetSCSIKey(const char *path)
+char *virStorageFileGetSCSIKey(const char *path)
 {
     virReportSystemError(ENOSYS, _("Unable to get SCSI key for %s"), path);
     return NULL;
