@@ -28,6 +28,7 @@
 # include "conf/domain_conf.h"
 # include "conf/storage_conf.h"
 # include "conf/domain_event.h"
+# include "conf/network_conf.h"
 # include "json.h"
 
 # define parallelsParseError()                                                 \
@@ -38,6 +39,7 @@ struct _parallelsConn {
     virMutex lock;
     virDomainObjList domains;
     virStoragePoolObjList pools;
+    virNetworkObjList networks;
     virCapsPtr caps;
     virDomainEventStatePtr domainEventState;
 };
@@ -54,6 +56,7 @@ struct parallelsDomObj {
 typedef struct parallelsDomObj *parallelsDomObjPtr;
 
 int parallelsStorageRegister(void);
+int parallelsNetworkRegister(void);
 
 virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;

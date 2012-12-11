@@ -557,7 +557,8 @@ PARALLELS_DRIVER_SOURCES =					\
 		parallels/parallels_driver.c			\
 		parallels/parallels_utils.c			\
 		parallels/parallels_utils.h			\
-		parallels/parallels_storage.c
+		parallels/parallels_storage.c		\
+		parallels/parallels_network.c
 
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c

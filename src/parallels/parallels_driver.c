@@ -2413,6 +2413,8 @@ parallelsRegister(void)
         return -1;
     if (parallelsStorageRegister())
         return -1;
+    if (parallelsNetworkRegister())
+        return -1;
 
     return 0;
 }
