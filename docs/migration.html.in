@@ -136,6 +136,20 @@
       facility should be used.
     </p>
 
+    <h2><a name="offline">Offline migration</a></h2>
+
+    <p>
+      Offline migration transfers inactive the definition of a domain
+      (which may or may not be active). After successful completion, the
+      domain remains in its current state on the source host and is defined
+      but inactive on the destination host. It's a bit more clever than
+      <code>virsh dumpxml</code> on source host followed by
+      <code>virsh define</code> on destination host, as offline migration
+      will run the pre-migration hook to update the domain XML on
+      destination host. Currently, copying non-shared storage is not
+      supported during offline migration.
+    </p>
+
     <h2><a name="uris">Migration URIs</a></h2>
 
     <p>
