@@ -3337,8 +3337,15 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     if (!(name = qemuDomainManagedSavePath(driver, vm)))
         goto cleanup;
 
-    ret = unlink(name);
+    if (unlink(name) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to remove managed save file '%s'"),
+                             name);
+        goto cleanup;
+    }
+
     vm->hasManagedSave = false;
+    ret = 0;
 
 cleanup:
     VIR_FREE(name);
