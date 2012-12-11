@@ -197,7 +197,7 @@ bool qemuCapsGet(qemuCapsPtr caps,
 char *qemuCapsFlagsString(qemuCapsPtr caps);
 
 const char *qemuCapsGetBinary(qemuCapsPtr caps);
-const char *qemuCapsGetArch(qemuCapsPtr caps);
+virArch qemuCapsGetArch(qemuCapsPtr caps);
 unsigned int qemuCapsGetVersion(qemuCapsPtr caps);
 unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps);
 int qemuCapsAddCPUDefinition(qemuCapsPtr caps,
