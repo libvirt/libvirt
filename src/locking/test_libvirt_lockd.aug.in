@@ -6,3 +6,4 @@ module Test_libvirt_lockd =
 { "require_lease_for_disks" = "1" }
 { "file_lockspace_dir" = "/var/lib/libvirt/lockd/files" }
 { "lvm_lockspace_dir" = "/var/lib/libvirt/lockd/lvmvolumes" }
+{ "scsi_lockspace_dir" = "/var/lib/libvirt/lockd/scsivolumes" }

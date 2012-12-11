@@ -74,6 +74,7 @@ struct _virLockManagerLockDaemonDriver {
 
     char *fileLockSpaceDir;
     char *lvmLockSpaceDir;
+    char *scsiLockSpaceDir;
 };
 
 static virLockManagerLockDaemonDriverPtr driver = NULL;
@@ -140,6 +141,17 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     if (p && p->str) {
         VIR_FREE(driver->lvmLockSpaceDir);
         if (!(driver->lvmLockSpaceDir = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue(conf, "scsi_lockspace_dir");
+    CHECK_TYPE("scsi_lockspace_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->scsiLockSpaceDir);
+        if (!(driver->scsiLockSpaceDir = strdup(p->str))) {
             virReportOOMError();
             virConfFree(conf);
             return -1;
@@ -387,6 +399,10 @@ static int virLockManagerLockDaemonInit(unsigned int version,
         if (driver->lvmLockSpaceDir &&
             virLockManagerLockDaemonSetupLockspace(driver->lvmLockSpaceDir) < 0)
             goto error;
+
+        if (driver->scsiLockSpaceDir &&
+            virLockManagerLockDaemonSetupLockspace(driver->scsiLockSpaceDir) < 0)
+            goto error;
     }
 
     return 0;
@@ -573,6 +589,23 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             if (newName) {
                 VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
                 if (!(newLockspace = strdup(driver->lvmLockSpaceDir)))
+                    goto no_memory;
+                autoCreate = true;
+                break;
+            }
+            virResetLastError();
+            /* Fallback to generic non-block code */
+        }
+
+        if (STRPREFIX(name, "/dev") &&
+            driver->scsiLockSpaceDir) {
+            VIR_DEBUG("Trying to find an SCSI ID for %s", name);
+            if (virStorageFileGetSCSIKey(name, &newName) < 0)
+                goto error;
+
+            if (newName) {
+                VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
+                if (!(newLockspace = strdup(driver->scsiLockSpaceDir)))
                     goto no_memory;
                 autoCreate = true;
                 break;
