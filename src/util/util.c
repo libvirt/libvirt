@@ -2530,23 +2530,16 @@ virGetUserIDByName(const char *name, uid_t *uid)
         }
     }
 
-    if (rc != 0) {
-       /* We explicitly test for the known error values returned by
-        * getpwnam_r as the manpage says:
-        * ERRORS
-        *   0 or ENOENT or ESRCH or EBADF or EPERM or ...
-        *         The given name or uid was not found.
-        */
-       if ((rc == EINTR) || (rc == EIO) || (rc == EMFILE) ||
-           (rc == ENFILE) || (rc == ENOMEM)) {
-           virReportSystemError(rc, _("Failed to get user record for name '%s'"),
-                                name);
-           goto cleanup;
-       }
-    }
-
     if (!pw) {
-        VIR_DEBUG("User record for user '%s' does not exist", name);
+        if (rc != 0) {
+            char buf[1024];
+            /* log the possible error from getpwnam_r. Unfortunately error
+             * reporting from this function is bad and we can't really
+             * rely on it, so we just report that the user wasn't found */
+            VIR_WARN("User record for user '%s' does was not found: %s",
+                     name, virStrerror(rc, buf, sizeof(buf)));
+        }
+
         ret = 1;
         goto cleanup;
     }
@@ -2621,23 +2614,16 @@ virGetGroupIDByName(const char *name, gid_t *gid)
         }
     }
 
-    if (rc != 0) {
-       /* We explicitly test for the known error values returned by
-        * getgrnam_r as the manpage says:
-        * ERRORS
-        *   0 or ENOENT or ESRCH or EBADF or EPERM or ...
-        *         The given name or gid was not found.
-        */
-       if ((rc == EINTR) || (rc == EIO) || (rc == EMFILE) ||
-           (rc == ENFILE) || (rc == ENOMEM)) {
-           virReportSystemError(rc, _("Failed to get group record for name '%s'"),
-                                name);
-           goto cleanup;
-       }
-    }
-
     if (!gr) {
-        VIR_DEBUG("Group record for group '%s' does not exist", name);
+        if (rc != 0) {
+            char buf[1024];
+            /* log the possible error from getgrnam_r. Unfortunately error
+             * reporting from this function is bad and we can't really
+             * rely on it, so we just report that the user wasn't found */
+            VIR_WARN("Group record for user '%s' does was not found: %s",
+                     name, virStrerror(rc, buf, sizeof(buf)));
+        }
+
         ret = 1;
         goto cleanup;
     }
