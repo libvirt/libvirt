@@ -27,7 +27,7 @@
 # include "virnetsocket.h"
 # include "virnetmessage.h"
 # include "virobject.h"
-# include "json.h"
+# include "virjson.h"
 
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;

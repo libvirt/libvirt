@@ -38,7 +38,7 @@
 #include "virsh-domain.h"
 #include "xml.h"
 #include "virtypedparam.h"
-#include "json.h"
+#include "virjson.h"
 
 /*
  * "capabilities" command

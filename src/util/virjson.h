@@ -1,5 +1,5 @@
 /*
- * json.h: JSON object parsing/formatting
+ * virjson.h: JSON object parsing/formatting
  *
  * Copyright (C) 2009, 2012 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange

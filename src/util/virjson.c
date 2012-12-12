@@ -1,5 +1,5 @@
 /*
- * json.c: JSON object parsing/formatting
+ * virjson.c: JSON object parsing/formatting
  *
  * Copyright (C) 2009-2010, 2012 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "json.h"
+#include "virjson.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"

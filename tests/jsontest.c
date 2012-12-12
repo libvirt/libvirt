@@ -6,7 +6,7 @@
 #include <time.h>
 
 #include "internal.h"
-#include "json.h"
+#include "virjson.h"
 #include "testutils.h"
 
 struct testInfo {

@@ -31,7 +31,7 @@
 # ifdef HAVE_SASL
 #  include "virnetsaslcontext.h"
 # endif
-# include "json.h"
+# include "virjson.h"
 
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;

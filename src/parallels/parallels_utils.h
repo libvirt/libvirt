@@ -29,7 +29,7 @@
 # include "conf/storage_conf.h"
 # include "conf/domain_event.h"
 # include "conf/network_conf.h"
-# include "json.h"
+# include "virjson.h"
 
 # define parallelsParseError()                                                 \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \

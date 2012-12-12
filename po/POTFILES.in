@@ -139,7 +139,6 @@ src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/iohelper.c
-src/util/json.c
 src/util/pci.c
 src/util/processinfo.c
 src/util/sexpr.c
@@ -161,6 +160,7 @@ src/util/virhash.c
 src/util/virhook.c
 src/util/virinitctl.c
 src/util/viriptables.c
+src/util/virjson.c
 src/util/virkeyfile.c
 src/util/virlockspace.c
 src/util/virnetdev.c

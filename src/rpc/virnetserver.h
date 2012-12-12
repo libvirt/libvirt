@@ -31,7 +31,7 @@
 # include "virnetserverclient.h"
 # include "virnetserverservice.h"
 # include "virobject.h"
-# include "json.h"
+# include "virjson.h"
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,

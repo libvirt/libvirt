@@ -40,7 +40,7 @@
 #include "driver.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
-#include "json.h"
+#include "virjson.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

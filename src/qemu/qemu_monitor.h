@@ -30,7 +30,7 @@
 # include "domain_conf.h"
 # include "virbitmap.h"
 # include "virhash.h"
-# include "json.h"
+# include "virjson.h"
 # include "device_conf.h"
 
 typedef struct _qemuMonitor qemuMonitor;

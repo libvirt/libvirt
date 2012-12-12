@@ -37,7 +37,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "virterror_internal.h"
-#include "json.h"
+#include "virjson.h"
 #include "virfile.h"
 #include "virprocess.h"
 #include "virtime.h"

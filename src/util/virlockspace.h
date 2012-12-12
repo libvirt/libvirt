@@ -23,7 +23,7 @@
 # define __VIR_LOCK_SPACE_H__
 
 # include "internal.h"
-# include "json.h"
+# include "virjson.h"
 
 typedef struct _virLockSpace virLockSpace;
 typedef virLockSpace *virLockSpacePtr;
