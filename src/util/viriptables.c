@@ -1,4 +1,6 @@
 /*
+ * viriptables.c: helper APIs for managing iptables
+ *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -38,7 +40,7 @@
 #endif
 
 #include "internal.h"
-#include "iptables.h"
+#include "viriptables.h"
 #include "vircommand.h"
 #include "memory.h"
 #include "virterror_internal.h"
