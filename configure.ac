@@ -360,10 +360,11 @@ dnl are also linux specific.  The "network" and storage_fs drivers are known
 dnl to not work on MacOS X presently, so we also make a note if compiling
 dnl for that
 
-with_linux=no with_osx=no
+with_linux=no with_osx=no with_freebsd=no
 case $host in
   *-*-linux*) with_linux=yes ;;
   *-*-darwin*) with_osx=yes ;;
+  *-*-freebsd*) with_freebsd=yes ;;
 esac
 
 if test $with_linux = no; then
@@ -371,14 +372,19 @@ if test $with_linux = no; then
     then
         with_lxc=no
     fi
-    if test "x$with_qemu" != xyes
-    then
-        with_qemu=no
-    fi
     with_dtrace=no
 fi
 
+if test $with_freebsd = yes; then
+   with_firewalld=no
+fi
+
+if test $with_osx = yes; then
+   with_qemu=no
+fi
+
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
+AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
@@ -949,9 +955,11 @@ fi
 dnl
 dnl check for kernel headers required by src/bridge.c
 dnl
-if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
-  AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
-                   AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support]))
+if test "$with_linux" = "yes"; then
+  if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
+    AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
+                     AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support]))
+  fi
 fi
 
 
@@ -2880,14 +2888,24 @@ if test "x$with_libblkid" = "xyes"; then
 fi
 AM_CONDITIONAL([HAVE_LIBBLKID], [test "x$with_libblkid" = "xyes"])
 
+if test $with_freebsd = yes; then
+  default_qemu_user=root
+  default_qemu_group=wheel
+else
+  default_qemu_user=root
+  default_qemu_group=root
+fi
+
 AC_ARG_WITH([qemu-user],
-  AC_HELP_STRING([--with-qemu-user], [username to run QEMU system instance as @<:@default=root@:>@]),
+  AC_HELP_STRING([--with-qemu-user],
+  [username to run QEMU system instance as @<:@default=platform dependent@:>@]),
   [QEMU_USER=${withval}],
-  [QEMU_USER=root])
+  [QEMU_USER=${default_qemu_user}])
 AC_ARG_WITH([qemu-group],
-  AC_HELP_STRING([--with-qemu-group], [groupname to run QEMU system instance as @<:@default=root@:>@]),
+  AC_HELP_STRING([--with-qemu-group],
+  [groupname to run QEMU system instance as @<:@default=platform dependent@:>@]),
   [QEMU_GROUP=${withval}],
-  [QEMU_GROUP=root])
+  [QEMU_GROUP=${default_qemu_group}])
 AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
 AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
 

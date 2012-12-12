@@ -27,7 +27,12 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <linux/capability.h>
+#if defined(__linux__)
+# include <linux/capability.h>
+#elif defined(__FreeBSD__)
+# include <sys/param.h>
+# include <sys/cpuset.h>
+#endif
 
 #include "qemu_process.h"
 #include "qemu_domain.h"
@@ -3716,7 +3721,12 @@ int qemuProcessStart(virConnectPtr conn,
     /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
     for (i = 0; i < vm->def->ndisks; i++) {
         if (vm->def->disks[i]->rawio == 1)
+#ifdef CAP_SYS_RAWIO
             virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+#else
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Raw I/O is not supported on this platform"));
+#endif
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);

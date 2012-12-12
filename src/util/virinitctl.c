@@ -35,6 +35,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_INITCTL
 
+#if defined(__linux__) || \
+    (defined(__FreeBSD_kernel__) && !(defined(__FreeBSD__)))
 /* These constants & struct definitions are taken from
  * systemd, under terms of LGPLv2+
  *
@@ -43,29 +45,29 @@
  *              Copyright (C) 1995-2004 Miquel van Smoorenburg
  */
 
-#if defined(__FreeBSD_kernel__)
-# define VIR_INITCTL_FIFO  "/etc/.initctl"
-#else
-# define VIR_INITCTL_FIFO  "/dev/initctl"
-#endif
+# if defined(__FreeBSD_kernel__)
+#  define VIR_INITCTL_FIFO  "/etc/.initctl"
+# else
+#  define VIR_INITCTL_FIFO  "/dev/initctl"
+# endif
 
-#define VIR_INITCTL_MAGIC 0x03091969
-#define VIR_INITCTL_CMD_START          0
-#define VIR_INITCTL_CMD_RUNLVL         1
-#define VIR_INITCTL_CMD_POWERFAIL      2
-#define VIR_INITCTL_CMD_POWERFAILNOW   3
-#define VIR_INITCTL_CMD_POWEROK        4
-#define VIR_INITCTL_CMD_BSD            5
-#define VIR_INITCTL_CMD_SETENV         6
-#define VIR_INITCTL_CMD_UNSETENV       7
+# define VIR_INITCTL_MAGIC 0x03091969
+# define VIR_INITCTL_CMD_START          0
+# define VIR_INITCTL_CMD_RUNLVL         1
+# define VIR_INITCTL_CMD_POWERFAIL      2
+# define VIR_INITCTL_CMD_POWERFAILNOW   3
+# define VIR_INITCTL_CMD_POWEROK        4
+# define VIR_INITCTL_CMD_BSD            5
+# define VIR_INITCTL_CMD_SETENV         6
+# define VIR_INITCTL_CMD_UNSETENV       7
 
-#define VIR_INITCTL_CMD_CHANGECONS     12345
+# define VIR_INITCTL_CMD_CHANGECONS     12345
 
-#ifdef MAXHOSTNAMELEN
-# define VIR_INITCTL_RQ_HLEN   MAXHOSTNAMELEN
-#else
-# define VIR_INITCTL_RQ_HLEN   64
-#endif
+# ifdef MAXHOSTNAMELEN
+#  define VIR_INITCTL_RQ_HLEN   MAXHOSTNAMELEN
+# else
+#  define VIR_INITCTL_RQ_HLEN   64
+# endif
 
 /*
 *      This is what BSD 4.4 uses when talking to init.
@@ -161,3 +163,11 @@ cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
+#else
+int virInitctlSetRunLevel(virInitctlRunLevel level ATTRIBUTE_UNUSED,
+                          const char *vroot ATTRIBUTE_UNUSED)
+{
+   virReportError(VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
+   return -1;
+}
+#endif
