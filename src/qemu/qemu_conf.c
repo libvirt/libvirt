@@ -34,7 +34,6 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <sys/utsname.h>
-#include <mntent.h>
 
 #include "virterror_internal.h"
 #include "qemu_conf.h"
