@@ -1,5 +1,5 @@
 /*
- * event.h: event loop for monitoring file handles
+ * vireventpool.h: Poll based event loop for monitoring file handles
  *
  * Copyright (C) 2007 Daniel P. Berrange
  * Copyright (C) 2007 Red Hat, Inc.

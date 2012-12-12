@@ -63,7 +63,6 @@
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
 #include "virfile.h"
-#include "event_poll.h"
 #include "configmake.h"
 #include "threads.h"
 #include "vircommand.h"

@@ -31,7 +31,7 @@
 #include "threads.h"
 #include "logging.h"
 #include "util.h"
-#include "event_poll.h"
+#include "vireventpoll.h"
 
 #define NUM_FDS 31
 #define NUM_TIME 31

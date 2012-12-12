@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "virevent.h"
-#include "event_poll.h"
+#include "vireventpoll.h"
 #include "logging.h"
 #include "virterror_internal.h"
 

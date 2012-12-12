@@ -41,7 +41,7 @@
 #endif
 
 #include "virnetservermdns.h"
-#include "event_poll.h"
+#include "vireventpoll.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
