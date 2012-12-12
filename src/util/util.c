@@ -84,7 +84,7 @@
 #include "threads.h"
 #include "verify.h"
 #include "virfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "nonblocking.h"
 #include "passfd.h"
 #include "virprocess.h"

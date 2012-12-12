@@ -11,7 +11,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "network_conf.h"
-#include "command.h"
+#include "vircommand.h"
 #include "memory.h"
 #include "network/bridge_driver.h"
 

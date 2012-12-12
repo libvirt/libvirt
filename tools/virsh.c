@@ -66,7 +66,7 @@
 #include "event_poll.h"
 #include "configmake.h"
 #include "threads.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virkeycode.h"
 #include "virnetdevbandwidth.h"
 #include "virbitmap.h"

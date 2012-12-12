@@ -66,7 +66,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "processinfo.h"
 #include "nodeinfo.h"
 #include "virrandom.h"

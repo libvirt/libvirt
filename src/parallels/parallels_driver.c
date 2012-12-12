@@ -45,7 +45,7 @@
 #include "memory.h"
 #include "util.h"
 #include "logging.h"
-#include "command.h"
+#include "vircommand.h"
 #include "configmake.h"
 #include "storage_file.h"
 #include "nodeinfo.h"

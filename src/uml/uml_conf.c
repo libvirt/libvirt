@@ -44,7 +44,7 @@
 #include "logging.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
 

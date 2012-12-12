@@ -41,7 +41,7 @@
 #include "memory.h"
 #include "util.h"
 #include "virfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "intprops.h"
 #include "virtypedparam.h"
 #include "viruri.h"

@@ -26,7 +26,7 @@
 
 # include "internal.h"
 # include "storage_conf.h"
-# include "command.h"
+# include "vircommand.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendCheckPool)(virConnectPtr conn, virStoragePoolObjPtr pool, bool *active);

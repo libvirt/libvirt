@@ -42,7 +42,7 @@
 #include "domain_audit.h"
 #include "virterror_internal.h"
 #include "logging.h"
-#include "command.h"
+#include "vircommand.h"
 #include "hooks.h"
 #include "lxc_hostdev.h"
 

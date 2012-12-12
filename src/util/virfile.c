@@ -37,7 +37,7 @@
 # include <sys/ioctl.h>
 #endif
 
-#include "command.h"
+#include "vircommand.h"
 #include "configmake.h"
 #include "memory.h"
 #include "virterror_internal.h"

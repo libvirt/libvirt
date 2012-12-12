@@ -29,7 +29,7 @@
 #include "virterror_internal.h"
 #include "storage_backend_sheepdog.h"
 #include "storage_conf.h"
-#include "util/command.h"
+#include "vircommand.h"
 #include "util.h"
 #include "memory.h"
 #include "logging.h"

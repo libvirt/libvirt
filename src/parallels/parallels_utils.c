@@ -24,7 +24,7 @@
 
 #include <stdarg.h>
 
-#include "command.h"
+#include "vircommand.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "json.h"

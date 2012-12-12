@@ -32,7 +32,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "virfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virsocketaddr.h"
 #include "gnutls_1_0_compat.h"
 

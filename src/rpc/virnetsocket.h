@@ -25,7 +25,7 @@
 # define __VIR_NET_SOCKET_H__
 
 # include "virsocketaddr.h"
-# include "command.h"
+# include "vircommand.h"
 # include "virnettlscontext.h"
 # include "virobject.h"
 # ifdef HAVE_SASL

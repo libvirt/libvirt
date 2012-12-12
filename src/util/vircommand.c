@@ -1,5 +1,5 @@
 /*
- * command.c: Child command execution
+ * vircommand.c: Child command execution
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  *
@@ -33,7 +33,7 @@
 # include <cap-ng.h>
 #endif
 
-#include "command.h"
+#include "vircommand.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "util.h"

@@ -745,7 +745,7 @@ $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protoco
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.h$$
 
-_src1=libvirt|fdstream|qemu/qemu_monitor|util/(command|util)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
+_src1=libvirt|fdstream|qemu/qemu_monitor|util/(vircommand|util)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/(shunload|virnettlscontext)test)\.c$$
 
@@ -778,7 +778,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(qemuhelp|nodeinfo)data/|\.(gif|ico|png|diff)$$)
 
-_src2=src/(util/command|libvirt|lxc/lxc_controller|locking/lock_daemon)
+_src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 

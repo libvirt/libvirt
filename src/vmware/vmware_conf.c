@@ -23,7 +23,7 @@
 
 #include <string.h>
 
-#include "command.h"
+#include "vircommand.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "memory.h"

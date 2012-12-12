@@ -26,7 +26,7 @@
 
 # include "virobject.h"
 # include "capabilities.h"
-# include "command.h"
+# include "vircommand.h"
 # include "virobject.h"
 # include "qemu_monitor.h"
 

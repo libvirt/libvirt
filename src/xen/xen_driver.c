@@ -62,7 +62,7 @@
 #include "fdstream.h"
 #include "virfile.h"
 #include "viruri.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virnodesuspend.h"
 #include "nodeinfo.h"
 #include "configmake.h"

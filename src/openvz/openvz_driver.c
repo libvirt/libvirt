@@ -56,7 +56,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "logging.h"
-#include "command.h"
+#include "vircommand.h"
 #include "viruri.h"
 #include "stats_linux.h"
 

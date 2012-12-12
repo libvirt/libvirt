@@ -61,8 +61,8 @@
 #include "virnetdevveth.h"
 #include "uuid.h"
 #include "virfile.h"
-#include "command.h"
 #include "hostusb.h"
+#include "vircommand.h"
 #include "virnetdev.h"
 #include "virprocess.h"
 

@@ -56,7 +56,7 @@
 #include "intprops.h"
 #include "conf.h"
 #include "rpc/virnettlscontext.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virrandom.h"
 #include "viruri.h"
 #include "threads.h"

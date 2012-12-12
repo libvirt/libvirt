@@ -40,7 +40,7 @@
 # include "cpu_conf.h"
 # include "driver.h"
 # include "virbitmap.h"
-# include "command.h"
+# include "vircommand.h"
 # include "threadpool.h"
 # include "locking/lock_manager.h"
 # include "qemu_capabilities.h"

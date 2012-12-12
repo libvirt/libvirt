@@ -1,5 +1,5 @@
 /*
- * command.h: Child command execution
+ * vircommand.h: Child command execution
  *
  * Copyright (C) 2010-2011 Red Hat, Inc.
  *

@@ -24,7 +24,7 @@
 # define __VIR_FDSTREAM_H_
 
 # include "internal.h"
-# include "command.h"
+# include "vircommand.h"
 
 /* internal callback, the generic one is used up by daemon stream driver */
 /* the close callback is called with fdstream private data locked */

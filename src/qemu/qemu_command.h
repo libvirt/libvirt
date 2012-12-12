@@ -25,7 +25,7 @@
 # define __QEMU_COMMAND_H__
 
 # include "domain_conf.h"
-# include "command.h"
+# include "vircommand.h"
 # include "capabilities.h"
 # include "qemu_conf.h"
 # include "qemu_domain.h"

@@ -38,7 +38,7 @@
 #include "virfile.h"
 #include "memory.h"
 #include "uuid.h"
-#include "command.h"
+#include "vircommand.h"
 #include "libxl.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"

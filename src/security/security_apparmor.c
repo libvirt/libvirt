@@ -47,7 +47,7 @@
 #include "hostusb.h"
 #include "virfile.h"
 #include "configmake.h"
-#include "command.h"
+#include "vircommand.h"
 #include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY

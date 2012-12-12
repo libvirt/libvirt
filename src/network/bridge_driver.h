@@ -30,7 +30,7 @@
 # include "internal.h"
 # include "network_conf.h"
 # include "domain_conf.h"
-# include "command.h"
+# include "vircommand.h"
 # include "dnsmasq.h"
 
 int networkRegister(void);

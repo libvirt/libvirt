@@ -42,7 +42,7 @@
 #include "virbitmap.h"
 #include "dnsmasq.h"
 #include "util.h"
-#include "command.h"
+#include "vircommand.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"

@@ -53,7 +53,7 @@
 #include "virbuffer.h"
 #include "virpidfile.h"
 #include "util.h"
-#include "command.h"
+#include "vircommand.h"
 #include "memory.h"
 #include "uuid.h"
 #include "iptables.h"

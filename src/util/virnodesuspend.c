@@ -22,7 +22,7 @@
 #include <config.h>
 #include "virnodesuspend.h"
 
-#include "command.h"
+#include "vircommand.h"
 #include "threads.h"
 #include "datatypes.h"
 

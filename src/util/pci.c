@@ -36,7 +36,7 @@
 
 #include "logging.h"
 #include "memory.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virterror_internal.h"
 #include "virfile.h"
 

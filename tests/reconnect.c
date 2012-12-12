@@ -6,7 +6,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "command.h"
+#include "vircommand.h"
 
 static void errorHandler(void *userData ATTRIBUTE_UNUSED,
                          virErrorPtr error ATTRIBUTE_UNUSED) {

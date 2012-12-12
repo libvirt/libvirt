@@ -39,7 +39,7 @@
 #include "stream.h"
 #include "uuid.h"
 #include "libvirt/libvirt-qemu.h"
-#include "command.h"
+#include "vircommand.h"
 #include "intprops.h"
 #include "virnetserverservice.h"
 #include "virnetserver.h"

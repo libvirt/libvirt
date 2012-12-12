@@ -40,7 +40,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 #include "virfile.h"
-#include "command.h"
+#include "vircommand.h"
 #include "configmake.h"
 #include "intprops.h"
 

@@ -24,7 +24,6 @@
 #include <config.h>
 #include "storage_file.h"
 
-#include <command.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -41,6 +40,7 @@
 #include "logging.h"
 #include "virfile.h"
 #include "c-ctype.h"
+#include "vircommand.h"
 #include "virhash.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

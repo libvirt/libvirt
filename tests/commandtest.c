@@ -33,7 +33,7 @@
 #include "nodeinfo.h"
 #include "util.h"
 #include "memory.h"
-#include "command.h"
+#include "vircommand.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virterror_internal.h"

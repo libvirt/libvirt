@@ -26,7 +26,7 @@
 #include "virmacaddr.h"
 #include "virfile.h"
 #include "virterror_internal.h"
-#include "command.h"
+#include "vircommand.h"
 #include "memory.h"
 #include "pci.h"
 #include "logging.h"

@@ -30,7 +30,7 @@
 #include "memory.h"
 #include "util.h"
 #include "uuid.h"
-#include "command.h"
+#include "vircommand.h"
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "vmware_driver.h"

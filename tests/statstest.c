@@ -9,7 +9,7 @@
 #include "internal.h"
 #include "xen/block_stats.h"
 #include "testutils.h"
-#include "command.h"
+#include "vircommand.h"
 
 static void testQuietError(void *userData ATTRIBUTE_UNUSED,
                            virErrorPtr error ATTRIBUTE_UNUSED)
