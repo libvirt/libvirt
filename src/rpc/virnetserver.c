@@ -35,7 +35,6 @@
 #include "threadpool.h"
 #include "util.h"
 #include "virfile.h"
-#include "event.h"
 #include "virnetservermdns.h"
 #include "virdbus.h"
 

@@ -1,5 +1,5 @@
 /*
- * event.c: event loop for monitoring file handles
+ * virevent.c: event loop for monitoring file handles
  *
  * Copyright (C) 2007, 2011 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "event.h"
+#include "virevent.h"
 #include "event_poll.h"
 #include "logging.h"
 #include "virterror_internal.h"

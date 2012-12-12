@@ -53,7 +53,6 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		util/event.c util/event.h			\
 		util/event_poll.c util/event_poll.h		\
 		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
@@ -84,6 +83,7 @@ UTIL_SOURCES =							\
 		util/virconf.c util/virconf.h			\
 		util/virdnsmasq.c util/virdnsmasq.h             \
 		util/virebtables.c util/virebtables.h		\
+		util/virevent.c util/virevent.h			\
 		util/virfile.c util/virfile.h			\
 		util/virnodesuspend.c util/virnodesuspend.h	\
 		util/virobject.c util/virobject.h		\

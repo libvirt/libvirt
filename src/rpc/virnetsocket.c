@@ -46,7 +46,6 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "virfile.h"
-#include "event.h"
 #include "threads.h"
 #include "virprocess.h"
 
