@@ -44,7 +44,7 @@
 #include "datatypes.h"
 #include "uuid.h"
 #include "pci.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "virfile.h"
 #include "configmake.h"
 #include "vircommand.h"

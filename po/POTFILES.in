@@ -138,7 +138,6 @@ src/storage/storage_driver.c
 src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
-src/util/hostusb.c
 src/util/iohelper.c
 src/util/iptables.c
 src/util/json.c
@@ -182,6 +181,7 @@ src/util/virterror_internal.h
 src/util/virtime.c
 src/util/virtypedparam.c
 src/util/viruri.c
+src/util/virusb.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c

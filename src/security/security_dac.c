@@ -29,7 +29,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "pci.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "storage_file.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY

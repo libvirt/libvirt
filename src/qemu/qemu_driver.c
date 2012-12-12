@@ -72,7 +72,7 @@
 #include "domain_audit.h"
 #include "node_device_conf.h"
 #include "pci.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "processinfo.h"
 #include "libvirt_internal.h"
 #include "xml.h"

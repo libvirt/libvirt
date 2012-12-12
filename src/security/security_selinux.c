@@ -38,7 +38,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "pci.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "storage_file.h"
 #include "virfile.h"
 #include "virhash.h"

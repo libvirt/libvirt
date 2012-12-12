@@ -24,7 +24,7 @@
 
 # include "domain_conf.h"
 # include "lxc_fuse.h"
-# include "hostusb.h"
+# include "virusb.h"
 
 int virLXCCgroupSetup(virDomainDefPtr def);
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo);

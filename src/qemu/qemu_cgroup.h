@@ -24,7 +24,7 @@
 #ifndef __QEMU_CGROUP_H__
 # define __QEMU_CGROUP_H__
 
-# include "hostusb.h"
+# include "virusb.h"
 # include "domain_conf.h"
 # include "qemu_conf.h"
 

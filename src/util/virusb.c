@@ -1,4 +1,6 @@
 /*
+ * virusb.c: helper APIs for managing host USB devices
+ *
  * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -31,7 +33,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "hostusb.h"
+#include "virusb.h"
 #include "logging.h"
 #include "memory.h"
 #include "util.h"

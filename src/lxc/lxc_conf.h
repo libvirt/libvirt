@@ -35,7 +35,7 @@
 # include "vircgroup.h"
 # include "security/security_manager.h"
 # include "configmake.h"
-# include "hostusb.h"
+# include "virusb.h"
 
 # define LXC_DRIVER_NAME "LXC"
 

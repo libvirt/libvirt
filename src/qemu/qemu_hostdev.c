@@ -28,7 +28,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "pci.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

@@ -59,7 +59,6 @@ UTIL_SOURCES =							\
 		util/memory.c util/memory.h			\
 		util/pci.c util/pci.h				\
 		util/processinfo.c util/processinfo.h		\
-		util/hostusb.c util/hostusb.h			\
 		util/sexpr.c util/sexpr.h			\
 		util/stats_linux.c util/stats_linux.h		\
 		util/storage_file.c util/storage_file.h		\
@@ -116,6 +115,7 @@ UTIL_SOURCES =							\
 		util/virsocketaddr.h util/virsocketaddr.c \
 		util/virstring.h util/virstring.c \
 		util/virtime.h util/virtime.c \
+		util/virusb.c util/virusb.h			\
 		util/viruri.h util/viruri.c
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \

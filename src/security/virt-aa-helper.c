@@ -50,7 +50,7 @@
 #include "domain_conf.h"
 #include "xml.h"
 #include "uuid.h"
-#include "hostusb.h"
+#include "virusb.h"
 #include "pci.h"
 #include "virfile.h"
 #include "configmake.h"
