@@ -1,4 +1,6 @@
 /*
+ * virebtables.c: Helper APIs for managing ebtables
+ *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
  *
@@ -40,7 +42,7 @@
 #endif
 
 #include "internal.h"
-#include "ebtables.h"
+#include "virebtables.h"
 #include "vircommand.h"
 #include "memory.h"
 #include "virterror_internal.h"

@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#include "ebtables.h"
+#include "virebtables.h"
 #include "qemu_conf.h"
 #include "qemu_driver.h"
 #include "util.h"

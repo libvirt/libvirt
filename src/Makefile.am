@@ -57,7 +57,6 @@ UTIL_SOURCES =							\
 		util/event_poll.c util/event_poll.h		\
 		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
-		util/ebtables.c util/ebtables.h			\
 		util/json.c util/json.h				\
 		util/logging.c util/logging.h			\
 		util/memory.c util/memory.h			\
@@ -84,6 +83,7 @@ UTIL_SOURCES =							\
 		util/vircommand.c util/vircommand.h		\
 		util/virconf.c util/virconf.h			\
 		util/virdnsmasq.c util/virdnsmasq.h             \
+		util/virebtables.c util/virebtables.h		\
 		util/virfile.c util/virfile.h			\
 		util/virnodesuspend.c util/virnodesuspend.h	\
 		util/virobject.c util/virobject.h		\

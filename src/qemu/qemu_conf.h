@@ -26,7 +26,7 @@
 
 # include <config.h>
 
-# include "ebtables.h"
+# include "virebtables.h"
 # include "internal.h"
 # include "capabilities.h"
 # include "network_conf.h"
