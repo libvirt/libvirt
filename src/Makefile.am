@@ -739,7 +739,7 @@ libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS) $(DLOPEN_LIBS)
 
-USED_SYM_FILES = libvirt_private.syms
+USED_SYM_FILES = $(srcdir)/libvirt_private.syms
 
 if WITH_TEST
 noinst_LTLIBRARIES += libvirt_driver_test.la
@@ -1337,43 +1337,43 @@ endif
 #
 
 if WITH_DRIVER_MODULES
-USED_SYM_FILES += libvirt_driver_modules.syms
+USED_SYM_FILES += $(srcdir)/libvirt_driver_modules.syms
 endif
 
 if WITH_LINUX
-USED_SYM_FILES += libvirt_linux.syms
+USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
 endif
 
 if WITH_ESX
-USED_SYM_FILES += libvirt_esx.syms
+USED_SYM_FILES += $(srcdir)/libvirt_esx.syms
 endif
 
 if WITH_LIBVIRTD
-USED_SYM_FILES += libvirt_daemon.syms
+USED_SYM_FILES += $(srcdir)/libvirt_daemon.syms
 endif
 
 if WITH_OPENVZ
-USED_SYM_FILES += libvirt_openvz.syms
+USED_SYM_FILES += $(srcdir)/libvirt_openvz.syms
 endif
 
 if WITH_VMX
-USED_SYM_FILES += libvirt_vmx.syms
+USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
 endif
 
 if WITH_XENXS
-USED_SYM_FILES += libvirt_xenxs.syms
+USED_SYM_FILES += $(srcdir)/libvirt_xenxs.syms
 endif
 
 if HAVE_SASL
-USED_SYM_FILES += libvirt_sasl.syms
+USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif
 
 if HAVE_LIBSSH2
-USED_SYM_FILES += libvirt_libssh2.syms
+USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 endif
 
 if WITH_ATOMIC_OPS_PTHREAD
-USED_SYM_FILES += libvirt_atomic.syms
+USED_SYM_FILES += $(srcdir)/libvirt_atomic.syms
 endif
 
 EXTRA_DIST += \
