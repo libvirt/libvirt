@@ -438,6 +438,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
     b_info->max_memkb = def->mem.max_balloon;
     b_info->target_memkb = def->mem.cur_balloon;
     if (hvm) {
+        char bootorder[VIR_DOMAIN_BOOT_LAST + 1];
+
         libxl_defbool_set(&b_info->u.hvm.pae,
                           def->features & (1 << VIR_DOMAIN_FEATURE_PAE));
         libxl_defbool_set(&b_info->u.hvm.apic,
@@ -449,6 +451,34 @@ libxlMakeDomBuildInfo(virDomainDefPtr def, libxl_domain_config *d_config)
                 def->clock.timers[i]->present == 1) {
                 libxl_defbool_set(&b_info->u.hvm.hpet, 1);
             }
+        }
+        for (i = 0 ; i < def->os.nBootDevs ; i++) {
+            switch (def->os.bootDevs[i]) {
+                case VIR_DOMAIN_BOOT_FLOPPY:
+                    bootorder[i] = 'a';
+                    break;
+                default:
+                case VIR_DOMAIN_BOOT_DISK:
+                    bootorder[i] = 'c';
+                    break;
+                case VIR_DOMAIN_BOOT_CDROM:
+                    bootorder[i] = 'd';
+                    break;
+                case VIR_DOMAIN_BOOT_NET:
+                    bootorder[i] = 'n';
+                    break;
+            }
+        }
+        if (def->os.nBootDevs == 0) {
+            bootorder[0] = 'c';
+            bootorder[1] = '\0';
+        }
+        else {
+            bootorder[def->os.nBootDevs] = '\0';
+        }
+        if ((b_info->u.hvm.boot = strdup(bootorder)) == NULL) {
+            virReportOOMError();
+            goto error;
         }
 
         /*
