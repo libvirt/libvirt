@@ -58,7 +58,7 @@
 #include "uuid.h"
 #include "iptables.h"
 #include "logging.h"
-#include "dnsmasq.h"
+#include "virdnsmasq.h"
 #include "configmake.h"
 #include "virnetdev.h"
 #include "pci.h"

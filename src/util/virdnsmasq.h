@@ -1,4 +1,6 @@
 /*
+ * virdnsmasq.h: Helper APIs for managing dnsmasq
+ *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *

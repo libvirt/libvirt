@@ -1,4 +1,6 @@
 /*
+ * virdnsmasq.c: Helper APIs for managing dnsmasq
+ *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *
@@ -40,7 +42,7 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "virbitmap.h"
-#include "dnsmasq.h"
+#include "virdnsmasq.h"
 #include "util.h"
 #include "vircommand.h"
 #include "memory.h"
