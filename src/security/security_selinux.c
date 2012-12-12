@@ -58,6 +58,7 @@ typedef virSecuritySELinuxCallbackData *virSecuritySELinuxCallbackDataPtr;
 
 struct _virSecuritySELinuxData {
     char *domain_context;
+    char *alt_domain_context;
     char *file_context;
     char *content_context;
     virHashTablePtr mcs;
@@ -446,8 +447,23 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
     }
 
     ptr = strchrnul(data->domain_context, '\n');
-    if (ptr)
+    if (ptr && *ptr == '\n') {
         *ptr = '\0';
+        ptr++;
+        if (*ptr != '\0') {
+            data->alt_domain_context = strdup(ptr);
+            if (!data->alt_domain_context) {
+                virReportOOMError();
+                goto error;
+            }
+            ptr = strchrnul(data->alt_domain_context, '\n');
+            if (ptr && *ptr == '\n')
+                *ptr = '\0';
+        }
+    }
+    VIR_DEBUG("Loaded domain context '%s', alt domain context '%s'",
+              data->domain_context, NULLSTR(data->alt_domain_context));
+
 
     if (virFileReadAll(selinux_virtual_image_context_path(), 2*MAX_CONTEXT, &(data->file_context)) < 0) {
         virReportSystemError(errno,
@@ -469,6 +485,9 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
             *ptr = '\0';
     }
 
+    VIR_DEBUG("Loaded file context '%s', content context '%s'",
+              data->file_context, data->content_context);
+
     if (!(data->mcs = virHashCreate(10, NULL)))
         goto error;
 
@@ -476,6 +495,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 
 error:
     VIR_FREE(data->domain_context);
+    VIR_FREE(data->alt_domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
     virHashFree(data->mcs);
@@ -506,6 +526,7 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     const char *range;
     virSecurityLabelDefPtr seclabel;
     virSecuritySELinuxDataPtr data;
+    const char *baselabel;
 
     if (mgr == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -568,10 +589,28 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         if (virSecuritySELinuxMCSAdd(mgr, mcs) < 0)
             goto cleanup;
 
+        baselabel = seclabel->baselabel;
+        if (!baselabel) {
+            if (def->virtType == VIR_DOMAIN_VIRT_QEMU) {
+                if (data->alt_domain_context == NULL) {
+                    static bool warned = false;
+                    if (!warned) {
+                        VIR_WARN("SELinux policy does not define a domain type for QEMU TCG. "
+                                 "Guest startup may be denied due to missing 'execmem' privilege "
+                                 "unless the 'virt_use_execmem' policy boolean is enabled");
+                        warned = true;
+                    }
+                    baselabel = data->domain_context;
+                } else {
+                    baselabel = data->alt_domain_context;
+                }
+            } else {
+                baselabel = data->domain_context;
+            }
+        }
+
         seclabel->label =
-            virSecuritySELinuxGenNewContext(seclabel->baselabel ?
-                                 seclabel->baselabel :
-                                 data->domain_context, mcs, false);
+            virSecuritySELinuxGenNewContext(baselabel, mcs, false);
         if (!seclabel->label)  {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot generate selinux context for %s"), mcs);
@@ -722,6 +761,7 @@ virSecuritySELinuxSecurityDriverClose(virSecurityManagerPtr mgr)
     virHashFree(data->mcs);
 
     VIR_FREE(data->domain_context);
+    VIR_FREE(data->alt_domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
 
