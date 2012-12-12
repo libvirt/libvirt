@@ -79,7 +79,7 @@
 #include "cpu/cpu.h"
 #include "sysinfo.h"
 #include "domain_nwfilter.h"
-#include "hooks.h"
+#include "virhook.h"
 #include "storage_file.h"
 #include "virfile.h"
 #include "fdstream.h"

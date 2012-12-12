@@ -1,5 +1,5 @@
 /*
- * hook.h: internal entry points needed for synchronous hooks support
+ * virhook.h: internal entry points needed for synchronous hooks support
  *
  * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard

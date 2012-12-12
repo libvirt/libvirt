@@ -52,7 +52,7 @@
 #include "nodeinfo.h"
 #include "uuid.h"
 #include "stats_linux.h"
-#include "hooks.h"
+#include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "fdstream.h"

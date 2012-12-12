@@ -1,5 +1,5 @@
 /*
- * hooks.c: implementation of the synchronous hooks support
+ * virhook.c: implementation of the synchronous hooks support
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
@@ -31,7 +31,7 @@
 #include <stdio.h>
 
 #include "virterror_internal.h"
-#include "hooks.h"
+#include "virhook.h"
 #include "util.h"
 #include "logging.h"
 #include "memory.h"

@@ -43,8 +43,8 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "vircommand.h"
-#include "hooks.h"
 #include "lxc_hostdev.h"
+#include "virhook.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

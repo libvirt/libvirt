@@ -54,7 +54,7 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "memory.h"
-#include "hooks.h"
+#include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "util.h"

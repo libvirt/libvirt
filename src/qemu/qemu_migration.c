@@ -49,7 +49,7 @@
 #include "rpc/virnetsocket.h"
 #include "storage_file.h"
 #include "viruri.h"
-#include "hooks.h"
+#include "virhook.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
