@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "lock_daemon_config.h"
-#include "conf.h"
+#include "virconf.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"

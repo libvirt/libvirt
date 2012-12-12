@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "lock_driver.h"
-#include "conf.h"
+#include "virconf.h"
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"

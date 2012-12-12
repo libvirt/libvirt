@@ -32,7 +32,7 @@
 #include "driver.h"
 #include "memory.h"
 #include "xen_driver.h"
-#include "conf.h"
+#include "virconf.h"
 #include "domain_conf.h"
 #include "xen_inotify.h"
 #include "xend_internal.h"

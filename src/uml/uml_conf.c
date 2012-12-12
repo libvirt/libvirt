@@ -37,7 +37,7 @@
 #include "uml_conf.h"
 #include "uuid.h"
 #include "virbuffer.h"
-#include "conf.h"
+#include "virconf.h"
 #include "util.h"
 #include "memory.h"
 #include "nodeinfo.h"

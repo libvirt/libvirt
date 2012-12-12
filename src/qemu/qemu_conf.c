@@ -41,7 +41,7 @@
 #include "qemu_bridge_filter.h"
 #include "uuid.h"
 #include "virbuffer.h"
-#include "conf.h"
+#include "virconf.h"
 #include "util.h"
 #include "memory.h"
 #include "datatypes.h"

@@ -43,7 +43,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "md5.h"
-#include "conf.h"
+#include "virconf.h"
 
 #include "configmake.h"
 

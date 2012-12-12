@@ -27,7 +27,7 @@
 # define __VIR_XEN_XM_H__
 
 # include "internal.h"
-# include "conf.h"
+# include "virconf.h"
 # include "domain_conf.h"
 
 virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def,

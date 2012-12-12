@@ -138,7 +138,6 @@ src/storage/storage_driver.c
 src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
-src/util/conf.c
 src/util/dnsmasq.c
 src/util/event_poll.c
 src/util/hooks.c
@@ -158,6 +157,7 @@ src/util/virauth.c
 src/util/virauthconfig.c
 src/util/vircgroup.c
 src/util/vircommand.c
+src/util/virconf.c
 src/util/virdbus.c
 src/util/virfile.c
 src/util/virhash.c

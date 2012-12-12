@@ -40,7 +40,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
-#include "conf.h"
+#include "virconf.h"
 #include "rpc/virnetserver.h"
 #include "virrandom.h"
 #include "virhash.h"

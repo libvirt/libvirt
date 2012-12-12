@@ -29,7 +29,7 @@
 #include "lxc_conf.h"
 #include "nodeinfo.h"
 #include "virterror_internal.h"
-#include "conf.h"
+#include "virconf.h"
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"

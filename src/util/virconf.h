@@ -1,5 +1,5 @@
-/**
- * conf.h: parser for a subset of the Python encoded Xen configuration files
+/*
+ * virconf.h: parser for a subset of the Python encoded Xen configuration files
  *
  * Copyright (C) 2006, 2007 Red Hat, Inc.
  *

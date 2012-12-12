@@ -1,5 +1,5 @@
-/**
- * conf.c: parser for a subset of the Python encoded Xen configuration files
+/*
+ * virconf.c: parser for a subset of the Python encoded Xen configuration files
  *
  * Copyright (C) 2006-2012 Red Hat, Inc.
  *
@@ -32,7 +32,7 @@
 
 #include "virterror_internal.h"
 #include "virbuffer.h"
-#include "conf.h"
+#include "virconf.h"
 #include "util.h"
 #include "c-ctype.h"
 #include "logging.h"

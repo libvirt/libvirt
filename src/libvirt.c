@@ -54,7 +54,7 @@
 #include "memory.h"
 #include "configmake.h"
 #include "intprops.h"
-#include "conf.h"
+#include "virconf.h"
 #include "rpc/virnettlscontext.h"
 #include "vircommand.h"
 #include "virrandom.h"

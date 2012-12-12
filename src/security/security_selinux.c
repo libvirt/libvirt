@@ -44,7 +44,7 @@
 #include "virhash.h"
 #include "virrandom.h"
 #include "util.h"
-#include "conf.h"
+#include "virconf.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 

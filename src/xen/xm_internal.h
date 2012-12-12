@@ -27,7 +27,7 @@
 
 # include "internal.h"
 # include "driver.h"
-# include "conf.h"
+# include "virconf.h"
 # include "domain_conf.h"
 
 extern struct xenUnifiedDriver xenXMDriver;

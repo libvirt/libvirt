@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "conf.h"
+#include "virconf.h"
 #include "memory.h"
 
 int main(int argc, char **argv)

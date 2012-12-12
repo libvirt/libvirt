@@ -28,7 +28,7 @@
 # define __VIR_XEN_SXPR_H__
 
 # include "internal.h"
-# include "conf.h"
+# include "virconf.h"
 # include "domain_conf.h"
 # include "sexpr.h"
 
