@@ -669,7 +669,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                               "##OVERWRITTEN AND LOST.  Changes to this "
                               "configuration should be made using:\n"
                               "##    virsh net-edit %s\n"
-                              "## of other applications using the libvirt API.\n"
+                              "## or other application using the libvirt API.\n"
                               "##\n## dnsmasq conf file created by libvirt\n"
                               "strict-order\n"
                               "domain-needed\n",
