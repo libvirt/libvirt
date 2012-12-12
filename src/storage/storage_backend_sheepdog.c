@@ -32,7 +32,7 @@
 #include "vircommand.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

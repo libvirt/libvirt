@@ -27,7 +27,7 @@
 #include "internal.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "esx_private.h"
 #include "esx_device_monitor.h"

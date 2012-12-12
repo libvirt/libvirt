@@ -52,7 +52,7 @@
 #endif
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 
 #include "lxc_conf.h"

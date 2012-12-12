@@ -32,7 +32,7 @@
 #include "node_device_driver.h"
 #include "driver.h"
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "uuid.h"
 #include "util.h"

@@ -29,7 +29,7 @@
 #include "vircommand.h"
 #include "memory.h"
 #include "pci.h"
-#include "logging.h"
+#include "virlog.h"
 
 #include <sys/ioctl.h>
 #include <net/if.h>

@@ -25,7 +25,7 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "secret_conf.h"
 #include "virterror_internal.h"

@@ -29,7 +29,7 @@
 #include "virauth.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "hyperv_driver.h"
 #include "hyperv_interface_driver.h"

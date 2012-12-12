@@ -36,7 +36,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "pci.h"
-#include "logging.h"
+#include "virlog.h"
 #include "node_device_driver.h"
 #include "virdbus.h"
 

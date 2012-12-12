@@ -32,7 +32,7 @@
 #include "memory.h"
 #include "verify.h"
 #include "uuid.h"
-#include "logging.h"
+#include "virlog.h"
 #include "count-one-bits.h"
 #include "xenxs_private.h"
 #include "xen_sxpr.h"

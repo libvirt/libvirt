@@ -31,7 +31,7 @@
 #include "count-one-bits.h"
 #include "util.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

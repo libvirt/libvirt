@@ -35,7 +35,7 @@
 #include "c-ctype.h"
 #include "c-strcasestr.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "driver.h"
 #include "datatypes.h"
 #include "virterror_internal.h"

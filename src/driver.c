@@ -26,7 +26,7 @@
 
 #include "driver.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 #include "configmake.h"
 

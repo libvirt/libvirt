@@ -34,7 +34,7 @@
 #include "libvirt_internal.h"
 #include "datatypes.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 #include "stream.h"
 #include "uuid.h"

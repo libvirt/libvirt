@@ -32,7 +32,7 @@
 
 #include "virbuffer.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "domain_conf.h"
 #include "nwfilter_conf.h"

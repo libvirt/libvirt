@@ -33,7 +33,7 @@
 #include "virterror_internal.h"
 #include "virhook.h"
 #include "util.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "virfile.h"
 #include "configmake.h"

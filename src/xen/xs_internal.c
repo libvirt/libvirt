@@ -45,7 +45,7 @@
 #include "datatypes.h"
 #include "driver.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "xen_driver.h"
 #include "xs_internal.h"

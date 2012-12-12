@@ -28,7 +28,7 @@
 #include <config.h>
 
 #include "virdbus.h"
-#include "logging.h"
+#include "virlog.h"
 
 #include "internal.h"
 

@@ -48,7 +48,7 @@
 #include "datatypes.h"
 #include "virbuffer.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "driver.h"
 #include "libvirt/libvirt.h"
 #include "virterror_internal.h"

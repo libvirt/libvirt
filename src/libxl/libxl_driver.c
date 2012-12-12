@@ -31,7 +31,7 @@
 #include <fcntl.h>
 
 #include "internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "virconf.h"
 #include "datatypes.h"

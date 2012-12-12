@@ -36,7 +36,7 @@
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "driver.h"
 #include "datatypes.h"
 #include "virterror_internal.h"

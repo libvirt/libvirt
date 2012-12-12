@@ -43,7 +43,7 @@
 #include "intprops.h"
 #include "virbuffer.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "virnetdev.h"
 #include "virterror_internal.h"

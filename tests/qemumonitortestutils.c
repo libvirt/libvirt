@@ -31,7 +31,7 @@
 #include "rpc/virnetsocket.h"
 #include "memory.h"
 #include "util.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

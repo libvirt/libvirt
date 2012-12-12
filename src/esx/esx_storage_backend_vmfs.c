@@ -33,7 +33,7 @@
 #include "md5.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "storage_conf.h"
 #include "storage_file.h"

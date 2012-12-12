@@ -28,7 +28,7 @@
 
 #include "virbuffer.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 #include "uuid.h"
 #include "vmx.h"

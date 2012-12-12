@@ -1,5 +1,5 @@
 /*
- * logging.c: internal logging and debugging
+ * virlog.c: internal logging and debugging
  *
  * Copyright (C) 2008, 2010-2012 Red Hat, Inc.
  *
@@ -41,7 +41,7 @@
 #endif
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "util.h"
 #include "virbuffer.h"

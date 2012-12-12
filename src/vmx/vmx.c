@@ -29,7 +29,7 @@
 #include "virterror_internal.h"
 #include "virconf.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "vmx.h"
 #include "viruri.h"

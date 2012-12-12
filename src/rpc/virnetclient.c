@@ -33,7 +33,7 @@
 #include "memory.h"
 #include "threads.h"
 #include "virfile.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 #include "virterror_internal.h"
 

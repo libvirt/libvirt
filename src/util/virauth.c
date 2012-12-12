@@ -27,7 +27,7 @@
 #include "virauth.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
 #include "configmake.h"

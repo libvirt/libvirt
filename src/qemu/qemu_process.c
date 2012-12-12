@@ -51,7 +51,7 @@
 #endif
 
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "virhook.h"

@@ -36,7 +36,7 @@
 #include "domain_conf.h"
 #include "xen_inotify.h"
 #include "xend_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "virfile.h"
 

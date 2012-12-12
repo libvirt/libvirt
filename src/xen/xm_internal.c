@@ -47,7 +47,7 @@
 #include "uuid.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "count-one-bits.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXM

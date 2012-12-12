@@ -53,7 +53,7 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
 
 # include "virnetlink.h"
 # include "virfile.h"
-# include "logging.h"
+# include "virlog.h"
 # include "virnetdev.h"
 
 # define MICROSEC_PER_SEC       (1000 * 1000)

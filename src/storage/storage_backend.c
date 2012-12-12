@@ -54,7 +54,7 @@
 #include "uuid.h"
 #include "storage_file.h"
 #include "storage_backend.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "stat-time.h"
 

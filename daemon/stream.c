@@ -26,7 +26,7 @@
 #include "stream.h"
 #include "remote.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virnetserverclient.h"
 #include "virterror_internal.h"
 

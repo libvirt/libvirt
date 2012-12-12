@@ -41,7 +41,7 @@
 #include "util.h"
 #include "memory.h"
 #include "vircgroup.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virhashcode.h"

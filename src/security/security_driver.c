@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 
 #include "security_driver.h"
 #ifdef WITH_SECDRIVER_SELINUX

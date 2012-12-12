@@ -39,7 +39,7 @@
 #include "storage_backend_iscsi.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "vircommand.h"
 #include "virrandom.h"

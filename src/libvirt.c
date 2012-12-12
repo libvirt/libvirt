@@ -46,7 +46,7 @@
 #endif
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "driver.h"
 

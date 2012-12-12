@@ -32,7 +32,7 @@
 #include "lxc_fuse.h"
 #include "lxc_cgroup.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "virbuffer.h"
 

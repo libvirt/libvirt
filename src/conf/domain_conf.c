@@ -40,7 +40,7 @@
 #include "uuid.h"
 #include "util.h"
 #include "virbuffer.h"
-#include "logging.h"
+#include "virlog.h"
 #include "nwfilter_conf.h"
 #include "storage_file.h"
 #include "virfile.h"

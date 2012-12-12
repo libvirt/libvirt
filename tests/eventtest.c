@@ -29,7 +29,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "threads.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 #include "vireventpoll.h"
 

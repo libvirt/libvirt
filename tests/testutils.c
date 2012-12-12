@@ -44,7 +44,7 @@
 #include "threads.h"
 #include "virterror_internal.h"
 #include "virbuffer.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vircommand.h"
 #include "virrandom.h"
 #include "dirname.h"

@@ -25,7 +25,7 @@
 
 #include "virbuffer.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"

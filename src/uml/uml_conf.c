@@ -41,7 +41,7 @@
 #include "util.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "logging.h"
+#include "virlog.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
 #include "vircommand.h"

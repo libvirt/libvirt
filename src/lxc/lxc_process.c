@@ -41,7 +41,7 @@
 #include "memory.h"
 #include "domain_audit.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vircommand.h"
 #include "lxc_hostdev.h"
 #include "virhook.h"

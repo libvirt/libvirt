@@ -28,7 +28,7 @@
 #include <fcntl.h>
 
 #include "virnetserver.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "threads.h"

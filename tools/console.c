@@ -38,7 +38,7 @@
 
 # include "internal.h"
 # include "console.h"
-# include "logging.h"
+# include "virlog.h"
 # include "util.h"
 # include "virfile.h"
 # include "memory.h"

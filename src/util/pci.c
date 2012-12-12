@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "vircommand.h"
 #include "virterror_internal.h"

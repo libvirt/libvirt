@@ -57,7 +57,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "viriptables.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virdnsmasq.h"
 #include "configmake.h"
 #include "virnetdev.h"

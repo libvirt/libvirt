@@ -24,7 +24,7 @@
 #include "lock_driver.h"
 #include "virconf.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "util.h"
 #include "virfile.h"

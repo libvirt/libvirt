@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "util.h"
 #include "cpu.h"

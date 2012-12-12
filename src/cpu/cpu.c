@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "xml.h"
 #include "cpu.h"

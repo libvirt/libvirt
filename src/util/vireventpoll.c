@@ -32,7 +32,7 @@
 #include <fcntl.h>
 
 #include "threads.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vireventpoll.h"
 #include "memory.h"
 #include "util.h"

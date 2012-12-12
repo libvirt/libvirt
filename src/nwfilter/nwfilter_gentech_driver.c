@@ -27,7 +27,7 @@
 #include "internal.h"
 
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "domain_conf.h"
 #include "virterror_internal.h"
 #include "nwfilter_gentech_driver.h"

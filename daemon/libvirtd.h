@@ -33,7 +33,7 @@
 # include <rpc/xdr.h>
 # include "remote_protocol.h"
 # include "qemu_protocol.h"
-# include "logging.h"
+# include "virlog.h"
 # include "threads.h"
 # if HAVE_SASL
 #  include "virnetsaslcontext.h"

@@ -27,7 +27,7 @@
 #include "util.h"
 #include "c-ctype.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virconf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

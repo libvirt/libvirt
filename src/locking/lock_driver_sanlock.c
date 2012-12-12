@@ -37,7 +37,7 @@
 
 #include "dirname.h"
 #include "lock_driver.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "util.h"

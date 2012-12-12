@@ -32,7 +32,7 @@
 #include "memory.h"
 #include "util.h"
 #include "intprops.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "c-ctype.h"
 #include "areadlink.h"

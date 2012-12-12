@@ -33,7 +33,7 @@
 #include "storage_conf.h"
 #include "storage_backend.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

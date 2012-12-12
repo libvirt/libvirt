@@ -27,7 +27,7 @@
 #include "virconf.h"
 #include "memory.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "rpc/virnetserver.h"
 #include "configmake.h"
 

@@ -29,7 +29,7 @@
 #include "qemu_bridge_filter.h"
 #include "cpu/cpu.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "util.h"
 #include "virarch.h"

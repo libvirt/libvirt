@@ -40,7 +40,7 @@
 #include <xen/dom0_ops.h>
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "xen_driver.h"
 

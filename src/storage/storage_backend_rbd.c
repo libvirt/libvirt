@@ -27,7 +27,7 @@
 #include "storage_conf.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "base64.h"
 #include "uuid.h"
 #include "rados/librados.h"

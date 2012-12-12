@@ -36,7 +36,7 @@
 #include <sys/socket.h>
 
 #include "virnetlink.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "threads.h"
 #include "virmacaddr.h"

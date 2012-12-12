@@ -51,7 +51,7 @@
 #include "uuid.h"
 #include "memory.h"
 #include "nodeinfo.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vbox_driver.h"
 #include "configmake.h"
 #include "virfile.h"

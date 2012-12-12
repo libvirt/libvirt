@@ -34,7 +34,7 @@
 #include "internal.h"
 
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vbox_driver.h"
 #include "vbox_glue.h"
 #include "virterror_internal.h"

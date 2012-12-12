@@ -30,7 +30,7 @@
 #include "node_device_hal.h"
 #include "virterror_internal.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV

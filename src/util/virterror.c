@@ -29,7 +29,7 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "threads.h"
 #include "util.h"

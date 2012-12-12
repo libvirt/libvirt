@@ -23,7 +23,7 @@
 
 #include "lock_driver_nop.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 
 

@@ -31,7 +31,7 @@
 #include "virterror_internal.h"
 #include "virconf.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "configmake.h"
 #include "lxc_container.h"

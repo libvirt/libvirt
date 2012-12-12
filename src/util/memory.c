@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 
 #if TEST_OOM
 static int testMallocNext = 0;

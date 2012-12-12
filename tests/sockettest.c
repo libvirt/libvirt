@@ -27,7 +27,7 @@
 
 #include "virsocketaddr.h"
 #include "testutils.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 
 static void testQuietError(void *userData ATTRIBUTE_UNUSED,

@@ -30,7 +30,7 @@
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "domain_conf.h"
-#include "logging.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

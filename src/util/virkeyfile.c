@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 #include "c-ctype.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "util.h"
 #include "virhash.h"

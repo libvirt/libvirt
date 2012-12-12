@@ -37,7 +37,7 @@
 #include "dirname.h"
 #include "memory.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "c-ctype.h"
 #include "vircommand.h"

@@ -48,7 +48,7 @@
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "count-one-bits.h"
 #include "intprops.h"

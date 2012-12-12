@@ -32,7 +32,7 @@
 #include "testutils.h"
 #include "memory.h"
 #include "util.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "security/security_manager.h"
 

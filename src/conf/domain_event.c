@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "domain_event.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "memory.h"
 #include "virterror_internal.h"

@@ -33,7 +33,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "node_device_conf.h"
 #include "node_device_hal.h"
 #include "node_device_driver.h"

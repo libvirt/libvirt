@@ -31,7 +31,7 @@
 #include <sys/socket.h>
 
 #include "internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "virfile.h"

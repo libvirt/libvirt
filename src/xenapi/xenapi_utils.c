@@ -33,7 +33,7 @@
 #include "uuid.h"
 #include "memory.h"
 #include "virbuffer.h"
-#include "logging.h"
+#include "virlog.h"
 #include "viruri.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"

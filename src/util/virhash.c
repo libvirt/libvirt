@@ -27,7 +27,7 @@
 #include "virterror_internal.h"
 #include "virhash.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virhashcode.h"
 #include "virrandom.h"
 

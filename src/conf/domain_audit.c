@@ -29,7 +29,7 @@
 #include "domain_audit.h"
 #include "viraudit.h"
 #include "uuid.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 
 /* Return nn:mm in hex for block and character devices, and NULL

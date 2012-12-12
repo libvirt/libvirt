@@ -27,7 +27,7 @@
 #include "internal.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "interface_conf.h"
 #include "virsocketaddr.h"

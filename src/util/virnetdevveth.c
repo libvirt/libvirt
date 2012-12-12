@@ -27,7 +27,7 @@
 
 #include "virnetdevveth.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "vircommand.h"
 #include "virterror_internal.h"
 

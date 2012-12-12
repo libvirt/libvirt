@@ -48,7 +48,7 @@
 #include "node_device_conf.h"
 #include "xml.h"
 #include "threads.h"
-#include "logging.h"
+#include "virlog.h"
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virrandom.h"

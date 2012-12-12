@@ -54,7 +54,7 @@
 #endif
 
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 #include "lxc_container.h"
 #include "util.h"
 #include "memory.h"

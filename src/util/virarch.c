@@ -23,7 +23,7 @@
 
 #include <sys/utsname.h>
 
-#include "logging.h"
+#include "virlog.h"
 #include "virarch.h"
 #include "verify.h"
 

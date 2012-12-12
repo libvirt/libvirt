@@ -56,7 +56,7 @@
 #include "domain_conf.h"
 #include "domain_audit.h"
 #include "datatypes.h"
-#include "logging.h"
+#include "virlog.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
 #include "fdstream.h"

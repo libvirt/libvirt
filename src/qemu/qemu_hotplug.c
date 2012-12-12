@@ -32,7 +32,7 @@
 #include "qemu_hostdev.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
-#include "logging.h"
+#include "virlog.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
 #include "memory.h"

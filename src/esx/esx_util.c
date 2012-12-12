@@ -30,7 +30,7 @@
 #include "datatypes.h"
 #include "util.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "uuid.h"
 #include "vmx.h"
 #include "esx_private.h"

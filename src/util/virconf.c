@@ -35,7 +35,7 @@
 #include "virconf.h"
 #include "util.h"
 #include "c-ctype.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "virfile.h"
 

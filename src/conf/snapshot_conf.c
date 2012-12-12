@@ -34,7 +34,7 @@
 #include "count-one-bits.h"
 #include "datatypes.h"
 #include "domain_conf.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vport_profile_conf.h"

@@ -31,7 +31,7 @@
 #include "virfile.h"
 #include "virterror_internal.h"
 #include "memory.h"
-#include "logging.h"
+#include "virlog.h"
 #include "util.h"
 
 #include <sys/ioctl.h>

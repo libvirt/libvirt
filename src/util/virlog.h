@@ -1,5 +1,5 @@
 /*
- * logging.h: internal logging and debugging
+ * virlog.h: internal logging and debugging
  *
  * Copyright (C) 2006-2008, 2011-2012 Red Hat, Inc.
  *

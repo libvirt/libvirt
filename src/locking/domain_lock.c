@@ -25,7 +25,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "virterror_internal.h"
-#include "logging.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 

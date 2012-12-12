@@ -32,7 +32,7 @@
 #include "base64.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "logging.h"
+#include "virlog.h"
 #include "memory.h"
 #include "secret_conf.h"
 #include "secret_driver.h"
