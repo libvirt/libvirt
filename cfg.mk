@@ -321,7 +321,7 @@ sc_prohibit_internal_functions:
 # Avoid raw malloc and free, except in documentation comments.
 sc_prohibit_raw_allocation:
 	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]'		\
-	halt='use VIR_ macros from memory.h instead of malloc/free'	\
+	halt='use VIR_ macros from viralloc.h instead of malloc/free'	\
 	  $(_sc_search_regexp)
 
 # Avoid functions that can lead to double-close bugs.
@@ -785,7 +785,7 @@ exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
 exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
-  ^src/(util/(memory|util|virfile)\.[hc]|esx/esx_vi\.c)$$
+  ^src/(util/(viralloc|util|virfile)\.[hc]|esx/esx_vi\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
@@ -794,7 +794,7 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*py|run.in$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(src/util/memory\.[ch]|examples/.*)$$
+  ^(src/util/viralloc\.[ch]|examples/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/util|lxc/lxc_container)\.c$$

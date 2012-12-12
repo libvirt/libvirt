@@ -38,7 +38,7 @@
 #include "storage_backend_scsi.h"
 #include "storage_backend_iscsi.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "vircommand.h"

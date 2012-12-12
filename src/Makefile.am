@@ -53,7 +53,6 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		util/memory.c util/memory.h			\
 		util/pci.c util/pci.h				\
 		util/processinfo.c util/processinfo.h		\
 		util/sexpr.c util/sexpr.h			\
@@ -66,6 +65,7 @@ UTIL_SOURCES =							\
 		util/threadpool.c util/threadpool.h		\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
+		util/viralloc.c util/viralloc.h			\
 		util/virarch.h util/virarch.c			\
 		util/viratomic.h util/viratomic.c		\
 		util/viraudit.c util/viraudit.h			\

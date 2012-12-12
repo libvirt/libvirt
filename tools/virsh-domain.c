@@ -42,7 +42,7 @@
 #include "c-ctype.h"
 #include "conf/domain_conf.h"
 #include "console.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virfile.h"
 #include "virkeycode.h"

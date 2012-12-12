@@ -32,7 +32,7 @@
 #include "virterror_internal.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 

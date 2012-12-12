@@ -1,5 +1,5 @@
 /*
- * memory.c: safer memory allocation
+ * viralloc.c: safer memory allocation
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
@@ -23,7 +23,7 @@
 #include <config.h>
 #include <stdlib.h>
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 
 #if TEST_OOM

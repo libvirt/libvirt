@@ -33,7 +33,7 @@
 
 # include "lxc_conf.h"
 # include "util.h"
-# include "memory.h"
+# include "viralloc.h"
 
 struct virLXCMeminfo {
     unsigned long long memtotal;

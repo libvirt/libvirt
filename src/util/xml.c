@@ -34,7 +34,7 @@
 #include "xml.h"
 #include "virbuffer.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_XML

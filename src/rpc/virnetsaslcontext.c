@@ -26,7 +26,7 @@
 #include "virnetmessage.h"
 
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virlog.h"
 

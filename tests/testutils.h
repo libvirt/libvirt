@@ -24,7 +24,7 @@
 # define __VIT_TEST_UTILS_H__
 
 # include <stdio.h>
-# include "memory.h"
+# include "viralloc.h"
 
 # define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 # define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */

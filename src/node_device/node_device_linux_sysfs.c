@@ -29,7 +29,7 @@
 #include "node_device_driver.h"
 #include "node_device_hal.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 

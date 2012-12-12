@@ -39,7 +39,7 @@
 #include <limits.h>
 #include "testutils.h"
 #include "internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "threads.h"
 #include "virterror_internal.h"

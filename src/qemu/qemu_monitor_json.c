@@ -35,7 +35,7 @@
 #include "qemu_monitor_json.h"
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "driver.h"
 #include "datatypes.h"

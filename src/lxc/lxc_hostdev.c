@@ -24,9 +24,9 @@
 #include <config.h>
 
 #include "lxc_hostdev.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
-#include "memory.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

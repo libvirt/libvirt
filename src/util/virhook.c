@@ -34,7 +34,7 @@
 #include "virhook.h"
 #include "util.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 #include "configmake.h"
 #include "vircommand.h"

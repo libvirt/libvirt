@@ -34,7 +34,7 @@
 #include "qemu_command.h"
 #include "c-ctype.h"
 #include "c-strcasestr.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "driver.h"
 #include "datatypes.h"

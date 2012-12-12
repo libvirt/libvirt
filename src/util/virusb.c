@@ -35,7 +35,7 @@
 
 #include "virusb.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virterror_internal.h"
 

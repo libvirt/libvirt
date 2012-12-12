@@ -44,7 +44,7 @@
 #endif
 
 #include "c-ctype.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "nodeinfo.h"
 #include "physmem.h"
 #include "util.h"

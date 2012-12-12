@@ -42,7 +42,7 @@
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
-#include "memory.h"
+#include "viralloc.h"
 #include "count-one-bits.h"
 #include "virfile.h"
 #include "viruri.h"

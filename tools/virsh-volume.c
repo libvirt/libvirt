@@ -35,7 +35,7 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virfile.h"
 #include "virsh-pool.h"

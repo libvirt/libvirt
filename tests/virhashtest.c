@@ -9,7 +9,7 @@
 #include "virhash.h"
 #include "virhashdata.h"
 #include "testutils.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virlog.h"
 

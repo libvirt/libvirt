@@ -12,7 +12,7 @@
 
 # include "internal.h"
 # include "testutils.h"
-# include "util/memory.h"
+# include "viralloc.h"
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"

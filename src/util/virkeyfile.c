@@ -27,7 +27,7 @@
 
 #include "c-ctype.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virhash.h"
 #include "virkeyfile.h"

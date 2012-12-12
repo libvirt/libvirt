@@ -36,7 +36,7 @@
 #include "virconf.h"
 #include "datatypes.h"
 #include "virfile.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "vircommand.h"
 #include "libxl.h"

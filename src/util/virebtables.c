@@ -44,7 +44,7 @@
 #include "internal.h"
 #include "virebtables.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "threads.h"

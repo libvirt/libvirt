@@ -27,7 +27,7 @@
 
 #include "capabilities.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "uuid.h"
 #include "cpu_conf.h"

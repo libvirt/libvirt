@@ -75,7 +75,7 @@
 #include "xend_internal.h"
 #include "virbuffer.h"
 #include "capabilities.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virfile.h"
 #include "virnodesuspend.h"

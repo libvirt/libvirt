@@ -30,7 +30,7 @@
 
 #include "virnettlscontext.h"
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "util.h"
 #include "virlog.h"

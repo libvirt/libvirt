@@ -32,7 +32,7 @@
 #include "internal.h"
 #include "nodeinfo.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircommand.h"
 #include "virfile.h"
 #include "virpidfile.h"

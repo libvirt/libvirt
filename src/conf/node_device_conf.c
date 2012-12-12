@@ -28,10 +28,10 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 
 #include "node_device_conf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "util.h"
 #include "virbuffer.h"

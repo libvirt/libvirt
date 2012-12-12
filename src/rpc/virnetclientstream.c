@@ -24,7 +24,7 @@
 
 #include "virnetclientstream.h"
 #include "virnetclient.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "threads.h"

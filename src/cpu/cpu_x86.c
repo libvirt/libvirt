@@ -26,7 +26,7 @@
 #include <stdint.h>
 
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "cpu.h"
 #include "cpu_map.h"

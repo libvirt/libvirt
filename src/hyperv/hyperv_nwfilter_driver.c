@@ -27,7 +27,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"
 #include "hyperv_nwfilter_driver.h"

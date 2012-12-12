@@ -29,7 +29,7 @@
 
 #include "virbuffer.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "util.h"
 #include "esx_vi.h"

@@ -56,7 +56,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 #  define MACVLAN_MODE_PASSTHRU 8
 # endif
 
-# include "memory.h"
+# include "viralloc.h"
 # include "virlog.h"
 # include "uuid.h"
 # include "virfile.h"

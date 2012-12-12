@@ -8,7 +8,7 @@
 #ifdef WITH_QEMU
 
 # include "internal.h"
-# include "memory.h"
+# include "viralloc.h"
 # include "testutils.h"
 # include "util.h"
 # include "qemu/qemu_monitor.h"

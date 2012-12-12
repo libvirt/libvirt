@@ -23,7 +23,7 @@
 
 #include "lxc_domain.h"
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 

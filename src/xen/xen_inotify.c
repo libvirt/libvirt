@@ -30,7 +30,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xen_driver.h"
 #include "virconf.h"
 #include "domain_conf.h"

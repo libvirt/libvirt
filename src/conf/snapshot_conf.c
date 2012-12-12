@@ -35,7 +35,7 @@
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "nwfilter_conf.h"

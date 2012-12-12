@@ -24,7 +24,7 @@
 
 #include "virnetdevvportprofile.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 

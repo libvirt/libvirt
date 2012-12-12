@@ -24,7 +24,7 @@
 
 #include <config.h>
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virhash.h"
 #include "cpu.h"
 #include "cpu_generic.h"

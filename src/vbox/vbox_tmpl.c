@@ -49,7 +49,7 @@
 #include "storage_conf.h"
 #include "storage_file.h"
 #include "uuid.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "nodeinfo.h"
 #include "virlog.h"
 #include "vbox_driver.h"

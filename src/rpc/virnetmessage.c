@@ -24,7 +24,7 @@
 #include <unistd.h>
 
 #include "virnetmessage.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "virfile.h"

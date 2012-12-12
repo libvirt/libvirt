@@ -46,7 +46,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "remote_driver.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virconf.h"
 #include "virnetlink.h"
 #include "virnetserver.h"

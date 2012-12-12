@@ -59,7 +59,7 @@
 #include "virbuffer.h"
 #include "console.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
 #include "virfile.h"

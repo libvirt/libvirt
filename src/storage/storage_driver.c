@@ -42,7 +42,7 @@
 #include "util.h"
 #include "storage_driver.h"
 #include "storage_conf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "storage_backend.h"
 #include "virlog.h"
 #include "virfile.h"

@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virbuffer.h"
 #include "cpu_conf.h"

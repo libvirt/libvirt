@@ -26,7 +26,7 @@
 #include <config.h>
 
 #include "threadpool.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virterror_internal.h"
 

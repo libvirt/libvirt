@@ -25,7 +25,7 @@
 #include "lxc_protocol.h"
 #include "lxc_monitor_dispatch.h"
 
-#include "memory.h"
+#include "viralloc.h"
 
 #include "virterror_internal.h"
 #include "virlog.h"

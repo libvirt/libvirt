@@ -38,7 +38,7 @@
 #include "virtime.h"
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "domain_audit.h"
 #include "virterror_internal.h"
 #include "virlog.h"

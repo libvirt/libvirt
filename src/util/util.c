@@ -80,7 +80,7 @@
 #include "virbuffer.h"
 #include "util.h"
 #include "storage_file.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "verify.h"
 #include "virfile.h"

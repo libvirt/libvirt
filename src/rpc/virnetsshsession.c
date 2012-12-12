@@ -27,7 +27,7 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "configmake.h"
 #include "threads.h"

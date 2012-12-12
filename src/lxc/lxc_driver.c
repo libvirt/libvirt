@@ -45,7 +45,7 @@
 #include "lxc_domain.h"
 #include "lxc_driver.h"
 #include "lxc_process.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"

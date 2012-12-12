@@ -57,7 +57,7 @@
 #include "virlog.h"
 #include "lxc_container.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virnetdevveth.h"
 #include "uuid.h"
 #include "virfile.h"

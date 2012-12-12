@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"
 #include "esx_vi_methods.h"

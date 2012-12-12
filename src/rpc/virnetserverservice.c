@@ -25,7 +25,7 @@
 
 #include "virnetserverservice.h"
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "threads.h"
 

@@ -31,7 +31,7 @@
 #include "datatypes.h"
 #include "util.h"
 #include "uuid.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virbuffer.h"
 #include "virlog.h"
 #include "viruri.h"

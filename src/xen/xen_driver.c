@@ -55,7 +55,7 @@
 #endif
 #include "xml.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "node_device_conf.h"
 #include "pci.h"
 #include "uuid.h"

@@ -16,7 +16,7 @@
 
 #include "typewrappers.h"
 
-#include "memory.h"
+#include "viralloc.h"
 
 #ifndef Py_CAPSULE_H
 typedef void(*PyCapsule_Destructor)(void *, void *);

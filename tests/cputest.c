@@ -32,7 +32,7 @@
 
 #include "internal.h"
 #include "xml.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virbuffer.h"
 #include "testutils.h"
 #include "cpu_conf.h"

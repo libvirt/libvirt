@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "virstring.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virbuffer.h"
 #include "virterror_internal.h"
 

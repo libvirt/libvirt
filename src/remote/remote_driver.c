@@ -38,7 +38,7 @@
 #include "remote_driver.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virfile.h"
 #include "vircommand.h"

@@ -31,7 +31,7 @@
 #define __VIR_BUFFER_C__
 
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 
 
 /* If adding more fields, ensure to edit buf.h to match

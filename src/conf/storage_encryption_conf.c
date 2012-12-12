@@ -28,7 +28,7 @@
 #include "internal.h"
 
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "storage_conf.h"
 #include "storage_encryption_conf.h"
 #include "util.h"

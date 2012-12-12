@@ -52,7 +52,7 @@
 #include "util.h"
 #include "openvz_conf.h"
 #include "nodeinfo.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virlog.h"

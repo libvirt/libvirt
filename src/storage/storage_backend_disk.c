@@ -30,7 +30,7 @@
 #include "virlog.h"
 #include "storage_backend_disk.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircommand.h"
 #include "configmake.h"
 

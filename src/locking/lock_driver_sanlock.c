@@ -39,7 +39,7 @@
 #include "lock_driver.h"
 #include "virlog.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virfile.h"
 #include "md5.h"

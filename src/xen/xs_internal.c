@@ -44,7 +44,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"
 #include "xen_driver.h"

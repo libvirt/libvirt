@@ -7,7 +7,7 @@
 
 # include "testutils.h"
 # include "qemu/qemu_capabilities.h"
-# include "memory.h"
+# include "viralloc.h"
 
 struct testInfo {
     const char *name;

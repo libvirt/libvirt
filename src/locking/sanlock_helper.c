@@ -6,7 +6,7 @@
 #include "configmake.h"
 #include "internal.h"
 #include "virconf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "domain_conf.h"
 
 

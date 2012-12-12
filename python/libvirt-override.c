@@ -24,7 +24,7 @@
 #include "libvirt/virterror.h"
 #include "typewrappers.h"
 #include "libvirt.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virtypedparam.h"
 #include "ignore-value.h"
 #include "util.h"

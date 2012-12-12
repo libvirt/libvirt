@@ -23,7 +23,7 @@
 
 #include <process.h>
 
-#include "memory.h"
+#include "viralloc.h"
 
 struct virThreadLocalData {
     DWORD key;

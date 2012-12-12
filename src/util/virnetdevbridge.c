@@ -26,7 +26,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "virfile.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "intprops.h"
 
 #include <sys/ioctl.h>

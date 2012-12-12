@@ -25,7 +25,7 @@
 
 #include "lock_daemon_config.h"
 #include "virconf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "rpc/virnetserver.h"

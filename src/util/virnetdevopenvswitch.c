@@ -25,7 +25,7 @@
 
 #include "virnetdevopenvswitch.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virmacaddr.h"
 

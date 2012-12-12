@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "virdbus.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "threads.h"

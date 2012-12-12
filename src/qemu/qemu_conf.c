@@ -43,7 +43,7 @@
 #include "virbuffer.h"
 #include "virconf.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "datatypes.h"
 #include "xml.h"
 #include "nodeinfo.h"

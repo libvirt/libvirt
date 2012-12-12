@@ -36,7 +36,7 @@
 #include "util.h"
 #include "c-ctype.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF

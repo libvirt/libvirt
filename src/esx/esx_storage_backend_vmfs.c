@@ -32,7 +32,7 @@
 #include "internal.h"
 #include "md5.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"
 #include "storage_conf.h"

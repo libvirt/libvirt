@@ -26,7 +26,7 @@
 
 #include "vircommand.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virjson.h"
 
 #include "parallels_utils.h"

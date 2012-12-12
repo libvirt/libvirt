@@ -28,7 +28,7 @@
 #include "internal.h"
 #include "virterror_internal.h"
 #include "virconf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "verify.h"
 #include "uuid.h"
 #include "sexpr.h"

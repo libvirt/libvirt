@@ -47,7 +47,7 @@
 #include "openvz_util.h"
 #include "uuid.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "nodeinfo.h"
 #include "virfile.h"

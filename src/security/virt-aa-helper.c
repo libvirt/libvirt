@@ -42,7 +42,7 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircommand.h"
 
 #include "security_driver.h"

@@ -39,7 +39,7 @@
 
 #include "security_apparmor.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "uuid.h"

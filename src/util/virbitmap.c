@@ -31,7 +31,7 @@
 #include <sys/types.h>
 
 #include "virbitmap.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virbuffer.h"
 #include "util.h"
 #include "c-ctype.h"

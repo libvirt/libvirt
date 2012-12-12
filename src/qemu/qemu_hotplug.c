@@ -35,7 +35,7 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "pci.h"
 #include "virfile.h"
 #include "qemu_cgroup.h"

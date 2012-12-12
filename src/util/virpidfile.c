@@ -29,7 +29,7 @@
 
 #include "virpidfile.h"
 #include "virfile.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "intprops.h"
 #include "virlog.h"

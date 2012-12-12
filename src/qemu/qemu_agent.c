@@ -34,7 +34,7 @@
 
 #include "qemu_agent.h"
 #include "qemu_command.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "virjson.h"

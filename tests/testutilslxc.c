@@ -4,7 +4,7 @@
 
 # include "testutilslxc.h"
 # include "testutils.h"
-# include "memory.h"
+# include "viralloc.h"
 # include "domain_conf.h"
 
 

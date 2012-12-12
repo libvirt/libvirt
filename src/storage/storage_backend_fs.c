@@ -46,7 +46,7 @@
 #include "storage_conf.h"
 #include "storage_file.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "virfile.h"
 #include "virlog.h"

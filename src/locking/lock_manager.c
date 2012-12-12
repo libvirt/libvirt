@@ -26,7 +26,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 
 #if HAVE_DLFCN_H

@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "cpu.h"
 #include "cpu_x86.h"

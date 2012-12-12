@@ -33,7 +33,7 @@
 #include "driver.h"
 #include "datatypes.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "util.h"
 #include "virbuffer.h"

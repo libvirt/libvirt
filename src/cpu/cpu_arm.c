@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "memory.h"
+#include "viralloc.h"
 #include "cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU

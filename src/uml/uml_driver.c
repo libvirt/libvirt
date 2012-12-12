@@ -51,7 +51,7 @@
 #include "nodeinfo.h"
 #include "stats_linux.h"
 #include "capabilities.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "domain_conf.h"
 #include "domain_audit.h"

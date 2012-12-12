@@ -26,7 +26,7 @@
 #include <config.h>
 
 #include "uuid.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "storage_conf.h"
 #include "esx_private.h"
 #include "esx_storage_driver.h"

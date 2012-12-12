@@ -34,7 +34,7 @@
 #include "sysinfo.h"
 #include "util.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircommand.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO

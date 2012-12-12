@@ -33,7 +33,7 @@
 #include "datatypes.h"
 #include "driver.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "secret_conf.h"
 #include "secret_driver.h"
 #include "threads.h"

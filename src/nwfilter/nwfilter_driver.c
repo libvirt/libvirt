@@ -34,7 +34,7 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "domain_conf.h"
 #include "domain_nwfilter.h"
 #include "nwfilter_conf.h"

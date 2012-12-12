@@ -37,7 +37,7 @@
 
 #include "virnetlink.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virmacaddr.h"
 #include "virterror_internal.h"

@@ -31,7 +31,7 @@
 #include <libgen.h>
 
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "configmake.h"
 #include "storage_file.h"
 #include "virterror_internal.h"

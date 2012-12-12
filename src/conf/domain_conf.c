@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "verify.h"
 #include "xml.h"
 #include "uuid.h"

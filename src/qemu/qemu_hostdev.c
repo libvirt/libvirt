@@ -26,7 +26,7 @@
 #include "qemu_hostdev.h"
 #include "virlog.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "pci.h"
 #include "virusb.h"
 #include "virnetdev.h"

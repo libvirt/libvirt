@@ -35,7 +35,7 @@
 #include "storage_backend_logical.h"
 #include "storage_conf.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 

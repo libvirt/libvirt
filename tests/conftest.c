@@ -6,7 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include "virconf.h"
-#include "memory.h"
+#include "viralloc.h"
 
 int main(int argc, char **argv)
 {

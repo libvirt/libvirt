@@ -30,7 +30,7 @@
 #include "virnetclient.h"
 #include "virnetsocket.h"
 #include "virkeepalive.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virfile.h"
 #include "virlog.h"

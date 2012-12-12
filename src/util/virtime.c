@@ -38,7 +38,7 @@
 
 #include "virtime.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

@@ -24,7 +24,7 @@
 
 #include <stdarg.h>
 
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virterror_internal.h"
 

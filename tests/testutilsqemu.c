@@ -4,7 +4,7 @@
 
 # include "testutilsqemu.h"
 # include "testutils.h"
-# include "memory.h"
+# include "viralloc.h"
 # include "cpu_conf.h"
 # include "qemu/qemu_driver.h"
 # include "qemu/qemu_domain.h"

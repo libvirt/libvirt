@@ -33,7 +33,7 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "xml.h"
 #include "conf/storage_conf.h"

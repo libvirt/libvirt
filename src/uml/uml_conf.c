@@ -39,7 +39,7 @@
 #include "virbuffer.h"
 #include "virconf.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "nodeinfo.h"
 #include "virlog.h"
 #include "domain_nwfilter.h"

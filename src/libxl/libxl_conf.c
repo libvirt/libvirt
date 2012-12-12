@@ -36,7 +36,7 @@
 #include "datatypes.h"
 #include "virfile.h"
 #include "virstring.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "capabilities.h"
 #include "libxl_driver.h"

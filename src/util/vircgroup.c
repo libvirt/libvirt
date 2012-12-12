@@ -39,7 +39,7 @@
 
 #include "internal.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircgroup.h"
 #include "virlog.h"
 #include "virfile.h"

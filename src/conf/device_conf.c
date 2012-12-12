@@ -23,7 +23,7 @@
 #include <config.h>
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"

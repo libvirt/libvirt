@@ -27,7 +27,7 @@
 #include <libxml/xpathInternals.h>
 
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "util.h"
 #include "uuid.h"

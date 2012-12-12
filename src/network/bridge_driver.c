@@ -54,7 +54,7 @@
 #include "virpidfile.h"
 #include "util.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "viriptables.h"
 #include "virlog.h"

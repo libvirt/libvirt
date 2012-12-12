@@ -31,7 +31,7 @@
 
 #include "virlog.h"
 #include "virterror_internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "threads.h"
 #include "virkeepalive.h"
 

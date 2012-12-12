@@ -30,7 +30,7 @@
 #include "virinitctl.h"
 #include "virterror_internal.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_INITCTL

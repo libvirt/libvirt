@@ -28,7 +28,7 @@
 #include "qemu_process.h"
 #include "vircgroup.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "util.h"
 #include "domain_audit.h"

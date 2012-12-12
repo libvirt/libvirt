@@ -51,7 +51,7 @@
 #include "driver.h"
 
 #include "uuid.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "configmake.h"
 #include "intprops.h"
 #include "virconf.h"

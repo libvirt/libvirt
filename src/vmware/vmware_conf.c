@@ -26,7 +26,7 @@
 #include "vircommand.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "nodeinfo.h"
 #include "virfile.h"
 #include "uuid.h"

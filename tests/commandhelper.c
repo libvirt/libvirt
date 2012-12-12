@@ -28,7 +28,7 @@
 
 #include "internal.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virfile.h"
 #include "testutils.h"
 

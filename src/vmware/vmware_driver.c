@@ -27,7 +27,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "virfile.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "uuid.h"
 #include "vircommand.h"

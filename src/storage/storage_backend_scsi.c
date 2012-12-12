@@ -30,7 +30,7 @@
 
 #include "virterror_internal.h"
 #include "storage_backend_scsi.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "vircommand.h"

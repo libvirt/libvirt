@@ -30,7 +30,7 @@
 #include "viraudit.h"
 #include "uuid.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 
 /* Return nn:mm in hex for block and character devices, and NULL
  * for other file types, stat failure, or allocation failure.  */

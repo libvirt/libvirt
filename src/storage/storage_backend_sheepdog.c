@@ -31,7 +31,7 @@
 #include "storage_conf.h"
 #include "vircommand.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

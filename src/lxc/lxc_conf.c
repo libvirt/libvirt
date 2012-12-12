@@ -30,7 +30,7 @@
 #include "nodeinfo.h"
 #include "virterror_internal.h"
 #include "virconf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"
 #include "configmake.h"

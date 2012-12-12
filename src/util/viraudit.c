@@ -32,7 +32,7 @@
 #include "viraudit.h"
 #include "util.h"
 #include "virfile.h"
-#include "memory.h"
+#include "viralloc.h"
 
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */

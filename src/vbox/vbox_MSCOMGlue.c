@@ -30,7 +30,7 @@
 #define nsCID CLSID
 
 #include "internal.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virlog.h"
 #include "virterror_internal.h"

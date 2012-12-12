@@ -45,7 +45,7 @@
 #include "virdnsmasq.h"
 #include "util.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "virfile.h"

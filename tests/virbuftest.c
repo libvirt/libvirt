@@ -8,7 +8,7 @@
 #include "util.h"
 #include "testutils.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 
 #define TEST_ERROR(...)                             \
     do {                                            \

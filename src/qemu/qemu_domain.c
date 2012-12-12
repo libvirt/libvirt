@@ -27,7 +27,7 @@
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "c-ctype.h"

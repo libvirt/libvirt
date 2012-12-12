@@ -27,7 +27,7 @@
 
 #include "interface_conf.h"
 
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"

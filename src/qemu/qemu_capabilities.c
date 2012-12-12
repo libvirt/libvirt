@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "qemu_capabilities.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "util.h"

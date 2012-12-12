@@ -27,7 +27,7 @@
 # include <sys/syscall.h>
 #endif
 
-#include "memory.h"
+#include "viralloc.h"
 
 
 /* Nothing special required for pthreads */

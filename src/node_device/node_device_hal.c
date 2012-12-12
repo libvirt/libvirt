@@ -33,7 +33,7 @@
 #include "virterror_internal.h"
 #include "driver.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "uuid.h"
 #include "pci.h"
 #include "virlog.h"

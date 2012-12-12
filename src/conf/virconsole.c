@@ -32,7 +32,7 @@
 #include "fdstream.h"
 #include "internal.h"
 #include "threads.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virpidfile.h"
 #include "virlog.h"
 #include "virterror_internal.h"

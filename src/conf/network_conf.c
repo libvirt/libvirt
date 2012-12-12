@@ -37,7 +37,7 @@
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "xml.h"
 #include "uuid.h"
 #include "util.h"

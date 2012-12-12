@@ -39,7 +39,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "capabilities.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "network_conf.h"
 #include "interface_conf.h"
 #include "domain_conf.h"

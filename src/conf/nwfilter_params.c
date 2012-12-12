@@ -25,7 +25,7 @@
 
 #include "internal.h"
 
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"

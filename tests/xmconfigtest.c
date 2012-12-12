@@ -34,7 +34,7 @@
 #include "xenxs/xen_xm.h"
 #include "testutils.h"
 #include "testutilsxen.h"
-#include "memory.h"
+#include "viralloc.h"
 
 static virCapsPtr caps;
 

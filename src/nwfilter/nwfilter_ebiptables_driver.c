@@ -31,7 +31,7 @@
 #include "internal.h"
 
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "domain_conf.h"

@@ -25,7 +25,7 @@
 #include <unistd.h>
 
 #include "driver.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "util.h"
 #include "configmake.h"

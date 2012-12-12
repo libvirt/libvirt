@@ -26,7 +26,7 @@
 #include "storage_backend_rbd.h"
 #include "storage_conf.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "base64.h"
 #include "uuid.h"

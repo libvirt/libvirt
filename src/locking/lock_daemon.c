@@ -39,7 +39,7 @@
 #include "virprocess.h"
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virconf.h"
 #include "rpc/virnetserver.h"
 #include "virrandom.h"

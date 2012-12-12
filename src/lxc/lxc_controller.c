@@ -62,7 +62,7 @@
 #include "lxc_fuse.h"
 #include "virnetdev.h"
 #include "virnetdevveth.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "virfile.h"
 #include "virpidfile.h"

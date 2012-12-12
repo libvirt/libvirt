@@ -34,7 +34,7 @@
 #include "internal.h"
 #include "base64.h"
 #include "virbuffer.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "util.h"
 #include "xml.h"
 

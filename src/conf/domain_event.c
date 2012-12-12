@@ -26,7 +26,7 @@
 #include "domain_event.h"
 #include "virlog.h"
 #include "datatypes.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

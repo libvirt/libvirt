@@ -46,7 +46,7 @@
 #include "virbuffer.h"
 #include "uuid.h"
 #include "util.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virlog.h"
 #include "count-one-bits.h"
 

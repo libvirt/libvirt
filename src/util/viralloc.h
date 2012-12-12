@@ -1,5 +1,5 @@
 /*
- * memory.c: safer memory allocation
+ * viralloc.h: safer memory allocation
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange

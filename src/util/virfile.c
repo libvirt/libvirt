@@ -39,7 +39,7 @@
 
 #include "vircommand.h"
 #include "configmake.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 

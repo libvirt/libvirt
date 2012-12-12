@@ -35,7 +35,7 @@
 #include <stdlib.h>
 
 #include "virlog.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "vircommand.h"
 #include "virterror_internal.h"
 #include "virfile.h"

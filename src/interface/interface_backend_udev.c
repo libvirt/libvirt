@@ -27,7 +27,7 @@
 #include "datatypes.h"
 #include "interface_driver.h"
 #include "interface_conf.h"
-#include "memory.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 

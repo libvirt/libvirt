@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include "memory.h"
+#include "viralloc.h"
 #include "cpu.h"
 #include "cpu_map.h"
 #include "configmake.h"

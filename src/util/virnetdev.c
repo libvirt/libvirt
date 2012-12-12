@@ -27,7 +27,7 @@
 #include "virfile.h"
 #include "virterror_internal.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "pci.h"
 #include "virlog.h"
 

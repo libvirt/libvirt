@@ -12,7 +12,7 @@
 #include "testutils.h"
 #include "network_conf.h"
 #include "vircommand.h"
-#include "memory.h"
+#include "viralloc.h"
 #include "network/bridge_driver.h"
 
 static int
