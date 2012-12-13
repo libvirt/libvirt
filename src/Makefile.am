@@ -1451,7 +1451,7 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
 	printf 'global:\n\n' >>$@-tmp && \
 	for file in $(USED_SYM_FILES); do \
-	    cat $(srcdir)/$$file >>$@-tmp; \
+	    cat $$file >>$@-tmp; \
 	done && \
 	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
 	chmod a-w $@-tmp && \
