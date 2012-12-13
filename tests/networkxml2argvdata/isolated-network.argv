@@ -1,6 +1,6 @@
 @DNSMASQ@ --strict-order \
 --local=// --domain-needed --conf-file= \
---bind-interfaces --except-interface lo \
+--except-interface lo --bind-interfaces \
 --listen-address 192.168.152.1 \
 --dhcp-option=3 --no-resolv \
 --dhcp-range 192.168.152.2,192.168.152.254 \

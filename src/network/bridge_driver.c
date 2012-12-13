@@ -510,6 +510,9 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     /* *no* conf file */
     virCommandAddArg(cmd, "--conf-file=");
 
+    /* dnsmasq will *always* listen on localhost unless told otherwise */
+    virCommandAddArgList(cmd, "--except-interface", "lo", NULL);
+
     if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)) {
         /* using --bind-dynamic with only --interface (no
          * --listen-address) prevents dnsmasq from responding to dns
@@ -523,10 +526,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
                              "--interface", network->def->bridge,
                              NULL);
     } else {
-        virCommandAddArgList(cmd,
-                             "--bind-interfaces",
-                             "--except-interface", "lo",
-                             NULL);
+        virCommandAddArg(cmd, "--bind-interfaces");
         /*
          * --interface does not actually work with dnsmasq < 2.47,
          * due to DAD for ipv6 addresses on the interface.
