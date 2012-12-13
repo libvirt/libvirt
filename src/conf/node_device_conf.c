@@ -35,7 +35,7 @@
 #include "xml.h"
 #include "virutil.h"
 #include "virbuffer.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virpci.h"
 #include "virrandom.h"
 

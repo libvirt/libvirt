@@ -50,7 +50,7 @@
 #include "datatypes.h"
 #include "driver.h"
 
-#include "uuid.h"
+#include "viruuid.h"
 #include "viralloc.h"
 #include "configmake.h"
 #include "intprops.h"

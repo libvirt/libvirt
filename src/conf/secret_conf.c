@@ -31,7 +31,7 @@
 #include "virterror_internal.h"
 #include "virutil.h"
 #include "xml.h"
-#include "uuid.h"
+#include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 

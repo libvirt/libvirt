@@ -30,7 +30,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virbuffer.h"
 #include "hyperv_private.h"
 #include "hyperv_wmi.h"

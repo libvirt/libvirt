@@ -53,7 +53,6 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		util/uuid.c util/uuid.h				\
 		util/viralloc.c util/viralloc.h			\
 		util/virarch.h util/virarch.c			\
 		util/viratomic.h util/viratomic.c		\
@@ -116,6 +115,7 @@ UTIL_SOURCES =							\
 		util/virusb.c util/virusb.h			\
 		util/viruri.h util/viruri.c			\
 		util/virutil.c util/virutil.h			\
+		util/viruuid.c util/viruuid.h			\
 		$(NULL)
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \

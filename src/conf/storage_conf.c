@@ -39,7 +39,7 @@
 #include "virstoragefile.h"
 
 #include "xml.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virbuffer.h"
 #include "virutil.h"
 #include "viralloc.h"

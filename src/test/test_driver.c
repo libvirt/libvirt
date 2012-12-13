@@ -37,7 +37,7 @@
 #include "test_driver.h"
 #include "virbuffer.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "capabilities.h"
 #include "viralloc.h"
 #include "network_conf.h"

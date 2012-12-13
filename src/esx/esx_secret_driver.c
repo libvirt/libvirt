@@ -27,7 +27,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "esx_private.h"
 #include "esx_secret_driver.h"
 #include "esx_vi.h"

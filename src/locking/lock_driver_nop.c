@@ -24,7 +24,7 @@
 #include "lock_driver_nop.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 
 
 static int virLockManagerNopInit(unsigned int version ATTRIBUTE_UNUSED,

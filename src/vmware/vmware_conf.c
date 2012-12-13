@@ -29,7 +29,7 @@
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "virfile.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virterror_internal.h"
 #include "vmx.h"
 

@@ -29,7 +29,7 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "vircommand.h"
 #include "vmx.h"
 #include "vmware_conf.h"

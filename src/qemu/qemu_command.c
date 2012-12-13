@@ -34,7 +34,7 @@
 #include "virarch.h"
 #include "virutil.h"
 #include "virfile.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
 #include "domain_audit.h"

@@ -42,7 +42,7 @@
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virpci.h"
 #include "virusb.h"
 #include "virfile.h"

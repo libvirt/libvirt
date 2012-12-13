@@ -27,7 +27,7 @@
 #include "virlog.h"
 #include "virutil.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 
 #if HAVE_DLFCN_H
 # include <dlfcn.h>

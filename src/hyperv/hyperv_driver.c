@@ -30,7 +30,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "hyperv_driver.h"
 #include "hyperv_interface_driver.h"
 #include "hyperv_network_driver.h"

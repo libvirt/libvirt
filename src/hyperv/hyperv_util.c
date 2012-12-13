@@ -27,7 +27,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "hyperv_private.h"
 #include "hyperv_util.h"
 

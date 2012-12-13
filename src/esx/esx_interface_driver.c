@@ -28,7 +28,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "interface_conf.h"
 #include "virsocketaddr.h"
 #include "esx_private.h"

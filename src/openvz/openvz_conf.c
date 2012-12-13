@@ -45,7 +45,7 @@
 #include "virterror_internal.h"
 #include "openvz_conf.h"
 #include "openvz_util.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virutil.h"

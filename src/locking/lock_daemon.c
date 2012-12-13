@@ -44,7 +44,7 @@
 #include "rpc/virnetserver.h"
 #include "virrandom.h"
 #include "virhash.h"
-#include "uuid.h"
+#include "viruuid.h"
 
 #include "locking/lock_daemon_dispatch.h"
 #include "locking/lock_protocol.h"

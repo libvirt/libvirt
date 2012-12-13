@@ -28,7 +28,7 @@
 
 #include "domain_audit.h"
 #include "viraudit.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virlog.h"
 #include "viralloc.h"
 

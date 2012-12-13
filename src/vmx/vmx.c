@@ -30,7 +30,7 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "vmx.h"
 #include "viruri.h"
 

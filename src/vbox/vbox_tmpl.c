@@ -48,7 +48,7 @@
 #include "domain_event.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "virlog.h"

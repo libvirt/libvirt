@@ -29,7 +29,7 @@
 
 #include "viralloc.h"
 #include "xml.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virutil.h"
 #include "virbuffer.h"
 

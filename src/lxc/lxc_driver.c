@@ -50,7 +50,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"
 #include "nodeinfo.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virstatslinux.h"
 #include "virhook.h"
 #include "virfile.h"

@@ -44,7 +44,7 @@
 #include "xen_xm.h"
 #include "virhash.h"
 #include "virbuffer.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"

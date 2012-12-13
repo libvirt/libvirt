@@ -52,7 +52,7 @@
 #include "driver.h"
 #include "libvirt/libvirt.h"
 #include "virterror_internal.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "domain_conf.h"
 #include "storage_conf.h"
 #include "nodeinfo.h"

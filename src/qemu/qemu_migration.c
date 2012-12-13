@@ -43,7 +43,7 @@
 #include "virfile.h"
 #include "datatypes.h"
 #include "fdstream.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"

@@ -37,7 +37,7 @@
 #include "xen_inotify.h"
 #include "xend_internal.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virfile.h"
 
 #include "xm_internal.h" /* for xenXMDomainConfigParse */

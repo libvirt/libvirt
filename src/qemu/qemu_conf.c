@@ -39,7 +39,7 @@
 #include "qemu_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_bridge_filter.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
 #include "virutil.h"

@@ -35,7 +35,7 @@
 #include <arpa/inet.h>
 
 #include "uml_conf.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
 #include "virutil.h"

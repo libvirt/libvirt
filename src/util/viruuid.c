@@ -1,4 +1,6 @@
 /*
+ * viruuid.h: helper APIs for dealing with UUIDs
+ *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +23,7 @@
 
 #include <config.h>
 
-#include "uuid.h"
+#include "viruuid.h"
 
 #include <errno.h>
 #include <fcntl.h>

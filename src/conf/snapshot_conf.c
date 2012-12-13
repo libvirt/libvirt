@@ -43,7 +43,7 @@
 #include "snapshot_conf.h"
 #include "virstoragefile.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virfile.h"
 #include "virterror_internal.h"
 #include "xml.h"

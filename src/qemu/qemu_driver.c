@@ -67,7 +67,7 @@
 #include "virstatslinux.h"
 #include "capabilities.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "domain_conf.h"
 #include "domain_audit.h"
 #include "node_device_conf.h"

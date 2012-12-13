@@ -38,7 +38,7 @@
 #include "virsexpr.h"
 #include "xen_sxpr.h"
 #include "virbuffer.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */

@@ -29,7 +29,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "hyperv_device_monitor.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV

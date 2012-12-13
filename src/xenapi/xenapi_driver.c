@@ -32,7 +32,7 @@
 #include "datatypes.h"
 #include "virauth.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "viralloc.h"
 #include "virbuffer.h"
 #include "viruri.h"

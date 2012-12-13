@@ -34,7 +34,7 @@
 #include "driver.h"
 #include "datatypes.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virpci.h"
 #include "virlog.h"
 #include "node_device_driver.h"

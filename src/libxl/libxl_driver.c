@@ -37,7 +37,7 @@
 #include "datatypes.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "vircommand.h"
 #include "libxl.h"
 #include "libxl_driver.h"

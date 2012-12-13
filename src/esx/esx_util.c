@@ -31,7 +31,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "vmx.h"
 #include "esx_private.h"
 #include "esx_util.h"

@@ -24,7 +24,7 @@
 # define __VIR_NETDEV_VPORT_PROFILE_H__
 
 # include "internal.h"
-# include "uuid.h"
+# include "viruuid.h"
 # include "virutil.h"
 # include "virmacaddr.h"
 

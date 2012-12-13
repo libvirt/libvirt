@@ -25,7 +25,7 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virterror_internal.h"

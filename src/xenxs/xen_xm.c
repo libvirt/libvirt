@@ -30,7 +30,7 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "verify.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virsexpr.h"
 #include "count-one-bits.h"
 #include "xenxs_private.h"

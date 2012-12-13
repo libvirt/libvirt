@@ -37,7 +37,7 @@
 #include "virlog.h"
 #include "virutil.h"
 #include "stream.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "libvirt/libvirt-qemu.h"
 #include "vircommand.h"
 #include "intprops.h"

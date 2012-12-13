@@ -44,7 +44,7 @@
 #include "libvirtd-config.h"
 
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "remote_driver.h"
 #include "viralloc.h"
 #include "virconf.h"
@@ -53,7 +53,6 @@
 #include "remote.h"
 #include "remote_driver.h"
 #include "virhook.h"
-#include "uuid.h"
 #include "viraudit.h"
 #include "locking/lock_manager.h"
 

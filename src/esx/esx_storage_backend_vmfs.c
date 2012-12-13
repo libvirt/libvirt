@@ -34,7 +34,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"
 #include "esx_storage_backend_vmfs.h"

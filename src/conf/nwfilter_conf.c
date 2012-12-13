@@ -38,7 +38,7 @@
 
 #include "internal.h"
 
-#include "uuid.h"
+#include "viruuid.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "datatypes.h"

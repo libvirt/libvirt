@@ -29,7 +29,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "cpu_conf.h"
 #include "virterror_internal.h"
 

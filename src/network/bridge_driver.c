@@ -55,7 +55,7 @@
 #include "virutil.h"
 #include "vircommand.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "viriptables.h"
 #include "virlog.h"
 #include "virdnsmasq.h"

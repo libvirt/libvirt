@@ -29,7 +29,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "base64.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "rados/librados.h"
 #include "rbd/librbd.h"
 

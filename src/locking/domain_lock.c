@@ -23,7 +23,7 @@
 
 #include "domain_lock.h"
 #include "viralloc.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 

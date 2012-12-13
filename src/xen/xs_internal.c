@@ -46,7 +46,7 @@
 #include "driver.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "xen_driver.h"
 #include "xs_internal.h"
 #include "xen_hypervisor.h"

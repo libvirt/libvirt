@@ -51,7 +51,7 @@
 #include "viralloc.h"
 #include "internal.h"
 #include "secret_conf.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virstoragefile.h"
 #include "storage_backend.h"
 #include "virlog.h"

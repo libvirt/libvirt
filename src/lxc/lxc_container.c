@@ -59,7 +59,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "virnetdevveth.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virfile.h"
 #include "virusb.h"
 #include "vircommand.h"

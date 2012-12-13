@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#include "uuid.h"
+#include "viruuid.h"
 #include "viralloc.h"
 #include "storage_conf.h"
 #include "esx_private.h"

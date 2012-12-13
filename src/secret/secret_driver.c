@@ -38,7 +38,7 @@
 #include "secret_driver.h"
 #include "virthread.h"
 #include "virutil.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virterror_internal.h"
 #include "virfile.h"
 #include "configmake.h"

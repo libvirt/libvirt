@@ -34,7 +34,7 @@
 #include "virutil.h"
 #include "xml.h"
 #include "virterror_internal.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

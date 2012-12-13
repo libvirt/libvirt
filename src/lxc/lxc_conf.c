@@ -32,7 +32,7 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "configmake.h"
 #include "lxc_container.h"
 #include "virnodesuspend.h"

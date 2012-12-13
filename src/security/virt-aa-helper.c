@@ -49,7 +49,7 @@
 #include "security_apparmor.h"
 #include "domain_conf.h"
 #include "xml.h"
-#include "uuid.h"
+#include "viruuid.h"
 #include "virusb.h"
 #include "virpci.h"
 #include "virfile.h"
