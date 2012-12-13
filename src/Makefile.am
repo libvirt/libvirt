@@ -149,19 +149,22 @@ LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
 		locking/sanlock_helper.c
 
 LOCK_PROTOCOL_GENERATED = \
-		locking/lock_protocol.h \
-		locking/lock_protocol.c \
+		$(srcdir)/locking/lock_protocol.h \
+		$(srcdir)/locking/lock_protocol.c \
 		$(NULL)
 
-EXTRA_DIST += locking/lock_protocol.x
+LOCK_PROTOCOL = $(srcdir)/locking/lock_protocol.x
+EXTRA_DIST += $(LOCK_PROTOCOL) \
+	$(LOCK_PROTOCOL_GENERATED)
 BUILT_SOURCES += $(LOCK_PROTOCOL_GENERATED)
 MAINTAINERCLEANFILES += $(LOCK_PROTOCOL_GENERATED)
 
 LOCK_DAEMON_GENERATED = \
-		locking/lock_daemon_dispatch_stubs.h
+		$(srcdir)/locking/lock_daemon_dispatch_stubs.h
 		$(NULL)
 
 BUILT_SOURCES += $(LOCK_DAEMON_GENERATED)
+EXTRA_DIST += $(LOCK_DAEMON_GENERATED)
 MAINTAINERCLEANFILES += $(LOCK_DAEMON_GENERATED)
 
 LOCK_DRIVER_LOCKD_SOURCES = \
@@ -177,8 +180,11 @@ LOCK_DAEMON_SOURCES = \
 		locking/lock_daemon_dispatch.h \
 		$(NULL)
 
-$(srcdir)/locking/lock_daemon_dispatch_stubs.h: locking/lock_protocol.x $(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl -b virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL $< > $@
+$(srcdir)/locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
+		$(srcdir)/rpc/gendispatch.pl Makefile.am
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
+	    -b virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
+	    $(LOCK_PROTOCOL) > $@
 
 
 NETDEV_CONF_SOURCES =						\
