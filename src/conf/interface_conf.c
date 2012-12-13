@@ -28,7 +28,7 @@
 #include "interface_conf.h"
 
 #include "viralloc.h"
-#include "xml.h"
+#include "virxml.h"
 #include "viruuid.h"
 #include "virutil.h"
 #include "virbuffer.h"

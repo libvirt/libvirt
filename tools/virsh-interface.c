@@ -35,7 +35,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "xml.h"
+#include "virxml.h"
 
 virInterfacePtr
 vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,

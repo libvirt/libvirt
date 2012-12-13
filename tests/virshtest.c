@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "virutil.h"
 #include "testutils.h"
 

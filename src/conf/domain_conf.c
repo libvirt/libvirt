@@ -36,7 +36,7 @@
 #include "snapshot_conf.h"
 #include "viralloc.h"
 #include "verify.h"
-#include "xml.h"
+#include "virxml.h"
 #include "viruuid.h"
 #include "virutil.h"
 #include "virbuffer.h"

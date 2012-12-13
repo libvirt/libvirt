@@ -37,7 +37,7 @@
 #include "viralloc.h"
 #include "virmacaddr.h"
 #include "virsh-domain.h"
-#include "xml.h"
+#include "virxml.h"
 
 static const char *
 vshDomainIOErrorToString(int error)

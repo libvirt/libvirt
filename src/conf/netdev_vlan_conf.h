@@ -25,7 +25,7 @@
 # include "internal.h"
 # include "virnetdevvlan.h"
 # include "virbuffer.h"
-# include "xml.h"
+# include "virxml.h"
 
 int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def);
 int virNetDevVlanFormat(virNetDevVlanPtr def, virBufferPtr buf);

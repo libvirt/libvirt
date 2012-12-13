@@ -86,7 +86,6 @@ UTIL_SOURCES =							\
 		util/virthreadwin32.h				\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtypedparam.c util/virtypedparam.h	\
-		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\
 		util/vircgroup.c util/vircgroup.h		\
 		util/virdbus.c util/virdbus.h			\
@@ -116,6 +115,7 @@ UTIL_SOURCES =							\
 		util/viruri.h util/viruri.c			\
 		util/virutil.c util/virutil.h			\
 		util/viruuid.c util/viruuid.h			\
+		util/virxml.c util/virxml.h			\
 		$(NULL)
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \

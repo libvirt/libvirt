@@ -51,7 +51,7 @@
 #include "virsh-domain-monitor.h"
 #include "virterror_internal.h"
 #include "virtypedparam.h"
-#include "xml.h"
+#include "virxml.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO

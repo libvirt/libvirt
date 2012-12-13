@@ -46,7 +46,7 @@
 #include "viruuid.h"
 #include "virfile.h"
 #include "virterror_internal.h"
-#include "xml.h"
+#include "virxml.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT
 

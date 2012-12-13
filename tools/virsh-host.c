@@ -36,7 +36,7 @@
 #include "viralloc.h"
 #include "virutil.h"
 #include "virsh-domain.h"
-#include "xml.h"
+#include "virxml.h"
 #include "virtypedparam.h"
 #include "virjson.h"
 

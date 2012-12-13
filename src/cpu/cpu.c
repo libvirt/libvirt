@@ -25,7 +25,7 @@
 
 #include "virlog.h"
 #include "viralloc.h"
-#include "xml.h"
+#include "virxml.h"
 #include "cpu.h"
 #include "cpu_x86.h"
 #include "cpu_powerpc.h"

@@ -39,7 +39,7 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "virsh-pool.h"
-#include "xml.h"
+#include "virxml.h"
 
 virStorageVolPtr
 vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,

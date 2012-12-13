@@ -75,7 +75,7 @@
 #include "virusb.h"
 #include "virprocess.h"
 #include "libvirt_internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "cpu/cpu.h"
 #include "virsysinfo.h"
 #include "domain_nwfilter.h"

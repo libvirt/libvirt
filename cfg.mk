@@ -809,7 +809,7 @@ exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virutil\.c$$
 exclude_file_name_regexp--sc_prohibit_strtol = \
   ^src/(util/virsexpr|(vbox|xen|xenxs)/.*)\.c$$
 
-exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/xml\.c$$
+exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 

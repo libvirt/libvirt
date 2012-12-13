@@ -30,7 +30,7 @@
 
 # include "virutil.h"
 # include "virhash.h"
-# include "xml.h"
+# include "virxml.h"
 # include "virbuffer.h"
 # include "virsocketaddr.h"
 # include "virmacaddr.h"

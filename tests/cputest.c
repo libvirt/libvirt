@@ -31,7 +31,7 @@
 #include <fcntl.h>
 
 #include "internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "viralloc.h"
 #include "virbuffer.h"
 #include "testutils.h"

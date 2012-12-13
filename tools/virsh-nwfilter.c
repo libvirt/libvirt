@@ -35,7 +35,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "xml.h"
+#include "virxml.h"
 
 virNWFilterPtr
 vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,

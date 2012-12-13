@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "testutils.h"
 #include "xen/xen_hypervisor.h"
 #include "virfile.h"

@@ -24,7 +24,7 @@
 #ifndef __VIR_CPU_MAP_H__
 # define __VIR_CPU_MAP_H__
 
-# include "xml.h"
+# include "virxml.h"
 
 
 enum cpuMapElement {

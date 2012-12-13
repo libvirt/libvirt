@@ -38,7 +38,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
 #include "viralloc.h"
-#include "xml.h"
+#include "virxml.h"
 #include "viruuid.h"
 #include "virutil.h"
 #include "virbuffer.h"

@@ -32,7 +32,7 @@
 #include "storage_conf.h"
 #include "storage_encryption_conf.h"
 #include "virutil.h"
-#include "xml.h"
+#include "virxml.h"
 #include "virterror_internal.h"
 #include "viruuid.h"
 #include "virfile.h"

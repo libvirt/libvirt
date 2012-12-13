@@ -60,7 +60,7 @@
 #include "console.h"
 #include "virutil.h"
 #include "viralloc.h"
-#include "xml.h"
+#include "virxml.h"
 #include "libvirt/libvirt-qemu.h"
 #include "virfile.h"
 #include "configmake.h"

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "datatypes.h"
 #include "xen/xen_driver.h"
 #include "xen/xend_internal.h"

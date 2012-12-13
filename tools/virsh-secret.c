@@ -36,7 +36,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "xml.h"
+#include "virxml.h"
 
 static virSecretPtr
 vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)

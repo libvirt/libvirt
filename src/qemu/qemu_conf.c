@@ -45,7 +45,7 @@
 #include "virutil.h"
 #include "viralloc.h"
 #include "datatypes.h"
-#include "xml.h"
+#include "virxml.h"
 #include "nodeinfo.h"
 #include "virlog.h"
 #include "cpu/cpu.h"

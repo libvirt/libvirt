@@ -32,7 +32,7 @@
 #include "virutil.h"
 #include "viruuid.h"
 #include "vmx.h"
-#include "xml.h"
+#include "virxml.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"

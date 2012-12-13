@@ -53,7 +53,7 @@
 #if WITH_XEN_INOTIFY
 # include "xen_inotify.h"
 #endif
-#include "xml.h"
+#include "virxml.h"
 #include "virutil.h"
 #include "viralloc.h"
 #include "node_device_conf.h"

@@ -46,7 +46,7 @@
 #include "domain_event.h"
 #include "storage_conf.h"
 #include "node_device_conf.h"
-#include "xml.h"
+#include "virxml.h"
 #include "virthread.h"
 #include "virlog.h"
 #include "virfile.h"

@@ -38,7 +38,7 @@
 #include "storage_conf.h"
 #include "virstoragefile.h"
 
-#include "xml.h"
+#include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virutil.h"

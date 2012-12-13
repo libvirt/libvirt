@@ -1,5 +1,5 @@
 /*
- * xml.c: XML based interfaces for the libvir library
+ * virxml.c: helper APIs for dealing with XML documents
  *
  * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
  *
@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 
 #include "virterror_internal.h"
-#include "xml.h"
+#include "virxml.h"
 #include "virbuffer.h"
 #include "virutil.h"
 #include "viralloc.h"

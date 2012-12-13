@@ -30,7 +30,7 @@
 #include "secret_conf.h"
 #include "virterror_internal.h"
 #include "virutil.h"
-#include "xml.h"
+#include "virxml.h"
 #include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
