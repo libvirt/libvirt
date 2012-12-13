@@ -756,15 +756,25 @@ virStorageFileProbeFormatFromBuf(const char *path,
 {
     int format = VIR_STORAGE_FILE_RAW;
     int i;
+    int possibleFormat = VIR_STORAGE_FILE_RAW;
+    VIR_DEBUG("path=%s", path);
 
     /* First check file magic */
     for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
-        if (virStorageFileMatchesMagic(i, buf, buflen) &&
-            virStorageFileMatchesVersion(i, buf, buflen)) {
+        if (virStorageFileMatchesMagic(i, buf, buflen)) {
+            if (!virStorageFileMatchesVersion(i, buf, buflen)) {
+                possibleFormat = i;
+                continue;
+            }
             format = i;
             goto cleanup;
         }
     }
+
+    if (possibleFormat != VIR_STORAGE_FILE_RAW)
+        VIR_WARN("File %s matches %s magic, but version is wrong. "
+                 "Please report new version to libvir-list@redhat.com",
+                 path, virStorageFileFormatTypeToString(possibleFormat));
 
     /* No magic, so check file extension */
     for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
