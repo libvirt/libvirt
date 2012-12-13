@@ -367,6 +367,7 @@ check-symfile:
 endif
 check-symsorting:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl $(USED_SYM_FILES)
+EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
@@ -389,7 +390,7 @@ else !WITH_REMOTE
 # re-generated when configured --without-remote.
 check-protocol:
 endif
-EXTRA_DIST += $(PROTOCOL_STRUCTS) check-symfile.pl
+EXTRA_DIST += $(PROTOCOL_STRUCTS)
 check-local: check-protocol check-symfile check-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
@@ -1575,6 +1576,9 @@ lockd_la_SOURCES = \
 lockd_la_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
 lockd_la_LDFLAGS = -module -avoid-version
 lockd_la_LIBADD = ../gnulib/lib/libgnu.la libvirt-net-rpc.la libvirt-net-rpc-client.la
+augeas_DATA += locking/libvirt_lockd.aug
+augeastest_DATA += test_libvirt_lockd.aug
+CLEANFILES += test_libvirt_lockd.aug
 if WITH_DTRACE_PROBES
 lockd_la_LIBADD += libvirt_probes.lo
 endif
@@ -1620,7 +1624,10 @@ EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
               $(LOCK_DRIVER_LOCKD_SOURCES)
 endif
 
-EXTRA_DIST += locking/virtlockd.sysconf
+EXTRA_DIST += locking/virtlockd.sysconf \
+	locking/lockd.conf \
+	locking/libvirt_lockd.aug \
+	locking/test_libvirt_lockd.aug.in
 
 install-sysconfig:
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
