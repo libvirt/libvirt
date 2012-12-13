@@ -31,7 +31,7 @@
 # include <libxml/xpath.h>
 
 # include "internal.h"
-# include "threads.h"
+# include "virthread.h"
 # include "virsocketaddr.h"
 # include "virnetdevbandwidth.h"
 # include "virnetdevvportprofile.h"

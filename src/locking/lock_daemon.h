@@ -24,7 +24,7 @@
 # define __VIR_LOCK_DAEMON_H__
 
 # include "virlockspace.h"
-# include "threads.h"
+# include "virthread.h"
 
 typedef struct _virLockDaemon virLockDaemon;
 typedef virLockDaemon *virLockDaemonPtr;

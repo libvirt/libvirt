@@ -25,7 +25,7 @@
 
 # include "internal.h"
 # include "domain_conf.h"
-# include "threads.h"
+# include "virthread.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 # define PROGRAM_SENTINAL ((char *)0x1)

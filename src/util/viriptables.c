@@ -45,7 +45,7 @@
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "threads.h"
+#include "virthread.h"
 
 #if HAVE_FIREWALLD
 static char *firewall_cmd_path = NULL;

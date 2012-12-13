@@ -31,7 +31,7 @@
 #include "virhash.h"
 #include "fdstream.h"
 #include "internal.h"
-#include "threads.h"
+#include "virthread.h"
 #include "viralloc.h"
 #include "virpidfile.h"
 #include "virlog.h"

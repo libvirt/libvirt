@@ -28,7 +28,7 @@
 #include "util.h"
 #include "virfile.h"
 #include "virhash.h"
-#include "threads.h"
+#include "virthread.h"
 
 #include <fcntl.h>
 #include <unistd.h>

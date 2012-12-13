@@ -22,7 +22,7 @@
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virterror_internal.h"
 
 

@@ -64,7 +64,7 @@
 #include "libvirt/libvirt-qemu.h"
 #include "virfile.h"
 #include "configmake.h"
-#include "threads.h"
+#include "virthread.h"
 #include "vircommand.h"
 #include "virkeycode.h"
 #include "virnetdevbandwidth.h"

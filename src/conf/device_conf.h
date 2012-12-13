@@ -29,7 +29,7 @@
 
 # include "internal.h"
 # include "util.h"
-# include "threads.h"
+# include "virthread.h"
 # include "virbuffer.h"
 
 enum virDeviceAddressPciMulti {

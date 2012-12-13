@@ -26,7 +26,7 @@
 
 #include "viratomic.h"
 #include "virrandom.h"
-#include "threads.h"
+#include "virthread.h"
 
 static int
 testTypes(const void *data ATTRIBUTE_UNUSED)

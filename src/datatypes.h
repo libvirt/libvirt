@@ -25,7 +25,7 @@
 # include "internal.h"
 
 # include "driver.h"
-# include "threads.h"
+# include "virthread.h"
 # include "virobject.h"
 
 extern virClassPtr virConnectClass;

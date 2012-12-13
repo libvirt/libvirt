@@ -46,7 +46,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virprocess.h"
 
 #include "passfd.h"

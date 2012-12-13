@@ -59,7 +59,7 @@
 #include "vircommand.h"
 #include "virrandom.h"
 #include "viruri.h"
-#include "threads.h"
+#include "virthread.h"
 
 #ifdef WITH_TEST
 # include "test/test_driver.h"

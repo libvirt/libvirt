@@ -27,7 +27,7 @@
 
 #include "virterror_internal.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

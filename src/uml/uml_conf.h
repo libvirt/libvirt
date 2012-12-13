@@ -30,7 +30,7 @@
 # include "domain_conf.h"
 # include "domain_event.h"
 # include "virterror_internal.h"
-# include "threads.h"
+# include "virthread.h"
 # include "vircommand.h"
 # include "virhash.h"
 

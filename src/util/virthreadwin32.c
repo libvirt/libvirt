@@ -1,5 +1,5 @@
 /*
- * threads-win32.c: basic thread synchronization primitives
+ * virthreadwin32.c: basic thread synchronization primitives
  *
  * Copyright (C) 2009-2011 Red Hat, Inc.
  *

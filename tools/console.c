@@ -42,7 +42,7 @@
 # include "util.h"
 # include "virfile.h"
 # include "viralloc.h"
-# include "threads.h"
+# include "virthread.h"
 # include "virterror_internal.h"
 
 /*

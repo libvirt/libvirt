@@ -1,5 +1,5 @@
 /*
- * threads.c: basic thread synchronization primitives
+ * virthread.c: basic thread synchronization primitives
  *
  * Copyright (C) 2009-2010 Red Hat, Inc.
  *
@@ -21,14 +21,14 @@
 
 #include <config.h>
 
-#include "threads.h"
+#include "virthread.h"
 
 /* On mingw, we prefer native threading over the sometimes-broken
  * pthreads-win32 library wrapper.  */
 #ifdef WIN32
-# include "threads-win32.c"
+# include "virthreadwin32.c"
 #elif defined HAVE_PTHREAD_MUTEXATTR_INIT
-# include "threads-pthread.c"
+# include "virthreadpthread.c"
 #else
 # error "Either pthreads or Win32 threads are required"
 #endif

@@ -26,7 +26,7 @@
 
 #include "qemumonitortestutils.h"
 
-#include "threads.h"
+#include "virthread.h"
 #include "qemu/qemu_monitor.h"
 #include "rpc/virnetsocket.h"
 #include "viralloc.h"

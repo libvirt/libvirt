@@ -31,7 +31,7 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "util.h"
 
 virThreadLocal virLastErr;

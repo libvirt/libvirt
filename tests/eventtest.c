@@ -28,7 +28,7 @@
 
 #include "testutils.h"
 #include "internal.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virlog.h"
 #include "util.h"
 #include "vireventpoll.h"

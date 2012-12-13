@@ -81,7 +81,7 @@
 #include "util.h"
 #include "virstoragefile.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "verify.h"
 #include "virfile.h"
 #include "vircommand.h"

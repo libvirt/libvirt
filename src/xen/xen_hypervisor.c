@@ -76,7 +76,7 @@
 #include "virbuffer.h"
 #include "capabilities.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virfile.h"
 #include "virnodesuspend.h"
 #include "virtypedparam.h"

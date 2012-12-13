@@ -27,7 +27,7 @@
 #include <strings.h>
 
 #include "virrandom.h"
-#include "threads.h"
+#include "virthread.h"
 #include "count-one-bits.h"
 #include "util.h"
 #include "virterror_internal.h"

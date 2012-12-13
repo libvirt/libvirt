@@ -27,7 +27,7 @@
 
 # include "internal.h"
 # include "util.h"
-# include "threads.h"
+# include "virthread.h"
 
 # include <libxml/tree.h>
 

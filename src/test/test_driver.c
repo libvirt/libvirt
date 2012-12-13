@@ -47,7 +47,7 @@
 #include "storage_conf.h"
 #include "node_device_conf.h"
 #include "xml.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virtypedparam.h"

@@ -1,5 +1,5 @@
 /*
- * threads.h: basic thread synchronization primitives
+ * virthread.h: basic thread synchronization primitives
  *
  * Copyright (C) 2009-2011 Red Hat, Inc.
  *
@@ -107,9 +107,9 @@ void *virThreadLocalGet(virThreadLocalPtr l);
 int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
 
 # ifdef WIN32
-#  include "threads-win32.h"
+#  include "virthreadwin32.h"
 # elif defined HAVE_PTHREAD_MUTEXATTR_INIT
-#  include "threads-pthread.h"
+#  include "virthreadpthread.h"
 # else
 #  error "Either pthreads or Win32 threads are required"
 # endif

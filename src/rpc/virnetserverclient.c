@@ -32,7 +32,7 @@
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virkeepalive.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

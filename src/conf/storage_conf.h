@@ -27,7 +27,7 @@
 # include "internal.h"
 # include "util.h"
 # include "storage_encryption_conf.h"
-# include "threads.h"
+# include "virthread.h"
 
 # include <libxml/tree.h>
 

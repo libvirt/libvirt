@@ -45,7 +45,7 @@
 #include "viralloc.h"
 #include "util.h"
 #include "virbuffer.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virfile.h"
 #include "virtime.h"
 #include "intprops.h"

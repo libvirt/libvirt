@@ -24,7 +24,7 @@
 #ifndef __QEMU_DOMAIN_H__
 # define __QEMU_DOMAIN_H__
 
-# include "threads.h"
+# include "virthread.h"
 # include "domain_conf.h"
 # include "snapshot_conf.h"
 # include "qemu_monitor.h"

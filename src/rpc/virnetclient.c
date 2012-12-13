@@ -31,7 +31,7 @@
 #include "virnetsocket.h"
 #include "virkeepalive.h"
 #include "viralloc.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "util.h"

@@ -1,5 +1,5 @@
 /*
- * threads-pthread.c: basic thread synchronization primitives
+ * virthreadpthread.c: basic thread synchronization primitives
  *
  * Copyright (C) 2009-2011 Red Hat, Inc.
  *

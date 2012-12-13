@@ -34,7 +34,7 @@
 # include "remote_protocol.h"
 # include "qemu_protocol.h"
 # include "virlog.h"
-# include "threads.h"
+# include "virthread.h"
 # if HAVE_SASL
 #  include "virnetsaslcontext.h"
 # endif

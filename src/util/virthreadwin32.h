@@ -1,7 +1,7 @@
 /*
- * threads.c: basic thread synchronization primitives
+ * virthreadwin32.h basic thread synchronization primitives
  *
- * Copyright (C) 2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,29 +21,33 @@
 
 #include "internal.h"
 
-#include <pthread.h>
+#ifdef HAVE_WINSOCK2_H
+# include <winsock2.h>
+#endif
+#include <windows.h>
 
 struct virMutex {
-    pthread_mutex_t lock;
+    HANDLE lock;
 };
 
 struct virCond {
-    pthread_cond_t cond;
+    virMutex lock;
+    unsigned int nwaiters;
+    HANDLE *waiters;
 };
 
 struct virThread {
-    pthread_t thread;
+    HANDLE thread;
+    bool joinable;
 };
 
 struct virThreadLocal {
-    pthread_key_t key;
+    DWORD key;
 };
 
 struct virOnceControl {
-    pthread_once_t once;
+    volatile long init; /* 0 at startup, > 0 if init has started */
+    volatile long complete; /* 0 until first thread completes callback */
 };
 
-#define VIR_ONCE_CONTROL_INITIALIZER \
-{                                    \
-    .once = PTHREAD_ONCE_INIT        \
-}
+#define VIR_ONCE_CONTROL_INITIALIZER { 0, 0 }

@@ -33,7 +33,7 @@
 # include "storage_encryption_conf.h"
 # include "cpu_conf.h"
 # include "util.h"
-# include "threads.h"
+# include "virthread.h"
 # include "virhash.h"
 # include "virsocketaddr.h"
 # include "nwfilter_params.h"

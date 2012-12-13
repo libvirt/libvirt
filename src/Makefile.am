@@ -53,9 +53,6 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		util/threads.c util/threads.h			\
-		util/threads-pthread.h				\
-		util/threads-win32.h				\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/viralloc.c util/viralloc.h			\
@@ -86,6 +83,9 @@ UTIL_SOURCES =							\
 		util/virstatslinux.c util/virstatslinux.h	\
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virsysinfo.c util/virsysinfo.h		\
+		util/virthread.c util/virthread.h		\
+		util/virthreadpthread.h				\
+		util/virthreadwin32.h				\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/xml.c util/xml.h				\
@@ -126,7 +126,7 @@ $(srcdir)/util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py <$(srcdir)/util/keymaps.csv >$@
 
-EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
+EXTRA_DIST += util/virthreadpthread.c util/virthreadwin32.c
 
 # Internal generic driver infrastructure
 NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c

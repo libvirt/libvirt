@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 #include "util.h"
-#include "threads.h"
+#include "virthread.h"
 #include "virfile.h"
 #include "viralloc.h"
 #include "virterror_internal.h"

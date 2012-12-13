@@ -34,7 +34,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "virlog.h"
-#include "threads.h"
+#include "virthread.h"
 #include "configmake.h"
 
 #define DH_BITS 1024

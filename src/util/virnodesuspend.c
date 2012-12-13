@@ -23,7 +23,7 @@
 #include "virnodesuspend.h"
 
 #include "vircommand.h"
-#include "threads.h"
+#include "virthread.h"
 #include "datatypes.h"
 
 #include "viralloc.h"

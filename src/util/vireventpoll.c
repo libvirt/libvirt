@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "threads.h"
+#include "virthread.h"
 #include "virlog.h"
 #include "vireventpoll.h"
 #include "viralloc.h"

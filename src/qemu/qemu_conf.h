@@ -32,7 +32,7 @@
 # include "network_conf.h"
 # include "domain_conf.h"
 # include "domain_event.h"
-# include "threads.h"
+# include "virthread.h"
 # include "security/security_manager.h"
 # include "vircgroup.h"
 # include "virpci.h"

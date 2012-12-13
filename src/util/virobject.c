@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "virobject.h"
-#include "threads.h"
+#include "virthread.h"
 #include "viralloc.h"
 #include "viratomic.h"
 #include "virterror_internal.h"

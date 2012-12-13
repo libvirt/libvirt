@@ -50,7 +50,6 @@
 #include "virconf.h"
 #include "virnetlink.h"
 #include "virnetserver.h"
-#include "threads.h"
 #include "remote.h"
 #include "remote_driver.h"
 #include "virhook.h"

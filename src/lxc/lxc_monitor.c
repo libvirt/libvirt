@@ -29,7 +29,7 @@
 
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "threads.h"
+#include "virthread.h"
 #include "rpc/virnetclient.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC

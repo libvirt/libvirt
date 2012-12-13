@@ -36,7 +36,7 @@
 #include "viralloc.h"
 #include "secret_conf.h"
 #include "secret_driver.h"
-#include "threads.h"
+#include "virthread.h"
 #include "util.h"
 #include "uuid.h"
 #include "virterror_internal.h"
