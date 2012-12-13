@@ -807,7 +807,7 @@ exclude_file_name_regexp--sc_prohibit_sprintf = \
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/util\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = \
-  ^src/(util/sexpr|(vbox|xen|xenxs)/.*)\.c$$
+  ^src/(util/virsexpr|(vbox|xen|xenxs)/.*)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/xml\.c$$
 

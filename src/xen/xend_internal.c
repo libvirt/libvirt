@@ -35,7 +35,7 @@
 #include "xend_internal.h"
 #include "driver.h"
 #include "util.h"
-#include "sexpr.h"
+#include "virsexpr.h"
 #include "xen_sxpr.h"
 #include "virbuffer.h"
 #include "uuid.h"

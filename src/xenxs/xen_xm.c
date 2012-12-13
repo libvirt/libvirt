@@ -31,7 +31,7 @@
 #include "viralloc.h"
 #include "verify.h"
 #include "uuid.h"
-#include "sexpr.h"
+#include "virsexpr.h"
 #include "count-one-bits.h"
 #include "xenxs_private.h"
 #include "xen_xm.h"
