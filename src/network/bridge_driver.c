@@ -629,10 +629,10 @@ networkBuildDnsmasqHostsList(dnsmasqContext *dctx,
 
 int
 networkDnsmasqConfContents(virNetworkObjPtr network,
-                        const char *pidfile,
-                        char **configstr,
-                        dnsmasqContext *dctx,
-                        dnsmasqCapsPtr caps ATTRIBUTE_UNUSED)
+                           const char *pidfile,
+                           char **configstr,
+                           dnsmasqContext *dctx,
+                           dnsmasqCapsPtr caps ATTRIBUTE_UNUSED)
 {
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int r, ret = -1;
@@ -664,29 +664,29 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     /* create dnsmasq config file appropriate for this network */
     virBufferAsprintf(&configbuf,
-                              "##WARNING:  THIS IS AN AUTO-GENERATED FILE. "
-                              "CHANGES TO IT ARE LIKELY TO BE\n"
-                              "##OVERWRITTEN AND LOST.  Changes to this "
-                              "configuration should be made using:\n"
-                              "##    virsh net-edit %s\n"
-                              "## or other application using the libvirt API.\n"
-                              "##\n## dnsmasq conf file created by libvirt\n"
-                              "strict-order\n"
-                              "domain-needed\n",
-                              network->def->name);
+                      "##WARNING:  THIS IS AN AUTO-GENERATED FILE. "
+                      "CHANGES TO IT ARE LIKELY TO BE\n"
+                      "##OVERWRITTEN AND LOST.  Changes to this "
+                      "configuration should be made using:\n"
+                      "##    virsh net-edit %s\n"
+                      "## or other application using the libvirt API.\n"
+                      "##\n## dnsmasq conf file created by libvirt\n"
+                      "strict-order\n"
+                      "domain-needed\n",
+                      network->def->name);
 
-     if (network->def->domain) {
+    if (network->def->domain) {
         virBufferAsprintf(&configbuf,
-                 "domain=%s\n"
-                 "expand-hosts\n",
-                 network->def->domain);
-     }
-     /* need to specify local even if no domain specified */
+                          "domain=%s\n"
+                          "expand-hosts\n",
+                          network->def->domain);
+    }
+    /* need to specify local even if no domain specified */
     virBufferAsprintf(&configbuf,
-                "local=/%s/\n",
-                network->def->domain ? network->def->domain : "");
+                      "local=/%s/\n",
+                      network->def->domain ? network->def->domain : "");
 
-     if (pidfile)
+    if (pidfile)
         virBufferAsprintf(&configbuf, "pid-file=%s\n", pidfile);
 
     /* dnsmasq will *always* listen on localhost unless told otherwise */
@@ -701,9 +701,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
          * this network). This was added in response to CVE 2012-3411.
          */
         virBufferAsprintf(&configbuf,
-                             "bind-dynamic\n"
-                             "interface=%s\n",
-                             network->def->bridge);
+                          "bind-dynamic\n"
+                          "interface=%s\n",
+                          network->def->bridge);
     } else {
         virBufferAddLit(&configbuf, "bind-interfaces\n");
         /*
@@ -721,6 +721,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
             if (!ipaddr)
                 goto cleanup;
+
             /* also part of CVE 2012-3411 - if the host's version of
              * dnsmasq doesn't have bind-dynamic, only allow listening on
              * private/local IP addresses (see RFC1918/RFC3484/RFC4193)
@@ -730,13 +731,16 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Publicly routable address %s is prohibited. "
-                                 "The version of dnsmasq on this host (%d.%d) doesn't "
-                                 "support the bind-dynamic option, which is required "
-                                 "for safe operation on a publicly routable subnet "
-                                 "(see CVE-2012-3411). You must either upgrade dnsmasq, "
-                                 "or use a private/local subnet range for this network "
-                                 "(as described in RFC1918/RFC3484/RFC4193)."), ipaddr,
-                               (int)version / 1000000, (int)(version % 1000000) / 1000);
+                                 "The version of dnsmasq on this host (%d.%d) "
+                                 "doesn't support the bind-dynamic option, "
+                                 "which is required for safe operation on a "
+                                 "publicly routable subnet "
+                                 "(see CVE-2012-3411). You must either "
+                                 "upgrade dnsmasq, or use a private/local "
+                                 "subnet range for this network "
+                                 "(as described in RFC1918/RFC3484/RFC4193)."),
+                               ipaddr, (int)version / 1000000,
+                               (int)(version % 1000000) / 1000);
                 goto cleanup;
             }
             virBufferAsprintf(&configbuf, "listen-address=%s\n", ipaddr);
@@ -753,7 +757,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
      */
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NONE) {
         virBufferAddLit(&configbuf, "dhcp-option=3\n"
-                                      "no-resolv\n");
+                        "no-resolv\n");
     }
 
     for (ii = 0; ii < dns->ntxts; ii++) {
@@ -786,11 +790,11 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             if (virAsprintf(&record, "%s.%s.%s,%s,%s,%s,%s",
                             dns->srvs[ii].service,
                             dns->srvs[ii].protocol,
-                            dns->srvs[ii].domain   ? dns->srvs[ii].domain : "",
-                            dns->srvs[ii].target   ? dns->srvs[ii].target : "",
-                            recordPort                  ? recordPort                : "",
-                            recordPriority              ? recordPriority            : "",
-                            recordWeight                ? recordWeight              : "") < 0) {
+                            dns->srvs[ii].domain ? dns->srvs[ii].domain : "",
+                            dns->srvs[ii].target ? dns->srvs[ii].target : "",
+                            recordPort           ? recordPort           : "",
+                            recordPriority       ? recordPriority       : "",
+                            recordWeight         ? recordWeight         : "") < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
@@ -811,8 +815,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("For IPv4, multiple DHCP definitions cannot "
-                          "be specified."));
+                                   _("For IPv4, multiple DHCP definitions "
+                                     "cannot be specified."));
                     goto cleanup;
                 } else {
                     ipv4def = ipdef;
@@ -824,17 +828,21 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                 if (!DNSMASQ_DHCPv6_SUPPORT(caps)) {
                     unsigned long version = dnsmasqCapsGetVersion(caps);
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("The version of dnsmasq on this host (%d.%d) doesn't "
-                              "adequately support IPv6 dhcp range or dhcp host "
-                              "specification.  Version %d.%d or later is required."),
-                            (int)version / 1000000, (int)(version % 1000000) / 1000,
-                            DNSMASQ_DHCPv6_MAJOR_REQD, DNSMASQ_DHCPv6_MINOR_REQD);
+                                   _("The version of dnsmasq on this host "
+                                     "(%d.%d) doesn't adequately support "
+                                     "IPv6 dhcp range or dhcp host "
+                                     "specification. Version %d.%d or later "
+                                     "is required."),
+                                   (int)version / 1000000,
+                                   (int)(version % 1000000) / 1000,
+                                   DNSMASQ_DHCPv6_MAJOR_REQD,
+                                   DNSMASQ_DHCPv6_MINOR_REQD);
                     goto cleanup;
                 }
                 if (ipv6def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("For IPv6, multiple DHCP definitions cannot "
-                          "be specified."));
+                                   _("For IPv6, multiple DHCP definitions "
+                                     "cannot be specified."));
                     goto cleanup;
                 } else {
                     ipv6def = ipdef;
@@ -848,10 +856,10 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     if (ipv6def && ipv6SLAAC) {
         VIR_WARN("For IPv6, when DHCP is specified for one address, then "
                  "state-full Router Advertising will occur.  The additional "
-                  "IPv6 addresses specified require manually configured guest "
-                  "network to work properly since both state-full (DHCP) "
-                  "and state-less (SLAAC) addressing are not supported "
-                  "on the same network interface.");
+                 "IPv6 addresses specified require manually configured guest "
+                 "network to work properly since both state-full (DHCP) "
+                 "and state-less (SLAAC) addressing are not supported "
+                 "on the same network interface.");
     }
 
     ipdef = ipv4def ? ipv4def : ipv6def;
@@ -867,7 +875,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                 goto cleanup;
             }
             virBufferAsprintf(&configbuf, "dhcp-range=%s,%s\n",
-                                        saddr, eaddr);
+                              saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
             nbleases += virSocketAddrGetRange(&ipdef->ranges[r].start,
@@ -875,9 +883,10 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
         }
 
         /*
-         * For static-only DHCP, i.e. with no range but at least one host element,
-         * we have to add a special --dhcp-range option to enable the service in
-         * dnsmasq. (this is for dhcp-hosts= support)
+         * For static-only DHCP, i.e. with no range but at least one
+         * host element, we have to add a special --dhcp-range option
+         * to enable the service in dnsmasq. (this is for dhcp-hosts=
+         * support)
          */
         if (!ipdef->nranges && ipdef->nhosts) {
             char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
@@ -909,7 +918,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                         goto cleanup;
                     }
                     virBufferAsprintf(&configbuf, "dhcp-boot=%s%s%s\n",
-                                       ipdef->bootfile, ",,", bootserver);
+                                      ipdef->bootfile, ",,", bootserver);
                     VIR_FREE(bootserver);
                 } else {
                     virBufferAsprintf(&configbuf, "dhcp-boot=%s\n", ipdef->bootfile);
@@ -932,21 +941,21 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     /* this is done once per interface */
     if (networkBuildDnsmasqHostsList(dctx, dns) < 0)
-       goto cleanup;
+        goto cleanup;
 
     /* Even if there are currently no static hosts, if we're
      * listening for DHCP, we should write a 0-length hosts
      * file to allow for runtime additions.
      */
     if (ipv4def || ipv6def)
-            virBufferAsprintf(&configbuf, "dhcp-hostsfile=%s\n",
-                                 dctx->hostsfile->path);
+        virBufferAsprintf(&configbuf, "dhcp-hostsfile=%s\n",
+                          dctx->hostsfile->path);
 
-    /* Likewise, always create this file and put it on the commandline, to allow for
-     * for runtime additions.
+    /* Likewise, always create this file and put it on the
+     * commandline, to allow for runtime additions.
      */
     virBufferAsprintf(&configbuf, "addn-hosts=%s\n",
-                       dctx->addnhostsfile->path);
+                      dctx->addnhostsfile->path);
 
     /* Are we doing RA instead of radvd? */
     if (DNSMASQ_RA_SUPPORT(caps)) {
@@ -954,8 +963,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             virBufferAddLit(&configbuf, "enable-ra\n");
         else {
             for (ii = 0;
-                (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
-                ii++) {
+                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, ii));
+                 ii++) {
                 if (!(ipdef->nranges || ipdef->nhosts)) {
                     char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
                     if (!bridgeaddr)
