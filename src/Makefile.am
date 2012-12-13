@@ -1457,9 +1457,7 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
 	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
 	printf 'global:\n\n' >>$@-tmp && \
-	for file in $(USED_SYM_FILES); do \
-	    cat $$file >>$@-tmp; \
-	done && \
+	cat $(USED_SYM_FILES) >>$@-tmp && \
 	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.syms
