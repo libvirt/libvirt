@@ -56,7 +56,6 @@ UTIL_SOURCES =							\
 		util/threads.c util/threads.h			\
 		util/threads-pthread.h				\
 		util/threads-win32.h				\
-		util/threadpool.c util/threadpool.h		\
 		util/uuid.c util/uuid.h				\
 		util/util.c util/util.h				\
 		util/viralloc.c util/viralloc.h			\
@@ -87,6 +86,7 @@ UTIL_SOURCES =							\
 		util/virstatslinux.c util/virstatslinux.h	\
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virsysinfo.c util/virsysinfo.h		\
+		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\

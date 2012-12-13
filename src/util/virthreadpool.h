@@ -1,5 +1,5 @@
 /*
- * threadpool.h: a generic thread pool implementation
+ * virthreadpool.h: a generic thread pool implementation
  *
  * Copyright (C) 2010 Hu Tao
  * Copyright (C) 2010 Daniel P. Berrange

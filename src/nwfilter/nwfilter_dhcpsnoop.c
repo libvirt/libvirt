@@ -65,7 +65,7 @@
 #include "virnetdev.h"
 #include "virfile.h"
 #include "viratomic.h"
-#include "threadpool.h"
+#include "virthreadpool.h"
 #include "configmake.h"
 #include "virtime.h"
 

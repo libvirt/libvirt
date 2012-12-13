@@ -84,7 +84,7 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
-#include "threadpool.h"
+#include "virthreadpool.h"
 #include "locking/lock_manager.h"
 #include "locking/domain_lock.h"
 #include "virkeycode.h"

@@ -41,7 +41,7 @@
 # include "driver.h"
 # include "virbitmap.h"
 # include "vircommand.h"
-# include "threadpool.h"
+# include "virthreadpool.h"
 # include "locking/lock_manager.h"
 # include "qemu_capabilities.h"
 

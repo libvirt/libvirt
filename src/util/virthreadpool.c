@@ -1,5 +1,5 @@
 /*
- * threadpool.c: a generic thread pool implementation
+ * virthreadpool.c: a generic thread pool implementation
  *
  * Copyright (C) 2010 Hu Tao
  * Copyright (C) 2010 Daniel P. Berrange
@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#include "threadpool.h"
+#include "virthreadpool.h"
 #include "viralloc.h"
 #include "threads.h"
 #include "virterror_internal.h"
