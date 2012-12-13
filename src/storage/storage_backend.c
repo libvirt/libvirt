@@ -52,7 +52,7 @@
 #include "internal.h"
 #include "secret_conf.h"
 #include "uuid.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "storage_backend.h"
 #include "virlog.h"
 #include "virfile.h"

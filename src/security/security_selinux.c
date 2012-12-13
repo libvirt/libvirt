@@ -39,7 +39,7 @@
 #include "virlog.h"
 #include "virpci.h"
 #include "virusb.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virrandom.h"

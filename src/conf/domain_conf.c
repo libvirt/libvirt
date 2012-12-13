@@ -42,7 +42,7 @@
 #include "virbuffer.h"
 #include "virlog.h"
 #include "nwfilter_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "virfile.h"
 #include "virbitmap.h"
 #include "count-one-bits.h"

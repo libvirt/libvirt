@@ -36,7 +36,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "storage_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 #include "xml.h"
 #include "uuid.h"

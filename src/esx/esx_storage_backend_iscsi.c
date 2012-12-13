@@ -33,7 +33,7 @@
 #include "virlog.h"
 #include "uuid.h"
 #include "storage_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "esx_storage_backend_iscsi.h"
 #include "esx_private.h"
 #include "esx_vi.h"

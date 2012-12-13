@@ -47,7 +47,7 @@
 # include "virobject.h"
 # include "device_conf.h"
 # include "virbitmap.h"
-# include "storage_file.h"
+# include "virstoragefile.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef

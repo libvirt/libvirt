@@ -80,7 +80,7 @@
 #include "sysinfo.h"
 #include "domain_nwfilter.h"
 #include "virhook.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"

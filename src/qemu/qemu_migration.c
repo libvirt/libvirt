@@ -47,7 +47,7 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "viruri.h"
 #include "virhook.h"
 

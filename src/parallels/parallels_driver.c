@@ -47,7 +47,7 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "configmake.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "nodeinfo.h"
 #include "c-ctype.h"
 

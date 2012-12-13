@@ -41,7 +41,7 @@
 #include "nwfilter_conf.h"
 #include "secret_conf.h"
 #include "snapshot_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "util.h"
 #include "uuid.h"
 #include "virfile.h"

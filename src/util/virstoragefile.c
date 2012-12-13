@@ -1,5 +1,5 @@
 /*
- * storage_file.c: file utility functions for FS storage backend
+ * virstoragefile.c: file utility functions for FS storage backend
  *
  * Copyright (C) 2007-2012 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
@@ -22,7 +22,7 @@
  */
 
 #include <config.h>
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 #include <sys/stat.h>
 #include <unistd.h>

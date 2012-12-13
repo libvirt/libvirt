@@ -42,7 +42,7 @@
 #include "libxl_driver.h"
 #include "libxl_conf.h"
 #include "libxl_utils.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL

@@ -79,7 +79,7 @@
 #include "virlog.h"
 #include "virbuffer.h"
 #include "util.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "viralloc.h"
 #include "threads.h"
 #include "verify.h"

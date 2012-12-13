@@ -44,7 +44,7 @@
 #include "virnetdevtap.h"
 #include "base64.h"
 #include "device_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>

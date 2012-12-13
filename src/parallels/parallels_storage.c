@@ -33,7 +33,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "configmake.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "virterror_internal.h"
 
 #include "parallels_utils.h"

@@ -47,7 +47,7 @@
 #include "virterror_internal.h"
 #include "domain_event.h"
 #include "storage_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "uuid.h"
 #include "viralloc.h"
 #include "nodeinfo.h"

@@ -45,7 +45,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "device_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

@@ -44,7 +44,7 @@
 #include "virterror_internal.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "xml.h"

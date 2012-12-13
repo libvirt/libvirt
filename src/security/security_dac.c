@@ -30,7 +30,7 @@
 #include "virlog.h"
 #include "virpci.h"
 #include "virusb.h"
-#include "storage_file.h"
+#include "virstoragefile.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_DAC_NAME "dac"
