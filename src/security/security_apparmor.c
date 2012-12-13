@@ -43,7 +43,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "uuid.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virusb.h"
 #include "virfile.h"
 #include "configmake.h"

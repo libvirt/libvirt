@@ -1,4 +1,6 @@
 /*
+ * virpci.c: helper APIs for managing host PCI devices
+ *
  * Copyright (C) 2009-2012 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +23,7 @@
 
 #include <config.h>
 
-#include "pci.h"
+#include "virpci.h"
 
 #include <dirent.h>
 #include <fcntl.h>

@@ -35,7 +35,7 @@
 # include "threads.h"
 # include "security/security_manager.h"
 # include "vircgroup.h"
-# include "pci.h"
+# include "virpci.h"
 # include "virusb.h"
 # include "cpu_conf.h"
 # include "driver.h"

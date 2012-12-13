@@ -71,7 +71,7 @@
 #include "domain_conf.h"
 #include "domain_audit.h"
 #include "node_device_conf.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virusb.h"
 #include "processinfo.h"
 #include "libvirt_internal.h"

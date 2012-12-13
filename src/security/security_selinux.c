@@ -37,7 +37,7 @@
 #include "util.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virusb.h"
 #include "storage_file.h"
 #include "virfile.h"

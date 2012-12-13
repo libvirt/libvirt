@@ -26,7 +26,7 @@
 # include "virsocketaddr.h"
 # include "virnetlink.h"
 # include "virmacaddr.h"
-# include "pci.h"
+# include "virpci.h"
 
 int virNetDevExists(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

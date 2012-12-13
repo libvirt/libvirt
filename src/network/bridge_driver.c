@@ -61,7 +61,7 @@
 #include "virdnsmasq.h"
 #include "configmake.h"
 #include "virnetdev.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"

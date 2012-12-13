@@ -28,7 +28,7 @@
 #include "virterror_internal.h"
 #include "vircommand.h"
 #include "viralloc.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virlog.h"
 
 #include <sys/ioctl.h>

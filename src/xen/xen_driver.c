@@ -57,7 +57,7 @@
 #include "util.h"
 #include "viralloc.h"
 #include "node_device_conf.h"
-#include "pci.h"
+#include "virpci.h"
 #include "uuid.h"
 #include "fdstream.h"
 #include "virfile.h"

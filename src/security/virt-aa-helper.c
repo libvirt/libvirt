@@ -51,7 +51,7 @@
 #include "xml.h"
 #include "uuid.h"
 #include "virusb.h"
-#include "pci.h"
+#include "virpci.h"
 #include "virfile.h"
 #include "configmake.h"
 #include "virrandom.h"
