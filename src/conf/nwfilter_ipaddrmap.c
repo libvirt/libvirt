@@ -26,7 +26,7 @@
 
 #include "internal.h"
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_ipaddrmap.h"

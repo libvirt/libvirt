@@ -23,7 +23,7 @@
 #include <dirent.h>
 #include <libudev.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "interface_driver.h"
 #include "interface_conf.h"

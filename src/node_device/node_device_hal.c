@@ -30,7 +30,7 @@
 
 #include "node_device_conf.h"
 #include "node_device_hal.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "driver.h"
 #include "datatypes.h"
 #include "viralloc.h"

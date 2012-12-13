@@ -46,7 +46,7 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "virnetdev.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virthread.h"
 #include "conf/nwfilter_params.h"
 #include "conf/domain_conf.h"

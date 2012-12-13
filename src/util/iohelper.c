@@ -37,7 +37,7 @@
 #include "virthread.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "configmake.h"
 #include "virrandom.h"
 

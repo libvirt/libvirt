@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_logical.h"
 #include "storage_conf.h"
 #include "vircommand.h"

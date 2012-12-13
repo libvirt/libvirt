@@ -31,7 +31,7 @@
 #include <string.h>
 #include <dirent.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "network_conf.h"
 #include "netdev_vport_profile_conf.h"

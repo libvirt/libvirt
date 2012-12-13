@@ -26,7 +26,7 @@
 #include "daemon/libvirtd-config.h"
 #include "virutil.h"
 #include "c-ctype.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virconf.h"
 

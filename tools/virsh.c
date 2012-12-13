@@ -54,7 +54,7 @@
 #endif
 
 #include "internal.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "base64.h"
 #include "virbuffer.h"
 #include "console.h"

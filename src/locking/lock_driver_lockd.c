@@ -28,7 +28,7 @@
 #include "viruuid.h"
 #include "virutil.h"
 #include "virfile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "rpc/virnetclient.h"
 #include "lock_protocol.h"
 #include "configmake.h"

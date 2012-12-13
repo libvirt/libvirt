@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_rbd.h"
 #include "storage_conf.h"
 #include "virutil.h"

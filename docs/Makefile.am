@@ -239,7 +239,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/virterror.h \
 		$(srcdir)/../src/libvirt.c \
 		$(srcdir)/../src/libvirt-qemu.c \
-		$(srcdir)/../src/util/virterror.c
+		$(srcdir)/../src/util/virerror.c
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(APIBUILD)
 	touch $@
 

@@ -38,7 +38,7 @@
 #  include <xs.h>
 # endif
 
-# include "virterror_internal.h"
+# include "virerror.h"
 # include "datatypes.h"
 # include "virutil.h"
 # include "block_stats.h"

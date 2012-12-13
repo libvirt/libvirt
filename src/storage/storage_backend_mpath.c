@@ -29,7 +29,7 @@
 
 #include <libdevmapper.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
 #include "viralloc.h"

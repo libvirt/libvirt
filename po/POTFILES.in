@@ -174,8 +174,8 @@ src/util/virsocketaddr.c
 src/util/virstatslinux.c
 src/util/virstoragefile.c
 src/util/virsysinfo.c
-src/util/virterror.c
-src/util/virterror_internal.h
+src/util/virerror.c
+src/util/virerror.h
 src/util/virtime.c
 src/util/virtypedparam.c
 src/util/viruri.c

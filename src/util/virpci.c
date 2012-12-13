@@ -39,7 +39,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "vircommand.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virfile.h"
 
 #define PCI_SYSFS "/sys/bus/pci/"

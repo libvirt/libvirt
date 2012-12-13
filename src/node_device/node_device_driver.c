@@ -30,7 +30,7 @@
 #include <time.h>
 #include <sys/stat.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"

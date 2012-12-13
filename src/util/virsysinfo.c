@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virsysinfo.h"
 #include "virutil.h"
 #include "virlog.h"

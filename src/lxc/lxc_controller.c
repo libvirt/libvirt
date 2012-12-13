@@ -51,7 +51,7 @@
 # include <numa.h>
 #endif
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virutil.h"
 

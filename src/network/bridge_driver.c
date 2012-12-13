@@ -44,7 +44,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "bridge_driver.h"
 #include "network_conf.h"

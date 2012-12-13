@@ -34,7 +34,7 @@
 #include "viralloc.h"
 #include "configmake.h"
 #include "virstoragefile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #include "parallels_utils.h"
 

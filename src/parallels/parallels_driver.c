@@ -41,7 +41,7 @@
 #include <sys/statvfs.h>
 
 #include "datatypes.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virutil.h"
 #include "virlog.h"

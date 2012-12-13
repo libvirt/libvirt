@@ -33,7 +33,7 @@
 #include "virutil.h"
 #include "intprops.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "c-ctype.h"
 #include "areadlink.h"
 

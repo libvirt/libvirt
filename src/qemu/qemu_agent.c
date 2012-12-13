@@ -36,7 +36,7 @@
 #include "qemu_command.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virjson.h"
 #include "virfile.h"
 #include "virprocess.h"

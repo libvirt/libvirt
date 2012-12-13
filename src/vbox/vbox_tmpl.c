@@ -44,7 +44,7 @@
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "network_conf.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "domain_event.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"

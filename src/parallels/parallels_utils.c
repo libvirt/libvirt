@@ -25,7 +25,7 @@
 #include <stdarg.h>
 
 #include "vircommand.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virjson.h"
 

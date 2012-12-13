@@ -33,7 +33,7 @@
 #include "viralloc.h"
 #include "virutil.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "security/security_manager.h"
 
 

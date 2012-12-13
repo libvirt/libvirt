@@ -27,7 +27,7 @@
 #include <dirent.h>
 #include <sys/inotify.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "driver.h"
 #include "viralloc.h"

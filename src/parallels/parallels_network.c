@@ -24,7 +24,7 @@
 
 #include "datatypes.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "md5.h"
 
 #include "parallels_utils.h"

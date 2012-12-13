@@ -34,7 +34,7 @@
 #include "domain_nwfilter.h"
 #include "virlog.h"
 #include "datatypes.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virpci.h"
 #include "virfile.h"

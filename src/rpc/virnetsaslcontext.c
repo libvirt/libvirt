@@ -25,7 +25,7 @@
 #include "virnetsaslcontext.h"
 #include "virnetmessage.h"
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virthread.h"
 #include "virlog.h"

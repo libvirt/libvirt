@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include "virnetdevbridge.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "viralloc.h"

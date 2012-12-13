@@ -29,7 +29,7 @@
 #include "virnetclient.h"
 #include "virnetclientprogram.h"
 #include "virnetclientstream.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "datatypes.h"
 #include "domain_event.h"

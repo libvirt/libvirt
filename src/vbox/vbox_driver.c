@@ -37,7 +37,7 @@
 #include "virlog.h"
 #include "vbox_driver.h"
 #include "vbox_glue.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX

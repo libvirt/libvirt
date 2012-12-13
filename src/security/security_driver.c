@@ -23,7 +23,7 @@
 #include <config.h>
 #include <string.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 
 #include "security_driver.h"

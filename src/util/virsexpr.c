@@ -28,7 +28,7 @@
 #include "c-ctype.h"
 #include <errno.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virsexpr.h"
 #include "virutil.h"
 #include "viralloc.h"

@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_scsi.h"
 #include "storage_backend_iscsi.h"
 #include "virutil.h"

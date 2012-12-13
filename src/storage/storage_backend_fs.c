@@ -41,7 +41,7 @@
 # include <blkid/blkid.h>
 #endif
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"

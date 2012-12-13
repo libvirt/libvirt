@@ -27,7 +27,7 @@
 
 #include "viralloc.h"
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virthread.h"
 #include "rpc/virnetclient.h"

@@ -26,7 +26,7 @@
 #include "security_driver.h"
 #include "security_stack.h"
 #include "security_dac.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
 

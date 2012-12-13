@@ -36,7 +36,7 @@
 #include "vircommand.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -43,7 +43,7 @@
 # include "virfile.h"
 # include "viralloc.h"
 # include "virthread.h"
-# include "virterror_internal.h"
+# include "virerror.h"
 
 /*
  * Convert given character to control character.

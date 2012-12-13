@@ -40,7 +40,7 @@
 
 #include "viruuid.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"

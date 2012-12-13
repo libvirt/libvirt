@@ -65,6 +65,7 @@ UTIL_SOURCES =							\
 		util/virconf.c util/virconf.h			\
 		util/virdnsmasq.c util/virdnsmasq.h             \
 		util/virebtables.c util/virebtables.h		\
+		util/virerror.c util/virerror.h			\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\
 		util/virfile.c util/virfile.h			\
@@ -86,7 +87,6 @@ UTIL_SOURCES =							\
 		util/virthreadwin32.h				\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtypedparam.c util/virtypedparam.h	\
-		util/virterror.c util/virterror_internal.h	\
 		util/vircgroup.c util/vircgroup.h		\
 		util/virdbus.c util/virdbus.h			\
 		util/virhash.c util/virhash.h			\

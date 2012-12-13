@@ -32,7 +32,7 @@
 #include "configmake.h"
 #include "virthread.h"
 #include "virutil.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virobject.h"
 
 #define VIR_FROM_THIS VIR_FROM_SSH

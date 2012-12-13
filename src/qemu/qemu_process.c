@@ -52,7 +52,7 @@
 
 #include "datatypes.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virhook.h"
 #include "virfile.h"

@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <xen/dom0_ops.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "xm_internal.h"
 #include "xen_driver.h"

@@ -26,7 +26,7 @@
 #include "virnetserverservice.h"
 
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

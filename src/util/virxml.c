@@ -30,7 +30,7 @@
 #include <math.h>               /* for isnan() */
 #include <sys/stat.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virxml.h"
 #include "virbuffer.h"
 #include "virutil.h"

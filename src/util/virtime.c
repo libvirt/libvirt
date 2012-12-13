@@ -39,7 +39,7 @@
 #include "virtime.h"
 #include "virutil.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -37,7 +37,7 @@
 
 #include "domain_audit.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virutil.h"
 #include "virfile.h"

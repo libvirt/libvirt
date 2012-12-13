@@ -24,7 +24,7 @@
 #include "domain_lock.h"
 #include "viralloc.h"
 #include "viruuid.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING

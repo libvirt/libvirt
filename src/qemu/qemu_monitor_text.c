@@ -38,7 +38,7 @@
 #include "virlog.h"
 #include "driver.h"
 #include "datatypes.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virbuffer.h"
 
 #ifdef WITH_DTRACE_PROBES

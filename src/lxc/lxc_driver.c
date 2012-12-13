@@ -36,7 +36,7 @@
 #include <unistd.h>
 #include <wait.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "datatypes.h"
 #include "lxc_cgroup.h"

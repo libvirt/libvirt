@@ -30,7 +30,7 @@
 #include "lock_daemon.h"
 #include "lock_protocol.h"
 #include "lock_daemon_dispatch_stubs.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

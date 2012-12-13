@@ -29,7 +29,7 @@
 #include "qemu_migration.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "c-ctype.h"
 #include "cpu/cpu.h"
 #include "viruuid.h"

@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "internal.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virnetdevvlan.h"
 #include "viralloc.h"
 

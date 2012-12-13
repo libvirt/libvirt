@@ -30,7 +30,7 @@
 #include "nodeinfo.h"
 #include "virfile.h"
 #include "viruuid.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "vmx.h"
 
 #include "vmware_conf.h"

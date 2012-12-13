@@ -53,7 +53,7 @@
 # include <blkid/blkid.h>
 #endif
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "lxc_container.h"
 #include "virutil.h"

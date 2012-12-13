@@ -34,7 +34,7 @@
 # include <inttypes.h>
 
 # include "internal.h"
-# include "virterror_internal.h"
+# include "virerror.h"
 # include "virthread.h"
 # include "virnetdevbandwidth.h"
 

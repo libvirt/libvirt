@@ -25,7 +25,7 @@
 #include "virnetdev.h"
 #include "virmacaddr.h"
 #include "virfile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virpci.h"

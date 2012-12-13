@@ -26,7 +26,7 @@
 #include "qemu_conf.h"
 #include "qemu_driver.h"
 #include "virutil.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 
 #include "qemu_bridge_filter.h"

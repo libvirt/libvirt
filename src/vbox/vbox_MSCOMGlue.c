@@ -33,7 +33,7 @@
 #include "viralloc.h"
 #include "virutil.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "vbox_MSCOMGlue.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX

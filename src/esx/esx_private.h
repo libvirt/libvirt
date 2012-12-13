@@ -24,7 +24,7 @@
 # define __ESX_PRIVATE_H__
 
 # include "internal.h"
-# include "virterror_internal.h"
+# include "virerror.h"
 # include "capabilities.h"
 # include "esx_vi.h"
 

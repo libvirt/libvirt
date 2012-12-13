@@ -31,7 +31,7 @@
 #include "virutil.h"
 #include "virhash.h"
 #include "virkeyfile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 

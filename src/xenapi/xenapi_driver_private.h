@@ -25,7 +25,7 @@
 
 # include <libxml/tree.h>
 # include <xen/api/xen_common.h>
-# include "virterror_internal.h"
+# include "virerror.h"
 
 /*# define PRINT_XML*/
 # define VIR_FROM_THIS VIR_FROM_XENAPI

@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #include "datatypes.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "viruuid.h"

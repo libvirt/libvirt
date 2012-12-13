@@ -40,7 +40,7 @@
 #include "security_apparmor.h"
 #include "virutil.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "viruuid.h"
 #include "virpci.h"

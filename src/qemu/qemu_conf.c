@@ -34,7 +34,7 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "qemu_conf.h"
 #include "qemu_command.h"
 #include "qemu_capabilities.h"

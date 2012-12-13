@@ -42,7 +42,7 @@
 #include <string.h>
 #include <sys/wait.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "openvz_conf.h"
 #include "openvz_util.h"
 #include "viruuid.h"

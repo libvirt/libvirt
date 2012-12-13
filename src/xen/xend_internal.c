@@ -29,7 +29,7 @@
 #include <netdb.h>
 #include <errno.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "datatypes.h"
 #include "xend_internal.h"

@@ -26,7 +26,7 @@
 #include "virnetdevopenvswitch.h"
 #include "vircommand.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virmacaddr.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

@@ -26,7 +26,7 @@
 #include "lxc_hostdev.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

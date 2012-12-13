@@ -28,7 +28,7 @@
 #include <sched.h>
 
 #include "virprocess.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virutil.h"

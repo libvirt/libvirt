@@ -75,7 +75,7 @@
 
 #include "c-ctype.h"
 #include "dirname.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"
 #include "virutil.h"

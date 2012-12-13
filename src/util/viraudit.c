@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "viraudit.h"
 #include "virutil.h"

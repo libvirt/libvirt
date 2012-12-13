@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <xen/dom0_ops.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "datatypes.h"
 #include "xen_driver.h"

@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "driver.h"
 #include "virutil.h"

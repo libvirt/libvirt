@@ -26,7 +26,7 @@
 #include "qemu_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virpidfile.h"

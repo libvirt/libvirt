@@ -33,7 +33,7 @@
 #include <locale.h>
 
 #include "libvirt_internal.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virprocess.h"

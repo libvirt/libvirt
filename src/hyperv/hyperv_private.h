@@ -25,7 +25,7 @@
 # define __HYPERV_PRIVATE_H__
 
 # include "internal.h"
-# include "virterror_internal.h"
+# include "virerror.h"
 # include "hyperv_util.h"
 # include "openwsman.h"
 

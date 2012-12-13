@@ -30,7 +30,7 @@
 #include "virnetserver.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virthread.h"
 #include "virthreadpool.h"
 #include "virutil.h"

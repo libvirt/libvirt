@@ -25,7 +25,7 @@
 #include "virthread.h"
 #include "viralloc.h"
 #include "viratomic.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

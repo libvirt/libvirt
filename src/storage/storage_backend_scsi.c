@@ -28,7 +28,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_scsi.h"
 #include "viralloc.h"
 #include "virlog.h"

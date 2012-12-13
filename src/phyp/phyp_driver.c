@@ -51,7 +51,7 @@
 #include "virlog.h"
 #include "driver.h"
 #include "libvirt/libvirt.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viruuid.h"
 #include "domain_conf.h"
 #include "storage_conf.h"

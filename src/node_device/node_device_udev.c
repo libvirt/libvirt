@@ -27,7 +27,7 @@
 #include <c-ctype.h>
 
 #include "node_device_udev.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "node_device_conf.h"
 #include "node_device_driver.h"
 #include "driver.h"

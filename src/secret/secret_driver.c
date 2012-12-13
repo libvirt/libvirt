@@ -39,7 +39,7 @@
 #include "virthread.h"
 #include "virutil.h"
 #include "viruuid.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virfile.h"
 #include "configmake.h"
 

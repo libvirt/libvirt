@@ -49,7 +49,7 @@
 #include "physmem.h"
 #include "virutil.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "count-one-bits.h"
 #include "intprops.h"
 #include "virarch.h"

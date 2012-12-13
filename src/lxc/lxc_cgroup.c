@@ -24,7 +24,7 @@
 #include "lxc_cgroup.h"
 #include "lxc_container.h"
 #include "virfile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "vircgroup.h"

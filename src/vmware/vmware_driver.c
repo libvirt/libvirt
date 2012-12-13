@@ -24,7 +24,7 @@
 #include <fcntl.h>
 
 #include "internal.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "virfile.h"
 #include "viralloc.h"

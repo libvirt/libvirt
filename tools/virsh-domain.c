@@ -49,7 +49,7 @@
 #include "virmacaddr.h"
 #include "virstring.h"
 #include "virsh-domain-monitor.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virtypedparam.h"
 #include "virxml.h"
 

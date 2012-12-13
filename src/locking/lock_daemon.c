@@ -37,7 +37,7 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virprocess.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virconf.h"

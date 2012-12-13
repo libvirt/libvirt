@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include "virnetdevvportprofile.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET

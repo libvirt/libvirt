@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 
 #if HAVE_POLKIT0
 # include <polkit/polkit.h>

@@ -24,7 +24,7 @@
 
 #include "testutils.h"
 #include "virutil.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
 

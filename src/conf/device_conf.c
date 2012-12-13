@@ -21,7 +21,7 @@
  */
 
 #include <config.h>
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virxml.h"

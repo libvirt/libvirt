@@ -32,7 +32,7 @@
 
 #include "internal.h"
 #include "virlog.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "virfile.h"
 #include "virstring.h"

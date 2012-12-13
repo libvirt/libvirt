@@ -1,5 +1,5 @@
 /*
- * virterror.h: internal error handling
+ * virerror.c: error handling and reporting code for libvirt
  *
  * Copyright (C) 2006-2009, 2011 Red Hat, Inc.
  *

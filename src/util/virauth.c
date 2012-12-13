@@ -29,7 +29,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "datatypes.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "configmake.h"
 #include "virauthconfig.h"
 

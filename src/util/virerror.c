@@ -1,5 +1,5 @@
 /*
- * virterror.c: implements error handling and reporting code for libvirt
+ * virerror.c: error handling and reporting code for libvirt
  *
  * Copyright (C) 2006, 2008-2012 Red Hat, Inc.
  *
@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "virlog.h"
 #include "viralloc.h"

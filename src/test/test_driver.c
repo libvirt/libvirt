@@ -32,7 +32,7 @@
 #include <libxml/xmlsave.h>
 
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "datatypes.h"
 #include "test_driver.h"
 #include "virbuffer.h"

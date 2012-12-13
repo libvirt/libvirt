@@ -24,7 +24,7 @@
 
 #include "viralloc.h"
 #include "virutil.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_URI

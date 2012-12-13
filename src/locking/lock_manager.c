@@ -23,7 +23,7 @@
 
 #include "lock_manager.h"
 #include "lock_driver_nop.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virutil.h"
 #include "viralloc.h"

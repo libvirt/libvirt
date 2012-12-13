@@ -26,7 +26,7 @@
 
 #include <config.h>
 
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "storage_backend_sheepdog.h"
 #include "storage_conf.h"
 #include "vircommand.h"

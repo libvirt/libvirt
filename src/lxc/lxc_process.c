@@ -40,7 +40,7 @@
 #include "network/bridge_driver.h"
 #include "viralloc.h"
 #include "domain_audit.h"
-#include "virterror_internal.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "vircommand.h"
 #include "lxc_hostdev.h"
