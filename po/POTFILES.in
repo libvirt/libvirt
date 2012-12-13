@@ -139,7 +139,6 @@ src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/iohelper.c
-src/util/stats_linux.c
 src/util/storage_file.c
 src/util/sysinfo.c
 src/util/util.c
@@ -175,6 +174,7 @@ src/util/virprocess.c
 src/util/virrandom.c
 src/util/virsexpr.c
 src/util/virsocketaddr.c
+src/util/virstatslinux.c
 src/util/virterror.c
 src/util/virterror_internal.h
 src/util/virtime.c

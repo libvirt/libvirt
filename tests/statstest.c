@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/utsname.h>
 
-#include "stats_linux.h"
+#include "virstatslinux.h"
 #include "internal.h"
 #include "xen/block_stats.h"
 #include "testutils.h"

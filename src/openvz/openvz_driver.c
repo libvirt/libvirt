@@ -58,7 +58,7 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "viruri.h"
-#include "stats_linux.h"
+#include "virstatslinux.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

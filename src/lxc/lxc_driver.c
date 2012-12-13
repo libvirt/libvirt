@@ -51,7 +51,7 @@
 #include "virnetdevveth.h"
 #include "nodeinfo.h"
 #include "uuid.h"
-#include "stats_linux.h"
+#include "virstatslinux.h"
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"

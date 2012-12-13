@@ -1,5 +1,5 @@
 /*
- * Linux block and network stats.
+ * virstatslinux.h: Linux block and network stats.
  *
  * Copyright (C) 2007 Red Hat, Inc.
  *

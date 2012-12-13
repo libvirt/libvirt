@@ -1,5 +1,5 @@
 /*
- * Linux block and network stats.
+ * virstatslinux.c: Linux block and network stats.
  *
  * Copyright (C) 2007-2010 Red Hat, Inc.
  *
@@ -35,7 +35,7 @@
 # include "virterror_internal.h"
 # include "datatypes.h"
 # include "util.h"
-# include "stats_linux.h"
+# include "virstatslinux.h"
 # include "viralloc.h"
 # include "virfile.h"
 

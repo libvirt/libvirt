@@ -49,7 +49,7 @@
 #include "virbuffer.h"
 #include "util.h"
 #include "nodeinfo.h"
-#include "stats_linux.h"
+#include "virstatslinux.h"
 #include "capabilities.h"
 #include "viralloc.h"
 #include "uuid.h"

@@ -70,7 +70,7 @@
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h"
-#include "stats_linux.h"
+#include "virstatslinux.h"
 #include "block_stats.h"
 #include "xend_internal.h"
 #include "virbuffer.h"
