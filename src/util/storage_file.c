@@ -628,6 +628,9 @@ virStorageFileMatchesVersion(int format,
             (buf[fileTypeInfo[format].versionOffset+2] << 8) |
             (buf[fileTypeInfo[format].versionOffset+3]);
     }
+
+    VIR_DEBUG("Compare detected version %d vs expected version %d",
+              version, fileTypeInfo[format].versionNumber);
     if (version != fileTypeInfo[format].versionNumber)
         return false;
 
@@ -650,6 +653,8 @@ virStorageFileGetMetadataFromBuf(int format,
                                  size_t buflen,
                                  virStorageFileMetadata *meta)
 {
+    VIR_DEBUG("path=%s format=%d", path, format);
+
     /* XXX we should consider moving virStorageBackendUpdateVolInfo
      * code into this method, for non-magic files
      */
@@ -785,6 +790,7 @@ virStorageFileProbeFormatFromBuf(const char *path,
     }
 
 cleanup:
+    VIR_DEBUG("format=%d", format);
     return format;
 }
 
@@ -963,6 +969,9 @@ virStorageFileGetMetadataRecurse(const char *path, int format,
                                  bool allow_probe, virHashTablePtr cycle)
 {
     int fd;
+    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d",
+              path, format, (int)uid, (int)gid, allow_probe);
+
     virStorageFileMetadataPtr ret = NULL;
 
     if (virHashLookup(cycle, path)) {
@@ -1027,6 +1036,9 @@ virStorageFileGetMetadata(const char *path, int format,
                           uid_t uid, gid_t gid,
                           bool allow_probe)
 {
+    VIR_DEBUG("path=%s format=%d uid=%d gid=%d probe=%d",
+              path, format, (int)uid, (int)gid, allow_probe);
+
     virHashTablePtr cycle = virHashCreate(5, NULL);
     virStorageFileMetadataPtr ret;
 
