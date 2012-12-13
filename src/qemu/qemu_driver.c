@@ -73,7 +73,7 @@
 #include "node_device_conf.h"
 #include "virpci.h"
 #include "virusb.h"
-#include "processinfo.h"
+#include "virprocess.h"
 #include "libvirt_internal.h"
 #include "xml.h"
 #include "cpu/cpu.h"
@@ -3880,8 +3880,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                         goto cleanup;
                     }
                 } else {
-                    if (virProcessInfoSetAffinity(cpupids[i],
-                                                  vcpupin->cpumask) < 0) {
+                    if (virProcessSetAffinity(cpupids[i],
+                                              vcpupin->cpumask) < 0) {
                         virReportError(VIR_ERR_SYSTEM_ERROR,
                                        _("failed to set cpu affinity for vcpu %d"),
                                        i);
@@ -4154,7 +4154,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                 goto cleanup;
             }
         } else {
-            if (virProcessInfoSetAffinity(priv->vcpupids[vcpu], pcpumap) < 0) {
+            if (virProcessSetAffinity(priv->vcpupids[vcpu], pcpumap) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("failed to set cpu affinity for vcpu %d"),
                                vcpu);
@@ -4422,7 +4422,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
                     }
                 }
             } else {
-                if (virProcessInfoSetAffinity(pid, pcpumap) < 0) {
+                if (virProcessSetAffinity(pid, pcpumap) < 0) {
                     virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
                                    _("failed to set cpu affinity for "
                                      "emulator threads"));
@@ -4640,8 +4640,8 @@ qemuDomainGetVcpus(virDomainPtr dom,
                     unsigned char *tmpmap = NULL;
                     int tmpmapLen = 0;
 
-                    if (virProcessInfoGetAffinity(priv->vcpupids[v],
-                                                  &map, maxcpu) < 0)
+                    if (virProcessGetAffinity(priv->vcpupids[v],
+                                              &map, maxcpu) < 0)
                         goto cleanup;
                     virBitmapToData(map, &tmpmap, &tmpmapLen);
                     if (tmpmapLen > maplen)

@@ -60,7 +60,6 @@
 #include "util.h"
 #include "c-ctype.h"
 #include "nodeinfo.h"
-#include "processinfo.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "locking/domain_lock.h"
@@ -1980,7 +1979,7 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0 /* Self */, cpumapToSet) < 0)
+    if (virProcessSetAffinity(0 /* Self */, cpumapToSet) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2045,8 +2044,8 @@ qemuProcessSetVcpuAffinities(virConnectPtr conn ATTRIBUTE_UNUSED,
     for (n = 0; n < def->cputune.nvcpupin; n++) {
         vcpu = def->cputune.vcpupin[n]->vcpuid;
 
-        if (virProcessInfoSetAffinity(priv->vcpupids[vcpu],
-                                      def->cputune.vcpupin[n]->cpumask) < 0) {
+        if (virProcessSetAffinity(priv->vcpupids[vcpu],
+                                  def->cputune.vcpupin[n]->cpumask) < 0) {
             goto cleanup;
         }
     }
@@ -2072,7 +2071,7 @@ qemuProcessSetEmulatorAffinities(virConnectPtr conn ATTRIBUTE_UNUSED,
     else
         return 0;
 
-    ret = virProcessInfoSetAffinity(vm->pid, cpumask);
+    ret = virProcessSetAffinity(vm->pid, cpumask);
     return ret;
 }
 

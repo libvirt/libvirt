@@ -67,7 +67,6 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "vircommand.h"
-#include "processinfo.h"
 #include "nodeinfo.h"
 #include "virrandom.h"
 #include "virprocess.h"
@@ -541,7 +540,7 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessInfoSetAffinity(0 /* Self */, cpumapToSet) < 0) {
+    if (virProcessSetAffinity(0 /* Self */, cpumapToSet) < 0) {
         virBitmapFree(cpumap);
         return -1;
     }

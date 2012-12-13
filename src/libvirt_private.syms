@@ -1028,11 +1028,6 @@ pciResetDevice;
 pciWaitForDeviceCleanup;
 
 
-# processinfo.h
-virProcessInfoGetAffinity;
-virProcessInfoSetAffinity;
-
-
 # secret_conf.h
 virSecretDefFormat;
 virSecretDefFree;
@@ -1794,8 +1789,10 @@ virPidFileWritePath;
 
 # virprocess.h
 virProcessAbort;
+virProcessGetAffinity;
 virProcessKill;
 virProcessKillPainfully;
+virProcessSetAffinity;
 virProcessTranslateStatus;
 virProcessWait;
 

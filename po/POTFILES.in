@@ -139,7 +139,6 @@ src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/iohelper.c
-src/util/processinfo.c
 src/util/sexpr.c
 src/util/stats_linux.c
 src/util/storage_file.c

@@ -25,6 +25,7 @@
 # include <sys/types.h>
 
 # include "internal.h"
+# include "virbitmap.h"
 
 char *
 virProcessTranslateStatus(int status);
@@ -40,5 +41,10 @@ int virProcessKill(pid_t pid, int sig);
 
 int virProcessKillPainfully(pid_t pid, bool force);
 
+int virProcessSetAffinity(pid_t pid, virBitmapPtr map);
+
+int virProcessGetAffinity(pid_t pid,
+                          virBitmapPtr *map,
+                          int maxcpu);
 
 #endif /* __VIR_PROCESS_H__ */
