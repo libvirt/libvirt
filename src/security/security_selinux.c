@@ -1993,7 +1993,8 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
         return NULL;
     }
 
-    VIR_DEBUG("imageLabel=%s opts=%s", secdef->imagelabel, opts);
+    VIR_DEBUG("imageLabel=%s opts=%s",
+              secdef ? secdef->imagelabel : "(null)", opts);
     return opts;
 }
 
