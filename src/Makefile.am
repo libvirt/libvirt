@@ -61,41 +61,27 @@ UTIL_SOURCES =							\
 		util/virauthconfig.c util/virauthconfig.h	\
 		util/virbitmap.c util/virbitmap.h		\
 		util/virbuffer.c util/virbuffer.h		\
+		util/vircgroup.c util/vircgroup.h		\
 		util/vircommand.c util/vircommand.h		\
 		util/virconf.c util/virconf.h			\
-		util/virdnsmasq.c util/virdnsmasq.h             \
+		util/virdbus.c util/virdbus.h			\
+		util/virdnsmasq.c util/virdnsmasq.h		\
 		util/virebtables.c util/virebtables.h		\
 		util/virerror.c util/virerror.h			\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\
 		util/virfile.c util/virfile.h			\
+		util/virhash.c util/virhash.h			\
+		util/virhashcode.c util/virhashcode.h		\
 		util/virhook.c util/virhook.h			\
-		util/virnodesuspend.c util/virnodesuspend.h	\
+		util/virinitctl.c util/virinitctl.h		\
 		util/viriptables.c util/viriptables.h		\
 		util/virjson.c util/virjson.h			\
-		util/virlog.c util/virlog.h			\
-		util/virobject.c util/virobject.h		\
-		util/virpci.c util/virpci.h			\
-		util/virpidfile.c util/virpidfile.h		\
-		util/virprocess.c util/virprocess.h		\
-		util/virsexpr.c util/virsexpr.h			\
-		util/virstatslinux.c util/virstatslinux.h	\
-		util/virstoragefile.c util/virstoragefile.h	\
-		util/virsysinfo.c util/virsysinfo.h		\
-		util/virthread.c util/virthread.h		\
-		util/virthreadpthread.h				\
-		util/virthreadwin32.h				\
-		util/virthreadpool.c util/virthreadpool.h	\
-		util/virtypedparam.c util/virtypedparam.h	\
-		util/vircgroup.c util/vircgroup.h		\
-		util/virdbus.c util/virdbus.h			\
-		util/virhash.c util/virhash.h			\
-		util/virhashcode.c util/virhashcode.h           \
-		util/virinitctl.c util/virinitctl.h		\
 		util/virkeycode.c util/virkeycode.h		\
 		util/virkeyfile.c util/virkeyfile.h		\
 		util/virkeymaps.h				\
 		util/virlockspace.c util/virlockspace.h		\
+		util/virlog.c util/virlog.h			\
 		util/virmacaddr.h util/virmacaddr.c		\
 		util/virnetdev.h util/virnetdev.c		\
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
@@ -103,20 +89,35 @@ UTIL_SOURCES =							\
 		util/virnetdevmacvlan.c util/virnetdevmacvlan.h	\
 		util/virnetdevopenvswitch.h util/virnetdevopenvswitch.c \
 		util/virnetdevtap.h util/virnetdevtap.c		\
-		util/virnetdevveth.h util/virnetdevveth.c \
-		util/virnetdevvlan.h util/virnetdevvlan.c \
+		util/virnetdevveth.h util/virnetdevveth.c	\
+		util/virnetdevvlan.h util/virnetdevvlan.c	\
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
 		util/virnetlink.c util/virnetlink.h		\
+		util/virnodesuspend.c util/virnodesuspend.h	\
+		util/virobject.c util/virobject.h		\
+		util/virpci.c util/virpci.h			\
+		util/virpidfile.c util/virpidfile.h		\
+		util/virprocess.c util/virprocess.h		\
 		util/virrandom.h util/virrandom.c		\
-		util/virsocketaddr.h util/virsocketaddr.c \
-		util/virstring.h util/virstring.c \
-		util/virtime.h util/virtime.c \
+		util/virsexpr.c util/virsexpr.h			\
+		util/virsocketaddr.h util/virsocketaddr.c	\
+		util/virstatslinux.c util/virstatslinux.h	\
+		util/virstoragefile.c util/virstoragefile.h	\
+		util/virstring.h util/virstring.c		\
+		util/virsysinfo.c util/virsysinfo.h		\
+		util/virthread.c util/virthread.h		\
+		util/virthreadpthread.h				\
+		util/virthreadwin32.h				\
+		util/virthreadpool.c util/virthreadpool.h	\
+		util/virtime.h util/virtime.c			\
+		util/virtypedparam.c util/virtypedparam.h	\
 		util/virusb.c util/virusb.h			\
 		util/viruri.h util/viruri.c			\
 		util/virutil.c util/virutil.h			\
 		util/viruuid.c util/viruuid.h			\
 		util/virxml.c util/virxml.h			\
 		$(NULL)
+
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py
