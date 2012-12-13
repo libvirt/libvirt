@@ -1,5 +1,5 @@
 /*
- * sysinfo.c: get SMBIOS/sysinfo information from the host
+ * virsysinfo.c: get SMBIOS/sysinfo information from the host
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard
@@ -31,7 +31,7 @@
 #include <stdio.h>
 
 #include "virterror_internal.h"
-#include "sysinfo.h"
+#include "virsysinfo.h"
 #include "util.h"
 #include "virlog.h"
 #include "viralloc.h"

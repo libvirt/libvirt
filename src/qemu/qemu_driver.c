@@ -77,7 +77,7 @@
 #include "libvirt_internal.h"
 #include "xml.h"
 #include "cpu/cpu.h"
-#include "sysinfo.h"
+#include "virsysinfo.h"
 #include "domain_nwfilter.h"
 #include "virhook.h"
 #include "virstoragefile.h"

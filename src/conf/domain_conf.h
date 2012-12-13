@@ -39,7 +39,7 @@
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
 # include "virnetdevmacvlan.h"
-# include "sysinfo.h"
+# include "virsysinfo.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevopenvswitch.h"
 # include "virnetdevbandwidth.h"

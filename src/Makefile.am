@@ -53,7 +53,6 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		util/sysinfo.c util/sysinfo.h			\
 		util/threads.c util/threads.h			\
 		util/threads-pthread.h				\
 		util/threads-win32.h				\
@@ -87,6 +86,7 @@ UTIL_SOURCES =							\
 		util/virsexpr.c util/virsexpr.h			\
 		util/virstatslinux.c util/virstatslinux.h	\
 		util/virstoragefile.c util/virstoragefile.h	\
+		util/virsysinfo.c util/virsysinfo.h		\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/xml.c util/xml.h				\
 		util/virterror.c util/virterror_internal.h	\

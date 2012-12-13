@@ -1,5 +1,5 @@
 /*
- * sysinfo.h: structure and entry points for sysinfo support
+ * virsysinfo.h: get SMBIOS/sysinfo information from the host
  *
  * Copyright (C) 2010-2011 Red Hat, Inc.
  * Copyright (C) 2010 Daniel Veillard

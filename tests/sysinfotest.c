@@ -31,7 +31,7 @@
 #include "internal.h"
 
 #include "virbuffer.h"
-#include "sysinfo.h"
+#include "virsysinfo.h"
 #include "testutils.h"
 #include "util.h"
 #include "virfile.h"
