@@ -36,7 +36,7 @@
 #include "datatypes.h"
 #include "test_driver.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "capabilities.h"
 #include "viralloc.h"

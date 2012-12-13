@@ -34,7 +34,7 @@
 #include "datatypes.h"
 #include "xend_internal.h"
 #include "driver.h"
-#include "util.h"
+#include "virutil.h"
 #include "virsexpr.h"
 #include "xen_sxpr.h"
 #include "virbuffer.h"

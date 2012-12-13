@@ -30,7 +30,7 @@
 #include "internal.h"
 #include "virthread.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "vireventpoll.h"
 
 #define NUM_FDS 31

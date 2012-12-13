@@ -22,7 +22,7 @@
 #ifndef __VIR_UTIL_VIRTKEYCODE_H__
 # define __VIR_UTIL_VIRTKEYCODE_H__
 
-# include "util.h"
+# include "virutil.h"
 # include "libvirt/libvirt.h"
 
 VIR_ENUM_DECL(virKeycodeSet);

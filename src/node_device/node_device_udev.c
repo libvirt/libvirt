@@ -35,7 +35,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "uuid.h"
-#include "util.h"
+#include "virutil.h"
 #include "virbuffer.h"
 #include "virpci.h"
 

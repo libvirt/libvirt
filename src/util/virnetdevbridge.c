@@ -24,7 +24,7 @@
 
 #include "virnetdevbridge.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "viralloc.h"
 #include "intprops.h"

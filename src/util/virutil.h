@@ -1,5 +1,5 @@
 /*
- * utils.h: common, generic utility functions
+ * virutil.h: common, generic utility functions
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma

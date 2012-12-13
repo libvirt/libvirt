@@ -25,7 +25,7 @@
 
 # include "internal.h"
 # include "uuid.h"
-# include "util.h"
+# include "virutil.h"
 # include "virmacaddr.h"
 
 # define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40

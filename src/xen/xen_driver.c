@@ -54,7 +54,7 @@
 # include "xen_inotify.h"
 #endif
 #include "xml.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "node_device_conf.h"
 #include "virpci.h"

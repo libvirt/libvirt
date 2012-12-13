@@ -34,7 +34,7 @@
 #include "security_driver.h"
 #include "security_selinux.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virpci.h"
@@ -43,7 +43,7 @@
 #include "virfile.h"
 #include "virhash.h"
 #include "virrandom.h"
-#include "util.h"
+#include "virutil.h"
 #include "virconf.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY

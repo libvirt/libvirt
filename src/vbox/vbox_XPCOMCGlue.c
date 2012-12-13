@@ -38,7 +38,7 @@
 #include "vbox_XPCOMCGlue.h"
 #include "internal.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 

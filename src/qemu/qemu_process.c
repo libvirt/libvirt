@@ -57,7 +57,7 @@
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "util.h"
+#include "virutil.h"
 #include "c-ctype.h"
 #include "nodeinfo.h"
 #include "domain_audit.h"

@@ -33,7 +33,7 @@
 #include "virterror_internal.h"
 #include "virthread.h"
 #include "virthreadpool.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "virnetservermdns.h"
 #include "virdbus.h"

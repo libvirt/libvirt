@@ -47,7 +47,7 @@
 
 #include "datatypes.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "internal.h"
 #include "secret_conf.h"

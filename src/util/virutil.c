@@ -1,5 +1,5 @@
 /*
- * utils.c: common, generic utility functions
+ * virutil.c: common, generic utility functions
  *
  * Copyright (C) 2006-2012 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
@@ -78,7 +78,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "virstoragefile.h"
 #include "viralloc.h"
 #include "virthread.h"

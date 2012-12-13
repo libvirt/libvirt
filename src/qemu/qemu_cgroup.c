@@ -30,7 +30,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "domain_audit.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

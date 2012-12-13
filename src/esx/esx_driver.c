@@ -28,7 +28,7 @@
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "virauth.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"

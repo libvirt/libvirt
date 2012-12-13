@@ -24,7 +24,7 @@
 # define __VIR_SECRET_CONF_H__
 
 # include "internal.h"
-# include "util.h"
+# include "virutil.h"
 
 VIR_ENUM_DECL(virSecretUsageType)
 

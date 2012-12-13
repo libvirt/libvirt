@@ -47,7 +47,7 @@
 #include "uml_driver.h"
 #include "uml_conf.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "nodeinfo.h"
 #include "virstatslinux.h"
 #include "capabilities.h"

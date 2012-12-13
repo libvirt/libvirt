@@ -33,7 +33,7 @@
 #include "node_device_conf.h"
 #include "viralloc.h"
 #include "xml.h"
-#include "util.h"
+#include "virutil.h"
 #include "virbuffer.h"
 #include "uuid.h"
 #include "virpci.h"

@@ -29,7 +29,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "storage_backend_disk.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "configmake.h"

@@ -26,7 +26,7 @@
 #include "virthread.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 #include "virnetsocket.h"
 #include "virkeepaliveprotocol.h"

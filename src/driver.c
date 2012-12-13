@@ -27,7 +27,7 @@
 #include "driver.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "configmake.h"
 
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"

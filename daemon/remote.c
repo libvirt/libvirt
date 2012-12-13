@@ -35,7 +35,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "stream.h"
 #include "uuid.h"
 #include "libvirt/libvirt-qemu.h"

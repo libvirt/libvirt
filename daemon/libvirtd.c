@@ -43,7 +43,7 @@
 #include "libvirtd.h"
 #include "libvirtd-config.h"
 
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "remote_driver.h"
 #include "viralloc.h"

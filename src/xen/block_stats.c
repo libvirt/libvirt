@@ -40,7 +40,7 @@
 
 # include "virterror_internal.h"
 # include "datatypes.h"
-# include "util.h"
+# include "virutil.h"
 # include "block_stats.h"
 # include "viralloc.h"
 # include "virfile.h"

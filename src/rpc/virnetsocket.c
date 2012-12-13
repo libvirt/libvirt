@@ -41,7 +41,7 @@
 
 #include "c-ctype.h"
 #include "virnetsocket.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"

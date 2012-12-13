@@ -25,7 +25,7 @@
 
 # include "internal.h"
 # include "virbuffer.h"
-# include "util.h"
+# include "virutil.h"
 
 # include <libxml/tree.h>
 

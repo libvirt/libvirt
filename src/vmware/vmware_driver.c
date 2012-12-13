@@ -28,7 +28,7 @@
 #include "datatypes.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "vircommand.h"
 #include "vmx.h"

@@ -32,7 +32,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virthread.h"
-#include "util.h"
+#include "virutil.h"
 
 virThreadLocal virLastErr;
 

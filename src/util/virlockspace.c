@@ -25,7 +25,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virthread.h"

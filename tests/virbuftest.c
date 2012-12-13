@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "testutils.h"
 #include "virbuffer.h"
 #include "viralloc.h"

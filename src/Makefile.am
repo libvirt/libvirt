@@ -54,7 +54,6 @@ augeastest_DATA =
 # helper APIs for various purposes
 UTIL_SOURCES =							\
 		util/uuid.c util/uuid.h				\
-		util/util.c util/util.h				\
 		util/viralloc.c util/viralloc.h			\
 		util/virarch.h util/virarch.c			\
 		util/viratomic.h util/viratomic.c		\
@@ -115,7 +114,9 @@ UTIL_SOURCES =							\
 		util/virstring.h util/virstring.c \
 		util/virtime.h util/virtime.c \
 		util/virusb.c util/virusb.h			\
-		util/viruri.h util/viruri.c
+		util/viruri.h util/viruri.c			\
+		util/virutil.c util/virutil.h			\
+		$(NULL)
 
 EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
 		$(srcdir)/util/virkeycode-mapgen.py

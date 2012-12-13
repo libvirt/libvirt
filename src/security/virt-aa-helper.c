@@ -41,7 +41,7 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "vircommand.h"
 

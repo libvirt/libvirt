@@ -30,7 +30,7 @@
 
 #include "virterror_internal.h"
 #include "virsexpr.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_SEXPR

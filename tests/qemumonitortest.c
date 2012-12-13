@@ -10,7 +10,7 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "testutils.h"
-# include "util.h"
+# include "virutil.h"
 # include "qemu/qemu_monitor.h"
 
 struct testEscapeString

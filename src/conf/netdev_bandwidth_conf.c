@@ -24,7 +24,7 @@
 
 #include "netdev_bandwidth_conf.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "domain_conf.h"
 

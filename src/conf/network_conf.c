@@ -40,7 +40,7 @@
 #include "viralloc.h"
 #include "xml.h"
 #include "uuid.h"
-#include "util.h"
+#include "virutil.h"
 #include "virbuffer.h"
 #include "c-ctype.h"
 #include "virfile.h"

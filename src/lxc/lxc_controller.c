@@ -53,7 +53,7 @@
 
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 
 #include "lxc_conf.h"
 #include "lxc_container.h"
@@ -63,7 +63,6 @@
 #include "virnetdev.h"
 #include "virnetdevveth.h"
 #include "viralloc.h"
-#include "util.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "vircommand.h"

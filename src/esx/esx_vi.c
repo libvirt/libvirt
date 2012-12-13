@@ -29,7 +29,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "vmx.h"
 #include "xml.h"

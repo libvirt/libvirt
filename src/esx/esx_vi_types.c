@@ -31,7 +31,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "esx_vi.h"
 #include "esx_vi_types.h"
 

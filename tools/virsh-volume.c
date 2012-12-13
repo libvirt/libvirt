@@ -36,7 +36,7 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "virsh-pool.h"
 #include "xml.h"

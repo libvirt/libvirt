@@ -32,7 +32,7 @@
 #include "virterror_internal.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 
 #include <sys/ioctl.h>
 #include <net/if.h>

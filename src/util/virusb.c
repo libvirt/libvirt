@@ -36,7 +36,7 @@
 #include "virusb.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 
 #define USB_SYSFS "/sys/bus/usb"

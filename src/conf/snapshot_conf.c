@@ -42,7 +42,7 @@
 #include "secret_conf.h"
 #include "snapshot_conf.h"
 #include "virstoragefile.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "virfile.h"
 #include "virterror_internal.h"

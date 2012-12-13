@@ -745,7 +745,7 @@ $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protoco
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.h$$
 
-_src1=libvirt|fdstream|qemu/qemu_monitor|util/(vircommand|util)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
+_src1=libvirt|fdstream|qemu/qemu_monitor|util/(vircommand|virutil)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/(shunload|virnettlscontext)test)\.c$$
 
@@ -764,13 +764,13 @@ exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
   ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virterror\.c)$$
 
-exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/util\.c$$
+exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   ^python/(libvirt-(qemu-)?override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/util\.c$$|examples/domain-events/events-c/event-test\.c$$)
+  ^(bootstrap.conf$$|src/util/virutil\.c$$|examples/domain-events/events-c/event-test\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c)$$)
@@ -782,10 +782,10 @@ _src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 
-exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/util\.c$$
+exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
-  ^src/(util/(viralloc|util|virfile)\.[hc]|esx/esx_vi\.c)$$
+  ^src/(util/(viralloc|virutil|virfile)\.[hc]|esx/esx_vi\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
@@ -797,14 +797,14 @@ exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(src/util/viralloc\.[ch]|examples/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
-  ^src/(util/util|lxc/lxc_container)\.c$$
+  ^src/(util/virutil|lxc/lxc_container)\.c$$
 
-exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/util\.c$$
+exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
   ^(docs/hacking\.html\.in)|(examples/systemtap/.*stp)|(src/dtrace2systemtap\.pl)|(src/rpc/gensystemtap\.pl)$$
 
-exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/util\.c$$
+exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = \
   ^src/(util/virsexpr|(vbox|xen|xenxs)/.*)\.c$$

@@ -29,7 +29,7 @@
 
 #include "virnetdevmacvlan.h"
 #include "virmacaddr.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET

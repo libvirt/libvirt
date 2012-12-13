@@ -30,7 +30,7 @@
 #include "virpidfile.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "intprops.h"
 #include "virlog.h"
 #include "virterror_internal.h"

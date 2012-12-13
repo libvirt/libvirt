@@ -31,7 +31,7 @@
 
 #include "internal.h"
 #include "md5.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "uuid.h"

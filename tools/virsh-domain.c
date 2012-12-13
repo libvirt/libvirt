@@ -43,7 +43,7 @@
 #include "conf/domain_conf.h"
 #include "console.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"

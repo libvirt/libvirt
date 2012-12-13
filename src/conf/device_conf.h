@@ -28,7 +28,7 @@
 # include <libxml/xpath.h>
 
 # include "internal.h"
-# include "util.h"
+# include "virutil.h"
 # include "virthread.h"
 # include "virbuffer.h"
 

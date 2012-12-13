@@ -8,7 +8,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 
 #if ! (defined __linux__  &&  (defined(__x86_64__) || \

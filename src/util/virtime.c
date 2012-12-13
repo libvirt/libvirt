@@ -37,7 +37,7 @@
 #include <sys/time.h>
 
 #include "virtime.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
 

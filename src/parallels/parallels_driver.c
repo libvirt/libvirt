@@ -43,7 +43,7 @@
 #include "datatypes.h"
 #include "virterror_internal.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virlog.h"
 #include "vircommand.h"
 #include "configmake.h"

@@ -6,7 +6,7 @@
 
 #include "internal.h"
 #include "xml.h"
-#include "util.h"
+#include "virutil.h"
 #include "testutils.h"
 
 #ifdef WIN32

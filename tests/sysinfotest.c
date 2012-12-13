@@ -33,7 +33,7 @@
 #include "virbuffer.h"
 #include "virsysinfo.h"
 #include "testutils.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 
 #if defined (__linux__)

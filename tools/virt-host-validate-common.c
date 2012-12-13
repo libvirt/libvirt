@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virt-host-validate-common.h"

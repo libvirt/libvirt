@@ -24,7 +24,7 @@
 #ifndef __VIR_CPU_CONF_H__
 # define __VIR_CPU_CONF_H__
 
-# include "util.h"
+# include "virutil.h"
 # include "virbuffer.h"
 # include "xml.h"
 # include "virbitmap.h"

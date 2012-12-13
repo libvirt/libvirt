@@ -33,7 +33,7 @@
 
 #include "lock_daemon.h"
 #include "lock_daemon_config.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virprocess.h"

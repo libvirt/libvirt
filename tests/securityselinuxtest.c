@@ -31,7 +31,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "security/security_manager.h"

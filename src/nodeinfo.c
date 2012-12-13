@@ -47,7 +47,7 @@
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "physmem.h"
-#include "util.h"
+#include "virutil.h"
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "count-one-bits.h"

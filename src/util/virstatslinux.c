@@ -34,7 +34,7 @@
 
 # include "virterror_internal.h"
 # include "datatypes.h"
-# include "util.h"
+# include "virutil.h"
 # include "virstatslinux.h"
 # include "viralloc.h"
 # include "virfile.h"

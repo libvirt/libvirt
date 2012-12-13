@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "util.h"
+#include "virutil.h"
 #include "virthread.h"
 #include "virfile.h"
 #include "viralloc.h"

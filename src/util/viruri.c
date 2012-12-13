@@ -23,7 +23,7 @@
 #include "viruri.h"
 
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 #include "virbuffer.h"
 

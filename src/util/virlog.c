@@ -43,7 +43,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virbuffer.h"
 #include "virthread.h"
 #include "virfile.h"

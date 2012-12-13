@@ -29,7 +29,7 @@
 #include "internal.h"
 #include "virinitctl.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virfile.h"
 

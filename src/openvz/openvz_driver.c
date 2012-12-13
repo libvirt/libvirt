@@ -49,7 +49,7 @@
 #include "openvz_driver.h"
 #include "openvz_util.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "openvz_conf.h"
 #include "nodeinfo.h"
 #include "viralloc.h"

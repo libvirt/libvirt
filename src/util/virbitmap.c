@@ -33,7 +33,7 @@
 #include "virbitmap.h"
 #include "viralloc.h"
 #include "virbuffer.h"
-#include "util.h"
+#include "virutil.h"
 #include "c-ctype.h"
 #include "count-one-bits.h"
 

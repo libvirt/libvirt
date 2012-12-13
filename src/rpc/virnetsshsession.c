@@ -31,7 +31,7 @@
 #include "virlog.h"
 #include "configmake.h"
 #include "virthread.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 #include "virobject.h"
 

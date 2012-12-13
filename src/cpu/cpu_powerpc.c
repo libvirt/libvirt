@@ -28,7 +28,7 @@
 
 #include "virlog.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "cpu.h"
 
 #include "cpu_map.h"

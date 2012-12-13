@@ -29,7 +29,7 @@
 #include "virrandom.h"
 #include "virthread.h"
 #include "count-one-bits.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 

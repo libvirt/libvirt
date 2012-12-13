@@ -52,7 +52,7 @@
 #include "driver.h"
 #include "virbuffer.h"
 #include "virpidfile.h"
-#include "util.h"
+#include "virutil.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "uuid.h"

@@ -38,7 +38,7 @@
 #include "internal.h"
 
 #include "security_apparmor.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "datatypes.h"

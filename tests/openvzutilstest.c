@@ -9,7 +9,7 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "testutils.h"
-# include "util.h"
+# include "virutil.h"
 # include "openvz/openvz_conf.h"
 
 static int

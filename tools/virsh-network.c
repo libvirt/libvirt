@@ -34,7 +34,7 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "xml.h"
 #include "conf/network_conf.h"
 

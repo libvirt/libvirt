@@ -31,7 +31,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "virauth.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "viralloc.h"
 #include "virbuffer.h"

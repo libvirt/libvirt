@@ -37,7 +37,7 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "configmake.h"
 

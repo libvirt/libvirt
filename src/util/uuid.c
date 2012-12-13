@@ -35,7 +35,7 @@
 
 #include "c-ctype.h"
 #include "internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "viralloc.h"

@@ -35,7 +35,7 @@
 #include "base64.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "xml.h"
 
 static virSecretPtr

@@ -139,7 +139,6 @@ src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/iohelper.c
-src/util/util.c
 src/util/viraudit.c
 src/util/virauth.c
 src/util/virauthconfig.c
@@ -181,6 +180,7 @@ src/util/virtime.c
 src/util/virtypedparam.c
 src/util/viruri.c
 src/util/virusb.c
+src/util/virutil.c
 src/util/xml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c

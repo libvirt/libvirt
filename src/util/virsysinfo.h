@@ -25,7 +25,7 @@
 # define __VIR_SYSINFOS_H__
 
 # include "internal.h"
-# include "util.h"
+# include "virutil.h"
 # include "virbuffer.h"
 
 enum virSysinfoType {

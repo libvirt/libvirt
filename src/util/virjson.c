@@ -27,7 +27,7 @@
 #include "viralloc.h"
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 
 #if HAVE_YAJL
 # include <yajl/yajl_gen.h>

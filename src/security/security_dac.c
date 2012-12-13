@@ -25,7 +25,7 @@
 
 #include "security_dac.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virpci.h"

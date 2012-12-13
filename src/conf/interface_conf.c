@@ -30,7 +30,7 @@
 #include "viralloc.h"
 #include "xml.h"
 #include "uuid.h"
-#include "util.h"
+#include "virutil.h"
 #include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE

@@ -39,7 +39,7 @@
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "vircommand.h"
 #include "intprops.h"

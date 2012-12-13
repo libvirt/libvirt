@@ -32,7 +32,7 @@
 # endif
 
 # include "lxc_conf.h"
-# include "util.h"
+# include "virutil.h"
 # include "viralloc.h"
 
 struct virLXCMeminfo {

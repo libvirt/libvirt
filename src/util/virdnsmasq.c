@@ -43,7 +43,7 @@
 #include "datatypes.h"
 #include "virbitmap.h"
 #include "virdnsmasq.h"
-#include "util.h"
+#include "virutil.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virterror_internal.h"

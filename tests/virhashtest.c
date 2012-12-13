@@ -10,7 +10,7 @@
 #include "virhashdata.h"
 #include "testutils.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virlog.h"
 
 

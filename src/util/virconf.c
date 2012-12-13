@@ -33,7 +33,7 @@
 #include "virterror_internal.h"
 #include "virbuffer.h"
 #include "virconf.h"
-#include "util.h"
+#include "virutil.h"
 #include "c-ctype.h"
 #include "virlog.h"
 #include "viralloc.h"

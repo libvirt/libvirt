@@ -38,7 +38,7 @@
 #include "uuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "virlog.h"

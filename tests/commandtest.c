@@ -31,7 +31,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virfile.h"

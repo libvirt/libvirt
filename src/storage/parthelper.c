@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include "util.h"
+#include "virutil.h"
 #include "c-ctype.h"
 #include "configmake.h"
 

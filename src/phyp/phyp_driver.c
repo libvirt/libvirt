@@ -44,7 +44,7 @@
 
 #include "internal.h"
 #include "virauth.h"
-#include "util.h"
+#include "virutil.h"
 #include "datatypes.h"
 #include "virbuffer.h"
 #include "viralloc.h"

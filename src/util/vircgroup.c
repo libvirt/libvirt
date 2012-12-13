@@ -38,7 +38,7 @@
 #include <dirent.h>
 
 #include "internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "vircgroup.h"
 #include "virlog.h"

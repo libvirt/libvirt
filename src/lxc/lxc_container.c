@@ -56,7 +56,7 @@
 #include "virterror_internal.h"
 #include "virlog.h"
 #include "lxc_container.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virnetdevveth.h"
 #include "uuid.h"

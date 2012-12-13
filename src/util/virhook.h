@@ -25,7 +25,7 @@
 # define __VIR_HOOKS_H__
 
 # include "internal.h"
-# include "util.h"
+# include "virutil.h"
 
 enum virHookDriverType {
     VIR_HOOK_DRIVER_DAEMON = 0,        /* Daemon related events */

@@ -48,7 +48,7 @@
 #include "uuid.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "nodeinfo.h"
 #include "virfile.h"
 #include "vircommand.h"

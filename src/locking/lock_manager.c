@@ -25,7 +25,7 @@
 #include "lock_driver_nop.h"
 #include "virterror_internal.h"
 #include "virlog.h"
-#include "util.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "uuid.h"
 

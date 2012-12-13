@@ -40,7 +40,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virthread.h"
 #include "virterror_internal.h"
 #include "virbuffer.h"

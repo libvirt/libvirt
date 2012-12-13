@@ -39,7 +39,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "util.h"
+#include "virutil.h"
 #include "storage_driver.h"
 #include "storage_conf.h"
 #include "viralloc.h"

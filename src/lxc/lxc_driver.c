@@ -46,7 +46,7 @@
 #include "lxc_driver.h"
 #include "lxc_process.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"
 #include "nodeinfo.h"

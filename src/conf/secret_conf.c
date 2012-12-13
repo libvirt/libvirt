@@ -29,7 +29,7 @@
 #include "viralloc.h"
 #include "secret_conf.h"
 #include "virterror_internal.h"
-#include "util.h"
+#include "virutil.h"
 #include "xml.h"
 #include "uuid.h"
 

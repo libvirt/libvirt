@@ -28,7 +28,7 @@
 #include "capabilities.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "uuid.h"
 #include "cpu_conf.h"
 #include "virterror_internal.h"

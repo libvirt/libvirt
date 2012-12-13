@@ -39,7 +39,7 @@
 #include "virlog.h"
 #include "virterror_internal.h"
 #include "viralloc.h"
-#include "util.h"
+#include "virutil.h"
 #include "virfile.h"
 #include "datatypes.h"
 #include "fdstream.h"
