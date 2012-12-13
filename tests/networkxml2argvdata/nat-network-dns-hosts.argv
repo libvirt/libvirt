@@ -1,5 +1,5 @@
 @DNSMASQ@ --strict-order --domain=example.com \
 --local=/example.com/ --domain-needed \
 --conf-file= \
---bind-dynamic --interface virbr0 \
+--except-interface lo --bind-dynamic --interface virbr0 \
 --expand-hosts --addn-hosts=/var/lib/libvirt/dnsmasq/default.addnhosts\
