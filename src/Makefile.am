@@ -1629,26 +1629,29 @@ EXTRA_DIST += locking/virtlockd.sysconf \
 	locking/test_libvirt_lockd.aug.in
 
 install-sysconfig:
-	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_DATA) $(srcdir)/locking/virtlockd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
 
 uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
+	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
 EXTRA_DIST += locking/virtlockd.init.in
 
 if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init:: virtlockd.init install-sysconfig
-	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
 	$(INSTALL_SCRIPT) virtlockd.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlockd
 
 uninstall-init:: uninstall-sysconfig
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlockd
+	rmdir $(DESTDIR)$(sysconfdir)/rc.d/init.d || :
 
 BUILT_SOURCES += virtlockd.init
+DISTCLEANFILES += virtlockd.init
 else
 install-init::
 uninstall-init::
@@ -1677,17 +1680,19 @@ if LIBVIRT_INIT_SCRIPT_SYSTEMD
 SYSTEMD_UNIT_DIR = /lib/systemd/system
 
 BUILT_SOURCES += virtlockd.service virtlockd.socket
+DISTCLEANFILES += virtlockd.service virtlockd.socket
 
-install-systemd: virtlockd.init install-sysconfig
-	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+install-systemd: virtlockd.service virtlockd.socket install-sysconfig
+	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_SCRIPT) virtlockd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
 	$(INSTALL_SCRIPT) virtlockd.socket \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
 
 uninstall-systemd: uninstall-sysconfig
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.service
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.socket
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.service \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.socket
+	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else
 install-systemd:
 uninstall-systemd:
