@@ -331,7 +331,10 @@ vshReconnect(vshControl *ctl)
                                    virConnectAuthPtrDefault,
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
     if (!ctl->conn) {
-        vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
+        if (disconnected)
+            vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
+        else
+            vshError(ctl, "%s", _("failed to connect to the hypervisor"));
     } else {
         if (virConnectRegisterCloseCallback(ctl->conn, vshCatchDisconnect,
                                             NULL, NULL) < 0)
