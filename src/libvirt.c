@@ -19118,6 +19118,67 @@ error:
 }
 
 /**
+ * virDomainOpenChannel:
+ * @dom: a domain object
+ * @name: the channel name, or NULL
+ * @st: a stream to associate with the channel
+ * @flags: bitwise-OR of virDomainChannelFlags
+ *
+ * This opens the host interface associated with a channel device on a
+ * guest, if the host interface is supported.  If @name is given, it
+ * can match either the device alias (e.g. "channel0"), or the virtio
+ * target name (e.g. "org.qemu.guest_agent.0").  If @name is omitted,
+ * then the first channel is opened. The channel is associated with
+ * the passed in @st stream, which should have been opened in
+ * non-blocking mode for bi-directional I/O.
+ *
+ * By default, when @flags is 0, the open will fail if libvirt detects
+ * that the channel is already in use by another client; passing
+ * VIR_DOMAIN_CHANNEL_FORCE will cause libvirt to forcefully remove the
+ * other client prior to opening this channel.
+ *
+ * Returns 0 if the channel was opened, -1 on error
+ */
+int virDomainOpenChannel(virDomainPtr dom,
+                         const char *name,
+                         virStreamPtr st,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(dom, "name=%s, st=%p, flags=%x",
+                     NULLSTR(name), st, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN(dom)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainOpenChannel) {
+        int ret;
+        ret = conn->driver->domainOpenChannel(dom, name, st, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainBlockJobAbort:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand

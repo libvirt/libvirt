@@ -4547,6 +4547,22 @@ int virDomainOpenConsole(virDomainPtr dom,
                          virStreamPtr st,
                          unsigned int flags);
 
+/**
+ * virDomainChannelFlags
+ *
+ * Since 1.0.2
+ */
+typedef enum {
+    VIR_DOMAIN_CHANNEL_FORCE = (1 << 0), /* abort a (possibly) active channel
+                                            connection to force a new
+                                            connection */
+} virDomainChannelFlags;
+
+int virDomainOpenChannel(virDomainPtr dom,
+                         const char *name,
+                         virStreamPtr st,
+                         unsigned int flags);
+
 typedef enum {
     VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = (1 << 0),
 } virDomainOpenGraphicsFlags;

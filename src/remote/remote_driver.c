@@ -6121,6 +6121,7 @@ static virDriver remote_driver = {
     .qemuDomainAttach = qemuDomainAttach, /* 0.9.4 */
     .qemuDomainArbitraryAgentCommand = qemuDomainAgentCommand, /* 0.10.0 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
+    .domainOpenChannel = remoteDomainOpenChannel, /* 1.0.2 */
     .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */
     .domainInjectNMI = remoteDomainInjectNMI, /* 0.9.2 */
     .domainMigrateBegin3 = remoteDomainMigrateBegin3, /* 0.9.2 */
