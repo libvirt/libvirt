@@ -1216,8 +1216,14 @@ if test "x$with_sanlock" != "xno"; then
       fi
     ])
   fi
-  test $fail = 1 &&
+  if test $fail = 1; then
     AC_MSG_ERROR([You must install the Sanlock development package in order to compile libvirt])
+  else
+    AC_CHECK_DECLS([SANLK_INQ_WAIT], [sanlock_inq_wait=1], [sanlock_inq_wait=0], [[
+      #include <stdint.h>
+      #include <sanlock_admin.h>
+    ]])
+  fi
   CPPFLAGS="$old_cppflags"
   LIBS="$old_libs"
   if test "x$with_sanlock" = "xyes" ; then
@@ -1233,7 +1239,8 @@ if test "x$with_sanlock" != "xno"; then
 
     AC_CHECK_LIB([sanlock_client], [sanlock_inq_lockspace],
                  [sanlock_inq_lockspace=yes], [sanlock_inq_lockspace=no])
-    if test "x$sanlock_inq_lockspace" = "xyes" ; then
+    if test "x$sanlock_inq_lockspace" = "xyes" && \
+       test $sanlock_inq_wait = 1; then
       AC_DEFINE_UNQUOTED([HAVE_SANLOCK_INQ_LOCKSPACE], 1,
         [whether sanlock supports sanlock_inq_lockspace])
     fi
