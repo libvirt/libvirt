@@ -174,8 +174,8 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     },
     [VIR_STORAGE_FILE_QED] = {
         /* http://wiki.qemu.org/Features/QED */
-        "QED\0", NULL,
-        LV_LITTLE_ENDIAN, -1, -1,
+        "QED", NULL,
+        LV_LITTLE_ENDIAN, -2, -1,
         QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore,
     },
     [VIR_STORAGE_FILE_VMDK] = {
@@ -611,6 +611,10 @@ virStorageFileMatchesVersion(int format,
     /* Validate version number info */
     if (fileTypeInfo[format].versionOffset == -1)
         return false;
+
+    /* -2 == non-versioned file format, so trivially match */
+    if (fileTypeInfo[format].versionOffset == -2)
+        return true;
 
     if ((fileTypeInfo[format].versionOffset + 4) > buflen)
         return false;
