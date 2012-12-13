@@ -2189,10 +2189,7 @@ vshInit(vshControl *ctl)
     ctl->eventLoopStarted = true;
 
     if (ctl->name) {
-        ctl->conn = virConnectOpenAuth(ctl->name,
-                                       virConnectAuthPtrDefault,
-                                       ctl->readonly ? VIR_CONNECT_RO : 0);
-
+        vshReconnect(ctl);
         /* Connecting to a named connection must succeed, but we delay
          * connecting to the default connection until we need it
          * (since the first command might be 'connect' which allows a
@@ -2201,7 +2198,6 @@ vshInit(vshControl *ctl)
          */
         if (!ctl->conn) {
             vshReportError(ctl);
-            vshError(ctl, "%s", _("failed to connect to the hypervisor"));
             return false;
         }
     }
