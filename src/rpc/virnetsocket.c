@@ -35,6 +35,10 @@
 # include <netinet/tcp.h>
 #endif
 
+#ifdef HAVE_SYS_UCRED_H
+# include <sys/ucred.h>
+#endif
+
 #include "c-ctype.h"
 #include "virnetsocket.h"
 #include "util.h"
@@ -1091,7 +1095,7 @@ int virNetSocketGetPort(virNetSocketPtr sock)
 }
 
 
-#ifdef SO_PEERCRED
+#if defined(SO_PEERCRED)
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 uid_t *uid,
                                 gid_t *gid,
@@ -1111,6 +1115,30 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
     *pid = cr.pid;
     *uid = cr.uid;
     *gid = cr.gid;
+
+    virMutexUnlock(&sock->lock);
+    return 0;
+}
+#elif defined(LOCAL_PEERCRED)
+int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
+                                uid_t *uid,
+                                gid_t *gid,
+                                pid_t *pid)
+{
+    struct xucred cr;
+    socklen_t cr_len = sizeof(cr);
+    virMutexLock(&sock->lock);
+
+    if (getsockopt(sock->fd, SOL_SOCKET, LOCAL_PEERCRED, &cr, &cr_len) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to get client socket identity"));
+        virMutexUnlock(&sock->lock);
+        return -1;
+    }
+
+    *pid = -1;
+    *uid = cr.cr_uid;
+    *gid = cr.cr_gid;
 
     virMutexUnlock(&sock->lock);
     return 0;
