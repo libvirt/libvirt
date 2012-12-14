@@ -1,0 +1,83 @@
+BIOS Information
+	Vendor: LENOVO
+	Version: 6DET62WW (3.12 )
+	Release Date: 01/12/2010
+	Address: 0xE0000
+	Runtime Size: 128 kB
+	ROM Size: 8192 kB
+	Characteristics:
+		PCI is supported
+		PC Card (PCMCIA) is supported
+		PNP is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		ESCD support is available
+		Boot from CD is supported
+		Selectable boot is supported
+		BIOS ROM is socketed
+		EDD is supported
+		ACPI is supported
+		USB legacy is supported
+		BIOS boot specification is supported
+		Targeted content distribution is supported
+	BIOS Revision: 3.18
+	Firmware Revision: 1.6
+
+System Information
+	Manufacturer: LENOVO
+	Product Name: 7458AU2
+	Version: ThinkPad X200
+	Serial Number: L3AAK6G
+	UUID: 4CD00C81-4A85-11CB-88EC-A5A7A8F13986
+	Wake-up Type: Power Switch
+	SKU Number: Not Specified
+	Family: ThinkPad X200
+
+Processor Information
+	Socket Designation: None
+	Type: Central Processor
+	Family: Other
+	Manufacturer: GenuineIntel
+	ID: 76 06 01 00 FF FB EB BF
+	Version: Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz
+	Voltage: 1.2 V
+	External Clock: 266 MHz
+	Max Speed: 2400 MHz
+	Current Speed: 2400 MHz
+	Status: Populated, Enabled
+	Upgrade: None
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
+	Part Number: Not Specified
+
+Memory Device
+	Total Width: 64 bits
+	Data Width: 64 bits
+	Size: 2048 MB
+	Form Factor: SODIMM
+	Set: None
+	Locator: DIMM 1
+	Bank Locator: Bank 0/1
+	Type: <OUT OF SPEC>
+	Type Detail: Synchronous
+	Speed: 1066 MHz (0.9 ns)
+	Manufacturer: 80CE
+	Serial Number: 46614E40
+	Asset Tag: 0841
+	Part Number: M471B5673DZ1-CF8
+
+Memory Device
+	Total Width: 64 bits
+	Data Width: 64 bits
+	Size: 2048 MB
+	Form Factor: SODIMM
+	Set: None
+	Locator: DIMM 2
+	Bank Locator: Bank 2/3
+	Type: <OUT OF SPEC>
+	Type Detail: Synchronous
+	Speed: 1066 MHz (0.9 ns)
+	Manufacturer: 8551
+	Serial Number: 29057112
+	Asset Tag: 0839
+	Part Number: IMSH2GS13A1F1C-10F

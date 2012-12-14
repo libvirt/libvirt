@@ -76,6 +76,7 @@ EXTRA_DIST =		\
 	storagevolschematest \
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
+	sysinfodata \
 	test-lib.sh	\
 	vmx2xmldata \
 	xencapsdata \
@@ -96,6 +97,7 @@ test_programs = virshtest sockettest \
 	virbitmaptest \
 	virlockspacetest \
 	virstringtest \
+	sysinfotest \
 	$(NULL)
 
 if WITH_SECDRIVER_SELINUX
@@ -636,6 +638,10 @@ shunloadtest_SOURCES = \
 	shunloadtest.c
 shunloadtest_LDADD = $(LIB_PTHREAD)
 shunloadtest_DEPENDENCIES = libshunload.la
+
+sysinfotest_SOURCES = \
+	sysinfotest.c testutils.h testutils.c
+sysinfotest_LDADD = $(LDADDS)
 
 if WITH_CIL
 CILOPTFLAGS =

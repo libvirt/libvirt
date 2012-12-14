@@ -821,7 +821,7 @@ exclude_file_name_regexp--sc_require_config_h = ^(examples/|tools/virsh-$(_virsh
 exclude_file_name_regexp--sc_require_config_h_first = ^(examples/|tools/virsh-$(_virsh_includes)\.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = \
-  (/qemuhelpdata/|\.(fig|gif|ico|png)$$)
+  (/qemuhelpdata/|/sysinfodata/.*\.data|\.(fig|gif|ico|png)$$)
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test)$$

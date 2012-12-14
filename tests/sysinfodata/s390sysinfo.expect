@@ -1,0 +1,25 @@
+<sysinfo type='smbios'>
+  <system>
+    <entry name='manufacturer'>IBM</entry>
+    <entry name='serial'>0000000000012345</entry>
+    <entry name='family'>2817</entry>
+  </system>
+  <processor>
+    <entry name='family'>2817</entry>
+    <entry name='manufacturer'>IBM/S390</entry>
+    <entry name='version'>FF</entry>
+    <entry name='serial_number'>000123</entry>
+  </processor>
+  <processor>
+    <entry name='family'>2817</entry>
+    <entry name='manufacturer'>IBM/S390</entry>
+    <entry name='version'>FF</entry>
+    <entry name='serial_number'>100123</entry>
+  </processor>
+  <processor>
+    <entry name='family'>2817</entry>
+    <entry name='manufacturer'>IBM/S390</entry>
+    <entry name='version'>FF</entry>
+    <entry name='serial_number'>200123</entry>
+  </processor>
+</sysinfo>

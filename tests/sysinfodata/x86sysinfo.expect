@@ -1,0 +1,53 @@
+<sysinfo type='smbios'>
+  <bios>
+    <entry name='vendor'>LENOVO</entry>
+    <entry name='version'>6DET62WW (3.12 )</entry>
+    <entry name='date'>01/12/2010</entry>
+    <entry name='release'>3.18</entry>
+  </bios>
+  <system>
+    <entry name='manufacturer'>LENOVO</entry>
+    <entry name='product'>7458AU2</entry>
+    <entry name='version'>ThinkPad X200</entry>
+    <entry name='serial'>L3AAK6G</entry>
+    <entry name='uuid'>4CD00C81-4A85-11CB-88EC-A5A7A8F13986</entry>
+    <entry name='sku'>Not Specified</entry>
+    <entry name='family'>ThinkPad X200</entry>
+  </system>
+  <processor>
+    <entry name='socket_destination'>None</entry>
+    <entry name='type'>Central Processor</entry>
+    <entry name='family'>Other</entry>
+    <entry name='manufacturer'>GenuineIntel</entry>
+    <entry name='version'>Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz</entry>
+    <entry name='external_clock'>266 MHz</entry>
+    <entry name='max_speed'>2400 MHz</entry>
+    <entry name='status'>Populated, Enabled</entry>
+    <entry name='serial_number'>Not Specified</entry>
+    <entry name='part_number'>Not Specified</entry>
+  </processor>
+  <memory_device>
+    <entry name='size'>2048 MB</entry>
+    <entry name='form_factor'>SODIMM</entry>
+    <entry name='locator'>DIMM 1</entry>
+    <entry name='bank_locator'>Bank 0/1</entry>
+    <entry name='type'>&lt;OUT OF SPEC&gt;</entry>
+    <entry name='type_detail'>Synchronous</entry>
+    <entry name='speed'>1066 MHz (0.9 ns)</entry>
+    <entry name='manufacturer'>80CE</entry>
+    <entry name='serial_number'>46614E40</entry>
+    <entry name='part_number'>M471B5673DZ1-CF8</entry>
+  </memory_device>
+  <memory_device>
+    <entry name='size'>2048 MB</entry>
+    <entry name='form_factor'>SODIMM</entry>
+    <entry name='locator'>DIMM 2</entry>
+    <entry name='bank_locator'>Bank 2/3</entry>
+    <entry name='type'>&lt;OUT OF SPEC&gt;</entry>
+    <entry name='type_detail'>Synchronous</entry>
+    <entry name='speed'>1066 MHz (0.9 ns)</entry>
+    <entry name='manufacturer'>8551</entry>
+    <entry name='serial_number'>29057112</entry>
+    <entry name='part_number'>IMSH2GS13A1F1C-10F</entry>
+  </memory_device>
+</sysinfo>

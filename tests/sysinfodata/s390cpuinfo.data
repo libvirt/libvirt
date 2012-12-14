@@ -1,0 +1,12 @@
+vendor_id       : IBM/S390
+# processors    : 3
+bogomips per cpu: 14367.00
+features	: esan3 zarch stfle msa ldisp eimm dfp etf3eh highgprs
+cache0          : level=1 type=Data scope=Private size=128K line_size=256 associativity=8
+cache1          : level=1 type=Instruction scope=Private size=64K line_size=256 associativity=4
+cache2          : level=2 type=Unified scope=Private size=1536K line_size=256 associativity=12
+cache3          : level=3 type=Unified scope=Shared size=24576K line_size=256 associativity=12
+cache4          : level=4 type=Unified scope=Shared size=196608K line_size=256 associativity=24
+processor 0: version = FF,  identification = 000123,  machine = 2817
+processor 1: version = FF,  identification = 100123,  machine = 2817
+processor 2: version = FF,  identification = 200123,  machine = 2817

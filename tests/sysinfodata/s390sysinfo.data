@@ -1,0 +1,114 @@
+Manufacturer:         IBM
+Type:                 2817
+Model:                703              M66
+Sequence Code:        0000000000012345
+Plant:                02
+Model Capacity:       703              00000408
+Model Perm. Capacity: 703              00000408
+Model Temp. Capacity: 703              00000408
+Nominal Cap. Rating:  00000408
+Nominal Perm. Rating: 00000408
+Nominal Temp. Rating: 00000408
+Capacity Adj. Ind.:   100
+Capacity Ch. Reason:  0
+Capacity Transient:   0
+Type 1 Percentage:    0
+Type 2 Percentage:    0
+Type 3 Percentage:    0
+Type 4 Percentage:    0
+Type 5 Percentage:    0
+
+CPUs Total:           69
+CPUs Configured:      3
+CPUs Standby:         0
+CPUs Reserved:        66
+Capability:           696
+Nominal Capability:   696
+Secondary Capability: 696
+Adjustment 02-way:    61900
+Adjustment 03-way:    60280
+Adjustment 04-way:    59080
+Adjustment 05-way:    57740
+Adjustment 06-way:    56900
+Adjustment 07-way:    56040
+Adjustment 08-way:    55120
+Adjustment 09-way:    53950
+Adjustment 10-way:    52980
+Adjustment 11-way:    52000
+Adjustment 12-way:    51080
+Adjustment 13-way:    50380
+Adjustment 14-way:    49600
+Adjustment 15-way:    48760
+Adjustment 16-way:    47860
+Adjustment 17-way:    47310
+Adjustment 18-way:    46860
+Adjustment 19-way:    46300
+Adjustment 20-way:    46020
+Adjustment 21-way:    45520
+Adjustment 22-way:    45260
+Adjustment 23-way:    44960
+Adjustment 24-way:    44690
+Adjustment 25-way:    44390
+Adjustment 26-way:    44140
+Adjustment 27-way:    43860
+Adjustment 28-way:    43460
+Adjustment 29-way:    43200
+Adjustment 30-way:    42900
+Adjustment 31-way:    42620
+Adjustment 32-way:    42360
+Adjustment 33-way:    42060
+Adjustment 34-way:    41800
+Adjustment 35-way:    41600
+Adjustment 36-way:    41440
+Adjustment 37-way:    41280
+Adjustment 38-way:    41040
+Adjustment 39-way:    40820
+Adjustment 40-way:    40570
+Adjustment 41-way:    40350
+Adjustment 42-way:    40260
+Adjustment 43-way:    40060
+Adjustment 44-way:    39910
+Adjustment 45-way:    39750
+Adjustment 46-way:    39540
+Adjustment 47-way:    39360
+Adjustment 48-way:    39260
+Adjustment 49-way:    39180
+Adjustment 50-way:    39000
+Adjustment 51-way:    38840
+Adjustment 52-way:    38740
+Adjustment 53-way:    38640
+Adjustment 54-way:    38520
+Adjustment 55-way:    38440
+Adjustment 56-way:    38330
+Adjustment 57-way:    38240
+Adjustment 58-way:    38160
+Adjustment 59-way:    38080
+Adjustment 60-way:    37960
+Adjustment 61-way:    37880
+Adjustment 62-way:    37780
+Adjustment 63-way:    37680
+Adjustment 64-way:    37580
+Adjustment 65-way:    37480
+Adjustment 66-way:    37360
+Adjustment 67-way:    37240
+Adjustment 68-way:    37120
+Adjustment 69-way:    36970
+
+LPAR Number:          47
+LPAR Characteristics: Shared
+LPAR Name:            VIRLP01
+LPAR Adjustment:      253
+LPAR CPUs Total:      16
+LPAR CPUs Configured: 16
+LPAR CPUs Standby:    0
+LPAR CPUs Reserved:   0
+LPAR CPUs Dedicated:  0
+LPAR CPUs Shared:     16
+
+VM00 Name:            VIRVM01
+VM00 Control Program: z/VM    6.2.0
+VM00 Adjustment:      187
+VM00 CPUs Total:      3
+VM00 CPUs Configured: 3
+VM00 CPUs Standby:    0
+VM00 CPUs Reserved:   0
