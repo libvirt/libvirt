@@ -8898,7 +8898,7 @@ cleanup:
 }
 #else
 static int
-qemuDomainInterfaceStats(virDomainPtr dom,
+qemuDomainInterfaceStats(virDomainPtr dom ATTRIBUTE_UNUSED,
                          const char *path ATTRIBUTE_UNUSED,
                          struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
 {

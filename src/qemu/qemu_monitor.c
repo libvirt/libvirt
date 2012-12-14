@@ -1428,16 +1428,16 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 
 struct qemuDomainDiskInfo *
 qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
-                           const char *devname)
+                           const char *dev)
 {
     struct qemuDomainDiskInfo *info;
 
-    VIR_DEBUG("blockInfo=%p dev=%s", blockInfo, NULLSTR(devname));
+    VIR_DEBUG("blockInfo=%p dev=%s", blockInfo, NULLSTR(dev));
 
-    if (!(info = virHashLookup(blockInfo, devname))) {
+    if (!(info = virHashLookup(blockInfo, dev))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot find info for device '%s'"),
-                       NULLSTR(devname));
+                       NULLSTR(dev));
     }
 
     return info;
