@@ -156,6 +156,12 @@ enum qemuCapsFlags {
     QEMU_CAPS_USB_REDIR_BOOTINDEX = 116, /* usb-redir.bootindex */
     QEMU_CAPS_USB_HOST_BOOTINDEX = 117, /* usb-host.bootindex */
     QEMU_CAPS_DISK_SNAPSHOT      = 118, /* blockdev-snapshot-sync command */
+    QEMU_CAPS_DEVICE_QXL         = 119, /* -device qxl */
+    QEMU_CAPS_DEVICE_VGA         = 120, /* -device VGA */
+    QEMU_CAPS_DEVICE_CIRRUS_VGA  = 121, /* -device cirrus-vga */
+    QEMU_CAPS_DEVICE_VMWARE_SVGA = 122, /* -device vmware-svga */
+    QEMU_CAPS_DEVICE_VIDEO_PRIMARY = 123, /* safe to use -device XXX
+                                           for primary video device */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
