@@ -93,6 +93,16 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support vbox */
               "qxl");
 
+VIR_ENUM_DECL(qemuDeviceVideo)
+
+VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
+              "VGA",
+              "cirrus-vga",
+              "vmware-svga",
+              "", /* no device for xen */
+              "", /* don't support vbox */
+              "qxl-vga");
+
 VIR_ENUM_DECL(qemuSoundCodec)
 
 VIR_ENUM_IMPL(qemuSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
@@ -1063,7 +1073,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
             goto cleanup;
 
-        if (qemuAssignDevicePCISlots(def, addrs) < 0)
+        if (qemuAssignDevicePCISlots(def, caps, addrs) < 0)
             goto cleanup;
     }
 
@@ -1421,12 +1431,15 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
  * skip over info.type == PCI
  */
 int
-qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
+qemuAssignDevicePCISlots(virDomainDefPtr def,
+                         qemuCapsPtr caps,
+                         qemuDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
     bool reservedIDE = false;
     bool reservedUSB = false;
     int function;
+    bool qemuDeviceVideoUsable = qemuCapsGet(caps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
 
     /* Host bridge */
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
@@ -1493,29 +1506,42 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    /* First VGA is hardcoded slot=2 */
     if (def->nvideos > 0) {
-        if (def->videos[0]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            if (def->videos[0]->info.addr.pci.domain != 0 ||
-                def->videos[0]->info.addr.pci.bus != 0 ||
-                def->videos[0]->info.addr.pci.slot != 2 ||
-                def->videos[0]->info.addr.pci.function != 0) {
+        virDomainVideoDefPtr primaryVideo = def->videos[0];
+        if (primaryVideo->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            primaryVideo->info.addr.pci.domain = 0;
+            primaryVideo->info.addr.pci.bus = 0;
+            primaryVideo->info.addr.pci.slot = 2;
+            primaryVideo->info.addr.pci.function = 0;
+
+            if (qemuDomainPCIAddressCheckSlot(addrs, &primaryVideo->info) < 0) {
+                if (qemuDeviceVideoUsable) {
+                    virResetLastError();
+                    if (qemuDomainPCIAddressSetNextAddr(addrs, &primaryVideo->info) < 0)
+                        goto error;
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("PCI address 0:0:2.0 is in use, "
+                                     "QEMU needs it for primary video"));
+                    goto error;
+                }
+            } else if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0) {
+                goto error;
+            }
+        } else if (!qemuDeviceVideoUsable) {
+            if (primaryVideo->info.addr.pci.domain != 0 ||
+                primaryVideo->info.addr.pci.bus != 0 ||
+                primaryVideo->info.addr.pci.slot != 2 ||
+                primaryVideo->info.addr.pci.function != 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Primary video card must have PCI address 0:0:2.0"));
                 goto error;
             }
             /* If TYPE==PCI, then qemuCollectPCIAddress() function
              * has already reserved the address, so we must skip */
-        } else {
-            def->videos[0]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            def->videos[0]->info.addr.pci.domain = 0;
-            def->videos[0]->info.addr.pci.bus = 0;
-            def->videos[0]->info.addr.pci.slot = 2;
-            def->videos[0]->info.addr.pci.function = 0;
-            if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
-                goto error;
         }
-    } else {
+    } else if (!qemuDeviceVideoUsable) {
         virDomainDeviceInfo dev;
         memset(&dev, 0, sizeof(dev));
         dev.addr.pci.slot = 2;
@@ -1688,8 +1714,13 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    /* Further non-primary video cards */
+    /* Further non-primary video cards which have to be qxl type */
     for (i = 1; i < def->nvideos ; i++) {
+        if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("non-primary video device must be type of 'qxl'"));
+            goto error;
+        }
         if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
@@ -3507,16 +3538,35 @@ error:
 }
 
 static char *
-qemuBuildVideoDevStr(virDomainVideoDefPtr video,
-                     qemuCapsPtr caps)
+qemuBuildDeviceVideoStr(virDomainVideoDefPtr video,
+                        qemuCapsPtr caps,
+                        bool primary)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *model = qemuVideoTypeToString(video->type);
+    const char *model;
 
-    if (!model) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid video model"));
-        goto error;
+    if (primary) {
+        model = qemuDeviceVideoTypeToString(video->type);
+        if (!model || STREQ(model, "")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type %s is not supported with QEMU"),
+                           virDomainVideoTypeToString(video->type));
+            goto error;
+        }
+    } else {
+        if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("non-primary video device must be type of 'qxl'"));
+            goto error;
+        }
+
+        if (!qemuCapsGet(caps, QEMU_CAPS_DEVICE_QXL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("only one video card is currently supported"));
+            goto error;
+        }
+
+        model = "qxl";
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
@@ -6433,22 +6483,42 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
     }
     if (def->nvideos > 0) {
-        if (qemuCapsGet(caps, QEMU_CAPS_VGA)) {
-            if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_XEN) {
+        int primaryVideoType = def->videos[0]->type;
+        if (qemuCapsGet(caps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&
+             ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+                 qemuCapsGet(caps, QEMU_CAPS_DEVICE_VGA)) ||
+             (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
+                 qemuCapsGet(caps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
+             (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+                 qemuCapsGet(caps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
+             (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+                 qemuCapsGet(caps, QEMU_CAPS_DEVICE_QXL_VGA)))
+           ) {
+            for (i = 0 ; i < def->nvideos ; i++) {
+                char *str;
+                virCommandAddArg(cmd, "-device");
+                if (!(str = qemuBuildDeviceVideoStr(def->videos[i], caps, !i)))
+                    goto error;
+
+                virCommandAddArg(cmd, str);
+                VIR_FREE(str);
+            }
+        } else if (qemuCapsGet(caps, QEMU_CAPS_VGA)) {
+            if (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_XEN) {
                 /* nothing - vga has no effect on Xen pvfb */
             } else {
-                if ((def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
+                if ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
                     !qemuCapsGet(caps, QEMU_CAPS_VGA_QXL)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("This QEMU does not support QXL graphics adapters"));
                     goto error;
                 }
 
-                const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
+                const char *vgastr = qemuVideoTypeToString(primaryVideoType);
                 if (!vgastr || STREQ(vgastr, "")) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("video type %s is not supported with QEMU"),
-                                   virDomainVideoTypeToString(def->videos[0]->type));
+                                   virDomainVideoTypeToString(primaryVideoType));
                     goto error;
                 }
 
@@ -6475,6 +6545,32 @@ qemuBuildCommandLine(virConnectPtr conn,
                     }
                 }
             }
+
+            if (def->nvideos > 1) {
+                if (qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
+                    for (i = 1 ; i < def->nvideos ; i++) {
+                        char *str;
+                        if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                           _("video type %s is only valid as primary video card"),
+                                           virDomainVideoTypeToString(def->videos[0]->type));
+                            goto error;
+                        }
+
+                        virCommandAddArg(cmd, "-device");
+
+                        if (!(str = qemuBuildDeviceVideoStr(def->videos[i], caps, false)))
+                            goto error;
+
+                        virCommandAddArg(cmd, str);
+                        VIR_FREE(str);
+                    }
+                } else {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   "%s", _("only one video card is currently supported"));
+                    goto error;
+                }
+            }
         } else {
 
             switch (def->videos[0]->type) {
@@ -6497,28 +6593,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                                virDomainVideoTypeToString(def->videos[0]->type));
                 goto error;
             }
-        }
 
-        if (def->nvideos > 1) {
-            if (qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
-                for (i = 1 ; i < def->nvideos ; i++) {
-                    char *str;
-                    if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("video type %s is only valid as primary video card"),
-                                       virDomainVideoTypeToString(def->videos[0]->type));
-                        goto error;
-                    }
-
-                    virCommandAddArg(cmd, "-device");
-
-                    if (!(str = qemuBuildVideoDevStr(def->videos[i], caps)))
-                        goto error;
-
-                    virCommandAddArg(cmd, str);
-                    VIR_FREE(str);
-                }
-            } else {
+            if (def->nvideos > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s", _("only one video card is currently supported"));
                 goto error;

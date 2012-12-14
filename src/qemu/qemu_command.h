@@ -211,7 +211,9 @@ int qemuDomainPCIAddressReleaseFunction(qemuDomainPCIAddressSetPtr addrs,
 int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot);
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
-int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
+int  qemuAssignDevicePCISlots(virDomainDefPtr def,
+                              qemuCapsPtr caps,
+                              qemuDomainPCIAddressSetPtr addrs);
 
 int qemuAssignDeviceAliases(virDomainDefPtr def, qemuCapsPtr caps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);

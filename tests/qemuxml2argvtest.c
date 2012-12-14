@@ -574,7 +574,8 @@ mymain(void)
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_NONE);
     DO_TEST("graphics-spice",
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
-            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-agentmouse",
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
@@ -582,7 +583,8 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("graphics-spice-compression",
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
-            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE);
+            QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-timeout",
             QEMU_CAPS_DRIVE,
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
@@ -591,7 +593,8 @@ mymain(void)
     DO_TEST("graphics-spice-qxl-vga",
             QEMU_CAPS_VGA, QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_DEVICE, QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL_VGA);
+            QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-usb-redir",
             QEMU_CAPS_VGA, QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
