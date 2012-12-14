@@ -1186,6 +1186,7 @@ virStorageFileResize;
 virSysinfoDefFree;
 virSysinfoFormat;
 virSysinfoRead;
+virSysinfoSetup;
 
 
 # threadpool.h

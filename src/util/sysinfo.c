@@ -39,12 +39,29 @@
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 
-#define SYSINFO_SMBIOS_DECODER "dmidecode"
-#define SYSINFO "/proc/sysinfo"
-#define CPUINFO "/proc/cpuinfo"
 
 VIR_ENUM_IMPL(virSysinfo, VIR_SYSINFO_LAST,
               "smbios");
+
+static const char *sysinfoDmidecode = "dmidecode";
+static const char *sysinfoSysinfo = "/proc/sysinfo";
+static const char *sysinfoCpuinfo = "/proc/cpuinfo";
+
+#define SYSINFO_SMBIOS_DECODER sysinfoDmidecode
+#define SYSINFO sysinfoSysinfo
+#define CPUINFO sysinfoCpuinfo
+
+/* only to be used test programs, therefore not in sysinfo.h */
+extern void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
+                            const char *cpuinfo);
+
+void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
+                     const char *cpuinfo)
+{
+    sysinfoDmidecode = dmidecode;
+    sysinfoSysinfo = sysinfo;
+    sysinfoCpuinfo = cpuinfo;
+}
 
 /**
  * virSysinfoDefFree:
@@ -240,114 +257,103 @@ no_memory:
 
 #elif defined(__s390__) || defined(__s390x__)
 
+/*
+  we need to ignore warnings about strchr caused by -Wlogical-op
+  for some GCC versions.
+  Doing it via a local pragma keeps the damage smaller than
+  disabling it on the package level.
+  Unfortunately, the affected GCCs don't allow diagnostic push/pop
+  which would have further reduced the impact.
+ */
+# if BROKEN_GCC_WLOGICALOP
+#  pragma GCC diagnostic ignored "-Wlogical-op"
+# endif
+
+static char *
+virSysinfoParseDelimited(const char *base, const char *name, char **value,
+                         char delim1, char delim2)
+{
+    const char *start;
+    char *end;
+
+    if (delim1 != delim2 &&
+        (start = strstr(base, name)) &&
+        (start = strchr(start, delim1))) {
+        start += 1;
+        end = strchrnul(start, delim2);
+        virSkipSpaces(&start);
+        if (!((*value) = strndup(start, end - start))) {
+            virReportOOMError();
+            goto error;
+        }
+        virTrimSpaces(*value, NULL);
+        return end;
+    }
+
+error:
+    return NULL;
+}
+
+static char *
+virSysinfoParseLine(const char *base, const char *name, char **value)
+{
+    return virSysinfoParseDelimited(base, name, value, ':', '\n');
+}
+
 static int
 virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
 {
-    char *cur, *eol = NULL;
-    const char *property;
-
-    /* Return if Manufacturer field is not found */
-    if ((cur = strstr(base, "Manufacturer")) == NULL)
+    if (virSysinfoParseLine(base, "Manufacturer",
+                            &ret->system_manufacturer) &&
+        virSysinfoParseLine(base, "Type",
+                            &ret->system_family) &&
+        virSysinfoParseLine(base, "Sequence Code",
+                            &ret->system_serial))
         return 0;
-
-    base = cur;
-    if ((cur = strstr(base, "Manufacturer")) != NULL) {
-        cur = strchr(cur, ':') + 1;
-        eol = strchr(cur, '\n');
-        virSkipSpacesBackwards(cur, &eol);
-        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
-        virSkipSpaces(&property);
-        ret->system_manufacturer = (char *) property;
-    }
-    if ((cur = strstr(base, "Type")) != NULL) {
-        cur = strchr(cur, ':') + 1;
-        eol = strchr(cur, '\n');
-        virSkipSpacesBackwards(cur, &eol);
-        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
-        virSkipSpaces(&property);
-        ret->system_family = (char *) property;
-    }
-    if ((cur = strstr(base, "Sequence Code")) != NULL) {
-        cur = strchr(cur, ':') + 1;
-        eol = strchr(cur, '\n');
-        virSkipSpacesBackwards(cur, &eol);
-        if ((eol) && ((property = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
-        virSkipSpaces(&property);
-        ret->system_serial = (char *) property;
-    }
-
-    return 0;
-
-no_memory:
-    return -1;
+    else
+        return -1;
 }
 
 static int
 virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
 {
-    char *cur, *eol, *tmp_base;
-    char *manufacturer;
-    const char *tmp;
+    char *tmp_base;
+    char *manufacturer = NULL;
+    char *procline = NULL;
+    int result = -1;
     virSysinfoProcessorDefPtr processor;
 
-    if ((cur = strstr(base, "vendor_id")) != NULL) {
-        cur = strchr(cur, ':') + 1;
-        eol = strchr(cur, '\n');
-        virSkipSpacesBackwards(cur, &eol);
-        if ((eol) && ((tmp = strndup(cur, eol - cur)) == NULL))
-            goto no_memory;
-        virSkipSpaces(&tmp);
-        manufacturer = (char *) tmp;
-    }
+    if (!(tmp_base=virSysinfoParseLine(base, "vendor_id", &manufacturer)))
+        goto cleanup;
 
-    /* Find processor N: line and gather the processor manufacturer, version,
-     * serial number, and family */
-    while ((tmp_base = strstr(base, "processor ")) != NULL) {
-        base = tmp_base;
-        eol = strchr(base, '\n');
-        cur = strchr(base, ':') + 1;
-
+    /* Find processor N: line and gather the processor manufacturer,
+       version, serial number, and family */
+    while ((tmp_base = strstr(tmp_base, "processor "))
+           && (tmp_base = virSysinfoParseLine(tmp_base, "processor ",
+                                              &procline))) {
         if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
-            goto no_memory;
+            virReportOOMError();
+            goto cleanup;
         }
-
         processor = &ret->processor[ret->nprocessor - 1];
-
-        /* Set the processor manufacturer */
-        processor->processor_manufacturer = manufacturer;
-
-        if ((cur = strstr(base, "version =")) != NULL) {
-            cur += sizeof("version =");
-            eol = strchr(cur, ',');
-            if ((eol) &&
-                ((processor->processor_version = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
-        }
-        if ((cur = strstr(base, "identification =")) != NULL) {
-            cur += sizeof("identification =");
-            eol = strchr(cur, ',');
-            if ((eol) &&
-                ((processor->processor_serial_number = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
-        }
-        if ((cur = strstr(base, "machine =")) != NULL) {
-            cur += sizeof("machine =");
-            eol = strchr(cur, '\n');
-            if ((eol) &&
-                ((processor->processor_family = strndup(cur, eol - cur)) == NULL))
-                goto no_memory;
-        }
-
-        base = cur;
+        processor->processor_manufacturer = strdup(manufacturer);
+        if (!virSysinfoParseDelimited(procline, "version",
+                                      &processor->processor_version,
+                                      '=', ',') ||
+            !virSysinfoParseDelimited(procline, "identification",
+                                      &processor->processor_serial_number,
+                                      '=', ',') ||
+            !virSysinfoParseDelimited(procline, "machine",
+                                      &processor->processor_family,
+                                      '=', '\n'))
+            goto cleanup;
     }
+    result = 0;
 
-    return 0;
-
-no_memory:
-    return -1;
+cleanup:
+    VIR_FREE(manufacturer);
+    VIR_FREE(procline);
+    return result;
 }
 
 /* virSysinfoRead for s390x
@@ -388,6 +394,7 @@ virSysinfoRead(void) {
     return ret;
 
 no_memory:
+    virSysinfoDefFree(ret);
     VIR_FREE(outbuf);
     return NULL;
 }
