@@ -255,6 +255,29 @@ AC_CHECK_TYPE([struct ifreq],
         #include <net/if.h>
   ]])
 
+dnl Check whether strchr(s, char variable) causes a bogus compile warning
+dnl which is the case with a certain range of GCC versions
+AC_MSG_CHECKING([whether GCC -Wlogical-op is broken])
+
+save_CFLAGS="$CFLAGS"
+CFLAGS="-O2 -Wlogical-op -Werror"
+
+AC_TRY_COMPILE([#include <string.h>],
+                [const char *haystack;
+                 char needle;
+                 return strchr(haystack, needle) == haystack;],
+                [gcc_false_strchr_warning=no],
+                [gcc_false_strchr_warning=yes])
+
+CFLAGS="$save_CFLAGS"
+
+if test "x$gcc_false_strchr_warning" = xyes; then
+  AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP], 1,
+                       [GCC -Wlogical-op is reporting false positive on strchr])
+fi
+
+AC_MSG_RESULT([$gcc_false_strchr_warning])
+
 dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
 dnl if the header is not present.  Assume -ltasn1 is present if the
 dnl header could be found.
