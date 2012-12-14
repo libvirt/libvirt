@@ -1048,7 +1048,7 @@
     &lt;hap/&gt;
     &lt;privnet/&gt;
     &lt;hyperv&gt;
-      &lt;relaxed state='on'&gt;
+      &lt;relaxed state='on'/&gt;
     &lt;/hyperv&gt;
 
   &lt;/features&gt;
@@ -2584,7 +2584,7 @@
     &lt;/interface&gt;
     &lt;interface type='bridge'&gt;
       &lt;source bridge='ovsbr'/&gt;
-      &lt;virtualport type='openvswitch'/&gt;
+      &lt;virtualport type='openvswitch'&gt;
         &lt;parameters profileid='menial' interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/&gt;
       &lt;/virtualport&gt;
     &lt;/interface&gt;
@@ -3871,7 +3871,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;serial type="dev"&gt;
       &lt;source path="/dev/ttyS0"/&gt;
       &lt;target port="1"/&gt;
-  &lt;/serial&gt;
+    &lt;/serial&gt;
   &lt;/devices&gt;
   ...</pre>
 
