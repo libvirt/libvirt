@@ -28,6 +28,7 @@ BUILT_SOURCES =
 CLEANFILES =
 DISTCLEANFILES =
 MAINTAINERCLEANFILES =
+nodist_conf_DATA =
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
 
@@ -1581,7 +1582,7 @@ if WITH_DTRACE_PROBES
 lockd_la_LIBADD += libvirt_probes.lo
 endif
 if WITH_QEMU
-nodist_conf_DATA = locking/qemu-lockd.conf
+nodist_conf_DATA += locking/qemu-lockd.conf
 BUILT_SOURCES += locking/qemu-lockd.conf
 DISTCLEANFILES += locking/qemu-lockd.conf
 endif
@@ -1732,7 +1733,7 @@ locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
 	cp $< $@
 
 if WITH_QEMU
-nodist_conf_DATA = locking/qemu-sanlock.conf
+nodist_conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf
 endif
