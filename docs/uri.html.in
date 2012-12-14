@@ -30,7 +30,7 @@ virConnectPtr conn = virConnectOpenReadOnly (<b>"test:///default"</b>);
     <p>
 To simplify life for administrators, it is possible to setup URI aliases in a
 libvirt client configuration file. The configuration file is <code>/etc/libvirt/libvirt.conf</code>
-for the root user, or <code>$XDG_CONFIG_DIR/libvirt/libvirt.conf</code> for any unprivileged user.
+for the root user, or <code>$XDG_CONFIG_HOME/libvirt/libvirt.conf</code> for any unprivileged user.
 In this file, the following syntax can be used to setup aliases
     </p>
 
