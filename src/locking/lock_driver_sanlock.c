@@ -197,9 +197,7 @@ static int virLockManagerSanlockSetupLockspace(void)
     struct sanlk_lockspace ls;
     char *path = NULL;
     char *dir = NULL;
-#ifndef HAVE_SANLOCK_INQ_LOCKSPACE
     int retries = LOCKSPACE_RETRIES;
-#endif
 
     if (virAsprintf(&path, "%s/%s",
                     driver->autoDiskLeasePath,
@@ -332,25 +330,23 @@ static int virLockManagerSanlockSetupLockspace(void)
      * either call a sanlock API that blocks us until lockspace changes state,
      * or we can fallback to polling.
      */
-#ifndef HAVE_SANLOCK_INQ_LOCKSPACE
 retry:
-#endif
     if ((rv = sanlock_add_lockspace(&ls, 0)) < 0) {
-        if (-rv == EINPROGRESS) {
+        if (-rv == EINPROGRESS && --retries) {
 #ifdef HAVE_SANLOCK_INQ_LOCKSPACE
             /* we have this function which blocks until lockspace change the
              * state. It returns 0 if lockspace has been added, -ENOENT if it
-             * hasn't. XXX should we goto retry? */
+             * hasn't. */
             VIR_DEBUG("Inquiring lockspace");
-            rv = sanlock_inq_lockspace(&ls, SANLK_INQ_WAIT);
+            if (sanlock_inq_lockspace(&ls, SANLK_INQ_WAIT) < 0)
+                VIR_DEBUG("Unable to inquire lockspace");
 #else
             /* fall back to polling */
-            if (retries--) {
-                usleep(LOCKSPACE_SLEEP * 1000);
-                VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
-                goto retry;
-            }
+            VIR_DEBUG("Sleeping for %dms", LOCKSPACE_SLEEP);
+            usleep(LOCKSPACE_SLEEP * 1000);
 #endif
+            VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
+            goto retry;
         }
         if (-rv != EEXIST) {
             if (rv <= -200)
