@@ -1123,7 +1123,7 @@ networkRefreshDhcpDaemon(struct network_driver *driver,
     dnsmasqContext *dctx = NULL;
 
     /* if no IP addresses specified, nothing to do */
-    if (virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
+    if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
         return 0;
 
     /* if there's no running dnsmasq, just start it */
