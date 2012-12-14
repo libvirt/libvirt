@@ -869,6 +869,11 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD, QEMU_CAPS_BLOCKIO);
 
+    DO_TEST("video-device-pciaddr-default",
+            QEMU_CAPS_KVM, QEMU_CAPS_VNC,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA);
+
     VIR_FREE(driver.stateDir);
     virCapabilitiesFree(driver.caps);
     VIR_FREE(map);
