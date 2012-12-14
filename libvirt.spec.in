@@ -1692,6 +1692,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
+%config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
 %endif
 %if %{with_lxc}
@@ -1744,6 +1745,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 
 %if %{with_libvirtd}
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver
+%attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 %endif
 
 %if %{with_qemu}
@@ -1758,6 +1760,8 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
 
 %{_datadir}/augeas/lenses/libvirtd.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
+%{_datadir}/augeas/lenses/libvirt_lockd.aug
+%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
 
 %if %{with_polkit}
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
