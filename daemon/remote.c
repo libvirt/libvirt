@@ -2887,9 +2887,10 @@ error:
     if (authdismissed) {
         virReportError(VIR_ERR_AUTH_CANCELLED, "%s",
                        _("authentication cancelled by user"));
+    } else if (pkout && *pkout) {
+        virReportError(VIR_ERR_AUTH_FAILED, _("polkit: %s"), pkout);
     } else {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       pkout && *pkout ? pkout : _("authentication failed"));
+        virReportError(VIR_ERR_AUTH_FAILED, "%s", _("authentication failed"));
     }
 
     VIR_FREE(pkout);
