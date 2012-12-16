@@ -168,6 +168,34 @@ realloc:
     return 0;
 }
 
+#elif defined(__FreeBSD__)
+
+int virProcessInfoSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
+                              virBitmapPtr map)
+{
+    if (!virBitmapIsAllSet(map)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("setting process affinity isn't supported "
+                         "on FreeBSD yet"));
+        return -1;
+    }
+
+    return 0;
+}
+
+int virProcessInfoGetAffinity(pid_t pid ATTRIBUTE_UNUSED,
+                              virBitmapPtr *map,
+                              int maxcpu)
+{
+    if (!(*map = virBitmapNew(maxcpu))) {
+        virReportOOMError();
+        return -1;
+    }
+    virBitmapSetAll(*map);
+
+    return 0;
+}
+
 #else /* HAVE_SCHED_GETAFFINITY */
 
 int virProcessInfoSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
