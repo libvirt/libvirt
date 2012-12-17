@@ -9181,21 +9181,22 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
 
         for (i = 0; i < def->vcpus; i++) {
-            if (!virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
-                                             def->cputune.nvcpupin,
-                                             i)) {
-                virDomainVcpuPinDefPtr vcpupin = NULL;
+            if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
+                                            def->cputune.nvcpupin,
+                                            i))
+                continue;
 
-                if (VIR_ALLOC(vcpupin) < 0) {
-                    virReportOOMError();
-                    goto error;
-                }
+            virDomainVcpuPinDefPtr vcpupin = NULL;
 
-                vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
-                virBitmapCopy(vcpupin->cpumask, def->cpumask);
-                vcpupin->vcpuid = i;
-                def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
+            if (VIR_ALLOC(vcpupin) < 0) {
+                virReportOOMError();
+                goto error;
             }
+
+            vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
+            virBitmapCopy(vcpupin->cpumask, def->cpumask);
+            vcpupin->vcpuid = i;
+            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
         }
     }
 
@@ -14100,31 +14101,29 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           "</emulator_quota>\n",
                           def->cputune.emulator_quota);
 
-    if (def->cputune.vcpupin) {
-        for (i = 0; i < def->cputune.nvcpupin; i++) {
-            /* Ignore the vcpupin which inherit from "cpuset"
-             * of "<vcpu>."
-             */
-            if (def->cpumask &&
-                virBitmapEqual(def->cpumask,
-                               def->cputune.vcpupin[i]->cpumask))
-                continue;
+    for (i = 0; i < def->cputune.nvcpupin; i++) {
+        /* Ignore the vcpupin which inherit from "cpuset"
+         * of "<vcpu>."
+         */
+        if (def->cpumask &&
+            virBitmapEqual(def->cpumask,
+                           def->cputune.vcpupin[i]->cpumask))
+            continue;
 
-            virBufferAsprintf(buf, "    <vcpupin vcpu='%u' ",
-                              def->cputune.vcpupin[i]->vcpuid);
+        virBufferAsprintf(buf, "    <vcpupin vcpu='%u' ",
+                          def->cputune.vcpupin[i]->vcpuid);
 
-            char *cpumask = NULL;
-            cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask);
+        char *cpumask = NULL;
+        cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask);
 
-            if (cpumask == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("failed to format cpuset for vcpupin"));
-                goto cleanup;
-            }
-
-            virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
-            VIR_FREE(cpumask);
+        if (cpumask == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("failed to format cpuset for vcpupin"));
+            goto cleanup;
         }
+
+        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        VIR_FREE(cpumask);
     }
 
     if (def->cputune.emulatorpin) {
