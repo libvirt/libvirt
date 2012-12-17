@@ -164,6 +164,7 @@
 /tests/ssh
 /tests/statstest
 /tests/storagebackendsheepdogtest
+/tests/sysinfotest
 /tests/utiltest
 /tests/viratomictest
 /tests/virauthconfigtest
