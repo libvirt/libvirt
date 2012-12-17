@@ -25,6 +25,8 @@
 
 # include "internal.h"
 
+# define USB_DEVFS "/dev/bus/usb/"
+
 typedef struct _usbDevice usbDevice;
 typedef struct _usbDeviceList usbDeviceList;
 

@@ -38,7 +38,6 @@
 #include "virterror_internal.h"
 
 #define USB_SYSFS "/sys/bus/usb"
-#define USB_DEVFS "/dev/bus/usb/"
 #define USB_ID_LEN 10 /* "1234 5678" */
 #define USB_ADDR_LEN 8 /* "123:456" */
 
