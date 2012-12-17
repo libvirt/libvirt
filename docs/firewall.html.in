@@ -198,7 +198,7 @@ using an XML format. At a high level the format looks like this:
     </p>
     <p>The <code>&lt;rule&gt;</code> element is where all the interesting stuff
        happens. It has three attributes, an action, a traffic direction and an
-       optional priority. eg:
+       optional priority. E.g.:
     </p>
     <pre>&lt;rule action='drop' direction='out' priority='500'&gt;</pre>
     <p>Within the rule there are a wide variety of elements allowed, which

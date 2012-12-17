@@ -1,7 +1,7 @@
 /*
  * lock_driver.h: Defines the lock driver plugin API
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -186,8 +186,8 @@ typedef void (*virLockDriverFree)(virLockManagerPtr man);
  *
  * Assign a resource to a managed object. This will
  * only be called prior to the object is being locked
- * when it is inactive. eg, to set the initial  boot
- * time disk assignments on a VM
+ * when it is inactive (e.g. to set the initial  boot
+ * time disk assignments on a VM).
  * The format of @name varies according to
  * the resource @type. A VIR_LOCK_MANAGER_RESOURCE_TYPE_DISK
  * will have the fully qualified file path, while a resource

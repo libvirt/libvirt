@@ -3769,7 +3769,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
 
                 /* People sometimes pass a bogus '' source path
                    when they mean to omit the source element
-                   completely. eg CDROM without media. This is
+                   completely (e.g. CDROM without media). This is
                    just a little compatibility check to help
                    those broken apps */
                 if (source && STREQ(source, ""))

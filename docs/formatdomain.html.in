@@ -1492,8 +1492,8 @@
         attribute specifies the type of disk device to emulate;
         possible values are driver specific, with typical values being
         "ide", "scsi", "virtio", "xen", "usb" or "sata". If omitted, the bus
-        type is inferred from the style of the device name. eg, a device named
-        'sda' will typically be exported using a SCSI bus. The optional
+        type is inferred from the style of the device name (e.g. a device named
+        'sda' will typically be exported using a SCSI bus). The optional
         attribute <code>tray</code> indicates the tray status of the
         removable disks (i.e. CDROM or Floppy disk), the value can be either
         "open" or "closed", defaults to "closed". NB, the value of
