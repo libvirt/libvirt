@@ -87,6 +87,7 @@ virCPUDefFree(virCPUDefPtr def)
         VIR_FREE(def->cells[i].cpustr);
     }
     VIR_FREE(def->cells);
+    VIR_FREE(def->vendor_id);
 
     VIR_FREE(def);
 }
