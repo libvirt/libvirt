@@ -300,32 +300,32 @@ virCPUDefParseXML(const xmlNodePtr node,
                     goto error;
                 }
             }
+        }
 
-            if (virXPathBoolean("boolean(./model[1]/@vendor_id)", ctxt)) {
-                char *vendor_id;
+        if (virXPathBoolean("boolean(./model[1]/@vendor_id)", ctxt)) {
+            char *vendor_id;
 
-                vendor_id = virXPathString("string(./model[1]/@vendor_id)",
-                                           ctxt);
-                if (!vendor_id ||
-                    strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("vendor_id must be exactly"
-                                     " %d characters long"),
-                                   VIR_CPU_VENDOR_ID_LENGTH);
+            vendor_id = virXPathString("string(./model[1]/@vendor_id)",
+                                       ctxt);
+            if (!vendor_id ||
+                strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("vendor_id must be exactly"
+                                 " %d characters long"),
+                               VIR_CPU_VENDOR_ID_LENGTH);
+                VIR_FREE(vendor_id);
+                goto error;
+            }
+            /* ensure that the string can be passed to qemu*/
+            for (i = 0; i < strlen(vendor_id); i++) {
+                if (vendor_id[i]==',') {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("vendor id is invalid"));
                     VIR_FREE(vendor_id);
                     goto error;
                 }
-                /* ensure that the string can be passed to qemu*/
-                for (i = 0; i < strlen(vendor_id); i++) {
-                    if (vendor_id[i]==',') {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("vendor id is invalid"));
-                        VIR_FREE(vendor_id);
-                        goto error;
-                    }
-                }
-                def->vendor_id = vendor_id;
             }
+            def->vendor_id = vendor_id;
         }
     }
 
