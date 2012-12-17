@@ -13955,10 +13955,10 @@ virDomainIsAllVcpupinInherited(virDomainDefPtr def)
     int i;
 
     if (!def->cpumask) {
-        if (!def->cputune.vcpupin)
-            return true;
-        else
+        if (def->cputune.nvcpupin)
             return false;
+        else
+            return true;
     } else {
         for (i = 0; i < def->cputune.nvcpupin; i++) {
             if (!virBitmapEqual(def->cputune.vcpupin[i]->cpumask,
@@ -14143,7 +14143,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 
     if (def->cputune.shares ||
-        (def->cputune.vcpupin && !virDomainIsAllVcpupinInherited(def)) ||
+        (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota)
@@ -14209,7 +14209,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         VIR_FREE(cpumask);
     }
     if (def->cputune.shares ||
-        (def->cputune.vcpupin && !virDomainIsAllVcpupinInherited(def)) ||
+        (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota)
