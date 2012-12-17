@@ -264,8 +264,9 @@ virCPUDefParseXML(const xmlNodePtr node,
             VIR_FREE(match);
 
             if (def->match < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Invalid match attribute for CPU specification"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Invalid match attribute for CPU "
+                                 "specification"));
                 goto error;
             }
         }
@@ -333,8 +334,8 @@ virCPUDefParseXML(const xmlNodePtr node,
         ret = virXPathULong("string(./topology[1]/@sockets)",
                             ctxt, &ul);
         if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Missing 'sockets' attribute in CPU topology"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing 'sockets' attribute in CPU topology"));
             goto error;
         }
         def->sockets = (unsigned int) ul;
@@ -342,8 +343,8 @@ virCPUDefParseXML(const xmlNodePtr node,
         ret = virXPathULong("string(./topology[1]/@cores)",
                             ctxt, &ul);
         if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Missing 'cores' attribute in CPU topology"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing 'cores' attribute in CPU topology"));
             goto error;
         }
         def->cores = (unsigned int) ul;
@@ -351,8 +352,8 @@ virCPUDefParseXML(const xmlNodePtr node,
         ret = virXPathULong("string(./topology[1]/@threads)",
                             ctxt, &ul);
         if (ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Missing 'threads' attribute in CPU topology"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing 'threads' attribute in CPU topology"));
             goto error;
         }
         def->threads = (unsigned int) ul;
@@ -370,8 +371,9 @@ virCPUDefParseXML(const xmlNodePtr node,
 
     if (n > 0) {
         if (!def->model) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Non-empty feature list specified without CPU model"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Non-empty feature list specified without "
+                             "CPU model"));
             goto error;
         }
 
