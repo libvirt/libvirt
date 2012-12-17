@@ -664,10 +664,20 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
     if (strstr(buf, "--bind-dynamic"))
         dnsmasqCapsSet(caps, DNSMASQ_CAPS_BIND_DYNAMIC);
 
-    VIR_INFO("dnsmasq version is %d.%d, --bind-dynamic is %s",
-             (int)caps->version / 1000000, (int)(caps->version % 1000000) / 1000,
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)
-             ? "present" : "NOT present");
+    /* if this string is a part of the --version output, dnsmasq
+     * has been patched to use SO_BINDTODEVICE when listening,
+     * so that it will only accept requests that arrived on the
+     * listening interface(s)
+     */
+    if (strstr(buf, "--bind-interfaces with SO_BINDTODEVICE"))
+        dnsmasqCapsSet(caps, DNSMASQ_CAPS_BINDTODEVICE);
+
+    VIR_INFO("dnsmasq version is %d.%d, --bind-dynamic is %spresent, "
+             "SO_BINDTODEVICE is %sin use",
+             (int)caps->version / 1000000,
+             (int)(caps->version % 1000000) / 1000,
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ",
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ");
     return 0;
 
 fail:

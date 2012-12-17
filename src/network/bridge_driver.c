@@ -726,15 +726,17 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
              * dnsmasq doesn't have bind-dynamic, only allow listening on
              * private/local IP addresses (see RFC1918/RFC3484/RFC4193)
              */
-            if (!virSocketAddrIsPrivate(&tmpipdef->address)) {
+            if (!dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) &&
+                !virSocketAddrIsPrivate(&tmpipdef->address)) {
                 unsigned long version = dnsmasqCapsGetVersion(caps);
 
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Publicly routable address %s is prohibited. "
                                  "The version of dnsmasq on this host (%d.%d) "
-                                 "doesn't support the bind-dynamic option, "
-                                 "which is required for safe operation on a "
-                                 "publicly routable subnet "
+                                 "doesn't support the bind-dynamic option or "
+                                 "use SO_BINDTODEVICE on listening sockets, "
+                                 "one of which is required for safe operation "
+                                 "on a publicly routable subnet "
                                  "(see CVE-2012-3411). You must either "
                                  "upgrade dnsmasq, or use a private/local "
                                  "subnet range for this network "
