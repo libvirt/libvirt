@@ -195,6 +195,8 @@ virCPUDefParseXML(const xmlNodePtr node,
     int n;
     unsigned int i;
     char *cpuMode;
+    char *fallback = NULL;
+    char *vendor_id = NULL;
 
     if (!xmlStrEqual(node->name, BAD_CAST "cpu")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -288,45 +290,32 @@ virCPUDefParseXML(const xmlNodePtr node,
     if (def->type == VIR_CPU_TYPE_GUEST &&
         def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
 
-        if (virXPathBoolean("boolean(./model[1]/@fallback)", ctxt)) {
-            const char *fallback;
-
-            fallback = virXPathString("string(./model[1]/@fallback)", ctxt);
-            if (fallback) {
-                def->fallback = virCPUFallbackTypeFromString(fallback);
-                VIR_FREE(fallback);
-                if (def->fallback < 0) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("Invalid fallback attribute"));
-                    goto error;
-                }
+        if ((fallback = virXPathString("string(./model[1]/@fallback)", ctxt))) {
+            if ((def->fallback = virCPUFallbackTypeFromString(fallback)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid fallback attribute"));
+                goto error;
             }
         }
 
-        if (virXPathBoolean("boolean(./model[1]/@vendor_id)", ctxt)) {
-            char *vendor_id;
-
-            vendor_id = virXPathString("string(./model[1]/@vendor_id)",
-                                       ctxt);
-            if (!vendor_id ||
-                strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
+        if ((vendor_id = virXPathString("string(./model[1]/@vendor_id)",
+                                        ctxt))) {
+            if (strlen(vendor_id) != VIR_CPU_VENDOR_ID_LENGTH) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("vendor_id must be exactly"
-                                 " %d characters long"),
+                               _("vendor_id must be exactly %d characters long"),
                                VIR_CPU_VENDOR_ID_LENGTH);
-                VIR_FREE(vendor_id);
                 goto error;
             }
+
             /* ensure that the string can be passed to qemu*/
-            for (i = 0; i < strlen(vendor_id); i++) {
-                if (vendor_id[i]==',') {
+            if (strchr(vendor_id, ',')) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("vendor id is invalid"));
-                    VIR_FREE(vendor_id);
                     goto error;
-                }
             }
+
             def->vendor_id = vendor_id;
+            vendor_id = NULL;
         }
     }
 
@@ -490,6 +479,8 @@ virCPUDefParseXML(const xmlNodePtr node,
     }
 
 cleanup:
+    VIR_FREE(fallback);
+    VIR_FREE(vendor_id);
     VIR_FREE(nodes);
     return def;
 
