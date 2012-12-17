@@ -1052,8 +1052,9 @@ fi
 /sbin/chkconfig --add libvirt-guests
 %endif
 
-%postun client -p /sbin/ldconfig
+%postun client
 
+/sbin/ldconfig
 %if %{with_systemd}
 %triggerun client -- libvirt < 0.9.4
 %{_bindir}/systemd-sysv-convert --save libvirt-guests >/dev/null 2>&1 ||:
