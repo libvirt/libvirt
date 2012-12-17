@@ -9168,16 +9168,9 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
      * the policy specified explicitly as def->cpuset.
      */
     if (def->cpumask) {
-        if (!def->cputune.vcpupin) {
-            if (VIR_ALLOC_N(def->cputune.vcpupin, def->vcpus) < 0) {
-                virReportOOMError();
-                goto error;
-            }
-        } else {
-            if (VIR_REALLOC_N(def->cputune.vcpupin, def->vcpus) < 0) {
-                virReportOOMError();
-                goto error;
-            }
+        if (VIR_REALLOC_N(def->cputune.vcpupin, def->vcpus) < 0) {
+            virReportOOMError();
+            goto error;
         }
 
         for (i = 0; i < def->vcpus; i++) {
