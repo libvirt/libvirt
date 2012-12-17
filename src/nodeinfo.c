@@ -38,6 +38,11 @@
 # include <numa.h>
 #endif
 
+#ifdef __FreeBSD__
+# include <sys/types.h>
+# include <sys/sysctl.h>
+#endif
+
 #include "c-ctype.h"
 #include "memory.h"
 #include "nodeinfo.h"
@@ -53,6 +58,23 @@
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+#ifdef __FreeBSD__
+static int
+freebsdNodeGetCPUCount(void)
+{
+    int ncpu_mib[2] = { CTL_HW, HW_NCPU };
+    unsigned long ncpu;
+    size_t ncpu_len = sizeof(ncpu);
+
+    if (sysctl(ncpu_mib, 2, &ncpu, &ncpu_len, NULL, 0) == -1) {
+        virReportSystemError(errno, "%s", _("Cannot obtain CPU count"));
+        return -1;
+    }
+
+    return ncpu;
+}
+#endif
 
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
@@ -870,6 +892,42 @@ cleanup:
     VIR_FORCE_FCLOSE(cpuinfo);
     return ret;
     }
+#elif defined(__FreeBSD__)
+    {
+    nodeinfo->nodes = 1;
+    nodeinfo->sockets = 1;
+    nodeinfo->threads = 1;
+
+    nodeinfo->cpus = freebsdNodeGetCPUCount();
+    if (nodeinfo->cpus == -1)
+        return -1;
+
+    nodeinfo->cores = nodeinfo->cpus;
+
+    unsigned long cpu_freq;
+    size_t cpu_freq_len = sizeof(cpu_freq);
+
+    if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+        return -1;
+    }
+
+    nodeinfo->mhz = cpu_freq;
+
+    /* get memory information */
+    int mib[2] = { CTL_HW, HW_PHYSMEM };
+    unsigned long physmem;
+    size_t len = sizeof(physmem);
+
+    if (sysctl(mib, 2, &physmem, &len, NULL, 0) == -1) {
+        virReportSystemError(errno, "%s", _("cannot obtain memory size"));
+        return -1;
+    }
+
+    nodeinfo->memory = (unsigned long)(physmem / 1024);
+
+    return 0;
+    }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
@@ -977,7 +1035,7 @@ int nodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
 int
 nodeGetCPUCount(void)
 {
-#ifdef __linux__
+#if defined(__linux__)
     /* To support older kernels that lack cpu/present, such as 2.6.18
      * in RHEL5, we fall back to count cpu/cpuNN entries; this assumes
      * that such kernels also lack hotplug, and therefore cpu/cpuNN
@@ -1007,6 +1065,8 @@ nodeGetCPUCount(void)
 
     VIR_FREE(cpupath);
     return i;
+#elif defined(__FreeBSD__)
+    return freebsdNodeGetCPUCount();
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("host cpu counting not implemented on this platform"));
