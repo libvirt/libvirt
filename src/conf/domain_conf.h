@@ -1121,6 +1121,7 @@ struct _virDomainVideoDef {
     int type;
     unsigned int vram;
     unsigned int heads;
+    bool primary;
     virDomainVideoAccelDefPtr accel;
     virDomainDeviceInfo info;
 };

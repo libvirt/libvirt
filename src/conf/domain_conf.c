@@ -7275,6 +7275,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
     char *type = NULL;
     char *heads = NULL;
     char *vram = NULL;
+    char *primary = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -7289,6 +7290,11 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
                 type = virXMLPropString(cur, "type");
                 vram = virXMLPropString(cur, "vram");
                 heads = virXMLPropString(cur, "heads");
+
+                if ((primary = virXMLPropString(cur, "primary")) != NULL)
+                    if (STREQ(primary, "yes"))
+                        def->primary = 1;
+
                 def->accel = virDomainVideoAccelDefParseXML(cur);
             }
         }
@@ -8709,6 +8715,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     xmlNodePtr cur;
     bool usb_none = false;
     bool usb_other = false;
+    bool primaryVideo = false;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -9996,12 +10003,28 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
+        size_t ii = def->nvideos;
         virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[i],
                                                                def,
                                                                flags);
         if (!video)
             goto error;
-        def->videos[def->nvideos++] = video;
+
+        if (video->primary) {
+            if (primaryVideo) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only one primary video device is supported"));
+                goto error;
+            }
+
+            ii = 0;
+            primaryVideo = true;
+        }
+        if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
+                                       ii,
+                                       def->nvideos,
+                                       video) < 0)
+            goto error;
     }
     VIR_FREE(nodes);
 
@@ -13151,6 +13174,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " vram='%u'", def->vram);
     if (def->heads)
         virBufferAsprintf(buf, " heads='%u'", def->heads);
+    if (def->primary)
+        virBufferAddLit(buf, " primary='yes'");
     if (def->accel) {
         virBufferAddLit(buf, ">\n");
         virDomainVideoAccelDefFormat(buf, def->accel);

@@ -2260,6 +2260,14 @@
             </attribute>
           </optional>
           <optional>
+            <attribute name="primary">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <element name="acceleration">
               <optional>
                 <attribute name="accel3d">

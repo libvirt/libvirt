@@ -3500,7 +3500,11 @@ qemu-kvm -net nic,model=? /dev/null
         will add a default <code>video</code> according to the guest type.
         For a guest of type "kvm", the default <code>video</code> for it is:
         <code>type</code> with value "cirrus", <code>vram</code> with value
-        "9216", and <code>heads</code> with value "1".
+        "9216", and <code>heads</code> with value "1". By default, the first
+        video device in domain xml is the primary one, but the optional
+        attribute <code>primary</code> (<span class="since">since 1.0.2</span>)
+        with value 'yes' can be used to mark the primary in cases of mutiple
+        video device. The non-primary must be type of "qxl".
       </dd>
 
       <dt><code>model</code></dt>
