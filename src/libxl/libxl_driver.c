@@ -604,7 +604,7 @@ error:
 }
 
 static int
-libxlDomainSetVcpuAffinites(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
+libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
@@ -803,7 +803,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (libxlCreateDomEvents(vm) < 0)
         goto error;
 
-    if (libxlDomainSetVcpuAffinites(driver, vm) < 0)
+    if (libxlDomainSetVcpuAffinities(driver, vm) < 0)
         goto error;
 
     if (!start_paused) {

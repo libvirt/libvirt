@@ -2025,7 +2025,7 @@ qemuProcessSetLinkStates(virDomainObjPtr vm)
 
 /* Set CPU affinities for vcpus if vcpupin xml provided. */
 static int
-qemuProcessSetVcpuAffinites(virConnectPtr conn ATTRIBUTE_UNUSED,
+qemuProcessSetVcpuAffinities(virConnectPtr conn ATTRIBUTE_UNUSED,
                             virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2058,7 +2058,7 @@ cleanup:
 
 /* Set CPU affinities for emulator threads. */
 static int
-qemuProcessSetEmulatorAffinites(virConnectPtr conn ATTRIBUTE_UNUSED,
+qemuProcessSetEmulatorAffinities(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm)
 {
     virBitmapPtr cpumask;
@@ -3845,11 +3845,11 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting VCPU affinities");
-    if (qemuProcessSetVcpuAffinites(conn, vm) < 0)
+    if (qemuProcessSetVcpuAffinities(conn, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting affinity of emulator threads");
-    if (qemuProcessSetEmulatorAffinites(conn, vm) < 0)
+    if (qemuProcessSetEmulatorAffinities(conn, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting any required VM passwords");
