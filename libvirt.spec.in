@@ -1605,8 +1605,9 @@ fi
 /sbin/chkconfig --add libvirt-guests
 %endif
 
-%postun client -p /sbin/ldconfig
+%postun client
 
+/sbin/ldconfig
 %if %{with_systemd}
 %if %{with_systemd_macros}
 %systemd_postun_with_restart libvirt-guests.service
