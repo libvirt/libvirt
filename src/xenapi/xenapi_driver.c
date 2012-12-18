@@ -44,7 +44,7 @@
 
 
 static int xenapiDefaultConsoleType(const char *ostype,
-                                    const char *arch ATTRIBUTE_UNUSED)
+                                    virArch arch ATTRIBUTE_UNUSED)
 {
     if (STREQ(ostype, "hvm"))
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
@@ -64,19 +64,19 @@ getCapsObject(void)
 {
     virCapsGuestPtr guest1, guest2;
     virCapsGuestDomainPtr domain1, domain2;
-    virCapsPtr caps = virCapabilitiesNew("x86_64", 0, 0);
+    virCapsPtr caps = virCapabilitiesNew(virArchFromHost(), 0, 0);
 
     if (!caps) {
         virReportOOMError();
         return NULL;
     }
-    guest1 = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 0, "", "", 0, NULL);
+    guest1 = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64, "", "", 0, NULL);
     if (!guest1)
         goto error_cleanup;
     domain1 = virCapabilitiesAddGuestDomain(guest1, "xen", "", "", 0, NULL);
     if (!domain1)
         goto error_cleanup;
-    guest2 = virCapabilitiesAddGuest(caps, "xen", "x86_64", 0, "", "", 0, NULL);
+    guest2 = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64, "", "", 0, NULL);
     if (!guest2)
         goto error_cleanup;
     domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
