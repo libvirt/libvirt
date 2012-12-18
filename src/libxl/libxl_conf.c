@@ -119,7 +119,7 @@ libxlNextFreeVncPort(libxlDriverPrivatePtr driver, int startPort)
 
 
 static int libxlDefaultConsoleType(const char *ostype,
-                                   const char *arch ATTRIBUTE_UNUSED)
+                                   virArch arch ATTRIBUTE_UNUSED)
 {
     if (STREQ(ostype, "hvm"))
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
@@ -128,7 +128,7 @@ static int libxlDefaultConsoleType(const char *ostype,
 }
 
 static virCapsPtr
-libxlBuildCapabilities(const char *hostmachine,
+libxlBuildCapabilities(virArch hostarch,
                        int host_pae,
                        struct guest_arch *guest_archs,
                        int nr_guest_archs)
@@ -136,7 +136,7 @@ libxlBuildCapabilities(const char *hostmachine,
     virCapsPtr caps;
     int i;
 
-    if ((caps = virCapabilitiesNew(hostmachine, 1, 1)) == NULL)
+    if ((caps = virCapabilitiesNew(hostarch, 1, 1)) == NULL)
         goto no_memory;
 
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x16, 0x3e });
@@ -326,7 +326,6 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
                 nr_guest_archs++;
 
             guest_archs[i].arch = arch;
-            guest_archs[i].bits = bits;
             guest_archs[i].hvm = hvm;
 
             /* Careful not to overwrite a previous positive
