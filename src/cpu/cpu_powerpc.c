@@ -414,15 +414,14 @@ no_memory:
 }
 
 static virCPUCompareResult
-PowerPCCompare(virCPUDefPtr host,
+ppcCompare(virCPUDefPtr host,
            virCPUDefPtr cpu)
 {
-    if ((cpu->arch != VIR_ARCH_NONE &&
-         (host->arch != cpu->arch)) ||
-        STRNEQ(host->model, cpu->model))
-        return VIR_CPU_COMPARE_INCOMPATIBLE;
+    if ((cpu->arch == VIR_ARCH_NONE || host->arch == cpu->arch) &&
+        STREQ(host->model, cpu->model))
+        return VIR_CPU_COMPARE_IDENTICAL;
 
-    return VIR_CPU_COMPARE_IDENTICAL;
+    return VIR_CPU_COMPARE_INCOMPATIBLE;
 }
 
 static int
@@ -631,7 +630,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .name = "ppc64",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare    = PowerPCCompare,
+    .compare    = ppcCompare,
     .decode     = PowerPCDecode,
     .encode     = NULL,
     .free       = PowerPCDataFree,
