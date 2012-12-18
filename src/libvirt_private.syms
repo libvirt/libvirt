@@ -1352,6 +1352,14 @@ virAuditOpen;
 virAuditSend;
 
 
+# virarch.h
+virArchFromHost;
+virArchFromString;
+virArchGetEndian;
+virArchGetWordSize;
+virArchToString;
+
+
 # virconsole.h
 virConsoleAlloc;
 virConsoleFree;
