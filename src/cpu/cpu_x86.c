@@ -51,7 +51,7 @@ struct x86_vendor {
 
 struct x86_feature {
     char *name;
-    union cpuData *data;
+    struct cpuX86Data *data;
 
     struct x86_feature *next;
 };
@@ -59,7 +59,7 @@ struct x86_feature {
 struct x86_model {
     char *name;
     const struct x86_vendor *vendor;
-    union cpuData *data;
+    struct cpuX86Data *data;
 
     struct x86_model *next;
 };
@@ -80,7 +80,7 @@ enum compare_result {
 
 
 struct data_iterator {
-    union cpuData *data;
+    struct cpuX86Data *data;
     int pos;
     bool extended;
 };
@@ -150,12 +150,10 @@ static struct cpuX86cpuid *
 x86DataCpuidNext(struct data_iterator *iterator)
 {
     struct cpuX86cpuid *ret;
-    struct cpuX86Data *data;
+    struct cpuX86Data *data = iterator->data;
 
-    if (!iterator->data)
+    if (!data)
         return NULL;
-
-    data = &iterator->data->x86;
 
     do {
         ret = NULL;
@@ -180,7 +178,7 @@ x86DataCpuidNext(struct data_iterator *iterator)
 
 
 static struct cpuX86cpuid *
-x86DataCpuid(const union cpuData *data,
+x86DataCpuid(const struct cpuX86Data *data,
              uint32_t function)
 {
     struct cpuX86cpuid *cpuids;
@@ -188,13 +186,13 @@ x86DataCpuid(const union cpuData *data,
     size_t i;
 
     if (function < CPUX86_EXTENDED) {
-        cpuids = data->x86.basic;
-        len = data->x86.basic_len;
+        cpuids = data->basic;
+        len = data->basic_len;
         i = function;
     }
     else {
-        cpuids = data->x86.extended;
-        len = data->x86.extended_len;
+        cpuids = data->extended;
+        len = data->extended_len;
         i = function - CPUX86_EXTENDED;
     }
 
@@ -206,65 +204,90 @@ x86DataCpuid(const union cpuData *data,
 
 
 static void
-x86DataFree(union cpuData *data)
+x86DataFree(struct cpuX86Data *data)
 {
     if (data == NULL)
         return;
 
-    VIR_FREE(data->x86.basic);
-    VIR_FREE(data->x86.extended);
+    VIR_FREE(data->basic);
+    VIR_FREE(data->extended);
     VIR_FREE(data);
 }
 
 
 static union cpuData *
-x86DataCopy(const union cpuData *data)
+x86MakeCPUData(struct cpuX86Data **data)
 {
-    union cpuData *copy = NULL;
+    union cpuData *cpuData;
+
+    if (VIR_ALLOC(cpuData) < 0)
+        return NULL;
+
+    cpuData->x86 = *data;
+    *data = NULL;
+
+    return cpuData;
+}
+
+static void
+x86FreeCPUData(union cpuData *data)
+{
+    if (!data)
+        return;
+
+    x86DataFree(data->x86);
+    VIR_FREE(data);
+}
+
+
+static struct cpuX86Data *
+x86DataCopy(const struct cpuX86Data *data)
+{
+    struct cpuX86Data *copy = NULL;
     size_t i;
 
     if (VIR_ALLOC(copy) < 0
-        || VIR_ALLOC_N(copy->x86.basic, data->x86.basic_len) < 0
-        || VIR_ALLOC_N(copy->x86.extended, data->x86.extended_len) < 0) {
+        || VIR_ALLOC_N(copy->basic, data->basic_len) < 0
+        || VIR_ALLOC_N(copy->extended, data->extended_len) < 0) {
         x86DataFree(copy);
         return NULL;
     }
 
-    copy->x86.basic_len = data->x86.basic_len;
-    for (i = 0; i < data->x86.basic_len; i++)
-        copy->x86.basic[i] = data->x86.basic[i];
+    copy->basic_len = data->basic_len;
+    for (i = 0; i < data->basic_len; i++)
+        copy->basic[i] = data->basic[i];
 
-    copy->x86.extended_len = data->x86.extended_len;
-    for (i = 0; i < data->x86.extended_len; i++)
-        copy->x86.extended[i] = data->x86.extended[i];
+    copy->extended_len = data->extended_len;
+    for (i = 0; i < data->extended_len; i++)
+        copy->extended[i] = data->extended[i];
 
     return copy;
 }
 
 
 static int
-x86DataExpand(union cpuData *data,
+x86DataExpand(struct cpuX86Data *data,
               int basic_by,
               int extended_by)
 {
     size_t i;
 
     if (basic_by > 0) {
-        size_t len = data->x86.basic_len;
-        if (VIR_EXPAND_N(data->x86.basic, data->x86.basic_len, basic_by) < 0)
+        size_t len = data->basic_len;
+        if (VIR_EXPAND_N(data->basic, data->basic_len, basic_by) < 0)
             return -1;
 
         for (i = 0; i < basic_by; i++)
-            data->x86.basic[len + i].function = len + i;
+            data->basic[len + i].function = len + i;
     }
 
     if (extended_by > 0) {
-        size_t len = data->x86.extended_len;
-        if (VIR_EXPAND_N(data->x86.extended, data->x86.extended_len, extended_by) < 0)
+        size_t len = data->extended_len;
+        if (VIR_EXPAND_N(data->extended, data->extended_len, extended_by) < 0)
             return -1;
 
         for (i = 0; i < extended_by; i++)
-            data->x86.extended[len + i].function = len + i + CPUX86_EXTENDED;
+            data->extended[len + i].function = len + i + CPUX86_EXTENDED;
     }
 
     return 0;
@@ -272,7 +295,7 @@ x86DataExpand(union cpuData *data,
 
 
 static int
-x86DataAddCpuid(union cpuData *data,
+x86DataAddCpuid(struct cpuX86Data *data,
                 const struct cpuX86cpuid *cpuid)
 {
     unsigned int basic_by = 0;
@@ -282,12 +305,12 @@ x86DataAddCpuid(union cpuData *data,
 
     if (cpuid->function < CPUX86_EXTENDED) {
         pos = cpuid->function;
-        basic_by = pos + 1 - data->x86.basic_len;
-        cpuids = &data->x86.basic;
+        basic_by = pos + 1 - data->basic_len;
+        cpuids = &data->basic;
     } else {
         pos = cpuid->function - CPUX86_EXTENDED;
-        extended_by = pos + 1 - data->x86.extended_len;
-        cpuids = &data->x86.extended;
+        extended_by = pos + 1 - data->extended_len;
+        cpuids = &data->extended;
     }
 
     if (x86DataExpand(data, basic_by, extended_by) < 0)
@@ -300,24 +323,24 @@ x86DataAddCpuid(union cpuData *data,
 
 
 static int
-x86DataAdd(union cpuData *data1,
-           const union cpuData *data2)
+x86DataAdd(struct cpuX86Data *data1,
+           const struct cpuX86Data *data2)
 {
     size_t i;
 
     if (x86DataExpand(data1,
-                      data2->x86.basic_len - data1->x86.basic_len,
-                      data2->x86.extended_len - data1->x86.extended_len) < 0)
+                      data2->basic_len - data1->basic_len,
+                      data2->extended_len - data1->extended_len) < 0)
         return -1;
 
-    for (i = 0; i < data2->x86.basic_len; i++) {
-        x86cpuidSetBits(data1->x86.basic + i,
-                        data2->x86.basic + i);
+    for (i = 0; i < data2->basic_len; i++) {
+        x86cpuidSetBits(data1->basic + i,
+                        data2->basic + i);
     }
 
-    for (i = 0; i < data2->x86.extended_len; i++) {
-        x86cpuidSetBits(data1->x86.extended + i,
-                        data2->x86.extended + i);
+    for (i = 0; i < data2->extended_len; i++) {
+        x86cpuidSetBits(data1->extended + i,
+                        data2->extended + i);
     }
 
     return 0;
@@ -325,29 +348,29 @@ x86DataAdd(union cpuData *data1,
 
 
 static void
-x86DataSubtract(union cpuData *data1,
-                const union cpuData *data2)
+x86DataSubtract(struct cpuX86Data *data1,
+                const struct cpuX86Data *data2)
 {
     size_t i;
     unsigned int len;
 
-    len = MIN(data1->x86.basic_len, data2->x86.basic_len);
+    len = MIN(data1->basic_len, data2->basic_len);
     for (i = 0; i < len; i++) {
-        x86cpuidClearBits(data1->x86.basic + i,
-                          data2->x86.basic + i);
+        x86cpuidClearBits(data1->basic + i,
+                          data2->basic + i);
     }
 
-    len = MIN(data1->x86.extended_len, data2->x86.extended_len);
+    len = MIN(data1->extended_len, data2->extended_len);
     for (i = 0; i < len; i++) {
-        x86cpuidClearBits(data1->x86.extended + i,
-                          data2->x86.extended + i);
+        x86cpuidClearBits(data1->extended + i,
+                          data2->extended + i);
     }
 }
 
 
 static void
-x86DataIntersect(union cpuData *data1,
-                 const union cpuData *data2)
+x86DataIntersect(struct cpuX86Data *data1,
+                 const struct cpuX86Data *data2)
 {
     struct data_iterator iter = DATA_ITERATOR_INIT(data1);
     struct cpuX86cpuid *cpuid1;
@@ -364,7 +387,7 @@ x86DataIntersect(union cpuData *data1,
 
 
 static bool
-x86DataIsEmpty(union cpuData *data)
+x86DataIsEmpty(struct cpuX86Data *data)
 {
     struct data_iterator iter = DATA_ITERATOR_INIT(data);
 
@@ -373,11 +396,11 @@ x86DataIsEmpty(union cpuData *data)
 
 
 static bool
-x86DataIsSubset(const union cpuData *data,
-                const union cpuData *subset)
+x86DataIsSubset(const struct cpuX86Data *data,
+                const struct cpuX86Data *subset)
 {
 
-    struct data_iterator iter = DATA_ITERATOR_INIT((union cpuData *) subset);
+    struct data_iterator iter = DATA_ITERATOR_INIT((struct cpuX86Data *)subset);
     const struct cpuX86cpuid *cpuid;
     const struct cpuX86cpuid *cpuidSubset;
 
@@ -395,7 +418,7 @@ x86DataIsSubset(const union cpuData *data,
 static int
 x86DataToCPUFeatures(virCPUDefPtr cpu,
                      int policy,
-                     union cpuData *data,
+                     struct cpuX86Data *data,
                      const struct x86_map *map)
 {
     const struct x86_feature *feature = map->features;
@@ -415,7 +438,7 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
 
 /* also removes bits corresponding to vendor string from data */
 static const struct x86_vendor *
-x86DataToVendor(union cpuData *data,
+x86DataToVendor(struct cpuX86Data *data,
                 const struct x86_map *map)
 {
     const struct x86_vendor *vendor = map->vendors;
@@ -435,13 +458,13 @@ x86DataToVendor(union cpuData *data,
 
 
 static virCPUDefPtr
-x86DataToCPU(const union cpuData *data,
+x86DataToCPU(const struct cpuX86Data *data,
              const struct x86_model *model,
              const struct x86_map *map)
 {
     virCPUDefPtr cpu;
-    union cpuData *copy = NULL;
-    union cpuData *modelData = NULL;
+    struct cpuX86Data *copy = NULL;
+    struct cpuX86Data *modelData = NULL;
     const struct x86_vendor *vendor;
 
     if (VIR_ALLOC(cpu) < 0 ||
@@ -616,7 +639,7 @@ x86FeatureFind(const struct x86_map *map,
 static char *
 x86FeatureNames(const struct x86_map *map,
                 const char *separator,
-                union cpuData *data)
+                struct cpuX86Data *data)
 {
     virBuffer ret = VIR_BUFFER_INITIALIZER;
     bool first = true;
@@ -1103,7 +1126,7 @@ error:
 /* A helper macro to exit the cpu computation function without writing
  * redundant code:
  * MSG: error message
- * CPU_DEF: a union cpuData pointer with flags that are conflicting
+ * CPU_DEF: a struct cpuX86Data pointer with flags that are conflicting
  * RET: return code to set
  *
  * This macro generates the error string outputs it into logs.
@@ -1228,6 +1251,8 @@ x86Compute(virCPUDefPtr host,
     }
 
     if (guest != NULL) {
+        struct cpuX86Data *guestData;
+
         if ((guest_model = x86ModelCopy(host_model)) == NULL)
             goto error;
 
@@ -1240,8 +1265,11 @@ x86Compute(virCPUDefPtr host,
 
         x86DataSubtract(guest_model->data, cpu_disable->data);
 
-        if ((*guest = x86DataCopy(guest_model->data)) == NULL)
+        if (!(guestData = x86DataCopy(guest_model->data)) ||
+            !(*guest = x86MakeCPUData(&guestData))) {
+            x86DataFree(guestData);
             goto error;
+        }
     }
 
 out:
@@ -1284,7 +1312,7 @@ x86GuestData(virCPUDefPtr host,
 
 static int
 x86Decode(virCPUDefPtr cpu,
-          const union cpuData *data,
+          const struct cpuX86Data *data,
           const char **models,
           unsigned int nmodels,
           const char *preferred)
@@ -1383,14 +1411,24 @@ out:
     return ret;
 }
 
+static int
+x86DecodeCPUData(virCPUDefPtr cpu,
+                 const union cpuData *data,
+                 const char **models,
+                 unsigned int nmodels,
+                 const char *preferred)
+{
+    return x86Decode(cpu, data->x86, models, nmodels, preferred);
+}
 
-static union cpuData *
+
+static struct cpuX86Data *
 x86EncodePolicy(const virCPUDefPtr cpu,
                 const struct x86_map *map,
                 enum virCPUFeaturePolicy policy)
 {
     struct x86_model *model;
-    union cpuData *data = NULL;
+    struct cpuX86Data *data = NULL;
 
     if (!(model = x86ModelFromCPU(cpu, map, policy)))
         return NULL;
@@ -1413,13 +1451,26 @@ x86Encode(const virCPUDefPtr cpu,
           union cpuData **vendor)
 {
     struct x86_map *map = NULL;
-    union cpuData *data_forced = NULL;
-    union cpuData *data_required = NULL;
-    union cpuData *data_optional = NULL;
-    union cpuData *data_disabled = NULL;
-    union cpuData *data_forbidden = NULL;
-    union cpuData *data_vendor = NULL;
+    struct cpuX86Data *data_forced = NULL;
+    struct cpuX86Data *data_required = NULL;
+    struct cpuX86Data *data_optional = NULL;
+    struct cpuX86Data *data_disabled = NULL;
+    struct cpuX86Data *data_forbidden = NULL;
+    struct cpuX86Data *data_vendor = NULL;
     int ret = -1;
+
+    if (forced)
+        *forced = NULL;
+    if (required)
+        *required = NULL;
+    if (optional)
+        *optional = NULL;
+    if (disabled)
+        *disabled = NULL;
+    if (forbidden)
+        *forbidden = NULL;
+    if (vendor)
+        *vendor = NULL;
 
     if ((map = x86LoadMap()) == NULL)
         goto error;
@@ -1470,18 +1521,24 @@ x86Encode(const virCPUDefPtr cpu,
         }
     }
 
-    if (forced)
-        *forced = data_forced;
-    if (required)
-        *required = data_required;
-    if (optional)
-        *optional = data_optional;
-    if (disabled)
-        *disabled = data_disabled;
-    if (forbidden)
-        *forbidden = data_forbidden;
-    if (vendor)
-        *vendor = data_vendor;
+    if (forced &&
+        !(*forced = x86MakeCPUData(&data_forced)))
+        goto error;
+    if (required &&
+        !(*required = x86MakeCPUData(&data_required)))
+        goto error;
+    if (optional &&
+        !(*optional = x86MakeCPUData(&data_optional)))
+        goto error;
+    if (disabled &&
+        !(*disabled = x86MakeCPUData(&data_disabled)))
+        goto error;
+    if (forbidden &&
+        !(*forbidden = x86MakeCPUData(&data_forbidden)))
+        goto error;
+    if (vendor &&
+        !(*vendor = x86MakeCPUData(&data_vendor)))
+        goto error;
 
     ret = 0;
 
@@ -1497,6 +1554,18 @@ error:
     x86DataFree(data_disabled);
     x86DataFree(data_forbidden);
     x86DataFree(data_vendor);
+    if (forced)
+        x86FreeCPUData(*forced);
+    if (required)
+        x86FreeCPUData(*required);
+    if (optional)
+        x86FreeCPUData(*optional);
+    if (disabled)
+        x86FreeCPUData(*disabled);
+    if (forbidden)
+        x86FreeCPUData(*forbidden);
+    if (vendor)
+        x86FreeCPUData(*vendor);
     goto cleanup;
 }
 
@@ -1562,21 +1631,25 @@ cpuidSet(uint32_t base, struct cpuX86cpuid **set)
 static union cpuData *
 x86NodeData(void)
 {
-    union cpuData *data;
+    union cpuData *cpuData = NULL;
+    struct cpuX86Data *data;
     int ret;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if ((ret = cpuidSet(CPUX86_BASIC, &data->x86.basic)) < 0)
+    if ((ret = cpuidSet(CPUX86_BASIC, &data->basic)) < 0)
         goto error;
-    data->x86.basic_len = ret;
+    data->basic_len = ret;
 
-    if ((ret = cpuidSet(CPUX86_EXTENDED, &data->x86.extended)) < 0)
+    if ((ret = cpuidSet(CPUX86_EXTENDED, &data->extended)) < 0)
         goto error;
-    data->x86.extended_len = ret;
+    data->extended_len = ret;
 
-    return data;
+    if (!(cpuData = x86MakeCPUData(&data)))
+        goto error;
+
+    return cpuData;
 
 error:
     x86DataFree(data);
@@ -1812,7 +1885,7 @@ static int x86HasFeature(const union cpuData *data,
     if (!(feature = x86FeatureFind(map, name)))
         goto cleanup;
 
-    ret = x86DataIsSubset(data, feature->data) ? 1 : 0;
+    ret = x86DataIsSubset(data->x86, feature->data) ? 1 : 0;
 
 cleanup:
     x86MapFree(map);
@@ -1824,9 +1897,9 @@ struct cpuArchDriver cpuDriverX86 = {
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
     .compare    = x86Compare,
-    .decode     = x86Decode,
+    .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
-    .free       = x86DataFree,
+    .free       = x86FreeCPUData,
 #if HAVE_CPUID
     .nodeData   = x86NodeData,
 #else

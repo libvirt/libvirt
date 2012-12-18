@@ -33,7 +33,7 @@
 
 
 union cpuData {
-    struct cpuX86Data x86;
+    struct cpuX86Data *x86;
     /* generic driver needs no data */
     /* PowerPC driver need data*/
     struct cpuPPCData ppc;
