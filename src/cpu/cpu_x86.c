@@ -215,10 +215,10 @@ x86DataFree(struct cpuX86Data *data)
 }
 
 
-static union cpuData *
+static virCPUDataPtr
 x86MakeCPUData(struct cpuX86Data **data)
 {
-    union cpuData *cpuData;
+    virCPUDataPtr cpuData;
 
     if (VIR_ALLOC(cpuData) < 0)
         return NULL;
@@ -230,7 +230,7 @@ x86MakeCPUData(struct cpuX86Data **data)
 }
 
 static void
-x86FreeCPUData(union cpuData *data)
+x86FreeCPUData(virCPUDataPtr data)
 {
     if (!data)
         return;
@@ -1151,7 +1151,7 @@ error:
 static virCPUCompareResult
 x86Compute(virCPUDefPtr host,
            virCPUDefPtr cpu,
-           union cpuData **guest,
+           virCPUDataPtr *guest,
            char **message)
 {
     struct x86_map *map = NULL;
@@ -1303,7 +1303,7 @@ x86Compare(virCPUDefPtr host,
 static virCPUCompareResult
 x86GuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
-             union cpuData **data,
+             virCPUDataPtr *data,
              char **message)
 {
     return x86Compute(host, guest, data, message);
@@ -1413,7 +1413,7 @@ out:
 
 static int
 x86DecodeCPUData(virCPUDefPtr cpu,
-                 const union cpuData *data,
+                 const virCPUDataPtr data,
                  const char **models,
                  unsigned int nmodels,
                  const char *preferred)
@@ -1443,12 +1443,12 @@ x86EncodePolicy(const virCPUDefPtr cpu,
 
 static int
 x86Encode(const virCPUDefPtr cpu,
-          union cpuData **forced,
-          union cpuData **required,
-          union cpuData **optional,
-          union cpuData **disabled,
-          union cpuData **forbidden,
-          union cpuData **vendor)
+          virCPUDataPtr *forced,
+          virCPUDataPtr *required,
+          virCPUDataPtr *optional,
+          virCPUDataPtr *disabled,
+          virCPUDataPtr *forbidden,
+          virCPUDataPtr *vendor)
 {
     struct x86_map *map = NULL;
     struct cpuX86Data *data_forced = NULL;
@@ -1628,10 +1628,10 @@ cpuidSet(uint32_t base, struct cpuX86cpuid **set)
 }
 
 
-static union cpuData *
+static virCPUDataPtr
 x86NodeData(void)
 {
-    union cpuData *cpuData = NULL;
+    virCPUDataPtr cpuData = NULL;
     struct cpuX86Data *data;
     int ret;
 
@@ -1872,7 +1872,7 @@ x86Update(virCPUDefPtr guest,
     return -1;
 }
 
-static int x86HasFeature(const union cpuData *data,
+static int x86HasFeature(const virCPUDataPtr data,
                          const char *name)
 {
     struct x86_map *map;

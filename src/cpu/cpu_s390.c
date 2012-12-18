@@ -31,10 +31,10 @@
 
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
-static union cpuData *
+static virCPUDataPtr
 s390NodeData(void)
 {
-    union cpuData *data;
+    virCPUDataPtr data;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
@@ -45,7 +45,7 @@ s390NodeData(void)
 
 static int
 s390Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
-           const union cpuData *data ATTRIBUTE_UNUSED,
+           const virCPUDataPtr data ATTRIBUTE_UNUSED,
            const char **models ATTRIBUTE_UNUSED,
            unsigned int nmodels ATTRIBUTE_UNUSED,
            const char *preferred ATTRIBUTE_UNUSED)
@@ -54,7 +54,7 @@ s390Decode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
 }
 
 static void
-s390DataFree(union cpuData *data)
+s390DataFree(virCPUDataPtr data)
 {
     VIR_FREE(data);
 }

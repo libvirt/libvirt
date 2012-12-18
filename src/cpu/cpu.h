@@ -32,11 +32,12 @@
 # include "cpu_ppc_data.h"
 
 
-union cpuData {
+typedef union _virCPUData virCPUData;
+typedef virCPUData *virCPUDataPtr;
+union _virCPUData {
     struct cpuX86Data *x86;
-    /* generic driver needs no data */
-    /* PowerPC driver need data*/
     struct cpuPPCData ppc;
+    /* generic driver needs no data */
 };
 
 
@@ -46,30 +47,30 @@ typedef virCPUCompareResult
 
 typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
-                     const union cpuData *data,
+                     const virCPUDataPtr data,
                      const char **models,
                      unsigned int nmodels,
                      const char *preferred);
 
 typedef int
 (*cpuArchEncode)    (const virCPUDefPtr cpu,
-                     union cpuData **forced,
-                     union cpuData **required,
-                     union cpuData **optional,
-                     union cpuData **disabled,
-                     union cpuData **forbidden,
-                     union cpuData **vendor);
+                     virCPUDataPtr *forced,
+                     virCPUDataPtr *required,
+                     virCPUDataPtr *optional,
+                     virCPUDataPtr *disabled,
+                     virCPUDataPtr *forbidden,
+                     virCPUDataPtr *vendor);
 
 typedef void
-(*cpuArchDataFree)  (union cpuData *data);
+(*cpuArchDataFree)  (virCPUDataPtr data);
 
-typedef union cpuData *
+typedef virCPUDataPtr
 (*cpuArchNodeData)  (void);
 
 typedef virCPUCompareResult
 (*cpuArchGuestData) (virCPUDefPtr host,
                      virCPUDefPtr guest,
-                     union cpuData **data,
+                     virCPUDataPtr *data,
                      char **message);
 
 typedef virCPUDefPtr
@@ -83,7 +84,7 @@ typedef int
                      const virCPUDefPtr host);
 
 typedef int
-(*cpuArchHasFeature) (const union cpuData *data,
+(*cpuArchHasFeature) (const virCPUDataPtr data,
                       const char *feature);
 
 
@@ -113,7 +114,7 @@ cpuCompare  (virCPUDefPtr host,
 
 extern int
 cpuDecode   (virCPUDefPtr cpu,
-             const union cpuData *data,
+             const virCPUDataPtr data,
              const char **models,
              unsigned int nmodels,
              const char *preferred);
@@ -121,24 +122,24 @@ cpuDecode   (virCPUDefPtr cpu,
 extern int
 cpuEncode   (virArch arch,
              const virCPUDefPtr cpu,
-             union cpuData **forced,
-             union cpuData **required,
-             union cpuData **optional,
-             union cpuData **disabled,
-             union cpuData **forbidden,
-             union cpuData **vendor);
+             virCPUDataPtr *forced,
+             virCPUDataPtr *required,
+             virCPUDataPtr *optional,
+             virCPUDataPtr *disabled,
+             virCPUDataPtr *forbidden,
+             virCPUDataPtr *vendor);
 
 extern void
 cpuDataFree (virArch arch,
-             union cpuData *data);
+             virCPUDataPtr data);
 
-extern union cpuData *
+extern virCPUDataPtr
 cpuNodeData (virArch arch);
 
 extern virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
-             union cpuData **data,
+             virCPUDataPtr *data,
              char **msg);
 
 extern char *
@@ -159,7 +160,7 @@ cpuUpdate   (virCPUDefPtr guest,
 
 extern int
 cpuHasFeature(virArch arch,
-              const union cpuData *data,
+              const virCPUDataPtr data,
               const char *feature);
 
 

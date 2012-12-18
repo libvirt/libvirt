@@ -301,7 +301,7 @@ ppcCompare(virCPUDefPtr host,
 
 static int
 ppcDecode(virCPUDefPtr cpu,
-          const union cpuData *data,
+          const virCPUDataPtr data,
           const char **models,
           unsigned int nmodels,
           const char *preferred ATTRIBUTE_UNUSED)
@@ -342,7 +342,7 @@ cleanup:
 
 
 static void
-ppcDataFree(union cpuData *data)
+ppcDataFree(virCPUDataPtr data)
 {
     if (data == NULL)
         return;
@@ -351,10 +351,10 @@ ppcDataFree(union cpuData *data)
 }
 
 #if defined(__powerpc__) || defined(__powerpc64__)
-static union cpuData *
+static virCPUDataPtr
 ppcNodeData(void)
 {
-    union cpuData *data;
+    virCPUDataPtr data;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;

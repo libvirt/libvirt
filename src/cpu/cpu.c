@@ -130,7 +130,7 @@ cpuCompare(virCPUDefPtr host,
 
 int
 cpuDecode(virCPUDefPtr cpu,
-          const union cpuData *data,
+          const virCPUDataPtr data,
           const char **models,
           unsigned int nmodels,
           const char *preferred)
@@ -174,12 +174,12 @@ cpuDecode(virCPUDefPtr cpu,
 int
 cpuEncode(virArch arch,
           const virCPUDefPtr cpu,
-          union cpuData **forced,
-          union cpuData **required,
-          union cpuData **optional,
-          union cpuData **disabled,
-          union cpuData **forbidden,
-          union cpuData **vendor)
+          virCPUDataPtr *forced,
+          virCPUDataPtr *required,
+          virCPUDataPtr *optional,
+          virCPUDataPtr *disabled,
+          virCPUDataPtr *forbidden,
+          virCPUDataPtr *vendor)
 {
     struct cpuArchDriver *driver;
 
@@ -205,7 +205,7 @@ cpuEncode(virArch arch,
 
 void
 cpuDataFree(virArch arch,
-            union cpuData *data)
+            virCPUDataPtr data)
 {
     struct cpuArchDriver *driver;
 
@@ -228,7 +228,7 @@ cpuDataFree(virArch arch,
 }
 
 
-union cpuData *
+virCPUDataPtr
 cpuNodeData(virArch arch)
 {
     struct cpuArchDriver *driver;
@@ -252,7 +252,7 @@ cpuNodeData(virArch arch)
 virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
-             union cpuData **data,
+             virCPUDataPtr *data,
              char **msg)
 {
     struct cpuArchDriver *driver;
@@ -420,7 +420,7 @@ cpuUpdate(virCPUDefPtr guest,
 
 int
 cpuHasFeature(virArch arch,
-              const union cpuData *data,
+              const virCPUDataPtr data,
               const char *feature)
 {
     struct cpuArchDriver *driver;

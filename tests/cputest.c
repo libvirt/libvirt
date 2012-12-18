@@ -261,7 +261,7 @@ cpuTestGuestData(const void *arg)
     virCPUDefPtr host = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUDefPtr guest = NULL;
-    union cpuData *guestData = NULL;
+    virCPUDataPtr guestData = NULL;
     virCPUCompareResult cmpResult;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
@@ -417,7 +417,7 @@ cpuTestHasFeature(const void *arg)
     const struct data *data = arg;
     int ret = -1;
     virCPUDefPtr host = NULL;
-    union cpuData *hostData = NULL;
+    virCPUDataPtr hostData = NULL;
     int result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)))

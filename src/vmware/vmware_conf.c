@@ -56,7 +56,7 @@ vmwareCapsInit(void)
     virCapsPtr caps = NULL;
     virCapsGuestPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
-    union cpuData *data = NULL;
+    virCPUDataPtr data = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    0, 0)) == NULL)

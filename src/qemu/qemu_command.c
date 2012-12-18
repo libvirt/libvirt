@@ -5640,7 +5640,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
     size_t ncpus = 0;
     char **cpus = NULL;
     const char *default_model;
-    union cpuData *data = NULL;
+    virCPUDataPtr data = NULL;
     bool have_cpu = false;
     char *compare_msg = NULL;
     int ret = -1;
@@ -9894,7 +9894,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
     if (dom->os.arch == VIR_ARCH_X86_64) {
         bool is_32bit = false;
         if (cpu) {
-            union cpuData *cpuData = NULL;
+            virCPUDataPtr cpuData = NULL;
 
             if (cpuEncode(VIR_ARCH_X86_64, cpu, NULL, &cpuData,
                           NULL, NULL, NULL, NULL) < 0)

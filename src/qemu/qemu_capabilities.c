@@ -832,7 +832,7 @@ virQEMUCapsInitCPU(virCapsPtr caps,
                    virArch arch)
 {
     virCPUDefPtr cpu = NULL;
-    union cpuData *data = NULL;
+    virCPUDataPtr data = NULL;
     virNodeInfo nodeinfo;
     int ret = -1;
 

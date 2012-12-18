@@ -30,10 +30,10 @@
 
 static const virArch archs[] = { VIR_ARCH_ARMV7L };
 
-static union cpuData *
+static virCPUDataPtr
 ArmNodeData(void)
 {
-    union cpuData *data;
+    virCPUDataPtr data;
 
     ignore_value(VIR_ALLOC(data));
     return data;
@@ -41,7 +41,7 @@ ArmNodeData(void)
 
 static int
 ArmDecode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
-          const union cpuData *data ATTRIBUTE_UNUSED,
+          const virCPUDataPtr data ATTRIBUTE_UNUSED,
           const char **models ATTRIBUTE_UNUSED,
           unsigned int nmodels ATTRIBUTE_UNUSED,
           const char *preferred ATTRIBUTE_UNUSED)
@@ -50,7 +50,7 @@ ArmDecode(virCPUDefPtr cpu ATTRIBUTE_UNUSED,
 }
 
 static void
-ArmDataFree(union cpuData *data)
+ArmDataFree(virCPUDataPtr data)
 {
     VIR_FREE(data);
 }
