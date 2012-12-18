@@ -56,9 +56,10 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
 }
 
 static int testQemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                      const char *arch)
+                                      virArch arch)
 {
-    if (STRPREFIX(arch, "s390"))
+    if (arch == VIR_ARCH_S390 ||
+        arch == VIR_ARCH_S390X)
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
     else
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
@@ -74,7 +75,7 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", "ppc64", 64,
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC64,
                                     "/usr/bin/qemu-system-ppc64", NULL,
                                      1, machines);
     if (!guest)
@@ -102,7 +103,7 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", "s390x", 64,
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_S390X,
                                     "/usr/bin/qemu-system-s390x", NULL,
                                     ARRAY_CARDINALITY(s390_machines),
                                     machines);
@@ -146,7 +147,7 @@ virCapsPtr testQemuCapsInit(void) {
         VIR_CPU_TYPE_HOST,      /* type */
         0,                      /* mode */
         0,                      /* match */
-        (char *) "x86_64",      /* arch */
+        VIR_ARCH_X86_64,        /* arch */
         (char *) "core2duo",    /* model */
         NULL,                   /* vendor_id */
         0,                      /* fallback */
@@ -175,7 +176,7 @@ virCapsPtr testQemuCapsInit(void) {
 
     qemuDomainSetNamespaceHooks(caps);
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32,
+    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
                                          "/usr/bin/qemu", NULL,
                                          nmachines, machines)) == NULL ||
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
@@ -193,7 +194,7 @@ virCapsPtr testQemuCapsInit(void) {
     if ((machines = testQemuAllocNewerMachines(&nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64,
+    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
                                          "/usr/bin/qemu-system-x86_64", NULL,
                                          nmachines, machines)) == NULL ||
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
@@ -224,7 +225,7 @@ virCapsPtr testQemuCapsInit(void) {
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "xen", "x86_64", 64,
+    if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64,
                                          "/usr/bin/xenner", NULL,
                                          nmachines, machines)) == NULL)
         goto cleanup;

@@ -15,7 +15,7 @@ static virCapsPtr caps;
 static virVMXContext ctx;
 
 static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                  const char *arch ATTRIBUTE_UNUSED)
+                                  virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
@@ -25,7 +25,7 @@ testCapsInit(void)
 {
     virCapsGuestPtr guest = NULL;
 
-    caps = virCapabilitiesNew("i686", 1, 1);
+    caps = virCapabilitiesNew(VIR_ARCH_I686, 1, 1);
 
     if (caps == NULL) {
         return;
@@ -40,7 +40,9 @@ testCapsInit(void)
 
     /* i686 guest */
     guest =
-      virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0, NULL);
+      virCapabilitiesAddGuest(caps, "hvm",
+                              VIR_ARCH_I686,
+                              NULL, NULL, 0, NULL);
 
     if (guest == NULL) {
         goto failure;
@@ -53,7 +55,9 @@ testCapsInit(void)
 
     /* x86_64 guest */
     guest =
-      virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64, NULL, NULL, 0, NULL);
+      virCapabilitiesAddGuest(caps, "hvm",
+                              VIR_ARCH_X86_64,
+                              NULL, NULL, 0, NULL);
 
     if (guest == NULL) {
         goto failure;

@@ -99,8 +99,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(log);
     virResetLastError();
 
-    if (STREQLEN(vmdef->os.arch, "x86_64", 6) ||
-        STREQLEN(vmdef->os.arch, "i686", 4)) {
+    if (vmdef->os.arch == VIR_ARCH_X86_64 ||
+        vmdef->os.arch == VIR_ARCH_I686) {
         qemuCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 

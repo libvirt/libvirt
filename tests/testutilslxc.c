@@ -9,7 +9,7 @@
 
 
 static int testLXCDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                     const char *arch ATTRIBUTE_UNUSED)
+                                     virArch arch ATTRIBUTE_UNUSED)
 {
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
 }
@@ -19,13 +19,13 @@ virCapsPtr testLXCCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
 
-    if ((caps = virCapabilitiesNew("x86_64",
+    if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
                                    0, 0)) == NULL)
         return NULL;
 
     caps->defaultConsoleTargetType = testLXCDefaultConsoleType;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe", "i686", 32,
+    if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_I686,
                                          "/usr/libexec/libvirt_lxc", NULL,
                                          0, NULL)) == NULL)
         goto error;
@@ -34,7 +34,7 @@ virCapsPtr testLXCCapsInit(void) {
         goto error;
 
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe", "x86_64", 64,
+    if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_X86_64,
                                          "/usr/libexec/libvirt_lxc", NULL,
                                          0, NULL)) == NULL)
         goto error;
