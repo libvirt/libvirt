@@ -1631,7 +1631,7 @@
       <dt><code>readonly</code></dt>
       <dd>If present, this indicates the device cannot be modified by
         the guest.  For now, this is the default for disks with
-        attribute <code>type='cdrom'</code>.
+        attribute <code>device='cdrom'</code>.
       </dd>
       <dt><code>shareable</code></dt>
       <dd>If present, this indicates the device is expected to be shared
