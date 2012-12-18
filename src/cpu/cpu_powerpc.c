@@ -203,11 +203,11 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
               struct ppc_map *map)
 {
     struct ppc_vendor *vendor = NULL;
-    char *string = NULL;
-    int ret = -1;
 
-    if (VIR_ALLOC(vendor) < 0)
-        goto no_memory;
+    if (VIR_ALLOC(vendor) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
@@ -222,31 +222,19 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
-    string = virXPathString("string(@string)", ctxt);
-    if (!string) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing vendor string for CPU vendor %s"), vendor->name);
-        goto ignore;
-    }
-    if (!map->vendors)
+    if (!map->vendors) {
         map->vendors = vendor;
-    else {
+    } else {
         vendor->next = map->vendors;
         map->vendors = vendor;
     }
 
-    ret = 0;
-
-out:
-    VIR_FREE(string);
-    return ret;
-
-no_memory:
-    virReportOOMError();
+cleanup:
+    return 0;
 
 ignore:
     ppcVendorFree(vendor);
-    goto out;
+    goto cleanup;
 }
 
 static int
