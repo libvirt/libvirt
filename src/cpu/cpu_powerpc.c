@@ -525,16 +525,6 @@ out:
     return ret;
 }
 
-#if defined(__powerpc__) || \
-    defined(__powerpc64__)
-static uint32_t ppc_mfpvr(void)
-{
-    uint32_t pvr;
-    asm("mfpvr %0"
-        : "=r"(pvr));
-    return pvr;
-}
-#endif
 
 static void
 PowerPCDataFree(union cpuData *data)
@@ -545,8 +535,9 @@ PowerPCDataFree(union cpuData *data)
     VIR_FREE(data);
 }
 
+#if defined(__powerpc__) || defined(__powerpc64__)
 static union cpuData *
-PowerPCNodeData(void)
+ppcNodeData(void)
 {
     union cpuData *data;
 
@@ -555,13 +546,12 @@ PowerPCNodeData(void)
         return NULL;
     }
 
-#if defined(__powerpc__) || \
-    defined(__powerpc64__)
-    data->ppc.pvr = ppc_mfpvr();
-#endif
+    asm("mfpvr %0"
+        : "=r" (data->ppc.pvr));
 
     return data;
 }
+#endif
 
 static int
 PowerPCUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
@@ -634,7 +624,11 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .decode     = PowerPCDecode,
     .encode     = NULL,
     .free       = PowerPCDataFree,
-    .nodeData   = PowerPCNodeData,
+#if defined(__powerpc__) || defined(__powerpc64__)
+    .nodeData   = ppcNodeData,
+#else
+    .nodeData   = NULL,
+#endif
     .guestData  = NULL,
     .baseline   = PowerPCBaseline,
     .update     = PowerPCUpdate,
