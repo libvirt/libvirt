@@ -95,6 +95,22 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       dontwarn="$dontwarn -Wmissing-declarations"
     fi
 
+    dnl Check whether strchr(s, char variable) causes a bogus compile
+    dnl warning, which is the case with GCC < 4.6 on some glibc
+    AC_CACHE_CHECK([whether GCC -Wlogical-op gives bogus warnings],
+      [lv_cv_gcc_wlogical_op_broken], [
+      save_CFLAGS="$CFLAGS"
+      CFLAGS="-O2 -Wlogical-op -Werror"
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #include <string.h>
+        ]], [[
+        const char *haystack;
+        char needle;
+        return strchr(haystack, needle) == haystack;]])],
+        [lv_cv_gcc_wlogical_op_broken=no],
+        [lv_cv_gcc_wlogical_op_broken=yes])
+      CFLAGS="$save_CFLAGS"])
+
     # We might fundamentally need some of these disabled forever, but
     # ideally we'd turn many of them on
     dontwarn="$dontwarn -Wfloat-equal"
@@ -196,4 +212,10 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     WARN_PYTHON_CFLAGS=$WARN_CFLAGS
     AC_SUBST(WARN_PYTHON_CFLAGS)
     WARN_CFLAGS=$save_WARN_CFLAGS
+
+    if test "$gl_cv_warn_c__Wlogical_op" = yes &&
+       test "$lv_cv_gcc_wlogical_op_broken" = yes; then
+      AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP], 1,
+       [Define to 1 if gcc -Wlogical-op reports false positives on strchr])
+    fi
 ])
