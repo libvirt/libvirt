@@ -38,20 +38,6 @@
 
 static const virArch archs[] = { VIR_ARCH_PPC64 };
 
-struct cpuPowerPC {
-    const char *name;
-    const char *vendor;
-    uint32_t pvr;
-};
-
-static const struct cpuPowerPC cpu_defs[] = {
-    {"POWER7", "IBM", 0x003f0200},
-    {"POWER7_v2.1", "IBM", 0x003f0201},
-    {"POWER7_v2.3", "IBM", 0x003f0203},
-    {NULL, NULL, 0xffffffff}
-};
-
-
 struct ppc_vendor {
     char *name;
     struct ppc_vendor *next;
@@ -60,7 +46,7 @@ struct ppc_vendor {
 struct ppc_model {
     char *name;
     const struct ppc_vendor *vendor;
-    union cpuData *data;
+    struct cpuPPCData data;
     struct ppc_model *next;
 };
 
@@ -69,59 +55,6 @@ struct ppc_map {
     struct ppc_model *models;
 };
 
-static int
-ConvertModelVendorFromPVR(char **model,
-                          char **vendor,
-                          uint32_t pvr)
-{
-    int i;
-
-    for (i = 0; cpu_defs[i].name; i++) {
-        if (cpu_defs[i].pvr == pvr) {
-            *model = strdup(cpu_defs[i].name);
-            *vendor = strdup(cpu_defs[i].vendor);
-            return 0;
-        }
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("Missing the definition of this model"));
-    return -1;
-}
-
-static int
-ConvertPVRFromModel(const char *model,
-                    uint32_t *pvr)
-{
-    int i;
-
-    for (i = 0; cpu_defs[i].name; i++) {
-        if (STREQ(cpu_defs[i].name, model)) {
-            *pvr = cpu_defs[i].pvr;
-            return 0;
-        }
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("Missing the definition of this model"));
-    return -1;
-}
-
-static struct ppc_model *
-ppcModelNew(void)
-{
-    struct ppc_model *model;
-
-    if (VIR_ALLOC(model) < 0)
-        return NULL;
-
-    if (VIR_ALLOC(model->data) < 0) {
-        VIR_FREE(model);
-        return NULL;
-    }
-
-    return model;
-}
 
 static void
 ppcModelFree(struct ppc_model *model)
@@ -130,9 +63,6 @@ ppcModelFree(struct ppc_model *model)
         return;
 
     VIR_FREE(model->name);
-
-    VIR_FREE(model->data);
-
     VIR_FREE(model);
 }
 
@@ -145,6 +75,23 @@ ppcModelFind(const struct ppc_map *map,
     model = map->models;
     while (model != NULL) {
         if (STREQ(model->name, name))
+            return model;
+
+        model = model->next;
+    }
+
+    return NULL;
+}
+
+static struct ppc_model *
+ppcModelFindPVR(const struct ppc_map *map,
+                uint32_t pvr)
+{
+    struct ppc_model *model;
+
+    model = map->models;
+    while (model != NULL) {
+        if (model->data.pvr == pvr)
             return model;
 
         model = model->next;
@@ -223,25 +170,27 @@ static int
 ppcModelLoad(xmlXPathContextPtr ctxt,
              struct ppc_map *map)
 {
-    xmlNodePtr *nodes = NULL;
     struct ppc_model *model;
     char *vendor = NULL;
-    int ret = -1;
+    unsigned long pvr;
 
-    if (!(model = ppcModelNew()))
-        goto no_memory;
+    if (VIR_ALLOC(model) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     model->name = virXPathString("string(@name)", ctxt);
-    if (model->name == NULL) {
+    if (!model->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU model name"));
         goto ignore;
     }
 
-    ret = ConvertPVRFromModel(model->name, &model->data->ppc.pvr);
-    if (ret < 0)
-       goto ignore;
-
+    if (ppcModelFind(map, model->name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("CPU model %s already defined"), model->name);
+        goto ignore;
+    }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
         vendor = virXPathString("string(./vendor/@name)", ctxt);
@@ -260,26 +209,29 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
         }
     }
 
-    if (map->models == NULL)
+    if (!virXPathBoolean("boolean(./pvr)", ctxt) ||
+        virXPathULongHex("string(./pvr/@value)", ctxt, &pvr) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing or invalid PVR value in CPU model %s"),
+                       model->name);
+        goto ignore;
+    }
+    model->data.pvr = pvr;
+
+    if (map->models == NULL) {
         map->models = model;
-    else {
+    } else {
         model->next = map->models;
         map->models = model;
     }
 
-    ret = 0;
-
-out:
+cleanup:
     VIR_FREE(vendor);
-    VIR_FREE(nodes);
-    return ret;
-
-no_memory:
-    virReportOOMError();
+    return 0;
 
 ignore:
     ppcModelFree(model);
-    goto out;
+    goto cleanup;
 }
 
 static int
@@ -294,7 +246,8 @@ ppcMapLoadCallback(enum cpuMapElement element,
         return ppcVendorLoad(ctxt, map);
     case CPU_MAP_ELEMENT_MODEL:
         return ppcModelLoad(ctxt, map);
-    default:
+    case CPU_MAP_ELEMENT_FEATURE:
+    case CPU_MAP_ELEMENT_LAST:
         break;
     }
 
@@ -362,32 +315,34 @@ ppcDecode(virCPUDefPtr cpu,
 {
     int ret = -1;
     struct ppc_map *map;
-    char *cpu_vendor = NULL;
-    char *cpu_model = NULL;
+    const struct ppc_model *model;
 
     if (data == NULL || (map = ppcLoadMap()) == NULL)
         return -1;
 
-    if (ConvertModelVendorFromPVR(&cpu_model, &cpu_vendor, data->ppc.pvr) < 0)
-        goto cleanup;
-
-    if (!cpuModelIsAllowed(cpu_model, models, nmodels)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("CPU model %s is not supported by hypervisor"),
-                       cpu_model);
+    if (!(model = ppcModelFindPVR(map, data->ppc.pvr))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Cannot find CPU model with PVR 0x%08x"),
+                       data->ppc.pvr);
         goto cleanup;
     }
 
-    cpu->model = cpu_model;
-    cpu->vendor = cpu_vendor;
-    cpu_model = NULL;
-    cpu_vendor = NULL;
+    if (!cpuModelIsAllowed(model->name, models, nmodels)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU model %s is not supported by hypervisor"),
+                       model->name);
+        goto cleanup;
+    }
+
+    if (!(cpu->model = strdup(model->name)) ||
+        (model->vendor && !(cpu->vendor = strdup(model->vendor->name)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     ret = 0;
 
 cleanup:
-    VIR_FREE(cpu_model);
-    VIR_FREE(cpu_vendor);
     ppcMapFree(map);
 
     return ret;

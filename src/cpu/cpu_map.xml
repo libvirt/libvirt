@@ -591,12 +591,17 @@
     <!-- IBM-based CPU models -->
     <model name='POWER7'>
       <vendor name='IBM'/>
+      <pvr value='0x003f0200'/>
     </model>
+
     <model name='POWER7_v2.1'>
       <vendor name='IBM'/>
+      <pvr value='0x003f0201'/>
     </model>
+
     <model name='POWER7_v2.3'>
       <vendor name='IBM'/>
+      <pvr value='0x003f0203'/>
     </model>
   </arch>
 </cpus>
