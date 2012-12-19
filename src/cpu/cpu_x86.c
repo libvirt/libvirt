@@ -1715,6 +1715,8 @@ x86Baseline(virCPUDefPtr *cpus,
     if (!outputVendor)
         VIR_FREE(cpu->vendor);
 
+    cpu->arch = VIR_ARCH_NONE;
+
 cleanup:
     x86ModelFree(base_model);
     x86MapFree(map);
