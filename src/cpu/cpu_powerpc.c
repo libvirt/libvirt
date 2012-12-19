@@ -70,16 +70,16 @@ struct ppc_map {
 };
 
 static int
-ConvertModelVendorFromPVR(char ***model,
-                          char ***vendor,
+ConvertModelVendorFromPVR(char **model,
+                          char **vendor,
                           uint32_t pvr)
 {
     int i;
 
     for (i = 0; cpu_defs[i].name; i++) {
         if (cpu_defs[i].pvr == pvr) {
-            **model = strdup(cpu_defs[i].name);
-            **vendor = strdup(cpu_defs[i].vendor);
+            *model = strdup(cpu_defs[i].name);
+            *vendor = strdup(cpu_defs[i].vendor);
             return 0;
         }
     }
@@ -106,24 +106,6 @@ ConvertPVRFromModel(const char *model,
                    "%s", _("Missing the definition of this model"));
     return -1;
 }
-
-static int
-cpuMatch(const union cpuData *data,
-         char **cpu_model,
-         char **cpu_vendor,
-         const struct ppc_model *model)
-{
-    int ret = 0;
-
-    ret = ConvertModelVendorFromPVR(&cpu_model, &cpu_vendor, data->ppc.pvr);
-
-    if (STREQ(model->name, *cpu_model) &&
-        STREQ(model->vendor->name, *cpu_vendor))
-        ret = 1;
-
-    return ret;
-}
-
 
 static struct ppc_model *
 ppcModelNew(void)
@@ -372,102 +354,41 @@ ppcCompare(virCPUDefPtr host,
 }
 
 static int
-PowerPCDecode(virCPUDefPtr cpu,
+ppcDecode(virCPUDefPtr cpu,
           const union cpuData *data,
           const char **models,
           unsigned int nmodels,
-          const char *preferred)
+          const char *preferred ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     struct ppc_map *map;
-    const struct ppc_model *candidate;
-    virCPUDefPtr cpuCandidate;
-    virCPUDefPtr cpuModel = NULL;
     char *cpu_vendor = NULL;
     char *cpu_model = NULL;
-    unsigned int i;
 
     if (data == NULL || (map = ppcLoadMap()) == NULL)
         return -1;
 
-    candidate = map->models;
+    if (ConvertModelVendorFromPVR(&cpu_model, &cpu_vendor, data->ppc.pvr) < 0)
+        goto cleanup;
 
-    while (candidate != NULL) {
-        bool allowed = (models == NULL);
-
-        for (i = 0; i < nmodels; i++) {
-            if (models && models[i] && STREQ(models[i], candidate->name)) {
-                allowed = true;
-                break;
-            }
-        }
-
-        if (!allowed) {
-            if (preferred && STREQ(candidate->name, preferred)) {
-                if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("CPU model %s is not supported by hypervisor"),
-                                   preferred);
-                    goto out;
-                } else {
-                    VIR_WARN("Preferred CPU model %s not allowed by"
-                             " hypervisor; closest supported model will be"
-                             " used", preferred);
-                }
-            } else {
-                VIR_DEBUG("CPU model %s not allowed by hypervisor; ignoring",
-                          candidate->name);
-            }
-            goto next;
-        }
-
-        if (VIR_ALLOC(cpuCandidate) < 0) {
-            virReportOOMError();
-            goto out;
-        }
-
-        cpuCandidate->model = strdup(candidate->name);
-        cpuCandidate->vendor = strdup(candidate->vendor->name);
-
-        if (preferred && STREQ(cpuCandidate->model, preferred)) {
-            virCPUDefFree(cpuModel);
-            cpuModel = cpuCandidate;
-            break;
-        }
-
-        ret = cpuMatch(data, &cpu_model, &cpu_vendor, candidate);
-        if (ret < 0) {
-            VIR_FREE(cpuCandidate);
-            goto out;
-        } else if (ret == 1) {
-            cpuCandidate->model = cpu_model;
-            cpuCandidate->vendor = cpu_vendor;
-            virCPUDefFree(cpuModel);
-            cpuModel = cpuCandidate;
-            break;
-        }
-
-        virCPUDefFree(cpuCandidate);
-
-    next:
-        candidate = candidate->next;
+    if (!cpuModelIsAllowed(cpu_model, models, nmodels)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU model %s is not supported by hypervisor"),
+                       cpu_model);
+        goto cleanup;
     }
 
-    if (cpuModel == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Cannot find suitable CPU model for given data"));
-        goto out;
-    }
-
-    cpu->model = cpuModel->model;
-    cpu->vendor = cpuModel->vendor;
-    VIR_FREE(cpuModel);
+    cpu->model = cpu_model;
+    cpu->vendor = cpu_vendor;
+    cpu_model = NULL;
+    cpu_vendor = NULL;
 
     ret = 0;
 
-out:
+cleanup:
+    VIR_FREE(cpu_model);
+    VIR_FREE(cpu_vendor);
     ppcMapFree(map);
-    virCPUDefFree(cpuModel);
 
     return ret;
 }
@@ -600,7 +521,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
     .compare    = ppcCompare,
-    .decode     = PowerPCDecode,
+    .decode     = ppcDecode,
     .encode     = NULL,
     .free       = PowerPCDataFree,
 #if defined(__powerpc__) || defined(__powerpc64__)
