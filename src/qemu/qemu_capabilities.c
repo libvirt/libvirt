@@ -251,8 +251,6 @@ VIR_ONCE_GLOBAL_INIT(qemuCaps)
 
 static virArch qemuCapsArchFromString(const char *arch)
 {
-    if (STREQ(arch, "ia64"))
-        return VIR_ARCH_ITANIUM;
     if (STREQ(arch, "i386"))
         return VIR_ARCH_I686;
     if (STREQ(arch, "arm"))
@@ -266,8 +264,6 @@ static const char *qemuCapsArchToString(virArch arch)
 {
     if (arch == VIR_ARCH_I686)
         return "i386";
-    else if (arch == VIR_ARCH_ITANIUM)
-        return "ia64";
     else if (arch == VIR_ARCH_ARMV7L)
         return "arm";
 

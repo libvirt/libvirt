@@ -39,7 +39,7 @@ static const struct virArchData {
     { "cris",         32, VIR_ARCH_LITTLE_ENDIAN },
     { "i686",         32, VIR_ARCH_LITTLE_ENDIAN },
 
-    { "itanium",      64, VIR_ARCH_LITTLE_ENDIAN },
+    { "ia64",         64, VIR_ARCH_LITTLE_ENDIAN },
     { "lm32",         32, VIR_ARCH_BIG_ENDIAN },
     { "m68k",         32, VIR_ARCH_BIG_ENDIAN },
     { "microblaze",   32, VIR_ARCH_BIG_ENDIAN },
@@ -159,8 +159,6 @@ virArch virArchFromHost(void)
         ut.machine[3] == '6' &&
         ut.machine[4] == '\0') {
         arch = VIR_ARCH_I686;
-    } else if (STREQ(ut.machine, "ia64")) {
-        arch = VIR_ARCH_ITANIUM;
     } else if (STREQ(ut.machine, "amd64")) {
         arch = VIR_ARCH_X86_64;
     } else {
