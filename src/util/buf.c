@@ -458,6 +458,15 @@ virBufferEscapeSexpr(virBufferPtr buf,
     virBufferEscape(buf, '\\', "\\'", format, str);
 }
 
+/* Work around spurious strchr() diagnostics given by -Wlogical-op *
+ * for gcc < 4.6.  Doing it via a local pragma keeps the damage
+ * smaller than disabling it on the package level.  Unfortunately, the
+ * affected GCCs don't allow diagnostic push/pop which would have
+ * further reduced the impact. */
+#if BROKEN_GCC_WLOGICALOP
+# pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
+
 /**
  * virBufferEscape:
  * @buf: the buffer to append to
@@ -499,11 +508,7 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
     cur = str;
     out = escaped;
     while (*cur != 0) {
-        /* strchr work-around for gcc 4.3 & 4.4 bug with -Wlogical-op
-         * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36513
-         */
-        char needle[2] = { *cur, 0 };
-        if (strstr(toescape, needle))
+        if (strchr(toescape, *cur))
             *out++ = escape;
         *out++ = *cur;
         cur++;
