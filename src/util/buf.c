@@ -106,8 +106,8 @@ virBufferGetIndent(const virBufferPtr buf, bool dynamic)
 
 /**
  * virBufferGrow:
- * @buf:  the buffer
- * @len:  the minimum free size to allocate on top of existing used space
+ * @buf: the buffer
+ * @len: the minimum free size to allocate on top of existing used space
  *
  * Grow the available space of a buffer to at least @len bytes.
  *
@@ -282,8 +282,8 @@ virBufferUse(const virBufferPtr buf)
 /**
  * virBufferAsprintf:
  * @buf: the buffer to append to
- * @format:  the format
- * @...:  the variable list of arguments
+ * @format: the format
+ * @...: the variable list of arguments
  *
  * Do a formatted print to an XML buffer.  Auto indentation may be applied.
  */
@@ -299,8 +299,8 @@ virBufferAsprintf(virBufferPtr buf, const char *format, ...)
 /**
  * virBufferVasprintf:
  * @buf: the buffer to append to
- * @format:  the format
- * @argptr:  the variable list of arguments
+ * @format: the format
+ * @argptr: the variable list of arguments
  *
  * Do a formatted print to an XML buffer.  Auto indentation may be applied.
  */
@@ -458,7 +458,7 @@ virBufferEscapeSexpr(virBufferPtr buf,
     virBufferEscape(buf, '\\', "\\'", format, str);
 }
 
-/* Work around spurious strchr() diagnostics given by -Wlogical-op *
+/* Work around spurious strchr() diagnostics given by -Wlogical-op
  * for gcc < 4.6.  Doing it via a local pragma keeps the damage
  * smaller than disabling it on the package level.  Unfortunately, the
  * affected GCCs don't allow diagnostic push/pop which would have
@@ -522,7 +522,7 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
 /**
  * virBufferURIEncodeString:
  * @buf: the buffer to append to
- * @str:  the string argument which will be URI-encoded
+ * @str: the string argument which will be URI-encoded
  *
  * Append the string to the buffer.  The string will be URI-encoded
  * during the append (ie any non alpha-numeric characters are replaced
@@ -630,7 +630,7 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
 /**
  * virBufferStrcat:
  * @buf: the buffer to append to
- * @...:  the variable list of strings, the last argument must be NULL
+ * @...: the variable list of strings, the last argument must be NULL
  *
  * Concatenate strings to an XML buffer.  Auto indentation may be applied
  * after each string argument.
