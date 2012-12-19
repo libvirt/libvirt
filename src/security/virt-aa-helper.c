@@ -72,7 +72,7 @@ typedef struct {
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
     char *hvm;                  /* type of hypervisor (eg hvm, xen) */
-    char *arch;                 /* machine architecture */
+    virArch arch;               /* machine architecture */
     char *newfile;              /* newly added file */
     bool append;                /* append to .files instead of rewrite */
 } vahControl;
@@ -87,7 +87,6 @@ vahDeinit(vahControl * ctl)
     virCapabilitiesFree(ctl->caps);
     VIR_FREE(ctl->files);
     VIR_FREE(ctl->hvm);
-    VIR_FREE(ctl->arch);
     VIR_FREE(ctl->newfile);
 
     return 0;
