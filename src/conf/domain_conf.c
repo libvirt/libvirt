@@ -9576,8 +9576,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
     tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
     if (tmp) {
-        virArch arch = virArchFromString(tmp);
-        if (!arch) {
+        def->os.arch = virArchFromString(tmp);
+        if (!def->os.arch) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown architecture %s"),
                            tmp);
