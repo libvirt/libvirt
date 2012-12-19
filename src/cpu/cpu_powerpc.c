@@ -360,47 +360,6 @@ error:
     return NULL;
 }
 
-static struct ppc_model *
-ppcModelCopy(const struct ppc_model *model)
-{
-    struct ppc_model *copy;
-
-    if (VIR_ALLOC(copy) < 0
-        || VIR_ALLOC(copy->data) < 0
-        || !(copy->name = strdup(model->name))){
-        ppcModelFree(copy);
-        return NULL;
-    }
-
-    copy->data->ppc.pvr = model->data->ppc.pvr;
-    copy->vendor = model->vendor;
-
-    return copy;
-}
-
-static struct ppc_model *
-ppcModelFromCPU(const virCPUDefPtr cpu,
-                const struct ppc_map *map)
-{
-    struct ppc_model *model = NULL;
-
-    if ((model = ppcModelFind(map, cpu->model))) {
-        if ((model = ppcModelCopy(model)) == NULL) {
-            goto no_memory;
-        }
-    } else if (!(model = ppcModelNew())) {
-        goto no_memory;
-    }
-
-    return model;
-
-no_memory:
-    virReportOOMError();
-    ppcModelFree(model);
-
-    return NULL;
-}
-
 static virCPUCompareResult
 ppcCompare(virCPUDefPtr host,
            virCPUDefPtr cpu)
@@ -548,57 +507,89 @@ PowerPCUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
    return 0;
 }
 static virCPUDefPtr
-PowerPCBaseline(virCPUDefPtr *cpus,
-                unsigned int ncpus ATTRIBUTE_UNUSED,
-                const char **models ATTRIBUTE_UNUSED,
-                unsigned int nmodels ATTRIBUTE_UNUSED)
+ppcBaseline(virCPUDefPtr *cpus,
+            unsigned int ncpus,
+            const char **models,
+            unsigned int nmodels)
 {
     struct ppc_map *map = NULL;
-    struct ppc_model *base_model = NULL;
+    const struct ppc_model *model;
+    const struct ppc_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
-    struct ppc_model *model = NULL;
-    bool outputModel = true;
+    unsigned int i;
 
-    if (!(map = ppcLoadMap())) {
+    if (!(map = ppcLoadMap()))
+        goto error;
+
+    if (!(model = ppcModelFind(map, cpus[0]->model))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown CPU model %s"), cpus[0]->model);
         goto error;
     }
 
-    if (!(base_model = ppcModelFromCPU(cpus[0], map))) {
+    if (!cpuModelIsAllowed(model->name, models, nmodels)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("CPU model %s is not supported by hypervisor"),
+                        model->name);
         goto error;
     }
 
-    if (VIR_ALLOC(cpu) < 0)
-         goto no_memory;
+    for (i = 0; i < ncpus; i++) {
+        const struct ppc_vendor *vnd;
 
-    cpu->arch = cpus[0]->arch;
+        if (STRNEQ(cpus[i]->model, model->name)) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("CPUs are incompatible"));
+            goto error;
+        }
+
+        if (!cpus[i]->vendor)
+            continue;
+
+        if (!(vnd = ppcVendorFind(map, cpus[i]->vendor))) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Unknown CPU vendor %s"), cpus[i]->vendor);
+            goto error;
+        }
+
+        if (model->vendor) {
+            if (model->vendor != vnd) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("CPU vendor %s of model %s differs from "
+                                 "vendor %s"),
+                               model->vendor->name, model->name,
+                               vnd->name);
+                goto error;
+            }
+        } else if (vendor) {
+            if (vendor != vnd) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("CPU vendors do not match"));
+                goto error;
+            }
+        } else {
+            vendor = vnd;
+        }
+    }
+
+    if (VIR_ALLOC(cpu) < 0 ||
+        !(cpu->model = strdup(model->name)))
+        goto no_memory;
+
+    if (vendor && !(cpu->vendor = strdup(vendor->name)))
+        goto no_memory;
+
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
-    if (!cpus[0]->model) {
-        outputModel = false;
-    } else if (!(model = ppcModelFind(map, cpus[0]->model))) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Unknown CPU vendor %s"), cpus[0]->model);
-        goto error;
-    }
-
-    if (outputModel)
-        base_model->data->ppc.pvr = model->data->ppc.pvr;
-    if (PowerPCDecode(cpu, base_model->data, models, nmodels, NULL) < 0)
-        goto error;
-
-    if (!outputModel)
-        VIR_FREE(cpu->model);
-
 cleanup:
-    ppcModelFree(base_model);
     ppcMapFree(map);
 
     return cpu;
+
 no_memory:
     virReportOOMError();
 error:
-    ppcModelFree(model);
     virCPUDefFree(cpu);
     cpu = NULL;
     goto cleanup;
@@ -618,7 +609,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .nodeData   = NULL,
 #endif
     .guestData  = NULL,
-    .baseline   = PowerPCBaseline,
+    .baseline   = ppcBaseline,
     .update     = PowerPCUpdate,
     .hasFeature = NULL,
 };
