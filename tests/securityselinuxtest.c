@@ -77,6 +77,7 @@ testBuildDomainDef(bool dynamic,
     if (VIR_ALLOC(secdef) < 0)
         goto no_memory;
 
+    def->virtType = VIR_DOMAIN_VIRT_KVM;
     def->seclabels[0] = secdef;
     def->seclabels[0]->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
 
