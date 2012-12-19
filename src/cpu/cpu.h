@@ -163,4 +163,9 @@ cpuHasFeature(virArch arch,
               const char *feature);
 
 
+bool
+cpuModelIsAllowed(const char *model,
+                  const char **models,
+                  unsigned int nmodels);
+
 #endif /* __VIR_CPU_H__ */

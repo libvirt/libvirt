@@ -123,20 +123,11 @@ genericBaseline(virCPUDefPtr *cpus,
     unsigned int count;
     unsigned int i, j;
 
-    if (models) {
-        bool found = false;
-        for (i = 0; i < nmodels; i++) {
-            if (STREQ(cpus[0]->model, models[i])) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("CPU model '%s' is not support by hypervisor"),
-                           cpus[0]->model);
-            goto error;
-        }
+    if (!cpuModelIsAllowed(cpus[0]->model, models, nmodels)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU model %s is not supported by hypervisor"),
+                       cpus[0]->model);
+        goto error;
     }
 
     if (VIR_ALLOC(cpu) < 0 ||

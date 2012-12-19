@@ -442,3 +442,20 @@ cpuHasFeature(virArch arch,
 
     return driver->hasFeature(data, feature);
 }
+
+bool
+cpuModelIsAllowed(const char *model,
+                  const char **models,
+                  unsigned int nmodels)
+{
+    unsigned int i;
+
+    if (!models || !nmodels)
+        return true;
+
+    for (i = 0; i < nmodels; i++) {
+        if (models[i] && STREQ(models[i], model))
+            return true;
+    }
+    return false;
+}
