@@ -350,7 +350,7 @@ cleanup:
 
 
 static void
-PowerPCDataFree(union cpuData *data)
+ppcDataFree(union cpuData *data)
 {
     if (data == NULL)
         return;
@@ -377,11 +377,12 @@ ppcNodeData(void)
 #endif
 
 static int
-PowerPCUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
+ppcUpdate(virCPUDefPtr guest ATTRIBUTE_UNUSED,
           const virCPUDefPtr host ATTRIBUTE_UNUSED)
 {
    return 0;
 }
+
 static virCPUDefPtr
 ppcBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
@@ -478,7 +479,7 @@ struct cpuArchDriver cpuDriverPowerPC = {
     .compare    = ppcCompare,
     .decode     = ppcDecode,
     .encode     = NULL,
-    .free       = PowerPCDataFree,
+    .free       = ppcDataFree,
 #if defined(__powerpc__) || defined(__powerpc64__)
     .nodeData   = ppcNodeData,
 #else
@@ -486,6 +487,6 @@ struct cpuArchDriver cpuDriverPowerPC = {
 #endif
     .guestData  = NULL,
     .baseline   = ppcBaseline,
-    .update     = PowerPCUpdate,
+    .update     = ppcUpdate,
     .hasFeature = NULL,
 };
