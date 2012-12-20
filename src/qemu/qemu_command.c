@@ -923,7 +923,6 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     for (i = 0 ; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
             (def->os.arch == VIR_ARCH_PPC64) &&
             STREQ(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
@@ -6970,7 +6969,6 @@ qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
 
     if ((arch == VIR_ARCH_PPC64) && STREQ(machine, "pseries")) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            serial->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
                               serial->info.alias);
