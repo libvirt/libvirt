@@ -1524,7 +1524,7 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     if (!def)
         return;
 
-    switch (def->type) {
+    switch ((virDomainDeviceType) def->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         virDomainDiskDefFree(def->data.disk);
         break;
@@ -1560,6 +1560,13 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         virDomainRedirdevDefFree(def->data.redirdev);
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_LAST:
         break;
     }
 
