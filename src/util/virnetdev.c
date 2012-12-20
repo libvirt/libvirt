@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1279,6 +1279,15 @@ virNetDevLinkDump(const char *ifname, int ifindex,
         if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
             goto buffer_too_small;
     }
+
+# if defined(IFLA_EXT_MASK) && defined(RTEXT_FILTER_VF)
+    /* if this filter exists in the kernel's netlink implementation,
+     * we need to set it, otherwise the response message will not
+     * contain the IFLA_VFINFO_LIST that we're looking for.
+     */
+    if (nla_put(nl_msg, IFLA_EXT_MASK, RTEXT_FILTER_VF) < 0)
+       goto buffer_too_small;
+# endif
 
     if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen, src_pid, dst_pid) < 0)
         goto cleanup;
