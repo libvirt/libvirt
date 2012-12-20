@@ -50,27 +50,6 @@ struct testSysinfoData {
     char *expected; /* (required) file containing output of virSysinfoFormat */
 };
 
-# if defined(__powerpc__) || defined(__powerpc64__)
-/* TODO ppc: remove the if defined() branch
-   to enable the real test run after providing test data, see below.
- */
-static int
-testSysinfo(const void *data ATTRIBUTE_UNUSED)
-{
-    return EXIT_AM_SKIP;
-}
-
-static int
-sysinfotest_run(const char *test ATTRIBUTE_UNUSED,
-                const char *decoder ATTRIBUTE_UNUSED,
-                const char *sysinfo ATTRIBUTE_UNUSED,
-                const char *cpuinfo ATTRIBUTE_UNUSED,
-                const char *expected ATTRIBUTE_UNUSED)
-{
-    return testSysinfo(NULL);
-}
-# else
-
 static int
 testSysinfo(const void *data)
 {
@@ -143,7 +122,6 @@ error:
     VIR_FREE(testdata.expected);
     return ret;
 }
-# endif /* defined(__powerpc__) ... */
 
 # if defined(__s390__) || defined(__s390x__)
 static int
@@ -158,9 +136,6 @@ test_s390(void)
 
 VIRT_TEST_MAIN(test_s390)
 # elif defined(__powerpc__) || defined(__powerpc64__)
-/* TODO for PPC owner: provide test data
-   and enable the real sysinfotest_run above
-*/
 static int
 test_ppc(void)
 {

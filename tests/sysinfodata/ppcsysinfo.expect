@@ -1,0 +1,87 @@
+<sysinfo type='smbios'>
+  <system>
+    <entry name='version'>PowerNV 8246-L2C</entry>
+    <entry name='serial'>8246-L2C</entry>
+    <entry name='family'>PowerNV</entry>
+  </system>
+  <processor>
+    <entry name='socket_destination'>0</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>4</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>8</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>12</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>16</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>20</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>24</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>28</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>32</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>36</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>40</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>44</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>48</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>52</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>56</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>60</entry>
+    <entry name='type'>POWER7 (raw), altivec supported</entry>
+    <entry name='version'>2.3 (pvr 003f 0203)</entry>
+  </processor>
+</sysinfo>

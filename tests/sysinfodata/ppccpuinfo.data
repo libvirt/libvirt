@@ -1,0 +1,85 @@
+processor	: 0
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 4
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 8
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 12
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 16
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 20
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 24
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 28
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 32
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 36
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 40
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 44
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 48
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 52
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 56
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+processor	: 60
+cpu		: POWER7 (raw), altivec supported
+clock		: 8.388608MHz
+revision	: 2.3 (pvr 003f 0203)
+
+timebase	: 512000000
+platform	: PowerNV
+model		: 8246-L2C
+machine		: PowerNV 8246-L2C
+firmware	: OPAL v2
