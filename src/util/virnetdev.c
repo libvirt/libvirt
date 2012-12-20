@@ -1275,6 +1275,15 @@ virNetDevLinkDump(const char *ifname, int ifindex,
             goto buffer_too_small;
     }
 
+# if defined(IFLA_EXT_MASK) && defined(RTEXT_FILTER_VF)
+    /* if this filter exists in the kernel's netlink implementation,
+     * we need to set it, otherwise the response message will not
+     * contain the IFLA_VFINFO_LIST that we're looking for.
+     */
+    if (nla_put(nl_msg, IFLA_EXT_MASK, RTEXT_FILTER_VF) < 0)
+       goto buffer_too_small;
+# endif
+
     if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen,
                           src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
