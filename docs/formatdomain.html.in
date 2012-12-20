@@ -4279,6 +4279,75 @@ qemu-kvm -net nic,model=? /dev/null
         </ul>
       </dd>
     </dl>
+    <h4><a name="elementsRng">Random number generator device</a></h4>
+
+    <p>
+      The virtual random number generator device allows the host to pass
+      through entropy to guest operating systems.
+      <span class="since">Since 1.0.3</span>
+    </p>
+
+    <p>
+      Example: usage of the RNG device:
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;rng model='virtio'&gt;
+      &lt;backend model='random'&gt;/dev/random&lt;/backend&gt;
+      &lt;!-- OR --&gt;
+      &lt;backend model='egd' type='udp'&gt;
+        &lt;source mode='bind' service='1234'&gt;
+        &lt;source mode='connect' host='1.2.3.4' service='1234'&gt;
+      &lt;/backend&gt;
+    &lt;/rng&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>
+        <p>
+          The required <code>model</code> attribute specifies what type
+          of RNG device is provided. Valid values are specific to
+          the virtualization platform:
+        </p>
+        <ul>
+          <li>'virtio' &mdash; supported by qemu and virtio-rng kernel module</li>
+        </ul>
+      </dd>
+      <dt><code>backend</code></dt>
+      <dd>
+        <p>
+          The <code>backend</code> element specifies the source of entropy
+          to be used for the domain. The source model is configured using the
+          <code>model</code> attribute. Supported source models are:
+        </p>
+        <ul>
+          <li>'random' &mdash; /dev/random (default) or similar device as source</li>
+          <li>'egd' &mdash; a EGD protocol backend</li>
+        </ul>
+      </dd>
+      <dt><code>backend type='random'</code></dt>
+      <dd>
+        <p>
+          This backend type expects a non-blocking character device as input.
+          Examples of such devices are /dev/random and /dev/urandom. The file
+          name is specified as contents of the <code>backend</code> element.
+          When no file name is specified the hypervisor default is used.
+        </p>
+      </dd>
+      <dt><code>backend type='egd'</code></dt>
+      <dd>
+        <p>
+          This backend connects to a source using the EGD protocol.
+          The source is specified as a character device. Refer to
+          <a href='#elementsCharHostInterface'>character device host interface</a>
+          for more information.
+        </p>
+      </dd>
+
+    </dl>
 
     <h3><a name="seclabel">Security label</a></h3>
 

@@ -3126,6 +3126,7 @@
             <ref name="hub"/>
             <ref name="redirdev"/>
             <ref name="redirfilter"/>
+            <ref name="rng"/>
           </choice>
         </zeroOrMore>
         <optional>
@@ -3511,6 +3512,37 @@
         </attribute>
       </optional>
       <empty/>
+    </element>
+  </define>
+
+  <define name="rng">
+    <element name="rng">
+      <attribute name="model">
+        <choice>
+          <value>virtio</value>
+        </choice>
+      </attribute>
+      <ref name="rng-backend"/>
+    </element>
+  </define>
+
+  <define name="rng-backend">
+    <element name="backend">
+      <choice>
+        <group>
+          <attribute name="model">
+            <value>random</value>
+          </attribute>
+          <ref name="filePath"/>
+        </group>
+        <group>
+          <attribute name="model">
+            <value>egd</value>
+          </attribute>
+          <ref name="qemucdevSrcType"/>
+          <ref name="qemucdevSrcDef"/>
+        </group>
+      </choice>
     </element>
   </define>
 
