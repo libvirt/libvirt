@@ -1468,53 +1468,55 @@ static int
 virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, unsigned char *mac,
                        int *vlanid)
 {
-    const char *msg = NULL;
     int rc = -1;
+    struct ifla_vf_mac *vf_mac;
+    struct ifla_vf_vlan *vf_vlan;
+    struct nlattr *tb_vf_info = {NULL, };
+    struct nlattr *tb_vf[IFLA_VF_MAX+1];
+    int found = 0;
+    int rem;
 
-    if (tb[IFLA_VFINFO_LIST]) {
-        struct ifla_vf_mac *vf_mac;
-        struct ifla_vf_vlan *vf_vlan;
-        struct nlattr *tb_vf_info = {NULL, };
-        struct nlattr *tb_vf[IFLA_VF_MAX+1];
-        int found = 0;
-        int rem;
-
-        nla_for_each_nested(tb_vf_info, tb[IFLA_VFINFO_LIST], rem) {
-            if (nla_type(tb_vf_info) != IFLA_VF_INFO)
-                continue;
-
-            if (nla_parse_nested(tb_vf, IFLA_VF_MAX, tb_vf_info,
-                                 ifla_vf_policy)) {
-                msg = _("error parsing IFLA_VF_INFO");
-                goto cleanup;
-            }
-
-            if (tb[IFLA_VF_MAC]) {
-                vf_mac = RTA_DATA(tb_vf[IFLA_VF_MAC]);
-                if (vf_mac && vf_mac->vf == vf)  {
-                    memcpy(mac, vf_mac->mac, VIR_MAC_BUFLEN);
-                    found = 1;
-                }
-            }
-
-            if (tb[IFLA_VF_VLAN]) {
-                vf_vlan = RTA_DATA(tb_vf[IFLA_VF_VLAN]);
-                if (vf_vlan && vf_vlan->vf == vf)  {
-                    *vlanid = vf_vlan->vlan;
-                    found = 1;
-                }
-            }
-            if (found) {
-                rc = 0;
-                break;
-            }
-        }
+    if (!tb[IFLA_VFINFO_LIST]) {
+        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing IFLA_VF_INFO in netlink response"));
+        goto cleanup;
     }
 
-cleanup:
-    if (msg)
-        virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s", msg);
+    nla_for_each_nested(tb_vf_info, tb[IFLA_VFINFO_LIST], rem) {
+        if (nla_type(tb_vf_info) != IFLA_VF_INFO)
+            continue;
 
+        if (nla_parse_nested(tb_vf, IFLA_VF_MAX, tb_vf_info,
+                             ifla_vf_policy)) {
+            virNetDevError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("error parsing IFLA_VF_INFO"));
+            goto cleanup;
+        }
+
+        if (tb[IFLA_VF_MAC]) {
+            vf_mac = RTA_DATA(tb_vf[IFLA_VF_MAC]);
+            if (vf_mac && vf_mac->vf == vf)  {
+                memcpy(mac, vf_mac->mac, VIR_MAC_BUFLEN);
+                found = 1;
+            }
+        }
+
+        if (tb[IFLA_VF_VLAN]) {
+            vf_vlan = RTA_DATA(tb_vf[IFLA_VF_VLAN]);
+            if (vf_vlan && vf_vlan->vf == vf)  {
+                *vlanid = vf_vlan->vlan;
+                found = 1;
+            }
+        }
+        if (found) {
+            rc = 0;
+            goto cleanup;
+        }
+    }
+    virNetDevError(VIR_ERR_INTERNAL_ERROR,
+                   _("couldn't find IFLA_VF_INFO for VF %d "
+                     "in netlink response"), vf);
+cleanup:
     return rc;
 }
 
