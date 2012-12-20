@@ -2260,7 +2260,13 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
     qemuCapsSet(caps, QEMU_CAPS_NO_SHUTDOWN);
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
-    qemuCapsSet(caps, QEMU_CAPS_NO_ACPI);
+
+    /* ACPI is only supported on x86, PPC or
+     * other platforms don't support it*/
+    if (caps->arch == VIR_ARCH_I686 ||
+        caps->arch == VIR_ARCH_X86_64)
+        qemuCapsSet(caps, QEMU_CAPS_NO_ACPI);
+
     qemuCapsSet(caps, QEMU_CAPS_FSDEV_READONLY);
     qemuCapsSet(caps, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_COPY_ON_READ);
