@@ -7284,6 +7284,8 @@ virDomainVideoDefaultType(virDomainDefPtr def)
             (STREQ(def->os.type, "xen") ||
              STREQ(def->os.type, "linux")))
             return VIR_DOMAIN_VIDEO_TYPE_XEN;
+        else if (def->os.arch == VIR_ARCH_PPC64)
+            return VIR_DOMAIN_VIDEO_TYPE_VGA;
         else
             return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
 
