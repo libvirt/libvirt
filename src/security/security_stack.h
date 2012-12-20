@@ -35,4 +35,4 @@ virSecurityStackGetPrimary(virSecurityManagerPtr mgr);
 virSecurityManagerPtr*
 virSecurityStackGetNested(virSecurityManagerPtr mgr);
 
-#endif /* __VIR_SECURITY_DAC */
+#endif /* __VIR_SECURITY_STACK */
