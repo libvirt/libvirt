@@ -133,6 +133,7 @@ virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(WARN_CFLAGS)					\
 		../src/libvirt.la				\
+		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\
 		../gnulib/lib/libgnu.la				\
 		$(LIBXML_LIBS)					\

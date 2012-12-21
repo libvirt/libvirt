@@ -3056,6 +3056,14 @@ When I<--aysnc> is given, the command waits for timeout whether success or
 failed. And when I<--block> is given, the command waits forever with blocking
 timeout.
 
+=item B<lxc-enter-namespace> I<domain> -- /path/to/binary [arg1, [arg2, ...]]
+
+Enter the namespace of I<domain> and execute the command C</path/to/binary>
+passing the requested args. The binary path is relative to the container
+root filesystem, not the host root filesystem. The binary will inherit the
+environment variables / console visible to virsh. This command only works
+when connected to the LXC hypervisor driver.
+
 =back
 
 =head1 ENVIRONMENT

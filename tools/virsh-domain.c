@@ -43,11 +43,13 @@
 #include "conf/domain_conf.h"
 #include "console.h"
 #include "viralloc.h"
+#include "vircommand.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virjson.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"
+#include "virprocess.h"
 #include "virstring.h"
 #include "virsh-domain-monitor.h"
 #include "virerror.h"
@@ -6771,6 +6773,98 @@ cleanup:
 }
 
 /*
+ * "lxc-enter-namespace" namespace
+ */
+static const vshCmdInfo info_lxc_enter_namespace[] = {
+    {"help", N_("LXC Guest Enter Namespace")},
+    {"desc", N_("Run an arbitrary lxc guest enter namespace; use at your own risk")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_lxc_enter_namespace[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("namespace")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    const vshCmdOpt *opt = NULL;
+    char **cmdargv = NULL;
+    size_t ncmdargv = 0;
+    pid_t pid;
+    int nfdlist;
+    int *fdlist;
+    size_t i;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (VIR_EXPAND_N(cmdargv, ncmdargv, 1) < 0) {
+            vshError(ctl, _("%s: %d: failed to allocate argv"),
+                     __FILE__, __LINE__);
+        }
+        cmdargv[ncmdargv-1] = opt->data;
+    }
+    if (VIR_EXPAND_N(cmdargv, ncmdargv, 1) < 0) {
+        vshError(ctl, _("%s: %d: failed to allocate argv"),
+                 __FILE__, __LINE__);
+    }
+    cmdargv[ncmdargv - 1] = NULL;
+
+    if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
+        goto cleanup;
+
+    /* Fork once because we don't want to affect
+     * virsh's namespace itself
+     */
+    if (virFork(&pid) < 0)
+        goto cleanup;
+    if (pid == 0) {
+        if (virDomainLxcEnterNamespace(dom,
+                                       nfdlist,
+                                       fdlist,
+                                       NULL,
+                                       NULL,
+                                       0) < 0)
+            _exit(255);
+
+        /* Fork a second time because entering the
+         * pid namespace only takes effect after fork
+         */
+        if (virFork(&pid) < 0)
+            _exit(255);
+        if (pid == 0) {
+            execv(cmdargv[0], cmdargv);
+            _exit(255);
+        } else {
+            if (virProcessWait(pid, NULL) < 0)
+                _exit(255);
+        }
+        _exit(0);
+    } else {
+        for (i = 0 ; i < nfdlist ; i++)
+            VIR_FORCE_CLOSE(fdlist[i]);
+        VIR_FREE(fdlist);
+        if (virProcessWait(pid, NULL) < 0)
+            goto cleanup;
+    }
+
+    ret = true;
+
+cleanup:
+    if (dom)
+        virDomainFree(dom);
+    VIR_FREE(cmdargv);
+    return ret;
+}
+
+/*
  * "dumpxml" command
  */
 static const vshCmdInfo info_dumpxml[] = {
@@ -8760,6 +8854,7 @@ const vshCmdDef domManagementCmds[] = {
     {"inject-nmi", cmdInjectNMI, opts_inject_nmi, info_inject_nmi, 0},
     {"send-key", cmdSendKey, opts_send_key, info_send_key, 0},
     {"send-process-signal", cmdSendProcessSignal, opts_send_process_signal, info_send_process_signal, 0},
+    {"lxc-enter-namespace", cmdLxcEnterNamespace, opts_lxc_enter_namespace, info_lxc_enter_namespace, 0},
     {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave, 0},
     {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove,
      info_managedsaveremove, 0},
