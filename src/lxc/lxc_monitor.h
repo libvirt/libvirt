@@ -23,7 +23,7 @@
 
 # include "virobject.h"
 # include "domain_conf.h"
-# include "lxc_protocol.h"
+# include "lxc_monitor_protocol.h"
 
 typedef struct _virLXCMonitor virLXCMonitor;
 typedef virLXCMonitor *virLXCMonitorPtr;

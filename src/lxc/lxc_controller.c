@@ -58,7 +58,7 @@
 #include "lxc_conf.h"
 #include "lxc_container.h"
 #include "lxc_cgroup.h"
-#include "lxc_protocol.h"
+#include "lxc_monitor_protocol.h"
 #include "lxc_fuse.h"
 #include "virnetdev.h"
 #include "virnetdevveth.h"

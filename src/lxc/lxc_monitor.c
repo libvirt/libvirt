@@ -22,7 +22,6 @@
 
 #include "lxc_monitor.h"
 #include "lxc_conf.h"
-#include "lxc_protocol.h"
 #include "lxc_monitor_dispatch.h"
 
 #include "viralloc.h"

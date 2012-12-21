@@ -413,9 +413,9 @@ if WITH_XEN_INOTIFY
 XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
 endif
 
-LXC_PROTOCOL_GENERATED = \
-	$(srcdir)/lxc/lxc_protocol.h \
-	$(srcdir)/lxc/lxc_protocol.c \
+LXC_MONITOR_PROTOCOL_GENERATED = \
+	$(srcdir)/lxc/lxc_monitor_protocol.h \
+	$(srcdir)/lxc/lxc_monitor_protocol.c \
 	$(NULL)
 
 LXC_MONITOR_GENERATED = \
@@ -427,32 +427,32 @@ LXC_CONTROLLER_GENERATED = \
 	$(NULL)
 
 LXC_GENERATED = \
-	$(LXC_PROTOCOL_GENERATED) \
+	$(LXC_MONITOR_PROTOCOL_GENERATED) \
 	$(LXC_MONITOR_GENERATED) \
 	$(LXC_CONTROLLER_GENERATED) \
 	$(NULL)
 
-LXC_PROTOCOL = $(srcdir)/lxc/lxc_protocol.x
+LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 
 $(srcdir)/lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL)
+		$(LXC_MONITOR_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k virLXCProtocol VIR_LXC_PROTOCOL $(LXC_PROTOCOL) > $@
+	  -k virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
 
 $(srcdir)/lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -b virLXCProtocol VIR_LXC_PROTOCOL $(LXC_PROTOCOL) > $@
+	  -b virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
 
 EXTRA_DIST += \
-	$(LXC_PROTOCOL) \
+	$(LXC_MONITOR_PROTOCOL) \
 	$(LXC_GENERATED) \
 	$(NULL)
 
 BUILT_SOURCES += $(LXC_GENERATED)
 
 LXC_DRIVER_SOURCES =						\
-		$(LXC_PROTOCOL_GENERATED)			\
+		$(LXC_MONITOR_PROTOCOL_GENERATED)		\
 		$(LXC_MONITOR_GENERATED)			\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
@@ -465,7 +465,7 @@ LXC_DRIVER_SOURCES =						\
 		lxc/lxc_driver.c lxc/lxc_driver.h
 
 LXC_CONTROLLER_SOURCES =					\
-		$(LXC_PROTOCOL_GENERATED)			\
+		$(LXC_MONITOR_PROTOCOL_GENERATED)		\
 		$(LXC_CONTROLLER_GENERATED)			\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\

@@ -115,8 +115,8 @@
 /src/locking/test_libvirt_sanlock.aug
 /src/lxc/lxc_controller_dispatch.h
 /src/lxc/lxc_monitor_dispatch.h
-/src/lxc/lxc_protocol.c
-/src/lxc/lxc_protocol.h
+/src/lxc/lxc_monitor_protocol.c
+/src/lxc/lxc_monitor_protocol.h
 /src/lxc/test_libvirtd_lxc.aug
 /src/qemu/test_libvirtd_qemu.aug
 /src/remote/*_client_bodies.h
