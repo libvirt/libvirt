@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<api name='libvir-lxc-python'>
+  <symbols>
+    <function name='virDomainLxcOpenNamespace' file='python-lxc'>
+      <info><![CDATA[This API is LXC specific, so it will only work with hypervisor
+connections to the LXC driver.
+
+Open the namespaces associated with the container @domain
+and return a list of file descriptors associated with the
+container.
+
+The returned file descriptors are intended to be used with
+the setns() system call.]]></info>
+      <return type='int' info='the list of open file descriptors, or -1 on error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='unsigned int' info='currently unused, pass 0'/>
+    </function>
+  </symbols>
+</api>

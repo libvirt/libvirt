@@ -33,6 +33,11 @@ qemu_included_files = {
   "libvirt-qemu.c": "Implementations for the QEMU specific APIs",
 }
 
+lxc_included_files = {
+  "libvirt-lxc.h": "header with LXC specific API definitions",
+  "libvirt-lxc.c": "Implementations for the LXC specific APIs",
+}
+
 ignored_words = {
   "ATTRIBUTE_UNUSED": (0, "macro keyword"),
   "ATTRIBUTE_SENTINEL": (0, "macro keyword"),
@@ -1945,6 +1950,8 @@ class docBuilder:
             self.includes = includes + included_files.keys()
         elif name == "libvirt-qemu":
             self.includes = includes + qemu_included_files.keys()
+        elif name == "libvirt-lxc":
+            self.includes = includes + lxc_included_files.keys()
         self.modules = {}
         self.headers = {}
         self.idx = index()
@@ -2463,7 +2470,7 @@ class docBuilder:
 
 
 def rebuild(name):
-    if name not in ["libvirt", "libvirt-qemu"]:
+    if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc"]:
         self.warning("rebuild() failed, unknown module %s") % name
         return None
     builder = None
@@ -2506,6 +2513,7 @@ if __name__ == "__main__":
     else:
         rebuild("libvirt")
         rebuild("libvirt-qemu")
+        rebuild("libvirt-lxc")
     if warnings > 0:
         sys.exit(2)
     else:

@@ -4,8 +4,10 @@
 #
 
 functions = {}
+lxc_functions = {}
 qemu_functions = {}
 enums = {} # { enumType: { enumConstant: enumValue } }
+lxc_enums = {} # { enumType: { enumConstant: enumValue } }
 qemu_enums = {} # { enumType: { enumConstant: enumValue } }
 
 import os
@@ -123,6 +125,8 @@ class docParser(xml.sax.handler.ContentHandler):
             if (attrs['file'] == "libvirt" or
                 attrs['file'] == "virterror"):
                 enum(attrs['type'],attrs['name'],attrs['value'])
+            elif attrs['file'] == "libvirt-lxc":
+                lxc_enum(attrs['type'],attrs['name'],attrs['value'])
             elif attrs['file'] == "libvirt-qemu":
                 qemu_enum(attrs['type'],attrs['name'],attrs['value'])
 
@@ -138,6 +142,11 @@ class docParser(xml.sax.handler.ContentHandler):
                              self.function_return, self.function_args,
                              self.function_file, self.function_module,
                              self.function_cond)
+                elif self.function_module == "libvirt-lxc":
+                    lxc_function(self.function, self.function_descr,
+                             self.function_return, self.function_args,
+                             self.function_file, self.function_module,
+                             self.function_cond)
                 elif self.function_module == "libvirt-qemu":
                     qemu_function(self.function, self.function_descr,
                              self.function_return, self.function_args,
@@ -148,6 +157,11 @@ class docParser(xml.sax.handler.ContentHandler):
                              self.function_return, self.function_args,
                              self.function_file, self.function_module,
                              self.function_cond)
+                elif self.function_file == "python-lxc":
+                    lxc_function(self.function, self.function_descr,
+                                  self.function_return, self.function_args,
+                                  self.function_file, self.function_module,
+                                  self.function_cond)
                 elif self.function_file == "python-qemu":
                     qemu_function(self.function, self.function_descr,
                                   self.function_return, self.function_args,
@@ -184,6 +198,9 @@ def function(name, desc, ret, args, file, module, cond):
 def qemu_function(name, desc, ret, args, file, module, cond):
     qemu_functions[name] = (desc, ret, args, file, module, cond)
 
+def lxc_function(name, desc, ret, args, file, module, cond):
+    lxc_functions[name] = (desc, ret, args, file, module, cond)
+
 def enum(type, name, value):
     if not enums.has_key(type):
         enums[type] = {}
@@ -208,6 +225,11 @@ def enum(type, name, value):
     if name[-5:] != '_LAST':
         enums[type][name] = value
 
+def lxc_enum(type, name, value):
+    if not lxc_enums.has_key(type):
+        lxc_enums[type] = {}
+    lxc_enums[type][name] = value
+
 def qemu_enum(type, name, value):
     if not qemu_enums.has_key(type):
         qemu_enums[type] = {}
@@ -222,10 +244,12 @@ def qemu_enum(type, name, value):
 #######################################################################
 
 functions_failed = []
+lxc_functions_failed = []
 qemu_functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
 ]
+lxc_functions_skipped = []
 qemu_functions_skipped = []
 
 skipped_modules = {
@@ -430,6 +454,10 @@ skip_impl = (
     'virNodeGetCPUMap',
 )
 
+lxc_skip_impl = (
+    'virDomainLxcOpenNamespace',
+)
+
 qemu_skip_impl = (
     'virDomainQemuMonitorCommand',
     'virDomainQemuAgentCommand',
@@ -501,6 +529,8 @@ skip_function = (
     "virStorageVolGetConnect",
 )
 
+lxc_skip_function = (
+)
 qemu_skip_function = (
     #"virDomainQemuAttach",
 )
@@ -511,6 +541,7 @@ function_skip_python_impl = (
                      # be exposed in bindings
 )
 
+lxc_function_skip_python_impl = ()
 qemu_function_skip_python_impl = ()
 
 function_skip_index_one = (
@@ -521,6 +552,7 @@ def print_function_wrapper(module, name, output, export, include):
     global py_types
     global unknown_types
     global functions
+    global lxc_functions
     global qemu_functions
     global skipped_modules
     global function_skip_python_impl
@@ -528,6 +560,8 @@ def print_function_wrapper(module, name, output, export, include):
     try:
         if module == "libvirt":
             (desc, ret, args, file, mod, cond) = functions[name]
+        if module == "libvirt-lxc":
+            (desc, ret, args, file, mod, cond) = lxc_functions[name]
         if module == "libvirt-qemu":
             (desc, ret, args, file, mod, cond) = qemu_functions[name]
     except:
@@ -541,6 +575,12 @@ def print_function_wrapper(module, name, output, export, include):
         if name in skip_function:
             return 0
         if name in skip_impl:
+            # Don't delete the function entry in the caller.
+            return 1
+    elif module == "libvirt-lxc":
+        if name in lxc_skip_function:
+            return 0
+        if name in lxc_skip_impl:
             # Don't delete the function entry in the caller.
             return 1
     elif module == "libvirt-qemu":
@@ -643,6 +683,10 @@ def print_function_wrapper(module, name, output, export, include):
         include.write("libvirt_%s(PyObject *self, PyObject *args);\n" % (name));
         export.write("    { (char *)\"%s\", libvirt_%s, METH_VARARGS, NULL },\n" %
                      (name, name))
+    elif module == "libvirt-lxc":
+        include.write("libvirt_lxc_%s(PyObject *self, PyObject *args);\n" % (name));
+        export.write("    { (char *)\"%s\", libvirt_lxc_%s, METH_VARARGS, NULL },\n" %
+                     (name, name))
     elif module == "libvirt-qemu":
         include.write("libvirt_qemu_%s(PyObject *self, PyObject *args);\n" % (name));
         export.write("    { (char *)\"%s\", libvirt_qemu_%s, METH_VARARGS, NULL },\n" %
@@ -666,6 +710,8 @@ def print_function_wrapper(module, name, output, export, include):
     output.write("PyObject *\n")
     if module == "libvirt":
         output.write("libvirt_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
+    elif module == "libvirt-lxc":
+        output.write("libvirt_lxc_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
     elif module == "libvirt-qemu":
         output.write("libvirt_qemu_%s(PyObject *self ATTRIBUTE_UNUSED," % (name))
     output.write(" PyObject *args")
@@ -698,6 +744,9 @@ def print_function_wrapper(module, name, output, export, include):
     if module == "libvirt":
         if name in function_skip_python_impl:
             return 0
+    elif module == "libvirt-lxc":
+        if name in lxc_function_skip_python_impl:
+            return 0
     elif module == "libvirt-qemu":
         if name in qemu_function_skip_python_impl:
             return 0
@@ -708,13 +757,17 @@ def buildStubs(module):
     global py_return_types
     global unknown_types
 
-    if module not in ["libvirt", "libvirt-qemu"]:
+    if module not in ["libvirt", "libvirt-qemu", "libvirt-lxc"]:
         print "ERROR: Unknown module type: %s" % module
         return None
 
     if module == "libvirt":
         funcs = functions
         funcs_failed = functions_failed
+        funcs_skipped = functions_skipped
+    elif module == "libvirt-lxc":
+        funcs = lxc_functions
+        funcs_failed = lxc_functions_failed
         funcs_skipped = functions_skipped
     elif module == "libvirt-qemu":
         funcs = qemu_functions
@@ -1111,6 +1164,8 @@ def functionCompare(info1, info2):
 def writeDoc(module, name, args, indent, output):
      if module == "libvirt":
          funcs = functions
+     elif module == "libvirt-lxc":
+         funcs = lxc_functions
      elif module == "libvirt-qemu":
          funcs = qemu_functions
      if funcs[name][0] is None or funcs[name][0] == "":
@@ -1762,11 +1817,126 @@ def qemuBuildWrappers(module):
     fd.close()
 
 
+def lxcBuildWrappers(module):
+    global lxc_functions
+
+    if not module == "libvirt-lxc":
+        print "ERROR: only libvirt-lxc is supported"
+        return None
+
+    extra_file = os.path.join(srcPref, "%s-override.py" % module)
+    extra = None
+
+    fd = open("libvirt_lxc.py", "w")
+
+    if os.path.exists(extra_file):
+        extra = open(extra_file, "r")
+    fd.write("#! " + python + " -i\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    fd.write("# This file is automatically written by generator.py. Any changes\n")
+    fd.write("# made here will be lost.\n")
+    fd.write("#\n")
+    fd.write("# To change the manually written methods edit " + module + "-override.py\n")
+    fd.write("# To change the automatically written methods edit generator.py\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    if extra != None:
+        fd.writelines(extra.readlines())
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    fd.write("#\n")
+    fd.write("# Automatically written part of python bindings for libvirt\n")
+    fd.write("#\n")
+    fd.write("# WARNING WARNING WARNING WARNING\n")
+    if extra != None:
+        extra.close()
+
+    fd.write("try:\n")
+    fd.write("    import libvirtmod_lxc\n")
+    fd.write("except ImportError, lib_e:\n")
+    fd.write("    try:\n")
+    fd.write("        import cygvirtmod_lxc as libvirtmod_lxc\n")
+    fd.write("    except ImportError, cyg_e:\n")
+    fd.write("        if str(cyg_e).count(\"No module named\"):\n")
+    fd.write("            raise lib_e\n\n")
+
+    fd.write("import libvirt\n\n");
+    fd.write("#\n# Functions from module %s\n#\n\n" % module)
+    #
+    # Generate functions directly, no classes
+    #
+    for name in lxc_functions.keys():
+        func = nameFixup(name, 'None', None, None)
+        (desc, ret, args, file, mod, cond) = lxc_functions[name]
+        fd.write("def %s(" % func)
+        n = 0
+        for arg in args:
+            if n != 0:
+                fd.write(", ")
+            fd.write("%s" % arg[0])
+            n = n + 1
+        fd.write("):\n")
+        writeDoc(module, name, args, '    ', fd);
+
+        if ret[0] != "void":
+            fd.write("    ret = ");
+        else:
+            fd.write("    ");
+        fd.write("libvirtmod_lxc.%s(" % name)
+        n = 0
+
+        conn = None
+
+        for arg in args:
+            if arg[1] == "virConnectPtr":
+                conn = arg[0]
+
+            if n != 0:
+                fd.write(", ");
+            if arg[1] in ["virDomainPtr", "virConnectPtr"]:
+                # FIXME: This might have problem if the function
+                # has multiple args which are objects.
+                fd.write("%s.%s" % (arg[0], "_o"))
+            else:
+                fd.write("%s" % arg[0])
+            n = n + 1
+        fd.write(")\n");
+
+        if ret[0] != "void":
+            fd.write("    if ret is None: raise libvirt.libvirtError('" + name + "() failed')\n")
+            if ret[0] == "virDomainPtr":
+                fd.write("    __tmp = virDomain(" + conn + ",_obj=ret)\n")
+                fd.write("    return __tmp\n")
+            else:
+                fd.write("    return ret\n")
+
+        fd.write("\n")
+
+    #
+    # Generate enum constants
+    #
+    for type,enum in lxc_enums.items():
+        fd.write("# %s\n" % type)
+        items = enum.items()
+        items.sort(lambda i1,i2: cmp(long(i1[1]),long(i2[1])))
+        for name,value in items:
+            fd.write("%s = %s\n" % (name,value))
+        fd.write("\n");
+
+    fd.close()
+
+
 quiet = 0
 if buildStubs("libvirt") < 0:
+    sys.exit(1)
+if buildStubs("libvirt-lxc") < 0:
     sys.exit(1)
 if buildStubs("libvirt-qemu") < 0:
     sys.exit(1)
 buildWrappers("libvirt")
+lxcBuildWrappers("libvirt-lxc")
 qemuBuildWrappers("libvirt-qemu")
 sys.exit(0)

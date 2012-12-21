@@ -11,6 +11,7 @@ my $srcdir = shift @ARGV;
 
 my $symslibvirt = "$srcdir/libvirt_public.syms";
 my $symsqemu = "$srcdir/libvirt_qemu.syms";
+my $symslxc = "$srcdir/libvirt_lxc.syms";
 my $drivertable = "$srcdir/driver.h";
 
 my %groupheaders = (
@@ -97,6 +98,45 @@ while (defined($line = <FILE>)) {
         $prevvers = $vers;
         $vers = undef;
     } elsif ($line =~ /\s*}\s*LIBVIRT_QEMU_(\d+\.\d+\.\d+)\s*;\s*$/) {
+        if ($1 ne $prevvers) {
+            die "malformed syms file $1 != $vers";
+        }
+        $prevvers = $vers;
+        $vers = undef;
+    } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
+        $apis{$1} = $vers;
+    } else {
+        die "unexpected data $line\n";
+    }
+}
+
+close FILE;
+
+
+# And the same for the LXC specific APIs
+
+open FILE, "<$symslxc"
+    or die "cannot read $symslxc: $!";
+
+$prevvers = undef;
+$vers = undef;
+while (defined($line = <FILE>)) {
+    chomp $line;
+    next if $line =~ /^\s*#/;
+    next if $line =~ /^\s*$/;
+    next if $line =~ /^\s*(global|local):/;
+    if ($line =~ /^\s*LIBVIRT_LXC_(\d+\.\d+\.\d+)\s*{\s*$/) {
+        if (defined $vers) {
+            die "malformed syms file";
+        }
+        $vers = $1;
+    } elsif ($line =~ /\s*}\s*;\s*$/) {
+        if (defined $prevvers) {
+            die "malformed syms file";
+        }
+        $prevvers = $vers;
+        $vers = undef;
+    } elsif ($line =~ /\s*}\s*LIBVIRT_LXC_(\d+\.\d+\.\d+)\s*;\s*$/) {
         if ($1 ne $prevvers) {
             die "malformed syms file $1 != $vers";
         }

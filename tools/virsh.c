@@ -62,6 +62,7 @@
 #include "viralloc.h"
 #include "virxml.h"
 #include "libvirt/libvirt-qemu.h"
+#include "libvirt/libvirt-lxc.h"
 #include "virfile.h"
 #include "configmake.h"
 #include "virthread.h"

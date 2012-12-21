@@ -921,6 +921,11 @@ typedef int
                           unsigned long long minimum,
                           unsigned int flags);
 
+typedef int
+    (*virDrvDomainLxcOpenNamespace)(virDomainPtr dom,
+                                    int **fdlist,
+                                    unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -1114,6 +1119,7 @@ struct _virDriver {
     virDrvNodeGetCPUMap                 nodeGetCPUMap;
     virDrvDomainFSTrim                  domainFSTrim;
     virDrvDomainSendProcessSignal       domainSendProcessSignal;
+    virDrvDomainLxcOpenNamespace        domainLxcOpenNamespace;
 };
 
 typedef int

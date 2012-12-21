@@ -35,6 +35,8 @@ EXTRA_DIST =			\
 	libvirt-override.c	\
 	libvirt-override.py	\
 	libvirt-override-api.xml \
+	libvirt-lxc-override.c	\
+	libvirt-lxc-override-api.xml \
 	libvirt-qemu-override.c	\
 	libvirt-qemu-override-api.xml \
 	$(CLASSES_EXTRA) \
@@ -47,10 +49,13 @@ mylibs = \
 myqemulibs = \
 	$(top_builddir)/src/libvirt-qemu.la \
 	$(top_builddir)/gnulib/lib/libgnu.la
+mylxclibs = \
+	$(top_builddir)/src/libvirt-lxc.la \
+	$(top_builddir)/gnulib/lib/libgnu.la
 
-all-local: libvirt.py libvirt_qemu.py
+all-local: libvirt.py libvirt_qemu.py libvirt_lxc.py
 
-pyexec_LTLIBRARIES = libvirtmod.la libvirtmod_qemu.la
+pyexec_LTLIBRARIES = libvirtmod.la libvirtmod_qemu.la libvirtmod_lxc.la
 
 libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c
 nodist_libvirtmod_la_SOURCES = libvirt.c libvirt.h
@@ -74,6 +79,17 @@ libvirtmod_qemu_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/sr
 libvirtmod_qemu_la_LIBADD = $(myqemulibs) \
 	$(CYGWIN_EXTRA_LIBADD) $(CYGWIN_EXTRA_PYTHON_LIBADD)
 
+libvirtmod_lxc_la_SOURCES = libvirt-lxc-override.c typewrappers.c
+nodist_libvirtmod_lxc_la_SOURCES = libvirt-lxc.c libvirt-lxc.h
+# Python <= 2.4 header files contain a redundant decl, hence we
+# need extra flags here
+libvirtmod_lxc_la_CFLAGS = $(WARN_PYTHON_CFLAGS)
+
+libvirtmod_lxc_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.libs \
+	$(CYGWIN_EXTRA_LDFLAGS)
+libvirtmod_lxc_la_LIBADD = $(mylxclibs) \
+	$(CYGWIN_EXTRA_LIBADD) $(CYGWIN_EXTRA_PYTHON_LIBADD)
+
 GENERATE = generator.py
 API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-override-api.xml
 GENERATED= libvirt-export.c \
@@ -87,18 +103,26 @@ QEMU_GENERATED= libvirt-qemu-export.c \
 	   libvirt-qemu.h \
 	   libvirt_qemu.py
 
-$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC) $(QEMU_API_DESC)
+LXC_API_DESC = $(top_srcdir)/docs/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-override-api.xml
+LXC_GENERATED= libvirt-lxc-export.c \
+	   libvirt-lxc.c \
+	   libvirt-lxc.h \
+	   libvirt_lxc.py
+
+$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC) $(QEMU_API_DESC) $(LXC_API_DESC)
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON) && \
 	touch $@
 
-$(GENERATED) $(QEMU_GENERATED): $(GENERATE).stamp
+$(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED): $(GENERATE).stamp
 
 $(libvirtmod_la_OBJECTS): $(GENERATED)
 $(libvirtmod_qemu_la_OBJECTS): $(QEMU_GENERATED)
+$(libvirtmod_lxc_la_OBJECTS): $(LXC_GENERATED)
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
+	$(INSTALL) -m 0644 libvirt_lxc.py $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt_qemu.py $(DESTDIR)$(pyexecdir)
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
@@ -106,9 +130,10 @@ install-data-local:
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py
+	rm -f $(DESTDIR)$(pyexecdir)/libvirt_lxc.py
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt_qemu.py
 
-CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(GENERATE).stamp
+CLEANFILES= $(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED) $(GENERATE).stamp
 
 else
 all:

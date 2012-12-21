@@ -303,6 +303,7 @@ sc_flags_usage:
 	@test "$$(cat $(srcdir)/include/libvirt/libvirt.h.in		\
 	    $(srcdir)/include/libvirt/virterror.h			\
 	    $(srcdir)/include/libvirt/libvirt-qemu.h			\
+	    $(srcdir)/include/libvirt/libvirt-lxc.h			\
 	  | grep -c '\(long\|unsigned\) flags')" != 4 &&		\
 	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2;	\
 	    exit 1; } || :
@@ -768,7 +769,7 @@ exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
 exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
-  ^python/(libvirt-(qemu-)?override|typewrappers)\.c$$
+  ^python/(libvirt-(lxc-|qemu-)?override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|src/util/virutil\.c$$|examples/domain-events/events-c/event-test\.c$$)

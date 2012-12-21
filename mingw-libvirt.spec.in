@@ -191,10 +191,12 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_bindir}/virt-xml-validate
 %{mingw32_bindir}/virt-pki-validate
 %{mingw32_bindir}/virt-host-validate.exe
+%{mingw32_bindir}/libvirt-lxc-0.dll
 %{mingw32_bindir}/libvirt-qemu-0.dll
 
 %{mingw32_libdir}/libvirt.dll.a
 %{mingw32_libdir}/pkgconfig/libvirt.pc
+%{mingw32_libdir}/libvirt-lxc.dll.a
 %{mingw32_libdir}/libvirt-qemu.dll.a
 
 %dir %{mingw32_datadir}/libvirt/
@@ -215,6 +217,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw32_datadir}/libvirt/api/
 %{mingw32_datadir}/libvirt/api/libvirt-api.xml
+%{mingw32_datadir}/libvirt/api/libvirt-lxc-api.xml
 %{mingw32_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %{mingw32_datadir}/libvirt/cpu_map.xml
@@ -224,6 +227,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %dir %{mingw32_includedir}/libvirt
 %{mingw32_includedir}/libvirt/libvirt.h
 %{mingw32_includedir}/libvirt/virterror.h
+%{mingw32_includedir}/libvirt/libvirt-lxc.h
 %{mingw32_includedir}/libvirt/libvirt-qemu.h
 
 %{mingw32_mandir}/man1/virsh.1*
@@ -233,6 +237,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %files -n mingw32-libvirt-static
 %{mingw32_libdir}/libvirt.a
+%{mingw32_libdir}/libvirt-lxc.a
 %{mingw32_libdir}/libvirt-qemu.a
 
 # Mingw64
@@ -245,10 +250,12 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_bindir}/virt-xml-validate
 %{mingw64_bindir}/virt-pki-validate
 %{mingw64_bindir}/virt-host-validate.exe
+%{mingw64_bindir}/libvirt-lxc-0.dll
 %{mingw64_bindir}/libvirt-qemu-0.dll
 
 %{mingw64_libdir}/libvirt.dll.a
 %{mingw64_libdir}/pkgconfig/libvirt.pc
+%{mingw64_libdir}/libvirt-lxc.dll.a
 %{mingw64_libdir}/libvirt-qemu.dll.a
 
 %dir %{mingw64_datadir}/libvirt/
@@ -269,6 +276,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/storagevol.rng
 %dir %{mingw64_datadir}/libvirt/api/
 %{mingw64_datadir}/libvirt/api/libvirt-api.xml
+%{mingw64_datadir}/libvirt/api/libvirt-lxc-api.xml
 %{mingw64_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %{mingw64_datadir}/libvirt/cpu_map.xml
@@ -278,6 +286,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %dir %{mingw64_includedir}/libvirt
 %{mingw64_includedir}/libvirt/libvirt.h
 %{mingw64_includedir}/libvirt/virterror.h
+%{mingw64_includedir}/libvirt/libvirt-lxc.h
 %{mingw64_includedir}/libvirt/libvirt-qemu.h
 
 %{mingw64_mandir}/man1/virsh.1*
@@ -287,6 +296,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %files -n mingw64-libvirt-static
 %{mingw64_libdir}/libvirt.a
+%{mingw64_libdir}/libvirt-lxc.a
 %{mingw64_libdir}/libvirt-qemu.a
 
 

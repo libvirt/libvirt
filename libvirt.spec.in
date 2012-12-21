@@ -1964,6 +1964,7 @@ fi
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
+%{_datadir}/libvirt/api/libvirt-lxc-api.xml
 
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/libvirt-api.xml

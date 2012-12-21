@@ -6,6 +6,7 @@
 virincdir = $(includedir)/libvirt
 
 virinc_HEADERS = libvirt.h		\
+		 libvirt-lxc.h		\
 		 libvirt-qemu.h		\
 		 virterror.h
 

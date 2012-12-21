@@ -36,7 +36,7 @@ if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
 endif
 
-lib_LTLIBRARIES = libvirt.la libvirt-qemu.la
+lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
 mod_LTLIBRARIES =
@@ -1480,6 +1480,13 @@ libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt_qemu.def
 
+libvirt_lxc.def: $(srcdir)/libvirt_lxc.syms
+	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
+	printf 'EXPORTS\n' > $@-tmp && \
+	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d; s/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
+	chmod a-w $@-tmp && \
+	mv $@-tmp libvirt_lxc.def
+
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
@@ -1564,6 +1571,15 @@ libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 			  $(AM_LDFLAGS)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
+
+libvirt_lxc_la_SOURCES = libvirt-lxc.c
+libvirt_lxc_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
+			  -version-info $(LIBVIRT_VERSION_INFO) \
+			  $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS) \
+			  $(AM_LDFLAGS)
+libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
+libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
+EXTRA_DIST += $(LIBVIRT_LXC_SYMBOL_FILE)
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =

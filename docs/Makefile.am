@@ -95,8 +95,12 @@ qemu_xml = \
   libvirt-qemu-api.xml \
   libvirt-qemu-refs.xml
 
+lxc_xml = \
+  libvirt-lxc-api.xml \
+  libvirt-lxc-refs.xml
+
 apidir = $(pkgdatadir)/api
-api_DATA = libvirt-api.xml libvirt-qemu-api.xml
+api_DATA = libvirt-api.xml libvirt-qemu-api.xml libvirt-lxc-api.xml
 
 fig = \
   libvirt-net-logical.fig \
@@ -133,6 +137,7 @@ all-am: web
 
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
+lxc_api: $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 
 web: $(dot_html) $(internals_html) html/index.html devhelp/index.html \
   $(dot_php)
@@ -152,7 +157,8 @@ todo:
 	$(MAKE) todo.html
 
 hvsupport.html.in: $(srcdir)/hvsupport.pl $(srcdir)/../src/libvirt_public.syms \
-	 $(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/driver.h
+	$(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/libvirt_lxc.syms \
+	$(srcdir)/../src/driver.h
 	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(srcdir)/../src > $@ || { rm $@ && exit 1; }
 
 .PHONY: todo
@@ -220,12 +226,16 @@ $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 
 python_generated_files = \
 		$(srcdir)/html/libvirt-libvirt.html \
+		$(srcdir)/html/libvirt-libvirt-lxc.html \
 		$(srcdir)/html/libvirt-libvirt-qemu.html \
 		$(srcdir)/html/libvirt-virterror.html \
 		$(srcdir)/libvirt-api.xml \
 		$(srcdir)/libvirt-refs.xml \
+		$(srcdir)/libvirt-lxc-api.xml \
+		$(srcdir)/libvirt-lxc-refs.xml \
 		$(srcdir)/libvirt-qemu-api.xml \
-		$(srcdir)/libvirt-qemu-refs.xml
+		$(srcdir)/libvirt-qemu-refs.xml \
+		$(NULL)
 
 APIBUILD=$(srcdir)/apibuild.py
 APIBUILD_STAMP=$(APIBUILD).stamp
@@ -235,9 +245,11 @@ $(python_generated_files): $(APIBUILD_STAMP)
 
 $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(srcdir)/../include/libvirt/libvirt.h.in \
+		$(srcdir)/../include/libvirt/libvirt-lxc.h \
 		$(srcdir)/../include/libvirt/libvirt-qemu.h \
 		$(srcdir)/../include/libvirt/virterror.h \
 		$(srcdir)/../src/libvirt.c \
+		$(srcdir)/../src/libvirt-lxc.c \
 		$(srcdir)/../src/libvirt-qemu.c \
 		$(srcdir)/../src/util/virerror.c
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(APIBUILD)
@@ -252,9 +264,10 @@ clean-local:
 maintainer-clean-local: clean-local
 	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml todo.html.in hvsupport.html.in
 	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
+	rm -rf $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 	rm -rf $(APIBUILD_STAMP)
 
-rebuild: api qemu_api all
+rebuild: api qemu_api lxc_api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)

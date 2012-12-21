@@ -64,6 +64,7 @@
 /docs/hvsupport.html.in
 /docs/libvirt-api.xml
 /docs/libvirt-qemu-*.xml
+/docs/libvirt-lxc-*.xml
 /docs/libvirt-refs.xml
 /docs/search.php
 /docs/todo.html.in
@@ -92,10 +93,13 @@
 /python/generated.stamp
 /python/generator.py.stamp
 /python/libvirt-export.c
+/python/libvirt-lxc-export.c
+/python/libvirt-lxc.[ch]
 /python/libvirt-qemu-export.c
 /python/libvirt-qemu.[ch]
 /python/libvirt.[ch]
 /python/libvirt.py
+/python/libvirt_lxc.py
 /python/libvirt_qemu.py
 /run
 /sc_*
