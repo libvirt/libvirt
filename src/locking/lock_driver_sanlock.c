@@ -679,6 +679,17 @@ static int virLockManagerSanlockCreateLease(struct sanlk_resource *res)
             }
             VIR_DEBUG("Someone else just created lockspace %s", res->disks[0].path);
         } else {
+            /* chown() the path to make sure sanlock can access it */
+            if ((driver->user != -1 || driver->group != -1) &&
+                (fchown(fd, driver->user, driver->group) < 0)) {
+                virReportSystemError(errno,
+                                     _("cannot chown '%s' to (%u, %u)"),
+                                     res->disks[0].path,
+                                     (unsigned int) driver->user,
+                                     (unsigned int) driver->group);
+                goto error_unlink;
+            }
+
             if ((rv = sanlock_align(&res->disks[0])) < 0) {
                 if (rv <= -200)
                     virReportError(VIR_ERR_INTERNAL_ERROR,
