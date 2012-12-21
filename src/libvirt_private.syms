@@ -1795,9 +1795,11 @@ virPidFileWritePath;
 # virprocess.h
 virProcessAbort;
 virProcessGetAffinity;
+virProcessGetNamespaces;
 virProcessKill;
 virProcessKillPainfully;
 virProcessSetAffinity;
+virProcessSetNamespaces;
 virProcessTranslateStatus;
 virProcessWait;
 

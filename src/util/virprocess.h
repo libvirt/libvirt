@@ -47,4 +47,11 @@ int virProcessGetAffinity(pid_t pid,
                           virBitmapPtr *map,
                           int maxcpu);
 
+int virProcessGetNamespaces(pid_t pid,
+                            size_t *nfdlist,
+                            int **fdlist);
+
+int virProcessSetNamespaces(size_t nfdlist,
+                            int *fdlist);
+
 #endif /* __VIR_PROCESS_H__ */
