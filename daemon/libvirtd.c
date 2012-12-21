@@ -103,6 +103,7 @@ virNetSASLContextPtr saslCtxt = NULL;
 #endif
 virNetServerProgramPtr remoteProgram = NULL;
 virNetServerProgramPtr qemuProgram = NULL;
+virNetServerProgramPtr lxcProgram = NULL;
 
 enum {
     VIR_DAEMON_ERR_NONE = 0,
@@ -1370,6 +1371,18 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (!(lxcProgram = virNetServerProgramNew(LXC_PROGRAM,
+                                              LXC_PROTOCOL_VERSION,
+                                              lxcProcs,
+                                              lxcNProcs))) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+    if (virNetServerAddProgram(srv, lxcProgram) < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     if (!(qemuProgram = virNetServerProgramNew(QEMU_PROGRAM,
                                                QEMU_PROTOCOL_VERSION,
                                                qemuProcs,
@@ -1475,6 +1488,7 @@ int main(int argc, char **argv) {
 cleanup:
     virNetlinkEventServiceStopAll();
     virObjectUnref(remoteProgram);
+    virObjectUnref(lxcProgram);
     virObjectUnref(qemuProgram);
     virNetServerClose(srv);
     virObjectUnref(srv);

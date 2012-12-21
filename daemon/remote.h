@@ -32,6 +32,9 @@
 extern virNetServerProgramProc remoteProcs[];
 extern size_t remoteNProcs;
 
+extern virNetServerProgramProc lxcProcs[];
+extern size_t lxcNProcs;
+
 extern virNetServerProgramProc qemuProcs[];
 extern size_t qemuNProcs;
 

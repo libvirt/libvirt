@@ -37,6 +37,7 @@
 #include "virbuffer.h"
 #include "remote_driver.h"
 #include "remote_protocol.h"
+#include "lxc_protocol.h"
 #include "qemu_protocol.h"
 #include "viralloc.h"
 #include "virutil.h"
@@ -77,6 +78,7 @@ struct private_data {
     virNetClientPtr client;
     virNetClientProgramPtr remoteProgram;
     virNetClientProgramPtr qemuProgram;
+    virNetClientProgramPtr lxcProgram;
 
     int counter; /* Serial number for RPC */
 
@@ -95,6 +97,7 @@ struct private_data {
 
 enum {
     REMOTE_CALL_QEMU              = (1 << 0),
+    REMOTE_CALL_LXC               = (1 << 1),
 };
 
 
@@ -112,10 +115,13 @@ static int call(virConnectPtr conn, struct private_data *priv,
                 unsigned int flags, int proc_nr,
                 xdrproc_t args_filter, char *args,
                 xdrproc_t ret_filter, char *ret);
-static int callWithFD(virConnectPtr conn, struct private_data *priv,
-                      unsigned int flags, int fd, int proc_nr,
-                      xdrproc_t args_filter, char *args,
-                      xdrproc_t ret_filter, char *ret);
+static int callFull(virConnectPtr conn, struct private_data *priv,
+                    unsigned int flags,
+                    int *fdin, size_t fdinlen,
+                    int **fdout, size_t *fdoutlen,
+                    int proc_nr,
+                    xdrproc_t args_filter, char *args,
+                    xdrproc_t ret_filter, char *ret);
 static int remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
                               virConnectAuthPtr auth, const char *authtype);
 #if WITH_SASL
@@ -768,6 +774,12 @@ doRemoteOpen(virConnectPtr conn,
                                                        ARRAY_CARDINALITY(remoteDomainEvents),
                                                        conn)))
         goto failed;
+    if (!(priv->lxcProgram = virNetClientProgramNew(LXC_PROGRAM,
+                                                    LXC_PROTOCOL_VERSION,
+                                                    NULL,
+                                                    0,
+                                                    NULL)))
+        goto failed;
     if (!(priv->qemuProgram = virNetClientProgramNew(QEMU_PROGRAM,
                                                      QEMU_PROTOCOL_VERSION,
                                                      NULL,
@@ -776,6 +788,7 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
 
     if (virNetClientAddProgram(priv->client, priv->remoteProgram) < 0 ||
+        virNetClientAddProgram(priv->client, priv->lxcProgram) < 0 ||
         virNetClientAddProgram(priv->client, priv->qemuProgram) < 0)
         goto failed;
 
@@ -860,6 +873,7 @@ no_memory:
 
  failed:
     virObjectUnref(priv->remoteProgram);
+    virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
@@ -1024,8 +1038,9 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
     virObjectUnref(priv->client);
     priv->client = NULL;
     virObjectUnref(priv->remoteProgram);
+    virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
-    priv->remoteProgram = priv->qemuProgram = NULL;
+    priv->remoteProgram = priv->qemuProgram = priv->lxcProgram = NULL;
 
     /* Free hostname copy */
     VIR_FREE(priv->hostname);
@@ -5409,6 +5424,8 @@ remoteDomainOpenGraphics(virDomainPtr dom,
     int rv = -1;
     remote_domain_open_graphics_args args;
     struct private_data *priv = dom->conn->privateData;
+    int fdin[] = { fd };
+    size_t fdinlen = ARRAY_CARDINALITY(fdin);
 
     remoteDriverLock(priv);
 
@@ -5416,9 +5433,12 @@ remoteDomainOpenGraphics(virDomainPtr dom,
     args.idx = idx;
     args.flags = flags;
 
-    if (callWithFD(dom->conn, priv, 0, fd, REMOTE_PROC_DOMAIN_OPEN_GRAPHICS,
-                   (xdrproc_t) xdr_remote_domain_open_graphics_args, (char *) &args,
-                   (xdrproc_t) xdr_void, NULL) == -1)
+    if (callFull(dom->conn, priv, 0,
+                 fdin, fdinlen,
+                 NULL, NULL,
+                 REMOTE_PROC_DOMAIN_OPEN_GRAPHICS,
+                 (xdrproc_t) xdr_remote_domain_open_graphics_args, (char *) &args,
+                 (xdrproc_t) xdr_void, NULL) == -1)
         goto done;
 
     rv = 0;
@@ -5523,6 +5543,7 @@ done:
 }
 
 #include "remote_client_bodies.h"
+#include "lxc_client_bodies.h"
 #include "qemu_client_bodies.h"
 
 /*
@@ -5530,21 +5551,29 @@ done:
  * send that to the server and wait for reply
  */
 static int
-callWithFD(virConnectPtr conn ATTRIBUTE_UNUSED,
-           struct private_data *priv,
-           unsigned int flags,
-           int fd,
-           int proc_nr,
-           xdrproc_t args_filter, char *args,
-           xdrproc_t ret_filter, char *ret)
+callFull(virConnectPtr conn ATTRIBUTE_UNUSED,
+         struct private_data *priv,
+         unsigned int flags,
+         int *fdin,
+         size_t fdinlen,
+         int **fdout,
+         size_t *fdoutlen,
+         int proc_nr,
+         xdrproc_t args_filter, char *args,
+         xdrproc_t ret_filter, char *ret)
 {
     int rv;
-    virNetClientProgramPtr prog = flags & REMOTE_CALL_QEMU ? priv->qemuProgram : priv->remoteProgram;
+    virNetClientProgramPtr prog;
     int counter = priv->counter++;
     virNetClientPtr client = priv->client;
-    int fds[] = { fd };
-    size_t nfds = fd == -1 ? 0 : 1;
     priv->localUses++;
+
+    if (flags & REMOTE_CALL_QEMU)
+        prog = priv->qemuProgram;
+    else if (flags & REMOTE_CALL_LXC)
+        prog = priv->lxcProgram;
+    else
+        prog = priv->remoteProgram;
 
     /* Unlock, so that if we get any async events/stream data
      * while processing the RPC, we don't deadlock when our
@@ -5555,7 +5584,8 @@ callWithFD(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  client,
                                  counter,
                                  proc_nr,
-                                 nfds, nfds ? fds : NULL, NULL, NULL,
+                                 fdinlen, fdin,
+                                 fdoutlen, fdout,
                                  args_filter, args,
                                  ret_filter, ret);
     remoteDriverLock(priv);
@@ -5572,9 +5602,12 @@ call(virConnectPtr conn,
      xdrproc_t args_filter, char *args,
      xdrproc_t ret_filter, char *ret)
 {
-    return callWithFD(conn, priv, flags, -1, proc_nr,
-                      args_filter, args,
-                      ret_filter, ret);
+    return callFull(conn, priv, flags,
+                    NULL, 0,
+                    NULL, NULL,
+                    proc_nr,
+                    args_filter, args,
+                    ret_filter, ret);
 }
 
 
@@ -5849,6 +5882,40 @@ done:
     remoteDriverUnlock(priv);
     return rv;
 }
+
+
+static int
+remoteDomainLxcOpenNamespace(virDomainPtr domain,
+                             int **fdlist,
+                             unsigned int flags)
+{
+    int rv = -1;
+    lxc_domain_open_namespace_args args;
+    struct private_data *priv = domain->conn->privateData;
+    size_t nfds = 0;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+
+    *fdlist = NULL;
+
+    if (callFull(domain->conn, priv, REMOTE_CALL_LXC,
+                 NULL, 0,
+                 fdlist, &nfds,
+                 LXC_PROC_DOMAIN_OPEN_NAMESPACE,
+                 (xdrproc_t) xdr_lxc_domain_open_namespace_args, (char *) &args,
+                 (xdrproc_t) xdr_void, NULL) == -1)
+        goto done;
+
+    rv = nfds;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
@@ -6170,6 +6237,7 @@ static virDriver remote_driver = {
     .nodeGetMemoryParameters = remoteNodeGetMemoryParameters, /* 0.10.2 */
     .nodeGetCPUMap = remoteNodeGetCPUMap, /* 1.0.0 */
     .domainFSTrim = remoteDomainFSTrim, /* 1.0.1 */
+    .domainLxcOpenNamespace = remoteDomainLxcOpenNamespace, /* 1.0.2 */
 };
 
 static virNetworkDriver network_driver = {

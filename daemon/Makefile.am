@@ -17,7 +17,9 @@ CLEANFILES =
 
 DAEMON_GENERATED =					\
 		$(srcdir)/remote_dispatch.h		\
-		$(srcdir)/qemu_dispatch.h
+		$(srcdir)/lxc_dispatch.h		\
+		$(srcdir)/qemu_dispatch.h		\
+		$(NULL)
 
 DAEMON_SOURCES =					\
 		libvirtd.c libvirtd.h			\
@@ -25,12 +27,14 @@ DAEMON_SOURCES =					\
 		remote.c remote.h			\
 		stream.c stream.h			\
 		../src/remote/remote_protocol.c		\
+		../src/remote/lxc_protocol.c		\
 		../src/remote/qemu_protocol.c		\
 		$(DAEMON_GENERATED)
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
 	remote_dispatch.h				\
+	lxc_dispatch.h					\
 	qemu_dispatch.h					\
 	libvirtd.conf					\
 	libvirtd.init.in				\
@@ -54,12 +58,18 @@ EXTRA_DIST =						\
 BUILT_SOURCES =
 
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
+LXC_PROTOCOL = $(top_srcdir)/src/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
 $(srcdir)/remote_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b remote REMOTE \
 	  $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/lxc_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
+		$(LXC_PROTOCOL)
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b lxc LXC \
+	  $(LXC_PROTOCOL) > $@
 
 $(srcdir)/qemu_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
@@ -117,6 +127,7 @@ libvirtd_LDADD += ../src/libvirt_probes.lo
 endif
 
 libvirtd_LDADD += \
+	../src/libvirt-lxc.la \
 	../src/libvirt-qemu.la
 
 if ! WITH_DRIVER_MODULES

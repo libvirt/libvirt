@@ -272,18 +272,27 @@ REMOTE_DRIVER_GENERATED = \
 		$(srcdir)/remote/remote_protocol.c		\
 		$(srcdir)/remote/remote_protocol.h		\
 		$(srcdir)/remote/remote_client_bodies.h		\
+		$(srcdir)/remote/lxc_protocol.c			\
+		$(srcdir)/remote/lxc_protocol.h			\
+		$(srcdir)/remote/lxc_client_bodies.h		\
 		$(srcdir)/remote/qemu_protocol.c		\
 		$(srcdir)/remote/qemu_protocol.h		\
 		$(srcdir)/remote/qemu_client_bodies.h
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
+LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
-REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL)
+REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL) $(LXC_PROTOCOL)
 
 $(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k remote REMOTE $(REMOTE_PROTOCOL) > $@
+
+$(srcdir)/remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
+		$(LXC_PROTOCOL)
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
+	  -k lxc LXC $(LXC_PROTOCOL) > $@
 
 $(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
@@ -318,7 +327,7 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 # The alternation of the following regexps matches both cases.
 r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
-struct_prefix = (remote_|qemu_|virNet|keepalive_)
+struct_prefix = (remote_|qemu_|lxc_|virNet|keepalive_)
 
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
@@ -374,6 +383,7 @@ EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 PROTOCOL_STRUCTS = \
 	$(srcdir)/remote_protocol-structs \
+	$(srcdir)/lxc_protocol-structs \
 	$(srcdir)/qemu_protocol-structs \
 	$(srcdir)/virnetprotocol-structs \
 	$(srcdir)/virkeepaliveprotocol-structs
@@ -382,7 +392,9 @@ check-protocol: $(PROTOCOL_STRUCTS) $(PROTOCOL_STRUCTS:structs=struct)
 
 # The .o file that pdwtags parses is created as a side effect of running
 # libtool; but from make's perspective we depend on the .lo file.
-$(srcdir)/remote_protocol-struct $(srcdir)/qemu_protocol-struct: \
+$(srcdir)/remote_protocol-struct \
+	$(srcdir)/qemu_protocol-struct \
+	$(srcdir)/lxc_protocol-struct: \
 		$(srcdir)/%-struct: libvirt_driver_remote_la-%.lo
 	$(PDWTAGS)
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
@@ -1546,6 +1558,7 @@ tapset_DATA = libvirt_probes.stp libvirt_qemu_probes.stp libvirt_functions.stp
 RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/rpc/virkeepaliveprotocol.x \
 		  $(srcdir)/remote/remote_protocol.x \
+		  $(srcdir)/remote/lxc_protocol.x \
 		  $(srcdir)/remote/qemu_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl

@@ -50,6 +50,7 @@
 #include "virprocess.h"
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
+#include "lxc_protocol.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_RPC
@@ -105,6 +106,7 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
 
 #include "remote_dispatch.h"
 #include "qemu_dispatch.h"
+#include "lxc_dispatch.h"
 
 
 /* Prototypes */
@@ -4617,6 +4619,56 @@ cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
     VIR_FREE(cpumap);
+    return rv;
+}
+
+static int
+lxcDispatchDomainOpenNamespace(virNetServerPtr server ATTRIBUTE_UNUSED,
+                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                               virNetMessageErrorPtr rerr,
+                               lxc_domain_open_namespace_args *args)
+{
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    int *fdlist = NULL;
+    int ret;
+    virDomainPtr dom = NULL;
+    size_t i;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    ret = virDomainLxcOpenNamespace(dom,
+                                    &fdlist,
+                                    args->flags);
+    if (ret < 0)
+        goto cleanup;
+
+    /* We shouldn't have received any from the client,
+     * but in case they're playing games with us, prevent
+     * a resource leak
+     */
+    for (i = 0 ; i < msg->nfds ; i++)
+        VIR_FORCE_CLOSE(msg->fds[i]);
+    VIR_FREE(msg->fds);
+    msg->nfds = 0;
+
+    msg->fds = fdlist;
+    msg->nfds = ret;
+
+    rv = 1;
+
+cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virDomainFree(dom);
     return rv;
 }
 
