@@ -45,6 +45,7 @@
 #include "viralloc.h"
 #include "virutil.h"
 #include "virfile.h"
+#include "virjson.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"
 #include "virstring.h"
@@ -6557,6 +6558,219 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 }
 
 /*
+ * "qemu-monitor-command" command
+ */
+static const vshCmdInfo info_qemu_monitor_command[] = {
+    {"help", N_("QEMU Monitor Command")},
+    {"desc", N_("QEMU Monitor Command")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_monitor_command[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"hmp", VSH_OT_BOOL, 0, N_("command is in human monitor protocol")},
+    {"pretty", VSH_OT_BOOL, 0,
+     N_("pretty-print any qemu monitor protocol output")},
+    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("command")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    char *monitor_cmd = NULL;
+    char *result = NULL;
+    unsigned int flags = 0;
+    const vshCmdOpt *opt = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pad = false;
+    virJSONValuePtr pretty = NULL;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (pad)
+            virBufferAddChar(&buf, ' ');
+        pad = true;
+        virBufferAdd(&buf, opt->data, -1);
+    }
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to collect command"));
+        goto cleanup;
+    }
+    monitor_cmd = virBufferContentAndReset(&buf);
+
+    if (vshCommandOptBool(cmd, "hmp")) {
+        if (vshCommandOptBool(cmd, "pretty")) {
+            vshError(ctl, _("--hmp and --pretty are not compatible"));
+            goto cleanup;
+        }
+        flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
+    }
+
+    if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
+        goto cleanup;
+
+    if (vshCommandOptBool(cmd, "pretty")) {
+        char *tmp;
+        pretty = virJSONValueFromString(result);
+        if (pretty && (tmp = virJSONValueToString(pretty, true))) {
+            VIR_FREE(result);
+            result = tmp;
+        } else {
+            vshResetLibvirtError();
+        }
+    }
+    vshPrint(ctl, "%s\n", result);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(result);
+    VIR_FREE(monitor_cmd);
+    virJSONValueFree(pretty);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/*
+ * "qemu-attach" command
+ */
+static const vshCmdInfo info_qemu_attach[] = {
+    {"help", N_("QEMU Attach")},
+    {"desc", N_("QEMU Attach")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_attach[] = {
+    {"pid", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pid")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    unsigned int flags = 0;
+    unsigned int pid_value; /* API uses unsigned int, not pid_t */
+
+    if (vshCommandOptUInt(cmd, "pid", &pid_value) <= 0) {
+        vshError(ctl, "%s", _("missing pid value"));
+        goto cleanup;
+    }
+
+    if (!(dom = virDomainQemuAttach(ctl->conn, pid_value, flags)))
+        goto cleanup;
+
+    if (dom != NULL) {
+        vshPrint(ctl, _("Domain %s attached to pid %u\n"),
+                 virDomainGetName(dom), pid_value);
+        virDomainFree(dom);
+        ret = true;
+    } else {
+        vshError(ctl, _("Failed to attach to pid %u"), pid_value);
+    }
+
+cleanup:
+    return ret;
+}
+
+/*
+ * "qemu-agent-command" command
+ */
+static const vshCmdInfo info_qemu_agent_command[] = {
+    {"help", N_("QEMU Guest Agent Command")},
+    {"desc", N_("Run an arbitrary qemu guest agent command; use at your own risk")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_agent_command[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"timeout", VSH_OT_INT, VSH_OFLAG_REQ_OPT, N_("timeout seconds. must be positive.")},
+    {"async", VSH_OT_BOOL, 0, N_("execute command without waiting for timeout")},
+    {"block", VSH_OT_BOOL, 0, N_("execute command without timeout")},
+    {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("command")},
+    {NULL, 0, 0, NULL}
+};
+
+static bool
+cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    bool ret = false;
+    char *guest_agent_cmd = NULL;
+    char *result = NULL;
+    int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
+    int judge = 0;
+    unsigned int flags = 0;
+    const vshCmdOpt *opt = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pad = false;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        if (pad)
+            virBufferAddChar(&buf, ' ');
+        pad = true;
+        virBufferAdd(&buf, opt->data, -1);
+    }
+    if (virBufferError(&buf)) {
+        vshPrint(ctl, "%s", _("Failed to collect command"));
+        goto cleanup;
+    }
+    guest_agent_cmd = virBufferContentAndReset(&buf);
+
+    judge = vshCommandOptInt(cmd, "timeout", &timeout);
+    if (judge < 0) {
+        vshError(ctl, "%s", _("timeout number has to be a number"));
+        goto cleanup;
+    } else if (judge > 0) {
+        judge = 1;
+    }
+    if (judge && timeout < 1) {
+        vshError(ctl, "%s", _("timeout must be positive"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "async")) {
+        timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT;
+        judge++;
+    }
+    if (vshCommandOptBool(cmd, "block")) {
+        timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK;
+        judge++;
+    }
+
+    if (judge > 1) {
+        vshError(ctl, "%s", _("timeout, async and block options are exclusive"));
+        goto cleanup;
+    }
+    result = virDomainQemuAgentCommand(dom, guest_agent_cmd, timeout, flags);
+
+    if (result) printf("%s\n", result);
+
+    ret = true;
+
+cleanup:
+    VIR_FREE(result);
+    VIR_FREE(guest_agent_cmd);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+/*
  * "dumpxml" command
  */
 static const vshCmdInfo info_dumpxml[] = {
@@ -8559,6 +8773,11 @@ const vshCmdDef domManagementCmds[] = {
     {"migrate-getspeed", cmdMigrateGetMaxSpeed,
      opts_migrate_getspeed, info_migrate_getspeed, 0},
     {"numatune", cmdNumatune, opts_numatune, info_numatune, 0},
+    {"qemu-attach", cmdQemuAttach, opts_qemu_attach, info_qemu_attach, 0},
+    {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command,
+     info_qemu_monitor_command, 0},
+    {"qemu-agent-command", cmdQemuAgentCommand, opts_qemu_agent_command,
+     info_qemu_agent_command, 0},
     {"reboot", cmdReboot, opts_reboot, info_reboot, 0},
     {"reset", cmdReset, opts_reset, info_reset, 0},
     {"restore", cmdRestore, opts_restore, info_restore, 0},
