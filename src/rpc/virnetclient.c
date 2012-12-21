@@ -997,6 +997,11 @@ virNetClientCallDispatchReply(virNetClientPtr client)
     thecall->msg->bufferLength = client->msg.bufferLength;
     thecall->msg->bufferOffset = client->msg.bufferOffset;
 
+    thecall->msg->nfds = client->msg.nfds;
+    thecall->msg->fds = client->msg.fds;
+    client->msg.nfds = 0;
+    client->msg.fds = NULL;
+
     thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
 
     return 0;
@@ -1290,7 +1295,9 @@ virNetClientIOHandleInput(virNetClientPtr client)
 
                 if (client->msg.header.type == VIR_NET_REPLY_WITH_FDS) {
                     size_t i;
-                    if (virNetMessageDecodeNumFDs(&client->msg) < 0)
+
+                    if (client->msg.nfds == 0 &&
+                        virNetMessageDecodeNumFDs(&client->msg) < 0)
                         return -1;
 
                     for (i = client->msg.donefds ; i < client->msg.nfds ; i++) {
@@ -1313,8 +1320,7 @@ virNetClientIOHandleInput(virNetClientPtr client)
                 }
 
                 ret = virNetClientCallDispatch(client);
-                client->msg.bufferOffset = client->msg.bufferLength = 0;
-                VIR_FREE(client->msg.buffer);
+                virNetMessageClear(&client->msg);
                 /*
                  * We've completed one call, but we don't want to
                  * spin around the loop forever if there are many

@@ -362,18 +362,18 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                 goto error;
             }
             for (i = 0 ; i < *ninfds ; i++)
-                *infds[i] = -1;
+                (*infds)[i] = -1;
             for (i = 0 ; i < *ninfds ; i++) {
-                if ((*infds[i] = dup(msg->fds[i])) < 0) {
+                if (((*infds)[i] = dup(msg->fds[i])) < 0) {
                     virReportSystemError(errno,
                                          _("Cannot duplicate FD %d"),
                                          msg->fds[i]);
                     goto error;
                 }
-                if (virSetInherit(*infds[i], false) < 0) {
+                if (virSetInherit((*infds)[i], false) < 0) {
                     virReportSystemError(errno,
                                          _("Cannot set close-on-exec %d"),
-                                         *infds[i]);
+                                         (*infds)[i]);
                     goto error;
                 }
             }
@@ -401,7 +401,7 @@ error:
     virNetMessageFree(msg);
     if (infds && ninfds) {
         for (i = 0 ; i < *ninfds ; i++)
-            VIR_FORCE_CLOSE(*infds[i]);
+            VIR_FORCE_CLOSE((*infds)[i]);
     }
     return -1;
 }
