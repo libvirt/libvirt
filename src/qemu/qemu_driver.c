@@ -13429,7 +13429,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *path,
     }
     if (!format && disk->mirrorFormat > 0)
         format = virStorageFileFormatTypeToString(disk->mirrorFormat);
-    if (!(disk->mirror = strdup(dest))) {
+    if (!(mirror = strdup(dest))) {
         virReportOOMError();
         goto endjob;
     }
