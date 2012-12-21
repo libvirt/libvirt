@@ -2192,13 +2192,11 @@ qemuCapsInitHelp(qemuCapsPtr caps, uid_t runUid, gid_t runGid)
     if (caps->arch == VIR_ARCH_X86_64 ||
         caps->arch == VIR_ARCH_I686) {
         qemuCapsSet(caps, QEMU_CAPS_PCI_MULTIBUS);
-    }
-
-    /* S390 and probably other archs do not support no-acpi -
-       maybe the qemu option parsing should be re-thought. */
-    if (caps->arch == VIR_ARCH_S390 ||
-        caps->arch == VIR_ARCH_S390X)
+    } else {
+        /* -no-acpi is not supported on other archs
+         * even if qemu reports it in -help */
         qemuCapsClear(caps, QEMU_CAPS_NO_ACPI);
+    }
 
     /* qemuCapsExtractDeviceStr will only set additional caps if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
@@ -2277,13 +2275,6 @@ qemuCapsInitQMPBasic(qemuCapsPtr caps)
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
     qemuCapsSet(caps, QEMU_CAPS_NO_SHUTDOWN);
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
-
-    /* ACPI is only supported on x86, PPC or
-     * other platforms don't support it*/
-    if (caps->arch == VIR_ARCH_I686 ||
-        caps->arch == VIR_ARCH_X86_64)
-        qemuCapsSet(caps, QEMU_CAPS_NO_ACPI);
-
     qemuCapsSet(caps, QEMU_CAPS_FSDEV_READONLY);
     qemuCapsSet(caps, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     qemuCapsSet(caps, QEMU_CAPS_DRIVE_COPY_ON_READ);
@@ -2430,16 +2421,12 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     }
     VIR_FREE(archstr);
 
-    /* Currently only x86_64 and i686 support PCI-multibus. */
+    /* Currently only x86_64 and i686 support PCI-multibus and -no-acpi. */
     if (caps->arch == VIR_ARCH_X86_64 ||
-        caps->arch == VIR_ARCH_I686)
+        caps->arch == VIR_ARCH_I686) {
         qemuCapsSet(caps, QEMU_CAPS_PCI_MULTIBUS);
-
-    /* S390 and probably other archs do not support no-acpi -
-       maybe the qemu option parsing should be re-thought. */
-    if (caps->arch == VIR_ARCH_S390 ||
-        caps->arch == VIR_ARCH_S390X)
-        qemuCapsClear(caps, QEMU_CAPS_NO_ACPI);
+        qemuCapsSet(caps, QEMU_CAPS_NO_ACPI);
+    }
 
     if (qemuCapsProbeQMPCommands(caps, mon) < 0)
         goto cleanup;
