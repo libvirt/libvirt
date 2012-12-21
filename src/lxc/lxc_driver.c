@@ -63,6 +63,7 @@
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
+#include "virprocess.h"
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "viruri.h"
@@ -4467,6 +4468,53 @@ static int lxcDomainDetachDevice(virDomainPtr dom,
 }
 
 
+static int lxcDomainOpenNamespace(virDomainPtr dom,
+                                  int **fdlist,
+                                  unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virLXCDomainObjPrivatePtr priv;
+    int ret = -1;
+    size_t nfds = 0;
+
+    *fdlist = NULL;
+    virCheckFlags(0, -1);
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+    priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Init pid is not yet available"));
+        goto cleanup;
+    }
+
+    if (virProcessGetNamespaces(priv->initpid, &nfds, fdlist) < 0)
+        goto cleanup;
+
+    ret = nfds;
+cleanup:
+    virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -4544,6 +4592,7 @@ static virDriver lxcDriver = {
     .domainShutdown = lxcDomainShutdown, /* 1.0.1 */
     .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */
     .domainReboot = lxcDomainReboot, /* 1.0.1 */
+    .domainLxcOpenNamespace = lxcDomainOpenNamespace, /* 1.0.2 */
 };
 
 static virStateDriver lxcStateDriver = {
