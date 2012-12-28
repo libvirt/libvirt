@@ -132,7 +132,7 @@ class docParser(xml.sax.handler.ContentHandler):
         if tag == 'function':
             if self.function != None:
                 if (self.function_module == "libvirt" or
-                    self.function_module == "event" or
+                    self.function_module == "virevent" or
                     self.function_module == "virterror"):
                     function(self.function, self.function_descr,
                              self.function_return, self.function_args,
