@@ -1431,22 +1431,45 @@ cleanup:
  *
  * char device redirected to /dev/pts/3
  *
+ * However, since 1.4 the line we are looking for has changed to:
+ *
+ * char device <alias> redirected to /some/path
+ *
  * Returns -1 for error, 0 success, 1 continue reading
  */
 static int
 qemuProcessExtractTTYPath(const char *haystack,
                           size_t *offset,
+                          const char *alias,
                           char **path)
 {
-    static const char needle[] = "char device redirected to";
-    char *tmp, *dev;
+    static const char *needle[] = {"char device", "redirected to"};
+    const char *tmp, *dev;
 
     VIR_FREE(*path);
     /* First look for our magic string */
-    if (!(tmp = strstr(haystack + *offset, needle))) {
+    if (!(tmp = strstr(haystack + *offset, needle[0])))
         return 1;
+
+    tmp += strlen(needle[0]);
+    virSkipSpaces(&tmp);
+
+    /* We prepend character devices IDs with 'char' prefix,
+     * hence full device ID is 'charalias0' */
+    if (STRPREFIX(tmp, "char")) {
+        /* we are dealing with new style */
+        tmp += strlen("char");
+        if (!STRPREFIX(tmp, alias))
+            return 1;
+
+        tmp += strlen(alias);
+        virSkipSpaces(&tmp);
     }
-    tmp += sizeof(needle);
+
+    if (!STRPREFIX(tmp, needle[1]))
+        return 1;
+
+    tmp += strlen(needle[1]);
     dev = tmp;
 
     /*
@@ -1569,6 +1592,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                 chr->info.alias,
                                                  &chr->source.data.file.path)) != 0)
                 return ret;
         }
@@ -1579,6 +1603,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                 chr->info.alias,
                                                  &chr->source.data.file.path)) != 0)
                 return ret;
         }
@@ -1589,6 +1614,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
         virDomainChrDefPtr chr = vm->def->channels[i];
         if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                 chr->info.alias,
                                                  &chr->source.data.file.path)) != 0)
                 return ret;
         }
@@ -1608,6 +1634,7 @@ qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
             if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
                 chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
                 if ((ret = qemuProcessExtractTTYPath(output, &offset,
+                                                     chr->info.alias,
                                                      &chr->source.data.file.path)) != 0)
                     return ret;
             }
