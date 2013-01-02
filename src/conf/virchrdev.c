@@ -1,6 +1,6 @@
 /**
  * virchrdev.c: api to guarantee mutually exclusive
- * access to domain's consoles
+ * access to domain's character devices
  *
  * Copyright (C) 2011-2012 Red Hat, Inc.
  *
@@ -40,47 +40,47 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-/* structure holding information about consoles
+/* structure holding information about character devices
  * open in a given domain */
-struct _virConsoles {
+struct _virChrdevs {
     virMutex lock;
     virHashTablePtr hash;
 };
 
-typedef struct _virConsoleStreamInfo virConsoleStreamInfo;
-typedef virConsoleStreamInfo *virConsoleStreamInfoPtr;
-struct _virConsoleStreamInfo {
-    virConsolesPtr cons;
-    const char *pty;
+typedef struct _virChrdevStreamInfo virChrdevStreamInfo;
+typedef virChrdevStreamInfo *virChrdevStreamInfoPtr;
+struct _virChrdevStreamInfo {
+    virChrdevsPtr devs;
+    const char *path;
 };
 
-#ifdef VIR_PTY_LOCK_FILE_PATH
+#ifdef VIR_CHRDEV_LOCK_FILE_PATH
 /**
  * Create a full filename with path to the lock file based on
- * name/path of corresponding pty
+ * name/path of corresponding device
  *
- * @pty path of the console device
+ * @dev path of the character device
  *
  * Returns a modified name that the caller has to free, or NULL
  * on error.
  */
-static char *virConsoleLockFilePath(const char *pty)
+static char *virChrdevLockFilePath(const char *dev)
 {
     char *path = NULL;
     char *sanitizedPath = NULL;
-    char *ptyCopy;
+    char *devCopy;
     char *filename;
     char *p;
 
-    if (!(ptyCopy = strdup(pty))) {
+    if (!(devCopy = strdup(dev))) {
         virReportOOMError();
         goto cleanup;
     }
 
     /* skip the leading "/dev/" */
-    filename = STRSKIP(ptyCopy, "/dev");
+    filename = STRSKIP(devCopy, "/dev");
     if (!filename)
-        filename = ptyCopy;
+        filename = devCopy;
 
     /* substitute path forward slashes for underscores */
     p = filename;
@@ -90,26 +90,26 @@ static char *virConsoleLockFilePath(const char *pty)
         ++p;
     }
 
-    if (virAsprintf(&path, "%s/LCK..%s", VIR_PTY_LOCK_FILE_PATH, filename) < 0)
+    if (virAsprintf(&path, "%s/LCK..%s", VIR_CHRDEV_LOCK_FILE_PATH, filename) < 0)
         goto cleanup;
 
     sanitizedPath = virFileSanitizePath(path);
 
 cleanup:
     VIR_FREE(path);
-    VIR_FREE(ptyCopy);
+    VIR_FREE(devCopy);
 
     return sanitizedPath;
 }
 
 /**
- * Verify and create a lock file for a console pty
+ * Verify and create a lock file for a character device
  *
- * @pty Path of the console device
+ * @dev Path of the character device
  *
  * Returns 0 on success, -1 on error
  */
-static int virConsoleLockFileCreate(const char *pty)
+static int virChrdevLockFileCreate(const char *dev)
 {
     char *path = NULL;
     int ret = -1;
@@ -118,16 +118,16 @@ static int virConsoleLockFileCreate(const char *pty)
     pid_t pid;
 
     /* build lock file path */
-    if (!(path = virConsoleLockFilePath(pty)))
+    if (!(path = virChrdevLockFilePath(dev)))
         goto cleanup;
 
     /* check if a log file and process holding the lock still exists */
     if (virPidFileReadPathIfAlive(path, &pid, NULL) == 0 && pid >= 0) {
         /* the process exists, the lockfile is valid */
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Requested console pty '%s' is locked by "
+                       _("Requested device '%s' is locked by "
                          "lock file '%s' held by process %lld"),
-                       pty, path, (long long) pid);
+                       dev, path, (long long) pid);
         goto cleanup;
     } else {
         /* clean up the stale/corrupted/nonexistent lockfile */
@@ -148,15 +148,15 @@ static int virConsoleLockFileCreate(const char *pty)
          * we run in daemon mode and thus privileged.
          */
         if (errno == EACCES && geteuid() != 0) {
-            VIR_DEBUG("Skipping lock file creation for pty '%s in path '%s'.",
-                      pty, path);
+            VIR_DEBUG("Skipping lock file creation for device '%s in path '%s'.",
+                      dev, path);
             ret = 0;
             goto cleanup;
         }
         virReportSystemError(errno,
                              _("Couldn't create lock file for "
-                               "pty '%s' in path '%s'"),
-                             pty, path);
+                               "device '%s' in path '%s'"),
+                             dev, path);
         goto cleanup;
     }
 
@@ -164,8 +164,8 @@ static int virConsoleLockFileCreate(const char *pty)
     if (safewrite(lockfd, pidStr, strlen(pidStr)) < 0) {
         virReportSystemError(errno,
                              _("Couldn't write to lock file for "
-                               "pty '%s' in path '%s'"),
-                             pty, path);
+                               "device '%s' in path '%s'"),
+                             dev, path);
         VIR_FORCE_CLOSE(lockfd);
         unlink(path);
         goto cleanup;
@@ -183,47 +183,47 @@ cleanup:
 }
 
 /**
- * Remove a lock file for a pty
+ * Remove a lock file for a device
  *
- * @pty Path of the pty device
+ * @dev Path of the device
  */
-static void virConsoleLockFileRemove(const char *pty)
+static void virChrdevLockFileRemove(const char *dev)
 {
-    char *path = virConsoleLockFilePath(pty);
+    char *path = virChrdevLockFilePath(dev);
     if (path)
         unlink(path);
     VIR_FREE(path);
 }
-#else /* #ifdef VIR_PTY_LOCK_FILE_PATH */
-/* file locking for console devices is disabled */
-static int virConsoleLockFileCreate(const char *pty ATTRIBUTE_UNUSED)
+#else /* #ifdef VIR_CHRDEV_LOCK_FILE_PATH */
+/* file locking for character devices is disabled */
+static int virChrdevLockFileCreate(const char *dev ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
-static void virConsoleLockFileRemove(const char *pty ATTRIBUTE_UNUSED)
+static void virChrdevLockFileRemove(const char *dev ATTRIBUTE_UNUSED)
 {
     return;
 }
-#endif /* #ifdef VIR_PTY_LOCK_FILE_PATH */
+#endif /* #ifdef VIR_CHRDEV_LOCK_FILE_PATH */
 
 /**
- * Frees an entry from the hash containing domain's active consoles
+ * Frees an entry from the hash containing domain's active devices
  *
- * @data Opaque data, struct holding information about the console
- * @name Path of the pty.
+ * @data Opaque data, struct holding information about the device
+ * @name Path of the device.
  */
-static void virConsoleHashEntryFree(void *data,
+static void virChrdevHashEntryFree(void *data,
                                     const void *name)
 {
-    const char *pty = name;
+    const char *dev = name;
     virStreamPtr st = data;
 
     /* free stream reference */
     virStreamFree(st);
 
     /* delete lock file */
-    virConsoleLockFileRemove(pty);
+    virChrdevLockFileRemove(dev);
 }
 
 /**
@@ -231,65 +231,65 @@ static void virConsoleHashEntryFree(void *data,
  *
  * @opaque Data to be freed.
  */
-static void virConsoleFDStreamCloseCbFree(void *opaque)
+static void virChrdevFDStreamCloseCbFree(void *opaque)
 {
-    virConsoleStreamInfoPtr priv = opaque;
+    virChrdevStreamInfoPtr priv = opaque;
 
-    VIR_FREE(priv->pty);
+    VIR_FREE(priv->path);
     VIR_FREE(priv);
 }
 
 /**
- * Callback being called if a FDstream is closed. Frees console entries
+ * Callback being called if a FDstream is closed. Frees device entries
  * from data structures and removes lockfiles.
  *
  * @st Pointer to stream being closed.
- * @opaque Domain's console information structure.
+ * @opaque Domain's device information structure.
  */
-static void virConsoleFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
+static void virChrdevFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
                                       void *opaque)
 {
-    virConsoleStreamInfoPtr priv = opaque;
-    virMutexLock(&priv->cons->lock);
+    virChrdevStreamInfoPtr priv = opaque;
+    virMutexLock(&priv->devs->lock);
 
     /* remove entry from hash */
-    virHashRemoveEntry(priv->cons->hash, priv->pty);
+    virHashRemoveEntry(priv->devs->hash, priv->path);
 
-    virMutexUnlock(&priv->cons->lock);
+    virMutexUnlock(&priv->devs->lock);
 }
 
 /**
- * Allocate structures for storing information about active console streams
+ * Allocate structures for storing information about active device streams
  * in domain's private data section.
  *
  * Returns pointer to the allocated structure or NULL on error
  */
-virConsolesPtr virConsoleAlloc(void)
+virChrdevsPtr virChrdevAlloc(void)
 {
-    virConsolesPtr cons;
-    if (VIR_ALLOC(cons) < 0)
+    virChrdevsPtr devs;
+    if (VIR_ALLOC(devs) < 0)
         return NULL;
 
-    if (virMutexInit(&cons->lock) < 0) {
-        VIR_FREE(cons);
+    if (virMutexInit(&devs->lock) < 0) {
+        VIR_FREE(devs);
         return NULL;
     }
 
-    /* there will hardly be any consoles most of the time, the hash
+    /* there will hardly be any devices most of the time, the hash
      * does not have to be huge */
-    if (!(cons->hash = virHashCreate(3, virConsoleHashEntryFree)))
+    if (!(devs->hash = virHashCreate(3, virChrdevHashEntryFree)))
         goto error;
 
-    return cons;
+    return devs;
 error:
-    virConsoleFree(cons);
+    virChrdevFree(devs);
     return NULL;
 }
 
 /**
  * Helper to clear stream callbacks when freeing the hash
  */
-static void virConsoleFreeClearCallbacks(void *payload,
+static void virChrdevFreeClearCallbacks(void *payload,
                                          const void *name ATTRIBUTE_UNUSED,
                                          void *data ATTRIBUTE_UNUSED)
 {
@@ -299,80 +299,80 @@ static void virConsoleFreeClearCallbacks(void *payload,
 }
 
 /**
- * Free structures for handling open console streams.
+ * Free structures for handling open device streams.
  *
- * @cons Pointer to the private structure.
+ * @devs Pointer to the private structure.
  */
-void virConsoleFree(virConsolesPtr cons)
+void virChrdevFree(virChrdevsPtr devs)
 {
-    if (!cons || !cons->hash)
+    if (!devs || !devs->hash)
         return;
 
-    virMutexLock(&cons->lock);
-    virHashForEach(cons->hash, virConsoleFreeClearCallbacks, NULL);
-    virHashFree(cons->hash);
-    virMutexUnlock(&cons->lock);
-    virMutexDestroy(&cons->lock);
+    virMutexLock(&devs->lock);
+    virHashForEach(devs->hash, virChrdevFreeClearCallbacks, NULL);
+    virHashFree(devs->hash);
+    virMutexUnlock(&devs->lock);
+    virMutexDestroy(&devs->lock);
 
-    VIR_FREE(cons);
+    VIR_FREE(devs);
 }
 
 /**
- * Open a console stream for a domain ensuring that other streams are
- * not using the console, nor any lockfiles exist. This ensures that
- * the console stream does not get corrupted due to a race on reading
+ * Open a device stream for a domain ensuring that other streams are
+ * not using the device, nor any lockfiles exist. This ensures that
+ * the device stream does not get corrupted due to a race on reading
  * same FD by two processes.
  *
- * @cons Pointer to private structure holding data about console streams.
- * @pty Path to the pseudo tty to be opened.
- * @st Stream the client wishes to use for the console connection.
- * @force On true, close active console streams for the selected console pty
- *        before opening this connection.
+ * @devs Pointer to private structure holding data about device streams.
+ * @path Path to the character device to be opened.
+ * @st Stream the client wishes to use for the device connection.
+ * @force On true, close active device streams for the selected character
+ *        device before opening this connection.
  *
- * Returns 0 on success and st is connected to the selected pty and
+ * Returns 0 on success and st is connected to the selected device and
  * corresponding lock file is created (if configured). Returns -1 on
- * error and 1 if the console stream is open and busy.
+ * error and 1 if the device stream is open and busy.
  */
-int virConsoleOpen(virConsolesPtr cons,
-                   const char *pty,
+int virChrdevOpen(virChrdevsPtr devs,
+                   const char *path,
                    virStreamPtr st,
                    bool force)
 {
-    virConsoleStreamInfoPtr cbdata = NULL;
+    virChrdevStreamInfoPtr cbdata = NULL;
     virStreamPtr savedStream;
     int ret;
 
-    virMutexLock(&cons->lock);
+    virMutexLock(&devs->lock);
 
-    if ((savedStream = virHashLookup(cons->hash, pty))) {
+    if ((savedStream = virHashLookup(devs->hash, path))) {
         if (!force) {
-             /* entry found, console is busy */
-            virMutexUnlock(&cons->lock);
+             /* entry found, device is busy */
+            virMutexUnlock(&devs->lock);
             return 1;
        } else {
            /* terminate existing connection */
-           /* The internal close callback handler needs to lock cons->lock to
+           /* The internal close callback handler needs to lock devs->lock to
             * remove the aborted stream from the hash. This would cause a
             * deadlock as we would try to enter the lock twice from the very
             * same thread. We need to unregister the callback and abort the
-            * stream manually before we create a new console connection.
+            * stream manually before we create a new device connection.
             */
            virFDStreamSetInternalCloseCb(savedStream, NULL, NULL, NULL);
            virStreamAbort(savedStream);
-           virHashRemoveEntry(cons->hash, pty);
+           virHashRemoveEntry(devs->hash, path);
            /* continue adding a new stream connection */
        }
     }
 
     /* create the lock file */
-    if ((ret = virConsoleLockFileCreate(pty)) < 0) {
-        virMutexUnlock(&cons->lock);
+    if ((ret = virChrdevLockFileCreate(path)) < 0) {
+        virMutexUnlock(&devs->lock);
         return ret;
     }
 
     /* obtain a reference to the stream */
     if (virStreamRef(st) < 0) {
-        virMutexUnlock(&cons->lock);
+        virMutexUnlock(&devs->lock);
         return -1;
     }
 
@@ -381,34 +381,34 @@ int virConsoleOpen(virConsolesPtr cons,
         goto error;
     }
 
-    if (virHashAddEntry(cons->hash, pty, st) < 0)
+    if (virHashAddEntry(devs->hash, path, st) < 0)
         goto error;
 
-    cbdata->cons = cons;
-    if (!(cbdata->pty = strdup(pty))) {
+    cbdata->devs = devs;
+    if (!(cbdata->path = strdup(path))) {
         virReportOOMError();
         goto error;
     }
 
-    /* open the console pty */
-    if (virFDStreamOpenFile(st, pty, 0, 0, O_RDWR) < 0)
+    /* open the character device */
+    if (virFDStreamOpenFile(st, path, 0, 0, O_RDWR) < 0)
         goto error;
 
     /* add cleanup callback */
     virFDStreamSetInternalCloseCb(st,
-                                  virConsoleFDStreamCloseCb,
+                                  virChrdevFDStreamCloseCb,
                                   cbdata,
-                                  virConsoleFDStreamCloseCbFree);
+                                  virChrdevFDStreamCloseCbFree);
 
-    virMutexUnlock(&cons->lock);
+    virMutexUnlock(&devs->lock);
     return 0;
 
 error:
     virStreamFree(st);
-    virHashRemoveEntry(cons->hash, pty);
+    virHashRemoveEntry(devs->hash, path);
     if (cbdata)
-        VIR_FREE(cbdata->pty);
+        VIR_FREE(cbdata->path);
     VIR_FREE(cbdata);
-    virMutexUnlock(&cons->lock);
+    virMutexUnlock(&devs->lock);
     return -1;
 }

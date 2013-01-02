@@ -244,8 +244,8 @@ ENCRYPTION_CONF_SOURCES =					\
 CPU_CONF_SOURCES =						\
 		conf/cpu_conf.c conf/cpu_conf.h
 
-# Safe console handling helper APIs
-CONSOLE_CONF_SOURCES =						\
+# Safe character device handling helper APIs
+CHRDEV_CONF_SOURCES =						\
 		conf/virchrdev.c conf/virchrdev.h
 
 # Device Helper APIs
@@ -264,7 +264,7 @@ CONF_SOURCES =							\
 		$(INTERFACE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
-		$(CONSOLE_CONF_SOURCES)				\
+		$(CHRDEV_CONF_SOURCES)				\
 		$(DEVICE_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc

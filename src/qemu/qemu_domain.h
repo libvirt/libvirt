@@ -155,7 +155,7 @@ struct _qemuDomainObjPrivate {
     unsigned long migMaxBandwidth;
     char *origname;
 
-    virConsolesPtr cons;
+    virChrdevsPtr devs;
 
     qemuDomainCleanupCallback *cleanupCallbacks;
     size_t ncleanupCallbacks;

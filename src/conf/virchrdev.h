@@ -1,6 +1,6 @@
 /**
  * virchrdev.h: api to guarantee mutually exclusive
- * access to domain's consoles
+ * access to domain's character devices
  *
  * Copyright (C) 2011-2012 Red Hat, Inc.
  *
@@ -20,17 +20,17 @@
  *
  * Author: Peter Krempa <pkrempa@redhat.com>
  */
-#ifndef __VIR_CONSOLE_H__
-# define __VIR_CONSOLE_H__
+#ifndef __VIR_CHRDEV_H__
+# define __VIR_CHRDEV_H__
 
 # include "internal.h"
 
-typedef struct _virConsoles virConsoles;
-typedef virConsoles *virConsolesPtr;
+typedef struct _virChrdevs virChrdevs;
+typedef virChrdevs *virChrdevsPtr;
 
-virConsolesPtr virConsoleAlloc(void);
-void virConsoleFree(virConsolesPtr cons);
+virChrdevsPtr virChrdevAlloc(void);
+void virChrdevFree(virChrdevsPtr devs);
 
-int virConsoleOpen(virConsolesPtr cons, const char *pty,
+int virChrdevOpen(virChrdevsPtr devs, const char *path,
                    virStreamPtr st, bool force);
-#endif /*__VIR_DOMAIN_CONSOLE_LOCK_H__*/
+#endif /*__VIR_CHRDEV_H__*/

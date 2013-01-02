@@ -12576,10 +12576,10 @@ qemuDomainOpenConsole(virDomainPtr dom,
     }
 
     /* handle mutually exclusive access to console devices */
-    ret = virConsoleOpen(priv->cons,
-                         chr->source.data.file.path,
-                         st,
-                         (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
+    ret = virChrdevOpen(priv->devs,
+                        chr->source.data.file.path,
+                        st,
+                        (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 
     if (ret == 1) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",

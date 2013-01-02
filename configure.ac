@@ -432,12 +432,12 @@ AC_ARG_WITH([remote],
   AC_HELP_STRING([--with-remote], [add remote driver support @<:@default=yes@:>@]),[],[with_remote=yes])
 AC_ARG_WITH([libvirtd],
   AC_HELP_STRING([--with-libvirtd], [add libvirtd support @<:@default=yes@:>@]),[],[with_libvirtd=yes])
-AC_ARG_WITH([console-lock-files],
-  AC_HELP_STRING([--with-console-lock-files],
-                 [location for UUCP style lock files for console PTYs
+AC_ARG_WITH([chrdev-lock-files],
+  AC_HELP_STRING([--with-chrdev-lock-files],
+                 [location for UUCP style lock files for character devices
                   (use auto for default paths on some platforms)
                   @<:@default=auto@:>@]),
-  [],[with_console_lock_files=auto])
+  [],[with_chrdev_lock_files=auto])
 AC_ARG_WITH([libssh2_transport],
   AC_HELP_STRING([--with-libssh2_transport], [libssh2 location @<:@default=check@:>@]),[],[with_libssh2_transport=check])
 
@@ -1437,25 +1437,25 @@ AM_CONDITIONAL([HAVE_AUDIT], [test "$with_audit" = "yes"])
 AC_SUBST([AUDIT_CFLAGS])
 AC_SUBST([AUDIT_LIBS])
 
-dnl UUCP style file locks for PTY consoles
-if test "$with_console_lock_files" != "no"; then
-  case $with_console_lock_files in
+dnl UUCP style file locks for character devices
+if test "$with_chrdev_lock_files" != "no"; then
+  case $with_chrdev_lock_files in
   yes | auto)
     dnl Default locations for platforms, or disable if unknown
     if test "$with_linux" = "yes"; then
-      with_console_lock_files=/var/lock
-    elif test "$with_console_lock_files" = "auto"; then
-      with_console_lock_files=no
+      with_chrdev_lock_files=/var/lock
+    elif test "$with_chrdev_lock_files" = "auto"; then
+      with_chrdev_lock_files=no
     fi ;;
   esac
-  if test "$with_console_lock_files" = "yes"; then
+  if test "$with_chrdev_lock_files" = "yes"; then
     AC_MSG_ERROR([You must specify path for the lock files on this
 platform])
   fi
-  AC_DEFINE_UNQUOTED([VIR_PTY_LOCK_FILE_PATH], "$with_console_lock_files",
-                      [path to directory containing UUCP pty lock files])
+  AC_DEFINE_UNQUOTED([VIR_CHRDEV_LOCK_FILE_PATH], "$with_chrdev_lock_files",
+                      [path to directory containing UUCP device lock files])
 fi
-AM_CONDITIONAL([VIR_PTY_LOCK_FILE_PATH], [test "$with_console_lock_files" != "no"])
+AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "no"])
 
 
 dnl SELinux
@@ -3293,16 +3293,16 @@ AC_MSG_NOTICE([  Alloc OOM: $enable_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([        Debug: $enable_debug])
-AC_MSG_NOTICE([  Use -Werror: $set_werror])
-AC_MSG_NOTICE([Warning Flags: $WARN_CFLAGS])
-AC_MSG_NOTICE([     Readline: $lv_use_readline])
-AC_MSG_NOTICE([       Python: $with_python])
-AC_MSG_NOTICE([       DTrace: $with_dtrace])
-AC_MSG_NOTICE([        numad: $with_numad])
-AC_MSG_NOTICE([  XML Catalog: $XML_CATALOG_FILE])
-AC_MSG_NOTICE([  Init script: $with_init_script])
-AC_MSG_NOTICE([Console locks: $with_console_lock_files])
+AC_MSG_NOTICE([            Debug: $enable_debug])
+AC_MSG_NOTICE([      Use -Werror: $set_werror])
+AC_MSG_NOTICE([    Warning Flags: $WARN_CFLAGS])
+AC_MSG_NOTICE([         Readline: $lv_use_readline])
+AC_MSG_NOTICE([           Python: $with_python])
+AC_MSG_NOTICE([           DTrace: $with_dtrace])
+AC_MSG_NOTICE([            numad: $with_numad])
+AC_MSG_NOTICE([      XML Catalog: $XML_CATALOG_FILE])
+AC_MSG_NOTICE([      Init script: $with_init_script])
+AC_MSG_NOTICE([Char device locks: $with_chrdev_lock_files])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])

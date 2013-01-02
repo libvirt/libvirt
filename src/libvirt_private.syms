@@ -1356,9 +1356,9 @@ virArchToString;
 
 
 # virchrdev.h
-virConsoleAlloc;
-virConsoleFree;
-virConsoleOpen;
+virChrdevAlloc;
+virChrdevFree;
+virChrdevOpen;
 
 
 # virdbus.h
