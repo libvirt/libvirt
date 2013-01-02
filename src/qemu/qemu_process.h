@@ -98,5 +98,6 @@ bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm);
 virBitmapPtr qemuPrepareCpumap(virQEMUDriverPtr driver,
                                virBitmapPtr nodemask);
+int qemuSetUnprivSGIO(virDomainDiskDefPtr disk);
 
 #endif /* __QEMU_PROCESS_H__ */

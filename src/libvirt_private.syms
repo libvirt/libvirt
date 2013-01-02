@@ -1284,6 +1284,7 @@ virGetDeviceUnprivSGIO;
 virGetGroupID;
 virGetGroupName;
 virGetHostname;
+virGetUnprivSGIOSysfsPath;
 virGetUserCacheDirectory;
 virGetUserConfigDirectory;
 virGetUserDirectory;

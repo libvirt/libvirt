@@ -3171,7 +3171,7 @@ virGetDeviceID(const char *path ATRRIBUTE_UNUSED,
 
 #define SYSFS_DEV_BLOCK_PATH "/sys/dev/block"
 
-static char *
+char *
 virGetUnprivSGIOSysfsPath(const char *path,
                           const char *sysfs_dir)
 {

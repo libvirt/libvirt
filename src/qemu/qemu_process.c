@@ -3409,6 +3409,34 @@ qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
     virHashForEach(driver->domains.objs, qemuProcessReconnectHelper, &data);
 }
 
+int
+qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
+{
+    int val = -1;
+
+    if (disk->sgio)
+        val = (disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED);
+
+    /* Ignore the setting if unpriv_sgio is not supported by the
+     * kernel, otherwise defaults to filter the SG_IO commands,
+     * I.E. Set unpriv_sgio to 0.
+     */
+    if (disk->sgio == VIR_DOMAIN_DISK_SGIO_DEFAULT &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        char *sysfs_path = NULL;
+
+        if ((sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL)) &&
+            virFileExists(sysfs_path))
+            val = 0;
+        VIR_FREE(sysfs_path);
+    }
+
+    if (val >= 0 && virSetDeviceUnprivSGIO(disk->src, NULL, val) < 0)
+        return -1;
+
+    return 0;
+}
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -3758,6 +3786,9 @@ int qemuProcessStart(virConnectPtr conn,
             if (qemuAddSharedDisk(driver->sharedDisks, disk->src) < 0)
                 goto cleanup;
         }
+
+        if (qemuSetUnprivSGIO(disk) < 0)
+            goto cleanup;
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
