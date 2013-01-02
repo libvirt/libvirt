@@ -1695,6 +1695,7 @@ qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps)
 
     virBitmapCopy(ret->flags, caps->flags);
 
+    ret->usedQMP = caps->usedQMP;
     ret->version = caps->version;
     ret->kvmVersion = caps->kvmVersion;
     ret->arch = caps->arch;
@@ -2632,4 +2633,10 @@ qemuCapsCacheFree(qemuCapsCachePtr cache)
     virHashFree(cache->binaries);
     virMutexDestroy(&cache->lock);
     VIR_FREE(cache);
+}
+
+bool
+qemuCapsUsedQMP(qemuCapsPtr caps)
+{
+    return caps->usedQMP;
 }

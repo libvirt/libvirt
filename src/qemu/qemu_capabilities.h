@@ -241,4 +241,5 @@ int qemuCapsParseDeviceStr(qemuCapsPtr caps, const char *str);
 
 VIR_ENUM_DECL(qemuCaps);
 
+bool qemuCapsUsedQMP(qemuCapsPtr caps);
 #endif /* __QEMU_CAPABILITIES_H__*/
