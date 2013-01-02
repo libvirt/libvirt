@@ -324,7 +324,7 @@ void virChrdevFree(virChrdevsPtr devs)
  * same FD by two processes.
  *
  * @devs Pointer to private structure holding data about device streams.
- * @path Path to the character device to be opened.
+ * @source Pointer to private structure holding data about device source.
  * @st Stream the client wishes to use for the device connection.
  * @force On true, close active device streams for the selected character
  *        device before opening this connection.
@@ -334,13 +334,28 @@ void virChrdevFree(virChrdevsPtr devs)
  * error and 1 if the device stream is open and busy.
  */
 int virChrdevOpen(virChrdevsPtr devs,
-                   const char *path,
-                   virStreamPtr st,
-                   bool force)
+                  virDomainChrSourceDefPtr source,
+                  virStreamPtr st,
+                  bool force)
 {
     virChrdevStreamInfoPtr cbdata = NULL;
     virStreamPtr savedStream;
+    const char *path;
     int ret;
+
+    switch (source->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        path = source->data.file.path;
+        break;
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        path = source->data.nix.path;
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported device type '%s'"),
+                       virDomainChrTypeToString(source->type));
+        return -1;
+    }
 
     virMutexLock(&devs->lock);
 
@@ -391,8 +406,21 @@ int virChrdevOpen(virChrdevsPtr devs,
     }
 
     /* open the character device */
-    if (virFDStreamOpenFile(st, path, 0, 0, O_RDWR) < 0)
+    switch (source->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        if (virFDStreamOpenFile(st, path, 0, 0, O_RDWR) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (virFDStreamConnectUNIX(st, path, false) < 0)
+            goto error;
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported device type '%s'"),
+                       virDomainChrTypeToString(source->type));
         goto error;
+    }
 
     /* add cleanup callback */
     virFDStreamSetInternalCloseCb(st,

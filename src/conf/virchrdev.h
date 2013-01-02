@@ -24,6 +24,7 @@
 # define __VIR_CHRDEV_H__
 
 # include "internal.h"
+# include "domain_conf.h"
 
 typedef struct _virChrdevs virChrdevs;
 typedef virChrdevs *virChrdevsPtr;
@@ -31,6 +32,6 @@ typedef virChrdevs *virChrdevsPtr;
 virChrdevsPtr virChrdevAlloc(void);
 void virChrdevFree(virChrdevsPtr devs);
 
-int virChrdevOpen(virChrdevsPtr devs, const char *path,
-                   virStreamPtr st, bool force);
+int virChrdevOpen(virChrdevsPtr devs, virDomainChrSourceDefPtr source,
+                  virStreamPtr st, bool force);
 #endif /*__VIR_CHRDEV_H__*/

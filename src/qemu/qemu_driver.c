@@ -12577,7 +12577,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
 
     /* handle mutually exclusive access to console devices */
     ret = virChrdevOpen(priv->devs,
-                        chr->source.data.file.path,
+                        &chr->source,
                         st,
                         (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 
