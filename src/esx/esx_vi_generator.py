@@ -4,6 +4,7 @@
 # esx_vi_generator.py: generates most of the SOAP type mapping code
 #
 # Copyright (C) 2010-2012 Matthias Bolte <matthias.bolte@googlemail.com>
+# Copyright (C) 2013 Ata E Husain Bohra <ata.husain@hotmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -785,16 +786,14 @@ class Object(Type):
             source += "ESX_VI__TEMPLATE__DYNAMIC_FREE(%s,\n" % self.name
             source += "{\n"
 
-            for extended_by in self.extended_by:
-                source += "    ESX_VI__TEMPLATE__DISPATCH__FREE(%s)\n" \
-                          % extended_by
+            source += self.generate_dispatch('FREE')
 
             source += "},\n"
             source += "{\n"
 
             if self.features & Object.FEATURE__LIST:
                 if self.extends is not None:
-                    # avoid "dereferencing type-punned pointer will brea
+                    # avoid "dereferencing type-punned pointer will break
                     # strict-aliasing rules" warnings
                     source += "    esxVI_%s *next = (esxVI_%s *)item->_next;\n\n" \
                               % (self.extends, self.extends)
@@ -1002,6 +1001,26 @@ class ManagedObject(Type):
             members += "    /* no properties */\n"
 
         return members
+
+
+    def generate_dispatch(self, suffix, is_first=True):
+        source = ""
+
+        if self.extended_by is not None:
+            if not is_first:
+                source += "\n"
+
+            source += "    /* %s */\n" % self.name
+
+            for extended_by in self.extended_by:
+                source += "    ESX_VI__TEMPLATE__DISPATCH__%s(%s)\n" \
+                          % (suffix, extended_by)
+
+            for extended_by in self.extended_by:
+                source += managed_objects_by_name[extended_by] \
+                          .generate_dispatch(suffix, False)
+
+        return source
 
 
     def generate_free_code(self, add_banner=False):
@@ -1220,13 +1239,12 @@ class ManagedObject(Type):
             source += "ESX_VI__TEMPLATE__DYNAMIC_FREE(%s,\n" % self.name
             source += "{\n"
 
-            for extended_by in self.extended_by:
-                source += "    ESX_VI__TEMPLATE__DISPATCH__FREE(%s)\n" % extended_by
+            source += self.generate_dispatch('FREE')
 
             source += "},\n"
             source += "{\n"
 
-            if self.features & Object.FEATURE__LIST:
+            if self.features & ManagedObject.FEATURE__LIST:
                 if self.extends is not None:
                     # avoid "dereferencing type-punned pointer will break
                     # strict-aliasing rules" warnings
