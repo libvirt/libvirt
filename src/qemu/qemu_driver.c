@@ -5814,6 +5814,11 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         goto end;
     }
 
+    if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        disk->shared &&
+        (qemuCheckSharedDisk(driver->sharedDisks, disk) < 0))
+        goto end;
+
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
         goto end;
 
