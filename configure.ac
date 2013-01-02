@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2005-2012 Red Hat, Inc.
+dnl Copyright (C) 2005-2013 Red Hat, Inc.
 dnl See COPYING.LIB for the License of this software
 
 AC_INIT([libvirt], [1.0.1], [libvir-list@redhat.com], [], [http://libvirt.org])
@@ -121,6 +121,12 @@ dnl Checks for C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
+
+dnl Setting AB_VERSION makes the 'autobuild' lines of configure output
+dnl slightly more useful
+if test -d $srcdir/.git && git --version >/dev/null 2>&1 ; then
+  AB_VERSION=`cd $srcdir && git describe --match 'v[[0-9]]*' 2>/dev/null`
+fi
 
 gl_EARLY
 gl_INIT
