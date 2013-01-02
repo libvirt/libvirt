@@ -12593,6 +12593,78 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainOpenChannel(virDomainPtr dom,
+                      const char *name,
+                      virStreamPtr st,
+                      unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    int i;
+    virDomainChrDefPtr chr = NULL;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(VIR_DOMAIN_CHANNEL_FORCE, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (name) {
+        for (i = 0 ; !chr && i < vm->def->nchannels ; i++) {
+            if (STREQ(name, vm->def->channels[i]->info.alias))
+                chr = vm->def->channels[i];
+
+            if (vm->def->channels[i]->targetType == \
+                VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+                STREQ(name, vm->def->channels[i]->target.name))
+                chr = vm->def->channels[i];
+        }
+    } else {
+        if (vm->def->nchannels)
+            chr = vm->def->channels[0];
+    }
+
+    if (!chr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find channel %s"),
+                       NULLSTR(name));
+        goto cleanup;
+    }
+
+    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("channel %s is not using a UNIX socket"),
+                       NULLSTR(name));
+        goto cleanup;
+    }
+
+    /* handle mutually exclusive access to channel devices */
+    ret = virChrdevOpen(priv->devs,
+                        &chr->source,
+                        st,
+                        (flags & VIR_DOMAIN_CHANNEL_FORCE) != 0);
+
+    if (ret == 1) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Active channel stream exists for this domain"));
+        ret = -1;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 static char *
 qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idx)
 {
@@ -14694,6 +14766,7 @@ static virDriver qemuDriver = {
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
     .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
     .domainFSTrim = qemuDomainFSTrim, /* 1.0.1 */
+    .domainOpenChannel = qemuDomainOpenChannel, /* 1.0.2 */
 };
 
 
