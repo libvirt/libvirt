@@ -971,24 +971,42 @@
     -->
   <define name="disk">
     <element name="disk">
-      <optional>
-        <attribute name="device">
-          <choice>
-            <value>floppy</value>
-            <value>disk</value>
-            <value>cdrom</value>
-            <value>lun</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="rawio">
-          <choice>
-            <value>yes</value>
-            <value>no</value>
-          </choice>
-        </attribute>
-      </optional>
+      <choice>
+        <group>
+          <optional>
+            <attribute name="device">
+              <choice>
+                <value>floppy</value>
+                <value>disk</value>
+                <value>cdrom</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="device">
+            <choice>
+              <value>lun</value>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="rawio">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="sgio">
+              <choice>
+                <value>filtered</value>
+                <value>unfiltered</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+      </choice>
       <optional>
         <ref name="snapshot"/>
       </optional>
