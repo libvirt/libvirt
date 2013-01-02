@@ -241,6 +241,12 @@ VIR_ENUM_IMPL(virDomainDiskIo, VIR_DOMAIN_DISK_IO_LAST,
               "default",
               "native",
               "threads")
+
+VIR_ENUM_IMPL(virDomainDiskSGIO, VIR_DOMAIN_DISK_SGIO_LAST,
+              "default",
+              "filtered",
+              "unfiltered")
+
 VIR_ENUM_IMPL(virDomainIoEventFd, VIR_DOMAIN_IO_EVENT_FD_LAST,
               "default",
               "on",
@@ -3593,6 +3599,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *device = NULL;
     char *snapshot = NULL;
     char *rawio = NULL;
+    char *sgio = NULL;
     char *driverName = NULL;
     char *driverType = NULL;
     char *source = NULL;
@@ -3657,6 +3664,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     snapshot = virXMLPropString(node, "snapshot");
 
     rawio = virXMLPropString(node, "rawio");
+    sgio = virXMLPropString(node, "sgio");
 
     cur = node->children;
     while (cur != NULL) {
@@ -4107,22 +4115,32 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
     }
 
+    if ((rawio || sgio) &&
+        (def->device != VIR_DOMAIN_DISK_DEVICE_LUN)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("rawio or sgio can be used only with "
+                         "device='lun'"));
+        goto error;
+    }
+
     if (rawio) {
         def->rawio_specified = true;
-        if (def->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            if (STREQ(rawio, "yes")) {
-                def->rawio = 1;
-            } else if (STREQ(rawio, "no")) {
-                def->rawio = 0;
-            } else {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("unknown disk rawio setting '%s'"),
-                               rawio);
-                goto error;
-            }
+        if (STREQ(rawio, "yes")) {
+            def->rawio = 1;
+        } else if (STREQ(rawio, "no")) {
+            def->rawio = 0;
         } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("rawio can be used only with device='lun'"));
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown disk rawio setting '%s'"),
+                           rawio);
+            goto error;
+        }
+    }
+
+    if (sgio) {
+        if ((def->sgio = virDomainDiskSGIOTypeFromString(sgio)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown disk sgio mode '%s'"), sgio);
             goto error;
         }
     }
@@ -4365,6 +4383,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(snapshot);
     VIR_FREE(rawio);
+    VIR_FREE(sgio);
     VIR_FREE(target);
     VIR_FREE(source);
     VIR_FREE(tray);
@@ -12132,6 +12151,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
     const char *copy_on_read = virDomainVirtioEventIdxTypeToString(def->copy_on_read);
     const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
+    const char *sgio = virDomainDiskSGIOTypeToString(def->sgio);
 
     int n;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -12161,6 +12181,11 @@ virDomainDiskDefFormat(virBufferPtr buf,
                        _("unexpected disk io mode %d"), def->iomode);
         return -1;
     }
+    if (!sgio) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected disk sgio mode '%d'"), def->sgio);
+        return -1;
+    }
 
     virBufferAsprintf(buf,
                       "    <disk type='%s' device='%s'",
@@ -12172,6 +12197,10 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, " rawio='no'");
         }
     }
+
+    if (def->sgio)
+        virBufferAsprintf(buf, " sgio='%s'", sgio);
+
     if (def->snapshot &&
         !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE && def->readonly))
         virBufferAsprintf(buf, " snapshot='%s'",
