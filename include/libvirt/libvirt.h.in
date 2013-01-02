@@ -3113,10 +3113,9 @@ typedef struct _virNodeDevice virNodeDevice;
  * virNodeDevicePtr:
  *
  * A virNodeDevicePtr is a pointer to a virNodeDevice structure.  Get
- * one via virNodeDeviceLookupByKey, virNodeDeviceLookupByName, or
- * virNodeDeviceCreate.  Be sure to Call virNodeDeviceFree when done
- * using a virNodeDevicePtr obtained from any of the above functions to
- * avoid leaking memory.
+ * one via, virNodeDeviceLookupByName, or virNodeDeviceCreate.  Be sure
+ * to Call virNodeDeviceFree when done using a virNodeDevicePtr obtained
+ * from any of the above functions to avoid leaking memory.
  */
 
 typedef virNodeDevice *virNodeDevicePtr;
