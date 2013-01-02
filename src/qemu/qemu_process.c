@@ -3744,6 +3744,8 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
     for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
         if (vm->def->disks[i]->rawio == 1)
 #ifdef CAP_SYS_RAWIO
             virCommandAllowCap(cmd, CAP_SYS_RAWIO);
@@ -3751,6 +3753,11 @@ int qemuProcessStart(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Raw I/O is not supported on this platform"));
 #endif
+
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
+            if (qemuAddSharedDisk(driver->sharedDisks, disk->src) < 0)
+                goto cleanup;
+        }
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
@@ -4146,6 +4153,14 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                                           vm->def,
                                           flags & VIR_QEMU_PROCESS_STOP_MIGRATED);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
+            ignore_value(qemuRemoveSharedDisk(driver->sharedDisks, disk->src));
+        }
+    }
 
     /* Clear out dynamically assigned labels */
     for (i = 0; i < vm->def->nseclabels; i++) {

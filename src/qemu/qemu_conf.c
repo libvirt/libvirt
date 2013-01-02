@@ -552,3 +552,89 @@ qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
 
     virHashForEach(driver->closeCallbacks, qemuDriverCloseCallbackRun, &data);
 }
+
+/* Construct the hash key for sharedDisks as "major:minor" */
+char *
+qemuGetSharedDiskKey(const char *disk_path)
+{
+    int maj, min;
+    char *key = NULL;
+    int rc;
+
+    if ((rc = virGetDeviceID(disk_path, &maj, &min)) < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to get minor number of device '%s'"),
+                             disk_path);
+        return NULL;
+    }
+
+    if (virAsprintf(&key, "%d:%d", maj, min) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return key;
+}
+
+/* Increase ref count if the entry already exists, otherwise
+ * add a new entry.
+ */
+int
+qemuAddSharedDisk(virHashTablePtr sharedDisks,
+                  const char *disk_path)
+{
+    size_t *ref = NULL;
+    char *key = NULL;
+
+    if (!(key = qemuGetSharedDiskKey(disk_path)))
+        return -1;
+
+    if ((ref = virHashLookup(sharedDisks, key))) {
+        if (virHashUpdateEntry(sharedDisks, key, ++ref) < 0) {
+             VIR_FREE(key);
+             return -1;
+        }
+    } else {
+        if (virHashAddEntry(sharedDisks, key, (void *)0x1)) {
+            VIR_FREE(key);
+            return -1;
+        }
+    }
+
+    VIR_FREE(key);
+    return 0;
+}
+
+/* Decrease the ref count if the entry already exists, otherwise
+ * remove the entry.
+ */
+int
+qemuRemoveSharedDisk(virHashTablePtr sharedDisks,
+                     const char *disk_path)
+{
+    size_t *ref = NULL;
+    char *key = NULL;
+
+    if (!(key = qemuGetSharedDiskKey(disk_path)))
+        return -1;
+
+    if (!(ref = virHashLookup(sharedDisks, key))) {
+        VIR_FREE(key);
+        return -1;
+    }
+
+    if (ref != (void *)0x1) {
+        if (virHashUpdateEntry(sharedDisks, key, --ref) < 0) {
+             VIR_FREE(key);
+             return -1;
+        }
+    } else {
+        if (virHashRemoveEntry(sharedDisks, key) < 0) {
+            VIR_FREE(key);
+            return -1;
+        }
+    }
+
+    VIR_FREE(key);
+    return 0;
+}

@@ -843,6 +843,9 @@ qemuStartup(bool privileged,
     if ((qemu_driver->inactivePciHostdevs = pciDeviceListNew()) == NULL)
         goto error;
 
+    if (!(qemu_driver->sharedDisks = virHashCreate(30, NULL)))
+        goto error;
+
     if (privileged) {
         if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
             virReportSystemError(errno,
@@ -1096,6 +1099,7 @@ qemuShutdown(void) {
     pciDeviceListFree(qemu_driver->activePciHostdevs);
     pciDeviceListFree(qemu_driver->inactivePciHostdevs);
     usbDeviceListFree(qemu_driver->activeUsbHostdevs);
+    virHashFree(qemu_driver->sharedDisks);
     virCapabilitiesFree(qemu_driver->caps);
     qemuCapsCacheFree(qemu_driver->capsCache);
 
@@ -5860,6 +5864,15 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(disk->src));
     }
+
+    if (ret == 0 &&
+        disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        disk->shared) {
+        if (qemuAddSharedDisk(driver->sharedDisks, disk->src) < 0)
+            VIR_WARN("Failed to add disk '%s' to shared disk table",
+                     disk->src);
+    }
+
 end:
     if (cgroup)
         virCgroupFree(&cgroup);
@@ -5974,6 +5987,15 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                        virDomainDiskDeviceTypeToString(disk->type));
         break;
     }
+
+    if (ret == 0 &&
+        disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        disk->shared) {
+        if (qemuRemoveSharedDisk(driver->sharedDisks, disk->src) < 0)
+             VIR_WARN("Failed to remove disk '%s' from shared disk table",
+                      disk->src);
+    }
+
     return ret;
 }
 
