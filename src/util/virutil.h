@@ -281,4 +281,15 @@ bool virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);
 bool virValidateWWN(const char *wwn);
 
 bool virStrIsPrint(const char *str);
+
+int virGetDeviceID(const char *path,
+                   int *maj,
+                   int *min);
+int virSetDeviceUnprivSGIO(const char *path,
+                           const char *sysfs_dir,
+                           int unpriv_sgio);
+int virGetDeviceUnprivSGIO(const char *path,
+                           const char *sysfs_dir,
+                           int *unpriv_sgio);
+
 #endif /* __VIR_UTIL_H__ */
