@@ -1,5 +1,5 @@
 /**
- * virconsole.c: api to guarantee mutually exclusive
+ * virchrdev.c: api to guarantee mutually exclusive
  * access to domain's consoles
  *
  * Copyright (C) 2011-2012 Red Hat, Inc.
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include "virconsole.h"
+#include "virchrdev.h"
 #include "virhash.h"
 #include "fdstream.h"
 #include "internal.h"

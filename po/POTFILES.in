@@ -22,7 +22,7 @@ src/conf/secret_conf.c
 src/conf/snapshot_conf.c
 src/conf/storage_conf.c
 src/conf/storage_encryption_conf.c
-src/conf/virconsole.c
+src/conf/virchrdev.c
 src/cpu/cpu.c
 src/cpu/cpu_generic.c
 src/cpu/cpu_map.c

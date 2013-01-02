@@ -1,5 +1,5 @@
 /**
- * virconsole.h: api to guarantee mutually exclusive
+ * virchrdev.h: api to guarantee mutually exclusive
  * access to domain's consoles
  *
  * Copyright (C) 2011-2012 Red Hat, Inc.

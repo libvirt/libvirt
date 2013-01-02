@@ -1355,7 +1355,7 @@ virArchGetWordSize;
 virArchToString;
 
 
-# virconsole.h
+# virchrdev.h
 virConsoleAlloc;
 virConsoleFree;
 virConsoleOpen;

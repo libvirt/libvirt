@@ -31,7 +31,7 @@
 # include "qemu_agent.h"
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
-# include "virconsole.h"
+# include "virchrdev.h"
 
 # define QEMU_EXPECTED_VIRT_TYPES      \
     ((1 << VIR_DOMAIN_VIRT_QEMU) |     \
