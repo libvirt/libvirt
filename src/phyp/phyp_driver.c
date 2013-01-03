@@ -76,7 +76,6 @@ static int
 waitsocket(int socket_fd, LIBSSH2_SESSION * session)
 {
     struct timeval timeout;
-    int rc;
     fd_set fd;
     fd_set *writefd = NULL;
     fd_set *readfd = NULL;
@@ -98,9 +97,7 @@ waitsocket(int socket_fd, LIBSSH2_SESSION * session)
     if (dir & LIBSSH2_SESSION_BLOCK_OUTBOUND)
         writefd = &fd;
 
-    rc = select(socket_fd + 1, readfd, writefd, NULL, &timeout);
-
-    return rc;
+    return select(socket_fd + 1, readfd, writefd, NULL, &timeout);
 }
 
 /* this function is the layer that manipulates the ssh channel itself
@@ -131,7 +128,11 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
     while ((channel = libssh2_channel_open_session(session)) == NULL &&
            libssh2_session_last_error(session, NULL, NULL, 0) ==
            LIBSSH2_ERROR_EAGAIN) {
-        waitsocket(sock, session);
+        if (waitsocket(sock, session) < 0 && errno != EINTR) {
+            virReportSystemError(errno, "%s",
+                                 _("unable to wait on libssh2 socket"));
+            goto err;
+        }
     }
 
     if (channel == NULL) {
@@ -140,7 +141,11 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
 
     while ((rc = libssh2_channel_exec(channel, cmd)) ==
            LIBSSH2_ERROR_EAGAIN) {
-        waitsocket(sock, session);
+        if (waitsocket(sock, session) < 0 && errno != EINTR) {
+            virReportSystemError(errno, "%s",
+                                 _("unable to wait on libssh2 socket"));
+            goto err;
+        }
     }
 
     if (rc != 0) {
@@ -161,7 +166,11 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
         /* this is due to blocking that would occur otherwise so we loop on
          * this condition */
         if (rc == LIBSSH2_ERROR_EAGAIN) {
-            waitsocket(sock, session);
+            if (waitsocket(sock, session) < 0 && errno != EINTR) {
+                virReportSystemError(errno, "%s",
+                                     _("unable to wait on libssh2 socket"));
+                goto err;
+            }
         } else {
             break;
         }
@@ -170,7 +179,11 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
     exitcode = 127;
 
     while ((rc = libssh2_channel_close(channel)) == LIBSSH2_ERROR_EAGAIN) {
-        waitsocket(sock, session);
+        if (waitsocket(sock, session) < 0 && errno != EINTR) {
+            virReportSystemError(errno, "%s",
+                                 _("unable to wait on libssh2 socket"));
+            goto err;
+        }
     }
 
     if (rc == 0) {
@@ -735,7 +748,11 @@ phypUUIDTable_Pull(virConnectPtr conn)
                 LIBSSH2_ERROR_EAGAIN) {
                 goto err;
             } else {
-                waitsocket(sock, session);
+                if (waitsocket(sock, session) < 0 && errno != EINTR) {
+                    virReportSystemError(errno, "%s",
+                                         _("unable to wait on libssh2 socket"));
+                    goto err;
+                }
             }
         }
     } while (!channel);
@@ -769,7 +786,12 @@ phypUUIDTable_Pull(virConnectPtr conn)
             /* this is due to blocking that would occur otherwise
              * so we loop on this condition */
 
-            waitsocket(sock, session);  /* now we wait */
+            /* now we wait */
+            if (waitsocket(sock, session) < 0 && errno != EINTR) {
+                virReportSystemError(errno, "%s",
+                                     _("unable to wait on libssh2 socket"));
+                goto err;
+            }
             continue;
         }
         break;
