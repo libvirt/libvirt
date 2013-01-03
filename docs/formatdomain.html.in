@@ -2557,12 +2557,15 @@
       virtualport types (and also to leave out certain attributes); at
       domain startup time, a complete <code>&lt;virtualport&gt;</code>
       element will be constructed by merging together the type and
-      attributes found in the which will be filled in from the network
-      or portgroup <code>&lt;virtualport&gt;</code>)
+      attributes defined in the network and the portgroup referenced
+      by the interface. The newly-constructed virtualport is a combination
+      of them. The attributes from lower virtualport can't make change
+      on the ones defined in higher virtualport.
+      Interface takes the highest priority, portgroup is lowest priority.
       (<span class="since">Since 0.10.0</span>). For example, in order
       to work properly with both an 802.1Qbh switch and an Open vSwitch
       switch, you may choose to specify no type, but both
-      an <code>instanceid</code> (in case the switch is 802.1Qbh) and
+      an <code>profileid</code> (in case the switch is 802.1Qbh) and
       an <code>interfaceid</code> (in case the switch is Open vSwitch)
       (you may also omit the other attributes, such as managerid,
       typeid, or profileid, to be filled in from the

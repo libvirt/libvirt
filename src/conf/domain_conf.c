@@ -5020,7 +5020,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        def->type == VIR_DOMAIN_NET_TYPE_INTERNAL &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 internal = virXMLPropString(cur, "name");
-            } else if (!network &&
+            } else if (!bridge &&
                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 bridge = virXMLPropString(cur, "bridge");
@@ -5054,7 +5054,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                                      " <interface type='%s'>"), type);
                     goto error;
                 }
-            } else if (!network &&
+            } else if (!address &&
                        (def->type == VIR_DOMAIN_NET_TYPE_SERVER ||
                         def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
                         def->type == VIR_DOMAIN_NET_TYPE_MCAST) &&
