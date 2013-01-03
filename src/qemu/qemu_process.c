@@ -1709,6 +1709,15 @@ cleanup:
     if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
+        if (qemuCapsUsedQMP(caps)) {
+            if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
+                return -1;
+
+            if (VIR_ALLOC_N(buf, buf_size) < 0) {
+                virReportOOMError();
+                goto closelog;
+            }
+        }
         qemuProcessReadLogFD(logfd, buf, buf_size, strlen(buf));
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("process exited while connecting to monitor: %s"),
