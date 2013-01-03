@@ -1687,9 +1687,9 @@ DISTCLEANFILES += virtlockd.service virtlockd.socket
 
 install-systemd: virtlockd.service virtlockd.socket install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_SCRIPT) virtlockd.service \
+	$(INSTALL_DATA) virtlockd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_SCRIPT) virtlockd.socket \
+	$(INSTALL_DATA) virtlockd.socket \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
 
 uninstall-systemd: uninstall-sysconfig
