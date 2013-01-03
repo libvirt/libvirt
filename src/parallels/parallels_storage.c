@@ -146,7 +146,7 @@ static char *parallelsMakePoolName(virConnectPtr conn, const char *path)
         if (i == 0)
             name = strdup(path);
         else
-            virAsprintf(&name, "%s-%u", path, i);
+            ignore_value(virAsprintf(&name, "%s-%u", path, i));
 
         if (!name) {
             virReportOOMError();
@@ -310,8 +310,7 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
     if (VIR_ALLOC(def))
         goto no_memory;
 
-    virAsprintf(&def->name, "%s-%s", dom->def->name, diskName);
-    if (!def->name)
+    if (virAsprintf(&def->name, "%s-%s", dom->def->name, diskName) < 0)
         goto no_memory;
 
     def->type = VIR_STORAGE_VOL_FILE;
