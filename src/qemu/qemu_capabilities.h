@@ -163,6 +163,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_DEVICE_VIDEO_PRIMARY = 123, /* safe to use -device XXX
                                            for primary video device */
     QEMU_CAPS_SCLP_S390          = 124, /* -device sclp* */
+    QEMU_CAPS_DEVICE_USB_SERIAL  = 125, /* -device usb-serial */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
