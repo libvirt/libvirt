@@ -293,7 +293,8 @@ static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
 
     lockspace = virLockSpaceNew(NULL);
 
-    mkdir(LOCKSPACE_DIR, 0700);
+    if (mkdir(LOCKSPACE_DIR, 0700) < 0)
+        goto cleanup;
 
     if (virLockSpaceCreateResource(lockspace, LOCKSPACE_DIR "/foo") < 0)
         goto cleanup;
