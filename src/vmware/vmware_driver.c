@@ -949,7 +949,7 @@ static void vmwareDomainObjListUpdateDomain(void *payload, const void *name ATTR
     struct vmware_driver *driver = data;
     virDomainObjPtr vm = payload;
     virDomainObjLock(vm);
-    vmwareUpdateVMStatus(driver, vm);
+    ignore_value(vmwareUpdateVMStatus(driver, vm));
     virDomainObjUnlock(vm);
 }
 
