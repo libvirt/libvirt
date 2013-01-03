@@ -11408,6 +11408,24 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                 }
             }
 
+            if (def->dom) {
+                if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
+                    def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+                    align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+                    align_match = false;
+                }
+
+                if (virDomainSnapshotAlignDisks(def, align_location,
+                                                align_match) < 0) {
+                    /* revert stealing of the snapshot domain definition */
+                    if (def->dom && !other->def->dom) {
+                        other->def->dom = def->dom;
+                        def->dom = NULL;
+                    }
+                    goto cleanup;
+                }
+            }
+
             if (other == vm->current_snapshot) {
                 update_current = true;
                 vm->current_snapshot = NULL;
@@ -11417,18 +11435,20 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
              * child relations by reusing snap.  */
             virDomainSnapshotDropParent(other);
             virDomainSnapshotDefFree(other->def);
-            other->def = NULL;
+            other->def = def;
+            def = NULL;
             snap = other;
-        }
-        if (def->dom) {
-            if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
-                def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-                align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-                align_match = false;
+        } else {
+            if (def->dom) {
+                if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
+                    def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+                    align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+                    align_match = false;
+                }
+                if (virDomainSnapshotAlignDisks(def, align_location,
+                                                align_match) < 0)
+                    goto cleanup;
             }
-            if (virDomainSnapshotAlignDisks(def, align_location,
-                                            align_match) < 0)
-                goto cleanup;
         }
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
@@ -11463,11 +11483,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
     }
 
-    if (snap)
-        snap->def = def;
-    else if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-        goto cleanup;
-    def = NULL;
+    if (!snap) {
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+            goto cleanup;
+
+        def = NULL;
+    }
 
     if (update_current)
         snap->def->current = true;
