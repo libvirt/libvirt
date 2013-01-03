@@ -201,6 +201,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "device-video-primary",
               "s390-sclp",
               "usb-serial",
+              "usb-net",
 
     );
 
@@ -1348,6 +1349,7 @@ struct qemuCapsStringFlags qemuCapsObjectTypes[] = {
     { "cirrus-vga", QEMU_CAPS_DEVICE_CIRRUS_VGA },
     { "vmware-svga", QEMU_CAPS_DEVICE_VMWARE_SVGA },
     { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL},
+    { "usb-net", QEMU_CAPS_DEVICE_USB_NET},
 };
 
 
