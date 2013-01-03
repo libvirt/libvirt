@@ -179,7 +179,9 @@ testParseVMXFileName(const char *fileName, void *opaque ATTRIBUTE_UNUSED)
             goto cleanup;
         }
 
-        virAsprintf(&src, "[%s] %s", datastoreName, directoryAndFileName);
+        if (virAsprintf(&src, "[%s] %s", datastoreName,
+                        directoryAndFileName) < 0)
+            goto cleanup;
     } else if (STRPREFIX(fileName, "/")) {
         /* Found absolute path referencing a file outside a datastore */
         src = strdup(fileName);
@@ -188,7 +190,8 @@ testParseVMXFileName(const char *fileName, void *opaque ATTRIBUTE_UNUSED)
         src = NULL;
     } else {
         /* Found single file name referencing a file inside a datastore */
-        virAsprintf(&src, "[datastore] directory/%s", fileName);
+        if (virAsprintf(&src, "[datastore] directory/%s", fileName) < 0)
+            goto cleanup;
     }
 
   cleanup:

@@ -193,8 +193,9 @@ testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
             directoryAndFileName += strspn(directoryAndFileName, " ");
         }
 
-        virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s", datastoreName,
-                    directoryAndFileName);
+        if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s", datastoreName,
+                        directoryAndFileName) < 0)
+            goto cleanup;
     } else if (STRPREFIX(src, "/")) {
         /* Found absolute path */
         absolutePath = strdup(src);
