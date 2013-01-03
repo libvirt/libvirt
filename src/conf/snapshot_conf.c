@@ -1058,17 +1058,23 @@ cleanup:
 
 
 bool
-virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap)
+virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def)
 {
     int i;
 
-    if (snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+    if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
         return true;
 
-    for (i = 0; i < snap->def->ndisks; i++) {
-        if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+    for (i = 0; i < def->ndisks; i++) {
+        if (def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
             return true;
     }
 
     return false;
+}
+
+bool
+virDomainSnapshotIsExternal(virDomainSnapshotObjPtr snap)
+{
+    return virDomainSnapshotDefIsExternal(snap->def);
 }
