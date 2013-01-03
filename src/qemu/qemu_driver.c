@@ -11410,7 +11410,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
             if (def->dom) {
                 if (def->state == VIR_DOMAIN_DISK_SNAPSHOT ||
-                    def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+                    virDomainSnapshotDefIsExternal(def)) {
                     align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
                     align_match = false;
                 }
