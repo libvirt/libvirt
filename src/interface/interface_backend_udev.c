@@ -654,9 +654,8 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
         ifacedef->data.bridge.stp = stp;
 
         /* Members of the bridge */
-        virAsprintf(&member_path, "%s/%s",
-                    udev_device_get_syspath(dev), "brif");
-        if (!member_path) {
+        if (virAsprintf(&member_path, "%s/%s",
+                        udev_device_get_syspath(dev), "brif") < 0) {
             virReportOOMError();
             goto cleanup;
         }
