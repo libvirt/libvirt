@@ -1,7 +1,7 @@
 /*
  * network_conf.c: network XML handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3138,7 +3138,7 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
     virNetworkDNSHostDef host;
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
-    bool foundCt = 0;
+    int foundCt = 0;
 
     memset(&host, 0, sizeof(host));
 
@@ -3229,12 +3229,12 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
                           /* virNetworkUpdateFlags */
                           unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    int ii, foundIdx, ret = -1;
+    int ii, foundIdx = -1, ret = -1;
     virNetworkDNSDefPtr dns = &def->dns;
     virNetworkDNSSrvDef srv;
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
                   command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST);
-    bool foundCt = 0;
+    int foundCt = 0;
 
     memset(&srv, 0, sizeof(srv));
 
