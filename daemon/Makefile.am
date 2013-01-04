@@ -273,14 +273,16 @@ uninstall-sysconfig:
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
 if WITH_SYSCTL
+# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
+# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
 install-sysctl:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysctl.d
+	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
-	  $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
+	  $(DESTDIR)$(prefix)/lib/sysctl.d/libvirtd.conf
 
 uninstall-sysctl:
-	rm -f $(DESTDIR)$(sysconfdir)/sysctl.d/libvirtd
-	rmdir $(DESTDIR)$(sysconfdir)/sysctl.d || :
+	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/libvirtd.conf
+	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
 else
 install-sysctl:
 uninstall-sysctl:
