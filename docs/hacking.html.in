@@ -59,6 +59,21 @@
         version if needed though).</p>
       </li>
 
+      <li><p>In your commit message, make the summary line reasonably
+          short (60 characters is typical), followed by a blank line,
+          followed by any longer description of why your patch makes
+          sense.  If the patch fixes a regression, and you know what
+          commit introduced the problem, mentioning that is useful.
+          If the patch resolves a bugzilla report, mentioning the URL
+          of the bug number is useful; but also summarize the issue
+          rather than making all readers follow the link.  You can use
+          'git shortlog -30' to get an idea of typical summary lines.
+          Libvirt does not currently attach any meaning to
+          Signed-off-by: lines, so it is up to you if you want to
+          include or omit them in the commit message.
+        </p>
+      </li>
+
       <li><p>Split large changes into a series of smaller patches,
         self-contained if possible, with an explanation of each patch
         and an explanation of how the sequence of patches fits
@@ -110,7 +125,10 @@
 <pre>
   ./qemuxml2xmltest
 </pre>
-
+        <p>There is also a <code>./run</code> script at the top level,
+          to make it easier to run programs that have not yet been
+          installed, as well as to wrap invocations of various tests
+          under gdb or valgrind.</p>
       </li>
       <li>Update tests and/or documentation, particularly if you are adding
         a new feature or changing the output of a program.</li>

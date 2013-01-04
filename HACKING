@@ -58,7 +58,19 @@ though).
 
 
 
-(3) Split large changes into a series of smaller patches, self-contained if
+(3) In your commit message, make the summary line reasonably short (60 characters
+is typical), followed by a blank line, followed by any longer description of
+why your patch makes sense. If the patch fixes a regression, and you know what
+commit introduced the problem, mentioning that is useful. If the patch
+resolves a bugzilla report, mentioning the URL of the bug number is useful;
+but also summarize the issue rather than making all readers follow the link.
+You can use 'git shortlog -30' to get an idea of typical summary lines.
+Libvirt does not currently attach any meaning to Signed-off-by: lines, so it
+is up to you if you want to include or omit them in the commit message.
+
+
+
+(4) Split large changes into a series of smaller patches, self-contained if
 possible, with an explanation of each patch and an explanation of how the
 sequence of patches fits together. Moreover, please keep in mind that it's
 required to be able to compile cleanly (*including* "make check" and "make
@@ -69,10 +81,10 @@ things).
 
 
 
-(4) Make sure your patches apply against libvirt GIT. Developers only follow GIT
+(5) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.
 
-(5) Run the automated tests on your code before submitting any changes. In
+(6) Run the automated tests on your code before submitting any changes. In
 particular, configure with compile warnings set to -Werror. This is done
 automatically for a git checkout; from a tarball, use:
 
@@ -97,7 +109,13 @@ Also, individual tests can be run from inside the "tests/" directory, like:
 
   ./qemuxml2xmltest
 
-(6) Update tests and/or documentation, particularly if you are adding a new
+There is also a "./run" script at the top level, to make it easier to run
+programs that have not yet been installed, as well as to wrap invocations of
+various tests under gdb or valgrind.
+
+
+
+(7) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
 
 
