@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2012 Red Hat, Inc.
+## Copyright (C) 2005-2013 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 INCLUDES = \
@@ -84,8 +84,8 @@ CLEANFILES += test_libvirtd.aug
 
 libvirtd.8: $(srcdir)/libvirtd.8.in
 	$(AM_V_GEN)sed \
-	    -e 's!SYSCONFDIR!$(sysconfdir)!g' \
-	    -e 's!LOCALSTATEDIR!$(localstatedir)!g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \
 	mv $@-t $@
 
@@ -181,7 +181,7 @@ endif
 
 libvirtd.policy: libvirtd.policy.in $(top_builddir)/config.status
 	$(AM_V_GEN) sed \
-	    -e 's![@]authaction[@]!$(policyauth)!g' \
+	    -e 's|[@]authaction[@]|$(policyauth)|g' \
 	    < $< > $@-t && \
 	mv $@-t $@
 BUILT_SOURCES += libvirtd.policy
@@ -222,25 +222,25 @@ BUILT_SOURCES += $(LOGROTATE_CONFS)
 
 libvirtd.logrotate: libvirtd.logrotate.in
 	$(AM_V_GEN)sed						\
-	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
 	$(AM_V_GEN)sed						\
-	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
 	$(AM_V_GEN)sed						\
-	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    < $< > $@-t &&					\
 	    mv $@-t $@
 
 libvirtd.uml.logrotate: libvirtd.uml.logrotate.in
 	$(AM_V_GEN)sed						\
-	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    < $< > $@-t &&					\
 	    mv $@-t $@
 
@@ -340,21 +340,21 @@ uninstall-init-systemd:
 endif # LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed					\
-	    -e s!\@localstatedir\@!$(localstatedir)!g	\
-	    -e s!\@sbindir\@!$(sbindir)!g		\
-	    -e s!\@sysconfdir\@!$(sysconfdir)!g		\
-	    < $< > $@-t &&				\
-	    chmod a+x $@-t &&				\
+	$(AM_V_GEN)sed						\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
+	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
+	    < $< > $@-t &&					\
+	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
 libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed					\
-	    -e s!\@localstatedir\@!$(localstatedir)!g	\
-	    -e s!\@sbindir\@!$(sbindir)!g		\
-	    -e s!\@sysconfdir\@!$(sysconfdir)!g		\
-	    < $< > $@-t &&				\
-	    chmod a+x $@-t &&				\
+	$(AM_V_GEN)sed						\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
+	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
+	    < $< > $@-t &&					\
+	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
 

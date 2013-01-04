@@ -20,19 +20,19 @@
 #               on virtual machine disk images
 #
 # processname: virtlockd
-# pidfile: ::localstatedir::/run/libvirt/virtlockd.pid
+# pidfile: @localstatedir@/run/libvirt/virtlockd.pid
 #
 
 # Source function library.
-. ::sysconfdir::/rc.d/init.d/functions
+. @sysconfdir@/rc.d/init.d/functions
 
 SERVICE=virtlockd
 PROCESS=virtlockd
-PIDFILE=::localstatedir::/run/libvirt/lockd/$SERVICE.pid
+PIDFILE=@localstatedir@/run/libvirt/lockd/$SERVICE.pid
 
 VIRTLOCKD_ARGS=
 
-test -f ::sysconfdir::/sysconfig/virtlockd && . ::sysconfdir::/sysconfig/virtlockd
+test -f @sysconfdir@/sysconfig/virtlockd && . @sysconfdir@/sysconfig/virtlockd
 
 RETVAL=0
 
@@ -41,7 +41,7 @@ start() {
     daemon --pidfile $PIDFILE --check $SERVICE $PROCESS --daemon $VIRTLOCKD_ARGS
     RETVAL=$?
     echo
-    [ $RETVAL -eq 0 ] && touch ::localstatedir::/lock/subsys/$SERVICE
+    [ $RETVAL -eq 0 ] && touch @localstatedir@/lock/subsys/$SERVICE
 }
 
 stop() {
@@ -51,7 +51,7 @@ stop() {
     RETVAL=$?
     echo
     if [ $RETVAL -eq 0 ]; then
-        rm -f ::localstatedir::/lock/subsys/$SERVICE
+        rm -f @localstatedir@/lock/subsys/$SERVICE
         rm -f $PIDFILE
     fi
 }
@@ -83,7 +83,7 @@ case "$1" in
         reload
         ;;
     condrestart|try-restart)
-        [ -f ::localstatedir::/lock/subsys/$SERVICE ] && restart || :
+        [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
         ;;
     *)
         echo $"Usage: $0 {start|stop|status|restart|condrestart|reload|force-reload|try-restart}"
