@@ -10,9 +10,9 @@ fi
 
 LOCKSPACE="__LIBVIRT__DISKS__"
 
-LOCKDIR=`augtool print '/files@SYSCONFDIR@/libvirt/qemu-sanlock.conf/disk_lease_dir'`
+LOCKDIR=`augtool print '/files@sysconfdir@/libvirt/qemu-sanlock.conf/disk_lease_dir'`
 if test $? != 0 || "x$LOCKDIR" = "x" ; then
-  LOCKDIR="@LOCALSTATEDIR@/lib/libvirt/sanlock"
+  LOCKDIR="@localstatedir@/lib/libvirt/sanlock"
 fi
 
 notify() {
@@ -80,7 +80,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2011 Red Hat, Inc.
+Copyright (C) 2011, 2013 Red Hat, Inc.
 
 =head1 LICENSE
 

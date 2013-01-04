@@ -25,7 +25,7 @@ echo Found "$CERTOOL"
 #
 # Check the directory structure
 #
-SYSCONFDIR="@SYSCONFDIR@"
+SYSCONFDIR="@sysconfdir@"
 PKI="$SYSCONFDIR/pki"
 if [ ! -d "$PKI" ]
 then

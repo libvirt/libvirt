@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2012 Red Hat, Inc.
+## Copyright (C) 2005-2013 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 # No libraries with the exception of LIBXML should be listed

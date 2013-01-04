@@ -57,7 +57,7 @@ if [ -z "$TYPE" ]; then
   esac
 fi
 
-SCHEMA="@SCHEMADIR@/${TYPE}.rng"
+SCHEMA="@schemadir@/${TYPE}.rng"
 
 if [ ! -f "$SCHEMA" ]; then
   echo "$0: schema $SCHEMA does not exist"
