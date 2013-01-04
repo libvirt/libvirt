@@ -2018,6 +2018,9 @@ qemuCapsProbeQMPObjects(qemuCapsPtr caps,
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (qemuCapsGet(caps, QEMU_CAPS_CHARDEV_SPICEVMC))
         qemuCapsClear(caps, QEMU_CAPS_DEVICE_SPICEVMC);
+    /* If qemu supports newer -device qxl it supports -vga qxl as well */
+    if (qemuCapsGet(caps, QEMU_CAPS_DEVICE_QXL))
+        qemuCapsSet(caps, QEMU_CAPS_VGA_QXL);
 
     return 0;
 }
