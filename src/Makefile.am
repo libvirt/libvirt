@@ -1707,9 +1707,7 @@ endif
 
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
 	    < $< > $@-t &&					\
 	    chmod a+x $@-t &&					\
 	    mv $@-t $@
@@ -1717,8 +1715,6 @@ virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
 virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed						\
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
 	    < $< > $@-t &&					\
 	    chmod a+x $@-t &&					\
 	    mv $@-t $@
