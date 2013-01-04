@@ -1632,9 +1632,9 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %if 0%{?fedora} >= 14 || 0%{?rhel} >= 6
-%config(noreplace) %{_sysconfdir}/sysctl.d/libvirtd
+%config(noreplace) %{_prefix}/lib/sysctl.d/libvirtd.conf
 %else
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/sysctl.d/libvirtd
+rm -f $RPM_BUILD_ROOT%{_prefix}/lib/sysctl.d/libvirtd.conf
 %endif
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
