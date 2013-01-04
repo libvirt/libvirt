@@ -260,7 +260,6 @@ libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
 	    -e 's|[@]libexecdir[@]|$(libexecdir)|g'		\
 	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
 

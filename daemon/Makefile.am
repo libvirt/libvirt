@@ -348,7 +348,6 @@ libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
 	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
 	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
 
