@@ -177,6 +177,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/gtk-doc/*
 
 rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt_iohelper.exe
 rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt_iohelper.exe
+rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt-guests.sh
+rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 
 # Mingw32
