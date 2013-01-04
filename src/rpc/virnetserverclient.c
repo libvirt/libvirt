@@ -767,6 +767,7 @@ readmore:
 
         /* Decode the header so we can use it for routing decisions */
         if (virNetMessageDecodeHeader(msg) < 0) {
+            virNetMessageQueueServe(&client->rx);
             virNetMessageFree(msg);
             client->wantClose = true;
             return;
