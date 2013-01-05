@@ -7035,9 +7035,29 @@ qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
             if (qemuBuildDeviceAddressStr(&cmd, &serial->info, caps) < 0)
                 goto error;
         }
-    } else
-        virBufferAsprintf(&cmd, "isa-serial,chardev=char%s,id=%s",
+    } else {
+        virBufferAsprintf(&cmd, "%s,chardev=char%s,id=%s",
+                          virDomainChrSerialTargetTypeToString(serial->targetType),
                           serial->info.alias, serial->info.alias);
+
+        if (serial->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+            if (!qemuCapsGet(caps, QEMU_CAPS_DEVICE_USB_SERIAL)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("usb-serial is not supported in this QEMU binary"));
+                goto error;
+            }
+
+            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("usb-serial requires address of usb type"));
+                goto error;
+            }
+
+            if (qemuBuildDeviceAddressStr(&cmd, &serial->info, caps) < 0)
+               goto error;
+        }
+    }
 
     if (virBufferError(&cmd)) {
         virReportOOMError();

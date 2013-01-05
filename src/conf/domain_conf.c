@@ -342,6 +342,11 @@ VIR_ENUM_IMPL(virDomainNetInterfaceLinkState, VIR_DOMAIN_NET_INTERFACE_LINK_STAT
               "up",
               "down")
 
+VIR_ENUM_IMPL(virDomainChrSerialTarget,
+              VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST,
+              "isa-serial",
+              "usb-serial")
+
 VIR_ENUM_IMPL(virDomainChrChannelTarget,
               VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
               "none",
@@ -5466,6 +5471,9 @@ virDomainChrDefaultTargetType(virCapsPtr caps,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        target = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
+        break;
+
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     default:
         /* No target type yet*/
@@ -5478,7 +5486,8 @@ virDomainChrDefaultTargetType(virCapsPtr caps,
 
 static int
 virDomainChrTargetTypeFromString(virCapsPtr caps,
-                                 virDomainDefPtr def,
+                                 virDomainDefPtr vmdef,
+                                 virDomainChrDefPtr def,
                                  int devtype,
                                  const char *targetType)
 {
@@ -5486,7 +5495,7 @@ virDomainChrTargetTypeFromString(virCapsPtr caps,
     int target = 0;
 
     if (!targetType) {
-        target = virDomainChrDefaultTargetType(caps, def, devtype);
+        target = virDomainChrDefaultTargetType(caps, vmdef, devtype);
         goto out;
     }
 
@@ -5500,11 +5509,16 @@ virDomainChrTargetTypeFromString(virCapsPtr caps,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        target = virDomainChrSerialTargetTypeFromString(targetType);
+        break;
+
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     default:
         /* No target type yet*/
         break;
     }
+
+    def->targetTypeAttr = true;
 
 out:
     ret = target;
@@ -5524,7 +5538,7 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
     const char *portStr = NULL;
 
     if ((def->targetType =
-         virDomainChrTargetTypeFromString(caps, vmdef,
+         virDomainChrTargetTypeFromString(caps, vmdef, def,
                                           def->deviceType, targetType)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown target type '%s' specified for character device"),
@@ -5956,6 +5970,15 @@ virDomainChrDefParseXML(virCapsPtr caps,
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
+
+    if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        def->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("usb-serial requires address of usb type"));
+        goto error;
+    }
 
 cleanup:
     VIR_FREE(type);
@@ -7959,6 +7982,9 @@ virDomainChrTargetTypeToString(int deviceType,
         break;
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
         type = virDomainChrConsoleTargetTypeToString(targetType);
+        break;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        type = virDomainChrSerialTargetTypeToString(targetType);
         break;
     default:
         break;
@@ -13119,6 +13145,15 @@ virDomainChrDefFormat(virBufferPtr buf,
                           def->target.port);
         break;
 
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        if (def->targetTypeAttr) {
+            virBufferAsprintf(buf,
+                              "      <target type='%s' port='%d'/>\n",
+                              virDomainChrTargetTypeToString(def->deviceType,
+                                                             def->targetType),
+                              def->target.port);
+            break;
+        }
     default:
         virBufferAsprintf(buf, "      <target port='%d'/>\n",
                           def->target.port);
@@ -14446,6 +14481,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             (n < def->nserials)) {
             memcpy(&console, def->serials[n], sizeof(console));
             console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+            console.targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
         } else {
             memcpy(&console, def->consoles[n], sizeof(console));
         }

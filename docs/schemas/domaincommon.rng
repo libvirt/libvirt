@@ -2473,12 +2473,26 @@
     </attribute>
   </define>
 
+  <define name='qemucdevSerialTgtType'>
+    <attribute name='type'>
+      <choice>
+        <value>isa-serial</value>
+        <value>usb-serial</value>
+      </choice>
+    </attribute>
+  </define>
+
   <define  name="qemucdevTgtDef">
     <element name="target">
       <interleave>
-        <optional>
-          <ref name="qemucdevConsoleTgtType"/>
-        </optional>
+        <choice>
+          <optional>
+            <ref name="qemucdevConsoleTgtType"/>
+          </optional>
+          <optional>
+            <ref name="qemucdevSerialTgtType"/>
+          </optional>
+        </choice>
         <optional>
           <attribute name="port"/>
         </optional>

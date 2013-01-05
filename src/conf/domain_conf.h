@@ -918,6 +918,13 @@ enum virDomainChrDeviceType {
     VIR_DOMAIN_CHR_DEVICE_TYPE_LAST
 };
 
+enum virDomainChrSerialTargetType {
+    VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA = 0,
+    VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB,
+
+    VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST
+};
+
 enum virDomainChrChannelTargetType {
     VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE = 0,
     VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD,
@@ -1005,6 +1012,8 @@ struct _virDomainChrSourceDef {
 /* A complete character device, both host and domain views.  */
 struct _virDomainChrDef {
     int deviceType;
+
+    bool targetTypeAttr;
     int targetType;
     union {
         int port; /* parallel, serial, console */
@@ -2262,6 +2271,7 @@ VIR_ENUM_DECL(virDomainNetInterfaceLinkState)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChrConsoleTarget)
+VIR_ENUM_DECL(virDomainChrSerialTarget)
 VIR_ENUM_DECL(virDomainSmartcard)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainChrTcpProtocol)
