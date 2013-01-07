@@ -240,8 +240,6 @@ class index:
                 self.includes[name] = d
             elif type == "struct":
                 self.structs[name] = d
-            elif type == "struct":
-                self.structs[name] = d
             elif type == "union":
                 self.unions[name] = d
             elif type == "enum":
