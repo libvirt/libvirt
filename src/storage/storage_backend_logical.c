@@ -264,7 +264,7 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
 
 cleanup:
     VIR_FREE(regex);
-    VIR_FREE(reg);
+    regfree(reg);
     VIR_FREE(vars);
     if (is_new_vol && (ret == -1))
         virStorageVolDefFree(vol);
