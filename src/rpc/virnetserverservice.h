@@ -40,21 +40,27 @@ typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
+# if HAVE_GNUTLS
+                                                 virNetTLSContextPtr tls,
+# endif
                                                  bool readonly,
-                                                 size_t nrequests_client_max,
-                                                 virNetTLSContextPtr tls);
+                                                 size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
+# if HAVE_GNUTLS
+                                                  virNetTLSContextPtr tls,
+# endif
                                                   bool readonly,
-                                                  size_t nrequests_client_max,
-                                                  virNetTLSContextPtr tls);
+                                                  size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,
+# if HAVE_GNUTLS
+                                                virNetTLSContextPtr tls,
+# endif
                                                 bool readonly,
-                                                size_t nrequests_client_max,
-                                                virNetTLSContextPtr tls);
+                                                size_t nrequests_client_max);
 
 virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object);
 
@@ -65,7 +71,9 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc);
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
 size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc);
+# ifdef HAVE_GNUTLS
 virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc);
+# endif
 
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,

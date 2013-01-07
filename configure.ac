@@ -1025,30 +1025,62 @@ CFLAGS="$old_cflags"
 LIBS="$old_libs"
 
 dnl GnuTLS library
-GNUTLS_CFLAGS=
-GNUTLS_LIBS=
-GNUTLS_FOUND=no
-if test -x "$PKG_CONFIG" ; then
-  PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED,
-     [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
-fi
-if test "$GNUTLS_FOUND" = "no"; then
+AC_ARG_WITH([gnutls],
+  AC_HELP_STRING([--with-gnutls], [use GNUTLS for encryption @<:@default=check@:>@]),
+  [],
+  [with_gnutls=check])
+
+
+if test "x$with_gnutls" != "xno"; then
+  if test "x$with_gnutls" != "xyes" && test "x$with_gnutls" != "xcheck"; then
+    GNUTLS_CFLAGS="-I$with_gnutls/include"
+    GNUTLS_LIBS="-L$with_gnutls/lib"
+  fi
   fail=0
+  old_cflags="$CFLAGS"
   old_libs="$LIBS"
-  AC_CHECK_HEADER([gnutls/gnutls.h], [], [fail=1])
-  AC_CHECK_LIB([gnutls], [gnutls_handshake],[], [fail=1], [-lgcrypt])
+  CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
+  LIBS="$LIBS $GNUTLS_LIBS"
 
-  test $fail = 1 &&
-    AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])
+  GNUTLS_FOUND=no
+  if test -x "$PKG_CONFIG" ; then
+    PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED,
+      [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
+  fi
+  if test "$GNUTLS_FOUND" = "no"; then
+    fail=0
+    AC_CHECK_HEADER([gnutls/gnutls.h], [], [fail=1])
+    AC_CHECK_LIB([gnutls], [gnutls_handshake],[], [fail=1], [-lgcrypt])
 
-  dnl Not all versions of gnutls include -lgcrypt, and so we add
-  dnl it explicitly for the calls to gcry_control/check_version
-  GNUTLS_LIBS="$LIBS -lgcrypt"
+    test $fail = 0 && GNUTLS_FOUND=yes
+
+    GNUTLS_LIBS="$GNUTLS_LIBS -lgnutls"
+  fi
+  if test "$GNUTLS_FOUND" = "no"; then
+    if test "$with_gnutls" = "check"; then
+      with_gnutls=no
+      GNUTLS_LIBS=
+      GNUTLS_CFLAGS=
+    else
+      AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])
+    fi
+  else
+    dnl Not all versions of gnutls include -lgcrypt, and so we add
+    dnl it explicitly for the calls to gcry_control/check_version
+    GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
+
+    with_gnutls=yes
+  fi
+
   LIBS="$old_libs"
-else
-  GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
+  CFLAGS="$old_CFLAGS"
 fi
 
+if test "x$with_gnutls" = "xyes" ; then
+  AC_DEFINE_UNQUOTED([HAVE_GNUTLS], 1,
+      [whether GNUTLS is available for encryption])
+fi
+AM_CONDITIONAL([HAVE_GNUTLS], [test "x$with_gnutls" = "xyes"])
 AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
 
@@ -3168,7 +3200,11 @@ AC_MSG_NOTICE([ libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
 else
 AC_MSG_NOTICE([ libssh2: no])
 fi
+if test "$with_gnutls" != "no" ; then
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
+else
+AC_MSG_NOTICE([  gnutls: no])
+fi
 if test "$with_sasl" != "no" ; then
 AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
 else

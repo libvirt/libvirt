@@ -80,7 +80,9 @@ struct private_data {
 
     int counter; /* Serial number for RPC */
 
+#ifdef HAVE_GNUTLS
     virNetTLSContextPtr tls;
+#endif
 
     int is_secure;              /* Secure if TLS or SASL or UNIX sockets */
     char *type;                 /* Cached return from remoteType. */
@@ -596,12 +598,19 @@ doRemoteOpen(virConnectPtr conn,
     /* Connect to the remote service. */
     switch (transport) {
     case trans_tls:
+#ifdef HAVE_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
                                                   sanity, verify);
         if (!priv->tls)
             goto failed;
         priv->is_secure = 1;
+#else
+        (void)sanity;
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("GNUTLS support not available in this build"));
+        goto failed;
+#endif
 
         /*FALLTHROUGH*/
     case trans_tcp:
@@ -609,11 +618,13 @@ doRemoteOpen(virConnectPtr conn,
         if (!priv->client)
             goto failed;
 
+#ifdef HAVE_GNUTLS
         if (priv->tls) {
             VIR_DEBUG("Starting TLS session");
             if (virNetClientSetTLSSession(priv->client, priv->tls) < 0)
                 goto failed;
         }
+#endif
 
         break;
 
@@ -1001,8 +1012,10 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         ret = -1;
 
+#ifdef HAVE_GNUTLS
     virObjectUnref(priv->tls);
     priv->tls = NULL;
+#endif
     virNetClientSetCloseCallback(priv->client,
                                  NULL,
                                  NULL,
@@ -3880,6 +3893,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                                             saslcb)))
         goto cleanup;
 
+# ifdef HAVE_GNUTLS
     /* Initialize some connection props we care about */
     if (priv->tls) {
         if ((ssf = virNetClientGetTLSKeySize(priv->client)) < 0)
@@ -3891,6 +3905,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
         if (virNetSASLSessionExtKeySize(sasl, ssf) < 0)
             goto cleanup;
     }
+# endif
 
     /* If we've got a secure channel (TLS or UNIX sock), we don't care about SSF */
     /* If we're not secure, then forbid any anonymous or trivially crackable auth */

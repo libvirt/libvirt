@@ -23,7 +23,9 @@
 #ifndef __VIR_NET_CLIENT_H__
 # define __VIR_NET_CLIENT_H__
 
-# include "virnettlscontext.h"
+# ifdef HAVE_GNUTLS
+#  include "virnettlscontext.h"
+# endif
 # include "virnetmessage.h"
 # ifdef HAVE_SASL
 #  include "virnetsaslcontext.h"
@@ -107,8 +109,10 @@ void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl);
 # endif
 
+# ifdef HAVE_GNUTLS
 int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls);
+# endif
 
 bool virNetClientIsEncrypted(virNetClientPtr client);
 bool virNetClientIsOpen(virNetClientPtr client);
@@ -116,7 +120,9 @@ bool virNetClientIsOpen(virNetClientPtr client);
 const char *virNetClientLocalAddrString(virNetClientPtr client);
 const char *virNetClientRemoteAddrString(virNetClientPtr client);
 
+# ifdef HAVE_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client);
+# endif
 
 void virNetClientClose(virNetClientPtr client);
 

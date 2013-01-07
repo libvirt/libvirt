@@ -41,7 +41,9 @@ struct _virNetServerService {
     bool readonly;
     size_t nrequests_client_max;
 
+#if HAVE_GNUTLS
     virNetTLSContextPtr tls;
+#endif
 
     virNetServerServiceDispatchFunc dispatchFunc;
     void *dispatchOpaque;
@@ -90,9 +92,11 @@ cleanup:
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
+#if HAVE_GNUTLS
+                                                 virNetTLSContextPtr tls,
+#endif
                                                  bool readonly,
-                                                 size_t nrequests_client_max,
-                                                 virNetTLSContextPtr tls)
+                                                 size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
     size_t i;
@@ -106,7 +110,9 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
+#if HAVE_GNUTLS
     svc->tls = virObjectRef(tls);
+#endif
 
     if (virNetSocketNewListenTCP(nodename,
                                  service,
@@ -144,9 +150,11 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
+#if HAVE_GNUTLS
+                                                  virNetTLSContextPtr tls,
+#endif
                                                   bool readonly,
-                                                  size_t nrequests_client_max,
-                                                  virNetTLSContextPtr tls)
+                                                  size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
     int i;
@@ -160,7 +168,9 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
+#if HAVE_GNUTLS
     svc->tls = virObjectRef(tls);
+#endif
 
     svc->nsocks = 1;
     if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
@@ -202,9 +212,11 @@ error:
 
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,
+#if HAVE_GNUTLS
+                                                virNetTLSContextPtr tls,
+#endif
                                                 bool readonly,
-                                                size_t nrequests_client_max,
-                                                virNetTLSContextPtr tls)
+                                                size_t nrequests_client_max)
 {
     virNetServerServicePtr svc;
     int i;
@@ -218,7 +230,9 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
+#if HAVE_GNUTLS
     svc->tls = virObjectRef(tls);
+#endif
 
     svc->nsocks = 1;
     if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
@@ -401,11 +415,12 @@ size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc)
     return svc->nrequests_client_max;
 }
 
+#if HAVE_GNUTLS
 virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc)
 {
     return svc->tls;
 }
-
+#endif
 
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,
@@ -425,7 +440,9 @@ void virNetServerServiceDispose(void *obj)
         virObjectUnref(svc->socks[i]);
     VIR_FREE(svc->socks);
 
+#if HAVE_GNUTLS
     virObjectUnref(svc->tls);
+#endif
 }
 
 void virNetServerServiceToggle(virNetServerServicePtr svc,

@@ -98,7 +98,9 @@ struct _virNetServer {
 
     unsigned int quit :1;
 
+#ifdef HAVE_GNUTLS
     virNetTLSContextPtr tls;
+#endif
 
     unsigned int autoShutdownTimeout;
     size_t autoShutdownInhibitions;
@@ -309,7 +311,9 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetAuth(svc),
                                          virNetServerServiceIsReadonly(svc),
                                          virNetServerServiceGetMaxRequests(svc),
+#if HAVE_GNUTLS
                                          virNetServerServiceGetTLSContext(svc),
+#endif
                                          srv->clientPrivNew,
                                          srv->clientPrivPreExecRestart,
                                          srv->clientPrivFree,
@@ -1034,12 +1038,14 @@ no_memory:
     return -1;
 }
 
+#if HAVE_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls)
 {
     srv->tls = virObjectRef(tls);
     return 0;
 }
+#endif
 
 
 static void virNetServerAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,

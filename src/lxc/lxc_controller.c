@@ -631,9 +631,11 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
                                            0700,
                                            0,
                                            0,
+#if HAVE_GNUTLS
+                                           NULL,
+#endif
                                            false,
-                                           5,
-                                           NULL)))
+                                           5)))
         goto error;
 
     if (virNetServerAddService(ctrl->server, svc, NULL) < 0)

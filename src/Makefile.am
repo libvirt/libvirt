@@ -1771,7 +1771,6 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h rpc/virnetmessage.c \
 	rpc/virnetprotocol.h rpc/virnetprotocol.c \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
-	rpc/virnettlscontext.h rpc/virnettlscontext.c \
 	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c \
 	rpc/virkeepalive.h rpc/virkeepalive.c
 if HAVE_LIBSSH2
@@ -1780,6 +1779,13 @@ libvirt_net_rpc_la_SOURCES += \
 else
 EXTRA_DIST += \
 	rpc/virnetsshsession.h rpc/virnetsshsession.c
+endif
+if HAVE_GNUTLS
+libvirt_net_rpc_la_SOURCES += \
+	rpc/virnettlscontext.h rpc/virnettlscontext.c
+else
+EXTRA_DIST += \
+	rpc/virnettlscontext.h rpc/virnettlscontext.c
 endif
 if HAVE_SASL
 libvirt_net_rpc_la_SOURCES += \

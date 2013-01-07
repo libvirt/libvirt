@@ -449,7 +449,9 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     virNetServerServicePtr svc = NULL;
     virNetServerServicePtr svcRO = NULL;
     virNetServerServicePtr svcTCP = NULL;
+#if HAVE_GNUTLS
     virNetServerServicePtr svcTLS = NULL;
+#endif
     gid_t unix_sock_gid = 0;
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
@@ -474,9 +476,11 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                            unix_sock_rw_mask,
                                            unix_sock_gid,
                                            config->auth_unix_rw,
+#if HAVE_GNUTLS
+                                           NULL,
+#endif
                                            false,
-                                           config->max_client_requests,
-                                           NULL)))
+                                           config->max_client_requests)))
         goto error;
     if (sock_path_ro) {
         VIR_DEBUG("Registering unix socket %s", sock_path_ro);
@@ -484,9 +488,11 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                  unix_sock_ro_mask,
                                                  unix_sock_gid,
                                                  config->auth_unix_ro,
+#if HAVE_GNUTLS
+                                                 NULL,
+#endif
                                                  true,
-                                                 config->max_client_requests,
-                                                 NULL)))
+                                                 config->max_client_requests)))
             goto error;
     }
 
@@ -507,9 +513,11 @@ static int daemonSetupNetworking(virNetServerPtr srv,
             if (!(svcTCP = virNetServerServiceNewTCP(config->listen_addr,
                                                      config->tcp_port,
                                                      config->auth_tcp,
+#if HAVE_GNUTLS
+                                                     NULL,
+#endif
                                                      false,
-                                                     config->max_client_requests,
-                                                     NULL)))
+                                                     config->max_client_requests)))
                 goto error;
 
             if (virNetServerAddService(srv, svcTCP,
@@ -517,6 +525,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                 goto error;
         }
 
+#if HAVE_GNUTLS
         if (config->listen_tls) {
             virNetTLSContextPtr ctxt = NULL;
 
@@ -546,9 +555,9 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                   virNetServerServiceNewTCP(config->listen_addr,
                                             config->tls_port,
                                             config->auth_tls,
+                                            ctxt,
                                             false,
-                                            config->max_client_requests,
-                                            ctxt))) {
+                                            config->max_client_requests))) {
                 virObjectUnref(ctxt);
                 goto error;
             }
@@ -559,13 +568,23 @@ static int daemonSetupNetworking(virNetServerPtr srv,
 
             virObjectUnref(ctxt);
         }
+#else
+        (void)privileged;
+        if (config->listen_tls) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This libvirtd build does not support TLS"));
+            goto error;
+        }
+#endif
     }
 
 #if HAVE_SASL
     if (config->auth_unix_rw == REMOTE_AUTH_SASL ||
         config->auth_unix_ro == REMOTE_AUTH_SASL ||
-        config->auth_tcp == REMOTE_AUTH_SASL ||
-        config->auth_tls == REMOTE_AUTH_SASL) {
+# if HAVE_GNUTLS
+        config->auth_tls == REMOTE_AUTH_SASL ||
+# endif
+        config->auth_tcp == REMOTE_AUTH_SASL) {
         saslCtxt = virNetSASLContextNewServer(
             (const char *const*)config->sasl_allowed_username_list);
         if (!saslCtxt)
@@ -576,7 +595,9 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     return 0;
 
 error:
+#if HAVE_GNUTLS
     virObjectUnref(svcTLS);
+#endif
     virObjectUnref(svcTCP);
     virObjectUnref(svc);
     virObjectUnref(svcRO);

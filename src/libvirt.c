@@ -55,7 +55,9 @@
 #include "configmake.h"
 #include "intprops.h"
 #include "virconf.h"
-#include "rpc/virnettlscontext.h"
+#if HAVE_GNUTLS
+# include "rpc/virnettlscontext.h"
+#endif
 #include "vircommand.h"
 #include "virrandom.h"
 #include "viruri.h"
@@ -268,6 +270,8 @@ winsock_init(void)
 }
 #endif
 
+
+#ifdef HAVE_GNUTLS
 static int virTLSMutexInit(void **priv)
 {
     virMutexPtr lock = NULL;
@@ -308,11 +312,11 @@ static int virTLSMutexUnlock(void **priv)
 
 static struct gcry_thread_cbs virTLSThreadImpl = {
     /* GCRY_THREAD_OPTION_VERSION was added in gcrypt 1.4.2 */
-#ifdef GCRY_THREAD_OPTION_VERSION
+# ifdef GCRY_THREAD_OPTION_VERSION
     (GCRY_THREAD_OPTION_PTHREAD | (GCRY_THREAD_OPTION_VERSION << 8)),
-#else
+# else
     GCRY_THREAD_OPTION_PTHREAD,
-#endif
+# endif
     NULL,
     virTLSMutexInit,
     virTLSMutexDestroy,
@@ -320,6 +324,7 @@ static struct gcry_thread_cbs virTLSThreadImpl = {
     virTLSMutexUnlock,
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
+#endif
 
 /* Helper macros to implement VIR_DOMAIN_DEBUG using just C99.  This
  * assumes you pass fewer than 15 arguments to VIR_DOMAIN_DEBUG, but
@@ -403,12 +408,16 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
+#ifdef HAVE_GNUTLS
     gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
     gcry_check_version(NULL);
+#endif
 
     virLogSetFromEnv();
 
+#ifdef HAVE_GNUTLS
     virNetTLSInit();
+#endif
 
 #if HAVE_LIBCURL
     curl_global_init(CURL_GLOBAL_DEFAULT);

@@ -91,7 +91,7 @@ test_programs = virshtest sockettest \
 	commandtest seclabeltest \
 	virhashtest virnetmessagetest virnetsockettest \
 	viratomictest \
-	utiltest virnettlscontexttest shunloadtest \
+	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
 	virbitmaptest \
@@ -99,6 +99,10 @@ test_programs = virshtest sockettest \
 	virstringtest \
 	sysinfotest \
 	$(NULL)
+
+if HAVE_GNUTLS
+test_programs += virnettlscontexttest
+endif
 
 if WITH_SECDRIVER_SELINUX
 test_programs += securityselinuxtest
@@ -526,6 +530,7 @@ virnetsockettest_SOURCES = \
 virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetsockettest_LDADD = $(LDADDS)
 
+if HAVE_GNUTLS
 virnettlscontexttest_SOURCES = \
 	virnettlscontexttest.c testutils.h testutils.c
 virnettlscontexttest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
@@ -535,6 +540,10 @@ virnettlscontexttest_SOURCES += pkix_asn1_tab.c
 virnettlscontexttest_LDADD += -ltasn1
 else
 EXTRA_DIST += pkix_asn1_tab.c
+endif
+else
+EXTRA_DIST += \
+	virnettlscontexttest.c testutils.h testutils.c pkix_asn1_tab.c
 endif
 
 virtimetest_SOURCES = \

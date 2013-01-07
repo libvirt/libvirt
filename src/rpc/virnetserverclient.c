@@ -66,8 +66,10 @@ struct _virNetServerClient
     int auth;
     bool readonly;
     char *identity;
+#if HAVE_GNUTLS
     virNetTLSContextPtr tlsCtxt;
     virNetTLSSessionPtr tls;
+#endif
 #if HAVE_SASL
     virNetSASLSessionPtr sasl;
 #endif
@@ -147,13 +149,18 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
 
 
     VIR_DEBUG("tls=%p hs=%d, rx=%p tx=%p",
+#ifdef HAVE_GNUTLS
               client->tls,
               client->tls ? virNetTLSSessionGetHandshakeStatus(client->tls) : -1,
+#else
+              NULL, -1,
+#endif
               client->rx,
               client->tx);
     if (!client->sock || client->wantClose)
         return 0;
 
+#if HAVE_GNUTLS
     if (client->tls) {
         switch (virNetTLSSessionGetHandshakeStatus(client->tls)) {
         case VIR_NET_TLS_HANDSHAKE_RECVING:
@@ -170,6 +177,7 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
                 mode |= VIR_EVENT_HANDLE_WRITABLE;
         }
     } else {
+#endif
         /* If there is a message on the rx queue, and
          * we're not in middle of a delayedClose, then
          * we're wanting more input */
@@ -180,7 +188,9 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client) {
            then monitor for writability on socket */
         if (client->tx)
             mode |= VIR_EVENT_HANDLE_WRITABLE;
+#if HAVE_GNUTLS
     }
+#endif
     VIR_DEBUG("mode=%o", mode);
     return mode;
 }
@@ -287,6 +297,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
 }
 
 
+#ifdef HAVE_GNUTLS
 /* Check the client's access. */
 static int
 virNetServerClientCheckAccess(virNetServerClientPtr client)
@@ -322,6 +333,8 @@ virNetServerClientCheckAccess(virNetServerClientPtr client)
 
     return 0;
 }
+#endif
+
 
 static void virNetServerClientSockTimerFunc(int timer,
                                             void *opaque)
@@ -340,9 +353,11 @@ static void virNetServerClientSockTimerFunc(int timer,
 static virNetServerClientPtr
 virNetServerClientNewInternal(virNetSocketPtr sock,
                               int auth,
+#ifdef HAVE_GNUTLS
+                              virNetTLSContextPtr tls,
+#endif
                               bool readonly,
-                              size_t nrequests_max,
-                              virNetTLSContextPtr tls)
+                              size_t nrequests_max)
 {
     virNetServerClientPtr client;
 
@@ -360,7 +375,9 @@ virNetServerClientNewInternal(virNetSocketPtr sock,
     client->sock = virObjectRef(sock);
     client->auth = auth;
     client->readonly = readonly;
+#ifdef HAVE_GNUTLS
     client->tlsCtxt = virObjectRef(tls);
+#endif
     client->nrequests_max = nrequests_max;
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
@@ -394,7 +411,9 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
+#ifdef HAVE_GNUTLS
                                             virNetTLSContextPtr tls,
+#endif
                                             virNetServerClientPrivNew privNew,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
@@ -402,9 +421,19 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
 {
     virNetServerClientPtr client;
 
-    VIR_DEBUG("sock=%p auth=%d tls=%p", sock, auth, tls);
+    VIR_DEBUG("sock=%p auth=%d tls=%p", sock, auth,
+#ifdef HAVE_GNUTLS
+              tls
+#else
+              NULL
+#endif
+        );
 
-    if (!(client = virNetServerClientNewInternal(sock, auth, readonly, nrequests_max, tls)))
+    if (!(client = virNetServerClientNewInternal(sock, auth,
+#ifdef HAVE_GNUTLS
+                                                 tls,
+#endif
+                                                 readonly, nrequests_max)))
         return NULL;
 
     if (privNew) {
@@ -470,9 +499,11 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
 
     if (!(client = virNetServerClientNewInternal(sock,
                                                  auth,
+#ifdef HAVE_GNUTLS
+                                                 NULL,
+#endif
                                                  readonly,
-                                                 nrequests_max,
-                                                 NULL))) {
+                                                 nrequests_max))) {
         virObjectUnref(sock);
         return NULL;
     }
@@ -571,6 +602,7 @@ bool virNetServerClientGetReadonly(virNetServerClientPtr client)
 }
 
 
+#ifdef HAVE_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client)
 {
     bool has;
@@ -589,6 +621,7 @@ int virNetServerClientGetTLSKeySize(virNetServerClientPtr client)
     virNetServerClientUnlock(client);
     return size;
 }
+#endif
 
 int virNetServerClientGetFD(virNetServerClientPtr client)
 {
@@ -615,8 +648,10 @@ bool virNetServerClientIsSecure(virNetServerClientPtr client)
 {
     bool secure = false;
     virNetServerClientLock(client);
+#if HAVE_GNUTLS
     if (client->tls)
         secure = true;
+#endif
 #if HAVE_SASL
     if (client->sasl)
         secure = true;
@@ -626,6 +661,7 @@ bool virNetServerClientIsSecure(virNetServerClientPtr client)
     virNetServerClientUnlock(client);
     return secure;
 }
+
 
 
 #if HAVE_SASL
@@ -730,8 +766,10 @@ void virNetServerClientDispose(void *obj)
 #endif
     if (client->sockTimer > 0)
         virEventRemoveTimeout(client->sockTimer);
+#if HAVE_GNUTLS
     virObjectUnref(client->tls);
     virObjectUnref(client->tlsCtxt);
+#endif
     virObjectUnref(client->sock);
     virNetServerClientUnlock(client);
     virMutexDestroy(&client->lock);
@@ -784,10 +822,12 @@ void virNetServerClientClose(virNetServerClientPtr client)
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
 
+#if HAVE_GNUTLS
     if (client->tls) {
         virObjectUnref(client->tls);
         client->tls = NULL;
     }
+#endif
     client->wantClose = true;
 
     while (client->rx) {
@@ -847,10 +887,13 @@ int virNetServerClientInit(virNetServerClientPtr client)
 {
     virNetServerClientLock(client);
 
+#if HAVE_GNUTLS
     if (!client->tlsCtxt) {
+#endif
         /* Plain socket, so prepare to read first message */
         if (virNetServerClientRegisterEvent(client) < 0)
             goto error;
+#if HAVE_GNUTLS
     } else {
         int ret;
 
@@ -879,6 +922,7 @@ int virNetServerClientInit(virNetServerClientPtr client)
             goto error;
         }
     }
+#endif
 
     virNetServerClientUnlock(client);
     return 0;
@@ -1180,6 +1224,8 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
     }
 }
 
+
+#if HAVE_GNUTLS
 static void
 virNetServerClientDispatchHandshake(virNetServerClientPtr client)
 {
@@ -1202,6 +1248,7 @@ virNetServerClientDispatchHandshake(virNetServerClientPtr client)
         client->wantClose = true;
     }
 }
+#endif
 
 static void
 virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque)
@@ -1218,17 +1265,21 @@ virNetServerClientDispatchEvent(virNetSocketPtr sock, int events, void *opaque)
 
     if (events & (VIR_EVENT_HANDLE_WRITABLE |
                   VIR_EVENT_HANDLE_READABLE)) {
+#if HAVE_GNUTLS
         if (client->tls &&
             virNetTLSSessionGetHandshakeStatus(client->tls) !=
             VIR_NET_TLS_HANDSHAKE_COMPLETE) {
             virNetServerClientDispatchHandshake(client);
         } else {
+#endif
             if (events & VIR_EVENT_HANDLE_WRITABLE)
                 virNetServerClientDispatchWrite(client);
             if (events & VIR_EVENT_HANDLE_READABLE &&
                 client->rx)
                 virNetServerClientDispatchRead(client);
+#if HAVE_GNUTLS
         }
+#endif
     }
 
     /* NB, will get HANGUP + READABLE at same time upon

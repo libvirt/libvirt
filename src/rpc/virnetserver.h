@@ -26,7 +26,9 @@
 
 # include <signal.h>
 
-# include "virnettlscontext.h"
+# ifdef HAVE_GNUTLS
+#  include "virnettlscontext.h"
+# endif
 # include "virnetserverprogram.h"
 # include "virnetserverclient.h"
 # include "virnetserverservice.h"
@@ -79,8 +81,10 @@ int virNetServerAddService(virNetServerPtr srv,
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);
 
+# if HAVE_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls);
+# endif
 
 void virNetServerUpdateServices(virNetServerPtr srv,
                                 bool enabled);
