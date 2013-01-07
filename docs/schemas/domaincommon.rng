@@ -2467,6 +2467,8 @@
         <value>virtio</value>
         <value>lxc</value>
         <value>openvz</value>
+        <value>sclp</value>
+        <value>sclplm</value>
       </choice>
     </attribute>
   </define>

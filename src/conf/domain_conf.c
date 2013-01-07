@@ -355,7 +355,9 @@ VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               "uml",
               "virtio",
               "lxc",
-              "openvz")
+              "openvz",
+              "sclp",
+              "sclplm")
 
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "parallel",
