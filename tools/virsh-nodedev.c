@@ -447,6 +447,12 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         case VIR_NODE_DEV_CAP_STORAGE:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE;
             break;
+        case VIR_NODE_DEV_CAP_FC_HOST:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST;
+            break;
+        case VIR_NODE_DEV_CAP_VPORTS:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS;
+            break;
         default:
             break;
         }

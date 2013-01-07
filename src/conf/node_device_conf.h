@@ -46,6 +46,8 @@ enum virNodeDevCapType {
     VIR_NODE_DEV_CAP_SCSI_TARGET,	/* SCSI Target */
     VIR_NODE_DEV_CAP_SCSI,		/* SCSI device */
     VIR_NODE_DEV_CAP_STORAGE,		/* Storage device */
+    VIR_NODE_DEV_CAP_FC_HOST,		/* FC Host Bus Adapter */
+    VIR_NODE_DEV_CAP_VPORTS,		/* HBA which is capable of vports */
     VIR_NODE_DEV_CAP_LAST
 };
 
@@ -263,7 +265,9 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST     | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET   | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS)
 
 int virNodeDeviceList(virConnectPtr conn,
                       virNodeDeviceObjList devobjs,

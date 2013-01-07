@@ -14253,6 +14253,8 @@ error:
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI
  *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST
+ *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS
  *
  * Returns the number of node devices found or -1 and sets @devices to NULL in
  * case of error.  On success, the array stored into @devices is guaranteed to
