@@ -1143,6 +1143,29 @@ cleanup:
 
 
 static int
+virLXCControllerSetupPrivateNS(void)
+{
+    int ret = -1;
+
+    if (unshare(CLONE_NEWNS) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot unshare mount namespace"));
+        goto cleanup;
+    }
+
+    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to switch root mount into slave mode"));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+
+static int
 virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
 {
     virDomainFSDefPtr root = virDomainGetRootFilesystem(ctrl->def);
@@ -1190,18 +1213,6 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
         virReportSystemError(errno,
                              _("root source %s does not exist"),
                              root->src);
-        goto cleanup;
-    }
-
-    if (unshare(CLONE_NEWNS) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot unshare mount namespace"));
-        goto cleanup;
-    }
-
-    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to switch root mount into slave mode"));
         goto cleanup;
     }
 
@@ -1407,6 +1418,9 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
                              _("socketpair failed"));
         goto cleanup;
     }
+
+    if (virLXCControllerSetupPrivateNS() < 0)
+        goto cleanup;
 
     if (virLXCControllerSetupLoopDevices(ctrl) < 0)
         goto cleanup;
