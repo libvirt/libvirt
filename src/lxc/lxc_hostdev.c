@@ -299,15 +299,29 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unsupported hostdev type %s"),
                                virDomainHostdevSubsysTypeToString(dev->source.subsys.type));
-                break;
+                return -1;
             }
             break;
+
+        case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+            switch (dev->source.subsys.type) {
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+                break;
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported hostdev type %s"),
+                               virDomainHostdevSubsysTypeToString(dev->source.subsys.type));
+                return -1;
+            }
+            break;
+
 
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported hostdev mode %s"),
                            virDomainHostdevModeTypeToString(dev->mode));
-            break;
+            return -1;
         }
     }
 
