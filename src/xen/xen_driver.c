@@ -1253,17 +1253,17 @@ static int
 xenUnifiedDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
     unsigned int flags = VIR_DOMAIN_VCPU_LIVE;
-    xenUnifiedPrivatePtr priv;
 
     /* Per the documented API, it is hypervisor-dependent whether this
      * affects just _LIVE or _LIVE|_CONFIG; in xen's case, that
      * depends on xendConfigVersion.  */
     if (dom) {
-        priv = dom->conn->privateData;
+        GET_PRIVATE(dom->conn);
         if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
             flags |= VIR_DOMAIN_VCPU_CONFIG;
+        return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
     }
-    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
+    return -1;
 }
 
 static int
