@@ -127,7 +127,8 @@ vmwareCapsInit(void)
 
 cleanup:
     virCPUDefFree(cpu);
-    cpuDataFree(caps->host.arch, data);
+    if (caps)
+        cpuDataFree(caps->host.arch, data);
 
     return caps;
 
