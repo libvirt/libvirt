@@ -1762,6 +1762,12 @@ static int lxcContainerIdentifyCGroups(struct lxcContainerCGroup **mountsret,
         VIR_DEBUG("Grabbed '%s'", mntent.mnt_dir);
     }
 
+    if (!*root) {
+        VIR_DEBUG("No mounted cgroups found");
+        ret = 0;
+        goto cleanup;
+    }
+
     VIR_DEBUG("Checking for symlinks in %s", *root);
     if (!(dh = opendir(*root))) {
         virReportSystemError(errno,
