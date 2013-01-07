@@ -5121,10 +5121,15 @@ virDomainMigrateDirect(virDomainPtr domain,
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
  *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_NON_SHARED_DISK Migration with non-shared storage with full
+ *                               disk copy
+ *   VIR_MIGRATE_NON_SHARED_INC  Migration with non-shared storage with
+ *                               incremental disk copy
  *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
  *                                 changes during the migration process (set
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+ *   VIR_MIGRATE_OFFLINE Migrate offline
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -5330,10 +5335,15 @@ error:
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
  *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_NON_SHARED_DISK Migration with non-shared storage with full
+ *                               disk copy
+ *   VIR_MIGRATE_NON_SHARED_INC  Migration with non-shared storage with
+ *                               incremental disk copy
  *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
  *                                 changes during the migration process (set
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+ *   VIR_MIGRATE_OFFLINE Migrate offline
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
@@ -5556,10 +5566,16 @@ error:
  *                            on the destination host.
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
+ *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_NON_SHARED_DISK Migration with non-shared storage with full
+ *                               disk copy
+ *   VIR_MIGRATE_NON_SHARED_INC  Migration with non-shared storage with
+ *                               incremental disk copy
  *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
  *                                 changes during the migration process (set
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+ *   VIR_MIGRATE_OFFLINE Migrate offline
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
@@ -5689,10 +5705,16 @@ error:
  *                            on the destination host.
  *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
  *                               domain on the source host.
+ *   VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+ *   VIR_MIGRATE_NON_SHARED_DISK Migration with non-shared storage with full
+ *                               disk copy
+ *   VIR_MIGRATE_NON_SHARED_INC  Migration with non-shared storage with
+ *                               incremental disk copy
  *   VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
  *                                 changes during the migration process (set
  *                                 automatically when supported).
  *   VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+ *   VIR_MIGRATE_OFFLINE Migrate offline
  *
  * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
  *
