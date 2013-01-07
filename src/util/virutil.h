@@ -306,4 +306,15 @@ int virReadFCHost(const char *sysfs_prefix,
 int virIsCapableFCHost(const char *sysfs_prefix, int host);
 int virIsCapableVport(const char *sysfs_prefix, int host);
 
+enum {
+    VPORT_CREATE,
+    VPORT_DELETE,
+};
+
+int virManageVport(const int parent_host,
+                   const char *wwpn,
+                   const char *wwnn,
+                  int operation)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 #endif /* __VIR_UTIL_H__ */

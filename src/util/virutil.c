@@ -3497,6 +3497,79 @@ cleanup:
     VIR_FREE(scsi_host_path);
     return ret;
 }
+
+int
+virManageVport(const int parent_host,
+               const char *wwpn,
+               const char *wwnn,
+               int operation)
+{
+    int ret = -1;
+    char *operation_path = NULL, *vport_name = NULL;
+    const char *operation_file = NULL;
+
+    switch (operation) {
+    case VPORT_CREATE:
+        operation_file = "vport_create";
+        break;
+    case VPORT_DELETE:
+        operation_file = "vport_delete";
+        break;
+    default:
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Invalid vport operation (%d)"), operation);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&operation_path,
+                    "%shost%d/%s",
+                    SYSFS_FC_HOST_PATH,
+                    parent_host,
+                    operation_file) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!virFileExists(operation_path)) {
+        VIR_FREE(operation_path);
+        if (virAsprintf(&operation_path,
+                        "%shost%d/%s",
+                        SYSFS_SCSI_HOST_PATH,
+                        parent_host,
+                        operation_file) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!virFileExists(operation_path)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("vport operation '%s' is not supported for host%d"),
+                           operation_file, parent_host);
+            goto cleanup;
+        }
+    }
+
+    if (virAsprintf(&vport_name,
+                    "%s:%s",
+                    wwpn,
+                    wwnn) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileWriteStr(operation_path, vport_name, 0) == 0)
+        ret = 0;
+    else
+        virReportSystemError(errno,
+                             _("Write of '%s' to '%s' during "
+                               "vport create/delete failed"),
+                             vport_name, operation_path);
+
+cleanup:
+    VIR_FREE(vport_name);
+    VIR_FREE(operation_path);
+    return ret;
+}
 #else
 int
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
@@ -3522,4 +3595,15 @@ virIsCapbleVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
+
+int
+virManageVport(const int parent_host ATTRIBUTE_UNUSED,
+               const char *wwpn ATTRIBUTE_UNUSED,
+               const char *wwnn ATTRIBUTE_UNUSED,
+               int operation ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+
 #endif /* __linux__ */

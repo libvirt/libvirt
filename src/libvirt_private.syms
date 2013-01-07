@@ -1867,6 +1867,7 @@ virIndexToDiskName;
 virIsCapableFCHost;
 virIsCapableVport;
 virIsDevMapperDevice;
+virManageVport;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;

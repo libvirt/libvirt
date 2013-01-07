@@ -408,91 +408,6 @@ cleanup:
     return ret;
 }
 
-
-static int
-nodeDeviceVportCreateDelete(const int parent_host,
-                            const char *wwpn,
-                            const char *wwnn,
-                            int operation)
-{
-    int retval = 0;
-    char *operation_path = NULL, *vport_name = NULL;
-    const char *operation_file = NULL;
-
-    switch (operation) {
-    case VPORT_CREATE:
-        operation_file = LINUX_SYSFS_VPORT_CREATE_POSTFIX;
-        break;
-    case VPORT_DELETE:
-        operation_file = LINUX_SYSFS_VPORT_DELETE_POSTFIX;
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid vport operation (%d)"), operation);
-        retval = -1;
-        goto cleanup;
-        break;
-    }
-
-    if (virAsprintf(&operation_path,
-                    "%shost%d%s",
-                    LINUX_SYSFS_FC_HOST_PREFIX,
-                    parent_host,
-                    operation_file) < 0) {
-
-        virReportOOMError();
-        retval = -1;
-        goto cleanup;
-    }
-
-    if (!virFileExists(operation_path)) {
-        VIR_FREE(operation_path);
-        if (virAsprintf(&operation_path,
-                        "%shost%d%s",
-                        LINUX_SYSFS_SCSI_HOST_PREFIX,
-                        parent_host,
-                        operation_file) < 0) {
-            virReportOOMError();
-            retval = -1;
-            goto cleanup;
-        }
-
-        if (!virFileExists(operation_path)) {
-            VIR_ERROR(_("No vport operation path found for host%d"),
-                      parent_host);
-            retval = -1;
-            goto cleanup;
-        }
-    }
-
-    VIR_DEBUG("Vport operation path is '%s'", operation_path);
-
-    if (virAsprintf(&vport_name,
-                    "%s:%s",
-                    wwpn,
-                    wwnn) < 0) {
-
-        virReportOOMError();
-        retval = -1;
-        goto cleanup;
-    }
-
-    if (virFileWriteStr(operation_path, vport_name, 0) == -1) {
-        virReportSystemError(errno,
-                             _("Write of '%s' to '%s' during "
-                               "vport create/delete failed"),
-                             vport_name, operation_path);
-        retval = -1;
-    }
-
-cleanup:
-    VIR_FREE(vport_name);
-    VIR_FREE(operation_path);
-    VIR_DEBUG("%s", _("Vport operation complete"));
-    return retval;
-}
-
-
 static int
 get_time(time_t *t)
 {
@@ -594,10 +509,10 @@ nodeDeviceCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (nodeDeviceVportCreateDelete(parent_host,
-                                    wwpn,
-                                    wwnn,
-                                    VPORT_CREATE) == -1) {
+    if (virManageVport(parent_host,
+                       wwpn,
+                       wwnn,
+                       VPORT_CREATE) == -1) {
         goto cleanup;
     }
 
@@ -661,10 +576,10 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (nodeDeviceVportCreateDelete(parent_host,
-                                    wwpn,
-                                    wwnn,
-                                    VPORT_DELETE) == -1) {
+    if (virManageVport(parent_host,
+                       wwpn,
+                       wwnn,
+                       VPORT_DELETE) == -1) {
         goto out;
     }
 
