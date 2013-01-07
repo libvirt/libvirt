@@ -56,16 +56,8 @@ enum virNodeDevNetCapType {
     VIR_NODE_DEV_CAP_NET_LAST
 };
 
-enum virNodeDevHBACapType {
-    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
-    VIR_NODE_DEV_CAP_HBA_FC_HOST,	/* fibre channel HBA */
-    VIR_NODE_DEV_CAP_HBA_VPORT_OPS,	/* capable of vport operations */
-    VIR_NODE_DEV_CAP_HBA_LAST
-};
-
 VIR_ENUM_DECL(virNodeDevCap)
 VIR_ENUM_DECL(virNodeDevNetCap)
-VIR_ENUM_DECL(virNodeDevHBACap)
 
 enum virNodeDevStorageCapFlags {
     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE			= (1 << 0),
