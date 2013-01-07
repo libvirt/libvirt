@@ -831,9 +831,6 @@ qemuStartup(bool privileged,
     if (!qemu_driver->capsCache)
         goto error;
 
-    if ((qemu_driver->caps = qemuCreateCapabilities(qemu_driver)) == NULL)
-        goto error;
-
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
         goto error;
 
@@ -872,6 +869,9 @@ qemuStartup(bool privileged,
             goto error;
         }
     }
+
+    if ((qemu_driver->caps = qemuCreateCapabilities(qemu_driver)) == NULL)
+        goto error;
 
     /* If hugetlbfs is present, then we need to create a sub-directory within
      * it, since we can't assume the root mount point has permissions that
