@@ -37,77 +37,6 @@
 
 #ifdef __linux__
 
-static int open_wwn_file(const char *prefix,
-                         int host,
-                         const char *file,
-                         int *fd)
-{
-    int retval = 0;
-    char *wwn_path = NULL;
-
-    if (virAsprintf(&wwn_path, "%s/host%d/%s", prefix, host, file) < 0) {
-        virReportOOMError();
-        retval = -1;
-        goto out;
-    }
-
-    /* fd will be closed by caller */
-    if ((*fd = open(wwn_path, O_RDONLY)) != -1) {
-        VIR_DEBUG("Opened WWN path '%s' for reading",
-                  wwn_path);
-    } else {
-        VIR_ERROR(_("Failed to open WWN path '%s' for reading"),
-                  wwn_path);
-    }
-
-out:
-    VIR_FREE(wwn_path);
-    return retval;
-}
-
-
-int read_wwn_linux(int host, const char *file, char **wwn)
-{
-    char *p = NULL;
-    int fd = -1, retval = 0;
-    char buf[65] = "";
-
-    if (open_wwn_file(LINUX_SYSFS_FC_HOST_PREFIX, host, file, &fd) < 0) {
-        goto out;
-    }
-
-    if (saferead(fd, buf, sizeof(buf) - 1) < 0) {
-        retval = -1;
-        VIR_DEBUG("Failed to read WWN for host%d '%s'",
-                  host, file);
-        goto out;
-    }
-
-    p = strstr(buf, "0x");
-    if (p != NULL) {
-        p += strlen("0x");
-    } else {
-        p = buf;
-    }
-
-    *wwn = strndup(p, sizeof(buf));
-    if (*wwn == NULL) {
-        virReportOOMError();
-        retval = -1;
-        goto out;
-    }
-
-    p = strchr(*wwn, '\n');
-    if (p != NULL) {
-        *p = '\0';
-    }
-
-out:
-    VIR_FORCE_CLOSE(fd);
-    return retval;
-}
-
-
 int check_fc_host_linux(union _virNodeDevCapData *d)
 {
     char *sysfs_path = NULL;
@@ -131,26 +60,29 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
 
     d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
 
-    if (read_wwn(d->scsi_host.host,
-                 "port_name",
-                 &d->scsi_host.wwpn) == -1) {
+    if (virReadFCHost(NULL,
+                      d->scsi_host.host,
+                      "port_name",
+                      &d->scsi_host.wwpn) == -1) {
         VIR_ERROR(_("Failed to read WWPN for host%d"),
                   d->scsi_host.host);
         retval = -1;
         goto out;
     }
 
-    if (read_wwn(d->scsi_host.host,
-                 "node_name",
-                 &d->scsi_host.wwnn) == -1) {
+    if (virReadFCHost(NULL,
+                      d->scsi_host.host,
+                      "node_name",
+                      &d->scsi_host.wwnn) == -1) {
         VIR_ERROR(_("Failed to read WWNN for host%d"),
                   d->scsi_host.host);
         retval = -1;
     }
 
-    if (read_wwn(d->scsi_host.host,
-                 "fabric_name",
-                 &d->scsi_host.fabric_wwn) == -1) {
+    if (virReadFCHost(NULL,
+                      d->scsi_host.host,
+                      "fabric_name",
+                      &d->scsi_host.fabric_wwn) == -1) {
         VIR_ERROR(_("Failed to read fabric WWN for host%d"),
                   d->scsi_host.host);
         retval = -1;

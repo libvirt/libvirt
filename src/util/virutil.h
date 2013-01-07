@@ -297,5 +297,10 @@ int virGetDeviceUnprivSGIO(const char *path,
                            int *unpriv_sgio);
 char * virGetUnprivSGIOSysfsPath(const char *path,
                                  const char *sysfs_dir);
+int virReadFCHost(const char *sysfs_prefix,
+                  int host,
+                  const char *entry,
+                  char **result)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 #endif /* __VIR_UTIL_H__ */

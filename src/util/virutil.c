@@ -3383,3 +3383,70 @@ cleanup:
     VIR_FREE(buf);
     return ret;
 }
+
+#ifdef __linux__
+# define SYSFS_FC_HOST_PATH "/sys/class/fc_host/"
+
+/* virReadFCHost:
+ * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
+ * @host: Host number, E.g. 5 of "fc_host/host5"
+ * @entry: Name of the sysfs entry to read
+ * @result: Return the entry value as string
+ *
+ * Read the value of sysfs "fc_host" entry.
+ *
+ * Returns 0 on success, and @result is filled with the entry value.
+ * as string, Otherwise returns -1. Caller must free @result after
+ * use.
+ */
+int
+virReadFCHost(const char *sysfs_prefix,
+              int host,
+              const char *entry,
+              char **result)
+{
+    char *sysfs_path = NULL;
+    char *p = NULL;
+    int ret = -1;
+    char *buf = NULL;
+
+    if (virAsprintf(&sysfs_path, "%s/host%d/%s",
+                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
+                    host, entry) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
+        goto cleanup;
+
+    if ((p = strchr(buf, '\n')))
+        *p = '\0';
+
+    if ((p = strstr(buf, "0x")))
+        p += strlen("0x");
+    else
+        p = buf;
+
+    if (!(*result = strndup(p, sizeof(buf)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(sysfs_path);
+    VIR_FREE(buf);
+    return ret;
+}
+#else
+int
+virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+              int host ATTRIBUTE_UNUSED,
+              const char *entry ATTRIBUTE_UNUSED,
+              char **result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* __linux__ */

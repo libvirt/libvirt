@@ -1868,6 +1868,7 @@ virIsDevMapperDevice;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;
+virReadFCHost;
 virScaleInteger;
 virSetBlocking;
 virSetCloseExec;
