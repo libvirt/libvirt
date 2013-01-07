@@ -3738,7 +3738,8 @@ static int remoteAuthFillFromConfig(virConnectPtr conn,
             break;
         }
 
-        if (virAuthConfigLookup(state->config,
+        if (credname &&
+            virAuthConfigLookup(state->config,
                                 "libvirt",
                                 VIR_URI_SERVER(conn->uri),
                                 credname,
