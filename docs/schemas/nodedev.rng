@@ -268,6 +268,12 @@
     <attribute name='type'>
       <value>vports_ops</value>
     </attribute>
+    <element name='max_vports'>
+      <ref name='unsignedInt'/>
+    </element>
+    <element name='vports'>
+      <ref name='unsignedInt'/>
+    </element>
   </define>
 
   <define name='capscsihost'>

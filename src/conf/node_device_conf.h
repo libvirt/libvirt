@@ -138,6 +138,8 @@ struct _virNodeDevCapsDef {
             char *wwpn;
             char *fabric_wwn;
             unsigned int flags;
+            int max_vports;
+            int vports;
         } scsi_host;
         struct {
             char *name;

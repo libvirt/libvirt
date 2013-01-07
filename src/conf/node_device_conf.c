@@ -391,7 +391,12 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def)
                 virBufferAddLit(&buf, "    </capability>\n");
             }
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
-                virBufferAddLit(&buf, "    <capability type='vport_ops' />\n");
+                virBufferAddLit(&buf, "    <capability type='vport_ops'>\n");
+                virBufferAsprintf(&buf, "      <max_vports>%d</max_vports>\n",
+                                  data->scsi_host.max_vports);
+                virBufferAsprintf(&buf, "      <vports>%d</vports>\n",
+                                  data->scsi_host.vports);
+                virBufferAddLit(&buf, "    </capability>\n");
             }
 
             break;
