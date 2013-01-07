@@ -605,7 +605,8 @@ PowerPCBaseline(virCPUDefPtr *cpus,
         goto error;
     }
 
-    base_model->data->ppc.pvr = model->data->ppc.pvr;
+    if (outputModel)
+        base_model->data->ppc.pvr = model->data->ppc.pvr;
     if (PowerPCDecode(cpu, base_model->data, models, nmodels, NULL) < 0)
         goto error;
 
