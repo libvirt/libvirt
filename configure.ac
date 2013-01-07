@@ -717,7 +717,7 @@ if test "$with_libxl" != "no" ; then
     LIBS="$LIBS $LIBXL_LIBS"
     AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
         with_libxl=yes
-        LIBXL_LIBS="$LIBXL_LIBS -lxenlight"
+        LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenctrl"
     ],[
         if test "$with_libxl" = "yes"; then
             fail=1
