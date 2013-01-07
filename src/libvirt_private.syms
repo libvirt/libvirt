@@ -1864,6 +1864,8 @@ virGetUserName;
 virGetUserRuntimeDirectory;
 virHexToBin;
 virIndexToDiskName;
+virIsCapableFCHost;
+virIsCapableVport;
 virIsDevMapperDevice;
 virParseNumber;
 virParseVersionString;

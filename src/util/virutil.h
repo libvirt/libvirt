@@ -303,4 +303,7 @@ int virReadFCHost(const char *sysfs_prefix,
                   char **result)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
+int virIsCapableFCHost(const char *sysfs_prefix, int host);
+int virIsCapableVport(const char *sysfs_prefix, int host);
+
 #endif /* __VIR_UTIL_H__ */

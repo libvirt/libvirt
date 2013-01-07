@@ -53,16 +53,12 @@ int nodedevRegister(void);
 
 # ifdef __linux__
 
-#  define check_fc_host(d) check_fc_host_linux(d)
-int check_fc_host_linux(union _virNodeDevCapData *d);
-
-#  define check_vport_capable(d) check_vport_capable_linux(d)
-int check_vport_capable_linux(union _virNodeDevCapData *d);
+#  define detect_scsi_host_caps(d) detect_scsi_host_caps_linux(d)
+int detect_scsi_host_caps_linux(union _virNodeDevCapData *d);
 
 # else  /* __linux__ */
 
-#  define check_fc_host(d)                      (-1)
-#  define check_vport_capable(d)                (-1)
+#  define detect_scsi_host_caps(d)                      (-1)
 
 # endif /* __linux__ */
 

@@ -48,7 +48,7 @@ static int update_caps(virNodeDeviceObjPtr dev)
     while (cap) {
         /* The only caps that currently need updating are FC related. */
         if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            check_fc_host(&dev->def->caps->data);
+            detect_scsi_host_caps(&dev->def->caps->data);
         }
         cap = cap->next;
     }
@@ -241,18 +241,15 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     nodeDeviceLock(driver);
 
     for (i = 0; i < devs->count; i++) {
-
         obj = devs->objs[i];
         virNodeDeviceObjLock(obj);
         cap = obj->def->caps;
 
         while (cap) {
-
             if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-                check_fc_host(&cap->data);
+                detect_scsi_host_caps(&cap->data);
                 if (cap->data.scsi_host.flags &
                     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-
                     if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
                         STREQ(cap->data.scsi_host.wwpn, wwpn)) {
                         dev = virGetNodeDevice(conn, obj->def->name);

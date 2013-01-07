@@ -663,8 +663,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
         goto out;
     }
 
-    check_fc_host(&def->caps->data);
-    check_vport_capable(&def->caps->data);
+    detect_scsi_host_caps(&def->caps->data);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0) {
         goto out;

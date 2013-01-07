@@ -3386,6 +3386,7 @@ cleanup:
 
 #ifdef __linux__
 # define SYSFS_FC_HOST_PATH "/sys/class/fc_host/"
+# define SYSFS_SCSI_HOST_PATH "/sys/class/scsi_host/"
 
 /* virReadFCHost:
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
@@ -3439,12 +3440,84 @@ cleanup:
     VIR_FREE(buf);
     return ret;
 }
+
+int
+virIsCapableFCHost(const char *sysfs_prefix,
+                   int host)
+{
+    char *sysfs_path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&sysfs_path, "%shost%d",
+                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
+                    host) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (access(sysfs_path, F_OK) == 0)
+        ret = 0;
+
+    VIR_FREE(sysfs_path);
+    return ret;
+}
+
+int
+virIsCapableVport(const char *sysfs_prefix,
+                  int host)
+{
+    char *scsi_host_path = NULL;
+    char *fc_host_path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&fc_host_path,
+                    "%shost%d%s",
+                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
+                    host,
+                    "vport_create") < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (virAsprintf(&scsi_host_path,
+                    "%shost%d%s",
+                    sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
+                    host,
+                    "vport_create") < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((access(fc_host_path, F_OK) == 0) ||
+        (access(scsi_host_path, F_OK) == 0))
+        ret = 0;
+
+cleanup:
+    VIR_FREE(fc_host_path);
+    VIR_FREE(scsi_host_path);
+    return ret;
+}
 #else
 int
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
               int host ATTRIBUTE_UNUSED,
               const char *entry ATTRIBUTE_UNUSED,
               char **result ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+
+int
+virIsCapableFCHost(int host ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+
+int
+virIsCapbleVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                 int host ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;

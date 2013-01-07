@@ -1,8 +1,8 @@
 /*
- * node_device_hal_linuc.c: Linux specific code to gather device data
+ * node_device_linux_sysfs.c: Linux specific code to gather device data
  * not available through HAL.
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,112 +37,53 @@
 
 #ifdef __linux__
 
-int check_fc_host_linux(union _virNodeDevCapData *d)
+int
+detect_scsi_host_caps_linux(union _virNodeDevCapData *d)
 {
-    char *sysfs_path = NULL;
-    int retval = 0;
-    struct stat st;
+    int ret = -1;
 
     VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 
-    if (virAsprintf(&sysfs_path, "%shost%d",
-                    LINUX_SYSFS_FC_HOST_PREFIX,
-                    d->scsi_host.host) < 0) {
-        virReportOOMError();
-        retval = -1;
-        goto out;
+    if (virIsCapableFCHost(NULL, d->scsi_host.host)) {
+        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
+
+        if (virReadFCHost(NULL,
+                          d->scsi_host.host,
+                          "port_name",
+                          &d->scsi_host.wwpn) == -1) {
+            VIR_ERROR(_("Failed to read WWPN for host%d"), d->scsi_host.host);
+            goto cleanup;
+        }
+
+        if (virReadFCHost(NULL,
+                          d->scsi_host.host,
+                          "node_name",
+                          &d->scsi_host.wwnn) == -1) {
+            VIR_ERROR(_("Failed to read WWNN for host%d"), d->scsi_host.host);
+            goto cleanup;
+        }
+
+        if (virReadFCHost(NULL,
+                          d->scsi_host.host,
+                          "fabric_name",
+                          &d->scsi_host.fabric_wwn) == -1) {
+            VIR_ERROR(_("Failed to read fabric WWN for host%d"),
+                      d->scsi_host.host);
+            goto cleanup;
+        }
     }
 
-    if (stat(sysfs_path, &st) != 0) {
-        /* Not an FC HBA; not an error, either. */
-        goto out;
-    }
+    if (virIsCapableVport(NULL, d->scsi_host.host) == 0)
+        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
-    d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
-
-    if (virReadFCHost(NULL,
-                      d->scsi_host.host,
-                      "port_name",
-                      &d->scsi_host.wwpn) == -1) {
-        VIR_ERROR(_("Failed to read WWPN for host%d"),
-                  d->scsi_host.host);
-        retval = -1;
-        goto out;
-    }
-
-    if (virReadFCHost(NULL,
-                      d->scsi_host.host,
-                      "node_name",
-                      &d->scsi_host.wwnn) == -1) {
-        VIR_ERROR(_("Failed to read WWNN for host%d"),
-                  d->scsi_host.host);
-        retval = -1;
-    }
-
-    if (virReadFCHost(NULL,
-                      d->scsi_host.host,
-                      "fabric_name",
-                      &d->scsi_host.fabric_wwn) == -1) {
-        VIR_ERROR(_("Failed to read fabric WWN for host%d"),
-                  d->scsi_host.host);
-        retval = -1;
-        goto out;
-    }
-
-out:
-    if (retval == -1) {
+    ret = 0;
+cleanup:
+    if (ret < 0) {
         VIR_FREE(d->scsi_host.wwnn);
         VIR_FREE(d->scsi_host.wwpn);
         VIR_FREE(d->scsi_host.fabric_wwn);
     }
-    VIR_FREE(sysfs_path);
-    return retval;
-}
-
-
-int check_vport_capable_linux(union _virNodeDevCapData *d)
-{
-    char *sysfs_path = NULL;
-    struct stat st;
-    int retval = 0;
-
-    if (virAsprintf(&sysfs_path,
-                    "%shost%d%s",
-                    LINUX_SYSFS_FC_HOST_PREFIX,
-                    d->scsi_host.host,
-                    LINUX_SYSFS_VPORT_CREATE_POSTFIX) < 0) {
-        virReportOOMError();
-        retval = -1;
-        goto out;
-    }
-
-    if (stat(sysfs_path, &st) == 0) {
-        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
-        goto out;
-    }
-
-    VIR_FREE(sysfs_path);
-    if (virAsprintf(&sysfs_path,
-                    "%shost%d%s",
-                    LINUX_SYSFS_SCSI_HOST_PREFIX,
-                    d->scsi_host.host,
-                    LINUX_SYSFS_VPORT_CREATE_POSTFIX) < 0) {
-        virReportOOMError();
-        retval = -1;
-        goto out;
-    }
-
-    if (stat(sysfs_path, &st) == 0) {
-        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
-    } else {
-        /* Not a vport capable HBA; not an error, either. */
-        VIR_DEBUG("No vport operation path found for host%d",
-                  d->scsi_host.host);
-    }
-
-out:
-    VIR_FREE(sysfs_path);
-    return retval;
+    return ret;
 }
 
 #endif /* __linux__ */

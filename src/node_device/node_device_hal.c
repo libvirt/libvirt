@@ -236,13 +236,11 @@ static int gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
 
     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
 
-    retval = check_fc_host(d);
+    retval = detect_scsi_host_caps(d);
 
     if (retval == -1) {
         goto out;
     }
-
-    retval = check_vport_capable(d);
 
 out:
     return retval;
