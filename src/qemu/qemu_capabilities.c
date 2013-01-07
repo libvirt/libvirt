@@ -2307,6 +2307,8 @@ qemuCapsInitQMP(qemuCapsPtr caps,
     char *pidfile = NULL;
     qemuCapsHookData hookData;
     char *archstr;
+    pid_t pid = 0;
+    virDomainObj vm;
 
     /* the ".sock" sufix is important to avoid a possible clash with a qemu
      * domain called "capabilities"
@@ -2360,7 +2362,16 @@ qemuCapsInitQMP(qemuCapsPtr caps,
         goto cleanup;
     }
 
-    if (!(mon = qemuMonitorOpen(NULL, &config, true, &callbacks))) {
+    if (virPidFileReadPath(pidfile, &pid) < 0) {
+        VIR_DEBUG("Failed to read pidfile %s", pidfile);
+        ret = 0;
+        goto cleanup;
+    }
+
+    memset(&vm, 0, sizeof(vm));
+    vm.pid = pid;
+
+    if (!(mon = qemuMonitorOpen(&vm, &config, true, &callbacks))) {
         ret = 0;
         goto cleanup;
     }
@@ -2446,21 +2457,16 @@ cleanup:
     VIR_FREE(monpath);
     VIR_FREE(package);
 
-    if (pidfile) {
+    if (pid != 0) {
         char ebuf[1024];
-        pid_t pid;
-        int rc;
 
-        if ((rc = virPidFileReadPath(pidfile, &pid)) < 0) {
-            VIR_DEBUG("Failed to read pidfile %s: %s",
-                      pidfile, virStrerror(-rc, ebuf, sizeof(ebuf)));
-        } else {
-            VIR_DEBUG("Killing QMP caps process %lld", (long long) pid);
-            if (virProcessKill(pid, SIGKILL) < 0 && errno != ESRCH)
-                VIR_ERROR(_("Failed to kill process %lld: %s"),
-                          (long long) pid,
-                          virStrerror(errno, ebuf, sizeof(ebuf)));
-        }
+        VIR_DEBUG("Killing QMP caps process %lld", (long long) pid);
+        if (virProcessKill(pid, SIGKILL) < 0 && errno != ESRCH)
+            VIR_ERROR(_("Failed to kill process %lld: %s"),
+                      (long long) pid,
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
+    }
+    if (pidfile) {
         unlink(pidfile);
         VIR_FREE(pidfile);
     }
