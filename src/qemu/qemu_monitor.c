@@ -1022,6 +1022,16 @@ int qemuMonitorEmitStop(qemuMonitorPtr mon)
 }
 
 
+int qemuMonitorEmitResume(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainResume, mon->vm);
+    return ret;
+}
+
+
 int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
 {
     int ret = -1;

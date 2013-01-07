@@ -736,6 +736,61 @@ unlock:
 
 
 static int
+qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                        virDomainObjPtr vm)
+{
+    virQEMUDriverPtr driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+
+    virDomainObjLock(vm);
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+
+        if (priv->gotShutdown) {
+            VIR_DEBUG("Ignoring RESUME event after SHUTDOWN");
+            goto unlock;
+        }
+
+        VIR_DEBUG("Transitioned guest %s out of paused into resumed state",
+                  vm->def->name);
+
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_UNPAUSED);
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+
+        VIR_DEBUG("Using lock state '%s' on resume event", NULLSTR(priv->lockState));
+        if (virDomainLockProcessResume(driver->lockManager, driver->uri,
+                                       vm, priv->lockState) < 0) {
+            /* Don't free priv->lockState on error, because we need
+             * to make sure we have state still present if the user
+             * tries to resume again
+             */
+            goto unlock;
+        }
+        VIR_FREE(priv->lockState);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after state change",
+                     vm->def->name);
+        }
+    }
+
+unlock:
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                            virDomainObjPtr vm,
                            long long offset)
@@ -1250,6 +1305,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .diskSecretLookup = qemuProcessFindVolumeQcowPassphrase,
     .domainShutdown = qemuProcessHandleShutdown,
     .domainStop = qemuProcessHandleStop,
+    .domainResume = qemuProcessHandleResume,
     .domainReset = qemuProcessHandleReset,
     .domainRTCChange = qemuProcessHandleRTCChange,
     .domainWatchdog = qemuProcessHandleWatchdog,

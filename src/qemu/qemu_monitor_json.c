@@ -55,6 +55,7 @@ static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr da
 static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleResume(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data);
@@ -87,6 +88,7 @@ static qemuEventHandler eventHandlers[] = {
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "RESET", qemuMonitorJSONHandleReset, },
+    { "RESUME", qemuMonitorJSONHandleResume, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
     { "SHUTDOWN", qemuMonitorJSONHandleShutdown, },
     { "SPICE_CONNECTED", qemuMonitorJSONHandleSPICEConnect, },
@@ -587,6 +589,11 @@ static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr d
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitStop(mon);
+}
+
+static void qemuMonitorJSONHandleResume(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitResume(mon);
 }
 
 static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data)
