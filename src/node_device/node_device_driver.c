@@ -28,7 +28,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
-#include <sys/stat.h>
 
 #include "virerror.h"
 #include "datatypes.h"
@@ -422,7 +421,6 @@ nodeDeviceVportCreateDelete(const int parent_host,
     int retval = 0;
     char *operation_path = NULL, *vport_name = NULL;
     const char *operation_file = NULL;
-    struct stat st;
 
     switch (operation) {
     case VPORT_CREATE:
@@ -450,7 +448,7 @@ nodeDeviceVportCreateDelete(const int parent_host,
         goto cleanup;
     }
 
-    if (stat(operation_path, &st) != 0) {
+    if (!virFileExists(operation_path)) {
         VIR_FREE(operation_path);
         if (virAsprintf(&operation_path,
                         "%shost%d%s",
@@ -462,7 +460,7 @@ nodeDeviceVportCreateDelete(const int parent_host,
             goto cleanup;
         }
 
-        if (stat(operation_path, &st) != 0) {
+        if (!virFileExists(operation_path)) {
             VIR_ERROR(_("No vport operation path found for host%d"),
                       parent_host);
             retval = -1;
