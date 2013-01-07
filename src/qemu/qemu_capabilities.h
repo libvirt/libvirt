@@ -162,6 +162,7 @@ enum qemuCapsFlags {
     QEMU_CAPS_DEVICE_VMWARE_SVGA = 122, /* -device vmware-svga */
     QEMU_CAPS_DEVICE_VIDEO_PRIMARY = 123, /* safe to use -device XXX
                                            for primary video device */
+    QEMU_CAPS_SCLP_S390          = 124, /* -device sclp* */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

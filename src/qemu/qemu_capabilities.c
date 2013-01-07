@@ -199,6 +199,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "cirrus-vga",
               "vmware-svga",
               "device-video-primary",
+              "s390-sclp",
+
     );
 
 struct _qemuCaps {
@@ -1331,6 +1333,7 @@ struct qemuCapsStringFlags qemuCapsObjectTypes[] = {
     { "usb-hub", QEMU_CAPS_USB_HUB },
     { "ich9-ahci", QEMU_CAPS_ICH9_AHCI },
     { "virtio-blk-s390", QEMU_CAPS_VIRTIO_S390 },
+    { "sclpconsole", QEMU_CAPS_SCLP_S390 },
     { "lsi53c895a", QEMU_CAPS_SCSI_LSI },
     { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI_PCI },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },

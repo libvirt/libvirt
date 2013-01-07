@@ -4132,6 +4132,38 @@ error:
     return NULL;
 }
 
+static char *
+qemuBuildSclpDevStr(virDomainChrDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE) {
+        switch (dev->targetType) {
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
+            virBufferAddLit(&buf, "sclpconsole");
+            break;
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+            virBufferAddLit(&buf, "sclplmconsole");
+            break;
+        }
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cannot use slcp with devices other than console"));
+        goto error;
+    }
+    virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
+                      dev->info.alias, dev->info.alias);
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
 static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -6383,6 +6415,34 @@ qemuBuildCommandLine(virConnectPtr conn,
         char *devstr;
 
         switch (console->targetType) {
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+            if (!qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclp console requires QEMU to support -device"));
+                goto error;
+            }
+            if (!qemuCapsGet(caps, QEMU_CAPS_SCLP_S390)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclp console requires QEMU to support s390-sclp"));
+                goto error;
+            }
+
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(&console->source,
+                                                  console->info.alias,
+                                                  caps)))
+                goto error;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            virCommandAddArg(cmd, "-device");
+            if (!(devstr = qemuBuildSclpDevStr(console)))
+                goto error;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+            break;
+
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
             if (!qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
