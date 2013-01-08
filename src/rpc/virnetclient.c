@@ -70,7 +70,7 @@ struct _virNetClient {
     virNetSocketPtr sock;
     bool asyncIO;
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virNetTLSSessionPtr tls;
 #endif
     char *hostname;
@@ -629,7 +629,7 @@ void virNetClientDispose(void *obj)
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
     virObjectUnref(client->sock);
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virObjectUnref(client->tls);
 #endif
 #if WITH_SASL
@@ -667,7 +667,7 @@ virNetClientCloseLocked(virNetClientPtr client)
 
     virObjectUnref(client->sock);
     client->sock = NULL;
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virObjectUnref(client->tls);
     client->tls = NULL;
 #endif
@@ -751,7 +751,7 @@ void virNetClientSetSASLSession(virNetClientPtr client,
 #endif
 
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
 int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls)
 {
@@ -860,7 +860,7 @@ bool virNetClientIsEncrypted(virNetClientPtr client)
 {
     bool ret = false;
     virNetClientLock(client);
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     if (client->tls)
         ret = true;
 #endif
@@ -966,7 +966,7 @@ const char *virNetClientRemoteAddrString(virNetClientPtr client)
     return virNetSocketRemoteAddrString(client->sock);
 }
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client)
 {
     int ret = 0;

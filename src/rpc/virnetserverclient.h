@@ -52,7 +52,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
                                             virNetTLSContextPtr tls,
 # endif
                                             virNetServerClientPrivNew privNew,
@@ -78,7 +78,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
 int virNetServerClientGetAuth(virNetServerClientPtr client);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
 
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
 # endif

@@ -79,7 +79,7 @@ struct _virNetSocket {
     char *localAddrStr;
     char *remoteAddrStr;
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virNetTLSSessionPtr tlsSession;
 #endif
 #if WITH_SASL
@@ -950,7 +950,7 @@ virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
         goto error;
     }
 #endif
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     if (sock->tlsSession) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Unable to save socket state when TLS session is active"));
@@ -1015,7 +1015,7 @@ void virNetSocketDispose(void *obj)
         unlink(sock->localAddr.data.un.sun_path);
 #endif
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     /* Make sure it can't send any more I/O during shutdown */
     if (sock->tlsSession)
         virNetTLSSessionSetIOCallbacks(sock->tlsSession, NULL, NULL, NULL);
@@ -1184,7 +1184,7 @@ const char *virNetSocketRemoteAddrString(virNetSocketPtr sock)
 }
 
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
 static ssize_t virNetSocketTLSSessionWrite(const char *buf,
                                            size_t len,
                                            void *opaque)
@@ -1287,7 +1287,7 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
 #endif
 
 reread:
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     if (sock->tlsSession &&
         virNetTLSSessionGetHandshakeStatus(sock->tlsSession) ==
         VIR_NET_TLS_HANDSHAKE_COMPLETE) {
@@ -1295,7 +1295,7 @@ reread:
     } else {
 #endif
         ret = read(sock->fd, buf, len);
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     }
 #endif
 
@@ -1346,7 +1346,7 @@ static ssize_t virNetSocketWriteWire(virNetSocketPtr sock, const char *buf, size
 #endif
 
 rewrite:
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     if (sock->tlsSession &&
         virNetTLSSessionGetHandshakeStatus(sock->tlsSession) ==
         VIR_NET_TLS_HANDSHAKE_COMPLETE) {
@@ -1354,7 +1354,7 @@ rewrite:
     } else {
 #endif
         ret = write(sock->fd, buf, len);
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     }
 #endif
 

@@ -40,7 +40,7 @@ typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int auth,
-# if HAVE_GNUTLS
+# if WITH_GNUTLS
                                                  virNetTLSContextPtr tls,
 # endif
                                                  bool readonly,
@@ -49,14 +49,14 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
-# if HAVE_GNUTLS
+# if WITH_GNUTLS
                                                   virNetTLSContextPtr tls,
 # endif
                                                   bool readonly,
                                                   size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,
-# if HAVE_GNUTLS
+# if WITH_GNUTLS
                                                 virNetTLSContextPtr tls,
 # endif
                                                 bool readonly,
@@ -71,7 +71,7 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc);
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
 size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc);
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
 virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc);
 # endif
 

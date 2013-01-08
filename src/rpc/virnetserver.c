@@ -98,7 +98,7 @@ struct _virNetServer {
 
     unsigned int quit :1;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
     virNetTLSContextPtr tls;
 #endif
 
@@ -311,7 +311,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetAuth(svc),
                                          virNetServerServiceIsReadonly(svc),
                                          virNetServerServiceGetMaxRequests(svc),
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
                                          virNetServerServiceGetTLSContext(svc),
 #endif
                                          srv->clientPrivNew,
@@ -1038,7 +1038,7 @@ no_memory:
     return -1;
 }
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls)
 {

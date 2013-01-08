@@ -26,7 +26,7 @@
 
 # include "virsocketaddr.h"
 # include "vircommand.h"
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
 #  include "virnettlscontext.h"
 # endif
 # include "virobject.h"
@@ -124,7 +124,7 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
 int virNetSocketSendFD(virNetSocketPtr sock, int fd);
 int virNetSocketRecvFD(virNetSocketPtr sock, int *fd);
 
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
 void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                virNetTLSSessionPtr sess);
 # endif

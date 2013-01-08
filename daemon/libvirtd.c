@@ -449,7 +449,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     virNetServerServicePtr svc = NULL;
     virNetServerServicePtr svcRO = NULL;
     virNetServerServicePtr svcTCP = NULL;
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virNetServerServicePtr svcTLS = NULL;
 #endif
     gid_t unix_sock_gid = 0;
@@ -476,7 +476,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                            unix_sock_rw_mask,
                                            unix_sock_gid,
                                            config->auth_unix_rw,
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
                                            NULL,
 #endif
                                            false,
@@ -488,7 +488,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                                                  unix_sock_ro_mask,
                                                  unix_sock_gid,
                                                  config->auth_unix_ro,
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
                                                  NULL,
 #endif
                                                  true,
@@ -513,7 +513,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
             if (!(svcTCP = virNetServerServiceNewTCP(config->listen_addr,
                                                      config->tcp_port,
                                                      config->auth_tcp,
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
                                                      NULL,
 #endif
                                                      false,
@@ -525,7 +525,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
                 goto error;
         }
 
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
         if (config->listen_tls) {
             virNetTLSContextPtr ctxt = NULL;
 
@@ -581,7 +581,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
 #if WITH_SASL
     if (config->auth_unix_rw == REMOTE_AUTH_SASL ||
         config->auth_unix_ro == REMOTE_AUTH_SASL ||
-# if HAVE_GNUTLS
+# if WITH_GNUTLS
         config->auth_tls == REMOTE_AUTH_SASL ||
 # endif
         config->auth_tcp == REMOTE_AUTH_SASL) {
@@ -595,7 +595,7 @@ static int daemonSetupNetworking(virNetServerPtr srv,
     return 0;
 
 error:
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
     virObjectUnref(svcTLS);
 #endif
     virObjectUnref(svcTCP);

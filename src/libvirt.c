@@ -55,7 +55,7 @@
 #include "configmake.h"
 #include "intprops.h"
 #include "virconf.h"
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
 # include "rpc/virnettlscontext.h"
 #endif
 #include "vircommand.h"
@@ -271,7 +271,7 @@ winsock_init(void)
 #endif
 
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
 static int virTLSMutexInit(void **priv)
 {
     virMutexPtr lock = NULL;
@@ -408,14 +408,14 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
     gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
     gcry_check_version(NULL);
 #endif
 
     virLogSetFromEnv();
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
     virNetTLSInit();
 #endif
 

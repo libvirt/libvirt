@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include <sys/time.h>
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 #endif
@@ -198,7 +198,7 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 }
 
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
 static char *
 qemuDomainExtractTLSSubject(const char *certdir)
 {
@@ -276,7 +276,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
         if (!listenAddr)
             listenAddr = driver->vncListen;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
         if (driver->vncTLS &&
             !(mig->tlsSubject = qemuDomainExtractTLSSubject(driver->vncTLSx509certdir)))
             goto error;
@@ -291,7 +291,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
         if (!listenAddr)
             listenAddr = driver->spiceListen;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
         if (driver->spiceTLS &&
             !(mig->tlsSubject = qemuDomainExtractTLSSubject(driver->spiceTLSx509certdir)))
             goto error;
@@ -304,7 +304,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
 
 no_memory:
     virReportOOMError();
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
 error:
 #endif
     qemuMigrationCookieGraphicsFree(mig);

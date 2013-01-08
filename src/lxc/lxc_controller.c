@@ -631,7 +631,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
                                            0700,
                                            0,
                                            0,
-#if HAVE_GNUTLS
+#if WITH_GNUTLS
                                            NULL,
 #endif
                                            false,

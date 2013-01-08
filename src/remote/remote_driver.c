@@ -80,7 +80,7 @@ struct private_data {
 
     int counter; /* Serial number for RPC */
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
     virNetTLSContextPtr tls;
 #endif
 
@@ -598,7 +598,7 @@ doRemoteOpen(virConnectPtr conn,
     /* Connect to the remote service. */
     switch (transport) {
     case trans_tls:
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
                                                   sanity, verify);
@@ -618,7 +618,7 @@ doRemoteOpen(virConnectPtr conn,
         if (!priv->client)
             goto failed;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
         if (priv->tls) {
             VIR_DEBUG("Starting TLS session");
             if (virNetClientSetTLSSession(priv->client, priv->tls) < 0)
@@ -1012,7 +1012,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         ret = -1;
 
-#ifdef HAVE_GNUTLS
+#ifdef WITH_GNUTLS
     virObjectUnref(priv->tls);
     priv->tls = NULL;
 #endif
@@ -3893,7 +3893,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                                             saslcb)))
         goto cleanup;
 
-# ifdef HAVE_GNUTLS
+# ifdef WITH_GNUTLS
     /* Initialize some connection props we care about */
     if (priv->tls) {
         if ((ssf = virNetClientGetTLSKeySize(priv->client)) < 0)

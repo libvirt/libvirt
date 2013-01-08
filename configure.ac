@@ -1086,10 +1086,10 @@ if test "x$with_gnutls" != "xno"; then
 fi
 
 if test "x$with_gnutls" = "xyes" ; then
-  AC_DEFINE_UNQUOTED([HAVE_GNUTLS], 1,
+  AC_DEFINE_UNQUOTED([WITH_GNUTLS], 1,
       [whether GNUTLS is available for encryption])
 fi
-AM_CONDITIONAL([HAVE_GNUTLS], [test "x$with_gnutls" = "xyes"])
+AM_CONDITIONAL([WITH_GNUTLS], [test "x$with_gnutls" = "xyes"])
 AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
 

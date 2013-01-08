@@ -2464,7 +2464,7 @@ remoteDispatchAuthSaslInit(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (!sasl)
         goto authfail;
 
-# if HAVE_GNUTLS
+# if WITH_GNUTLS
     /* Inform SASL that we've got an external SSF layer from TLS */
     if (virNetServerClientHasTLSSession(client)) {
         int ssf;

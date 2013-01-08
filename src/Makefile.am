@@ -1779,7 +1779,7 @@ else
 EXTRA_DIST += \
 	rpc/virnetsshsession.h rpc/virnetsshsession.c
 endif
-if HAVE_GNUTLS
+if WITH_GNUTLS
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnettlscontext.h rpc/virnettlscontext.c
 else

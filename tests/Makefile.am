@@ -100,7 +100,7 @@ test_programs = virshtest sockettest \
 	sysinfotest \
 	$(NULL)
 
-if HAVE_GNUTLS
+if WITH_GNUTLS
 test_programs += virnettlscontexttest
 endif
 
@@ -530,7 +530,7 @@ virnetsockettest_SOURCES = \
 virnetsockettest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virnetsockettest_LDADD = $(LDADDS)
 
-if HAVE_GNUTLS
+if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
 	virnettlscontexttest.c testutils.h testutils.c
 virnettlscontexttest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
