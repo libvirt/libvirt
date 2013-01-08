@@ -83,6 +83,38 @@
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template name="formattext">
+    <xsl:param name="text" />
+
+    <xsl:if test="$text">
+      <xsl:variable name="head" select="substring-before($text, '&#xA;&#xA;')"/>
+      <xsl:variable name="rest" select="substring-after($text, '&#xA;&#xA;')"/>
+
+      <xsl:choose>
+        <xsl:when test="$head">
+          <p>
+            <xsl:call-template name="dumptext">
+              <xsl:with-param name="text" select="$head"/>
+            </xsl:call-template>
+          </p>
+        </xsl:when>
+        <xsl:when test="not($rest)">
+          <p>
+            <xsl:call-template name="dumptext">
+              <xsl:with-param name="text" select="$text"/>
+            </xsl:call-template>
+          </p>
+        </xsl:when>
+      </xsl:choose>
+
+      <xsl:if test="$rest">
+        <xsl:call-template name="formattext">
+          <xsl:with-param name="text" select="$rest"/>
+        </xsl:call-template>
+      </xsl:if>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="macro" mode="toc">
     <xsl:text>#define </xsl:text>
     <a href="#{@name}"><xsl:value-of select="@name"/></a>
@@ -254,11 +286,11 @@
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre><xsl:text>#define </xsl:text><xsl:value-of select="$name"/></pre>
-    <p>
-    <xsl:call-template name="dumptext">
+    <div>
+    <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
-    </p><xsl:text>
+    </div><xsl:text>
 </xsl:text>
   </xsl:template>
 
@@ -393,11 +425,11 @@
     <xsl:text>)
 </xsl:text>
     </pre>
-    <p>
-    <xsl:call-template name="dumptext">
+    <div>
+    <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
-    </p>
+    </div>
     <xsl:if test="arg | return">
       <div class="variablelist"><table border="0"><col align="left"/><tbody>
       <xsl:for-each select="arg">
@@ -470,11 +502,11 @@
     <xsl:text>
 </xsl:text>
     </pre>
-    <p>
-    <xsl:call-template name="dumptext">
+    <div>
+    <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
-    </p><xsl:text>
+    </div><xsl:text>
 </xsl:text>
     <xsl:if test="arg | return/@info">
       <div class="variablelist"><table border="0"><col align="left"/><tbody>
