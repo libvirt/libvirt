@@ -3329,16 +3329,12 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
     LIBSSH2_SESSION *session = connection_data->session;
     virDomainPtr dom = NULL;
     char *managed_system = phyp_driver->managed_system;
-    int exit_status = 0;
     unsigned char lpar_uuid[VIR_UUID_BUFLEN];
 
     char *lpar_name = phypGetLparNAME(session, managed_system, lpar_id,
                                       conn);
 
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
-        goto cleanup;
-
-    if (exit_status < 0)
         goto cleanup;
 
     dom = virGetDomain(conn, lpar_name, lpar_uuid);
