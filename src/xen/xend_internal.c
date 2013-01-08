@@ -89,11 +89,10 @@ do_connect(virConnectPtr xend)
     }
 
     /*
-     * try to desactivate slow-start
+     * try to deactivate slow-start
      */
-    setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
-               sizeof(no_slow_start));
-
+    ignore_value(setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
+                            sizeof(no_slow_start)));
 
     if (connect(s, (struct sockaddr *)&priv->addr, priv->addrlen) == -1) {
         VIR_FORCE_CLOSE(s); /* preserves errno */
