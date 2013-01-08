@@ -3133,7 +3133,7 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
                            /* virNetworkUpdateFlags */
                            unsigned int fflags ATTRIBUTE_UNUSED)
 {
-    int ii, jj, kk, foundIdx, ret = -1;
+    int ii, jj, kk, foundIdx = -1, ret = -1;
     virNetworkDNSDefPtr dns = &def->dns;
     virNetworkDNSHostDef host;
     bool isAdd = (command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST ||
