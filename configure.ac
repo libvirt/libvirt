@@ -1871,9 +1871,9 @@ if test "$with_esx" = "yes" || test "$with_esx" = "check" || test "$with_xenapi"
 fi
 
 if test "$have_curl" = "yes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_LIBCURL], 1, [whether libcurl is available])
+    AC_DEFINE_UNQUOTED([WITH_CURL], 1, [whether libcurl is available])
 fi
-AM_CONDITIONAL([HAVE_LIBCURL], [test "$have_curl" = "yes"])
+AM_CONDITIONAL([WITH_CURL], [test "$have_curl" = "yes"])
 
 
 if test "$with_esx" = "yes" ; then

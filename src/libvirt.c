@@ -41,7 +41,7 @@
 # include <winsock2.h>
 #endif
 
-#ifdef HAVE_LIBCURL
+#ifdef WITH_CURL
 # include <curl/curl.h>
 #endif
 
@@ -419,7 +419,7 @@ virGlobalInit(void)
     virNetTLSInit();
 #endif
 
-#if HAVE_LIBCURL
+#if WITH_CURL
     curl_global_init(CURL_GLOBAL_DEFAULT);
 #endif
 
