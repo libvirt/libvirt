@@ -352,7 +352,7 @@ udevIfaceListAllInterfaces(virConnectPtr conn,
         const char *path;
         const char *name;
         const char *macaddr;
-        int add_to_list;
+        int add_to_list = 0;
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
