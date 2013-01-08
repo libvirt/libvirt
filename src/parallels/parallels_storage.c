@@ -258,7 +258,7 @@ static int parallelsDiskDescParseNode(xmlDocPtr xml,
                                       virStorageVolDefPtr def)
 {
     xmlXPathContextPtr ctxt = NULL;
-    int ret;
+    int ret = -1;
 
     if (STRNEQ((const char *)root->name, "Parallels_disk_image")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -275,11 +275,16 @@ static int parallelsDiskDescParseNode(xmlDocPtr xml,
     ctxt->node = root;
 
     if (virXPathULongLong("string(./Disk_Parameters/Disk_size)",
-                          ctxt, &def->capacity))
-        ret = -1;
+                          ctxt, &def->capacity) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       "%s", _("failed to get disk size from "
+                               "the disk descriptor xml"));
+        goto cleanup;
+    }
 
     def->capacity <<= 9;
     def->allocation = def->capacity;
+    ret = 0;
 cleanup:
     xmlXPathFreeContext(ctxt);
     return ret;
@@ -315,7 +320,8 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
 
     def->type = VIR_STORAGE_VOL_FILE;
 
-    parallelsDiskDescParse(diskDescPath, def);
+    if (parallelsDiskDescParse(diskDescPath, def) < 0)
+        goto error;
 
     if (!(def->target.path = realpath(diskPath, NULL)))
         goto no_memory;
@@ -330,8 +336,9 @@ static int parallelsAddDiskVolume(virStoragePoolObjPtr pool,
 
     return 0;
 no_memory:
-    virStorageVolDefFree(def);
     virReportOOMError();
+error:
+    virStorageVolDefFree(def);
     return -1;
 }
 
