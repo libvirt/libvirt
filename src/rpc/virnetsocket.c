@@ -51,7 +51,7 @@
 
 #include "passfd.h"
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
 # include "virnetsshsession.h"
 #endif
 
@@ -93,7 +93,7 @@ struct _virNetSocket {
     size_t saslEncodedLength;
     size_t saslEncodedOffset;
 #endif
-#if HAVE_LIBSSH2
+#if WITH_SSH2
     virNetSSHSessionPtr sshSession;
 #endif
 };
@@ -738,7 +738,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
     return virNetSocketNewConnectCommand(cmd, retsock);
 }
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
 int
 virNetSocketNewConnectLibSSH2(const char *host,
                               const char *port,
@@ -870,7 +870,7 @@ virNetSocketNewConnectLibSSH2(const char *host ATTRIBUTE_UNUSED,
                          _("libssh2 transport support was not enabled"));
     return -1;
 }
-#endif /* HAVE_LIBSSH2 */
+#endif /* WITH_SSH2 */
 
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *retsock)
@@ -1025,7 +1025,7 @@ void virNetSocketDispose(void *obj)
     virObjectUnref(sock->saslSession);
 #endif
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
     virObjectUnref(sock->sshSession);
 #endif
 
@@ -1234,7 +1234,7 @@ bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
     bool hasCached = false;
     virMutexLock(&sock->lock);
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
     if (virNetSSHSessionHasCachedData(sock->sshSession))
         hasCached = true;
 #endif
@@ -1247,7 +1247,7 @@ bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
     return hasCached;
 }
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
 static ssize_t virNetSocketLibSSH2Read(virNetSocketPtr sock,
                                        char *buf,
                                        size_t len)
@@ -1281,7 +1281,7 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
     char *errout = NULL;
     ssize_t ret;
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
     if (sock->sshSession)
         return virNetSocketLibSSH2Read(sock, buf, len);
 #endif
@@ -1340,7 +1340,7 @@ static ssize_t virNetSocketWriteWire(virNetSocketPtr sock, const char *buf, size
 {
     ssize_t ret;
 
-#if HAVE_LIBSSH2
+#if WITH_SSH2
     if (sock->sshSession)
         return virNetSocketLibSSH2Write(sock, buf, len);
 #endif

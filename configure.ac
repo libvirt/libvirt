@@ -1426,11 +1426,11 @@ if test "$with_phyp" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
 fi
 if test "$with_libssh2_transport" = "yes"; then
-    AC_DEFINE_UNQUOTED([HAVE_LIBSSH2], 1, [whether libssh2 transport is enabled])
+    AC_DEFINE_UNQUOTED([WITH_SSH2], 1, [whether libssh2 transport is enabled])
 fi
 
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
-AM_CONDITIONAL([HAVE_LIBSSH2], [test "$with_libssh2_transport" = "yes"])
+AM_CONDITIONAL([WITH_SSH2], [test "$with_libssh2_transport" = "yes"])
 
 AC_SUBST([LIBSSH2_CFLAGS])
 AC_SUBST([LIBSSH2_LIBS])

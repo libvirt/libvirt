@@ -1426,7 +1426,7 @@ if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif
 
-if HAVE_LIBSSH2
+if WITH_SSH2
 USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 endif
 
@@ -1772,7 +1772,7 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetsocket.h rpc/virnetsocket.c \
 	rpc/virkeepaliveprotocol.h rpc/virkeepaliveprotocol.c \
 	rpc/virkeepalive.h rpc/virkeepalive.c
-if HAVE_LIBSSH2
+if WITH_SSH2
 libvirt_net_rpc_la_SOURCES += \
 	rpc/virnetsshsession.h rpc/virnetsshsession.c
 else
