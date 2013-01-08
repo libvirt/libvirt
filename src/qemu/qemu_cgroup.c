@@ -343,15 +343,18 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
         unsigned long long hard_limit = vm->def->mem.hard_limit;
 
         if (!hard_limit) {
-            /* If there is no hard_limit set, set a reasonable
-             * one to avoid system trashing caused by exploited qemu.
-             * As 'reasonable limit' has been chosen:
-             *     (1 + k) * (domain memory + total video memory) + F
-             * where k = 0.02 and F = 200MB. */
+            /* If there is no hard_limit set, set a reasonable one to avoid
+             * system trashing caused by exploited qemu.  As 'reasonable limit'
+             * has been chosen:
+             *     (1 + k) * (domain memory + total video memory) + (32MB for
+             *     cache per each disk) + F
+             * where k = 0.5 and F = 200MB.  The cache for disks is important as
+             * kernel cache on the host side counts into the RSS limit. */
             hard_limit = vm->def->mem.max_balloon;
             for (i = 0; i < vm->def->nvideos; i++)
                 hard_limit += vm->def->videos[i]->vram;
-            hard_limit = hard_limit * 1.02 + 204800;
+            hard_limit = hard_limit * 1.5 + 204800;
+            hard_limit += vm->def->ndisks * 32768;
         }
 
         rc = virCgroupSetMemoryHardLimit(cgroup, hard_limit);
