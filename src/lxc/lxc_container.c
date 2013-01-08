@@ -596,7 +596,7 @@ cleanup:
     return rc;
 }
 
-#if HAVE_FUSE
+#if WITH_FUSE
 static int lxcContainerMountProcFuse(virDomainDefPtr def,
                                      const char *srcprefix)
 {

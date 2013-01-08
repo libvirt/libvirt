@@ -38,7 +38,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
-#if HAVE_FUSE
+#if WITH_FUSE
 
 static const char *fuse_meminfo_path = "/meminfo";
 

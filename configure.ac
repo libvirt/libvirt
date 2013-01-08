@@ -1440,7 +1440,7 @@ AS_IF([test "x$with_fuse" != "xno"],
           [with_fuse=yes
            AC_SUBST([FUSE_CFLAGS])
            AC_SUBST([FUSE_LIBS])
-           AC_DEFINE_UNQUOTED([HAVE_FUSE], 1, [whether fuse is available for libvirt lxc])
+           AC_DEFINE_UNQUOTED([WITH_FUSE], 1, [whether fuse is available for libvirt lxc])
           ],
           [if test "x$with_fuse" = "xyes" ; then
              AC_MSG_ERROR([You must install fuse library to compile libvirt])
@@ -1449,7 +1449,7 @@ AS_IF([test "x$with_fuse" != "xno"],
            fi
           ])
         ])
-AM_CONDITIONAL([HAVE_FUSE], [test "x$with_fuse" = "xyes"])
+AM_CONDITIONAL([WITH_FUSE], [test "x$with_fuse" = "xyes"])
 
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])

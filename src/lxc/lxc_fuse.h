@@ -27,7 +27,7 @@
 # define FUSE_USE_VERSION 26
 
 # include <config.h>
-# if HAVE_FUSE
+# if WITH_FUSE
 #  include <fuse.h>
 # endif
 
