@@ -105,8 +105,6 @@ DEVMAPPER_REQUIRED=1.0.0
 OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
-LIBSSH2_REQUIRED="1.0"
-LIBSSH2_TRANSPORT_REQUIRED="1.3"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -161,6 +159,7 @@ LIBVIRT_CHECK_PCIACCESS
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_SELINUX
+LIBVIRT_CHECK_SSH2
 LIBVIRT_CHECK_UDEV
 LIBVIRT_CHECK_YAJL
 
@@ -415,8 +414,6 @@ AC_ARG_WITH([openvz],
   AC_HELP_STRING([--with-openvz], [add OpenVZ support @<:@default=check@:>@]),[],[with_openvz=check])
 AC_ARG_WITH([vmware],
   AC_HELP_STRING([--with-vmware], [add VMware support @<:@default=yes@:>@]),[],[with_vmware=yes])
-AC_ARG_WITH([libssh2],
-  AC_HELP_STRING([--with-libssh2], [libssh2 location @<:@default=check@:>@]),[],[with_libssh2=check])
 AC_ARG_WITH([phyp],
   AC_HELP_STRING([--with-phyp], [add PHYP support @<:@default=check@:>@]),[],[with_phyp=check])
 AC_ARG_WITH([xenapi],
@@ -447,8 +444,6 @@ AC_ARG_WITH([chrdev-lock-files],
                   (use auto for default paths on some platforms)
                   @<:@default=auto@:>@]),
   [],[with_chrdev_lock_files=auto])
-AC_ARG_WITH([libssh2_transport],
-  AC_HELP_STRING([--with-libssh2_transport], [libssh2 location @<:@default=check@:>@]),[],[with_libssh2_transport=check])
 
 dnl
 dnl in case someone want to build static binaries
@@ -1379,61 +1374,26 @@ AM_CONDITIONAL([WITH_UML], [test "$with_uml" = "yes"])
 
 
 dnl
-dnl check for libssh2 (PHYP and libssh2 transport)
+dnl check for PHYP
 dnl
 
-LIBSSH2_CFLAGS=""
-LIBSSH2_LIBS=""
-
-if test "$with_phyp" = "yes" || test "$with_phyp" = "check" ||
-   test "$with_libssh2_transport" = "yes"  || test "$with_libssh2_transport" = "check"; then
-    PKG_CHECK_MODULES([LIBSSH2], [libssh2 >= $LIBSSH2_REQUIRED], [
-        if test "$with_phyp" = "check"; then
-            with_phyp=yes
-        fi
-        if $PKG_CONFIG "libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED"; then
-            if test "$with_libssh2_transport" = "check"; then
-                with_libssh2_transport=yes
-            fi
-        else
-            if test "$with_libssh2_transport" = "check"; then
-                with_libssh2_transport=no
-                AC_MSG_NOTICE([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
-            fi
-            if test "$with_libssh2_transport" = "yes"; then
-                AC_MSG_ERROR([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
-            fi
-        fi
-    ], [
-        if test "$with_phyp" = "check"; then
-            with_phyp=no
-            AC_MSG_NOTICE([libssh2 is required for Phyp driver, disabling it])
-        fi
-        if test "$with_phyp" = "yes"; then
-            AC_MSG_ERROR([libssh2 >= $LIBSSH2_REQUIRED is required for Phyp driver])
-        fi
-        if test "$with_libssh2_transport" = "check"; then
-            with_libssh2_transport=no
-            AC_MSG_NOTICE([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
-        fi
-        if test "$with_libssh2_transport" = "yes"; then
-            AC_MSG_ERROR([libssh2 >= $LIBSSH2_TRANSPORT_REQUIRED is required for libssh2 transport])
-        fi
-    ])
+if test "$with_phyp" != "no"; then
+  if test "$with_ssh2" = "no" ; then
+    if test "$with_phyp" = "check"; then
+      with_phyp=no
+    else
+      AC_MSG_ERROR([libssh2 is required for Phyp driver])
+    fi
+  else
+    with_phyp=yes
+  fi
 fi
 
 if test "$with_phyp" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
 fi
-if test "$with_libssh2_transport" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_SSH2], 1, [whether libssh2 transport is enabled])
-fi
 
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
-AM_CONDITIONAL([WITH_SSH2], [test "$with_libssh2_transport" = "yes"])
-
-AC_SUBST([LIBSSH2_CFLAGS])
-AC_SUBST([LIBSSH2_LIBS])
 
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
@@ -2528,6 +2488,7 @@ LIBVIRT_RESULT_PCIACCESS
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_SELINUX
+LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
@@ -2536,11 +2497,6 @@ if test "$with_hyperv" = "yes" ; then
 AC_MSG_NOTICE([openwsman: $OPENWSMAN_CFLAGS $OPENWSMAN_LIBS])
 else
 AC_MSG_NOTICE([openwsman: no])
-fi
-if test "$with_libssh2" != "no" ; then
-AC_MSG_NOTICE([ libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
-else
-AC_MSG_NOTICE([ libssh2: no])
 fi
 if test "$with_gnutls" != "no" ; then
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])

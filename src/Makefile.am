@@ -848,8 +848,8 @@ endif
 if WITH_PHYP
 noinst_LTLIBRARIES += libvirt_driver_phyp.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_phyp.la
-libvirt_driver_phyp_la_LIBADD = $(LIBSSH2_LIBS)
-libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS) \
+libvirt_driver_phyp_la_LIBADD = $(SSH2_LIBS)
+libvirt_driver_phyp_la_CFLAGS = $(SSH2_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
 endif
@@ -1796,13 +1796,13 @@ endif
 libvirt_net_rpc_la_CFLAGS = \
 			$(GNUTLS_CFLAGS) \
 			$(SASL_CFLAGS) \
-			$(LIBSSH2_CFLAGS) \
+			$(SSH2_CFLAGS) \
 			$(XDR_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
 			$(SASL_LIBS) \
-			$(LIBSSH2_LIBS)\
+			$(SSH2_LIBS)\
 			$(AM_LDFLAGS) \
 			$(CYGWIN_EXTRA_LDFLAGS) \
 			$(MINGW_EXTRA_LDFLAGS)
