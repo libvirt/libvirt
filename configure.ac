@@ -102,7 +102,6 @@ POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 XMLRPC_REQUIRED=1.14.0
 DEVMAPPER_REQUIRED=1.0.0
-LIBCURL_REQUIRED="7.18.0"
 OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
@@ -152,6 +151,7 @@ LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_AVAHI
 LIBVIRT_CHECK_BLKID
 LIBVIRT_CHECK_CAPNG
+LIBVIRT_CHECK_CURL
 LIBVIRT_CHECK_DBUS
 LIBVIRT_CHECK_FUSE
 LIBVIRT_CHECK_HAL
@@ -703,21 +703,30 @@ if test "$with_xenapi" != "no" ; then
     CFLAGS="$CFLAGS $LIBXENSERVER_CFLAGS"
     LIBS="$LIBS $LIBXENSERVER_LIBS"
     AC_CHECK_LIB([xenserver], [xen_vm_start], [
-        with_xenapi=yes
         LIBXENSERVER_LIBS="$LIBXENSERVER_LIBS -lxenserver"
     ],[
         if test "$with_xenapi" = "yes"; then
             fail=1
         fi
-            with_xenapi=no
+        with_xenapi=no
     ])
+    if test "$with_xenapi" != "no" ; then
+        if test "$with_curl" = "no"; then
+            if test "$with_xenapi" = "yes"; then
+                fail=1
+            fi
+            with_xenapi=no
+        else
+            with_xenapi=yes
+        fi
+    fi
 fi
 
 LIBS="$old_LIBS"
 CFLAGS="$old_CFLAGS"
 
 if test $fail = 1; then
-    AC_MSG_ERROR([You must install the XenServer Library to compile XenAPI driver with -lxenserver])
+    AC_MSG_ERROR([You must install libxenserver and libcurl to compile the XenAPI driver])
 fi
 
 if test "$with_xenapi" = "yes"; then
@@ -1835,46 +1844,20 @@ fi
 AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
 
 dnl
-dnl check for libcurl (ESX/XenAPI)
+dnl check for (ESX)
 dnl
 
-LIBCURL_CFLAGS=""
-LIBCURL_LIBS=""
-have_curl=no
-
-if test "$with_esx" = "yes" || test "$with_esx" = "check" || test "$with_xenapi" = "yes" || test "$with_xenapi" = "check"; then
-    PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [
-        have_curl=yes
-
-        if test "$with_esx" = "check"; then
-            with_esx=yes
-        fi
-
-        if test "$with_xenapi" = "check"; then
-            with_xenapi=yes
-        fi
-    ], [
-        if test "$with_esx" = "check"; then
-            with_esx=no
-            AC_MSG_NOTICE([libcurl is required for the ESX driver, disabling it])
-        elif test "$with_esx" = "yes"; then
-            AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the ESX driver])
-        fi
-
-        if test "$with_xenapi" = "check"; then
-            with_xenapi=no
-            AC_MSG_NOTICE([libcurl is required for the XenAPI driver, disabling it])
-        elif test "$with_xenapi" = "yes"; then
-            AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the XenAPI driver])
-        fi
-    ])
+if test "$with_curl" != "yes" ; then
+  if test "$with_esx" = "check"; then
+    with_esx=no
+  else
+    AC_MSG_ERROR([Curl is required for the ESX driver])
+  fi
+else
+  if test "$with_esx" = "check"; then
+    with_esx=yes
+  fi
 fi
-
-if test "$have_curl" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_CURL], 1, [whether libcurl is available])
-fi
-AM_CONDITIONAL([WITH_CURL], [test "$have_curl" = "yes"])
-
 
 if test "$with_esx" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_ESX], 1, [whether ESX driver is enabled])
@@ -2535,6 +2518,7 @@ LIBVIRT_RESULT_AUDIT
 LIBVIRT_RESULT_AVAHI
 LIBVIRT_RESULT_BLKID
 LIBVIRT_RESULT_CAPNG
+LIBVIRT_RESULT_CURL
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_HAL
@@ -2548,11 +2532,6 @@ LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
-if test "$have_curl" = "yes" ; then
-AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
-else
-AC_MSG_NOTICE([ libcurl: no])
-fi
 if test "$with_hyperv" = "yes" ; then
 AC_MSG_NOTICE([openwsman: $OPENWSMAN_CFLAGS $OPENWSMAN_LIBS])
 else
