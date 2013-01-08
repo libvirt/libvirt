@@ -1620,13 +1620,10 @@ fi
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 
-%attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %if %{with_systemd}
 %{_unitdir}/libvirtd.service
-%{_unitdir}/libvirt-guests.service
 %else
 %{_sysconfdir}/rc.d/init.d/libvirtd
-%{_sysconfdir}/rc.d/init.d/libvirt-guests
 %endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
@@ -1889,8 +1886,11 @@ rm -f $RPM_BUILD_ROOT%{_prefix}/lib/sysctl.d/libvirtd.conf
 
 %if %{with_systemd}
 %{_unitdir}/libvirt-guests.service
+%else
+%{_sysconfdir}/rc.d/init.d/libvirt-guests
 %endif
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
+%attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
 %if %{with_sasl}
