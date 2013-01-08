@@ -662,7 +662,7 @@ static int testTLSSessionInit(const void *opaque)
             if (rv < 0)
                 goto cleanup;
             if (rv == VIR_NET_TLS_HANDSHAKE_COMPLETE)
-                serverShake = true;
+                clientShake = true;
         }
     } while (!clientShake && !serverShake);
 
