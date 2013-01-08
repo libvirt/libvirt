@@ -485,7 +485,7 @@ error:
 static int
 openvzReadMemConf(virDomainDefPtr def, int veid)
 {
-    int ret;
+    int ret = -1;
     char *temp = NULL;
     unsigned long long barrier, limit;
     const char *param;
