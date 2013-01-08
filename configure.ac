@@ -102,7 +102,6 @@ POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 XMLRPC_REQUIRED=1.14.0
 DEVMAPPER_REQUIRED=1.0.0
-OPENWSMAN_REQUIRED="2.2.3"
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 
@@ -155,6 +154,7 @@ LIBVIRT_CHECK_FUSE
 LIBVIRT_CHECK_HAL
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
+LIBVIRT_CHECK_OPENWSMAN
 LIBVIRT_CHECK_PCIACCESS
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
@@ -1850,25 +1850,19 @@ AC_SUBST([LIBCURL_LIBS])
 
 
 dnl
-dnl check for openwsman (Hyper-V)
+dnl check for Hyper-V
 dnl
 
-OPENWSMAN_CFLAGS=""
-OPENWSMAN_LIBS=""
-
-if test "$with_hyperv" = "yes" || test "$with_hyperv" = "check"; then
-    PKG_CHECK_MODULES([OPENWSMAN], [openwsman >= $OPENWSMAN_REQUIRED], [
-        if test "$with_hyperv" = "check"; then
-            with_hyperv=yes
-        fi
-    ], [
-        if test "$with_hyperv" = "check"; then
-            with_hyperv=no
-            AC_MSG_NOTICE([openwsman is required for the Hyper-V driver, disabling it])
-        elif test "$with_hyperv" = "yes"; then
-            AC_MSG_ERROR([openwsman >= $OPENWSMAN_REQUIRED is required for the Hyper-V driver])
-        fi
-    ])
+if test "$with_hyperv" != "no"; then
+  if test "$with_openwsman" != "yes"; then
+    if test "$with_hyperv" = "check"; then
+      with_hyperv=no
+    else
+      AC_MSG_ERROR([openwsman is required for the Hyper-V driver])
+    fi
+  else
+    with_hyperv=yes
+  fi
 fi
 
 if test "$with_hyperv" = "yes" ; then
@@ -2484,6 +2478,7 @@ LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_HAL
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
+LIBVIRT_RESULT_OPENWSMAN
 LIBVIRT_RESULT_PCIACCESS
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
