@@ -3102,7 +3102,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
     virDomainDiskDefPtr def = dev->data.disk;
     virCgroupPtr group = NULL;
     int ret = -1;
-    char *dst;
+    char *dst = NULL;
     struct stat sb;
     bool created = false;
     mode_t mode = 0;
