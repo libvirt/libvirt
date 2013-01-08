@@ -108,7 +108,6 @@ LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 LIBSSH2_REQUIRED="1.0"
 LIBSSH2_TRANSPORT_REQUIRED="1.3"
-FUSE_REQUIRED="2.8.6"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -154,6 +153,7 @@ LIBVIRT_CHECK_AVAHI
 LIBVIRT_CHECK_BLKID
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_DBUS
+LIBVIRT_CHECK_FUSE
 LIBVIRT_CHECK_HAL
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
@@ -1426,31 +1426,6 @@ AM_CONDITIONAL([HAVE_LIBSSH2], [test "$with_libssh2_transport" = "yes"])
 AC_SUBST([LIBSSH2_CFLAGS])
 AC_SUBST([LIBSSH2_LIBS])
 
-
-dnl libfuse
-AC_ARG_WITH([fuse],
-  AC_HELP_STRING([--with-fuse], [use libfuse to proivde fuse filesystem support for libvirt lxc]),
-  [],
-  [with_fuse=check])
-dnl
-dnl This check looks for 'fuse'
-dnl
-AS_IF([test "x$with_fuse" != "xno"],
-        [PKG_CHECK_MODULES([FUSE], [fuse >= $FUSE_REQUIRED],
-          [with_fuse=yes
-           AC_SUBST([FUSE_CFLAGS])
-           AC_SUBST([FUSE_LIBS])
-           AC_DEFINE_UNQUOTED([WITH_FUSE], 1, [whether fuse is available for libvirt lxc])
-          ],
-          [if test "x$with_fuse" = "xyes" ; then
-             AC_MSG_ERROR([You must install fuse library to compile libvirt])
-           else
-             with_fuse=no
-           fi
-          ])
-        ])
-AM_CONDITIONAL([WITH_FUSE], [test "x$with_fuse" = "xyes"])
-
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
 
@@ -2561,6 +2536,7 @@ LIBVIRT_RESULT_AVAHI
 LIBVIRT_RESULT_BLKID
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_DBUS
+LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_HAL
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
@@ -2601,11 +2577,6 @@ AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
 fi
 else
 AC_MSG_NOTICE([  polkit: no])
-fi
-if test "$with_fuse" = "yes" ; then
-AC_MSG_NOTICE([    fuse: $FUSE_CFLAGS $FUSE_LIBS])
-else
-AC_MSG_NOTICE([    fuse: no])
 fi
 if test "$with_xen" = "yes" ; then
 AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
