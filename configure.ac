@@ -1113,9 +1113,9 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
   AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
   if test "x$PKCHECK_PATH" != "x" ; then
     AC_DEFINE_UNQUOTED([PKCHECK_PATH],["$PKCHECK_PATH"],[Location of pkcheck program])
-    AC_DEFINE_UNQUOTED([HAVE_POLKIT], 1,
+    AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
         [use PolicyKit for UNIX socket access checks])
-    AC_DEFINE_UNQUOTED([HAVE_POLKIT1], 1,
+    AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
         [use PolicyKit for UNIX socket access checks])
     with_polkit="yes"
     with_polkit1="yes"
@@ -1131,9 +1131,9 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
       fi
     ])
     if test "x$with_polkit" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_POLKIT], 1,
+      AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
         [use PolicyKit for UNIX socket access checks])
-      AC_DEFINE_UNQUOTED([HAVE_POLKIT0], 1,
+      AC_DEFINE_UNQUOTED([WITH_POLKIT0], 1,
         [use PolicyKit for UNIX socket access checks])
 
       old_CFLAGS=$CFLAGS
@@ -1152,9 +1152,9 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
     fi
   fi
 fi
-AM_CONDITIONAL([HAVE_POLKIT], [test "x$with_polkit" = "xyes"])
-AM_CONDITIONAL([HAVE_POLKIT0], [test "x$with_polkit0" = "xyes"])
-AM_CONDITIONAL([HAVE_POLKIT1], [test "x$with_polkit1" = "xyes"])
+AM_CONDITIONAL([WITH_POLKIT], [test "x$with_polkit" = "xyes"])
+AM_CONDITIONAL([WITH_POLKIT0], [test "x$with_polkit0" = "xyes"])
+AM_CONDITIONAL([WITH_POLKIT1], [test "x$with_polkit1" = "xyes"])
 AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
 

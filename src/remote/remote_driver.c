@@ -122,10 +122,10 @@ static int remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
 static int remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
                           virConnectAuthPtr auth, const char *mech);
 #endif
-#if HAVE_POLKIT
+#if WITH_POLKIT
 static int remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
                             virConnectAuthPtr auth);
-#endif /* HAVE_POLKIT */
+#endif /* WITH_POLKIT */
 
 static virDomainPtr get_nonnull_domain(virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network(virConnectPtr conn, remote_nonnull_network network);
@@ -3504,7 +3504,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
     }
 #endif
 
-#if HAVE_POLKIT
+#if WITH_POLKIT
     case REMOTE_AUTH_POLKIT:
         if (remoteAuthPolkit(conn, priv, auth) < 0) {
             VIR_FREE(ret.types.types_val);
@@ -4075,8 +4075,8 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 #endif /* WITH_SASL */
 
 
-#if HAVE_POLKIT
-# if HAVE_POLKIT1
+#if WITH_POLKIT
+# if WITH_POLKIT1
 static int
 remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
                  virConnectAuthPtr auth ATTRIBUTE_UNUSED)
@@ -4094,7 +4094,7 @@ remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
     VIR_DEBUG("PolicyKit-1 authentication complete");
     return 0;
 }
-# elif HAVE_POLKIT0
+# elif WITH_POLKIT0
 /* Perform the PolicyKit authentication process
  */
 static int
@@ -4156,8 +4156,8 @@ out:
     VIR_DEBUG("PolicyKit-0 authentication complete");
     return 0;
 }
-# endif /* HAVE_POLKIT0 */
-#endif /* HAVE_POLKIT */
+# endif /* WITH_POLKIT0 */
+#endif /* WITH_POLKIT */
 /*----------------------------------------------------------------------*/
 
 static int remoteDomainEventRegister(virConnectPtr conn,

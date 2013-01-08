@@ -170,8 +170,8 @@ endif
 
 libvirtd_LDADD += ../src/libvirt.la
 
-if HAVE_POLKIT
-if HAVE_POLKIT0
+if WITH_POLKIT
+if WITH_POLKIT0
 policydir = $(datadir)/PolicyKit/policy
 policyauth = auth_admin_keep_session
 else
@@ -201,7 +201,7 @@ uninstall-local:: uninstall-init-redhat uninstall-init-systemd uninstall-init-up
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
-if HAVE_POLKIT
+if WITH_POLKIT
 install-data-polkit::
 	$(MKDIR_P) $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy

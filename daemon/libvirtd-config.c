@@ -242,7 +242,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         goto no_memory;
 
     /* Only default to PolicyKit if running as root */
-#if HAVE_POLKIT
+#if WITH_POLKIT
     if (privileged) {
         data->auth_unix_rw = REMOTE_AUTH_POLKIT;
         data->auth_unix_ro = REMOTE_AUTH_POLKIT;
@@ -250,7 +250,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 #endif
         data->auth_unix_rw = REMOTE_AUTH_NONE;
         data->auth_unix_ro = REMOTE_AUTH_NONE;
-#if HAVE_POLKIT
+#if WITH_POLKIT
     }
 #endif
 
@@ -374,7 +374,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &data->auth_unix_rw, filename) < 0)
         goto error;
-#if HAVE_POLKIT
+#if WITH_POLKIT
     /* Change default perms to be wide-open if PolicyKit is enabled.
      * Admin can always override in config file
      */

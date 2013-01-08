@@ -24,7 +24,7 @@
 
 #include "virerror.h"
 
-#if HAVE_POLKIT0
+#if WITH_POLKIT0
 # include <polkit/polkit.h>
 # include <polkit-dbus/polkit-dbus.h>
 #endif
@@ -2802,7 +2802,7 @@ remoteDispatchAuthSaslStep(virNetServerPtr server ATTRIBUTE_UNUSED,
 
 
 
-#if HAVE_POLKIT1
+#if WITH_POLKIT1
 static int
 remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
                          virNetServerClientPtr client,
@@ -2912,7 +2912,7 @@ authdeny:
           client, REMOTE_AUTH_POLKIT, ident);
     goto error;
 }
-#elif HAVE_POLKIT0
+#elif WITH_POLKIT0
 static int
 remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
                          virNetServerClientPtr client,
@@ -3056,7 +3056,7 @@ authdeny:
     goto error;
 }
 
-#else /* !HAVE_POLKIT0 & !HAVE_POLKIT1*/
+#else /* !WITH_POLKIT0 & !HAVE_POLKIT1*/
 
 static int
 remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
@@ -3071,7 +3071,7 @@ remoteDispatchAuthPolkit(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNetMessageSaveError(rerr);
     return -1;
 }
-#endif /* HAVE_POLKIT1 */
+#endif /* WITH_POLKIT1 */
 
 
 /***************************************************************
