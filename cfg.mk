@@ -98,6 +98,7 @@ useless_free_options =				\
   --name=qemuMigrationCookieFree                \
   --name=qemuMigrationCookieGraphicsFree        \
   --name=sexpr_free				\
+  --name=usbFreeDevice                          \
   --name=virBandwidthDefFree			\
   --name=virBitmapFree                          \
   --name=virCPUDefFree				\

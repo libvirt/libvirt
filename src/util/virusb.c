@@ -356,6 +356,8 @@ usbGetDevice(unsigned int bus,
 void
 usbFreeDevice(usbDevice *dev)
 {
+    if (!dev)
+        return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev->path);
     VIR_FREE(dev);
@@ -496,8 +498,7 @@ usbDeviceListDel(usbDeviceList *list,
                  usbDevice *dev)
 {
     usbDevice *ret = usbDeviceListSteal(list, dev);
-    if (ret)
-        usbFreeDevice(ret);
+    usbFreeDevice(ret);
 }
 
 usbDevice *
