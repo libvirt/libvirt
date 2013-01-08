@@ -91,7 +91,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainChrSourceDef monitor_chr;
     virConnectPtr conn;
     char *log = NULL;
-    char *emulator = NULL;
     virCommandPtr cmd = NULL;
 
     if (!(conn = virGetConnect()))
@@ -173,15 +172,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(actualargv = virCommandToString(cmd)))
         goto out;
 
-    if (emulator) {
-        /* Skip the abs_srcdir portion of replacement emulator.  */
-        char *start_skip = strstr(actualargv, abs_srcdir);
-        char *end_skip = strstr(actualargv, emulator);
-        if (!start_skip || !end_skip)
-            goto out;
-        memmove(start_skip, end_skip, strlen(end_skip) + 1);
-    }
-
     len = virtTestLoadFile(cmdline, &expectargv);
     if (len < 0)
         goto out;
@@ -203,7 +193,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 out:
     VIR_FREE(log);
-    VIR_FREE(emulator);
     VIR_FREE(expectargv);
     VIR_FREE(actualargv);
     virCommandFree(cmd);
