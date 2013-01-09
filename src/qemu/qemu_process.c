@@ -133,7 +133,8 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
     virDomainObjLock(vm);
 
     priv = vm->privateData;
-    if (priv->agent == agent)
+    if (priv->agent == agent &&
+        !virObjectUnref(priv->agent))
         priv->agent = NULL;
 
     virDomainObjUnlock(vm);
