@@ -127,12 +127,12 @@ typedef enum {
                                    power management */
 
 #ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_LAST
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last state supported
      * by this version of the libvirt API.
      */
-    VIR_DOMAIN_LAST
 #endif
 } virDomainState;
 
@@ -351,8 +351,7 @@ typedef enum {
     VIR_NODE_SUSPEND_TARGET_HYBRID  = 2,
 
 #ifdef VIR_ENUM_SENTINELS
-    /* This constant is subject to change */
-    VIR_NODE_SUSPEND_TARGET_LAST
+    VIR_NODE_SUSPEND_TARGET_LAST /* This constant is subject to change */
 #endif
 } virNodeSuspendTarget;
 
@@ -1186,8 +1185,7 @@ typedef enum {
     VIR_CRED_EXTERNAL = 9,     /* Externally managed credential */
 
 #ifdef VIR_ENUM_SENTINELS
-    /* More may be added - expect the unexpected */
-    VIR_CRED_LAST
+    VIR_CRED_LAST              /* More may be added - expect the unexpected */
 #endif
 } virConnectCredentialType;
 
@@ -1662,8 +1660,7 @@ typedef enum {
     VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE  = 2,
 
 #ifdef VIR_ENUM_SENTINELS
-    /* This constant is subject to change */
-    VIR_DOMAIN_NUMATUNE_MEM_LAST
+    VIR_DOMAIN_NUMATUNE_MEM_LAST /* This constant is subject to change */
 #endif
 } virDomainNumatuneMemMode;
 
@@ -2742,12 +2739,12 @@ typedef enum {
     VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
 
 #ifdef VIR_ENUM_SENTINELS
+    VIR_STORAGE_VOL_WIPE_ALG_LAST
     /*
      * NB: this enum value will increase over time as new algorithms are
      * added to the libvirt API. It reflects the last algorithm supported
      * by this version of the libvirt API.
      */
-    VIR_STORAGE_VOL_WIPE_ALG_LAST
 #endif
 } virStorageVolWipeAlgorithm;
 
@@ -2974,12 +2971,12 @@ typedef enum {
     VIR_KEYCODE_SET_RFB            = 9,
 
 #ifdef VIR_ENUM_SENTINELS
+    VIR_KEYCODE_SET_LAST
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last keycode set supported
      * by this version of the libvirt API.
      */
-    VIR_KEYCODE_SET_LAST
 #endif
 } virKeycodeSet;
 
@@ -3533,12 +3530,12 @@ typedef enum {
     VIR_SECRET_USAGE_TYPE_CEPH = 2,
 
 #ifdef VIR_ENUM_SENTINELS
+    VIR_SECRET_USAGE_TYPE_LAST
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last secret owner ID
      * supported by this version of the libvirt API.
      */
-    VIR_SECRET_USAGE_TYPE_LAST
 #endif
 } virSecretUsageType;
 
@@ -4443,12 +4440,12 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback */
 
 #ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_EVENT_ID_LAST
     /*
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      */
-    VIR_DOMAIN_EVENT_ID_LAST
 #endif
 } virDomainEventID;
 
