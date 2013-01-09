@@ -356,14 +356,14 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
     if (!object)
         return NULL;
 
-    if (!(socks = virJSONValueNewArray()))
-        goto error;
-
     if (virJSONValueObjectAppendNumberInt(object, "auth", svc->auth) < 0)
         goto error;
     if (virJSONValueObjectAppendBoolean(object, "readonly", svc->readonly) < 0)
         goto error;
     if (virJSONValueObjectAppendNumberUint(object, "nrequests_client_max", svc->nrequests_client_max) < 0)
+        goto error;
+
+    if (!(socks = virJSONValueNewArray()))
         goto error;
 
     if (virJSONValueObjectAppend(object, "socks", socks) < 0) {
