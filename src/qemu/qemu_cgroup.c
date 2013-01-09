@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.c: QEMU cgroup management
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -344,8 +344,8 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
 
         if (!hard_limit) {
             /* If there is no hard_limit set, set a reasonable one to avoid
-             * system trashing caused by exploited qemu.  As 'reasonable limit'
-             * has been chosen:
+             * system thrashing caused by exploited qemu.  A 'reasonable
+             * limit' has been chosen:
              *     (1 + k) * (domain memory + total video memory) + (32MB for
              *     cache per each disk) + F
              * where k = 0.5 and F = 200MB.  The cache for disks is important as
