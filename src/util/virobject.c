@@ -33,6 +33,8 @@
 static unsigned int magicCounter = 0xCAFE0000;
 
 struct _virClass {
+    virClassPtr parent;
+
     unsigned int magic;
     const char *name;
     size_t objectSize;
@@ -40,9 +42,39 @@ struct _virClass {
     virObjectDisposeCallback dispose;
 };
 
+static virClassPtr virObjectClass;
+
+static int virObjectOnceInit(void)
+{
+    if (!(virObjectClass = virClassNew(NULL,
+                                       "virObject",
+                                       sizeof(virObject),
+                                       NULL)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virObject);
+
+
+/**
+ * virClassForObject:
+ *
+ * Returns the class instance for the base virObject type
+ */
+virClassPtr virClassForObject(void)
+{
+    if (!virObjectInitialize() < 0)
+        return NULL;
+
+    return virObjectClass;
+}
+
 
 /**
  * virClassNew:
+ * @parent: the parent class
  * @name: the class name
  * @objectSize: total size of the object struct
  * @dispose: callback to run to free object fields
@@ -56,15 +88,29 @@ struct _virClass {
  *
  * Returns a new class instance
  */
-virClassPtr virClassNew(const char *name,
+virClassPtr virClassNew(virClassPtr parent,
+                        const char *name,
                         size_t objectSize,
                         virObjectDisposeCallback dispose)
 {
     virClassPtr klass;
 
+    if (parent == NULL &&
+        STRNEQ(name, "virObject")) {
+        virReportInvalidNonNullArg(parent);
+        return NULL;
+    } else if (parent &&
+               objectSize <= parent->objectSize) {
+        virReportInvalidArg(objectSize,
+                            _("object size %zu of %s is smaller than parent class %zu"),
+                            objectSize, name, parent->objectSize);
+        return NULL;
+    }
+
     if (VIR_ALLOC(klass) < 0)
         goto no_memory;
 
+    klass->parent = parent;
     if (!(klass->name = strdup(name)))
         goto no_memory;
     klass->magic = virAtomicIntInc(&magicCounter);
@@ -77,6 +123,27 @@ no_memory:
     VIR_FREE(klass);
     virReportOOMError();
     return NULL;
+}
+
+
+/**
+ * virClassIsDerivedFrom:
+ * @klass: the klass to check
+ * @parent: the possible parent class
+ *
+ * Determine if @klass is derived from @parent
+ *
+ * Return true if @klass is derived from @parent, false otherwise
+ */
+bool virClassIsDerivedFrom(virClassPtr klass,
+                           virClassPtr parent)
+{
+    while (klass) {
+        if (klass->magic == parent->magic)
+            return true;
+        klass = klass->parent;
+    }
+    return false;
 }
 
 
@@ -135,8 +202,14 @@ bool virObjectUnref(void *anyobj)
     PROBE(OBJECT_UNREF, "obj=%p", obj);
     if (lastRef) {
         PROBE(OBJECT_DISPOSE, "obj=%p", obj);
-        if (obj->klass->dispose)
-            obj->klass->dispose(obj);
+        virClassPtr klass = obj->klass;
+        while (klass) {
+            if (klass->dispose)
+                klass->dispose(obj);
+            klass = klass->parent;
+        }
+
+        virMutexDestroy(&obj->lock);
 
         /* Clear & poison object */
         memset(obj, 0, obj->klass->objectSize);
@@ -184,7 +257,10 @@ bool virObjectIsClass(void *anyobj,
                       virClassPtr klass)
 {
     virObjectPtr obj = anyobj;
-    return obj != NULL && (obj->magic == klass->magic) && (obj->klass == klass);
+    if (!obj)
+        return false;
+
+    return virClassIsDerivedFrom(obj->klass, klass);
 }
 
 

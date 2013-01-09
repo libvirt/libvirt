@@ -64,7 +64,8 @@ static int
 virDataTypesOnceInit(void)
 {
 #define DECLARE_CLASS(basename)                                  \
-    if (!(basename ## Class = virClassNew(#basename,             \
+    if (!(basename ## Class = virClassNew(virClassForObject(),   \
+                                          #basename,             \
                                           sizeof(basename),      \
                                           basename ## Dispose))) \
         return -1;

@@ -244,7 +244,8 @@ static void qemuCapsDispose(void *obj);
 
 static int qemuCapsOnceInit(void)
 {
-    if (!(qemuCapsClass = virClassNew("qemuCaps",
+    if (!(qemuCapsClass = virClassNew(virClassForObject(),
+                                      "qemuCaps",
                                       sizeof(qemuCaps),
                                       qemuCapsDispose)))
         return -1;

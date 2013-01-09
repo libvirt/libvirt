@@ -165,6 +165,7 @@ src/util/virnetdevtap.c
 src/util/virnetdevvportprofile.c
 src/util/virnetlink.c
 src/util/virnodesuspend.c
+src/util/virobject.c
 src/util/virpci.c
 src/util/virpidfile.c
 src/util/virprocess.c

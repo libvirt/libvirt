@@ -38,13 +38,20 @@ struct _virObject {
     virClassPtr klass;
 };
 
-virClassPtr virClassNew(const char *name,
+virClassPtr virClassForObject(void);
+
+virClassPtr virClassNew(virClassPtr parent,
+                        const char *name,
                         size_t objectSize,
                         virObjectDisposeCallback dispose)
     ATTRIBUTE_NONNULL(1);
 
 const char *virClassName(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
+
+bool virClassIsDerivedFrom(virClassPtr klass,
+                           virClassPtr parent)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void *virObjectNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);

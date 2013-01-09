@@ -700,7 +700,8 @@ static void virDomainObjDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
-    if (!(virDomainObjClass = virClassNew("virDomainObj",
+    if (!(virDomainObjClass = virClassNew(virClassForObject(),
+                                          "virDomainObj",
                                           sizeof(virDomainObj),
                                           virDomainObjDispose)))
         return -1;

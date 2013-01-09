@@ -52,7 +52,8 @@ static void virNetClientProgramDispose(void *obj);
 
 static int virNetClientProgramOnceInit(void)
 {
-    if (!(virNetClientProgramClass = virClassNew("virNetClientProgram",
+    if (!(virNetClientProgramClass = virClassNew(virClassForObject(),
+                                                 "virNetClientProgram",
                                                  sizeof(virNetClientProgram),
                                                  virNetClientProgramDispose)))
         return -1;

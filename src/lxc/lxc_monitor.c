@@ -50,7 +50,8 @@ static void virLXCMonitorDispose(void *obj);
 
 static int virLXCMonitorOnceInit(void)
 {
-    if (!(virLXCMonitorClass = virClassNew("virLXCMonitor",
+    if (!(virLXCMonitorClass = virClassNew(virClassForObject(),
+                                           "virLXCMonitor",
                                            sizeof(virLXCMonitor),
                                            virLXCMonitorDispose)))
         return -1;

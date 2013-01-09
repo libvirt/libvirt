@@ -104,7 +104,8 @@ static void virNetSocketDispose(void *obj);
 
 static int virNetSocketOnceInit(void)
 {
-    if (!(virNetSocketClass = virClassNew("virNetSocket",
+    if (!(virNetSocketClass = virClassNew(virClassForObject(),
+                                          "virNetSocket",
                                           sizeof(virNetSocket),
                                           virNetSocketDispose)))
         return -1;

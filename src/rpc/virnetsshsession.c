@@ -161,7 +161,8 @@ static virClassPtr virNetSSHSessionClass;
 static int
 virNetSSHSessionOnceInit(void)
 {
-    if (!(virNetSSHSessionClass = virClassNew("virNetSSHSession",
+    if (!(virNetSSHSessionClass = virClassNew(virClassForObject(),
+                                              "virNetSSHSession",
                                               sizeof(virNetSSHSession),
                                               virNetSSHSessionDispose)))
         return -1;
