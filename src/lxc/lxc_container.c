@@ -539,19 +539,19 @@ static int lxcContainerMountBasicFS(bool pivotRoot,
         VIR_DEBUG("Processing %s -> %s",
                   mnts[i].src, mnts[i].dst);
 
-        if (virFileMakePath(mnts[i].dst) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to mkdir %s"),
-                                 mnts[i].src);
-            goto cleanup;
-        }
-
         srcpath = mnts[i].src;
 
         /* Skip if mount doesn't exist in source */
         if ((srcpath[0] == '/') &&
             (access(srcpath, R_OK) < 0))
             continue;
+
+        if (virFileMakePath(mnts[i].dst) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to mkdir %s"),
+                                 mnts[i].src);
+            goto cleanup;
+        }
 
         VIR_DEBUG("Mount %s on %s type=%s flags=%x, opts=%s",
                   srcpath, mnts[i].dst, mnts[i].type, mnts[i].mflags, mnts[i].opts);
