@@ -37,6 +37,7 @@ EXTRA_DIST =						\
 	libvirtd.upstart				\
 	libvirtd.policy.in				\
 	libvirtd.sasl					\
+	libvirtd.service.in				\
 	libvirtd.sysconf				\
 	libvirtd.sysctl					\
 	libvirtd.aug                                    \
@@ -322,7 +323,6 @@ uninstall-init-upstart:
 endif # LIBVIRT_INIT_SCRIPT_UPSTART
 
 
-EXTRA_DIST += libvirtd.service.in
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 SYSTEMD_UNIT_DIR = /lib/systemd/system
