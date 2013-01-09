@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2012 Red Hat, Inc.
+# Copyright (C) 2008-2013 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -617,6 +617,23 @@ sc_require_whitespace_in_translation:
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\
 	  $(VC_LIST_EXCEPT) | grep '\.[ch]$$' | xargs cppi -a -c	\
+	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
+		exit 1; };						\
+	else								\
+	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
+	fi
+
+# Enforce similar spec file indentation style, by running cppi on a
+# (comment-only) C file that mirrors the same layout as the spec file.
+sc_spec_indentation:
+	@if cppi --version >/dev/null 2>&1; then			\
+	  for f in $$($(VC_LIST_EXCEPT) | grep '\.spec\.in$$'); do	\
+	    sed -e 's|#|// #|; s|%ifn*\(arch\)* |#if a // |'		\
+		-e 's/%\(else\|endif\|define\)/#\1/'			\
+		-e 's/^\( *\)\1\1\1#/#\1/'				\
+		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f	\
+	    | cppi -a -c 2>&1 | sed "s|standard input|$$f|";		\
+	  done | { if grep . >&2; then false; else :; fi; }		\
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
 		exit 1; };						\
 	else								\
