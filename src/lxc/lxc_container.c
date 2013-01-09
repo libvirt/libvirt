@@ -605,7 +605,7 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def,
 
     if ((ret = virAsprintf(&meminfo_path,
                            "%s/%s/%s/meminfo",
-                           srcprefix, LXC_STATE_DIR,
+                           srcprefix ? srcprefix : "", LXC_STATE_DIR,
                            def->name)) < 0)
         return ret;
 
@@ -2059,7 +2059,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts /proc/meminfo etc sysinfo */
-    if (lxcContainerMountProcFuse(vmDef, "/.oldroot") < 0)
+    if (lxcContainerMountProcFuse(vmDef, NULL) < 0)
         goto cleanup;
 
     /* Now we can re-mount the cgroups controllers in the
