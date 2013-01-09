@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -11128,6 +11128,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     bool atomic = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC);
     bool transaction = qemuCapsGet(priv->caps, QEMU_CAPS_TRANSACTION);
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
+    bool pmsuspended = false;
 
     if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm,
                                              QEMU_ASYNC_JOB_SNAPSHOT) < 0)
@@ -11147,8 +11148,11 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         }
     }
 
-    /* we need to resume the guest only if it was previously running */
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+    /* We need to track what state the guest is in, since taking the
+     * snapshot may alter that state and we must restore it later.  */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PMSUSPENDED) {
+        pmsuspended = true;
+    } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         resume = true;
 
         /* For external checkpoints (those with memory), the guest
@@ -11228,6 +11232,18 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         resume = false;
         thaw = 0;
         vm = NULL;
+        if (event)
+            qemuDomainEventQueue(driver, event);
+    } else if (memory && pmsuspended) {
+        /* qemu 1.3 is unable to save a domain in pm-suspended (S3)
+         * state; so we must emit an event stating that it was
+         * converted to paused.  */
+        virDomainEventPtr event;
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                             VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
+        event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+                                         VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
         if (event)
             qemuDomainEventQueue(driver, event);
     }
