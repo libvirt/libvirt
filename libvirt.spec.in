@@ -824,9 +824,7 @@ Summary: Qemu driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
-%if %{with_driver_modules}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
-%endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -841,9 +839,7 @@ Summary: LXC driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
-%if %{with_driver_modules}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
-%endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
@@ -1745,10 +1741,8 @@ fi
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %endif
 
-%if %{with_libvirtd}
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
-%endif
 
 %if %{with_qemu}
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
