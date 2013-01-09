@@ -1564,7 +1564,6 @@ libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 			  $(AM_LDFLAGS)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
-EXTRA_DIST += $(LIBVIRT_QEMU_SYMBOL_FILE)
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =

@@ -2676,6 +2676,8 @@ CYGWIN_EXTRA_LIBADD=
 CYGWIN_EXTRA_PYTHON_LIBADD=
 MINGW_EXTRA_LDFLAGS=
 WIN32_EXTRA_CFLAGS=
+dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
+dnl hence the asymmetric naming of these two symbol files.
 LIBVIRT_SYMBOL_FILE=libvirt.syms
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
 MSCOM_LIBS=
