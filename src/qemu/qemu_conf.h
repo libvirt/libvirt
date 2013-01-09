@@ -39,7 +39,7 @@
 # include "virusb.h"
 # include "cpu_conf.h"
 # include "driver.h"
-# include "virbitmap.h"
+# include "virportallocator.h"
 # include "vircommand.h"
 # include "virthreadpool.h"
 # include "locking/lock_manager.h"
@@ -150,7 +150,7 @@ struct _virQEMUDriver {
 
     virHashTablePtr sharedDisks;
 
-    virBitmapPtr reservedRemotePorts;
+    virPortAllocatorPtr remotePorts;
 
     virSysinfoDefPtr hostsysinfo;
 

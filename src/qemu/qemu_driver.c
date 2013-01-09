@@ -809,9 +809,10 @@ qemuStartup(bool privileged,
     /* Allocate bitmap for remote display port reservations. We cannot
      * do this before the config is loaded properly, since the port
      * numbers are configurable now */
-    if ((qemu_driver->reservedRemotePorts =
-         virBitmapNew(qemu_driver->remotePortMax - qemu_driver->remotePortMin)) == NULL)
-        goto out_of_memory;
+    if ((qemu_driver->remotePorts =
+         virPortAllocatorNew(qemu_driver->remotePortMin,
+                             qemu_driver->remotePortMax)) == NULL)
+        goto error;
 
     /* We should always at least have the 'nop' manager, so
      * NULLs here are a fatal error
@@ -1104,7 +1105,7 @@ qemuShutdown(void) {
     qemuCapsCacheFree(qemu_driver->capsCache);
 
     virDomainObjListDeinit(&qemu_driver->domains);
-    virBitmapFree(qemu_driver->reservedRemotePorts);
+    virObjectUnref(qemu_driver->remotePorts);
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 

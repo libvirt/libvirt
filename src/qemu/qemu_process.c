@@ -2604,73 +2604,6 @@ qemuProcessInitPCIAddresses(virQEMUDriverPtr driver,
 }
 
 
-static int qemuProcessNextFreePort(virQEMUDriverPtr driver,
-                                   int startPort)
-{
-    int i;
-
-    for (i = startPort ; i < driver->remotePortMax; i++) {
-        int fd;
-        int reuse = 1;
-        struct sockaddr_in addr;
-        bool used = false;
-
-        if (virBitmapGetBit(driver->reservedRemotePorts,
-                            i - driver->remotePortMin, &used) < 0)
-            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - driver->remotePortMin);
-
-        if (used)
-            continue;
-
-        addr.sin_family = AF_INET;
-        addr.sin_port = htons(i);
-        addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        fd = socket(PF_INET, SOCK_STREAM, 0);
-        if (fd < 0)
-            return -1;
-
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse, sizeof(reuse)) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            break;
-        }
-
-        if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
-            /* Not in use, lets grab it */
-            VIR_FORCE_CLOSE(fd);
-            /* Add port to bitmap of reserved ports */
-            if (virBitmapSetBit(driver->reservedRemotePorts,
-                                i - driver->remotePortMin) < 0) {
-                VIR_DEBUG("virBitmapSetBit failed on bit %d",
-                          i - driver->remotePortMin);
-            }
-            return i;
-        }
-        VIR_FORCE_CLOSE(fd);
-
-        if (errno == EADDRINUSE) {
-            /* In use, try next */
-            continue;
-        }
-        /* Some other bad failure, get out.. */
-        break;
-    }
-    return -1;
-}
-
-
-static void
-qemuProcessReturnPort(virQEMUDriverPtr driver,
-                      int port)
-{
-    if (port < driver->remotePortMin)
-        return;
-
-    if (virBitmapClearBit(driver->reservedRemotePorts,
-                          port - driver->remotePortMin) < 0)
-        VIR_DEBUG("Could not mark port %d as unused", port);
-}
-
-
 static int
 qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                 virDomainChrDefPtr dev,
@@ -3665,20 +3598,18 @@ int qemuProcessStart(virConnectPtr conn,
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             !graphics->data.vnc.socket &&
             graphics->data.vnc.autoport) {
-            int port = qemuProcessNextFreePort(driver, driver->remotePortMin);
-            if (port < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Unable to find an unused port for VNC"));
+            unsigned short port;
+            if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
                 goto cleanup;
-            }
             graphics->data.vnc.port = port;
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            int port = -1;
+            unsigned short port = 0;
             if (graphics->data.spice.autoport ||
                 graphics->data.spice.port == -1) {
-                port = qemuProcessNextFreePort(driver, driver->remotePortMin);
+                if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
+                    goto cleanup;
 
-                if (port < 0) {
+                if (port == 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Unable to find an unused port for SPICE"));
                     goto cleanup;
@@ -3689,12 +3620,14 @@ int qemuProcessStart(virConnectPtr conn,
             if (driver->spiceTLS &&
                 (graphics->data.spice.autoport ||
                  graphics->data.spice.tlsPort == -1)) {
-                int tlsPort = qemuProcessNextFreePort(driver,
-                                                      graphics->data.spice.port + 1);
-                if (tlsPort < 0) {
+                unsigned short tlsPort;
+                if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
+                    goto cleanup;
+
+                if (tlsPort == 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Unable to find an unused port for SPICE TLS"));
-                    qemuProcessReturnPort(driver, port);
+                    virPortAllocatorRelease(driver->remotePorts, port);
                     goto cleanup;
                 }
 
@@ -4363,12 +4296,15 @@ retry:
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             graphics->data.vnc.autoport) {
-            qemuProcessReturnPort(driver, graphics->data.vnc.port);
+            ignore_value(virPortAllocatorRelease(driver->remotePorts,
+                                                 graphics->data.vnc.port));
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
             graphics->data.spice.autoport) {
-            qemuProcessReturnPort(driver, graphics->data.spice.port);
-            qemuProcessReturnPort(driver, graphics->data.spice.tlsPort);
+            ignore_value(virPortAllocatorRelease(driver->remotePorts,
+                                                 graphics->data.spice.port));
+            ignore_value(virPortAllocatorRelease(driver->remotePorts,
+                                                 graphics->data.spice.tlsPort));
         }
     }
 
