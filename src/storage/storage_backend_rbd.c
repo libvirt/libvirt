@@ -1,6 +1,7 @@
 /*
  * storage_backend_rbd.c: storage backend for RBD (RADOS Block Device) handling
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Wido den Hollander
  *
  * This library is free software; you can redistribute it and/or
@@ -319,26 +320,31 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     for (i = 0, name = names; name < names + max_size; i++) {
+        virStorageVolDefPtr vol;
+
         if (VIR_REALLOC_N(pool->volumes.objs, pool->volumes.count + 1) < 0) {
             virStoragePoolObjClearVols(pool);
             goto out_of_memory;
         }
 
-        virStorageVolDefPtr vol;
+        if (STREQ(name, ""))
+            break;
+
         if (VIR_ALLOC(vol) < 0)
             goto out_of_memory;
 
         vol->name = strdup(name);
-        if (vol->name == NULL)
+        if (vol->name == NULL) {
+            VIR_FREE(vol);
             goto out_of_memory;
-
-        if (STREQ(vol->name, ""))
-            break;
+        }
 
         name += strlen(name) + 1;
 
-        if (volStorageBackendRBDRefreshVolInfo(vol, pool, ptr) < 0)
+        if (volStorageBackendRBDRefreshVolInfo(vol, pool, ptr) < 0) {
+            virStorageVolDefFree(vol);
             goto cleanup;
+        }
 
         pool->volumes.objs[pool->volumes.count++] = vol;
     }
