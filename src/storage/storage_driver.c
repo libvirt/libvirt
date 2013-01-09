@@ -1197,6 +1197,7 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
             if (tmp_vols[i])
                 virStorageVolFree(tmp_vols[i]);
         }
+        VIR_FREE(tmp_vols);
     }
 
     if (obj)
