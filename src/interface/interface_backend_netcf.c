@@ -399,6 +399,7 @@ cleanup:
             if (tmp_iface_objs[i])
                 virInterfaceFree(tmp_iface_objs[i]);
         }
+        VIR_FREE(tmp_iface_objs);
     }
 
     interfaceDriverUnlock(driver);
