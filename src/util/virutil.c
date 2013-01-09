@@ -1,7 +1,7 @@
 /*
  * virutil.c: common, generic utility functions
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -3135,27 +3135,18 @@ int
 virGetDeviceID(const char *path, int *maj, int *min)
 {
     struct stat sb;
-    char *canonical_path = NULL;
 
-    if (virFileResolveLink(path, &canonical_path) < 0)
+    if (stat(path, &sb) < 0)
         return -errno;
 
-    if (stat(canonical_path, &sb) < 0) {
-        VIR_FREE(canonical_path);
-        return -errno;
-    }
-
-    if (!S_ISBLK(sb.st_mode)) {
-        VIR_FREE(canonical_path);
+    if (!S_ISBLK(sb.st_mode))
         return -EINVAL;
-    }
 
     if (maj)
         *maj = major(sb.st_rdev);
     if (min)
         *min = minor(sb.st_rdev);
 
-    VIR_FREE(canonical_path);
     return 0;
 }
 #else
