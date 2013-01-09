@@ -78,9 +78,8 @@ struct _virNetSSHAuthMethod {
 };
 
 struct _virNetSSHSession {
-    virObject object;
+    virObjectLockable parent;
     virNetSSHSessionState state;
-    virMutex lock;
 
     /* libssh2 internal stuff */
     LIBSSH2_SESSION *session;
@@ -161,7 +160,7 @@ static virClassPtr virNetSSHSessionClass;
 static int
 virNetSSHSessionOnceInit(void)
 {
-    if (!(virNetSSHSessionClass = virClassNew(virClassForObject(),
+    if (!(virNetSSHSessionClass = virClassNew(virClassForObjectLockable(),
                                               "virNetSSHSession",
                                               sizeof(virNetSSHSession),
                                               virNetSSHSessionDispose)))
@@ -927,18 +926,18 @@ int
 virNetSSHSessionAuthSetCallback(virNetSSHSessionPtr sess,
                                 virConnectAuthPtr auth)
 {
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     sess->cred = auth;
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 }
 
 void
 virNetSSHSessionAuthReset(virNetSSHSessionPtr sess)
 {
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     virNetSSHSessionAuthMethodsFree(sess);
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
 }
 
 int
@@ -957,7 +956,7 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (!(user = strdup(username)) ||
         !(pass = strdup(password)))
@@ -970,14 +969,14 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
     auth->password = pass;
     auth->method = VIR_NET_SSH_AUTH_PASSWORD;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 
 no_memory:
     VIR_FREE(user);
     VIR_FREE(pass);
     virReportOOMError();
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return -1;
 }
 
@@ -995,7 +994,7 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (!(user = strdup(username)))
         goto no_memory;
@@ -1006,13 +1005,13 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
     auth->username = user;
     auth->method = VIR_NET_SSH_AUTH_AGENT;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 
 no_memory:
     VIR_FREE(user);
     virReportOOMError();
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return -1;
 }
 
@@ -1035,7 +1034,7 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (!(user = strdup(username)) ||
         !(file = strdup(keyfile)))
@@ -1052,7 +1051,7 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
     auth->filename = file;
     auth->method = VIR_NET_SSH_AUTH_PRIVKEY;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 
 no_memory:
@@ -1060,7 +1059,7 @@ no_memory:
     VIR_FREE(pass);
     VIR_FREE(file);
     virReportOOMError();
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return -1;
 }
 
@@ -1079,7 +1078,7 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (!(user = strdup(username)))
         goto no_memory;
@@ -1091,13 +1090,13 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
     auth->tries = tries;
     auth->method = VIR_NET_SSH_AUTH_KEYBOARD_INTERACTIVE;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 
 no_memory:
     VIR_FREE(user);
     virReportOOMError();
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return -1;
 
 }
@@ -1107,7 +1106,7 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
                                   const char *command)
 {
     int ret = 0;
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     VIR_FREE(sess->channelCommand);
 
@@ -1116,7 +1115,7 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
         ret = -1;
     }
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1130,7 +1129,7 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
 {
     char *errmsg;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     sess->port = port;
     sess->hostKeyVerify = opt;
@@ -1167,13 +1166,13 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
         }
     }
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return 0;
 
 no_memory:
     virReportOOMError();
 error:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return -1;
 }
 
@@ -1185,15 +1184,8 @@ virNetSSHSessionPtr virNetSSHSessionNew(void)
     if (virNetSSHSessionInitialize() < 0)
         goto error;
 
-    if (!(sess = virObjectNew(virNetSSHSessionClass)))
+    if (!(sess = virObjectLockableNew(virNetSSHSessionClass)))
         goto error;
-
-    /* initialize internal structures */
-    if (virMutexInit(&sess->lock) < 0) {
-        virReportError(VIR_ERR_SSH, "%s",
-                       _("Failed to initialize mutex"));
-        goto error;
-    }
 
     /* initialize session data, use the internal data for callbacks
      * and stick to default memory management functions */
@@ -1250,7 +1242,7 @@ virNetSSHSessionConnect(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     /* check if configuration is valid */
     if ((ret = virNetSSHValidateConfig(sess)) < 0)
@@ -1284,12 +1276,12 @@ virNetSSHSessionConnect(virNetSSHSessionPtr sess,
     libssh2_session_set_blocking(sess->session, 0);
     sess->state = VIR_NET_SSH_STATE_HANDSHAKE_COMPLETE;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 
 error:
     sess->state = VIR_NET_SSH_STATE_ERROR;
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1302,7 +1294,7 @@ virNetSSHChannelRead(virNetSSHSessionPtr sess,
     ssize_t ret = -1;
     ssize_t read_n = 0;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (sess->state != VIR_NET_SSH_STATE_HANDSHAKE_COMPLETE) {
         if (sess->state == VIR_NET_SSH_STATE_ERROR_REMOTE)
@@ -1314,7 +1306,7 @@ virNetSSHChannelRead(virNetSSHSessionPtr sess,
             virReportError(VIR_ERR_SSH, "%s",
                            _("Tried to write socket in error state"));
 
-        virMutexUnlock(&sess->lock);
+        virObjectUnlock(sess);
         return -1;
     }
 
@@ -1387,22 +1379,22 @@ virNetSSHChannelRead(virNetSSHSessionPtr sess,
                            libssh2_channel_get_exit_status(sess->channel));
             sess->channelCommandReturnValue = libssh2_channel_get_exit_status(sess->channel);
             sess->state = VIR_NET_SSH_STATE_ERROR_REMOTE;
-            virMutexUnlock(&sess->lock);
+            virObjectUnlock(sess);
             return -1;
         }
 
         sess->state = VIR_NET_SSH_STATE_CLOSED;
-        virMutexUnlock(&sess->lock);
+        virObjectUnlock(sess);
         return -1;
     }
 
 success:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return read_n;
 
 error:
     sess->state = VIR_NET_SSH_STATE_ERROR;
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1413,7 +1405,7 @@ virNetSSHChannelWrite(virNetSSHSessionPtr sess,
 {
     ssize_t ret;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     if (sess->state != VIR_NET_SSH_STATE_HANDSHAKE_COMPLETE) {
         if (sess->state == VIR_NET_SSH_STATE_ERROR_REMOTE)
@@ -1459,7 +1451,7 @@ virNetSSHChannelWrite(virNetSSHSessionPtr sess,
     }
 
 cleanup:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1471,10 +1463,10 @@ virNetSSHSessionHasCachedData(virNetSSHSessionPtr sess)
     if (!sess)
         return false;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
 
     ret = sess->bufUsed > 0;
 
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }

@@ -33,16 +33,14 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetSASLContext {
-    virObject object;
+    virObjectLockable parent;
 
-    virMutex lock;
     const char *const*usernameWhitelist;
 };
 
 struct _virNetSASLSession {
-    virObject object;
+    virObjectLockable parent;
 
-    virMutex lock;
     sasl_conn_t *conn;
     size_t maxbufsize;
 };
@@ -50,18 +48,17 @@ struct _virNetSASLSession {
 
 static virClassPtr virNetSASLContextClass;
 static virClassPtr virNetSASLSessionClass;
-static void virNetSASLContextDispose(void *obj);
 static void virNetSASLSessionDispose(void *obj);
 
 static int virNetSASLContextOnceInit(void)
 {
-    if (!(virNetSASLContextClass = virClassNew(virClassForObject(),
+    if (!(virNetSASLContextClass = virClassNew(virClassForObjectLockable(),
                                                "virNetSASLContext",
                                                sizeof(virNetSASLContext),
-                                               virNetSASLContextDispose)))
+                                               NULL)))
         return -1;
 
-    if (!(virNetSASLSessionClass = virClassNew(virClassForObject(),
+    if (!(virNetSASLSessionClass = virClassNew(virClassForObjectLockable(),
                                                "virNetSASLSession",
                                                sizeof(virNetSASLSession),
                                                virNetSASLSessionDispose)))
@@ -89,15 +86,8 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
         return NULL;
     }
 
-    if (!(ctxt = virObjectNew(virNetSASLContextClass)))
+    if (!(ctxt = virObjectLockableNew(virNetSASLContextClass)))
         return NULL;
-
-    if (virMutexInit(&ctxt->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(ctxt);
-        return NULL;
-    }
 
     return ctxt;
 }
@@ -118,15 +108,8 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitel
         return NULL;
     }
 
-    if (!(ctxt = virObjectNew(virNetSASLContextClass)))
+    if (!(ctxt = virObjectLockableNew(virNetSASLContextClass)))
         return NULL;
-
-    if (virMutexInit(&ctxt->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(ctxt);
-        return NULL;
-    }
 
     ctxt->usernameWhitelist = usernameWhitelist;
 
@@ -139,7 +122,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     const char *const*wildcards;
     int ret = -1;
 
-    virMutexLock(&ctxt->lock);
+    virObjectLock(ctxt);
 
     /* If the list is not set, allow any DN. */
     wildcards = ctxt->usernameWhitelist;
@@ -173,17 +156,10 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&ctxt->lock);
+    virObjectUnlock(ctxt);
     return ret;
 }
 
-
-void virNetSASLContextDispose(void *obj)
-{
-    virNetSASLContextPtr ctxt = obj;
-
-    virMutexDestroy(&ctxt->lock);
-}
 
 virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIBUTE_UNUSED,
                                                 const char *service,
@@ -195,15 +171,8 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
     virNetSASLSessionPtr sasl = NULL;
     int err;
 
-    if (!(sasl = virObjectNew(virNetSASLSessionClass)))
+    if (!(sasl = virObjectLockableNew(virNetSASLSessionClass)))
         return NULL;
-
-    if (virMutexInit(&sasl->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(sasl);
-        return NULL;
-    }
 
     /* Arbitrary size for amount of data we can encode in a single block */
     sasl->maxbufsize = 1 << 16;
@@ -237,15 +206,8 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIB
     virNetSASLSessionPtr sasl = NULL;
     int err;
 
-    if (!(sasl = virObjectNew(virNetSASLSessionClass)))
+    if (!(sasl = virObjectLockableNew(virNetSASLSessionClass)))
         return NULL;
-
-    if (virMutexInit(&sasl->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(sasl);
-        return NULL;
-    }
 
     /* Arbitrary size for amount of data we can encode in a single block */
     sasl->maxbufsize = 1 << 16;
@@ -277,7 +239,7 @@ int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
 {
     int err;
     int ret = -1;
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
 
     err = sasl_setprop(sasl->conn, SASL_SSF_EXTERNAL, &ssf);
     if (err != SASL_OK) {
@@ -290,7 +252,7 @@ int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -298,7 +260,7 @@ const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
 {
     const void *val = NULL;
     int err;
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
 
     err = sasl_getprop(sasl->conn, SASL_USERNAME, &val);
     if (err != SASL_OK) {
@@ -316,7 +278,7 @@ const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
     VIR_DEBUG("SASL client username %s", (const char *)val);
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return (const char*)val;
 }
 
@@ -327,7 +289,7 @@ int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl)
     int ssf;
     const void *val;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_getprop(sasl->conn, SASL_SSF, &val);
     if (err != SASL_OK) {
         virReportError(VIR_ERR_AUTH_FAILED,
@@ -339,7 +301,7 @@ int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl)
     ssf = *(const int *)val;
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ssf;
 }
 
@@ -355,7 +317,7 @@ int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
     VIR_DEBUG("minSSF=%d maxSSF=%d allowAnonymous=%d maxbufsize=%zu",
               minSSF, maxSSF, allowAnonymous, sasl->maxbufsize);
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     memset(&secprops, 0, sizeof(secprops));
 
     secprops.min_ssf = minSSF;
@@ -375,7 +337,7 @@ int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -408,7 +370,7 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
     char *ret = NULL;
     int err;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_listmech(sasl->conn,
                         NULL, /* Don't need to set user */
                         "", /* Prefix */
@@ -429,7 +391,7 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
     }
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -448,7 +410,7 @@ int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
     VIR_DEBUG("sasl=%p mechlist=%s prompt_need=%p clientout=%p clientoutlen=%p mech=%p",
               sasl, mechlist, prompt_need, clientout, clientoutlen, mech);
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_client_start(sasl->conn,
                             mechlist,
                             prompt_need,
@@ -478,7 +440,7 @@ int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
     }
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -498,7 +460,7 @@ int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
     VIR_DEBUG("sasl=%p serverin=%s serverinlen=%zu prompt_need=%p clientout=%p clientoutlen=%p",
               sasl, serverin, serverinlen, prompt_need, clientout, clientoutlen);
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_client_step(sasl->conn,
                            serverin,
                            inlen,
@@ -527,7 +489,7 @@ int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
     }
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -543,7 +505,7 @@ int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
     int err;
     int ret = -1;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_server_start(sasl->conn,
                             mechname,
                             clientin,
@@ -573,7 +535,7 @@ int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
     }
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -589,7 +551,7 @@ int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
     int err;
     int ret = -1;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     err = sasl_server_step(sasl->conn,
                            clientin,
                            inlen,
@@ -618,16 +580,16 @@ int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
     }
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
 size_t virNetSASLSessionGetMaxBufSize(virNetSASLSessionPtr sasl)
 {
     size_t ret;
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     ret = sasl->maxbufsize;
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -642,7 +604,7 @@ ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
     int err;
     ssize_t ret = -1;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     if (inputLen > sasl->maxbufsize) {
         virReportSystemError(EINVAL,
                              _("SASL data length %zu too long, max %zu"),
@@ -666,7 +628,7 @@ ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -681,7 +643,7 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
     int err;
     ssize_t ret = -1;
 
-    virMutexLock(&sasl->lock);
+    virObjectLock(sasl);
     if (inputLen > sasl->maxbufsize) {
         virReportSystemError(EINVAL,
                              _("SASL data length %zu too long, max %zu"),
@@ -704,7 +666,7 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&sasl->lock);
+    virObjectUnlock(sasl);
     return ret;
 }
 
@@ -715,5 +677,4 @@ void virNetSASLSessionDispose(void *obj)
     if (sasl->conn)
         sasl_dispose(&sasl->conn);
 
-    virMutexDestroy(&sasl->lock);
 }

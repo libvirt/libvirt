@@ -50,9 +50,7 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetTLSContext {
-    virObject object;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     gnutls_certificate_credentials_t x509cred;
     gnutls_dh_params_t dhParams;
@@ -63,9 +61,7 @@ struct _virNetTLSContext {
 };
 
 struct _virNetTLSSession {
-    virObject object;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     bool handshakeComplete;
 
@@ -85,13 +81,13 @@ static void virNetTLSSessionDispose(void *obj);
 
 static int virNetTLSContextOnceInit(void)
 {
-    if (!(virNetTLSContextClass = virClassNew(virClassForObject(),
+    if (!(virNetTLSContextClass = virClassNew(virClassForObjectLockable(),
                                               "virNetTLSContext",
                                               sizeof(virNetTLSContext),
                                               virNetTLSContextDispose)))
         return -1;
 
-    if (!(virNetTLSSessionClass = virClassNew(virClassForObject(),
+    if (!(virNetTLSSessionClass = virClassNew(virClassForObjectLockable(),
                                               "virNetTLSSession",
                                               sizeof(virNetTLSSession),
                                               virNetTLSSessionDispose)))
@@ -676,15 +672,8 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     if (virNetTLSContextInitialize() < 0)
         return NULL;
 
-    if (!(ctxt = virObjectNew(virNetTLSContextClass)))
+    if (!(ctxt = virObjectLockableNew(virNetTLSContextClass)))
         return NULL;
-
-    if (virMutexInit(&ctxt->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(ctxt);
-        return NULL;
-    }
 
     if ((gnutlsdebug = getenv("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
         int val;
@@ -1097,8 +1086,8 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
 {
     int ret = -1;
 
-    virMutexLock(&ctxt->lock);
-    virMutexLock(&sess->lock);
+    virObjectLock(ctxt);
+    virObjectLock(sess);
     if (virNetTLSContextValidCertificate(ctxt, sess) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_WARN("Certificate check failed %s", err && err->message ? err->message : "<unknown>");
@@ -1114,8 +1103,8 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&ctxt->lock);
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(ctxt);
+    virObjectUnlock(sess);
 
     return ret;
 }
@@ -1126,7 +1115,6 @@ void virNetTLSContextDispose(void *obj)
 
     gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
-    virMutexDestroy(&ctxt->lock);
 }
 
 
@@ -1167,15 +1155,8 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     VIR_DEBUG("ctxt=%p hostname=%s isServer=%d",
               ctxt, NULLSTR(hostname), ctxt->isServer);
 
-    if (!(sess = virObjectNew(virNetTLSSessionClass)))
+    if (!(sess = virObjectLockableNew(virNetTLSSessionClass)))
         return NULL;
-
-    if (virMutexInit(&sess->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialized mutex"));
-        VIR_FREE(sess);
-        return NULL;
-    }
 
     if (hostname &&
         !(sess->hostname = strdup(hostname))) {
@@ -1243,11 +1224,11 @@ void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
                                     virNetTLSSessionReadFunc readFunc,
                                     void *opaque)
 {
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     sess->writeFunc = writeFunc;
     sess->readFunc = readFunc;
     sess->opaque = opaque;
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
 }
 
 
@@ -1256,7 +1237,7 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
 {
     ssize_t ret;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     ret = gnutls_record_send(sess->session, buf, len);
 
     if (ret >= 0)
@@ -1280,7 +1261,7 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
     ret = -1;
 
 cleanup:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1289,7 +1270,7 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
 {
     ssize_t ret;
 
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     ret = gnutls_record_recv(sess->session, buf, len);
 
     if (ret >= 0)
@@ -1310,7 +1291,7 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
     ret = -1;
 
 cleanup:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1318,7 +1299,7 @@ int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
 {
     int ret;
     VIR_DEBUG("sess=%p", sess);
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     ret = gnutls_handshake(sess->session);
     VIR_DEBUG("Ret=%d", ret);
     if (ret == 0) {
@@ -1342,7 +1323,7 @@ int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
     ret = -1;
 
 cleanup:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1350,14 +1331,14 @@ virNetTLSSessionHandshakeStatus
 virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess)
 {
     virNetTLSSessionHandshakeStatus ret;
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     if (sess->handshakeComplete)
         ret = VIR_NET_TLS_HANDSHAKE_COMPLETE;
     else if (gnutls_record_get_direction(sess->session) == 0)
         ret = VIR_NET_TLS_HANDSHAKE_RECVING;
     else
         ret = VIR_NET_TLS_HANDSHAKE_SENDING;
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ret;
 }
 
@@ -1365,7 +1346,7 @@ int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
 {
     gnutls_cipher_algorithm_t cipher;
     int ssf;
-    virMutexLock(&sess->lock);
+    virObjectLock(sess);
     cipher = gnutls_cipher_get(sess->session);
     if (!(ssf = gnutls_cipher_get_key_size(cipher))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1375,7 +1356,7 @@ int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
     }
 
 cleanup:
-    virMutexUnlock(&sess->lock);
+    virObjectUnlock(sess);
     return ssf;
 }
 
@@ -1386,7 +1367,6 @@ void virNetTLSSessionDispose(void *obj)
 
     VIR_FREE(sess->hostname);
     gnutls_deinit(sess->session);
-    virMutexDestroy(&sess->lock);
 }
 
 /*

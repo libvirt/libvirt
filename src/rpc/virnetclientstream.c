@@ -32,9 +32,7 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetClientStream {
-    virObject object;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     virNetClientProgramPtr prog;
     int proc;
@@ -68,7 +66,7 @@ static void virNetClientStreamDispose(void *obj);
 
 static int virNetClientStreamOnceInit(void)
 {
-    if (!(virNetClientStreamClass = virClassNew(virClassForObject(),
+    if (!(virNetClientStreamClass = virClassNew(virClassForObjectLockable(),
                                                 "virNetClientStream",
                                                 sizeof(virNetClientStream),
                                                 virNetClientStreamDispose)))
@@ -106,8 +104,7 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     virNetClientStreamPtr st = opaque;
     int events = 0;
 
-
-    virMutexLock(&st->lock);
+    virObjectLock(st);
 
     if (st->cb &&
         (st->cbEvents & VIR_STREAM_EVENT_READABLE) &&
@@ -124,15 +121,15 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
         virFreeCallback cbFree = st->cbFree;
 
         st->cbDispatch = 1;
-        virMutexUnlock(&st->lock);
+        virObjectUnlock(st);
         (cb)(st, events, cbOpaque);
-        virMutexLock(&st->lock);
+        virObjectLock(st);
         st->cbDispatch = 0;
 
         if (!st->cb && cbFree)
             (cbFree)(cbOpaque);
     }
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
 }
 
 
@@ -145,19 +142,12 @@ virNetClientStreamPtr virNetClientStreamNew(virNetClientProgramPtr prog,
     if (virNetClientStreamInitialize() < 0)
         return NULL;
 
-    if (!(st = virObjectNew(virNetClientStreamClass)))
+    if (!(st = virObjectLockableNew(virNetClientStreamClass)))
         return NULL;
 
     st->prog = prog;
     st->proc = proc;
     st->serial = serial;
-
-    if (virMutexInit(&st->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot initialize mutex"));
-        VIR_FREE(st);
-        return NULL;
-    }
 
     virObjectRef(prog);
 
@@ -170,7 +160,6 @@ void virNetClientStreamDispose(void *obj)
 
     virResetError(&st->err);
     VIR_FREE(st->incoming);
-    virMutexDestroy(&st->lock);
     virObjectUnref(st->prog);
 }
 
@@ -178,21 +167,21 @@ bool virNetClientStreamMatches(virNetClientStreamPtr st,
                                virNetMessagePtr msg)
 {
     bool match = false;
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (virNetClientProgramMatches(st->prog, msg) &&
         st->proc == msg->header.proc &&
         st->serial == msg->header.serial)
         match = true;
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return match;
 }
 
 
 bool virNetClientStreamRaiseError(virNetClientStreamPtr st)
 {
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (st->err.code == VIR_ERR_OK) {
-        virMutexUnlock(&st->lock);
+        virObjectUnlock(st);
         return false;
     }
 
@@ -206,7 +195,7 @@ bool virNetClientStreamRaiseError(virNetClientStreamPtr st)
                       st->err.int1,
                       st->err.int2,
                       "%s", st->err.message ? st->err.message : _("Unknown error"));
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return true;
 }
 
@@ -217,7 +206,7 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
     virNetMessageError err;
     int ret = -1;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
 
     if (st->err.code != VIR_ERR_OK)
         VIR_DEBUG("Overwriting existing stream error %s", NULLSTR(st->err.message));
@@ -265,7 +254,7 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
 
 cleanup:
     xdr_free((xdrproc_t)xdr_virNetMessageError, (void*)&err);
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return ret;
 }
 
@@ -276,7 +265,7 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
     int ret = -1;
     size_t need;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     need = msg->bufferLength - msg->bufferOffset;
     if (need) {
         size_t avail = st->incomingLength - st->incomingOffset;
@@ -306,7 +295,7 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return ret;
 }
 
@@ -323,7 +312,7 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
     if (!(msg = virNetMessageNew(false)))
         return -1;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
 
     msg->header.prog = virNetClientProgramGetProgram(st->prog);
     msg->header.vers = virNetClientProgramGetVersion(st->prog);
@@ -332,7 +321,7 @@ int virNetClientStreamSendPacket(virNetClientStreamPtr st,
     msg->header.serial = st->serial;
     msg->header.proc = st->proc;
 
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
 
     if (virNetMessageEncodeHeader(msg) < 0)
         goto error;
@@ -373,7 +362,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     int rv = -1;
     VIR_DEBUG("st=%p client=%p data=%p nbytes=%zu nonblock=%d",
               st, client, data, nbytes, nonblock);
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (!st->incomingOffset && !st->incomingEOF) {
         virNetMessagePtr msg;
         int ret;
@@ -397,9 +386,9 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
         msg->header.status = VIR_NET_CONTINUE;
 
         VIR_DEBUG("Dummy packet to wait for stream data");
-        virMutexUnlock(&st->lock);
+        virObjectUnlock(st);
         ret = virNetClientSendWithReplyStream(client, msg, st);
-        virMutexLock(&st->lock);
+        virObjectLock(st);
         virNetMessageFree(msg);
 
         if (ret < 0)
@@ -427,7 +416,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     virNetClientStreamEventTimerUpdate(st);
 
 cleanup:
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return rv;
 }
 
@@ -440,7 +429,7 @@ int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
 {
     int ret = -1;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (st->cb) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("multiple stream callbacks not supported"));
@@ -467,7 +456,7 @@ int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return ret;
 }
 
@@ -476,7 +465,7 @@ int virNetClientStreamEventUpdateCallback(virNetClientStreamPtr st,
 {
     int ret = -1;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (!st->cb) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no stream callback registered"));
@@ -490,7 +479,7 @@ int virNetClientStreamEventUpdateCallback(virNetClientStreamPtr st,
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return ret;
 }
 
@@ -498,7 +487,7 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st)
 {
     int ret = -1;
 
-    virMutexLock(&st->lock);
+    virObjectLock(st);
     if (!st->cb) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no stream callback registered"));
@@ -517,7 +506,7 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st)
     ret = 0;
 
 cleanup:
-    virMutexUnlock(&st->lock);
+    virObjectUnlock(st);
     return ret;
 }
 

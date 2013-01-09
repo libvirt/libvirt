@@ -35,9 +35,7 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virKeepAlive {
-    virObject object;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     int interval;
     unsigned int count;
@@ -58,7 +56,7 @@ static void virKeepAliveDispose(void *obj);
 
 static int virKeepAliveOnceInit(void)
 {
-    if (!(virKeepAliveClass = virClassNew(virClassForObject(),
+    if (!(virKeepAliveClass = virClassNew(virClassForObjectLockable(),
                                           "virKeepAlive",
                                           sizeof(virKeepAlive),
                                           virKeepAliveDispose)))
@@ -68,19 +66,6 @@ static int virKeepAliveOnceInit(void)
 }
 
 VIR_ONCE_GLOBAL_INIT(virKeepAlive)
-
-static void
-virKeepAliveLock(virKeepAlivePtr ka)
-{
-    virMutexLock(&ka->lock);
-}
-
-static void
-virKeepAliveUnlock(virKeepAlivePtr ka)
-{
-    virMutexUnlock(&ka->lock);
-}
-
 
 static virNetMessagePtr
 virKeepAliveMessage(virKeepAlivePtr ka, int proc)
@@ -174,7 +159,7 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     bool dead;
     void *client;
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
 
     client = ka->client;
     dead = virKeepAliveTimerInternal(ka, &msg);
@@ -183,7 +168,7 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
         goto cleanup;
 
     virObjectRef(ka);
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 
     if (dead) {
         ka->deadCB(client);
@@ -192,11 +177,11 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
         virNetMessageFree(msg);
     }
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
     virObjectUnref(ka);
 
 cleanup:
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 }
 
 
@@ -215,13 +200,8 @@ virKeepAliveNew(int interval,
     if (virKeepAliveInitialize() < 0)
         return NULL;
 
-    if (!(ka = virObjectNew(virKeepAliveClass)))
+    if (!(ka = virObjectLockableNew(virKeepAliveClass)))
         return NULL;
-
-    if (virMutexInit(&ka->lock) < 0) {
-        VIR_FREE(ka);
-        return NULL;
-    }
 
     ka->interval = interval;
     ka->count = count;
@@ -245,7 +225,6 @@ virKeepAliveDispose(void *obj)
 {
     virKeepAlivePtr ka = obj;
 
-    virMutexDestroy(&ka->lock);
     ka->freeCB(ka->client);
 }
 
@@ -260,7 +239,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
     int timeout;
     time_t now;
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
 
     if (ka->timer >= 0) {
         VIR_DEBUG("Keepalive messages already enabled");
@@ -306,7 +285,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
     ret = 0;
 
 cleanup:
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
     return ret;
 }
 
@@ -314,7 +293,7 @@ cleanup:
 void
 virKeepAliveStop(virKeepAlivePtr ka)
 {
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
 
     PROBE(RPC_KEEPALIVE_STOP,
           "ka=%p client=%p",
@@ -325,7 +304,7 @@ virKeepAliveStop(virKeepAlivePtr ka)
         ka->timer = -1;
     }
 
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 }
 
 
@@ -337,7 +316,7 @@ virKeepAliveTimeout(virKeepAlivePtr ka)
     if (!ka)
         return -1;
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
 
     if (ka->interval <= 0 || ka->intervalStart == 0) {
         timeout = -1;
@@ -347,7 +326,7 @@ virKeepAliveTimeout(virKeepAlivePtr ka)
             timeout = 0;
     }
 
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 
     if (timeout < 0)
         return -1;
@@ -366,9 +345,9 @@ virKeepAliveTrigger(virKeepAlivePtr ka,
     if (!ka)
         return false;
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
     dead = virKeepAliveTimerInternal(ka, msg);
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 
     return dead;
 }
@@ -388,7 +367,7 @@ virKeepAliveCheckMessage(virKeepAlivePtr ka,
     if (!ka)
         return false;
 
-    virKeepAliveLock(ka);
+    virObjectLock(ka);
 
     ka->countToDeath = ka->count;
     ka->lastPacketReceived = ka->intervalStart = time(NULL);
@@ -420,7 +399,7 @@ virKeepAliveCheckMessage(virKeepAlivePtr ka,
     if (ka->timer >= 0)
         virEventUpdateTimeout(ka->timer, ka->interval * 1000);
 
-    virKeepAliveUnlock(ka);
+    virObjectUnlock(ka);
 
     return ret;
 }
