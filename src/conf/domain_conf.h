@@ -1867,9 +1867,7 @@ struct _virDomainStateReason {
 typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
-    virObject object;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     pid_t pid;
     virDomainStateReason state;
@@ -2167,9 +2165,6 @@ int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 int virDomainObjIsDuplicate(virDomainObjListPtr doms,
                             virDomainDefPtr def,
                             unsigned int check_active);
-
-void virDomainObjLock(virDomainObjPtr obj);
-void virDomainObjUnlock(virDomainObjPtr obj);
 
 int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active);
 

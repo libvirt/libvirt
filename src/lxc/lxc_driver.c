@@ -223,7 +223,7 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -252,7 +252,7 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -278,7 +278,7 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -303,7 +303,7 @@ static int lxcDomainIsActive(virDomainPtr dom)
 
 cleanup:
     if (obj)
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -328,7 +328,7 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
 
 cleanup:
     if (obj)
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -352,7 +352,7 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
 
 cleanup:
     if (obj)
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -457,7 +457,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 cleanup:
     virDomainDefFree(def);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
@@ -510,7 +510,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
@@ -579,7 +579,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -612,7 +612,7 @@ lxcDomainGetState(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -641,7 +641,7 @@ static char *lxcGetOSType(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -669,7 +669,7 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -701,7 +701,7 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -756,7 +756,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (cgroup)
         virCgroupFree(&cgroup);
     return ret;
@@ -835,7 +835,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -934,7 +934,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -966,7 +966,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -1025,7 +1025,7 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
@@ -1112,7 +1112,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
 cleanup:
     virDomainDefFree(def);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
@@ -1173,7 +1173,7 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -1343,7 +1343,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     lxcDriverUnlock(driver);
@@ -1872,7 +1872,7 @@ cleanup:
     virDomainDefFree(vmdef);
     virCgroupFree(&group);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -1991,7 +1991,7 @@ out:
 cleanup:
     virCgroupFree(&group);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2100,7 +2100,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 cleanup:
     virCgroupFree(&group);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2207,7 +2207,7 @@ cleanup:
     if (group)
         virCgroupFree(&group);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2259,7 +2259,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 #else
@@ -2296,7 +2296,7 @@ static int lxcDomainGetAutostart(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2370,7 +2370,7 @@ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2513,7 +2513,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2579,7 +2579,7 @@ cleanup:
     if (event)
         virDomainEventStateQueue(driver->domainEventState, event);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2649,7 +2649,7 @@ lxcDomainOpenConsole(virDomainPtr dom,
     ret = 0;
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -2728,7 +2728,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2830,7 +2830,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
 cleanup:
     VIR_FREE(vroot);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2919,7 +2919,7 @@ lxcDomainReboot(virDomainPtr dom,
 cleanup:
     VIR_FREE(vroot);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -4419,7 +4419,7 @@ cleanup:
         virDomainDeviceDefFree(dev_copy);
     virDomainDeviceDefFree(dev);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     lxcDriverUnlock(driver);
     return ret;
 }
@@ -4510,7 +4510,7 @@ static int lxcDomainOpenNamespace(virDomainPtr dom,
 
     ret = nfds;
 cleanup:
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
     return ret;
 }
 

@@ -160,9 +160,6 @@ void qemuMonitorClose(qemuMonitorPtr mon);
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
-void qemuMonitorLock(qemuMonitorPtr mon);
-void qemuMonitorUnlock(qemuMonitorPtr mon);
-
 int qemuMonitorSetLink(qemuMonitorPtr mon,
                        const char *name,
                        enum virDomainNetInterfaceLinkState state) ;

@@ -536,7 +536,7 @@ qemuDriverCloseCallbackRun(void *payload,
 
     dom = closeDef->cb(data->driver, dom, data->conn);
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
 
     virHashRemoveEntry(data->driver->closeCallbacks, uuidstr);
 }

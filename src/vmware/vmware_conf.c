@@ -198,7 +198,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
                              VIR_DOMAIN_RUNNING_UNKNOWN);
         vm->persistent = 1;
 
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
 
         vmdef = NULL;
         vm = NULL;

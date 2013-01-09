@@ -1267,13 +1267,13 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
             goto cleanup;
         }
 
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
         qemuDriverUnlock(driver);
 
         nanosleep(&ts, NULL);
 
         qemuDriverLock(driver);
-        virDomainObjLock(vm);
+        virObjectLock(vm);
     }
 
 cleanup:
@@ -1751,7 +1751,7 @@ cleanup:
     VIR_FORCE_CLOSE(dataFD[1]);
     if (vm) {
         if (ret >= 0 || vm->persistent)
-            virDomainObjUnlock(vm);
+            virObjectUnlock(vm);
         else
             qemuDomainRemoveInactive(driver, vm);
     }
@@ -3096,7 +3096,7 @@ endjob:
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     return ret;
@@ -3180,7 +3180,7 @@ endjob:
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     return ret;
@@ -3493,7 +3493,7 @@ endjob:
 cleanup:
     if (vm) {
         VIR_FREE(priv->origname);
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     }
     if (event)
         qemuDomainEventQueue(driver, event);

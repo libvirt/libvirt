@@ -700,7 +700,7 @@ static void virDomainObjDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
-    if (!(virDomainObjClass = virClassNew(virClassForObject(),
+    if (!(virDomainObjClass = virClassNew(virClassForObjectLockable(),
                                           "virDomainObj",
                                           sizeof(virDomainObj),
                                           virDomainObjDispose)))
@@ -801,11 +801,11 @@ static int virDomainObjListSearchID(const void *payload,
     const int *id = data;
     int want = 0;
 
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (virDomainObjIsActive(obj) &&
         obj->def->id == *id)
         want = 1;
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
     return want;
 }
 
@@ -815,7 +815,7 @@ virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
     virDomainObjPtr obj;
     obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
     if (obj)
-        virDomainObjLock(obj);
+        virObjectLock(obj);
     return obj;
 }
 
@@ -830,7 +830,7 @@ virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
 
     obj = virHashLookup(doms->objs, uuidstr);
     if (obj)
-        virDomainObjLock(obj);
+        virObjectLock(obj);
     return obj;
 }
 
@@ -841,10 +841,10 @@ static int virDomainObjListSearchName(const void *payload,
     virDomainObjPtr obj = (virDomainObjPtr)payload;
     int want = 0;
 
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (STREQ(obj->def->name, (const char *)data))
         want = 1;
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
     return want;
 }
 
@@ -854,7 +854,7 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
     virDomainObjPtr obj;
     obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
     if (obj)
-        virDomainObjLock(obj);
+        virObjectLock(obj);
     return obj;
 }
 
@@ -1786,8 +1786,6 @@ static void virDomainObjDispose(void *obj)
     if (dom->privateDataFreeFunc)
         (dom->privateDataFreeFunc)(dom->privateData);
 
-    virMutexDestroy(&dom->lock);
-
     virDomainSnapshotObjListFree(dom->snapshots);
 }
 
@@ -1799,15 +1797,8 @@ virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     if (virDomainObjInitialize() < 0)
         return NULL;
 
-    if (!(domain = virObjectNew(virDomainObjClass)))
+    if (!(domain = virObjectLockableNew(virDomainObjClass)))
         return NULL;
-
-    if (virMutexInit(&domain->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(domain);
-        return NULL;
-    }
 
     if (caps &&
         caps->privateDataAllocFunc) {
@@ -1821,7 +1812,7 @@ virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     if (!(domain->snapshots = virDomainSnapshotObjListNew()))
         goto error;
 
-    virDomainObjLock(domain);
+    virObjectLock(domain);
     virDomainObjSetState(domain, VIR_DOMAIN_SHUTOFF,
                                  VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
@@ -1999,7 +1990,7 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virUUIDFormat(dom->def->uuid, uuidstr);
 
-    virDomainObjUnlock(dom);
+    virObjectUnlock(dom);
 
     virHashRemoveEntry(doms->objs, uuidstr);
 }
@@ -14930,7 +14921,7 @@ int virDomainLoadAllConfigs(virCapsPtr caps,
                                       notify,
                                       opaque);
         if (dom) {
-            virDomainObjUnlock(dom);
+            virObjectUnlock(dom);
             if (!liveStatus)
                 dom->persistent = 1;
         }
@@ -15097,19 +15088,8 @@ virDomainObjIsDuplicate(virDomainObjListPtr doms,
     ret = dupVM;
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
-}
-
-
-void virDomainObjLock(virDomainObjPtr obj)
-{
-    virMutexLock(&obj->lock);
-}
-
-void virDomainObjUnlock(virDomainObjPtr obj)
-{
-    virMutexUnlock(&obj->lock);
 }
 
 
@@ -15117,20 +15097,20 @@ static void virDomainObjListCountActive(void *payload, const void *name ATTRIBUT
 {
     virDomainObjPtr obj = payload;
     int *count = data;
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (virDomainObjIsActive(obj))
         (*count)++;
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 static void virDomainObjListCountInactive(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
 {
     virDomainObjPtr obj = payload;
     int *count = data;
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (!virDomainObjIsActive(obj))
         (*count)++;
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active)
@@ -15153,10 +15133,10 @@ static void virDomainObjListCopyActiveIDs(void *payload, const void *name ATTRIB
 {
     virDomainObjPtr obj = payload;
     struct virDomainIDData *data = opaque;
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (virDomainObjIsActive(obj) && data->numids < data->maxids)
         data->ids[data->numids++] = obj->def->id;
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
@@ -15183,14 +15163,14 @@ static void virDomainObjListCopyInactiveNames(void *payload, const void *name AT
     if (data->oom)
         return;
 
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     if (!virDomainObjIsActive(obj) && data->numnames < data->maxnames) {
         if (!(data->names[data->numnames] = strdup(obj->def->name)))
             data->oom = 1;
         else
             data->numnames++;
     }
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 
@@ -15883,7 +15863,7 @@ virDomainListPopulate(void *payload,
     if (data->error)
         return;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     /* check if the domain matches the filter */
 
     /* filter by active state */
@@ -15956,7 +15936,7 @@ virDomainListPopulate(void *payload,
     data->domains[data->ndomains++] = dom;
 
 cleanup:
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
     return;
 }
 #undef MATCH

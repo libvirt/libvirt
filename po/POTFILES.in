@@ -62,7 +62,6 @@ src/lxc/lxc_container.c
 src/lxc/lxc_conf.c
 src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
-src/lxc/lxc_monitor.c
 src/lxc/lxc_process.c
 src/libxl/libxl_driver.c
 src/libxl/libxl_conf.c

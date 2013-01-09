@@ -82,9 +82,8 @@ struct _qemuAgentMessage {
 
 
 struct _qemuAgent {
-    virObject object;
+    virObjectLockable parent;
 
-    virMutex lock; /* also used to protect fd */
     virCond notify;
 
     int fd;
@@ -121,7 +120,7 @@ static void qemuAgentDispose(void *obj);
 
 static int qemuAgentOnceInit(void)
 {
-    if (!(qemuAgentClass = virClassNew(virClassForObject(),
+    if (!(qemuAgentClass = virClassNew(virClassForObjectLockable(),
                                        "qemuAgent",
                                        sizeof(qemuAgent),
                                        qemuAgentDispose)))
@@ -153,17 +152,6 @@ qemuAgentEscapeNonPrintable(const char *text)
 }
 #endif
 
-void qemuAgentLock(qemuAgentPtr mon)
-{
-    virMutexLock(&mon->lock);
-}
-
-
-void qemuAgentUnlock(qemuAgentPtr mon)
-{
-    virMutexUnlock(&mon->lock);
-}
-
 
 static void qemuAgentDispose(void *obj)
 {
@@ -172,7 +160,6 @@ static void qemuAgentDispose(void *obj)
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     ignore_value(virCondDestroy(&mon->notify));
-    virMutexDestroy(&mon->lock);
     VIR_FREE(mon->buffer);
 }
 
@@ -592,7 +579,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
     virObjectRef(mon);
     /* lock access to the monitor and protect fd */
-    qemuAgentLock(mon);
+    virObjectLock(mon);
 #if DEBUG_IO
     VIR_DEBUG("Agent %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 #endif
@@ -695,7 +682,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        qemuAgentUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm);
@@ -706,12 +693,12 @@ qemuAgentIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        qemuAgentUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
         (errorNotify)(mon, vm);
     } else {
-        qemuAgentUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
     }
 }
@@ -733,26 +720,18 @@ qemuAgentOpen(virDomainObjPtr vm,
     if (qemuAgentInitialize() < 0)
         return NULL;
 
-    if (!(mon = virObjectNew(qemuAgentClass)))
+    if (!(mon = virObjectLockableNew(qemuAgentClass)))
         return NULL;
 
-    if (virMutexInit(&mon->lock) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot initialize monitor mutex"));
-        VIR_FREE(mon);
-        return NULL;
-    }
+    mon->fd = -1;
     if (virCondInit(&mon->notify) < 0) {
         virReportSystemError(errno, "%s",
                              _("cannot initialize monitor condition"));
-        virMutexDestroy(&mon->lock);
-        VIR_FREE(mon);
+        virObjectUnref(mon);
         return NULL;
     }
-    mon->fd = -1;
     mon->vm = vm;
     mon->cb = cb;
-    qemuAgentLock(mon);
 
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -774,6 +753,7 @@ qemuAgentOpen(virDomainObjPtr vm,
     if (mon->fd == -1)
         goto cleanup;
 
+    virObjectRef(mon);
     if ((mon->watch = virEventAddHandle(mon->fd,
                                         VIR_EVENT_HANDLE_HANGUP |
                                         VIR_EVENT_HANDLE_ERROR |
@@ -784,14 +764,13 @@ qemuAgentOpen(virDomainObjPtr vm,
                                         qemuAgentIO,
                                         mon,
                                         virObjectFreeCallback)) < 0) {
+        virObjectUnref(mon);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
     }
-    virObjectRef(mon);
 
     VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
-    qemuAgentUnlock(mon);
 
     return mon;
 
@@ -802,7 +781,6 @@ cleanup:
      * so kill the callbacks now.
      */
     mon->cb = NULL;
-    qemuAgentUnlock(mon);
     qemuAgentClose(mon);
     return NULL;
 }
@@ -815,7 +793,7 @@ void qemuAgentClose(qemuAgentPtr mon)
 
     VIR_DEBUG("mon=%p", mon);
 
-    qemuAgentLock(mon);
+    virObjectLock(mon);
 
     if (mon->fd >= 0) {
         if (mon->watch)
@@ -829,7 +807,7 @@ void qemuAgentClose(qemuAgentPtr mon)
         mon->msg->finished = 1;
         virCondSignal(&mon->notify);
     }
-    qemuAgentUnlock(mon);
+    virObjectUnlock(mon);
 
     virObjectUnref(mon);
 }
@@ -883,8 +861,8 @@ static int qemuAgentSend(qemuAgentPtr mon,
     qemuAgentUpdateWatch(mon);
 
     while (!mon->msg->finished) {
-        if ((then && virCondWaitUntil(&mon->notify, &mon->lock, then) < 0) ||
-            (!then && virCondWait(&mon->notify, &mon->lock) < 0)) {
+        if ((then && virCondWaitUntil(&mon->notify, &mon->parent.lock, then) < 0) ||
+            (!then && virCondWait(&mon->notify, &mon->parent.lock) < 0)) {
             if (errno == ETIMEDOUT) {
                 virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
                                _("Guest agent not available for now"));

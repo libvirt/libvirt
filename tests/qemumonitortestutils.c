@@ -364,7 +364,7 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test)
 
     virObjectUnref(test->server);
     if (test->mon) {
-        qemuMonitorUnlock(test->mon);
+        virObjectUnlock(test->mon);
         qemuMonitorClose(test->mon);
     }
 
@@ -496,7 +496,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
                                       json ? 1 : 0,
                                       &qemuCallbacks)))
         goto error;
-    qemuMonitorLock(test->mon);
+    virObjectLock(test->mon);
 
     if (virNetSocketAccept(test->server, &test->client) < 0)
         goto error;

@@ -299,7 +299,7 @@ libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
     virDomainObjPtr vm = payload;
     virErrorPtr err;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     virResetLastError();
 
     if (vm->autostart && !virDomainObjIsActive(vm) &&
@@ -311,7 +311,7 @@ libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
     }
 
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
 }
 
 static int
@@ -528,7 +528,7 @@ static void libxlEventHandler(void *data, const libxl_event *event)
     virDomainEventPtr dom_event = NULL;
 
     libxlDriverLock(driver);
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     libxlDriverUnlock(driver);
 
     if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
@@ -566,7 +566,7 @@ static void libxlEventHandler(void *data, const libxl_event *event)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (dom_event) {
         libxlDriverLock(driver);
         libxlDomainEventQueue(driver, dom_event);
@@ -863,7 +863,7 @@ libxlReconnectDomain(void *payload,
     int len;
     uint8_t *data = NULL;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
 
     /* Does domain still exist? */
     rc = libxl_domain_info(driver->ctx, &d_info, vm->def->id);
@@ -892,7 +892,7 @@ libxlReconnectDomain(void *payload,
 
     /* Recreate domain death et. al. events */
     libxlCreateDomEvents(vm);
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
     return;
 
 out:
@@ -900,7 +900,7 @@ out:
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
     else
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
 }
 
 static void
@@ -1312,7 +1312,7 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
 cleanup:
     virDomainDefFree(def);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return dom;
 }
@@ -1339,7 +1339,7 @@ libxlDomainLookupByID(virConnectPtr conn, int id)
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -1365,7 +1365,7 @@ libxlDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -1391,7 +1391,7 @@ libxlDomainLookupByName(virConnectPtr conn, const char *name)
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return dom;
 }
 
@@ -1443,7 +1443,7 @@ libxlDomainSuspend(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event) {
         libxlDriverLock(driver);
         libxlDomainEventQueue(driver, event);
@@ -1503,7 +1503,7 @@ libxlDomainResume(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event) {
         libxlDriverLock(driver);
         libxlDomainEventQueue(driver, event);
@@ -1553,7 +1553,7 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -1602,7 +1602,7 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -1652,7 +1652,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     libxlDriverUnlock(driver);
@@ -1688,7 +1688,7 @@ libxlDomainGetOSType(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return type;
 }
 
@@ -1711,7 +1711,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -1825,7 +1825,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -1880,7 +1880,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -1911,7 +1911,7 @@ libxlDomainGetState(virDomainPtr dom,
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2033,7 +2033,7 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -2087,7 +2087,7 @@ cleanup:
         virReportSystemError(errno, "%s", _("cannot close file"));
     virDomainDefFree(def);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -2183,7 +2183,7 @@ cleanup_unpause:
     }
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event) {
         libxlDriverLock(driver);
         libxlDomainEventQueue(driver, event);
@@ -2232,7 +2232,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     VIR_FREE(name);
     return ret;
@@ -2247,7 +2247,7 @@ libxlDomainManagedSaveLoad(void *payload,
     libxlDriverPrivatePtr driver = opaque;
     char *name;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
 
     if (!(name = libxlDomainManagedSavePath(driver, vm)))
         goto cleanup;
@@ -2255,7 +2255,7 @@ libxlDomainManagedSaveLoad(void *payload,
     vm->hasManagedSave = virFileExists(name);
 
 cleanup:
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
     VIR_FREE(name);
 }
 
@@ -2282,7 +2282,7 @@ libxlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -2317,7 +2317,7 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 cleanup:
     VIR_FREE(name);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -2452,7 +2452,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 cleanup:
     VIR_FREE(bitmask);
      if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2518,7 +2518,7 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2581,7 +2581,7 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2649,7 +2649,7 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2676,7 +2676,7 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
   cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -2827,7 +2827,7 @@ libxlDomainCreateWithFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -2882,7 +2882,7 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
 cleanup:
     virDomainDefFree(def);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     libxlDriverUnlock(driver);
@@ -2958,7 +2958,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
   cleanup:
     VIR_FREE(name);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     libxlDriverUnlock(driver);
@@ -3438,7 +3438,7 @@ cleanup:
     virDomainDefFree(vmdef);
     virDomainDeviceDefFree(dev);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -3558,7 +3558,7 @@ libxlDomainGetAutostart(virDomainPtr dom, int *autostart)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -3626,7 +3626,7 @@ cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     libxlDriverUnlock(driver);
     return ret;
 }
@@ -3686,7 +3686,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -3754,7 +3754,7 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -3840,7 +3840,7 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 
@@ -3869,7 +3869,7 @@ libxlDomainIsActive(virDomainPtr dom)
 
   cleanup:
     if (obj)
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -3891,7 +3891,7 @@ libxlDomainIsPersistent(virDomainPtr dom)
 
   cleanup:
     if (obj)
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -3913,7 +3913,7 @@ libxlDomainIsUpdated(virDomainPtr dom)
 
 cleanup:
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     return ret;
 }
 

@@ -1161,7 +1161,7 @@ virNWFilterDomainFWUpdateCB(void *payload,
     int i, err;
     bool skipIface;
 
-    virDomainObjLock(obj);
+    virObjectLock(obj);
 
     if (virDomainObjIsActive(obj)) {
         for (i = 0; i < vm->nnets; i++) {
@@ -1209,5 +1209,5 @@ virNWFilterDomainFWUpdateCB(void *payload,
         }
     }
 
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
 }

@@ -2385,7 +2385,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
         goto cleanup;
     }
 
-    qemuMonitorLock(mon);
+    virObjectLock(mon);
 
     if (qemuMonitorSetCapabilities(mon) < 0) {
         virErrorPtr err = virGetLastError();
@@ -2458,7 +2458,7 @@ qemuCapsInitQMP(qemuCapsPtr caps,
 
 cleanup:
     if (mon)
-        qemuMonitorUnlock(mon);
+        virObjectUnlock(mon);
     qemuMonitorClose(mon);
     virCommandAbort(cmd);
     virCommandFree(cmd);

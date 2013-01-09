@@ -34,9 +34,7 @@
 #define VIR_FROM_THIS VIR_FROM_LXC
 
 struct _virLXCMonitor {
-    virObject parent;
-
-    virMutex lock;
+    virObjectLockable parent;
 
     virDomainObjPtr vm;
     virLXCMonitorCallbacks cb;
@@ -50,7 +48,7 @@ static void virLXCMonitorDispose(void *obj);
 
 static int virLXCMonitorOnceInit(void)
 {
-    if (!(virLXCMonitorClass = virClassNew(virClassForObject(),
+    if (!(virLXCMonitorClass = virClassNew(virClassForObjectLockable(),
                                            "virLXCMonitor",
                                            sizeof(virLXCMonitor),
                                            virLXCMonitorDispose)))
@@ -120,10 +118,10 @@ static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
     virDomainObjPtr vm;
 
     VIR_DEBUG("EOF notify mon=%p", mon);
-    virLXCMonitorLock(mon);
+    virObjectLock(mon);
     eofNotify = mon->cb.eofNotify;
     vm = mon->vm;
-    virLXCMonitorUnlock(mon);
+    virObjectUnlock(mon);
 
     if (eofNotify) {
         VIR_DEBUG("EOF callback mon=%p vm=%p", mon, vm);
@@ -151,15 +149,8 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     if (virLXCMonitorInitialize() < 0)
         return NULL;
 
-    if (!(mon = virObjectNew(virLXCMonitorClass)))
+    if (!(mon = virObjectLockableNew(virLXCMonitorClass)))
         return NULL;
-
-    if (virMutexInit(&mon->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot initialize monitor mutex"));
-        VIR_FREE(mon);
-        return NULL;
-    }
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     socketdir, vm->def->name) < 0)
@@ -209,7 +200,6 @@ static void virLXCMonitorDispose(void *opaque)
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb.destroy)
         (mon->cb.destroy)(mon, mon->vm);
-    virMutexDestroy(&mon->lock);
     virObjectUnref(mon->program);
 }
 
@@ -228,16 +218,4 @@ void virLXCMonitorClose(virLXCMonitorPtr mon)
         virObjectUnref(mon->client);
         mon->client = NULL;
     }
-}
-
-
-void virLXCMonitorLock(virLXCMonitorPtr mon)
-{
-    virMutexLock(&mon->lock);
-}
-
-
-void virLXCMonitorUnlock(virLXCMonitorPtr mon)
-{
-    virMutexUnlock(&mon->lock);
 }

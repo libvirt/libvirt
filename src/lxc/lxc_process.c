@@ -104,7 +104,7 @@ static void virLXCProcessAutoDestroyDom(void *payload,
         virDomainRemoveInactive(&data->driver->domains, dom);
 
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
     if (event)
         virDomainEventStateQueue(data->driver->domainEventState, event);
     virHashRemoveEntry(data->driver->autodestroy, uuidstr);
@@ -558,7 +558,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     VIR_DEBUG("mon=%p vm=%p", mon, vm);
 
     lxcDriverLock(driver);
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     lxcDriverUnlock(driver);
 
     priv = vm->privateData;
@@ -595,7 +595,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     }
 
     if (vm)
-        virDomainObjUnlock(vm);
+        virObjectUnlock(vm);
     if (event) {
         lxcDriverLock(driver);
         virDomainEventStateQueue(driver->domainEventState, event);
@@ -1250,7 +1250,7 @@ virLXCProcessAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
     virDomainObjPtr vm = payload;
     const struct virLXCProcessAutostartData *data = opaque;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
         int ret = virLXCProcessStart(data->conn, data->driver, vm, false,
@@ -1270,7 +1270,7 @@ virLXCProcessAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
                 virDomainEventStateQueue(data->driver->domainEventState, event);
         }
     }
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
 }
 
 
@@ -1302,7 +1302,7 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
     virLXCDriverPtr driver = opaque;
     virLXCDomainObjPrivatePtr priv;
 
-    virDomainObjLock(vm);
+    virObjectLock(vm);
     VIR_DEBUG("Reconnect id=%d pid=%d state=%d", vm->def->id, vm->pid, vm->state.state);
 
     priv = vm->privateData;
@@ -1345,7 +1345,7 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
     }
 
 cleanup:
-    virDomainObjUnlock(vm);
+    virObjectUnlock(vm);
     return;
 
 error:

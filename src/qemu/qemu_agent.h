@@ -47,9 +47,6 @@ qemuAgentPtr qemuAgentOpen(virDomainObjPtr vm,
                            virDomainChrSourceDefPtr config,
                            qemuAgentCallbacksPtr cb);
 
-void qemuAgentLock(qemuAgentPtr mon);
-void qemuAgentUnlock(qemuAgentPtr mon);
-
 void qemuAgentClose(qemuAgentPtr mon);
 
 typedef enum {

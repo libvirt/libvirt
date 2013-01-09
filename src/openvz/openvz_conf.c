@@ -669,7 +669,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
         dom = NULL;
     }
 

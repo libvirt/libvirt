@@ -125,10 +125,10 @@ To lock the driver
 
 To lock the virDomainObjPtr
 
-  virDomainObjLock()
+  virObjectLock()
     - Acquires the virDomainObjPtr lock
 
-  virDomainObjUnlock()
+  virObjectUnlock()
     - Releases the virDomainObjPtr lock
 
 
@@ -419,9 +419,9 @@ Design patterns
          ...monitor job progress...
          qemuDomainObjExitMonitorWithDriver(driver, obj);
 
-         virDomainObjUnlock(obj);
+         virObjectUnlock(obj);
          sleep(aWhile);
-         virDomainObjLock(obj);
+         virObjectLock(obj);
      }
 
      ...do final work...

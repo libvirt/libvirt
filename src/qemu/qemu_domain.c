@@ -786,12 +786,12 @@ retry:
     }
 
     while (!nested && !qemuDomainNestedJobAllowed(priv, job)) {
-        if (virCondWaitUntil(&priv->job.asyncCond, &obj->lock, then) < 0)
+        if (virCondWaitUntil(&priv->job.asyncCond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
     while (priv->job.active) {
-        if (virCondWaitUntil(&priv->job.cond, &obj->lock, then) < 0)
+        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
@@ -818,9 +818,9 @@ retry:
     }
 
     if (driver_locked) {
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
         qemuDriverLock(driver);
-        virDomainObjLock(obj);
+        virObjectLock(obj);
     }
 
     if (qemuDomainTrackJob(job))
@@ -851,9 +851,9 @@ error:
                              "%s", _("cannot acquire job mutex"));
     priv->jobs_queued--;
     if (driver_locked) {
-        virDomainObjUnlock(obj);
+        virObjectUnlock(obj);
         qemuDriverLock(driver);
-        virDomainObjLock(obj);
+        virObjectLock(obj);
     }
     virObjectUnref(obj);
     return -1;
@@ -1004,10 +1004,10 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
                  " monitor without asking for a nested job is dangerous");
     }
 
-    qemuMonitorLock(priv->mon);
+    virObjectLock(priv->mon);
     virObjectRef(priv->mon);
     ignore_value(virTimeMillisNow(&priv->monStart));
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
     if (driver_locked)
         qemuDriverUnlock(driver);
 
@@ -1025,11 +1025,11 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
     hasRefs = virObjectUnref(priv->mon);
 
     if (hasRefs)
-        qemuMonitorUnlock(priv->mon);
+        virObjectUnlock(priv->mon);
 
     if (driver_locked)
         qemuDriverLock(driver);
-    virDomainObjLock(obj);
+    virObjectLock(obj);
 
     priv->monStart = 0;
     if (!hasRefs)
@@ -1127,10 +1127,10 @@ qemuDomainObjEnterAgentInternal(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
-    qemuAgentLock(priv->agent);
+    virObjectLock(priv->agent);
     virObjectRef(priv->agent);
     ignore_value(virTimeMillisNow(&priv->agentStart));
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
     if (driver_locked)
         qemuDriverUnlock(driver);
 
@@ -1148,11 +1148,11 @@ qemuDomainObjExitAgentInternal(virQEMUDriverPtr driver,
     hasRefs = virObjectUnref(priv->agent);
 
     if (hasRefs)
-        qemuAgentUnlock(priv->agent);
+        virObjectUnlock(priv->agent);
 
     if (driver_locked)
         qemuDriverLock(driver);
-    virDomainObjLock(obj);
+    virObjectLock(obj);
 
     priv->agentStart = 0;
     if (!hasRefs)
@@ -1214,7 +1214,7 @@ void qemuDomainObjEnterRemoteWithDriver(virQEMUDriverPtr driver,
                                         virDomainObjPtr obj)
 {
     virObjectRef(obj);
-    virDomainObjUnlock(obj);
+    virObjectUnlock(obj);
     qemuDriverUnlock(driver);
 }
 
@@ -1222,7 +1222,7 @@ void qemuDomainObjExitRemoteWithDriver(virQEMUDriverPtr driver,
                                        virDomainObjPtr obj)
 {
     qemuDriverLock(driver);
-    virDomainObjLock(obj);
+    virObjectLock(obj);
     virObjectUnref(obj);
 }
 

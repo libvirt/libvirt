@@ -48,9 +48,8 @@
 #define DEBUG_RAW_IO 0
 
 struct _qemuMonitor {
-    virObject object;
+    virObjectLockable parent;
 
-    virMutex lock; /* also used to protect fd */
     virCond notify;
 
     int fd;
@@ -86,7 +85,7 @@ static void qemuMonitorDispose(void *obj);
 
 static int qemuMonitorOnceInit(void)
 {
-    if (!(qemuMonitorClass = virClassNew(virClassForObject(),
+    if (!(qemuMonitorClass = virClassNew(virClassForObjectLockable(),
                                          "qemuMonitor",
                                          sizeof(qemuMonitor),
                                          qemuMonitorDispose)))
@@ -230,17 +229,6 @@ static char * qemuMonitorEscapeNonPrintable(const char *text)
 }
 #endif
 
-void qemuMonitorLock(qemuMonitorPtr mon)
-{
-    virMutexLock(&mon->lock);
-}
-
-void qemuMonitorUnlock(qemuMonitorPtr mon)
-{
-    virMutexUnlock(&mon->lock);
-}
-
-
 static void qemuMonitorDispose(void *obj)
 {
     qemuMonitorPtr mon = obj;
@@ -250,7 +238,6 @@ static void qemuMonitorDispose(void *obj)
         (mon->cb->destroy)(mon, mon->vm);
     if (virCondDestroy(&mon->notify) < 0)
     {}
-    virMutexDestroy(&mon->lock);
     VIR_FREE(mon->buffer);
 }
 
@@ -563,12 +550,12 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     virObjectRef(mon);
 
     /* lock access to the monitor and protect fd */
-    qemuMonitorLock(mon);
+    virObjectLock(mon);
 #if DEBUG_IO
     VIR_DEBUG("Monitor %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 #endif
     if (mon->fd == -1 || mon->watch == 0) {
-        qemuMonitorUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
         return;
     }
@@ -666,7 +653,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        qemuMonitorUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering EOF callback");
         (eofNotify)(mon, vm);
@@ -677,12 +664,12 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        qemuMonitorUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
         VIR_DEBUG("Triggering error callback");
         (errorNotify)(mon, vm);
     } else {
-        qemuMonitorUnlock(mon);
+        virObjectUnlock(mon);
         virObjectUnref(mon);
     }
 }
@@ -711,21 +698,14 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     if (qemuMonitorInitialize() < 0)
         return NULL;
 
-    if (!(mon = virObjectNew(qemuMonitorClass)))
+    if (!(mon = virObjectLockableNew(qemuMonitorClass)))
         return NULL;
 
-    if (virMutexInit(&mon->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot initialize monitor mutex"));
-        VIR_FREE(mon);
-        return NULL;
-    }
+    mon->fd = -1;
     if (virCondInit(&mon->notify) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize monitor condition"));
-        virMutexDestroy(&mon->lock);
-        VIR_FREE(mon);
-        return NULL;
+        goto cleanup;
     }
     mon->fd = fd;
     mon->hasSendFD = hasSendFD;
@@ -734,7 +714,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     if (json)
         mon->wait_greeting = 1;
     mon->cb = cb;
-    qemuMonitorLock(mon);
+    virObjectLock(mon);
 
     if (virSetCloseExec(mon->fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -748,6 +728,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     }
 
 
+    virObjectRef(mon);
     if ((mon->watch = virEventAddHandle(mon->fd,
                                         VIR_EVENT_HANDLE_HANGUP |
                                         VIR_EVENT_HANDLE_ERROR |
@@ -755,16 +736,16 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
                                         qemuMonitorIO,
                                         mon,
                                         virObjectFreeCallback)) < 0) {
+        virObjectUnref(mon);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
     }
-    virObjectRef(mon);
 
     PROBE(QEMU_MONITOR_NEW,
           "mon=%p refs=%d fd=%d",
-          mon, mon->object.refs, mon->fd);
-    qemuMonitorUnlock(mon);
+          mon, mon->parent.parent.refs, mon->fd);
+    virObjectUnlock(mon);
 
     return mon;
 
@@ -775,7 +756,7 @@ cleanup:
      * so kill the callbacks now.
      */
     mon->cb = NULL;
-    qemuMonitorUnlock(mon);
+    virObjectUnlock(mon);
     /* The caller owns 'fd' on failure */
     mon->fd = -1;
     if (mon->watch)
@@ -834,9 +815,9 @@ void qemuMonitorClose(qemuMonitorPtr mon)
     if (!mon)
         return;
 
-    qemuMonitorLock(mon);
+    virObjectLock(mon);
     PROBE(QEMU_MONITOR_CLOSE,
-          "mon=%p refs=%d", mon, mon->object.refs);
+          "mon=%p refs=%d", mon, mon->parent.parent.refs);
 
     if (mon->fd >= 0) {
         if (mon->watch) {
@@ -867,7 +848,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         virCondSignal(&mon->notify);
     }
 
-    qemuMonitorUnlock(mon);
+    virObjectUnlock(mon);
     virObjectUnref(mon);
 }
 
@@ -905,7 +886,7 @@ int qemuMonitorSend(qemuMonitorPtr mon,
           mon, mon->msg->txBuffer, mon->msg->txFD);
 
     while (!mon->msg->finished) {
-        if (virCondWait(&mon->notify, &mon->lock) < 0) {
+        if (virCondWait(&mon->notify, &mon->parent.lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to wait on monitor condition"));
             goto cleanup;
@@ -960,10 +941,10 @@ cleanup:
 #define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...)          \
     do {                                                        \
         virObjectRef(mon);                                      \
-        qemuMonitorUnlock(mon);                                 \
+        virObjectUnlock(mon);                                   \
         if ((mon)->cb && (mon)->cb->callback)                   \
             (ret) = ((mon)->cb->callback)(mon, __VA_ARGS__);    \
-        qemuMonitorLock(mon);                                   \
+        virObjectLock(mon);                                     \
         virObjectUnref(mon);                                    \
     } while (0)
 

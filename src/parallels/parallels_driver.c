@@ -851,7 +851,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     else
         dom->autostart = 0;
 
-    virDomainObjUnlock(dom);
+    virObjectUnlock(dom);
 
     return dom;
 
@@ -1134,7 +1134,7 @@ parallelsLookupDomainByID(virConnectPtr conn, int id)
 
   cleanup:
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -1163,7 +1163,7 @@ parallelsLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
 
   cleanup:
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -1190,7 +1190,7 @@ parallelsLookupDomainByName(virConnectPtr conn, const char *name)
 
   cleanup:
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -1219,7 +1219,7 @@ parallelsGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     return ret;
 }
 
@@ -1243,7 +1243,7 @@ parallelsGetOSType(virDomainPtr domain)
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     parallelsDriverUnlock(privconn);
     return ret;
 }
@@ -1266,7 +1266,7 @@ parallelsDomainIsPersistent(virDomainPtr domain)
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     parallelsDriverUnlock(privconn);
     return ret;
 }
@@ -1294,7 +1294,7 @@ parallelsDomainGetState(virDomainPtr domain,
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     return ret;
 }
 
@@ -1324,7 +1324,7 @@ parallelsDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     return ret;
 }
 
@@ -1349,7 +1349,7 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
     return ret;
 }
 
@@ -1392,7 +1392,7 @@ parallelsDomainChangeState(virDomainPtr domain,
 
   cleanup:
     if (privdom)
-        virDomainObjUnlock(privdom);
+        virObjectUnlock(privdom);
 
     return ret;
 }
@@ -2357,10 +2357,10 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     if (parallelsApplyChanges(conn, olddom, def) < 0) {
-        virDomainObjUnlock(olddom);
+        virObjectUnlock(olddom);
         goto cleanup;
     }
-    virDomainObjUnlock(olddom);
+    virObjectUnlock(olddom);
 
     if (!(dom = virDomainAssignDef(privconn->caps,
                                    &privconn->domains, def, false))) {
@@ -2378,7 +2378,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
   cleanup:
     virDomainDefFree(def);
     if (dom)
-        virDomainObjUnlock(dom);
+        virObjectUnlock(dom);
     parallelsDriverUnlock(privconn);
     return ret;
 }
