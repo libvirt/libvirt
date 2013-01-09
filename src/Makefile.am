@@ -97,6 +97,7 @@ UTIL_SOURCES =							\
 		util/virobject.c util/virobject.h		\
 		util/virpci.c util/virpci.h			\
 		util/virpidfile.c util/virpidfile.h		\
+		util/virportallocator.c util/virportallocator.h \
 		util/virprocess.c util/virprocess.h		\
 		util/virrandom.h util/virrandom.c		\
 		util/virsexpr.c util/virsexpr.h			\

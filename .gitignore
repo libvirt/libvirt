@@ -180,6 +180,7 @@
 /tests/virkeyfiletest
 /tests/virlockspacetest
 /tests/virnet*test
+/tests/virportallocatortest
 /tests/virshtest
 /tests/virstringtest
 /tests/virtimetest

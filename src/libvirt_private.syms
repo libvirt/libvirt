@@ -1798,6 +1798,12 @@ virPidFileWrite;
 virPidFileWritePath;
 
 
+# virportallocator.h
+virPortAllocatorAcquire;
+virPortAllocatorNew;
+virPortAllocatorRelease;
+
+
 # virprocess.h
 virProcessAbort;
 virProcessGetAffinity;

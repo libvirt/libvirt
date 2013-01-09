@@ -98,6 +98,7 @@ test_programs = virshtest sockettest \
 	virbitmaptest \
 	virlockspacetest \
 	virstringtest \
+        virportallocatortest \
 	sysinfotest \
 	$(NULL)
 
@@ -235,7 +236,9 @@ endif
 
 EXTRA_DIST += $(test_scripts)
 
-test_libraries = libshunload.la
+test_libraries = libshunload.la \
+		libvirportallocatormock.la \
+		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
 endif
@@ -564,6 +567,18 @@ virlockspacetest_SOURCES = \
 	virlockspacetest.c testutils.h testutils.c
 virlockspacetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virlockspacetest_LDADD = $(LDADDS)
+
+virportallocatortest_SOURCES = \
+	virportallocatortest.c testutils.h testutils.c
+virportallocatortest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virportallocatortest_LDADD = $(LDADDS)
+
+libvirportallocatormock_la_SOURCES = \
+	virportallocatortest.c
+libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
+libvirportallocatormock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
 
 viruritest_SOURCES = \
 	viruritest.c testutils.h testutils.c
