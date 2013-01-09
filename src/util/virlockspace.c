@@ -387,6 +387,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         if (virSetInherit(res->fd, false) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Cannot enable close-on-exec flag"));
+            virLockSpaceResourceFree(res);
             goto error;
         }
         if (virJSONValueObjectGetBoolean(child, "lockHeld", &res->lockHeld) < 0) {
