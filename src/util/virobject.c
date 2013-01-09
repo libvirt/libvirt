@@ -43,6 +43,9 @@ struct _virClass {
 };
 
 static virClassPtr virObjectClass;
+static virClassPtr virObjectLockableClass;
+
+static void virObjectLockableDispose(void *anyobj);
 
 static int virObjectOnceInit(void)
 {
@@ -50,6 +53,12 @@ static int virObjectOnceInit(void)
                                        "virObject",
                                        sizeof(virObject),
                                        NULL)))
+        return -1;
+
+    if (!(virObjectLockableClass = virClassNew(virObjectClass,
+                                               "virObjectLockable",
+                                               sizeof(virObjectLockable),
+                                               virObjectLockableDispose)))
         return -1;
 
     return 0;
@@ -69,6 +78,20 @@ virClassPtr virClassForObject(void)
         return NULL;
 
     return virObjectClass;
+}
+
+
+/**
+ * virClassForObjectLockable:
+ *
+ * Returns the class instance for the virObjectLockable type
+ */
+virClassPtr virClassForObjectLockable(void)
+{
+    if (!virObjectInitialize() < 0)
+        return NULL;
+
+    return virObjectLockableClass;
 }
 
 
@@ -180,6 +203,38 @@ void *virObjectNew(virClassPtr klass)
 }
 
 
+void *virObjectLockableNew(virClassPtr klass)
+{
+    virObjectLockablePtr obj;
+
+    if (!virClassIsDerivedFrom(klass, virClassForObjectLockable())) {
+        virReportInvalidArg(klass,
+                            _("Class %s must derive from virObjectLockable"),
+                            virClassName(klass));
+        return NULL;
+    }
+
+    if (!(obj = virObjectNew(klass)))
+        return NULL;
+
+    if (virMutexInit(&obj->lock) < 0) {
+        virReportSystemError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Unable to initialize mutex"));
+        virObjectUnref(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+
+static void virObjectLockableDispose(void *anyobj)
+{
+    virObjectLockablePtr obj = anyobj;
+
+    virMutexDestroy(&obj->lock);
+}
+
 /**
  * virObjectUnref:
  * @anyobj: any instance of virObjectPtr
@@ -208,8 +263,6 @@ bool virObjectUnref(void *anyobj)
                 klass->dispose(obj);
             klass = klass->parent;
         }
-
-        virMutexDestroy(&obj->lock);
 
         /* Clear & poison object */
         memset(obj, 0, obj->klass->objectSize);
@@ -240,6 +293,53 @@ void *virObjectRef(void *anyobj)
     virAtomicIntInc(&obj->refs);
     PROBE(OBJECT_REF, "obj=%p", obj);
     return anyobj;
+}
+
+
+/**
+ * virObjectLock:
+ * @anyobj: any instance of virObjectLockablePtr
+ *
+ * Acquire a lock on @anyobj. The lock must be
+ * released by virObjectUnlock.
+ *
+ * The caller is expected to have acquired a reference
+ * on the object before locking it (eg virObjectRef).
+ * The object must be unlocked before releasing this
+ * reference.
+ */
+void virObjectLock(void *anyobj)
+{
+    virObjectLockablePtr obj = anyobj;
+
+    if (!virObjectIsClass(obj, virObjectLockableClass)) {
+        VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
+                 obj, obj ? obj->parent.klass->name : "(unknown)");
+        return;
+    }
+
+    virMutexLock(&obj->lock);
+}
+
+
+/**
+ * virObjectUnlock:
+ * @anyobj: any instance of virObjectLockablePtr
+ *
+ * Release a lock on @anyobj. The lock must have been
+ * acquired by virObjectLock.
+ */
+void virObjectUnlock(void *anyobj)
+{
+    virObjectLockablePtr obj = anyobj;
+
+    if (!virObjectIsClass(obj, virObjectLockableClass)) {
+        VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
+                 obj, obj ? obj->parent.klass->name : "(unknown)");
+        return;
+    }
+
+    virMutexUnlock(&obj->lock);
 }
 
 

@@ -1770,13 +1770,17 @@ virNodeSuspendGetTargetMask;
 
 # virobject.h
 virClassForObject;
+virClassForObjectLockable;
 virClassIsDerivedFrom;
 virClassName;
 virClassNew;
 virObjectFreeCallback;
 virObjectIsClass;
+virObjectLock;
+virObjectLockableNew;
 virObjectNew;
 virObjectRef;
+virObjectUnlock;
 virObjectUnref;
 
 
