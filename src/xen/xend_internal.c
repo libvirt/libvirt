@@ -1113,7 +1113,6 @@ sexpr_to_xend_topology(const struct sexpr *root,
 {
     const char *nodeToCpu;
     const char *cur;
-    virBitmapPtr cpuset = NULL;
     int *cpuNums = NULL;
     int cell, cpu, nb_cpus;
     int n = 0;
@@ -1131,6 +1130,7 @@ sexpr_to_xend_topology(const struct sexpr *root,
 
     cur = nodeToCpu;
     while (*cur != 0) {
+        virBitmapPtr cpuset = NULL;
         /*
          * Find the next NUMA cell described in the xend output
          */
@@ -1163,28 +1163,22 @@ sexpr_to_xend_topology(const struct sexpr *root,
             if (used)
                 cpuNums[n++] = cpu;
         }
+        virBitmapFree(cpuset);
 
-        if (virCapabilitiesAddHostNUMACell(caps,
-                                           cell,
-                                           nb_cpus,
-                                           cpuNums) < 0)
+        if (virCapabilitiesAddHostNUMACell(caps, cell, nb_cpus, cpuNums) < 0)
             goto memory_error;
     }
     VIR_FREE(cpuNums);
-    virBitmapFree(cpuset);
     return 0;
 
   parse_error:
     virReportError(VIR_ERR_XEN_CALL, "%s", _("topology syntax error"));
   error:
     VIR_FREE(cpuNums);
-    virBitmapFree(cpuset);
-
     return -1;
 
   memory_error:
     VIR_FREE(cpuNums);
-    virBitmapFree(cpuset);
     virReportOOMError();
     return -1;
 }

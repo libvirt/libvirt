@@ -373,6 +373,7 @@ int virBitmapParse(const char *str,
         }
     }
 
+    sa_assert(ret >= 0);
     return ret;
 
 parse_error:
