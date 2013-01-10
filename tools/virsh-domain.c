@@ -8340,6 +8340,11 @@ static const vshCmdOptDef opts_migrate[] = {
      .flags = 0,
      .help = N_("display the progress of migration")
     },
+    {.name = "compressed",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("compress repeated pages during live migration")
+    },
     {.name = "domain",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -8429,6 +8434,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "unsafe"))
         flags |= VIR_MIGRATE_UNSAFE;
+
+    if (vshCommandOptBool(cmd, "compressed"))
+        flags |= VIR_MIGRATE_COMPRESSED;
 
     if (vshCommandOptBool(cmd, "offline")) {
         flags |= VIR_MIGRATE_OFFLINE;

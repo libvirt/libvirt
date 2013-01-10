@@ -1187,6 +1187,7 @@ typedef enum {
                                                * when supported */
     VIR_MIGRATE_UNSAFE            = (1 << 9), /* force migration even if it is considered unsafe */
     VIR_MIGRATE_OFFLINE           = (1 << 10), /* offline migrate */
+    VIR_MIGRATE_COMPRESSED        = (1 << 11), /* compress data during migration */
 } virDomainMigrateFlags;
 
 /* Domain migration. */

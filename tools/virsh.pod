@@ -1043,7 +1043,7 @@ stats.
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
-I<domain> I<desturi> [I<migrateuri>] [I<dname>]
+[I<--compressed>] I<domain> I<desturi> [I<migrateuri>] [I<dname>]
 [I<--timeout> B<seconds>] [I<--xml> B<file>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
@@ -1064,7 +1064,9 @@ host. I<--change-protection> enforces that no incompatible configuration
 changes will be made to the domain while the migration is underway; this flag
 is implicitly enabled when supported by the hypervisor, but can be explicitly
 used to reject the migration if the hypervisor lacks change protection
-support.  I<--verbose> displays the progress of migration.
+support.  I<--verbose> displays the progress of migration.  I<--compressed>
+activates compression of memory pages that have to be transferred repeatedly
+during live migration.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
