@@ -3,7 +3,7 @@
  * esx_driver.c: core driver functions for managing VMware ESX hosts
  *
  * Copyright (C) 2010-2012 Red Hat, Inc.
- * Copyright (C) 2009-2012 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2013 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -650,7 +650,8 @@ esxCapsInit(esxPrivate *priv)
 
 
 static int
-esxConnectToHost(virConnectPtr conn,
+esxConnectToHost(esxPrivate *priv,
+                 virConnectPtr conn,
                  virConnectAuthPtr auth,
                  char **vCenterIpAddress)
 {
@@ -663,7 +664,6 @@ esxConnectToHost(virConnectPtr conn,
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_Boolean inMaintenanceMode = esxVI_Boolean_Undefined;
-    esxPrivate *priv = conn->privateData;
     esxVI_ProductVersion expectedProductVersion = STRCASEEQ(conn->uri->scheme, "esx")
         ? esxVI_ProductVersion_ESX
         : esxVI_ProductVersion_GSX;
@@ -785,7 +785,8 @@ esxConnectToHost(virConnectPtr conn,
 
 
 static int
-esxConnectToVCenter(virConnectPtr conn,
+esxConnectToVCenter(esxPrivate *priv,
+                    virConnectPtr conn,
                     virConnectAuthPtr auth,
                     const char *hostname,
                     const char *hostSystemIpAddress)
@@ -796,7 +797,6 @@ esxConnectToVCenter(virConnectPtr conn,
     char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
-    esxPrivate *priv = conn->privateData;
 
     if (hostSystemIpAddress == NULL &&
         (priv->parsedUri->path == NULL || STREQ(priv->parsedUri->path, "/"))) {
@@ -1008,8 +1008,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     priv->supportsLongMode = esxVI_Boolean_Undefined;
     priv->usedCpuTimeCounterId = -1;
 
-    conn->privateData = priv;
-
     /*
      * Set the port dependent on the transport protocol if no port is
      * specified. This allows us to rely on the port parameter being
@@ -1036,7 +1034,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (STRCASEEQ(conn->uri->scheme, "esx") ||
         STRCASEEQ(conn->uri->scheme, "gsx")) {
         /* Connect to host */
-        if (esxConnectToHost(conn, auth,
+        if (esxConnectToHost(priv, conn, auth,
                              &potentialVCenterIpAddress) < 0) {
             goto cleanup;
         }
@@ -1075,7 +1073,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
                 }
             }
 
-            if (esxConnectToVCenter(conn, auth,
+            if (esxConnectToVCenter(priv, conn, auth,
                                     vCenterIpAddress,
                                     priv->host->ipAddress) < 0) {
                 goto cleanup;
@@ -1085,7 +1083,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         priv->primary = priv->host;
     } else { /* VPX */
         /* Connect to vCenter */
-        if (esxConnectToVCenter(conn, auth,
+        if (esxConnectToVCenter(priv, conn, auth,
                                 conn->uri->server,
                                 NULL) < 0) {
             goto cleanup;
@@ -1101,13 +1099,12 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto cleanup;
     }
 
+    conn->privateData = priv;
+    priv = NULL;
     result = VIR_DRV_OPEN_SUCCESS;
 
   cleanup:
-    if (result == VIR_DRV_OPEN_ERROR) {
-        esxFreePrivate(&priv);
-    }
-
+    esxFreePrivate(&priv);
     VIR_FREE(potentialVCenterIpAddress);
 
     return result;
