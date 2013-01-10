@@ -458,7 +458,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         if (pciDeviceGetManaged(dev) &&
-            pciDettachDevice(dev, driver->activePciHostdevs, NULL) < 0)
+            pciDettachDevice(dev, driver->activePciHostdevs, NULL, "pci-stub") < 0)
             goto reattachdevs;
     }
 
@@ -574,7 +574,7 @@ resetvfnetconfig:
 reattachdevs:
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciReAttachDevice(dev, driver->activePciHostdevs, NULL);
+        pciReAttachDevice(dev, driver->activePciHostdevs, NULL, "pci-stub");
     }
 
 cleanup:
@@ -830,7 +830,7 @@ void qemuReattachPciDevice(pciDevice *dev, virQEMUDriverPtr driver)
     }
 
     if (pciReAttachDevice(dev, driver->activePciHostdevs,
-                          driver->inactivePciHostdevs) < 0) {
+                          driver->inactivePciHostdevs, "pci-stub") < 0) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to re-attach PCI device: %s"),
                   err ? err->message : _("unknown error"));

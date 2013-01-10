@@ -855,57 +855,35 @@ pciDeviceFile(char **buffer, const char *device, const char *file)
     return 0;
 }
 
-
-static const char *
-pciFindStubDriver(void)
+static int
+pciProbeStubDriver(const char *driver)
 {
     char *drvpath = NULL;
     int probed = 0;
 
 recheck:
-    if (pciDriverDir(&drvpath, "pci-stub") < 0) {
-        return NULL;
-    }
-
-    if (virFileExists(drvpath)) {
+    if (pciDriverDir(&drvpath, driver) == 0 && virFileExists(drvpath)) {
+        /* driver already loaded, return */
         VIR_FREE(drvpath);
-        return "pci-stub";
-    }
-
-    if (pciDriverDir(&drvpath, "pciback") < 0) {
-        return NULL;
-    }
-
-    if (virFileExists(drvpath)) {
-        VIR_FREE(drvpath);
-        return "pciback";
+        return 0;
     }
 
     VIR_FREE(drvpath);
 
     if (!probed) {
-        const char *const stubprobe[] = { MODPROBE, "pci-stub", NULL };
-        const char *const backprobe[] = { MODPROBE, "pciback", NULL };
-
+        const char *const probecmd[] = { MODPROBE, driver, NULL };
         probed = 1;
-        /*
-         * Probing for pci-stub will succeed regardless of whether
-         * on native or Xen kernels.
-         * On Xen though, we want to prefer pciback, so probe
-         * for that first, because that will only work on Xen
-         */
-        if (virRun(backprobe, NULL) < 0 &&
-            virRun(stubprobe, NULL) < 0) {
+        if (virRun(probecmd, NULL) < 0) {
             char ebuf[1024];
-            VIR_WARN("failed to load pci-stub or pciback drivers: %s",
+            VIR_WARN("failed to load driver %s: %s", driver,
                      virStrerror(errno, ebuf, sizeof(ebuf)));
-            return NULL;
+            return -1;
         }
 
         goto recheck;
     }
 
-    return NULL;
+    return -1;
 }
 
 static int
@@ -1149,12 +1127,12 @@ cleanup:
 int
 pciDettachDevice(pciDevice *dev,
                  pciDeviceList *activeDevs,
-                 pciDeviceList *inactiveDevs)
+                 pciDeviceList *inactiveDevs,
+                 const char *driver)
 {
-    const char *driver = pciFindStubDriver();
-    if (!driver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot find any PCI stub module"));
+    if (pciProbeStubDriver(driver) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load PCI stub module %s"), driver);
         return -1;
     }
 
@@ -1179,12 +1157,12 @@ pciDettachDevice(pciDevice *dev,
 int
 pciReAttachDevice(pciDevice *dev,
                   pciDeviceList *activeDevs,
-                  pciDeviceList *inactiveDevs)
+                  pciDeviceList *inactiveDevs,
+                  const char *driver)
 {
-    const char *driver = pciFindStubDriver();
-    if (!driver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot find any PCI stub module"));
+    if (pciProbeStubDriver(driver) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load PCI stub module %s"), driver);
         return -1;
     }
 

@@ -10022,7 +10022,7 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
     in_inactive_list = pciDeviceListFind(driver->inactivePciHostdevs, pci);
 
     if (pciDettachDevice(pci, driver->activePciHostdevs,
-                         driver->inactivePciHostdevs) < 0)
+                         driver->inactivePciHostdevs, "pci-stub") < 0)
         goto out;
 
     ret = 0;
@@ -10067,7 +10067,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 
     qemuDriverLock(driver);
     if (pciReAttachDevice(pci, driver->activePciHostdevs,
-                          driver->inactivePciHostdevs) < 0)
+                          driver->inactivePciHostdevs, "pci-stub") < 0)
         goto out;
 
     ret = 0;

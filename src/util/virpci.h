@@ -44,10 +44,12 @@ void       pciFreeDevice     (pciDevice     *dev);
 const char *pciDeviceGetName (pciDevice     *dev);
 int        pciDettachDevice  (pciDevice     *dev,
                               pciDeviceList *activeDevs,
-                              pciDeviceList *inactiveDevs);
+                              pciDeviceList *inactiveDevs,
+                              const char *driver);
 int        pciReAttachDevice (pciDevice     *dev,
                               pciDeviceList *activeDevs,
-                              pciDeviceList *inactiveDevs);
+                              pciDeviceList *inactiveDevs,
+                              const char *driver);
 int        pciResetDevice    (pciDevice     *dev,
                               pciDeviceList *activeDevs,
                               pciDeviceList *inactiveDevs);
