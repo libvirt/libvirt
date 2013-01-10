@@ -124,7 +124,7 @@ typedef enum {
     VIR_DOMAIN_SHUTOFF = 5,     /* the domain is shut off */
     VIR_DOMAIN_CRASHED = 6,     /* the domain is crashed */
     VIR_DOMAIN_PMSUSPENDED = 7, /* the domain is suspended by guest
-                                    power management */
+                                   power management */
 
 #ifdef VIR_ENUM_SENTINELS
     /*
@@ -1380,7 +1380,7 @@ virDomainPtr            virDomainLookupByID     (virConnectPtr conn,
 virDomainPtr            virDomainLookupByUUID   (virConnectPtr conn,
                                                  const unsigned char *uuid);
 virDomainPtr            virDomainLookupByUUIDString     (virConnectPtr conn,
-                                                        const char *uuid);
+                                                         const char *uuid);
 
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_DEFAULT        = 0,        /* hypervisor choice */
@@ -1479,9 +1479,9 @@ int             virDomainSaveImageDefineXML     (virConnectPtr conn,
 int                    virDomainManagedSave     (virDomainPtr dom,
                                                  unsigned int flags);
 int                    virDomainHasManagedSaveImage(virDomainPtr dom,
-                                                 unsigned int flags);
+                                                    unsigned int flags);
 int                    virDomainManagedSaveRemove(virDomainPtr dom,
-                                                 unsigned int flags);
+                                                  unsigned int flags);
 
 /*
  * Domain core dump
@@ -1550,7 +1550,7 @@ int                     virDomainGetControlInfo (virDomainPtr domain,
  * Return scheduler type in effect 'sedf', 'credit', 'linux'
  */
 char *                  virDomainGetSchedulerType(virDomainPtr domain,
-                                                 int *nparams);
+                                                  int *nparams);
 
 
 /* Manage blkio parameters.  */
@@ -1698,7 +1698,7 @@ unsigned int            virDomainGetID          (virDomainPtr domain);
 int                     virDomainGetUUID        (virDomainPtr domain,
                                                  unsigned char *uuid);
 int                     virDomainGetUUIDString  (virDomainPtr domain,
-                                                char *buf);
+                                                 char *buf);
 char *                  virDomainGetOSType      (virDomainPtr domain);
 unsigned long           virDomainGetMaxMemory   (virDomainPtr domain);
 int                     virDomainSetMaxMemory   (virDomainPtr domain,
@@ -1828,13 +1828,13 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
 #define VIR_DOMAIN_BANDWIDTH_OUT_BURST "outbound.burst"
 
 int                     virDomainSetInterfaceParameters (virDomainPtr dom,
-                                                        const char *device,
-                                                        virTypedParameterPtr params,
-                                                        int nparams, unsigned int flags);
+                                                         const char *device,
+                                                         virTypedParameterPtr params,
+                                                         int nparams, unsigned int flags);
 int                     virDomainGetInterfaceParameters (virDomainPtr dom,
-                                                        const char *device,
-                                                        virTypedParameterPtr params,
-                                                        int *nparams, unsigned int flags);
+                                                         const char *device,
+                                                         virTypedParameterPtr params,
+                                                         int *nparams, unsigned int flags);
 
 /* Management of domain block devices */
 
@@ -1972,7 +1972,7 @@ int                     virConnectListAllDomains (virConnectPtr conn,
                                                   unsigned int flags);
 int                     virDomainCreate         (virDomainPtr domain);
 int                     virDomainCreateWithFlags (virDomainPtr domain,
-                                                 unsigned int flags);
+                                                  unsigned int flags);
 
 int                     virDomainGetAutostart   (virDomainPtr domain,
                                                  int *autostart);
@@ -2515,7 +2515,7 @@ typedef enum {
                                                    config if it's not active */
     VIR_NETWORK_UPDATE_AFFECT_LIVE    = 1 << 0, /* affect live state of network only */
     VIR_NETWORK_UPDATE_AFFECT_CONFIG  = 1 << 1, /* affect persistent config only */
-    } virNetworkUpdateFlags;
+} virNetworkUpdateFlags;
 
 /*
  * Update an existing network definition
@@ -2725,16 +2725,16 @@ typedef enum {
 typedef enum {
     VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes */
     VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1, /* 4-pass  NNSA Policy Letter
-                                        NAP-14.1-C (XVI-8) */
+                                          NAP-14.1-C (XVI-8) */
     VIR_STORAGE_VOL_WIPE_ALG_DOD = 2, /* 4-pass DoD 5220.22-M section
-                                       8-306 procedure */
+                                         8-306 procedure */
     VIR_STORAGE_VOL_WIPE_ALG_BSI = 3, /* 9-pass method recommended by the
-                                       German Center of Security in
-                                       Information Technologies */
+                                         German Center of Security in
+                                         Information Technologies */
     VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence */
     VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
-                                             Bruce Schneier in "Applied
-                                             Cryptography" (1996) */
+                                              Bruce Schneier in "Applied
+                                              Cryptography" (1996) */
     VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random */
 
     VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
@@ -3556,12 +3556,12 @@ int                     virConnectListSecrets   (virConnectPtr conn,
  */
 typedef enum {
     VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
-                                                      stored persistently */
+                                                       stored persistently */
     VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 1 << 1,
 
     VIR_CONNECT_LIST_SECRETS_PRIVATE      = 1 << 2, /* not revealed to any caller
-                                                      of libvirt, nor to any other
-                                                      node */
+                                                       of libvirt, nor to any other
+                                                       node */
     VIR_CONNECT_LIST_SECRETS_NO_PRIVATE   = 1 << 3,
 } virConnectListAllSecretsFlags;
 
@@ -4305,12 +4305,12 @@ typedef enum {
  * VIR_DOMAIN_EVENT_ID_DISK_CHANGE with virConnectDomainEventRegisterAny()
  */
 typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
-                                                       virDomainPtr dom,
-                                                       const char *oldSrcPath,
-                                                       const char *newSrcPath,
-                                                       const char *devAlias,
-                                                       int reason,
-                                                       void *opaque);
+                                                        virDomainPtr dom,
+                                                        const char *oldSrcPath,
+                                                        const char *newSrcPath,
+                                                        const char *devAlias,
+                                                        int reason,
+                                                        void *opaque);
 
 /**
  * virConnectDomainEventTrayChangeReason:
