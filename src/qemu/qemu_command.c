@@ -152,6 +152,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
     int rc;
     char *res_ifname = NULL;
     int vnet_hdr = 0;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuCapsGet(caps, QEMU_CAPS_VNET_HDR) &&
         net->model && STREQ(net->model, "virtio"))
@@ -164,7 +165,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         true, vnet_hdr, def->uuid,
         virDomainNetGetActualVirtPortProfile(net),
         &res_ifname,
-        vmop, driver->stateDir,
+        vmop, cfg->stateDir,
         virDomainNetGetActualBandwidth(net));
     if (rc >= 0) {
         if (virSecurityManagerSetTapFDLabel(driver->securityManager,
@@ -176,6 +177,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
         net->ifname = res_ifname;
     }
 
+    virObjectUnref(cfg);
     return rc;
 
 error:
@@ -184,8 +186,9 @@ error:
                      virDomainNetGetActualDirectDev(net),
                      virDomainNetGetActualDirectMode(net),
                      virDomainNetGetActualVirtPortProfile(net),
-                     driver->stateDir));
+                     cfg->stateDir));
     VIR_FREE(res_ifname);
+    virObjectUnref(cfg);
     return -1;
 }
 
@@ -203,6 +206,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
     unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
     bool template_ifname = false;
     int actualType = virDomainNetGetActualType(net);
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         int active, fail = 0;
@@ -278,7 +282,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tapfd = -1;
     }
 
-    if (driver->macFilter) {
+    if (cfg->macFilter) {
         if ((err = networkAllowMacOnPort(driver, net->ifname, &net->mac))) {
             virReportSystemError(err,
                  _("failed to add ebtables rule to allow MAC address on '%s'"),
@@ -306,6 +310,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
 cleanup:
     VIR_FREE(brname);
+    virObjectUnref(cfg);
 
     return tapfd;
 }
@@ -3283,11 +3288,13 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     enum virDomainNetType netType = virDomainNetGetActualType(net);
     const char *brname = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("scripts are not supported on interfaces of type %s"),
                        virDomainNetTypeToString(netType));
+        virObjectUnref(cfg);
         return NULL;
     }
 
@@ -3298,7 +3305,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
      * through, -net tap,fd
      */
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (!driver->privileged &&
+        if (!cfg->privileged &&
             qemuCapsGet(caps, QEMU_CAPS_NETDEV_BRIDGE)) {
             brname = virDomainNetGetActualBridgeName(net);
             virBufferAsprintf(&buf, "bridge%cbr=%s", type_sep, brname);
@@ -3373,6 +3380,8 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         if (net->tune.sndbuf_specified)
             virBufferAsprintf(&buf, ",sndbuf=%lu", net->tune.sndbuf);
     }
+
+    virObjectUnref(cfg);
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
@@ -4706,7 +4715,7 @@ error:
 }
 
 static int
-qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
+qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virCommandPtr cmd,
                              virDomainDefPtr def,
                              qemuCapsPtr caps,
@@ -4724,11 +4733,11 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
         }
 
         if (graphics->data.vnc.socket ||
-            driver->vncAutoUnixSocket) {
+            cfg->vncAutoUnixSocket) {
 
             if (!graphics->data.vnc.socket &&
                 virAsprintf(&graphics->data.vnc.socket,
-                            "%s/%s.vnc", driver->libDir, def->name) == -1) {
+                            "%s/%s.vnc", cfg->libDir, def->name) == -1) {
                 goto no_memory;
             }
 
@@ -4774,7 +4783,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
             }
 
             if (!listenAddr)
-                listenAddr = driver->vncListen;
+                listenAddr = cfg->vncListen;
 
             escapeAddr = strchr(listenAddr, ':') != NULL;
             if (escapeAddr)
@@ -4792,26 +4801,26 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
 
         if (qemuCapsGet(caps, QEMU_CAPS_VNC_COLON)) {
             if (graphics->data.vnc.auth.passwd ||
-                driver->vncPassword)
+                cfg->vncPassword)
                 virBufferAddLit(&opt, ",password");
 
-            if (driver->vncTLS) {
+            if (cfg->vncTLS) {
                 virBufferAddLit(&opt, ",tls");
-                if (driver->vncTLSx509verify) {
+                if (cfg->vncTLSx509verify) {
                     virBufferAsprintf(&opt, ",x509verify=%s",
-                                      driver->vncTLSx509certdir);
+                                      cfg->vncTLSx509certdir);
                 } else {
                     virBufferAsprintf(&opt, ",x509=%s",
-                                      driver->vncTLSx509certdir);
+                                      cfg->vncTLSx509certdir);
                 }
             }
 
-            if (driver->vncSASL) {
+            if (cfg->vncSASL) {
                 virBufferAddLit(&opt, ",sasl");
 
-                if (driver->vncSASLdir)
+                if (cfg->vncSASLdir)
                     virCommandAddEnvPair(cmd, "SASL_CONF_DIR",
-                                         driver->vncSASLdir);
+                                         cfg->vncSASLdir);
 
                 /* TODO: Support ACLs later */
             }
@@ -4828,7 +4837,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
          * prevent it opening the host OS audio devices, since that causes
          * security issues and might not work when using VNC.
          */
-        if (driver->vncAllowHostAudio) {
+        if (cfg->vncAllowHostAudio) {
             virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
         } else {
             virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
@@ -4884,7 +4893,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
             virBufferAsprintf(&opt, "port=%u", port);
 
         if (tlsPort > 0) {
-            if (!driver->spiceTLS) {
+            if (!cfg->spiceTLS) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("spice TLS port set in XML configuration,"
                                  " but TLS is disabled in qemu.conf"));
@@ -4927,7 +4936,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
         }
 
         if (!listenAddr)
-            listenAddr = driver->spiceListen;
+            listenAddr = cfg->spiceListen;
         if (listenAddr)
             virBufferAsprintf(&opt, ",addr=%s", listenAddr);
 
@@ -4951,12 +4960,12 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
          * making it visible on CLI, so there's no use of password=XXX
          * in this bit of the code */
         if (!graphics->data.spice.auth.passwd &&
-            !driver->spicePassword)
+            !cfg->spicePassword)
             virBufferAddLit(&opt, ",disable-ticketing");
 
-        if (driver->spiceTLS)
+        if (cfg->spiceTLS)
             virBufferAsprintf(&opt, ",x509-dir=%s",
-                              driver->spiceTLSx509certdir);
+                              cfg->spiceTLSx509certdir);
 
         switch (defaultMode) {
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
@@ -4974,7 +4983,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverPtr driver,
             int mode = graphics->data.spice.channels[i];
             switch (mode) {
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-                if (!driver->spiceTLS) {
+                if (!cfg->spiceTLS) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("spice secure channels set in XML configuration, but TLS is disabled in qemu.conf"));
                     goto error;
@@ -5087,6 +5096,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         VIR_DOMAIN_CONTROLLER_TYPE_CCID,
     };
     virArch hostarch = virArchFromHost();
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "caps=%p migrateFrom=%s migrateFD=%d "
@@ -5159,7 +5169,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (qemuCapsGet(caps, QEMU_CAPS_NAME)) {
         virCommandAddArg(cmd, "-name");
-        if (driver->setProcessName &&
+        if (cfg->setProcessName &&
             qemuCapsGet(caps, QEMU_CAPS_NAME_PROCESS)) {
             virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
                                    def->name, def->name);
@@ -5208,12 +5218,12 @@ qemuBuildCommandLine(virConnectPtr conn,
     def->mem.max_balloon = VIR_DIV_UP(def->mem.max_balloon, 1024) * 1024;
     virCommandAddArgFormat(cmd, "%llu", def->mem.max_balloon / 1024);
     if (def->mem.hugepage_backed) {
-        if (!driver->hugetlbfs_mount) {
+        if (!cfg->hugetlbfsMount) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("hugetlbfs filesystem is not mounted"));
             goto error;
         }
-        if (!driver->hugepage_path) {
+        if (!cfg->hugepagePath) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("hugepages are disabled by administrator config"));
             goto error;
@@ -5225,7 +5235,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
         virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path",
-                             driver->hugepage_path, NULL);
+                             cfg->hugepagePath, NULL);
     }
 
     virCommandAddArg(cmd, "-smp");
@@ -6108,7 +6118,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                  * supported.
                  */
                 if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                    driver->privileged ||
+                    cfg->privileged ||
                     (!qemuCapsGet(caps, QEMU_CAPS_NETDEV_BRIDGE))) {
                     int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
                                                         caps);
@@ -6554,7 +6564,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0 ; i < def->ngraphics ; ++i) {
-        if (qemuBuildGraphicsCommandLine(driver, cmd, def, caps,
+        if (qemuBuildGraphicsCommandLine(cfg, cmd, def, caps,
                                          def->graphics[i]) < 0)
             goto error;
     }
@@ -7041,21 +7051,23 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (qemuCapsGet(caps, QEMU_CAPS_SECCOMP_SANDBOX)) {
-        if (driver->seccompSandbox == 0)
+        if (cfg->seccompSandbox == 0)
             virCommandAddArgList(cmd, "-sandbox", "off", NULL);
-        else if (driver->seccompSandbox > 0)
+        else if (cfg->seccompSandbox > 0)
             virCommandAddArgList(cmd, "-sandbox", "on", NULL);
-    } else if (driver->seccompSandbox > 0) {
+    } else if (cfg->seccompSandbox > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("QEMU does not support seccomp sandboxes"));
         goto error;
     }
 
+    virObjectUnref(cfg);
     return cmd;
 
  no_memory:
     virReportOOMError();
  error:
+    virObjectUnref(cfg);
     /* free up any resources in the network driver */
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);

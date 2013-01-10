@@ -201,18 +201,8 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = "..";
 
+    driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
-    if ((driver.stateDir = strdup("/nowhere")) == NULL)
-        return EXIT_FAILURE;
-    if ((driver.hugetlbfs_mount = strdup("/dev/hugepages")) == NULL)
-        return EXIT_FAILURE;
-    if ((driver.hugepage_path = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
-        return EXIT_FAILURE;
-    driver.spiceTLS = 1;
-    if (!(driver.spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")))
-        return EXIT_FAILURE;
-    if (!(driver.spicePassword = strdup("123456")))
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
@@ -260,7 +250,7 @@ mymain(void)
     DO_TEST("qemu-ns-commandline-ns0", false, NONE);
     DO_TEST("qemu-ns-commandline-ns1", false, NONE);
 
-    VIR_FREE(driver.stateDir);
+    virObjectUnref(driver.config);
     virCapabilitiesFree(driver.caps);
     VIR_FREE(map);
 

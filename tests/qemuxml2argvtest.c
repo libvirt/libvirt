@@ -278,18 +278,23 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = "..";
 
+    driver.config = virQEMUDriverConfigNew(false);
+    VIR_FREE(driver.config->spiceListen);
+    VIR_FREE(driver.config->vncListen);
+
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
-    if ((driver.stateDir = strdup("/nowhere")) == NULL)
+    VIR_FREE(driver.config->stateDir);
+    if ((driver.config->stateDir = strdup("/nowhere")) == NULL)
         return EXIT_FAILURE;
-    if ((driver.hugetlbfs_mount = strdup("/dev/hugepages")) == NULL)
+    VIR_FREE(driver.config->hugetlbfsMount);
+    if ((driver.config->hugetlbfsMount = strdup("/dev/hugepages")) == NULL)
         return EXIT_FAILURE;
-    if ((driver.hugepage_path = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
+    VIR_FREE(driver.config->hugepagePath);
+    if ((driver.config->hugepagePath = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
         return EXIT_FAILURE;
-    driver.spiceTLS = 1;
-    if (!(driver.spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")))
-        return EXIT_FAILURE;
-    if (!(driver.spicePassword = strdup("123456")))
+    driver.config->spiceTLS = 1;
+    if (!(driver.config->spicePassword = strdup("123456")))
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
@@ -546,17 +551,15 @@ mymain(void)
     DO_TEST("graphics-vnc", QEMU_CAPS_VNC);
     DO_TEST("graphics-vnc-socket", QEMU_CAPS_VNC);
 
-    driver.vncSASL = 1;
-    driver.vncSASLdir = strdup("/root/.sasl2");
+    driver.config->vncSASL = 1;
+    VIR_FREE(driver.config->vncSASLdir);
+    driver.config->vncSASLdir = strdup("/root/.sasl2");
     DO_TEST("graphics-vnc-sasl", QEMU_CAPS_VNC, QEMU_CAPS_VGA);
-    driver.vncTLS = 1;
-    driver.vncTLSx509verify = 1;
-    driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
+    driver.config->vncTLS = 1;
+    driver.config->vncTLSx509verify = 1;
     DO_TEST("graphics-vnc-tls", QEMU_CAPS_VNC);
-    driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
-    VIR_FREE(driver.vncSASLdir);
-    VIR_FREE(driver.vncTLSx509certdir);
-    driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
+    driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
+    driver.config->vncSASLdir = driver.config->vncTLSx509certdir = NULL;
 
     DO_TEST("graphics-sdl", NONE);
     DO_TEST("graphics-sdl-fullscreen", NONE);
@@ -868,7 +871,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA);
 
-    VIR_FREE(driver.stateDir);
+    virObjectUnref(driver.config);
     virCapabilitiesFree(driver.caps);
     VIR_FREE(map);
 

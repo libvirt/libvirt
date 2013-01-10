@@ -663,14 +663,14 @@ void qemuDomainSetNamespaceHooks(virCapsPtr caps)
 static void
 qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
-    if (!virDomainObjIsActive(obj)) {
-        /* don't write the state file yet, it will be written once the domain
-         * gets activated */
-        return;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainObjIsActive(obj)) {
+        if (virDomainSaveStatus(driver->caps, cfg->stateDir, obj) < 0)
+            VIR_WARN("Failed to save status on vm %s", obj->def->name);
     }
 
-    if (virDomainSaveStatus(driver->caps, driver->stateDir, obj) < 0)
-        VIR_WARN("Failed to save status on vm %s", obj->def->name);
+    virObjectUnref(cfg);
 }
 
 void
@@ -768,11 +768,15 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     unsigned long long now;
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     priv->jobs_queued++;
 
-    if (virTimeMillisNow(&now) < 0)
+    if (virTimeMillisNow(&now) < 0) {
+        virObjectUnref(cfg);
         return -1;
+    }
+
     then = now + QEMU_JOB_WAIT_TIME;
 
     virObjectRef(obj);
@@ -780,8 +784,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
         qemuDriverUnlock(driver);
 
 retry:
-    if (driver->max_queued &&
-        priv->jobs_queued > driver->max_queued) {
+    if (cfg->maxQueuedJobs &&
+        priv->jobs_queued > cfg->maxQueuedJobs) {
         goto error;
     }
 
@@ -826,6 +830,7 @@ retry:
     if (qemuDomainTrackJob(job))
         qemuDomainObjSaveJob(driver, obj);
 
+    virObjectUnref(cfg);
     return 0;
 
 error:
@@ -841,8 +846,8 @@ error:
     if (errno == ETIMEDOUT)
         virReportError(VIR_ERR_OPERATION_TIMEOUT,
                        "%s", _("cannot acquire state change lock"));
-    else if (driver->max_queued &&
-             priv->jobs_queued > driver->max_queued)
+    else if (cfg->maxQueuedJobs &&
+             priv->jobs_queued > cfg->maxQueuedJobs)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("cannot acquire state change lock "
                                "due to max_queued limit"));
@@ -856,6 +861,7 @@ error:
         virObjectLock(obj);
     }
     virObjectUnref(obj);
+    virObjectUnref(cfg);
     return -1;
 }
 
@@ -1397,11 +1403,12 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              int logFD)
 {
     int i;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    if (driver->privileged &&
-        (!driver->clearEmulatorCapabilities ||
-         driver->user == 0 ||
-         driver->group == 0))
+    if (cfg->privileged &&
+        (!cfg->clearEmulatorCapabilities ||
+         cfg->user == 0 ||
+         cfg->group == 0))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
 
     if (obj->def->namespaceData) {
@@ -1418,6 +1425,8 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
 
     for (i = 0 ; i < obj->def->nnets ; i++)
         qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
+
+    virObjectUnref(cfg);
 }
 
 
@@ -1426,12 +1435,16 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainDiskDefPtr disk,
                                  int logFD)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
     if ((!disk->format || disk->format == VIR_STORAGE_FILE_AUTO) &&
-        driver->allowDiskFormatProbing)
+        cfg->allowDiskFormatProbing)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
 
     if (disk->rawio == 1)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
+
+    virObjectUnref(cfg);
 }
 
 
@@ -1451,7 +1464,7 @@ void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainOpenLogHelper(virQEMUDriverPtr driver,
+qemuDomainOpenLogHelper(virQEMUDriverConfigPtr cfg,
                         virDomainObjPtr vm,
                         int oflags,
                         mode_t mode)
@@ -1460,7 +1473,7 @@ qemuDomainOpenLogHelper(virQEMUDriverPtr driver,
     int fd = -1;
     bool trunc = false;
 
-    if (virAsprintf(&logfile, "%s/%s.log", driver->logDir, vm->def->name) < 0) {
+    if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -1503,27 +1516,34 @@ int
 qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     bool append)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int oflags;
+    int ret;
 
     oflags = O_CREAT | O_WRONLY;
     /* Only logrotate files in /var/log, so only append if running privileged */
-    if (driver->privileged || append)
+    if (cfg->privileged || append)
         oflags |= O_APPEND;
     else
         oflags |= O_TRUNC;
 
-    return qemuDomainOpenLogHelper(driver, vm, oflags, S_IRUSR | S_IWUSR);
+    ret = qemuDomainOpenLogHelper(cfg, vm, oflags, S_IRUSR | S_IWUSR);
+    virObjectUnref(cfg);
+    return ret;
 }
 
 
 int
 qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm, off_t pos)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int fd;
     off_t off;
     int whence;
 
-    if ((fd = qemuDomainOpenLogHelper(driver, vm, O_RDONLY, 0)) < 0)
+    fd = qemuDomainOpenLogHelper(cfg, vm, O_RDONLY, 0);
+    virObjectUnref(cfg);
+    if (fd < 0)
         return -1;
 
     if (pos < 0) {
@@ -1748,6 +1768,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotObjPtr parentsnap = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
@@ -1764,7 +1785,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
         }
     }
 
-    if (virAsprintf(&snapFile, "%s/%s/%s.xml", driver->snapshotDir,
+    if (virAsprintf(&snapFile, "%s/%s/%s.xml", cfg->snapshotDir,
                     vm->def->name, snap->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
@@ -1780,7 +1801,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
             } else {
                 parentsnap->def->current = true;
                 if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
-                                                    driver->snapshotDir) < 0) {
+                                                    cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",
                              snap->def->parent);
                     parentsnap->def->current = false;
@@ -1799,7 +1820,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FREE(snapFile);
-
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1845,22 +1866,24 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
     char *snapDir;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     /* Remove any snapshot metadata prior to removing the domain */
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
         VIR_WARN("unable to remove all snapshots for domain %s",
                  vm->def->name);
     }
-    else if (virAsprintf(&snapDir, "%s/%s", driver->snapshotDir,
+    else if (virAsprintf(&snapDir, "%s/%s", cfg->snapshotDir,
                          vm->def->name) < 0) {
         VIR_WARN("unable to remove snapshot directory %s/%s",
-                 driver->snapshotDir, vm->def->name);
+                 cfg->snapshotDir, vm->def->name);
     } else {
         if (rmdir(snapDir) < 0 && errno != ENOENT)
             VIR_WARN("unable to remove snapshot directory %s", snapDir);
         VIR_FREE(snapDir);
     }
     virDomainRemoveInactive(&driver->domains, vm);
+    virObjectUnref(cfg);
 }
 
 void
@@ -1869,14 +1892,17 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                         bool value)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (priv->fakeReboot == value)
         return;
 
     priv->fakeReboot = value;
 
-    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
+
+    virObjectUnref(cfg);
 }
 
 int
@@ -1889,6 +1915,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     virDomainDiskDefPtr disk;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virDomainEventPtr event = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virUUIDFormat(vm->def->uuid, uuid);
 
@@ -1899,8 +1926,8 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
             continue;
 
         if (virFileAccessibleAs(disk->src, F_OK,
-                                driver->user,
-                                driver->group) >= 0) {
+                                cfg->user,
+                                cfg->group) >= 0) {
             /* disk accessible */
             continue;
         }
@@ -1946,6 +1973,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
     ret = 0;
 
 cleanup:
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2026,23 +2054,27 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainDiskDefPtr disk,
                              bool force)
 {
-    bool probe = driver->allowDiskFormatProbing;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = 0;
 
     if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
-        return 0;
+        goto cleanup;
 
     if (disk->backingChain) {
         if (force) {
             virStorageFileFreeMetadata(disk->backingChain);
             disk->backingChain = NULL;
         } else {
-            return 0;
+            goto cleanup;
         }
     }
     disk->backingChain = virStorageFileGetMetadata(disk->src, disk->format,
-                                                   driver->user, driver->group,
-                                                   probe);
+                                                   cfg->user, cfg->group,
+                                                   cfg->allowDiskFormatProbing);
     if (!disk->backingChain)
-        return -1;
-    return 0;
+        ret = -1;
+
+cleanup:
+    virObjectUnref(cfg);
+    return ret;
 }

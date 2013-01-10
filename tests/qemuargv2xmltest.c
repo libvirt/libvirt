@@ -116,9 +116,8 @@ mymain(void)
 {
     int ret = 0;
 
+    driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
-    if ((driver.stateDir = strdup("/nowhere")) == NULL)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \
@@ -193,17 +192,8 @@ mymain(void)
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-socket");
 
-    driver.vncSASL = 1;
-    driver.vncSASLdir = strdup("/root/.sasl2");
     DO_TEST("graphics-vnc-sasl");
-    driver.vncTLS = 1;
-    driver.vncTLSx509verify = 1;
-    driver.vncTLSx509certdir = strdup("/etc/pki/tls/qemu");
     DO_TEST("graphics-vnc-tls");
-    driver.vncSASL = driver.vncTLSx509verify = driver.vncTLS = 0;
-    VIR_FREE(driver.vncSASLdir);
-    VIR_FREE(driver.vncTLSx509certdir);
-    driver.vncSASLdir = driver.vncTLSx509certdir = NULL;
 
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
@@ -252,7 +242,7 @@ mymain(void)
 
     DO_TEST_FULL("qemu-ns-no-env", 1, NULL);
 
-    VIR_FREE(driver.stateDir);
+    virObjectUnref(driver.config);
     virCapabilitiesFree(driver.caps);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

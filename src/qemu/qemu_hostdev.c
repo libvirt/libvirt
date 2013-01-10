@@ -410,9 +410,10 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     int last_processed_hostdev_vf = -1;
     int i;
     int ret = -1;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
-        return -1;
+        goto cleanup;
 
     /* We have to use 9 loops here. *All* devices must
      * be detached before we reset any of them, because
@@ -430,7 +431,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
         pciDevice *other;
 
-        if (!pciDeviceIsAssignable(dev, !driver->relaxedACS)) {
+        if (!pciDeviceIsAssignable(dev, !cfg->relaxedACS)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is not assignable"),
                            pciDeviceGetName(dev));
@@ -482,7 +483,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
              if (qemuDomainHostdevNetConfigReplace(hostdev, uuid,
-                                                   driver->stateDir) < 0) {
+                                                   cfg->stateDir) < 0) {
                  goto resetvfnetconfig;
              }
          }
@@ -568,7 +569,7 @@ resetvfnetconfig:
          virDomainHostdevDefPtr hostdev = hostdevs[i];
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
-             qemuDomainHostdevNetConfigRestore(hostdev, driver->stateDir);
+             qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
          }
     }
 
@@ -580,6 +581,7 @@ reattachdevs:
 
 cleanup:
     pciDeviceListFree(pcidevs);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -848,6 +850,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 {
     pciDeviceList *pcidevs;
     int i;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (!(pcidevs = qemuGetActivePciHostDeviceList(driver,
                                                    hostdevs,
@@ -856,7 +859,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : _("unknown error"));
         virResetError(err);
-        return;
+        goto cleanup;
     }
 
     /* Again 4 loops; mark all devices as inactive before reset
@@ -893,7 +896,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
              continue;
          if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
              hostdev->parent.data.net) {
-             qemuDomainHostdevNetConfigRestore(hostdev, driver->stateDir);
+             qemuDomainHostdevNetConfigRestore(hostdev, cfg->stateDir);
          }
     }
 
@@ -914,6 +917,8 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     }
 
     pciDeviceListFree(pcidevs);
+cleanup:
+    virObjectUnref(cfg);
 }
 
 static void
