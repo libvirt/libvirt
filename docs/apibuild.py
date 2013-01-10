@@ -654,17 +654,11 @@ class CParser:
         lines = string.split(comment, "\n")
         item = None
         for line in lines:
-            while line != "" and (line[0] == ' ' or line[0] == '\t'):
-                line = line[1:]
-            while line != "" and line[0] == '*':
-                line = line[1:]
-            while line != "" and (line[0] == ' ' or line[0] == '\t'):
-                line = line[1:]
+            line = line.lstrip().lstrip('*').lstrip()
             try:
                 (it, line) = string.split(line, ":", 1)
                 item = it
-                while line != "" and (line[0] == ' ' or line[0] == '\t'):
-                    line = line[1:]
+                line = line.lstrip()
                 if res.has_key(item):
                     res[item] = res[item] + " " + line
                 else:
