@@ -615,7 +615,11 @@ Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
 %if %{with_avahi}
+%if 0%{?rhel} == 5
+Requires: avahi
+%else
 Requires: avahi-libs
+%endif
 %endif
 %if %{with_network}
 Requires: dnsmasq >= 2.41
