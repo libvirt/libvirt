@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -493,42 +493,30 @@ phypUUIDTable_Push(virConnectPtr conn)
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
     LIBSSH2_CHANNEL *channel = NULL;
-    virBuffer username = VIR_BUFFER_INITIALIZER;
     struct stat local_fileinfo;
     char buffer[1024];
     int rc = 0;
-    FILE *fd = NULL;
+    FILE *f = NULL;
     size_t nread, sent;
     char *ptr;
     char local_file[] = "./uuid_table";
     char *remote_file = NULL;
+    int ret = -1;
 
-    if (conn->uri->user != NULL) {
-        virBufferAdd(&username, conn->uri->user, -1);
-
-        if (virBufferError(&username)) {
-            virBufferFreeAndReset(&username);
-            virReportOOMError();
-            goto err;
-        }
-    }
-
-    if (virAsprintf
-        (&remote_file, "/home/%s/libvirt_uuid_table",
-         virBufferContentAndReset(&username))
-        < 0) {
+    if (virAsprintf(&remote_file, "/home/%s/libvirt_uuid_table",
+                    NULLSTR(conn->uri->user)) < 0) {
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
 
     if (stat(local_file, &local_fileinfo) == -1) {
         VIR_WARN("Unable to stat local file.");
-        goto err;
+        goto cleanup;
     }
 
-    if (!(fd = fopen(local_file, "rb"))) {
+    if (!(f = fopen(local_file, "rb"))) {
         VIR_WARN("Unable to open local file.");
-        goto err;
+        goto cleanup;
     }
 
     do {
@@ -539,18 +527,18 @@ phypUUIDTable_Push(virConnectPtr conn)
 
         if ((!channel) && (libssh2_session_last_errno(session) !=
                            LIBSSH2_ERROR_EAGAIN))
-            goto err;
+            goto cleanup;
     } while (!channel);
 
     do {
-        nread = fread(buffer, 1, sizeof(buffer), fd);
+        nread = fread(buffer, 1, sizeof(buffer), f);
         if (nread <= 0) {
-            if (feof(fd)) {
+            if (feof(f)) {
                 /* end of file */
                 break;
             } else {
                 VIR_ERROR(_("Failed to read from %s"), local_file);
-                goto err;
+                goto cleanup;
             }
         }
         ptr = buffer;
@@ -570,17 +558,9 @@ phypUUIDTable_Push(virConnectPtr conn)
         } while (rc > 0 && sent < nread);
     } while (1);
 
-    if (channel) {
-        libssh2_channel_send_eof(channel);
-        libssh2_channel_wait_eof(channel);
-        libssh2_channel_wait_closed(channel);
-        libssh2_channel_free(channel);
-        channel = NULL;
-    }
-    virBufferFreeAndReset(&username);
-    return 0;
+    ret = 0;
 
-err:
+cleanup:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -588,8 +568,8 @@ err:
         libssh2_channel_free(channel);
         channel = NULL;
     }
-    VIR_FORCE_FCLOSE(fd);
-    return -1;
+    VIR_FORCE_FCLOSE(f);
+    return ret;
 }
 
 static int
@@ -665,7 +645,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     int id;
 
     if ((fd = open(local_file, O_RDONLY)) == -1) {
-        VIR_WARN("Unable to write information to local file.");
+        VIR_WARN("Unable to read information from local file.");
         goto err;
     }
 
@@ -682,13 +662,13 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
                 uuid_table->lpars[i]->id = id;
             } else {
                 VIR_WARN
-                    ("Unable to read from information to local file.");
+                    ("Unable to read from information from local file.");
                 goto err;
             }
 
             rc = read(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN);
             if (rc != VIR_UUID_BUFLEN) {
-                VIR_WARN("Unable to read information to local file.");
+                VIR_WARN("Unable to read information from local file.");
                 goto err;
             }
         }
@@ -709,34 +689,22 @@ phypUUIDTable_Pull(virConnectPtr conn)
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
     LIBSSH2_CHANNEL *channel = NULL;
-    virBuffer username = VIR_BUFFER_INITIALIZER;
     struct stat fileinfo;
     char buffer[1024];
     int rc = 0;
-    int fd;
+    int fd = -1;
     int got = 0;
     int amount = 0;
     int total = 0;
     int sock = 0;
     char local_file[] = "./uuid_table";
     char *remote_file = NULL;
+    int ret = -1;
 
-    if (conn->uri->user != NULL) {
-        virBufferAdd(&username, conn->uri->user, -1);
-
-        if (virBufferError(&username)) {
-            virBufferFreeAndReset(&username);
-            virReportOOMError();
-            goto err;
-        }
-    }
-
-    if (virAsprintf
-        (&remote_file, "/home/%s/libvirt_uuid_table",
-         virBufferContentAndReset(&username))
-        < 0) {
+    if (virAsprintf(&remote_file, "/home/%s/libvirt_uuid_table",
+                    NULLSTR(conn->uri->user)) < 0) {
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
 
     /* Trying to stat the remote file. */
@@ -746,12 +714,12 @@ phypUUIDTable_Pull(virConnectPtr conn)
         if (!channel) {
             if (libssh2_session_last_errno(session) !=
                 LIBSSH2_ERROR_EAGAIN) {
-                goto err;
+                goto cleanup;
             } else {
                 if (waitsocket(sock, session) < 0 && errno != EINTR) {
                     virReportSystemError(errno, "%s",
                                          _("unable to wait on libssh2 socket"));
-                    goto err;
+                    goto cleanup;
                 }
             }
         }
@@ -759,7 +727,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
 
     /* Creating a new data base based on remote file */
     if ((fd = creat(local_file, 0755)) == -1)
-        goto err;
+        goto cleanup;
 
     /* Request a file via SCP */
     while (got < fileinfo.st_size) {
@@ -790,7 +758,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
             if (waitsocket(sock, session) < 0 && errno != EINTR) {
                 virReportSystemError(errno, "%s",
                                      _("unable to wait on libssh2 socket"));
-                goto err;
+                goto cleanup;
             }
             continue;
         }
@@ -799,9 +767,12 @@ phypUUIDTable_Pull(virConnectPtr conn)
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, _("Could not close %s"),
                              local_file);
-        goto err;
+        goto cleanup;
     }
 
+    ret = 0;
+
+cleanup:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
@@ -809,18 +780,8 @@ phypUUIDTable_Pull(virConnectPtr conn)
         libssh2_channel_free(channel);
         channel = NULL;
     }
-    virBufferFreeAndReset(&username);
-    return 0;
-
-err:
-    if (channel) {
-        libssh2_channel_send_eof(channel);
-        libssh2_channel_wait_eof(channel);
-        libssh2_channel_wait_closed(channel);
-        libssh2_channel_free(channel);
-        channel = NULL;
-    }
-    return -1;
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 
 static int
@@ -985,7 +946,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     const char *hostname = conn->uri->server;
     char *username = NULL;
     char *password = NULL;
-    int sock;
+    int sock = -1;
     int rc;
     struct addrinfo *ai = NULL, *cur;
     struct addrinfo hints;
@@ -1135,6 +1096,7 @@ disconnect:
     libssh2_session_disconnect(session, "Disconnecting...");
     libssh2_session_free(session);
 err:
+    VIR_FORCE_CLOSE(sock);
     VIR_FREE(userhome);
     VIR_FREE(pubkey);
     VIR_FREE(pvtkey);
@@ -1191,6 +1153,7 @@ phypOpen(virConnectPtr conn,
         virReportOOMError();
         goto failure;
     }
+    connection_data->sock = -1;
 
     if (conn->uri->path) {
         /* need to shift one byte in order to remove the first "/" of URI component */
@@ -1227,6 +1190,7 @@ phypOpen(virConnectPtr conn,
     }
 
     connection_data->session = session;
+    connection_data->sock = internal_socket;
 
     uuid_table->nlpars = 0;
     uuid_table->lpars = NULL;
@@ -1270,6 +1234,8 @@ failure:
         libssh2_session_free(session);
     }
 
+    if (connection_data)
+        VIR_FORCE_CLOSE(connection_data->sock);
     VIR_FREE(connection_data);
 
     return VIR_DRV_OPEN_ERROR;
@@ -1289,6 +1255,8 @@ phypClose(virConnectPtr conn)
     phypUUIDTable_Free(phyp_driver->uuid_table);
     VIR_FREE(phyp_driver->managed_system);
     VIR_FREE(phyp_driver);
+
+    VIR_FORCE_CLOSE(connection_data->sock);
     VIR_FREE(connection_data);
     return 0;
 }
