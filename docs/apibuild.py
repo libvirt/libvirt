@@ -10,6 +10,7 @@
 import os, sys
 import string
 import glob
+import re
 
 quiet=True
 warnings=0
@@ -655,20 +656,17 @@ class CParser:
         item = None
         for line in lines:
             line = line.lstrip().lstrip('*').lstrip()
-            try:
-                (it, line) = string.split(line, ":", 1)
-                item = it
-                line = line.lstrip()
+
+            m = re.match('([_.a-zA-Z0-9]+):(.*)', line)
+            if m:
+                item = m.group(1)
+                line = m.group(2).lstrip()
+
+            if item:
                 if res.has_key(item):
                     res[item] = res[item] + " " + line
                 else:
                     res[item] = line
-            except:
-                if item != None:
-                    if res.has_key(item):
-                        res[item] = res[item] + " " + line
-                    else:
-                        res[item] = line
         self.index.info = res
 
     def strip_lead_star(self, line):
