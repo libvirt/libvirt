@@ -787,6 +787,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (virAsprintf(&def->memballoon->info.alias, "balloon%d", 0) < 0)
             goto no_memory;
     }
+    if (def->rng) {
+        if (virAsprintf(&def->rng->info.alias, "rng%d", 0) < 0)
+            goto no_memory;
+    }
 
     return 0;
 
@@ -1657,6 +1661,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
         def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->memballoon->info) < 0)
+            goto error;
+    }
+
+    /* VirtIO RNG */
+    if (def->rng &&
+        def->rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
+        def->rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->rng->info) < 0)
             goto error;
     }
 
@@ -4164,6 +4176,82 @@ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
+
+
+static int
+qemuBuildRNGBackendArgs(virCommandPtr cmd,
+                        virDomainRNGDefPtr dev,
+                        virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    switch ((enum virDomainRNGBackend) dev->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the rng-random "
+                             " backend"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, "rng-random,id=%s", dev->info.alias);
+        if (dev->source.file)
+            virBufferAsprintf(&buf, ",filename=%s", dev->source.file);
+
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgBuffer(cmd, &buf);
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("egd RNG backend not yet implemented"));
+        goto cleanup;
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        break;
+    }
+
+    ret = 0;
+
+cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+
+static int
+qemuBuildRNGDeviceArgs(virCommandPtr cmd,
+                       virDomainRNGDefPtr dev,
+                       virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    if (dev->model != VIR_DOMAIN_RNG_MODEL_VIRTIO ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("this qemu doesn't support RNG device type '%s'"),
+                       virDomainRNGModelTypeToString(dev->model));
+        goto cleanup;
+    }
+
+    virBufferAsprintf(&buf, "virtio-rng-pci,rng=%s", dev->info.alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
+        goto cleanup;
+
+    virCommandAddArg(cmd, "-device");
+    virCommandAddArgBuffer(cmd, &buf);
+
+    ret = 0;
+
+cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
 
 static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 {
@@ -7004,6 +7092,16 @@ qemuBuildCommandLine(virConnectPtr conn,
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BALLOON)) {
             virCommandAddArgList(cmd, "-balloon", "virtio", NULL);
         }
+    }
+
+    if (def->rng) {
+        /* add the RNG source backend */
+        if (qemuBuildRNGBackendArgs(cmd, def->rng, qemuCaps) < 0)
+            goto error;
+
+        /* add the device */
+        if (qemuBuildRNGDeviceArgs(cmd, def->rng, qemuCaps) < 0)
+            goto error;
     }
 
     if (snapshot)

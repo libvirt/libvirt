@@ -206,6 +206,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "usb-net",
               "add-fd",
               "nbd-server",
+              "virtio-rng",
+
+              "rng-random", /* 130 */
     );
 
 struct _virQEMUCaps {
@@ -1329,6 +1332,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vmware-svga", QEMU_CAPS_DEVICE_VMWARE_SVGA },
     { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL},
     { "usb-net", QEMU_CAPS_DEVICE_USB_NET},
+    { "virtio-rng-pci", QEMU_CAPS_DEVICE_VIRTIO_RNG },
+    { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
 };
 
 

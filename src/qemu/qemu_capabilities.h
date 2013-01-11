@@ -167,6 +167,9 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_USB_NET     = 126, /* -device usb-net */
     QEMU_CAPS_ADD_FD             = 127, /* -add-fd */
     QEMU_CAPS_NBD_SERVER         = 128, /* nbd-server-start QMP command */
+    QEMU_CAPS_DEVICE_VIRTIO_RNG  = 129, /* virtio-rng device */
+    QEMU_CAPS_OBJECT_RNG_RANDOM  = 130, /* the rng-random backend for
+                                           virtio rng */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
