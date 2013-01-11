@@ -286,6 +286,8 @@ virDomainPMSuspendedReasonTypeFromString;
 virDomainPMSuspendedReasonTypeToString;
 virDomainRedirdevBusTypeFromString;
 virDomainRedirdevBusTypeToString;
+virDomainRNGBackendTypeToString;
+virDomainRNGModelTypeToString;
 virDomainRunningReasonTypeFromString;
 virDomainRunningReasonTypeToString;
 virDomainSaveConfig;

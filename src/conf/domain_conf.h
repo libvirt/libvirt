@@ -114,6 +114,9 @@ typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
 typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
 
+typedef struct _virDomainRNGDef virDomainRNGDef;
+typedef virDomainRNGDef *virDomainRNGDefPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -133,6 +136,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_SMARTCARD,
     VIR_DOMAIN_DEVICE_CHR,
     VIR_DOMAIN_DEVICE_MEMBALLOON,
+    VIR_DOMAIN_DEVICE_RNG,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -158,6 +162,7 @@ struct _virDomainDeviceDef {
         virDomainSmartcardDefPtr smartcard;
         virDomainChrDefPtr chr;
         virDomainMemballoonDefPtr memballoon;
+        virDomainRNGDefPtr rng;
     } data;
 };
 
@@ -1714,6 +1719,33 @@ struct _virBlkioDeviceWeight {
     unsigned int weight;
 };
 
+enum virDomainRNGModel {
+    VIR_DOMAIN_RNG_MODEL_VIRTIO,
+
+    VIR_DOMAIN_RNG_MODEL_LAST
+};
+
+enum virDomainRNGBackend {
+    VIR_DOMAIN_RNG_BACKEND_RANDOM,
+    VIR_DOMAIN_RNG_BACKEND_EGD,
+    /* VIR_DOMAIN_RNG_BACKEND_POOL, */
+
+    VIR_DOMAIN_RNG_BACKEND_LAST
+};
+
+struct _virDomainRNGDef {
+    int model;
+    int backend;
+
+    union {
+        char *file; /* file name for 'random' source */
+        virDomainChrSourceDefPtr chardev; /* a char backend for
+                                             the EGD source */
+    } source;
+
+    virDomainDeviceInfo info;
+};
+
 void virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                     int ndevices);
 
@@ -1852,6 +1884,7 @@ struct _virDomainDef {
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
+    virDomainRNGDefPtr rng;
 
     void *namespaceData;
     virDomainXMLNamespace ns;
@@ -2064,6 +2097,8 @@ int virDomainEmulatorPinAdd(virDomainDefPtr def,
                               int maplen);
 
 int virDomainEmulatorPinDel(virDomainDefPtr def);
+
+void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                              bool allow_ambiguous);
@@ -2325,6 +2360,8 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 VIR_ENUM_DECL(virDomainNumatuneMemPlacementMode)
 VIR_ENUM_DECL(virDomainHyperv)
+VIR_ENUM_DECL(virDomainRNGModel)
+VIR_ENUM_DECL(virDomainRNGBackend)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)

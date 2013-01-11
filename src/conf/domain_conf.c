@@ -175,7 +175,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "redirdev",
               "smartcard",
               "chr",
-              "memballoon")
+              "memballoon",
+              "rng")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -699,6 +700,15 @@ VIR_ENUM_IMPL(virDomainNumatuneMemPlacementMode,
               "default",
               "static",
               "auto");
+
+VIR_ENUM_IMPL(virDomainRNGModel,
+              VIR_DOMAIN_RNG_MODEL_LAST,
+              "virtio");
+
+VIR_ENUM_IMPL(virDomainRNGBackend,
+              VIR_DOMAIN_RNG_BACKEND_LAST,
+              "random",
+              "egd");
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
@@ -1597,6 +1607,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         virDomainRedirdevDefFree(def->data.redirdev);
         break;
+    case VIR_DOMAIN_DEVICE_RNG:
+        virDomainRNGDefFree(def->data.rng);
+        break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
@@ -2342,6 +2355,12 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
         if (cb(def, &device, &def->memballoon->info, opaque) < 0)
             return -1;
     }
+    if (def->rng) {
+        device.type = VIR_DOMAIN_DEVICE_RNG;
+        device.data.rng = def->rng;
+        if (cb(def, &device, &def->rng->info, opaque) < 0)
+            return -1;
+    }
     device.type = VIR_DOMAIN_DEVICE_HUB;
     for (i = 0; i < def->nhubs ; i++) {
         device.data.hub = def->hubs[i];
@@ -2374,6 +2393,7 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_RNG:
         break;
     }
 
@@ -7452,6 +7472,110 @@ error:
 }
 
 
+static virDomainRNGDefPtr
+virDomainRNGDefParseXML(const xmlNodePtr node,
+                        xmlXPathContextPtr ctxt,
+                        unsigned int flags)
+{
+    const char *model = NULL;
+    const char *backend = NULL;
+    const char *type = NULL;
+    virDomainRNGDefPtr def;
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr *backends = NULL;
+    int nbackends;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (!(model = virXMLPropString(node, "model"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing RNG device model"));
+        goto error;
+    }
+
+    if ((def->model = virDomainRNGModelTypeFromString(model)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, _("unknown RNG model '%s'"), model);
+        goto error;
+    }
+
+    ctxt->node = node;
+
+    if ((nbackends = virXPathNodeSet("./backend", ctxt, &backends)) < 0)
+        goto error;
+
+    if (nbackends != 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one RNG backend is supported"));
+        goto error;
+    }
+
+    if (!(backend = virXMLPropString(backends[0], "model"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing RNG device backend model"));
+        goto error;
+    }
+
+    if ((def->backend = virDomainRNGBackendTypeFromString(backend)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown RNG backend model '%s'"), backend);
+        goto error;
+    }
+
+    switch ((enum virDomainRNGBackend) def->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        def->source.file = virXPathString("string(./backend)", ctxt);
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        if (!(type = virXMLPropString(backends[0], "type"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing EGD backend type"));
+            goto error;
+        }
+
+        if (VIR_ALLOC(def->source.chardev) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+
+        def->source.chardev->type = virDomainChrTypeFromString(type);
+        if (def->source.chardev->type < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown backend type '%s' for egd"),
+                           type);
+            goto error;
+        }
+
+        if (virDomainChrSourceDefParseXML(def->source.chardev,
+                                          backends[0]->children, flags,
+                                          NULL, ctxt, NULL, 0) < 0)
+            goto error;
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        break;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(model);
+    VIR_FREE(backend);
+    VIR_FREE(type);
+    VIR_FREE(backends);
+    ctxt->node = save;
+    return def;
+
+error:
+    virDomainRNGDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+
 static virDomainMemballoonDefPtr
 virDomainMemballoonDefParseXML(const xmlNodePtr node,
                                unsigned int flags)
@@ -8248,6 +8372,10 @@ virDomainDeviceDefParse(virCapsPtr caps,
     } else if (xmlStrEqual(node->name, BAD_CAST "redirdev")) {
         dev->type = VIR_DOMAIN_DEVICE_REDIRDEV;
         if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, NULL, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "rng")) {
+        dev->type = VIR_DOMAIN_DEVICE_RNG;
+        if (!(dev->data.rng = virDomainRNGDefParseXML(node, ctxt, flags)))
             goto error;
     } else {
         virReportError(VIR_ERR_XML_ERROR,
@@ -10601,6 +10729,22 @@ virDomainDefParseXML(virCapsPtr caps,
                 VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
             def->memballoon = memballoon;
         }
+    }
+
+    /* Parse the RNG device */
+    if ((n = virXPathNodeSet("./devices/rng", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single RNG device is supported"));
+        goto error;
+    }
+
+    if (n > 0) {
+        if (!(def->rng = virDomainRNGDefParseXML(nodes[0], ctxt, flags)))
+            goto error;
+        VIR_FREE(nodes);
     }
 
     /* analysis of the hub devices */
@@ -13625,6 +13769,63 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainRNGDefFormat(virBufferPtr buf,
+                      virDomainRNGDefPtr def,
+                      unsigned int flags)
+{
+    const char *model = virDomainRNGModelTypeToString(def->model);
+    const char *backend = virDomainRNGBackendTypeToString(def->backend);
+
+    virBufferAsprintf(buf, "    <rng model='%s'>\n", model);
+    virBufferAsprintf(buf, "      <backend model='%s'", backend);
+
+    switch ((enum virDomainRNGBackend) def->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        if (def->source.file)
+            virBufferEscapeString(buf, ">%s</backend>\n", def->source.file);
+        else
+            virBufferAddLit(buf, "/>\n");
+
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        virBufferAdjustIndent(buf, 2);
+        if (virDomainChrSourceDefFormat(buf, def->source.chardev,
+                                        false, flags) < 0)
+            return -1;
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "      </backend>\n");
+
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        break;
+    }
+
+    virBufferAddLit(buf, "    </rng>\n");
+
+    return 0;
+}
+
+void
+virDomainRNGDefFree(virDomainRNGDefPtr def)
+{
+    if (!def)
+        return;
+
+    switch ((enum virDomainRNGBackend) def->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        VIR_FREE(def->source.file);
+        break;
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+        virDomainChrSourceDefFree(def->source.chardev);
+        break;
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        break;
+    }
+
+    VIR_FREE(def);
+}
+
 static void
 virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
@@ -14817,6 +15018,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->memballoon)
         virDomainMemballoonDefFormat(buf, def->memballoon, flags);
+
+    if (def->rng)
+        virDomainRNGDefFormat(buf, def->rng, flags);
 
     virBufferAddLit(buf, "  </devices>\n");
 
@@ -16087,6 +16291,9 @@ virDomainDeviceDefCopy(virCapsPtr caps,
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         rc = virDomainRedirdevDefFormat(&buf, src->data.redirdev, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_RNG:
+        rc = virDomainRNGDefFormat(&buf, src->data.rng, flags);
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
