@@ -3353,23 +3353,21 @@ error:
     virObjectUnref(cfg);
 }
 
-static void
-qemuProcessReconnectHelper(void *payload,
-                           const void *name ATTRIBUTE_UNUSED,
+static int
+qemuProcessReconnectHelper(virDomainObjPtr obj,
                            void *opaque)
 {
     virThread thread;
     struct qemuProcessReconnectData *src = opaque;
     struct qemuProcessReconnectData *data;
-    virDomainObjPtr obj = payload;
 
     if (VIR_ALLOC(data) < 0) {
         virReportOOMError();
-        return;
+        return -1;
     }
 
     memcpy(data, src, sizeof(*data));
-    data->payload = payload;
+    data->payload = obj;
 
     /* This iterator is called with driver being locked.
      * We create a separate thread to run qemuProcessReconnect in it.
@@ -3430,10 +3428,11 @@ qemuProcessReconnectHelper(void *payload,
 
     virObjectUnlock(obj);
 
-    return;
+    return 0;
 
 error:
     VIR_FREE(data);
+    return -1;
 }
 
 /**
@@ -3446,7 +3445,7 @@ void
 qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
 {
     struct qemuProcessReconnectData data = {.conn = conn, .driver = driver};
-    virHashForEach(driver->domains->objs, qemuProcessReconnectHelper, &data);
+    virDomainObjListForEach(driver->domains, qemuProcessReconnectHelper, &data);
 }
 
 int

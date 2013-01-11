@@ -98,12 +98,12 @@ struct _libxlEventHookInfo {
 };
 
 static virClassPtr libxlDomainObjPrivateClass;
+
 static libxlDriverPrivatePtr libxl_driver = NULL;
 
 /* Function declarations */
-static void
-libxlDomainManagedSaveLoad(void *payload,
-                           const void *n ATTRIBUTE_UNUSED,
+static int
+libxlDomainManagedSaveLoad(virDomainObjPtr vm,
                            void *opaque);
 
 static int
@@ -433,13 +433,13 @@ libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
     virDomainEventStateQueue(driver->domainEventState, event);
 }
 
-static void
-libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
+static int
+libxlAutostartDomain(virDomainObjPtr vm,
                      void *opaque)
 {
     libxlDriverPrivatePtr driver = opaque;
-    virDomainObjPtr vm = payload;
     virErrorPtr err;
+    int ret = -1;
 
     virObjectLock(vm);
     virResetLastError();
@@ -450,10 +450,14 @@ libxlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
         VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                   vm->def->name,
                   err ? err->message : _("unknown error"));
+        goto cleanup;
     }
 
+    ret = 0;
+cleanup:
     if (vm)
         virObjectUnlock(vm);
+    return ret;
 }
 
 static int
@@ -1005,12 +1009,10 @@ error:
  * Reconnect to running domains that were previously started/created
  * with libxenlight driver.
  */
-static void
-libxlReconnectDomain(void *payload,
-                     const void *name ATTRIBUTE_UNUSED,
+static int
+libxlReconnectDomain(virDomainObjPtr vm,
                      void *opaque)
 {
-    virDomainObjPtr vm = payload;
     libxlDriverPrivatePtr driver = opaque;
     int rc;
     libxl_dominfo d_info;
@@ -1047,7 +1049,7 @@ libxlReconnectDomain(void *payload,
     /* Recreate domain death et. al. events */
     libxlCreateDomEvents(vm);
     virObjectUnlock(vm);
-    return;
+    return 0;
 
 out:
     libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
@@ -1055,12 +1057,14 @@ out:
         virDomainObjListRemove(driver->domains, vm);
     else
         virObjectUnlock(vm);
+
+    return -1;
 }
 
 static void
 libxlReconnectDomains(libxlDriverPrivatePtr driver)
 {
-    virHashForEach(driver->domains->objs, libxlReconnectDomain, driver);
+    virDomainObjListForEach(driver->domains, libxlReconnectDomain, driver);
 }
 
 static int
@@ -1071,7 +1075,7 @@ libxlShutdown(void)
 
     libxlDriverLock(libxl_driver);
     virCapabilitiesFree(libxl_driver->caps);
-    virDomainObjListFree(libxl_driver->domains);
+    virObjectUnref(libxl_driver->domains);
     libxl_ctx_free(libxl_driver->ctx);
     xtl_logger_destroy(libxl_driver->logger);
     if (libxl_driver->logger_file)
@@ -1252,11 +1256,11 @@ libxlStartup(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
-    virHashForEach(libxl_driver->domains->objs, libxlAutostartDomain,
-                   libxl_driver);
+    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
+                            libxl_driver);
 
-    virHashForEach(libxl_driver->domains->objs, libxlDomainManagedSaveLoad,
-                   libxl_driver);
+    virDomainObjListForEach(libxl_driver->domains, libxlDomainManagedSaveLoad,
+                            libxl_driver);
 
     libxlDriverUnlock(libxl_driver);
 
@@ -1288,8 +1292,8 @@ libxlReload(void)
                                    1, 1 << VIR_DOMAIN_VIRT_XEN,
                                    NULL, libxl_driver);
 
-    virHashForEach(libxl_driver->domains->objs, libxlAutostartDomain,
-                   libxl_driver);
+    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
+                            libxl_driver);
 
     libxlDriverUnlock(libxl_driver);
 
@@ -2406,14 +2410,13 @@ cleanup:
     return ret;
 }
 
-static void
-libxlDomainManagedSaveLoad(void *payload,
-                           const void *n ATTRIBUTE_UNUSED,
+static int
+libxlDomainManagedSaveLoad(virDomainObjPtr vm,
                            void *opaque)
 {
-    virDomainObjPtr vm = payload;
     libxlDriverPrivatePtr driver = opaque;
     char *name;
+    int ret = -1;
 
     virObjectLock(vm);
 
@@ -2422,9 +2425,11 @@ libxlDomainManagedSaveLoad(void *payload,
 
     vm->hasManagedSave = virFileExists(name);
 
+    ret = 0;
 cleanup:
     virObjectUnlock(vm);
     VIR_FREE(name);
+    return ret;
 }
 
 static int

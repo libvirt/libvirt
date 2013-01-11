@@ -37,7 +37,6 @@
 # include "virhash.h"
 # include "virsocketaddr.h"
 # include "nwfilter_params.h"
-# include "nwfilter_conf.h"
 # include "virnetdevmacvlan.h"
 # include "virsysinfo.h"
 # include "virnetdevvportprofile.h"
@@ -1893,11 +1892,6 @@ struct _virDomainObj {
 
 typedef struct _virDomainObjList virDomainObjList;
 typedef virDomainObjList *virDomainObjListPtr;
-struct _virDomainObjList {
-    /* uuid string -> virDomainObj  mapping
-     * for O(1), lockless lookup-by-uuid */
-    virHashTable *objs;
-};
 
 static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
@@ -1908,7 +1902,6 @@ virDomainObjIsActive(virDomainObjPtr dom)
 virDomainObjPtr virDomainObjNew(virCapsPtr caps);
 
 virDomainObjListPtr virDomainObjListNew(void);
-void virDomainObjListFree(virDomainObjListPtr objs);
 
 virDomainObjPtr virDomainObjListFindByID(const virDomainObjListPtr doms,
                                          int id);
@@ -2175,6 +2168,13 @@ int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
 int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                      char **const names,
                                      int maxnames);
+
+typedef int (*virDomainObjListIterator)(virDomainObjPtr dom,
+                                        void *opaque);
+
+int virDomainObjListForEach(virDomainObjListPtr doms,
+                            virDomainObjListIterator callback,
+                            void *opaque);
 
 typedef int (*virDomainSmartcardDefIterator)(virDomainDefPtr def,
                                              virDomainSmartcardDefPtr dev,

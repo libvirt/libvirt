@@ -1150,16 +1150,15 @@ virNWFilterTeardownFilter(const virDomainNetDefPtr net)
 }
 
 
-void
-virNWFilterDomainFWUpdateCB(void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
+int
+virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
                             void *data)
 {
-    virDomainObjPtr obj = payload;
     virDomainDefPtr vm = obj->def;
     struct domUpdateCBStruct *cb = data;
-    int i, err;
+    int i;
     bool skipIface;
+    int ret = 0;
 
     virObjectLock(obj);
 
@@ -1169,45 +1168,46 @@ virNWFilterDomainFWUpdateCB(void *payload,
             if ((net->filter) && (net->ifname)) {
                 switch (cb->step) {
                 case STEP_APPLY_NEW:
-                    cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
-                                                                 vm->uuid,
-                                                                 net,
-                                                                 &skipIface);
-                    if (cb->err == 0 && skipIface) {
+                    ret = virNWFilterUpdateInstantiateFilter(cb->conn,
+                                                             vm->uuid,
+                                                             net,
+                                                             &skipIface);
+                    if (ret == 0 && skipIface) {
                         /* filter tree unchanged -- no update needed */
-                        cb->err = virHashAddEntry(cb->skipInterfaces,
-                                                  net->ifname,
-                                                  (void *)~0);
+                        ret = virHashAddEntry(cb->skipInterfaces,
+                                              net->ifname,
+                                              (void *)~0);
                     }
                     break;
 
                 case STEP_TEAR_NEW:
                     if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
-                        cb->err = virNWFilterRollbackUpdateFilter(net);
+                        ret = virNWFilterRollbackUpdateFilter(net);
                     }
                     break;
 
                 case STEP_TEAR_OLD:
                     if (!virHashLookup(cb->skipInterfaces, net->ifname)) {
-                        cb->err = virNWFilterTearOldFilter(net);
+                        ret = virNWFilterTearOldFilter(net);
                     }
                     break;
 
                 case STEP_APPLY_CURRENT:
-                    err = virNWFilterInstantiateFilter(cb->conn,
+                    ret = virNWFilterInstantiateFilter(cb->conn,
                                                        vm->uuid,
                                                        net);
-                    if (err)
+                    if (ret)
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Failure while applying current filter on "
                                          "VM %s"), vm->name);
                     break;
                 }
-                if (cb->err)
+                if (ret)
                     break;
             }
         }
     }
 
     virObjectUnlock(obj);
+    return ret;
 }

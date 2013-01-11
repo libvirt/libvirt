@@ -79,6 +79,7 @@
 #include "cpu/cpu.h"
 #include "virsysinfo.h"
 #include "domain_nwfilter.h"
+#include "nwfilter_conf.h"
 #include "virhook.h"
 #include "virstoragefile.h"
 #include "virfile.h"
@@ -144,9 +145,8 @@ static int qemuDomainObjStart(virConnectPtr conn,
 
 static int qemuDomainGetMaxVcpus(virDomainPtr dom);
 
-static void qemuDomainManagedSaveLoad(void *payload,
-                                      const void *n ATTRIBUTE_UNUSED,
-                                      void *opaque);
+static int qemuDomainManagedSaveLoad(virDomainObjPtr vm,
+                                     void *opaque);
 
 
 virQEMUDriverPtr qemu_driver = NULL;
@@ -166,11 +166,9 @@ qemuVMDriverUnlock(void) {
 
 static int
 qemuVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    virHashIterator iter, void *data)
+                    virDomainObjListIterator iter, void *data)
 {
-    virHashForEach(qemu_driver->domains->objs, iter, data);
-
-    return 0;
+    return virDomainObjListForEach(qemu_driver->domains, iter, data);
 }
 
 static virNWFilterCallbackDriver qemuCallbackDriver = {
@@ -278,15 +276,15 @@ qemuSnapObjFromSnapshot(virDomainObjPtr vm,
     return qemuSnapObjFromName(vm, snapshot->name);
 }
 
-static void
-qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
+static int
+qemuAutostartDomain(virDomainObjPtr vm,
                     void *opaque)
 {
-    virDomainObjPtr vm = payload;
     struct qemuAutostartData *data = opaque;
     virErrorPtr err;
     int flags = 0;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(data->driver);
+    int ret = -1;
 
     if (cfg->autoStartBypassCache)
         flags |= VIR_DOMAIN_START_BYPASS_CACHE;
@@ -315,10 +313,12 @@ qemuAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED,
             vm = NULL;
     }
 
+    ret = 0;
 cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);
+    return ret;
 }
 
 
@@ -336,7 +336,7 @@ qemuAutostartDomains(virQEMUDriverPtr driver)
     struct qemuAutostartData data = { driver, conn };
 
     qemuDriverLock(driver);
-    virHashForEach(driver->domains->objs, qemuAutostartDomain, &data);
+    virDomainObjListForEach(driver->domains, qemuAutostartDomain, &data);
     qemuDriverUnlock(driver);
 
     if (conn)
@@ -489,18 +489,15 @@ err_exit:
 }
 
 
-static void
-qemuDomainSnapshotLoad(void *payload,
-                       const void *name ATTRIBUTE_UNUSED,
+static int
+qemuDomainSnapshotLoad(virDomainObjPtr vm,
                        void *data)
 {
-    virDomainObjPtr vm = (virDomainObjPtr)payload;
     char *baseDir = (char *)data;
     char *snapDir = NULL;
     DIR *dir = NULL;
     struct dirent *entry;
     char *xmlStr;
-    int ret;
     char *fullpath;
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
@@ -509,6 +506,7 @@ qemuDomainSnapshotLoad(void *payload,
     unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
+    int ret = -1;
 
     virObjectLock(vm);
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
@@ -541,8 +539,7 @@ qemuDomainSnapshotLoad(void *payload,
             continue;
         }
 
-        ret = virFileReadAll(fullpath, 1024*1024*1, &xmlStr);
-        if (ret < 0) {
+        if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
             VIR_ERROR(_("Failed to read snapshot file %s: %s"), fullpath,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
@@ -596,21 +593,21 @@ qemuDomainSnapshotLoad(void *payload,
 
     virResetLastError();
 
+    ret = 0;
 cleanup:
     if (dir)
         closedir(dir);
     VIR_FREE(snapDir);
     virObjectUnlock(vm);
+    return ret;
 }
 
 
-static void
-qemuDomainNetsRestart(void *payload,
-                      const void *name ATTRIBUTE_UNUSED,
+static int
+qemuDomainNetsRestart(virDomainObjPtr vm,
                       void *data ATTRIBUTE_UNUSED)
 {
     int i;
-    virDomainObjPtr vm = (virDomainObjPtr)payload;
     virDomainDefPtr def = vm->def;
 
     virObjectLock(vm);
@@ -631,19 +628,20 @@ qemuDomainNetsRestart(void *payload,
     }
 
     virObjectUnlock(vm);
+    return 0;
 }
 
 
-static void
-qemuDomainFindMaxID(void *payload,
-                    const void *name ATTRIBUTE_UNUSED,
+static int
+qemuDomainFindMaxID(virDomainObjPtr vm,
                     void *data)
 {
-    virDomainObjPtr vm = payload;
     int *driver_maxid = data;
 
     if (vm->def->id >= *driver_maxid)
         *driver_maxid = vm->def->id + 1;
+
+    return 0;
 }
 
 
@@ -874,11 +872,13 @@ qemuStartup(bool privileged,
     /* find the maximum ID from active and transient configs to initialize
      * the driver with. This is to avoid race between autostart and reconnect
      * threads */
-    virHashForEach(qemu_driver->domains->objs,
-                   qemuDomainFindMaxID,
-                   &qemu_driver->nextvmid);
+    virDomainObjListForEach(qemu_driver->domains,
+                            qemuDomainFindMaxID,
+                            &qemu_driver->nextvmid);
 
-    virHashForEach(qemu_driver->domains->objs, qemuDomainNetsRestart, NULL);
+    virDomainObjListForEach(qemu_driver->domains,
+                            qemuDomainNetsRestart,
+                            NULL);
 
     conn = virConnectOpen(cfg->uri);
 
@@ -894,13 +894,13 @@ qemuStartup(bool privileged,
         goto error;
 
 
-    virHashForEach(qemu_driver->domains->objs,
-                   qemuDomainSnapshotLoad,
-                   cfg->snapshotDir);
+    virDomainObjListForEach(qemu_driver->domains,
+                            qemuDomainSnapshotLoad,
+                            cfg->snapshotDir);
 
-    virHashForEach(qemu_driver->domains->objs,
-                   qemuDomainManagedSaveLoad,
-                   qemu_driver);
+    virDomainObjListForEach(qemu_driver->domains,
+                            qemuDomainManagedSaveLoad,
+                            qemu_driver);
 
     qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, processWatchdogEvent, qemu_driver);
     if (!qemu_driver->workerPool)
@@ -1054,7 +1054,7 @@ qemuShutdown(void) {
     virCapabilitiesFree(qemu_driver->caps);
     qemuCapsCacheFree(qemu_driver->capsCache);
 
-    virDomainObjListFree(qemu_driver->domains);
+    virObjectUnref(qemu_driver->domains);
     virObjectUnref(qemu_driver->remotePorts);
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
@@ -3128,14 +3128,13 @@ cleanup:
     return ret;
 }
 
-static void
-qemuDomainManagedSaveLoad(void *payload,
-                          const void *n ATTRIBUTE_UNUSED,
+static int
+qemuDomainManagedSaveLoad(virDomainObjPtr vm,
                           void *opaque)
 {
-    virDomainObjPtr vm = payload;
     virQEMUDriverPtr driver = opaque;
     char *name;
+    int ret = -1;
 
     virObjectLock(vm);
 
@@ -3144,10 +3143,13 @@ qemuDomainManagedSaveLoad(void *payload,
 
     vm->hasManagedSave = virFileExists(name);
 
+    ret = 0;
 cleanup:
     virObjectUnlock(vm);
     VIR_FREE(name);
+    return ret;
 }
+
 
 static int
 qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)

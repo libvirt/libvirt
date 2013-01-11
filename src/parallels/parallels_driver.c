@@ -940,7 +940,7 @@ parallelsOpenDefault(virConnectPtr conn)
     return VIR_DRV_OPEN_SUCCESS;
 
   error:
-    virDomainObjListFree(privconn->domains);
+    virObjectUnref(privconn->domains);
     virCapabilitiesFree(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn);
@@ -987,7 +987,7 @@ parallelsClose(virConnectPtr conn)
 
     parallelsDriverLock(privconn);
     virCapabilitiesFree(privconn->caps);
-    virDomainObjListFree(privconn->domains);
+    virObjectUnref(privconn->domains);
     conn->privateData = NULL;
 
     parallelsDriverUnlock(privconn);

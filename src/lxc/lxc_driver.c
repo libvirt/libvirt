@@ -58,6 +58,7 @@
 #include "fdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
+#include "nwfilter_conf.h"
 #include "network/bridge_driver.h"
 #include "virinitctl.h"
 #include "virnetdev.h"
@@ -82,11 +83,9 @@ virLXCDriverPtr lxc_driver = NULL;
 /* callbacks for nwfilter */
 static int
 lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virHashIterator iter, void *data)
+                   virDomainObjListIterator iter, void *data)
 {
-    virHashForEach(lxc_driver->domains->objs, iter, data);
-
-    return 0;
+    return virDomainObjListForEach(lxc_driver->domains, iter, data);
 }
 
 static void
@@ -1556,7 +1555,7 @@ static int lxcShutdown(void)
 
     lxcDriverLock(lxc_driver);
     virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
-    virDomainObjListFree(lxc_driver->domains);
+    virObjectUnref(lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
 
     virLXCProcessAutoDestroyShutdown(lxc_driver);

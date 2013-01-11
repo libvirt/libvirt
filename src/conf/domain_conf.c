@@ -58,6 +58,15 @@
  * verify that it doesn't overflow an unsigned int when shifting */
 verify(VIR_DOMAIN_VIRT_LAST <= 32);
 
+
+struct _virDomainObjList {
+    virObjectLockable parent;
+
+    /* uuid string -> virDomainObj  mapping
+     * for O(1), lockless lookup-by-uuid */
+    virHashTable *objs;
+};
+
 /* Private flags used internally by virDomainSaveStatus and
  * virDomainLoadStatus. */
 typedef enum {
@@ -694,7 +703,9 @@ VIR_ENUM_IMPL(virDomainNumatuneMemPlacementMode,
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
 
 static virClassPtr virDomainObjClass;
+static virClassPtr virDomainObjListClass;
 static void virDomainObjDispose(void *obj);
+static void virDomainObjListDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
@@ -702,6 +713,12 @@ static int virDomainObjOnceInit(void)
                                           "virDomainObj",
                                           sizeof(virDomainObj),
                                           virDomainObjDispose)))
+        return -1;
+
+    if (!(virDomainObjListClass = virClassNew(virClassForObjectLockable(),
+                                              "virDomainObjList",
+                                              sizeof(virDomainObjList),
+                                              virDomainObjListDispose)))
         return -1;
 
     return 0;
@@ -780,26 +797,26 @@ virDomainObjListPtr virDomainObjListNew(void)
 {
     virDomainObjListPtr doms;
 
-    if (VIR_ALLOC(doms) < 0) {
-        virReportOOMError();
+    if (virDomainObjInitialize() < 0)
+        return NULL;
+
+    if (!(doms = virObjectLockableNew(virDomainObjListClass)))
+        return NULL;
+
+    if (!(doms->objs = virHashCreate(50, virDomainObjListDataFree))) {
+        virObjectUnref(doms);
         return NULL;
     }
 
-    doms->objs = virHashCreate(50, virDomainObjListDataFree);
-    if (!doms->objs) {
-        VIR_FREE(doms);
-        return NULL;
-    }
     return doms;
 }
 
 
-void virDomainObjListFree(virDomainObjListPtr doms)
+static void virDomainObjListDispose(void *obj)
 {
-    if (!doms)
-        return;
+    virDomainObjListPtr doms = obj;
+
     virHashFree(doms->objs);
-    VIR_FREE(doms);
 }
 
 
@@ -15230,6 +15247,37 @@ cleanup:
         VIR_FREE(data.names[i]);
     return -1;
 }
+
+
+struct virDomainListIterData {
+    virDomainObjListIterator callback;
+    void *opaque;
+    int ret;
+};
+
+static void
+virDomainObjListHelper(void *payload,
+                       const void *name ATTRIBUTE_UNUSED,
+                       void *opaque)
+{
+    struct virDomainListIterData *data = opaque;
+
+    if (data->callback(payload, data->opaque) < 0)
+        data->ret = -1;
+}
+
+int virDomainObjListForEach(virDomainObjListPtr doms,
+                            virDomainObjListIterator callback,
+                            void *opaque)
+{
+    struct virDomainListIterData data = {
+        callback, opaque, 0,
+    };
+    virHashForEach(doms->objs, virDomainObjListHelper, &data);
+
+    return data.ret;
+}
+
 
 int virDomainChrDefForeach(virDomainDefPtr def,
                            bool abortOnError,

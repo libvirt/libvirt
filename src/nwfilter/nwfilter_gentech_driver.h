@@ -23,6 +23,8 @@
 #ifndef __NWFILTER_GENTECH_DRIVER_H
 # define __NWFILTER_GENTECH_DRIVER_H
 
+# include "nwfilter_conf.h"
+
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 
 int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
@@ -60,8 +62,7 @@ int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
                                        const virNWFilterVarValuePtr);
 
-void virNWFilterDomainFWUpdateCB(void *payload,
-                                 const void *name,
-                                 void *data);
+int virNWFilterDomainFWUpdateCB(virDomainObjPtr vm,
+                                void *data);
 
 #endif

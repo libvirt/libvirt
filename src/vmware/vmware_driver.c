@@ -946,19 +946,19 @@ vmwareDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     return xml;
 }
 
-static void vmwareDomainObjListUpdateDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
+static int vmwareDomainObjListUpdateDomain(virDomainObjPtr dom, void *data)
 {
     struct vmware_driver *driver = data;
-    virDomainObjPtr vm = payload;
-    virObjectLock(vm);
-    ignore_value(vmwareUpdateVMStatus(driver, vm));
-    virObjectUnlock(vm);
+    virObjectLock(dom);
+    ignore_value(vmwareUpdateVMStatus(driver, dom));
+    virObjectUnlock(dom);
+    return 0;
 }
 
 static void
 vmwareDomainObjListUpdateAll(virDomainObjListPtr doms, struct vmware_driver *driver)
 {
-    virHashForEach(doms->objs, vmwareDomainObjListUpdateDomain, driver);
+    virDomainObjListForEach(doms, vmwareDomainObjListUpdateDomain, driver);
 }
 
 static int

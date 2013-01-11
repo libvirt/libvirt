@@ -58,6 +58,7 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "domain_nwfilter.h"
+#include "nwfilter_conf.h"
 #include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
@@ -148,11 +149,9 @@ static struct uml_driver *uml_driver = NULL;
 
 static int
 umlVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virHashIterator iter, void *data)
+                   virDomainObjListIterator iter, void *data)
 {
-    virHashForEach(uml_driver->domains->objs, iter, data);
-
-    return 0;
+    return virDomainObjListForEach(uml_driver->domains, iter, data);
 }
 
 static void
@@ -179,16 +178,15 @@ struct umlAutostartData {
     virConnectPtr conn;
 };
 
-static void
-umlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static int
+umlAutostartDomain(virDomainObjPtr vm,
+                   void *opaque)
 {
-    virDomainObjPtr vm = payload;
     const struct umlAutostartData *data = opaque;
-
+    int ret = 0;
     virObjectLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        int ret;
         virResetLastError();
         ret = umlStartVMDaemon(data->conn, data->driver, vm, false);
         virDomainAuditStart(vm, "booted", ret >= 0);
@@ -206,6 +204,7 @@ umlAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaqu
         }
     }
     virObjectUnlock(vm);
+    return ret;
 }
 
 static void
@@ -223,7 +222,7 @@ umlAutostartConfigs(struct uml_driver *driver) {
     struct umlAutostartData data = { driver, conn };
 
     umlDriverLock(driver);
-    virHashForEach(driver->domains->objs, umlAutostartDomain, &data);
+    virDomainObjListForEach(driver->domains, umlAutostartDomain, &data);
     umlDriverUnlock(driver);
 
     if (conn)
@@ -602,10 +601,9 @@ umlReload(void) {
 }
 
 
-static void
-umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static int
+umlShutdownOneVM(virDomainObjPtr dom, void *opaque)
 {
-    virDomainObjPtr dom = payload;
     struct uml_driver *driver = opaque;
 
     virObjectLock(dom);
@@ -614,6 +612,7 @@ umlShutdownOneVM(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
         virDomainAuditStop(dom, "shutdown");
     }
     virObjectUnlock(dom);
+    return 0;
 }
 
 /**
@@ -635,9 +634,9 @@ umlShutdown(void) {
 
     /* shutdown active VMs
      * XXX allow them to stay around & reconnect */
-    virHashForEach(uml_driver->domains->objs, umlShutdownOneVM, uml_driver);
+    virDomainObjListForEach(uml_driver->domains, umlShutdownOneVM, uml_driver);
 
-    virDomainObjListFree(uml_driver->domains);
+    virObjectUnref(uml_driver->domains);
 
     virDomainEventStateFree(uml_driver->domainEventState);
 

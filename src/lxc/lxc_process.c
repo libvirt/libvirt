@@ -1246,17 +1246,18 @@ struct virLXCProcessAutostartData {
     virConnectPtr conn;
 };
 
-static void
-virLXCProcessAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static int
+virLXCProcessAutostartDomain(virDomainObjPtr vm,
+                             void *opaque)
 {
-    virDomainObjPtr vm = payload;
     const struct virLXCProcessAutostartData *data = opaque;
+    int ret = 0;
 
     virObjectLock(vm);
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        int ret = virLXCProcessStart(data->conn, data->driver, vm, false,
-                             VIR_DOMAIN_RUNNING_BOOTED);
+        ret = virLXCProcessStart(data->conn, data->driver, vm, false,
+                                 VIR_DOMAIN_RUNNING_BOOTED);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
@@ -1273,6 +1274,7 @@ virLXCProcessAutostartDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
         }
     }
     virObjectUnlock(vm);
+    return ret;
 }
 
 
@@ -1290,19 +1292,22 @@ virLXCProcessAutostartAll(virLXCDriverPtr driver)
     struct virLXCProcessAutostartData data = { driver, conn };
 
     lxcDriverLock(driver);
-    virHashForEach(driver->domains->objs, virLXCProcessAutostartDomain, &data);
+    virDomainObjListForEach(driver->domains,
+                            virLXCProcessAutostartDomain,
+                            &data);
     lxcDriverUnlock(driver);
 
     if (conn)
         virConnectClose(conn);
 }
 
-static void
-virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static int
+virLXCProcessReconnectDomain(virDomainObjPtr vm,
+                             void *opaque)
 {
-    virDomainObjPtr vm = payload;
     virLXCDriverPtr driver = opaque;
     virLXCDomainObjPrivatePtr priv;
+    int ret = -1;
 
     virObjectLock(vm);
     VIR_DEBUG("Reconnect id=%d pid=%d state=%d", vm->def->id, vm->pid, vm->state.state);
@@ -1346,9 +1351,10 @@ virLXCProcessReconnectDomain(void *payload, const void *name ATTRIBUTE_UNUSED, v
         vm->def->id = -1;
     }
 
+    ret = 0;
 cleanup:
     virObjectUnlock(vm);
-    return;
+    return ret;
 
 error:
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
@@ -1360,6 +1366,6 @@ error:
 int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms)
 {
-    virHashForEach(doms->objs, virLXCProcessReconnectDomain, driver);
+    virDomainObjListForEach(doms, virLXCProcessReconnectDomain, driver);
     return 0;
 }

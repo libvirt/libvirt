@@ -646,7 +646,7 @@ static int testOpenDefault(virConnectPtr conn) {
     return VIR_DRV_OPEN_SUCCESS;
 
 error:
-    virDomainObjListFree(privconn->domains);
+    virObjectUnref(privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
@@ -1115,7 +1115,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(ifaces);
     VIR_FREE(pools);
     VIR_FREE(devs);
-    virDomainObjListFree(privconn->domains);
+    virObjectUnref(privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
@@ -1184,7 +1184,7 @@ static int testClose(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     testDriverLock(privconn);
     virCapabilitiesFree(privconn->caps);
-    virDomainObjListFree(privconn->domains);
+    virObjectUnref(privconn->domains);
     virNodeDeviceObjListFree(&privconn->devs);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);

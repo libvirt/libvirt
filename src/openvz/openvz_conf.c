@@ -558,7 +558,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     if (!driver)
         return;
 
-    virDomainObjListFree(driver->domains);
+    virObjectUnref(driver->domains);
     virCapabilitiesFree(driver->caps);
     VIR_FREE(driver);
 }
@@ -570,6 +570,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     char *status;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr dom = NULL;
+    virDomainDefPtr def = NULL;
     char *temp = NULL;
     char *outbuf = NULL;
     char *line;
@@ -594,35 +595,20 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         }
         *line++ = '\0';
 
-        if (!(dom = virDomainObjNew(driver->caps)))
-             goto cleanup;
-
-        if (VIR_ALLOC(dom->def) < 0)
+        if (VIR_ALLOC(def) < 0)
             goto no_memory;
 
-        dom->def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
+        def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
 
-        if (STREQ(status, "stopped")) {
-            virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
-                                 VIR_DOMAIN_SHUTOFF_UNKNOWN);
-        } else {
-            virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
-                                 VIR_DOMAIN_RUNNING_UNKNOWN);
-        }
-
-        dom->pid = veid;
-        if (virDomainObjGetState(dom, NULL) == VIR_DOMAIN_SHUTOFF)
-            dom->def->id = -1;
+        if (STREQ(status, "stopped"))
+            def->id = -1;
         else
-            dom->def->id = veid;
-        /* XXX OpenVZ doesn't appear to have concept of a transient domain */
-        dom->persistent = 1;
-
-        if (virAsprintf(&dom->def->name, "%i", veid) < 0)
+            def->id = veid;
+        if (virAsprintf(&def->name, "%i", veid) < 0)
             goto no_memory;
 
         openvzGetVPSUUID(veid, uuidstr, sizeof(uuidstr));
-        ret = virUUIDParse(uuidstr, dom->def->uuid);
+        ret = virUUIDParse(uuidstr, def->uuid);
 
         if (ret == -1) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -630,9 +616,9 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
-        if (!(dom->def->os.type = strdup("exe")))
+        if (!(def->os.type = strdup("exe")))
             goto no_memory;
-        if (!(dom->def->os.init = strdup("/sbin/init")))
+        if (!(def->os.init = strdup("/sbin/init")))
             goto no_memory;
 
         ret = openvzReadVPSConfigParam(veid, "CPUS", &temp);
@@ -642,35 +628,48 @@ int openvzLoadDomains(struct openvz_driver *driver) {
                            veid);
             goto cleanup;
         } else if (ret > 0) {
-            dom->def->maxvcpus = strtoI(temp);
+            def->maxvcpus = strtoI(temp);
         }
 
-        if (ret == 0 || dom->def->maxvcpus == 0)
-            dom->def->maxvcpus = openvzGetNodeCPUs();
-        dom->def->vcpus = dom->def->maxvcpus;
+        if (ret == 0 || def->maxvcpus == 0)
+            def->maxvcpus = openvzGetNodeCPUs();
+        def->vcpus = def->maxvcpus;
 
         /* XXX load rest of VM config data .... */
 
-        openvzReadNetworkConf(dom->def, veid);
-        openvzReadFSConf(dom->def, veid);
-        openvzReadMemConf(dom->def, veid);
+        openvzReadNetworkConf(def, veid);
+        openvzReadFSConf(def, veid);
+        openvzReadMemConf(def, veid);
 
-        virUUIDFormat(dom->def->uuid, uuidstr);
-        if (virHashLookup(driver->domains->objs, uuidstr)) {
+        virUUIDFormat(def->uuid, uuidstr);
+        if (virDomainObjListIsDuplicate(driver->domains, def, true)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Duplicate container UUID %s detected for %d"),
                            uuidstr,
                            veid);
             goto cleanup;
         }
-        if (virHashAddEntry(driver->domains->objs, uuidstr, dom) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not add UUID for container %d"), veid);
+        if (!(dom = virDomainObjListAdd(driver->domains,
+                                        driver->caps,
+                                        def,
+                                        STRNEQ(status, "stopped"))))
             goto cleanup;
+
+        if (STREQ(status, "stopped")) {
+            virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
+                                 VIR_DOMAIN_SHUTOFF_UNKNOWN);
+            dom->pid = -1;
+        } else {
+            virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_UNKNOWN);
+            dom->pid = veid;
         }
+        /* XXX OpenVZ doesn't appear to have concept of a transient domain */
+        dom->persistent = 1;
 
         virObjectUnlock(dom);
         dom = NULL;
+        def = NULL;
     }
 
     virCommandFree(cmd);
@@ -687,6 +686,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     VIR_FREE(temp);
     VIR_FREE(outbuf);
     virObjectUnref(dom);
+    virDomainDefFree(def);
     return -1;
 }
 

@@ -476,7 +476,7 @@ virDomainObjListExport;
 virDomainObjListFindByID;
 virDomainObjListFindByName;
 virDomainObjListFindByUUID;
-virDomainObjListFree;
+virDomainObjListForEach;
 virDomainObjListGetActiveIDs;
 virDomainObjListGetInactiveNames;
 virDomainObjListIsDuplicate;
