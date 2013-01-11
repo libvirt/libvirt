@@ -10296,9 +10296,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         def->memballoon = memballoon;
         VIR_FREE(nodes);
-    } else if (def->os.arch != VIR_ARCH_S390 &&
-               def->os.arch != VIR_ARCH_S390X) {
-        /* TODO: currently no balloon support on s390 -> no default balloon */
+    } else {
         if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
             def->virtType == VIR_DOMAIN_VIRT_QEMU ||
             def->virtType == VIR_DOMAIN_VIRT_KQEMU ||

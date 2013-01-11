@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -795,7 +795,7 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
 {
     /*
        declare address-less virtio devices to be of address type 'type'
-       only disks, networks, consoles and controllers for now
+       only disks, networks, consoles, controllers and memballoon for now
     */
     int i;
 
@@ -825,6 +825,10 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
             def->controllers[i]->info.type = type;
     }
 
+    if (def->memballoon &&
+        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+        def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        def->memballoon->info.type = type;
 }
 
 static void
@@ -6977,8 +6981,11 @@ qemuBuildCommandLine(virConnectPtr conn,
      * NB: Earlier we declared that VirtIO balloon will always be in
      * slot 0x3 on bus 0x0
      */
-    if ((def->memballoon) &&
-        (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
+    if (qemuCapsGet(caps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
+        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
+
+    if (def->memballoon &&
+        def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
         if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Memory balloon device type '%s' is not supported by this version of qemu"),
