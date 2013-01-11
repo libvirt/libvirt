@@ -1,7 +1,7 @@
 /*
  * virnetsocket.c: generic network socket handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -943,7 +943,7 @@ virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
 
     virMutexLock(&sock->lock);
 
-#if HAVE_SASL
+#if WITH_SASL
     if (sock->saslSession) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Unable to save socket state when SASL session is active"));
