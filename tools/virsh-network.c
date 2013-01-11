@@ -614,9 +614,10 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (!(list = vshNetworkListCollect(ctl, flags)))
         return false;
 
-    vshPrintExtra(ctl, "%-20s %-10s %-13s %s\n", _("Name"), _("State"),
+    vshPrintExtra(ctl, " %-20s %-10s %-13s %s\n", _("Name"), _("State"),
                   _("Autostart"), _("Persistent"));
-    vshPrintExtra(ctl, "--------------------------------------------------\n");
+    vshPrintExtra(ctl,
+                  "----------------------------------------------------------\n");
 
     for (i = 0; i < list->nnets; i++) {
         virNetworkPtr network = list->nets[i];
@@ -628,7 +629,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         else
             autostartStr = is_autostart ? _("yes") : _("no");
 
-        vshPrint(ctl, "%-20s %-10s %-13s %s\n",
+        vshPrint(ctl, " %-20s %-10s %-13s %s\n",
                  virNetworkGetName(network),
                  virNetworkIsActive(network) ? _("active") : _("inactive"),
                  autostartStr,
