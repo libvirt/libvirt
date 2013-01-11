@@ -34,7 +34,7 @@
 # include "domain_event.h"
 # include "capabilities.h"
 # include "configmake.h"
-# include "virbitmap.h"
+# include "virportallocator.h"
 
 
 # define LIBXL_VNC_PORT_MIN  5900
@@ -60,7 +60,7 @@ struct _libxlDriverPrivate {
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 
-    virBitmapPtr reservedVNCPorts;
+    virPortAllocatorPtr reservedVNCPorts;
 
     size_t nactive;
     virStateInhibitCallback inhibitCallback;

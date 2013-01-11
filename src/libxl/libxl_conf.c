@@ -64,60 +64,6 @@ static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x
 static regex_t xen_cap_rec;
 
 
-static int
-libxlNextFreeVncPort(libxlDriverPrivatePtr driver, int startPort)
-{
-    int i;
-
-    for (i = startPort ; i < LIBXL_VNC_PORT_MAX; i++) {
-        int fd;
-        int reuse = 1;
-        struct sockaddr_in addr;
-        bool used = false;
-
-        if (virBitmapGetBit(driver->reservedVNCPorts,
-                            i - LIBXL_VNC_PORT_MIN, &used) < 0)
-            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - LIBXL_VNC_PORT_MIN);
-
-        if (used)
-            continue;
-
-        addr.sin_family = AF_INET;
-        addr.sin_port = htons(i);
-        addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        fd = socket(PF_INET, SOCK_STREAM, 0);
-        if (fd < 0)
-            return -1;
-
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse, sizeof(reuse)) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            break;
-        }
-
-        if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
-            /* Not in use, lets grab it */
-            VIR_FORCE_CLOSE(fd);
-            /* Add port to bitmap of reserved ports */
-            if (virBitmapSetBit(driver->reservedVNCPorts,
-                                i - LIBXL_VNC_PORT_MIN) < 0) {
-                VIR_DEBUG("virBitmapSetBit failed on bit %d",
-                          i - LIBXL_VNC_PORT_MIN);
-            }
-            return i;
-        }
-        VIR_FORCE_CLOSE(fd);
-
-        if (errno == EADDRINUSE) {
-            /* In use, try next */
-            continue;
-        }
-        /* Some other bad failure, get out.. */
-        break;
-    }
-    return -1;
-}
-
-
 static int libxlDefaultConsoleType(const char *ostype,
                                    virArch arch ATTRIBUTE_UNUSED)
 {
@@ -712,7 +658,7 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
              virDomainGraphicsDefPtr l_vfb,
              libxl_device_vfb *x_vfb)
 {
-    int port;
+    unsigned short port;
     const char *listenAddr;
 
     switch (l_vfb->type) {
@@ -735,8 +681,10 @@ libxlMakeVfb(libxlDriverPrivatePtr driver,
             /* driver handles selection of free port */
             libxl_defbool_set(&x_vfb->vnc.findunused, 0);
             if (l_vfb->data.vnc.autoport) {
-                port = libxlNextFreeVncPort(driver, LIBXL_VNC_PORT_MIN);
-                if (port < 0) {
+
+                if (virPortAllocatorAcquire(driver->reservedVNCPorts, &port) < 0)
+                    return -1;
+                if (port == 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Unable to find an unused VNC port"));
                     return -1;

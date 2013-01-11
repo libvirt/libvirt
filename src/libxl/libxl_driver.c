@@ -466,8 +466,8 @@ libxlVmCleanup(libxlDriverPrivatePtr driver,
         vm->def->graphics[0]->data.vnc.autoport) {
         vnc_port = vm->def->graphics[0]->data.vnc.port;
         if (vnc_port >= LIBXL_VNC_PORT_MIN) {
-            if (virBitmapClearBit(driver->reservedVNCPorts,
-                                  vnc_port - LIBXL_VNC_PORT_MIN) < 0)
+            if (virPortAllocatorRelease(driver->reservedVNCPorts,
+                                        vnc_port) < 0)
                 VIR_DEBUG("Could not mark port %d as unused", vnc_port);
         }
     }
@@ -923,7 +923,7 @@ libxlShutdown(void)
     if (libxl_driver->logger_file)
         VIR_FORCE_FCLOSE(libxl_driver->logger_file);
 
-    virBitmapFree(libxl_driver->reservedVNCPorts);
+    virObjectUnref(libxl_driver->reservedVNCPorts);
 
     VIR_FREE(libxl_driver->configDir);
     VIR_FREE(libxl_driver->autostartDir);
@@ -979,9 +979,10 @@ libxlStartup(bool privileged,
     libxlDriverLock(libxl_driver);
 
     /* Allocate bitmap for vnc port reservation */
-    if ((libxl_driver->reservedVNCPorts =
-         virBitmapNew(LIBXL_VNC_PORT_MAX - LIBXL_VNC_PORT_MIN)) == NULL)
-        goto out_of_memory;
+    if (!(libxl_driver->reservedVNCPorts =
+          virPortAllocatorNew(LIBXL_VNC_PORT_MIN,
+                              LIBXL_VNC_PORT_MAX)))
+        goto error;
 
     if (virDomainObjListInit(&libxl_driver->domains) < 0)
         goto out_of_memory;
