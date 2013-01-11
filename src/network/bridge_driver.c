@@ -3124,6 +3124,9 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
             goto cleanup;
     }
 
+    /* define makes the network persistent - always */
+    network->persistent = 1;
+
     /* def was asigned */
     freeDef = false;
 
