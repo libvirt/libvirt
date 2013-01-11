@@ -84,16 +84,16 @@ AC_DEFUN([LIBVIRT_CHECK_LIB],[
       if test "x$with_var" != "xcheck"; then
         fail=1
       fi
-      m4_expand(with_var[=no])
+      with_var=no
     ])
     if test "$fail" = "0" && test "x$with_var" != "xno" ; then
       AC_CHECK_HEADER([header_name], [
-        m4_expand(with_var[=yes])
+        with_var=yes
       ],[
         if test "x$with_var" != "xcheck"; then
           fail=1
         fi
-        m4_expand(with_var[=no])
+        with_var=no
       ])
     fi
   fi
@@ -218,20 +218,20 @@ AC_DEFUN([LIBVIRT_CHECK_LIB_ALT],[
         if test "x$with_var" != "xcheck"; then
           fail=1
         fi
-        m4_expand(with_var[=no])
+        with_var=no
       ])
     ])
     if test "$fail" = "0" && test "x$with_var" != "xno" ; then
       AC_CHECK_HEADER([header_name], [
-        m4_expand(with_var[=yes])
+        with_var=yes
       ],[
         AC_CHECK_HEADER([header_name_alt], [
-          m4_expand(with_var[=yes])
+          with_var=yes
         ],[
           if test "x$with_var" != "xcheck"; then
             fail=1
           fi
-          m4_expand(with_var[=no])
+          with_var=no
         ])
       ])
     fi
@@ -326,12 +326,12 @@ AC_DEFUN([LIBVIRT_CHECK_PKG],[
   fail=0
   if test "x$with_var" != "xno" ; then
     PKG_CHECK_MODULES(check_name, pc_name[ >= ]pc_version, [
-      m4_expand(with_var[=yes])
+      with_var=yes
     ],[
       if test "x$with_var" != "xcheck"; then
         fail=1
       fi
-      m4_expand(with_var[=no])
+      with_var=no
     ])
   fi
 
