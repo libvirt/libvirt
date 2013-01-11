@@ -2088,6 +2088,7 @@ networkAddIptablesRules(struct network_driver *driver,
 {
     int ii;
     virNetworkIpDefPtr ipdef;
+    virErrorPtr orig_error;
 
     /* Add "once per network" rules */
     if (networkAddGeneralIptablesRules(driver, network) < 0)
@@ -2104,6 +2105,9 @@ networkAddIptablesRules(struct network_driver *driver,
     return 0;
 
 err:
+    /* store the previous error message before attempting removal of rules */
+    orig_error = virSaveLastError();
+
     /* The final failed call to networkAddIpSpecificIptablesRules will
      * have removed any rules it created, but we need to remove those
      * added for previous IP addresses.
@@ -2113,6 +2117,9 @@ err:
         networkRemoveIpSpecificIptablesRules(driver, network, ipdef);
     }
     networkRemoveGeneralIptablesRules(driver, network);
+
+    /* return the original error */
+    virSetError(orig_error);
     return -1;
 }
 
