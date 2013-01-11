@@ -9,8 +9,12 @@
       <li>Discuss any large changes on the mailing list first.  Post patches
         early and listen to feedback.</li>
 
-      <li><p>Post patches in unified diff format.  A command similar to this
-        should work:</p>
+      <li><p>Post patches in unified diff format, with git rename
+        detection enabled.  You need a one-time setup of:</p>
+<pre>
+  git config diff.renames true
+</pre>
+        <p>After that, a command similar to this should work:</p>
 <pre>
   diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch
 </pre>
@@ -20,7 +24,9 @@
 <pre>
   git diff &gt; libvirt-myfeature.patch
 </pre>
-        <p>However, the usual workflow of libvirt developer is:</p>
+        <p>Also, for code motion patches, you may find that <code>git
+        diff --patience</code> provides an easier-to-read patch.
+        However, the usual workflow of libvirt developer is:</p>
 <pre>
   git checkout master
   git pull

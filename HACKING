@@ -14,7 +14,12 @@ General tips for contributing patches
 (1) Discuss any large changes on the mailing list first. Post patches early and
 listen to feedback.
 
-(2) Post patches in unified diff format. A command similar to this should work:
+(2) Post patches in unified diff format, with git rename detection enabled. You
+need a one-time setup of:
+
+  git config diff.renames true
+
+After that, a command similar to this should work:
 
   diff -urp libvirt.orig/ libvirt.modified/ > libvirt-myfeature.patch
 
@@ -22,7 +27,9 @@ or:
 
   git diff > libvirt-myfeature.patch
 
-However, the usual workflow of libvirt developer is:
+Also, for code motion patches, you may find that "git diff --patience"
+provides an easier-to-read patch. However, the usual workflow of libvirt
+developer is:
 
   git checkout master
   git pull
