@@ -776,18 +776,30 @@ virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
     virObjectUnref(obj);
 }
 
-int virDomainObjListInit(virDomainObjListPtr doms)
+virDomainObjListPtr virDomainObjListNew(void)
 {
+    virDomainObjListPtr doms;
+
+    if (VIR_ALLOC(doms) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
     doms->objs = virHashCreate(50, virDomainObjListDataFree);
-    if (!doms->objs)
-        return -1;
-    return 0;
+    if (!doms->objs) {
+        VIR_FREE(doms);
+        return NULL;
+    }
+    return doms;
 }
 
 
-void virDomainObjListDeinit(virDomainObjListPtr doms)
+void virDomainObjListFree(virDomainObjListPtr doms)
 {
+    if (!doms)
+        return;
     virHashFree(doms->objs);
+    VIR_FREE(doms);
 }
 
 
@@ -807,8 +819,8 @@ static int virDomainObjListSearchID(const void *payload,
     return want;
 }
 
-virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
-                                  int id)
+virDomainObjPtr virDomainObjListFindByID(const virDomainObjListPtr doms,
+                                         int id)
 {
     virDomainObjPtr obj;
     obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
@@ -818,8 +830,8 @@ virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
 }
 
 
-virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
-                                    const unsigned char *uuid)
+virDomainObjPtr virDomainObjListFindByUUID(const virDomainObjListPtr doms,
+                                           const unsigned char *uuid)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr obj;
@@ -846,8 +858,8 @@ static int virDomainObjListSearchName(const void *payload,
     return want;
 }
 
-virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
-                                    const char *name)
+virDomainObjPtr virDomainObjListFindByName(const virDomainObjListPtr doms,
+                                           const char *name)
 {
     virDomainObjPtr obj;
     obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
@@ -1849,15 +1861,15 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
     }
 }
 
-virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
-                                   virDomainObjListPtr doms,
-                                   const virDomainDefPtr def,
-                                   bool live)
+virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
+                                    virCapsPtr caps,
+                                    const virDomainDefPtr def,
+                                    bool live)
 {
     virDomainObjPtr domain;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if ((domain = virDomainFindByUUID(doms, def->uuid))) {
+    if ((domain = virDomainObjListFindByUUID(doms, def->uuid))) {
         virDomainObjAssignDef(domain, def, live);
         return domain;
     }
@@ -1989,8 +2001,8 @@ cleanup:
  * and must also have locked 'dom', to ensure no one else
  * is either waiting for 'dom' or still using it
  */
-void virDomainRemoveInactive(virDomainObjListPtr doms,
-                             virDomainObjPtr dom)
+void virDomainObjListRemove(virDomainObjListPtr doms,
+                            virDomainObjPtr dom)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virUUIDFormat(dom->def->uuid, uuidstr);
@@ -14782,14 +14794,15 @@ cleanup:
 }
 
 
-static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
-                                           virDomainObjListPtr doms,
-                                           const char *configDir,
-                                           const char *autostartDir,
-                                           const char *name,
-                                           unsigned int expectedVirtTypes,
-                                           virDomainLoadConfigNotify notify,
-                                           void *opaque)
+static virDomainObjPtr
+virDomainObjListLoadConfig(virDomainObjListPtr doms,
+                           virCapsPtr caps,
+                           const char *configDir,
+                           const char *autostartDir,
+                           const char *name,
+                           unsigned int expectedVirtTypes,
+                           virDomainLoadConfigNotify notify,
+                           void *opaque)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virDomainDefPtr def = NULL;
@@ -14812,7 +14825,7 @@ static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
     /* if the domain is already in our hashtable, we only need to
      * update the autostart flag
      */
-    if ((dom = virDomainFindByUUID(doms, def->uuid))) {
+    if ((dom = virDomainObjListFindByUUID(doms, def->uuid))) {
         dom->autostart = autostart;
 
         if (virDomainObjIsActive(dom) &&
@@ -14827,7 +14840,7 @@ static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
         return dom;
     }
 
-    if (!(dom = virDomainAssignDef(caps, doms, def, false)))
+    if (!(dom = virDomainObjListAdd(doms, caps, def, false)))
         goto error;
 
     dom->autostart = autostart;
@@ -14846,13 +14859,14 @@ error:
     return NULL;
 }
 
-static virDomainObjPtr virDomainLoadStatus(virCapsPtr caps,
-                                           virDomainObjListPtr doms,
-                                           const char *statusDir,
-                                           const char *name,
-                                           unsigned int expectedVirtTypes,
-                                           virDomainLoadConfigNotify notify,
-                                           void *opaque)
+static virDomainObjPtr
+virDomainObjListLoadStatus(virDomainObjListPtr doms,
+                           virCapsPtr caps,
+                           const char *statusDir,
+                           const char *name,
+                           unsigned int expectedVirtTypes,
+                           virDomainLoadConfigNotify notify,
+                           void *opaque)
 {
     char *statusFile = NULL;
     virDomainObjPtr obj = NULL;
@@ -14891,14 +14905,14 @@ error:
     return NULL;
 }
 
-int virDomainLoadAllConfigs(virCapsPtr caps,
-                            virDomainObjListPtr doms,
-                            const char *configDir,
-                            const char *autostartDir,
-                            int liveStatus,
-                            unsigned int expectedVirtTypes,
-                            virDomainLoadConfigNotify notify,
-                            void *opaque)
+int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
+                                   virCapsPtr caps,
+                                   const char *configDir,
+                                   const char *autostartDir,
+                                   int liveStatus,
+                                   unsigned int expectedVirtTypes,
+                                   virDomainLoadConfigNotify notify,
+                                   void *opaque)
 {
     DIR *dir;
     struct dirent *entry;
@@ -14927,22 +14941,22 @@ int virDomainLoadAllConfigs(virCapsPtr caps,
            kill the whole process */
         VIR_INFO("Loading config file '%s.xml'", entry->d_name);
         if (liveStatus)
-            dom = virDomainLoadStatus(caps,
-                                      doms,
-                                      configDir,
-                                      entry->d_name,
-                                      expectedVirtTypes,
-                                      notify,
-                                      opaque);
+            dom = virDomainObjListLoadStatus(doms,
+                                             caps,
+                                             configDir,
+                                             entry->d_name,
+                                             expectedVirtTypes,
+                                             notify,
+                                             opaque);
         else
-            dom = virDomainLoadConfig(caps,
-                                      doms,
-                                      configDir,
-                                      autostartDir,
-                                      entry->d_name,
-                                      expectedVirtTypes,
-                                      notify,
-                                      opaque);
+            dom = virDomainObjListLoadConfig(doms,
+                                             caps,
+                                             configDir,
+                                             autostartDir,
+                                             entry->d_name,
+                                             expectedVirtTypes,
+                                             notify,
+                                             opaque);
         if (dom) {
             virObjectUnlock(dom);
             if (!liveStatus)
@@ -15053,7 +15067,7 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
 }
 
 /*
- * virDomainObjIsDuplicate:
+ * virDomainObjListIsDuplicate:
  * @doms : virDomainObjListPtr to search
  * @def  : virDomainDefPtr definition of domain to lookup
  * @check_active: If true, ensure that domain is not active
@@ -15063,16 +15077,16 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
  *          1 if domain is a duplicate
  */
 int
-virDomainObjIsDuplicate(virDomainObjListPtr doms,
-                        virDomainDefPtr def,
-                        unsigned int check_active)
+virDomainObjListIsDuplicate(virDomainObjListPtr doms,
+                            virDomainDefPtr def,
+                            unsigned int check_active)
 {
     int ret = -1;
     int dupVM = 0;
     virDomainObjPtr vm = NULL;
 
     /* See if a VM with matching UUID already exists */
-    vm = virDomainFindByUUID(doms, def->uuid);
+    vm = virDomainObjListFindByUUID(doms, def->uuid);
     if (vm) {
         /* UUID matches, but if names don't match, refuse it */
         if (STRNEQ(vm->def->name, def->name)) {
@@ -15097,7 +15111,7 @@ virDomainObjIsDuplicate(virDomainObjListPtr doms,
         dupVM = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        vm = virDomainFindByName(doms, def->name);
+        vm = virDomainObjListFindByName(doms, def->name);
         if (vm) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(vm->def->uuid, uuidstr);
@@ -15973,10 +15987,10 @@ cleanup:
 #undef MATCH
 
 int
-virDomainList(virConnectPtr conn,
-              virHashTablePtr domobjs,
-              virDomainPtr **domains,
-              unsigned int flags)
+virDomainObjListExport(virDomainObjListPtr doms,
+                       virConnectPtr conn,
+                       virDomainPtr **domains,
+                       unsigned int flags)
 {
     int ret = -1;
     int i;
@@ -15984,13 +15998,13 @@ virDomainList(virConnectPtr conn,
     struct virDomainListData data = { conn, NULL, flags, 0, false };
 
     if (domains) {
-        if (VIR_ALLOC_N(data.domains, virHashSize(domobjs) + 1) < 0) {
+        if (VIR_ALLOC_N(data.domains, virHashSize(doms->objs) + 1) < 0) {
             virReportOOMError();
             goto cleanup;
         }
     }
 
-    virHashForEach(domobjs, virDomainListPopulate, &data);
+    virHashForEach(doms->objs, virDomainListPopulate, &data);
 
     if (data.error)
         goto cleanup;
@@ -16006,7 +16020,7 @@ virDomainList(virConnectPtr conn,
 
 cleanup:
     if (data.domains) {
-        int count = virHashSize(domobjs);
+        int count = virHashSize(doms->objs);
         for (i = 0; i < count; i++)
             virObjectUnref(data.domains[i]);
     }

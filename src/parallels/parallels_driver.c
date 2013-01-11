@@ -830,8 +830,9 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     if (parallelsAddVNCInfo(def, jobj) < 0)
         goto cleanup;
 
-    if (!(dom = virDomainAssignDef(privconn->caps,
-                                   &privconn->domains, def, false)))
+    if (!(dom = virDomainObjListAdd(privconn->domains,
+                                    privconn->caps,
+                                    def, false)))
         goto cleanup;
     /* dom is locked here */
 
@@ -928,7 +929,7 @@ parallelsOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = parallelsBuildCapabilities()))
         goto error;
 
-    if (virDomainObjListInit(&privconn->domains) < 0)
+    if (!(privconn->domains = virDomainObjListNew()))
         goto error;
 
     conn->privateData = privconn;
@@ -939,7 +940,7 @@ parallelsOpenDefault(virConnectPtr conn)
     return VIR_DRV_OPEN_SUCCESS;
 
   error:
-    virDomainObjListDeinit(&privconn->domains);
+    virDomainObjListFree(privconn->domains);
     virCapabilitiesFree(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn);
@@ -986,7 +987,7 @@ parallelsClose(virConnectPtr conn)
 
     parallelsDriverLock(privconn);
     virCapabilitiesFree(privconn->caps);
-    virDomainObjListDeinit(&privconn->domains);
+    virDomainObjListFree(privconn->domains);
     conn->privateData = NULL;
 
     parallelsDriverUnlock(privconn);
@@ -1049,7 +1050,7 @@ parallelsListDomains(virConnectPtr conn, int *ids, int maxids)
     int n;
 
     parallelsDriverLock(privconn);
-    n = virDomainObjListGetActiveIDs(&privconn->domains, ids, maxids);
+    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids);
     parallelsDriverUnlock(privconn);
 
     return n;
@@ -1062,7 +1063,7 @@ parallelsNumOfDomains(virConnectPtr conn)
     int count;
 
     parallelsDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(&privconn->domains, 1);
+    count = virDomainObjListNumOfDomains(privconn->domains, 1);
     parallelsDriverUnlock(privconn);
 
     return count;
@@ -1076,7 +1077,7 @@ parallelsListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
 
     parallelsDriverLock(privconn);
     memset(names, 0, sizeof(*names) * maxnames);
-    n = virDomainObjListGetInactiveNames(&privconn->domains, names,
+    n = virDomainObjListGetInactiveNames(privconn->domains, names,
                                          maxnames);
     parallelsDriverUnlock(privconn);
 
@@ -1090,7 +1091,7 @@ parallelsNumOfDefinedDomains(virConnectPtr conn)
     int count;
 
     parallelsDriverLock(privconn);
-    count = virDomainObjListNumOfDomains(&privconn->domains, 0);
+    count = virDomainObjListNumOfDomains(privconn->domains, 0);
     parallelsDriverUnlock(privconn);
 
     return count;
@@ -1106,7 +1107,7 @@ parallelsListAllDomains(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
     parallelsDriverLock(privconn);
-    ret = virDomainList(conn, privconn->domains.objs, domains, flags);
+    ret = virDomainObjListExport(privconn->domains, conn, domains, flags);
     parallelsDriverUnlock(privconn);
 
     return ret;
@@ -1120,7 +1121,7 @@ parallelsLookupDomainByID(virConnectPtr conn, int id)
     virDomainObjPtr dom;
 
     parallelsDriverLock(privconn);
-    dom = virDomainFindByID(&privconn->domains, id);
+    dom = virDomainObjListFindByID(privconn->domains, id);
     parallelsDriverUnlock(privconn);
 
     if (dom == NULL) {
@@ -1146,7 +1147,7 @@ parallelsLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainObjPtr dom;
 
     parallelsDriverLock(privconn);
-    dom = virDomainFindByUUID(&privconn->domains, uuid);
+    dom = virDomainObjListFindByUUID(privconn->domains, uuid);
     parallelsDriverUnlock(privconn);
 
     if (dom == NULL) {
@@ -1175,7 +1176,7 @@ parallelsLookupDomainByName(virConnectPtr conn, const char *name)
     virDomainObjPtr dom;
 
     parallelsDriverLock(privconn);
-    dom = virDomainFindByName(&privconn->domains, name);
+    dom = virDomainObjListFindByName(privconn->domains, name);
     parallelsDriverUnlock(privconn);
 
     if (dom == NULL) {
@@ -1202,7 +1203,7 @@ parallelsGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     int ret = -1;
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     parallelsDriverUnlock(privconn);
 
     if (privdom == NULL) {
@@ -1232,7 +1233,7 @@ parallelsGetOSType(virDomainPtr domain)
     char *ret = NULL;
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     if (privdom == NULL) {
         parallelsDomNotFoundError(domain);
         goto cleanup;
@@ -1256,7 +1257,7 @@ parallelsDomainIsPersistent(virDomainPtr domain)
     int ret = -1;
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     if (privdom == NULL) {
         parallelsDomNotFoundError(domain);
         goto cleanup;
@@ -1281,7 +1282,7 @@ parallelsDomainGetState(virDomainPtr domain,
     virCheckFlags(0, -1);
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     parallelsDriverUnlock(privconn);
 
     if (privdom == NULL) {
@@ -1309,7 +1310,7 @@ parallelsDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     /* Flags checked by virDomainDefFormat */
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     parallelsDriverUnlock(privconn);
 
     if (privdom == NULL) {
@@ -1336,7 +1337,7 @@ parallelsDomainGetAutostart(virDomainPtr domain, int *autostart)
     int ret = -1;
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     parallelsDriverUnlock(privconn);
 
     if (privdom == NULL) {
@@ -1368,7 +1369,7 @@ parallelsDomainChangeState(virDomainPtr domain,
     int ret = -1;
 
     parallelsDriverLock(privconn);
-    privdom = virDomainFindByUUID(&privconn->domains, domain->uuid);
+    privdom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     parallelsDriverUnlock(privconn);
 
     if (privdom == NULL) {
@@ -2334,13 +2335,13 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if ((dupVM = virDomainObjIsDuplicate(&privconn->domains, def, 0)) < 0) {
+    if ((dupVM = virDomainObjListIsDuplicate(privconn->domains, def, 0)) < 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("Already exists"));
         goto cleanup;
     }
 
     if (dupVM == 1) {
-        olddom = virDomainFindByUUID(&privconn->domains, def->uuid);
+        olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);
     } else {
         if (STREQ(def->os.type, "hvm")) {
             if (parallelsCreateVm(conn, def))
@@ -2355,7 +2356,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
         }
         if (parallelsLoadDomains(privconn, def->name))
             goto cleanup;
-        olddom = virDomainFindByName(&privconn->domains, def->name);
+        olddom = virDomainObjListFindByName(privconn->domains, def->name);
         if (!olddom) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Domain for '%s' is not defined after creation"),
@@ -2370,8 +2371,9 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     }
     virObjectUnlock(olddom);
 
-    if (!(dom = virDomainAssignDef(privconn->caps,
-                                   &privconn->domains, def, false))) {
+    if (!(dom = virDomainObjListAdd(privconn->domains,
+                                    privconn->caps,
+                                    def, false))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Can't allocate domobj"));
         goto cleanup;

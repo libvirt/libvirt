@@ -85,8 +85,8 @@ static void virLXCProcessAutoDestroyDom(void *payload,
         return;
     }
 
-    if (!(dom = virDomainFindByUUID(&data->driver->domains,
-                                    uuid))) {
+    if (!(dom = virDomainObjListFindByUUID(data->driver->domains,
+                                           uuid))) {
         VIR_DEBUG("No domain object to kill");
         return;
     }
@@ -101,7 +101,7 @@ static void virLXCProcessAutoDestroyDom(void *payload,
     priv->doneStopEvent = true;
 
     if (dom && !dom->persistent)
-        virDomainRemoveInactive(&data->driver->domains, dom);
+        virDomainObjListRemove(data->driver->domains, dom);
 
     if (dom)
         virObjectUnlock(dom);
@@ -576,7 +576,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
             VIR_DEBUG("Stop event has already been sent");
         }
         if (!vm->persistent) {
-            virDomainRemoveInactive(&driver->domains, vm);
+            virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
         }
     } else {
@@ -590,7 +590,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              priv->stopReason);
             if (!vm->persistent) {
-                virDomainRemoveInactive(&driver->domains, vm);
+                virDomainObjListRemove(driver->domains, vm);
                 vm = NULL;
             }
         }
@@ -1290,7 +1290,7 @@ virLXCProcessAutostartAll(virLXCDriverPtr driver)
     struct virLXCProcessAutostartData data = { driver, conn };
 
     lxcDriverLock(driver);
-    virHashForEach(driver->domains.objs, virLXCProcessAutostartDomain, &data);
+    virHashForEach(driver->domains->objs, virLXCProcessAutostartDomain, &data);
     lxcDriverUnlock(driver);
 
     if (conn)

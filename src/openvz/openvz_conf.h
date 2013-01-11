@@ -45,7 +45,7 @@ struct openvz_driver {
     virMutex lock;
 
     virCapsPtr caps;
-    virDomainObjList domains;
+    virDomainObjListPtr domains;
     int version;
 };
 

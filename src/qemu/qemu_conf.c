@@ -673,7 +673,7 @@ qemuDriverCloseCallbackRun(void *payload,
      */
     virUUIDFormat(uuid, uuidstr);
 
-    if (!(dom = virDomainFindByUUID(&data->driver->domains, uuid))) {
+    if (!(dom = virDomainObjListFindByUUID(data->driver->domains, uuid))) {
         VIR_DEBUG("No domain object with UUID %s", uuidstr);
         return;
     }

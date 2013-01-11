@@ -1882,7 +1882,7 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
             VIR_WARN("unable to remove snapshot directory %s", snapDir);
         VIR_FREE(snapDir);
     }
-    virDomainRemoveInactive(&driver->domains, vm);
+    virDomainObjListRemove(driver->domains, vm);
     virObjectUnref(cfg);
 }
 

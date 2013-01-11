@@ -169,7 +169,7 @@ struct _virQEMUDriver {
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
-    virDomainObjList domains;
+    virDomainObjListPtr domains;
 
     char *qemuImgBinary;
 

@@ -67,7 +67,7 @@ struct _libxlDriverPrivate {
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
-    virDomainObjList domains;
+    virDomainObjListPtr domains;
 
     virDomainEventStatePtr domainEventState;
 

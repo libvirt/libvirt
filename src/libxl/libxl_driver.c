@@ -684,7 +684,7 @@ libxlEventHandler(void *data ATTRIBUTE_UNUSED, const libxl_event *event)
             goto cleanup;
 
         libxlDriverLock(driver);
-        vm = virDomainFindByID(&driver->domains, event->domid);
+        vm = virDomainObjListFindByID(driver->domains, event->domid);
         libxlDriverUnlock(driver);
 
         if (!vm)
@@ -703,7 +703,7 @@ libxlEventHandler(void *data ATTRIBUTE_UNUSED, const libxl_event *event)
                 }
                 libxlVmReap(driver, vm, reason);
                 if (!vm->persistent) {
-                    virDomainRemoveInactive(&driver->domains, vm);
+                    virDomainObjListRemove(driver->domains, vm);
                     vm = NULL;
                 }
                 break;
@@ -1052,7 +1052,7 @@ libxlReconnectDomain(void *payload,
 out:
     libxlVmCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
     if (!vm->persistent)
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
     else
         virObjectUnlock(vm);
 }
@@ -1060,7 +1060,7 @@ out:
 static void
 libxlReconnectDomains(libxlDriverPrivatePtr driver)
 {
-    virHashForEach(driver->domains.objs, libxlReconnectDomain, driver);
+    virHashForEach(driver->domains->objs, libxlReconnectDomain, driver);
 }
 
 static int
@@ -1071,7 +1071,7 @@ libxlShutdown(void)
 
     libxlDriverLock(libxl_driver);
     virCapabilitiesFree(libxl_driver->caps);
-    virDomainObjListDeinit(&libxl_driver->domains);
+    virDomainObjListFree(libxl_driver->domains);
     libxl_ctx_free(libxl_driver->ctx);
     xtl_logger_destroy(libxl_driver->logger);
     if (libxl_driver->logger_file)
@@ -1138,8 +1138,8 @@ libxlStartup(bool privileged,
                               LIBXL_VNC_PORT_MAX)))
         goto error;
 
-    if (virDomainObjListInit(&libxl_driver->domains) < 0)
-        goto out_of_memory;
+    if (!(libxl_driver->domains = virDomainObjListNew()))
+        goto error;
 
     if (virAsprintf(&libxl_driver->configDir,
                     "%s", LIBXL_CONFIG_DIR) == -1)
@@ -1233,29 +1233,29 @@ libxlStartup(bool privileged,
     libxl_driver->caps->privateDataFreeFunc = libxlDomainObjPrivateFree;
 
     /* Load running domains first. */
-    if (virDomainLoadAllConfigs(libxl_driver->caps,
-                                &libxl_driver->domains,
-                                libxl_driver->stateDir,
-                                libxl_driver->autostartDir,
-                                1, 1 << VIR_DOMAIN_VIRT_XEN,
-                                NULL, NULL) < 0)
+    if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
+                                       libxl_driver->caps,
+                                       libxl_driver->stateDir,
+                                       libxl_driver->autostartDir,
+                                       1, 1 << VIR_DOMAIN_VIRT_XEN,
+                                       NULL, NULL) < 0)
         goto error;
 
     libxlReconnectDomains(libxl_driver);
 
     /* Then inactive persistent configs */
-    if (virDomainLoadAllConfigs(libxl_driver->caps,
-                                &libxl_driver->domains,
-                                libxl_driver->configDir,
-                                libxl_driver->autostartDir,
-                                0, 1 << VIR_DOMAIN_VIRT_XEN,
-                                NULL, NULL) < 0)
+    if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
+                                       libxl_driver->caps,
+                                       libxl_driver->configDir,
+                                       libxl_driver->autostartDir,
+                                       0, 1 << VIR_DOMAIN_VIRT_XEN,
+                                       NULL, NULL) < 0)
         goto error;
 
-    virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
+    virHashForEach(libxl_driver->domains->objs, libxlAutostartDomain,
                    libxl_driver);
 
-    virHashForEach(libxl_driver->domains.objs, libxlDomainManagedSaveLoad,
+    virHashForEach(libxl_driver->domains->objs, libxlDomainManagedSaveLoad,
                    libxl_driver);
 
     libxlDriverUnlock(libxl_driver);
@@ -1281,14 +1281,14 @@ libxlReload(void)
         return 0;
 
     libxlDriverLock(libxl_driver);
-    virDomainLoadAllConfigs(libxl_driver->caps,
-                            &libxl_driver->domains,
-                            libxl_driver->configDir,
-                            libxl_driver->autostartDir,
-                            1, 1 << VIR_DOMAIN_VIRT_XEN,
-                            NULL, libxl_driver);
+    virDomainObjListLoadAllConfigs(libxl_driver->domains,
+                                   libxl_driver->caps,
+                                   libxl_driver->configDir,
+                                   libxl_driver->autostartDir,
+                                   1, 1 << VIR_DOMAIN_VIRT_XEN,
+                                   NULL, libxl_driver);
 
-    virHashForEach(libxl_driver->domains.objs, libxlAutostartDomain,
+    virHashForEach(libxl_driver->domains->objs, libxlAutostartDomain,
                    libxl_driver);
 
     libxlDriverUnlock(libxl_driver);
@@ -1409,7 +1409,7 @@ libxlListDomains(virConnectPtr conn, int *ids, int nids)
     int n;
 
     libxlDriverLock(driver);
-    n = virDomainObjListGetActiveIDs(&driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
     libxlDriverUnlock(driver);
 
     return n;
@@ -1422,7 +1422,7 @@ libxlNumDomains(virConnectPtr conn)
     int n;
 
     libxlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(&driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, 1);
     libxlDriverUnlock(driver);
 
     return n;
@@ -1445,17 +1445,18 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def, false)))
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def, false)))
         goto cleanup;
     def = NULL;
 
     if (libxlVmStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0,
                      -1) < 0) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -1480,7 +1481,7 @@ libxlDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr dom = NULL;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1506,7 +1507,7 @@ libxlDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr dom = NULL;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1532,7 +1533,7 @@ libxlDomainLookupByName(virConnectPtr conn, const char *name)
     virDomainPtr dom = NULL;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByName(&driver->domains, name);
+    vm = virDomainObjListFindByName(driver->domains, name);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1560,7 +1561,7 @@ libxlDomainSuspend(virDomainPtr dom)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1618,7 +1619,7 @@ libxlDomainResume(virDomainPtr dom)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1678,7 +1679,7 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -1731,7 +1732,7 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -1774,7 +1775,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -1799,7 +1800,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     }
 
     if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -1828,7 +1829,7 @@ libxlDomainGetOSType(virDomainPtr dom)
     char *type = NULL;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1855,7 +1856,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
     unsigned long long ret = 0;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -1886,7 +1887,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                   VIR_DOMAIN_MEM_MAXIMUM, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2005,7 +2006,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2052,7 +2053,7 @@ libxlDomainGetState(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2163,7 +2164,7 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     }
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2182,7 +2183,7 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
         goto cleanup;
 
     if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -2225,17 +2226,19 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
     if (fd < 0)
         goto cleanup;
 
-    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(driver->caps, &driver->domains, def, true)))
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def, true)))
         goto cleanup;
 
     def = NULL;
 
     if ((ret = libxlVmStart(driver, vm, false, fd)) < 0 &&
         !vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -2268,7 +2271,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2319,7 +2322,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     }
 
     if ((flags & VIR_DUMP_CRASH) && !vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -2360,7 +2363,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -2389,7 +2392,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -2434,7 +2437,7 @@ libxlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -2463,7 +2466,7 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -2522,7 +2525,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2641,7 +2644,7 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2698,7 +2701,7 @@ libxlDomainPinVcpu(virDomainPtr dom, unsigned int vcpu, unsigned char *cpumap,
     libxl_bitmap map;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2765,7 +2768,7 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
     unsigned char *cpumap;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2828,7 +2831,7 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     /* Flags checked by virDomainDefFormat */
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -2944,7 +2947,7 @@ libxlListDefinedDomains(virConnectPtr conn,
     int n;
 
     libxlDriverLock(driver);
-    n = virDomainObjListGetInactiveNames(&driver->domains, names, nnames);
+    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
     libxlDriverUnlock(driver);
     return n;
 }
@@ -2956,7 +2959,7 @@ libxlNumDefinedDomains(virConnectPtr conn)
     int n;
 
     libxlDriverLock(driver);
-    n = virDomainObjListNumOfDomains(&driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, 0);
     libxlDriverUnlock(driver);
 
     return n;
@@ -2973,7 +2976,7 @@ libxlDomainCreateWithFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_START_PAUSED, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -3019,18 +3022,19 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-   if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
+   if ((dupVM = virDomainObjListIsDuplicate(driver->domains, def, 0)) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def, false)))
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def, false)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
 
     if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -3067,7 +3071,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3114,7 +3118,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     if (virDomainObjIsActive(vm)) {
         vm->persistent = 0;
     } else {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -3506,7 +3510,7 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                   VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
@@ -3707,7 +3711,7 @@ libxlDomainGetAutostart(virDomainPtr dom, int *autostart)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -3736,7 +3740,7 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3806,7 +3810,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
     libxl_scheduler sched_id;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -3871,7 +3875,7 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -3954,7 +3958,7 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
         return -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
 
     if (!vm) {
@@ -4024,7 +4028,7 @@ libxlDomainIsActive(virDomainPtr dom)
     int ret = -1;
 
     libxlDriverLock(driver);
-    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
     if (!obj) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
@@ -4046,7 +4050,7 @@ libxlDomainIsPersistent(virDomainPtr dom)
     int ret = -1;
 
     libxlDriverLock(driver);
-    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
     if (!obj) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
@@ -4068,7 +4072,7 @@ libxlDomainIsUpdated(virDomainPtr dom)
     int ret = -1;
 
     libxlDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     libxlDriverUnlock(driver);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
@@ -4135,7 +4139,7 @@ libxlListAllDomains(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     libxlDriverLock(driver);
-    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
     libxlDriverUnlock(driver);
 
     return ret;

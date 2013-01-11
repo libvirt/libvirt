@@ -39,7 +39,7 @@
 
 struct _parallelsConn {
     virMutex lock;
-    virDomainObjList domains;
+    virDomainObjListPtr domains;
     virStoragePoolObjList pools;
     virNetworkObjList networks;
     virCapsPtr caps;

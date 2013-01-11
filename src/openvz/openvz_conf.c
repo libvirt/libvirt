@@ -558,7 +558,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     if (!driver)
         return;
 
-    virDomainObjListDeinit(&driver->domains);
+    virDomainObjListFree(driver->domains);
     virCapabilitiesFree(driver->caps);
     VIR_FREE(driver);
 }
@@ -656,14 +656,14 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         openvzReadMemConf(dom->def, veid);
 
         virUUIDFormat(dom->def->uuid, uuidstr);
-        if (virHashLookup(driver->domains.objs, uuidstr)) {
+        if (virHashLookup(driver->domains->objs, uuidstr)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Duplicate container UUID %s detected for %d"),
                            uuidstr,
                            veid);
             goto cleanup;
         }
-        if (virHashAddEntry(driver->domains.objs, uuidstr, dom) < 0) {
+        if (virHashAddEntry(driver->domains->objs, uuidstr, dom) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not add UUID for container %d"), veid);
             goto cleanup;

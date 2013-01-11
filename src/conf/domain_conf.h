@@ -1907,15 +1907,15 @@ virDomainObjIsActive(virDomainObjPtr dom)
 
 virDomainObjPtr virDomainObjNew(virCapsPtr caps);
 
-int virDomainObjListInit(virDomainObjListPtr objs);
-void virDomainObjListDeinit(virDomainObjListPtr objs);
+virDomainObjListPtr virDomainObjListNew(void);
+void virDomainObjListFree(virDomainObjListPtr objs);
 
-virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
-                                  int id);
-virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
-                                    const unsigned char *uuid);
-virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
-                                    const char *name);
+virDomainObjPtr virDomainObjListFindByID(const virDomainObjListPtr doms,
+                                         int id);
+virDomainObjPtr virDomainObjListFindByUUID(const virDomainObjListPtr doms,
+                                           const unsigned char *uuid);
+virDomainObjPtr virDomainObjListFindByName(const virDomainObjListPtr doms,
+                                           const char *name);
 
 bool virDomainObjTaint(virDomainObjPtr obj,
                        enum virDomainTaintFlags taint);
@@ -1975,10 +1975,10 @@ virDomainChrDefPtr virDomainChrDefNew(void);
 
 /* live == true means def describes an active domain (being migrated or
  * restored) as opposed to a new persistent configuration of the domain */
-virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
-                                   virDomainObjListPtr doms,
-                                   const virDomainDefPtr def,
-                                   bool live);
+virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
+                                    virCapsPtr caps,
+                                    const virDomainDefPtr def,
+                                    bool live);
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            const virDomainDefPtr def,
                            bool live);
@@ -2000,8 +2000,8 @@ virDomainDefPtr virDomainDefCopy(virCapsPtr caps, virDomainDefPtr src,
 virDomainDefPtr
 virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainObjPtr dom);
 
-void virDomainRemoveInactive(virDomainObjListPtr doms,
-                             virDomainObjPtr dom);
+void virDomainObjListRemove(virDomainObjListPtr doms,
+                            virDomainObjPtr dom);
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               virDomainDefPtr def,
@@ -2138,14 +2138,14 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
                                           void *opaque);
 
-int virDomainLoadAllConfigs(virCapsPtr caps,
-                            virDomainObjListPtr doms,
-                            const char *configDir,
-                            const char *autostartDir,
-                            int liveStatus,
-                            unsigned int expectedVirtTypes,
-                            virDomainLoadConfigNotify notify,
-                            void *opaque);
+int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
+                                   virCapsPtr caps,
+                                   const char *configDir,
+                                   const char *autostartDir,
+                                   int liveStatus,
+                                   unsigned int expectedVirtTypes,
+                                   virDomainLoadConfigNotify notify,
+                                   void *opaque);
 
 int virDomainDeleteConfig(const char *configDir,
                           const char *autostartDir,
@@ -2163,9 +2163,9 @@ int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 int virDomainVideoDefaultType(virDomainDefPtr def);
 int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 
-int virDomainObjIsDuplicate(virDomainObjListPtr doms,
-                            virDomainDefPtr def,
-                            unsigned int check_active);
+int virDomainObjListIsDuplicate(virDomainObjListPtr doms,
+                                virDomainDefPtr def,
+                                unsigned int check_active);
 
 int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active);
 
@@ -2366,8 +2366,10 @@ VIR_ENUM_DECL(virDomainStartupPolicy)
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)
 
-int virDomainList(virConnectPtr conn, virHashTablePtr domobjs,
-                  virDomainPtr **domains, unsigned int flags);
+int virDomainObjListExport(virDomainObjListPtr doms,
+                           virConnectPtr conn,
+                           virDomainPtr **domains,
+                           unsigned int flags);
 
 virDomainVcpuPinDefPtr virDomainLookupVcpuPin(virDomainDefPtr def,
                                               int vcpuid);

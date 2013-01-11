@@ -3446,7 +3446,7 @@ void
 qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
 {
     struct qemuProcessReconnectData data = {.conn = conn, .driver = driver};
-    virHashForEach(driver->domains.objs, qemuProcessReconnectHelper, &data);
+    virHashForEach(driver->domains->objs, qemuProcessReconnectHelper, &data);
 }
 
 int

@@ -84,7 +84,7 @@ static int
 lxcVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                    virHashIterator iter, void *data)
 {
-    virHashForEach(lxc_driver->domains.objs, iter, data);
+    virHashForEach(lxc_driver->domains->objs, iter, data);
 
     return 0;
 }
@@ -208,7 +208,7 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -235,7 +235,7 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -264,7 +264,7 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByName(&driver->domains, name);
+    vm = virDomainObjListFindByName(driver->domains, name);
     lxcDriverUnlock(driver);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -290,7 +290,7 @@ static int lxcDomainIsActive(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -315,7 +315,7 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -339,7 +339,7 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!obj) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -361,7 +361,7 @@ static int lxcListDomains(virConnectPtr conn, int *ids, int nids) {
     int n;
 
     lxcDriverLock(driver);
-    n = virDomainObjListGetActiveIDs(&driver->domains, ids, nids);
+    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
     lxcDriverUnlock(driver);
 
     return n;
@@ -372,7 +372,7 @@ static int lxcNumDomains(virConnectPtr conn) {
     int n;
 
     lxcDriverLock(driver);
-    n = virDomainObjListNumOfDomains(&driver->domains, 1);
+    n = virDomainObjListNumOfDomains(driver->domains, 1);
     lxcDriverUnlock(driver);
 
     return n;
@@ -384,7 +384,7 @@ static int lxcListDefinedDomains(virConnectPtr conn,
     int n;
 
     lxcDriverLock(driver);
-    n = virDomainObjListGetInactiveNames(&driver->domains, names, nnames);
+    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
     lxcDriverUnlock(driver);
 
     return n;
@@ -396,7 +396,7 @@ static int lxcNumDefinedDomains(virConnectPtr conn) {
     int n;
 
     lxcDriverLock(driver);
-    n = virDomainObjListNumOfDomains(&driver->domains, 0);
+    n = virDomainObjListNumOfDomains(driver->domains, 0);
     lxcDriverUnlock(driver);
 
     return n;
@@ -422,7 +422,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
+    if ((dupVM = virDomainObjListIsDuplicate(driver->domains, def, 0)) < 0)
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
@@ -431,15 +431,16 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def, false)))
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def, false)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
 
     if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -475,7 +476,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -502,7 +503,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
     if (virDomainObjIsActive(vm)) {
         vm->persistent = 0;
     } else {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -531,7 +532,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     int ret = -1, rc;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -596,7 +597,7 @@ lxcDomainGetState(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -623,7 +624,7 @@ static char *lxcGetOSType(virDomainPtr dom)
     char *ret = NULL;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -654,7 +655,7 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
     unsigned long long ret = 0;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -679,7 +680,7 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -712,7 +713,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -787,7 +788,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         return -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -857,7 +858,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -950,7 +951,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
     /* Flags checked by virDomainDefFormat */
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -990,7 +991,7 @@ static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -1077,7 +1078,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
         goto cleanup;
 
     if ((def->nets != NULL) && !(driver->have_netns)) {
@@ -1087,8 +1088,9 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     }
 
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def, false)))
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def, false)))
         goto cleanup;
     def = NULL;
 
@@ -1096,7 +1098,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
                            (flags & VIR_DOMAIN_START_AUTODESTROY),
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
         goto cleanup;
     }
@@ -1128,7 +1130,7 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     memset(seclabel, 0, sizeof(*seclabel));
 
@@ -1315,7 +1317,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -1338,7 +1340,7 @@ lxcDomainDestroyFlags(virDomainPtr dom,
     priv->doneStopEvent = true;
     virDomainAuditStop(vm, "destroyed");
     if (!vm->persistent) {
-        virDomainRemoveInactive(&driver->domains, vm);
+        virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
 
@@ -1442,7 +1444,7 @@ static int lxcStartup(bool privileged,
     }
     lxcDriverLock(lxc_driver);
 
-    if (virDomainObjListInit(&lxc_driver->domains) < 0)
+    if (!(lxc_driver->domains = virDomainObjListNew()))
         goto cleanup;
 
     lxc_driver->domainEventState = virDomainEventStateNew();
@@ -1478,23 +1480,23 @@ static int lxcStartup(bool privileged,
         goto cleanup;
 
     /* Get all the running persistent or transient configs first */
-    if (virDomainLoadAllConfigs(lxc_driver->caps,
-                                &lxc_driver->domains,
-                                lxc_driver->stateDir,
-                                NULL,
-                                1, 1 << VIR_DOMAIN_VIRT_LXC,
-                                NULL, NULL) < 0)
+    if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
+                                       lxc_driver->caps,
+                                       lxc_driver->stateDir,
+                                       NULL,
+                                       1, 1 << VIR_DOMAIN_VIRT_LXC,
+                                       NULL, NULL) < 0)
         goto cleanup;
 
-    virLXCProcessReconnectAll(lxc_driver, &lxc_driver->domains);
+    virLXCProcessReconnectAll(lxc_driver, lxc_driver->domains);
 
     /* Then inactive persistent configs */
-    if (virDomainLoadAllConfigs(lxc_driver->caps,
-                                &lxc_driver->domains,
-                                lxc_driver->configDir,
-                                lxc_driver->autostartDir,
-                                0, 1 << VIR_DOMAIN_VIRT_LXC,
-                                NULL, NULL) < 0)
+    if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
+                                       lxc_driver->caps,
+                                       lxc_driver->configDir,
+                                       lxc_driver->autostartDir,
+                                       0, 1 << VIR_DOMAIN_VIRT_LXC,
+                                       NULL, NULL) < 0)
         goto cleanup;
 
     lxcDriverUnlock(lxc_driver);
@@ -1536,12 +1538,12 @@ lxcReload(void) {
         return 0;
 
     lxcDriverLock(lxc_driver);
-    virDomainLoadAllConfigs(lxc_driver->caps,
-                            &lxc_driver->domains,
-                            lxc_driver->configDir,
-                            lxc_driver->autostartDir,
-                            0, 1 << VIR_DOMAIN_VIRT_LXC,
-                            lxcNotifyLoadDomain, lxc_driver);
+    virDomainObjListLoadAllConfigs(lxc_driver->domains,
+                                   lxc_driver->caps,
+                                   lxc_driver->configDir,
+                                   lxc_driver->autostartDir,
+                                   0, 1 << VIR_DOMAIN_VIRT_LXC,
+                                   lxcNotifyLoadDomain, lxc_driver);
     lxcDriverUnlock(lxc_driver);
 
     return 0;
@@ -1554,7 +1556,7 @@ static int lxcShutdown(void)
 
     lxcDriverLock(lxc_driver);
     virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
-    virDomainObjListDeinit(&lxc_driver->domains);
+    virDomainObjListFree(lxc_driver->domains);
     virDomainEventStateFree(lxc_driver->domainEventState);
 
     virLXCProcessAutoDestroyShutdown(lxc_driver);
@@ -1774,7 +1776,7 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
 
     lxcDriverLock(driver);
 
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1916,7 +1918,7 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
         cpu_bw_status = !!rc;
     }
 
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2029,7 +2031,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
     lxcDriverLock(driver);
 
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2127,7 +2129,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
     lxcDriverLock(driver);
 
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (vm == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2228,7 +2230,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -2283,7 +2285,7 @@ static int lxcDomainGetAutostart(virDomainPtr dom,
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -2311,7 +2313,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2479,7 +2481,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2544,7 +2546,7 @@ static int lxcDomainResume(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2604,7 +2606,7 @@ lxcDomainOpenConsole(virDomainPtr dom,
 
     lxcDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
@@ -2682,7 +2684,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
 
     lxcDriverLock(driver);
     virUUIDFormat(dom->uuid, uuidstr);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -2747,7 +2749,7 @@ lxcListAllDomains(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     lxcDriverLock(driver);
-    ret = virDomainList(conn, driver->domains.objs, domains, flags);
+    ret = virDomainObjListExport(driver->domains, conn, domains, flags);
     lxcDriverUnlock(driver);
 
     return ret;
@@ -2769,7 +2771,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
                   VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -2858,7 +2860,7 @@ lxcDomainReboot(virDomainPtr dom,
                   VIR_DOMAIN_REBOOT_SIGNAL, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
 
     if (!vm) {
@@ -4301,7 +4303,7 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -4485,7 +4487,7 @@ static int lxcDomainOpenNamespace(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];

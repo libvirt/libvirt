@@ -458,7 +458,7 @@ static int parallelsLoadPools(virConnectPtr conn)
 
     data.conn = conn;
     data.failed = false;
-    virHashForEach(privconn->domains.objs, parallelsPoolsAdd, &data);
+    virHashForEach(privconn->domains->objs, parallelsPoolsAdd, &data);
 
     if (data.failed)
         goto error;

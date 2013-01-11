@@ -58,7 +58,7 @@ struct _virLXCDriver {
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
-    virDomainObjList domains;
+    virDomainObjListPtr domains;
     char *configDir;
     char *autostartDir;
     char *stateDir;
