@@ -200,7 +200,8 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
               "vmware-svga",
               "device-video-primary",
               "s390-sclp",
-              "usb-serial",
+
+              "usb-serial", /* 125 */
               "usb-net",
 
     );
