@@ -19,6 +19,14 @@ dnl
 
 AC_DEFUN([LIBVIRT_CHECK_CURL],[
   LIBVIRT_CHECK_PKG([CURL], [libcurl], [7.18.0])
+
+  # XXX as of libcurl-devel-7.20.1-3.fc13.x86_64, curl ships a version
+  # of <curl/curl.h> that #defines several wrapper macros around underlying
+  # functions to add type safety for gcc only.  However, these macros
+  # spuriously trip gcc's -Wlogical-op warning.  Avoid the warning by
+  # disabling the wrappers; even if it removes some type-check safety.
+  CURL_CFLAGS="-DCURL_DISABLE_TYPECHECK $CURL_CFLAGS"
+  AC_SUBST(CURL_CFLAGS)
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_CURL],[
