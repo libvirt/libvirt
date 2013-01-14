@@ -89,9 +89,17 @@ static const vshCmdInfo info_network_autostart[] = {
 };
 
 static const vshCmdOptDef opts_network_autostart[] = {
-    {"network",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {"disable", VSH_OT_BOOL, 0, N_("disable autostarting")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = "disable",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("disable autostarting")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -134,8 +142,12 @@ static const vshCmdInfo info_network_create[] = {
 };
 
 static const vshCmdOptDef opts_network_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML network description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML network description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -176,8 +188,12 @@ static const vshCmdInfo info_network_define[] = {
 };
 
 static const vshCmdOptDef opts_network_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML network description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML network description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -218,8 +234,12 @@ static const vshCmdInfo info_network_destroy[] = {
 };
 
 static const vshCmdOptDef opts_network_destroy[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -253,9 +273,17 @@ static const vshCmdInfo info_network_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_network_dumpxml[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {"inactive", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("network information of an inactive domain")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("network information of an inactive domain")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -297,8 +325,12 @@ static const vshCmdInfo info_network_info[] = {
 };
 
 static const vshCmdOptDef opts_network_info[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -570,13 +602,37 @@ static const vshCmdInfo info_network_list[] = {
 };
 
 static const vshCmdOptDef opts_network_list[] = {
-    {"inactive", VSH_OT_BOOL, 0, N_("list inactive networks")},
-    {"all", VSH_OT_BOOL, 0, N_("list inactive & active networks")},
-    {"persistent", VSH_OT_BOOL, 0, N_("list persistent networks")},
-    {"transient", VSH_OT_BOOL, 0, N_("list transient networks")},
-    {"autostart", VSH_OT_BOOL, 0, N_("list networks with autostart enabled")},
-    {"no-autostart", VSH_OT_BOOL, 0, N_("list networks with autostart disabled")},
-    {NULL, 0, 0, NULL}
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive networks")
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive & active networks")
+    },
+    {.name = "persistent",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list persistent networks")
+    },
+    {.name = "transient",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list transient networks")
+    },
+    {.name = "autostart",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list networks with autostart enabled")
+    },
+    {.name = "no-autostart",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list networks with autostart disabled")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -650,8 +706,12 @@ static const vshCmdInfo info_network_name[] = {
 };
 
 static const vshCmdOptDef opts_network_name[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -678,8 +738,12 @@ static const vshCmdInfo info_network_start[] = {
 };
 
 static const vshCmdOptDef opts_network_start[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -712,8 +776,12 @@ static const vshCmdInfo info_network_undefine[] = {
 };
 
 static const vshCmdOptDef opts_network_undefine[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -747,19 +815,48 @@ static const vshCmdInfo info_network_update[] = {
 };
 
 static const vshCmdOptDef opts_network_update[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {"command", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("type of update (add-first, add-last (add), delete, or modify)")},
-    {"section", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("which section of network configuration to update")},
-    {"xml", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("name of file containing xml (or, if it starts with '<', the complete "
-        "xml element itself) to add/modify, or to be matched for search")},
-    {"parent-index", VSH_OT_INT, 0, N_("which parent object to search through")},
-    {"config", VSH_OT_BOOL, 0, N_("affect next network startup")},
-    {"live", VSH_OT_BOOL, 0, N_("affect running network")},
-    {"current", VSH_OT_BOOL, 0, N_("affect current state of network")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = "command",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("type of update (add-first, add-last (add), delete, or modify)")
+    },
+    {.name = "section",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("which section of network configuration to update")
+    },
+    {.name = "xml",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("name of file containing xml (or, if it starts with '<', the complete "
+                "xml element itself) to add/modify, or to be matched for search")
+    },
+    {.name = "parent-index",
+     .type = VSH_OT_INT,
+     .flags = 0,
+     .help = N_("which parent object to search through")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("affect next network startup")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("affect running network")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("affect current state of network")
+    },
+    {.name = NULL}
 };
 
 VIR_ENUM_DECL(virNetworkUpdateCommand)
@@ -901,8 +998,12 @@ static const vshCmdInfo info_network_uuid[] = {
 };
 
 static const vshCmdOptDef opts_network_uuid[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -934,8 +1035,12 @@ static const vshCmdInfo info_network_edit[] = {
 };
 
 static const vshCmdOptDef opts_network_edit[] = {
-    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "network",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network name or uuid")
+    },
+    {.name = NULL}
 };
 
 static char *vshNetworkGetXMLDesc(virNetworkPtr network)
