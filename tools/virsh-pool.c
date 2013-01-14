@@ -85,9 +85,17 @@ static const vshCmdInfo info_pool_autostart[] = {
 };
 
 static const vshCmdOptDef opts_pool_autostart[] = {
-    {"pool",  VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {"disable", VSH_OT_BOOL, 0, N_("disable autostarting")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = "disable",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("disable autostarting")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -130,9 +138,12 @@ static const vshCmdInfo info_pool_create[] = {
 };
 
 static const vshCmdOptDef opts_pool_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("file containing an XML pool description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML pool description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -167,16 +178,52 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
  * XML Building helper for pool-define-as and pool-create-as
  */
 static const vshCmdOptDef opts_pool_X_as[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name of the pool")},
-    {"print-xml", VSH_OT_BOOL, 0, N_("print XML document, but don't define/create")},
-    {"type", VSH_OT_DATA, VSH_OFLAG_REQ, N_("type of the pool")},
-    {"source-host", VSH_OT_DATA, 0, N_("source-host for underlying storage")},
-    {"source-path", VSH_OT_DATA, 0, N_("source path for underlying storage")},
-    {"source-dev", VSH_OT_DATA, 0, N_("source device for underlying storage")},
-    {"source-name", VSH_OT_DATA, 0, N_("source name for underlying storage")},
-    {"target", VSH_OT_DATA, 0, N_("target for underlying storage")},
-    {"source-format", VSH_OT_STRING, 0, N_("format for underlying storage")},
-    {NULL, 0, 0, NULL}
+    {.name = "name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("name of the pool")
+    },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("print XML document, but don't define/create")
+    },
+    {.name = "type",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("type of the pool")
+    },
+    {.name = "source-host",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("source-host for underlying storage")
+    },
+    {.name = "source-path",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("source path for underlying storage")
+    },
+    {.name = "source-dev",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("source device for underlying storage")
+    },
+    {.name = "source-name",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("source name for underlying storage")
+    },
+    {.name = "target",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("target for underlying storage")
+    },
+    {.name = "source-format",
+     .type = VSH_OT_STRING,
+     .flags = 0,
+     .help = N_("format for underlying storage")
+    },
+    {.name = NULL}
 };
 
 static int buildPoolXML(const vshCmd *cmd, const char **retname, char **xml) {
@@ -287,8 +334,12 @@ static const vshCmdInfo info_pool_define[] = {
 };
 
 static const vshCmdOptDef opts_pool_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML pool description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML pool description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -367,10 +418,22 @@ static const vshCmdInfo info_pool_build[] = {
 };
 
 static const vshCmdOptDef opts_pool_build[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {"no-overwrite", VSH_OT_BOOL, 0, N_("do not overwrite an existing pool of this type")},
-    {"overwrite", VSH_OT_BOOL, 0, N_("overwrite any existing data")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = "no-overwrite",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("do not overwrite an existing pool of this type")
+    },
+    {.name = "overwrite",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("overwrite any existing data")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -415,8 +478,12 @@ static const vshCmdInfo info_pool_destroy[] = {
 };
 
 static const vshCmdOptDef opts_pool_destroy[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -450,8 +517,12 @@ static const vshCmdInfo info_pool_delete[] = {
 };
 
 static const vshCmdOptDef opts_pool_delete[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -485,8 +556,12 @@ static const vshCmdInfo info_pool_refresh[] = {
 };
 
 static const vshCmdOptDef opts_pool_refresh[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -520,9 +595,17 @@ static const vshCmdInfo info_pool_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_pool_dumpxml[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {"inactive", VSH_OT_BOOL, 0, N_("show inactive defined XML")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("show inactive defined XML")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -786,15 +869,47 @@ static const vshCmdInfo info_pool_list[] = {
 };
 
 static const vshCmdOptDef opts_pool_list[] = {
-    {"inactive", VSH_OT_BOOL, 0, N_("list inactive pools")},
-    {"all", VSH_OT_BOOL, 0, N_("list inactive & active pools")},
-    {"transient", VSH_OT_BOOL, 0, N_("list transient pools")},
-    {"persistent", VSH_OT_BOOL, 0, N_("list persistent pools")},
-    {"autostart", VSH_OT_BOOL, 0, N_("list pools with autostart enabled")},
-    {"no-autostart", VSH_OT_BOOL, 0, N_("list pools with autostart disabled")},
-    {"type", VSH_OT_STRING, 0, N_("only list pool of specified type(s) (if supported)")},
-    {"details", VSH_OT_BOOL, 0, N_("display extended details for pools")},
-    {NULL, 0, 0, NULL}
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive pools")
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive & active pools")
+    },
+    {.name = "transient",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list transient pools")
+    },
+    {.name = "persistent",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list persistent pools")
+    },
+    {.name = "autostart",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list pools with autostart enabled")
+    },
+    {.name = "no-autostart",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list pools with autostart disabled")
+    },
+    {.name = "type",
+     .type = VSH_OT_STRING,
+     .flags = 0,
+     .help = N_("only list pool of specified type(s) (if supported)")
+    },
+    {.name = "details",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("display extended details for pools")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1206,12 +1321,27 @@ static const vshCmdInfo info_find_storage_pool_sources_as[] = {
 };
 
 static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
-    {"type", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("type of storage pool sources to find")},
-    {"host", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional host to query")},
-    {"port", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional port to query")},
-    {"initiator", VSH_OT_DATA, VSH_OFLAG_NONE, N_("optional initiator IQN to use for query")},
-    {NULL, 0, 0, NULL}
+    {.name = "type",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("type of storage pool sources to find")
+    },
+    {.name = "host",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("optional host to query")
+    },
+    {.name = "port",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("optional port to query")
+    },
+    {.name = "initiator",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("optional initiator IQN to use for query")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1278,11 +1408,17 @@ static const vshCmdInfo info_find_storage_pool_sources[] = {
 };
 
 static const vshCmdOptDef opts_find_storage_pool_sources[] = {
-    {"type", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("type of storage pool sources to discover")},
-    {"srcSpec", VSH_OT_DATA, VSH_OFLAG_NONE,
-     N_("optional file of source xml to query for pools")},
-    {NULL, 0, 0, NULL}
+    {.name = "type",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("type of storage pool sources to discover")
+    },
+    {.name = "srcSpec",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("optional file of source xml to query for pools")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1325,8 +1461,12 @@ static const vshCmdInfo info_pool_info[] = {
 };
 
 static const vshCmdOptDef opts_pool_info[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1417,8 +1557,12 @@ static const vshCmdInfo info_pool_name[] = {
 };
 
 static const vshCmdOptDef opts_pool_name[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1445,8 +1589,12 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("name or uuid of the inactive pool")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("name or uuid of the inactive pool")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1480,8 +1628,12 @@ static const vshCmdInfo info_pool_undefine[] = {
 };
 
 static const vshCmdOptDef opts_pool_undefine[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1515,8 +1667,12 @@ static const vshCmdInfo info_pool_uuid[] = {
 };
 
 static const vshCmdOptDef opts_pool_uuid[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -1548,8 +1704,12 @@ static const vshCmdInfo info_pool_edit[] = {
 };
 
 static const vshCmdOptDef opts_pool_edit[] = {
-    {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "pool",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("pool name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
