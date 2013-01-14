@@ -1172,7 +1172,7 @@ virSecuritySELinuxSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file, void *opaque)
 {
     virSecurityLabelDefPtr secdef;
@@ -1196,19 +1196,19 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         if (dev->missing)
             return 0;
 
-        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device,
-                           vroot);
+        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                              dev->source.subsys.u.usb.device,
+                              vroot);
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(usb, virSecuritySELinuxSetSecurityUSBLabel, def);
-        usbFreeDevice(usb);
+        ret = virUSBDeviceFileIterate(usb, virSecuritySELinuxSetSecurityUSBLabel, def);
+        virUSBDeviceFree(usb);
         break;
     }
 
@@ -1337,7 +1337,7 @@ virSecuritySELinuxRestoreSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxRestoreSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                           const char *file,
                                           void *opaque)
 {
@@ -1357,19 +1357,19 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         if (dev->missing)
             return 0;
 
-        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device,
-                           vroot);
+        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                              dev->source.subsys.u.usb.device,
+                              vroot);
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(usb, virSecuritySELinuxRestoreSecurityUSBLabel, mgr);
-        usbFreeDevice(usb);
+        ret = virUSBDeviceFileIterate(usb, virSecuritySELinuxRestoreSecurityUSBLabel, mgr);
+        virUSBDeviceFree(usb);
 
         break;
     }

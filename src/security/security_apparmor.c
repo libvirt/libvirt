@@ -306,7 +306,7 @@ reload_profile(virSecurityManagerPtr mgr,
 }
 
 static int
-AppArmorSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
+AppArmorSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                            const char *file, void *opaque)
 {
     struct SDPDOP *ptr = opaque;
@@ -770,15 +770,16 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device,
-                                      vroot);
+        virUSBDevicePtr usb =
+            virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                            dev->source.subsys.u.usb.device,
+                            vroot);
 
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(usb, AppArmorSetSecurityUSBLabel, ptr);
-        usbFreeDevice(usb);
+        ret = virUSBDeviceFileIterate(usb, AppArmorSetSecurityUSBLabel, ptr);
+        virUSBDeviceFree(usb);
         break;
     }
 

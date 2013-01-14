@@ -845,7 +845,7 @@ vah_add_file_chardev(virBufferPtr buf,
 }
 
 static int
-file_iterate_hostdev_cb(usbDevice *dev ATTRIBUTE_UNUSED,
+file_iterate_hostdev_cb(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                         const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;
@@ -1007,15 +1007,16 @@ get_files(vahControl * ctl)
             virDomainHostdevDefPtr dev = ctl->def->hostdevs[i];
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                              dev->source.subsys.u.usb.device,
-                                              NULL);
+                virUSBDevicePtr usb =
+                    virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                                    dev->source.subsys.u.usb.device,
+                                    NULL);
 
                 if (usb == NULL)
                     continue;
 
-                rc = usbDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
-                usbFreeDevice(usb);
+                rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
+                virUSBDeviceFree(usb);
                 if (rc != 0)
                     goto clean;
                 break;

@@ -66,7 +66,7 @@ struct _virLXCDriver {
     int log_libvirtd;
     int have_netns;
 
-    usbDeviceList *activeUsbHostdevs;
+    virUSBDeviceListPtr activeUsbHostdevs;
 
     virDomainEventStatePtr domainEventState;
 

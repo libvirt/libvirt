@@ -777,7 +777,7 @@ qemuStartup(bool privileged,
     if ((qemu_driver->activePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
 
-    if ((qemu_driver->activeUsbHostdevs = usbDeviceListNew()) == NULL)
+    if ((qemu_driver->activeUsbHostdevs = virUSBDeviceListNew()) == NULL)
         goto error;
 
     if ((qemu_driver->inactivePciHostdevs = virPCIDeviceListNew()) == NULL)
@@ -1049,7 +1049,7 @@ qemuShutdown(void) {
     virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
     virPCIDeviceListFree(qemu_driver->activePciHostdevs);
     virPCIDeviceListFree(qemu_driver->inactivePciHostdevs);
-    usbDeviceListFree(qemu_driver->activeUsbHostdevs);
+    virUSBDeviceListFree(qemu_driver->activeUsbHostdevs);
     virHashFree(qemu_driver->sharedDisks);
     virCapabilitiesFree(qemu_driver->caps);
     qemuCapsCacheFree(qemu_driver->capsCache);

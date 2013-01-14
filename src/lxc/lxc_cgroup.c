@@ -292,7 +292,7 @@ struct _virLXCCgroupDevicePolicy {
 
 
 int
-virLXCSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+virLXCSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                const char *path,
                                void *opaque)
 {
@@ -314,7 +314,7 @@ virLXCSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
 
 
 int
-virLXCTeardownHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+virLXCTeardownHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                   const char *path,
                                   void *opaque)
 {
@@ -412,7 +412,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         switch (hostdev->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
@@ -421,17 +421,17 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             if (hostdev->missing)
                 continue;
 
-            if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                                    hostdev->source.subsys.u.usb.device,
-                                    NULL)) == NULL)
+            if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
+                                       hostdev->source.subsys.u.usb.device,
+                                       NULL)) == NULL)
                 goto cleanup;
 
-            if (usbDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
-                                     cgroup) < 0) {
-                usbFreeDevice(usb);
+            if (virUSBDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
+                                        cgroup) < 0) {
+                virUSBDeviceFree(usb);
                 goto cleanup;
             }
-            usbFreeDevice(usb);
+            virUSBDeviceFree(usb);
             break;
         case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
             switch (hostdev->source.caps.type) {

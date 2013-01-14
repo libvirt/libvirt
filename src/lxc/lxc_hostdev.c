@@ -41,7 +41,7 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
         return 0;
 
     for (i = 0; i < def->nhostdevs; i++) {
-        usbDevice *usb = NULL;
+        virUSBDevicePtr usb = NULL;
         hostdev = def->hostdevs[i];
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -49,9 +49,9 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
             continue;
 
-        usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                           hostdev->source.subsys.u.usb.device,
-                           NULL);
+        usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
+                              hostdev->source.subsys.u.usb.device,
+                              NULL);
         if (!usb) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
                      hostdev->source.subsys.u.usb.bus,
@@ -60,10 +60,10 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
             continue;
         }
 
-        usbDeviceSetUsedBy(usb, def->name);
+        virUSBDeviceSetUsedBy(usb, def->name);
 
-        if (usbDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
-            usbFreeDevice(usb);
+        if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
+            virUSBDeviceFree(usb);
             return -1;
         }
     }
@@ -75,47 +75,47 @@ virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
 int
 virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
                                const char *name,
-                               usbDeviceList *list)
+                               virUSBDeviceList *list)
 {
     size_t i, j;
     unsigned int count;
-    usbDevice *tmp;
+    virUSBDevicePtr tmp;
 
-    count = usbDeviceListCount(list);
+    count = virUSBDeviceListCount(list);
 
     for (i = 0; i < count; i++) {
-        usbDevice *usb = usbDeviceListGet(list, i);
-        if ((tmp = usbDeviceListFind(driver->activeUsbHostdevs, usb))) {
-            const char *other_name = usbDeviceGetUsedBy(tmp);
+        virUSBDevicePtr usb = virUSBDeviceListGet(list, i);
+        if ((tmp = virUSBDeviceListFind(driver->activeUsbHostdevs, usb))) {
+            const char *other_name = virUSBDeviceGetUsedBy(tmp);
 
             if (other_name)
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("USB device %s is in use by domain %s"),
-                               usbDeviceGetName(tmp), other_name);
+                               virUSBDeviceGetName(tmp), other_name);
             else
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("USB device %s is already in use"),
-                               usbDeviceGetName(tmp));
+                               virUSBDeviceGetName(tmp));
             goto error;
         }
 
-        usbDeviceSetUsedBy(usb, name);
+        virUSBDeviceSetUsedBy(usb, name);
         VIR_DEBUG("Adding %03d.%03d dom=%s to activeUsbHostdevs",
-                  usbDeviceGetBus(usb), usbDeviceGetDevno(usb), name);
+                  virUSBDeviceGetBus(usb), virUSBDeviceGetDevno(usb), name);
         /*
          * The caller is responsible to steal these usb devices
-         * from the usbDeviceList that passed in on success,
+         * from the virUSBDeviceList that passed in on success,
          * perform rollback on failure.
          */
-        if (usbDeviceListAdd(driver->activeUsbHostdevs, usb) < 0)
+        if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0)
             goto error;
     }
     return 0;
 
 error:
     for (j = 0; j < i; j++) {
-        tmp = usbDeviceListGet(list, i);
-        usbDeviceListSteal(driver->activeUsbHostdevs, tmp);
+        tmp = virUSBDeviceListGet(list, i);
+        virUSBDeviceListSteal(driver->activeUsbHostdevs, tmp);
     }
     return -1;
 }
@@ -123,7 +123,7 @@ error:
 int
 virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                            bool mandatory,
-                           usbDevice **usb)
+                           virUSBDevicePtr *usb)
 {
     unsigned vendor = hostdev->source.subsys.u.usb.vendor;
     unsigned product = hostdev->source.subsys.u.usb.product;
@@ -135,10 +135,10 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
     *usb = NULL;
 
     if (vendor && bus) {
-        rc = usbFindDevice(vendor, product, bus, device,
-                           NULL,
-                           autoAddress ? false : mandatory,
-                           usb);
+        rc = virUSBDeviceFind(vendor, product, bus, device,
+                              NULL,
+                              autoAddress ? false : mandatory,
+                              usb);
         if (rc < 0) {
             return -1;
         } else if (!autoAddress) {
@@ -155,19 +155,19 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
      * automatically found before.
      */
     if (vendor) {
-        usbDeviceList *devs;
+        virUSBDeviceList *devs;
 
-        rc = usbFindDeviceByVendor(vendor, product,
-                                   NULL,
-                                   mandatory, &devs);
+        rc = virUSBDeviceFindByVendor(vendor, product,
+                                      NULL,
+                                      mandatory, &devs);
         if (rc < 0)
             return -1;
 
         if (rc == 1) {
-            *usb = usbDeviceListGet(devs, 0);
-            usbDeviceListSteal(devs, *usb);
+            *usb = virUSBDeviceListGet(devs, 0);
+            virUSBDeviceListSteal(devs, *usb);
         }
-        usbDeviceListFree(devs);
+        virUSBDeviceListFree(devs);
 
         if (rc == 0) {
             goto out;
@@ -186,8 +186,8 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
             return -1;
         }
 
-        hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(*usb);
-        hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(*usb);
+        hostdev->source.subsys.u.usb.bus = virUSBDeviceGetBus(*usb);
+        hostdev->source.subsys.u.usb.device = virUSBDeviceGetDevno(*usb);
         hostdev->source.subsys.u.usb.autoAddress = true;
 
         if (autoAddress) {
@@ -199,9 +199,9 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                      bus, device);
         }
     } else if (!vendor && bus) {
-        if (usbFindDeviceByBus(bus, device,
-                               NULL,
-                               mandatory, usb) < 0)
+        if (virUSBDeviceFindByBus(bus, device,
+                                  NULL,
+                                  mandatory, usb) < 0)
             return -1;
     }
 
@@ -217,8 +217,8 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
 {
     size_t i;
     int ret = -1;
-    usbDeviceList *list;
-    usbDevice *tmp;
+    virUSBDeviceList *list;
+    virUSBDevicePtr tmp;
     virDomainHostdevDefPtr *hostdevs = def->hostdevs;
     int nhostdevs = def->nhostdevs;
 
@@ -227,7 +227,7 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
      * This is done in several loops which cannot be joined into one big
      * loop. See virLXCPrepareHostdevPCIDevices()
      */
-    if (!(list = usbDeviceListNew()))
+    if (!(list = virUSBDeviceListNew()))
         goto cleanup;
 
     /* Loop 1: build temporary list
@@ -235,7 +235,7 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
     for (i = 0 ; i < nhostdevs ; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         bool required = true;
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -248,8 +248,8 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
         if (virLXCFindHostdevUSBDevice(hostdev, required, &usb) < 0)
             goto cleanup;
 
-        if (usb && usbDeviceListAdd(list, usb) < 0) {
-            usbFreeDevice(usb);
+        if (usb && virUSBDeviceListAdd(list, usb) < 0) {
+            virUSBDeviceFree(usb);
             goto cleanup;
         }
     }
@@ -265,15 +265,15 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
      * driver list, so steal all items to avoid freeing them
      * in cleanup label.
      */
-    while (usbDeviceListCount(list) > 0) {
-        tmp = usbDeviceListGet(list, 0);
-        usbDeviceListSteal(list, tmp);
+    while (virUSBDeviceListCount(list) > 0) {
+        tmp = virUSBDeviceListGet(list, 0);
+        virUSBDeviceListSteal(list, tmp);
     }
 
     ret = 0;
 
 cleanup:
-    usbDeviceListFree(list);
+    virUSBDeviceListFree(list);
     return ret;
 }
 
@@ -342,7 +342,7 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
-        usbDevice *usb, *tmp;
+        virUSBDevicePtr usb, tmp;
         const char *used_by = NULL;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -352,9 +352,9 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
         if (hostdev->missing)
             continue;
 
-        usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                           hostdev->source.subsys.u.usb.device,
-                           NULL);
+        usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
+                              hostdev->source.subsys.u.usb.device,
+                              NULL);
 
         if (!usb) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
@@ -370,8 +370,8 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
          * Therefore we want to steal only those devices from
          * the list which were taken by @name */
 
-        tmp = usbDeviceListFind(driver->activeUsbHostdevs, usb);
-        usbFreeDevice(usb);
+        tmp = virUSBDeviceListFind(driver->activeUsbHostdevs, usb);
+        virUSBDeviceFree(usb);
 
         if (!tmp) {
             VIR_WARN("Unable to find device %03d.%03d "
@@ -381,14 +381,14 @@ virLXCDomainReAttachHostUsbDevices(virLXCDriverPtr driver,
             continue;
         }
 
-        used_by = usbDeviceGetUsedBy(tmp);
+        used_by = virUSBDeviceGetUsedBy(tmp);
         if (STREQ_NULLABLE(used_by, name)) {
             VIR_DEBUG("Removing %03d.%03d dom=%s from activeUsbHostdevs",
                       hostdev->source.subsys.u.usb.bus,
                       hostdev->source.subsys.u.usb.device,
                       name);
 
-            usbDeviceListDel(driver->activeUsbHostdevs, tmp);
+            virUSBDeviceListDel(driver->activeUsbHostdevs, tmp);
         }
     }
 }

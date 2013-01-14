@@ -453,7 +453,7 @@ virSecurityDACSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
+virSecurityDACSetSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                   const char *file,
                                   void *opaque)
 {
@@ -489,20 +489,20 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         if (dev->missing)
             return 0;
 
-        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device,
-                           vroot);
+        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                              dev->source.subsys.u.usb.device,
+                              vroot);
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(usb, virSecurityDACSetSecurityUSBLabel,
-                                   params);
-        usbFreeDevice(usb);
+        ret = virUSBDeviceFileIterate(usb, virSecurityDACSetSecurityUSBLabel,
+                                      params);
+        virUSBDeviceFree(usb);
         break;
     }
 
@@ -543,9 +543,9 @@ virSecurityDACRestoreSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
-                                       const char *file,
-                                       void *opaque ATTRIBUTE_UNUSED)
+virSecurityDACRestoreSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+                                      const char *file,
+                                      void *opaque ATTRIBUTE_UNUSED)
 {
     return virSecurityDACRestoreSecurityFileLabel(file);
 }
@@ -569,19 +569,19 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb;
+        virUSBDevicePtr usb;
 
         if (dev->missing)
             return 0;
 
-        usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                           dev->source.subsys.u.usb.device,
-                           vroot);
+        usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                              dev->source.subsys.u.usb.device,
+                              vroot);
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(usb, virSecurityDACRestoreSecurityUSBLabel, mgr);
-        usbFreeDevice(usb);
+        ret = virUSBDeviceFileIterate(usb, virSecurityDACRestoreSecurityUSBLabel, mgr);
+        virUSBDeviceFree(usb);
 
         break;
     }

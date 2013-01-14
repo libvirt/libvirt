@@ -3373,7 +3373,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
     struct stat sb;
     mode_t mode;
     bool created = false;
-    usbDevice *usb = NULL;
+    virUSBDevicePtr usb = NULL;
     virCgroupPtr group = NULL;
 
     if (virDomainHostdevFind(vm->def, def, NULL) >= 0) {
@@ -3421,8 +3421,8 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(usb = usbGetDevice(def->source.subsys.u.usb.bus,
-                             def->source.subsys.u.usb.device, vroot)))
+    if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
+                                def->source.subsys.u.usb.device, vroot)))
         goto cleanup;
 
     if (stat(src, &sb) < 0) {
@@ -3460,7 +3460,7 @@ lxcDomainAttachDeviceHostdevSubsysUSBLive(virLXCDriverPtr driver,
                                           vm->def, def, vroot) < 0)
         goto cleanup;
 
-    if (usbDeviceFileIterate(usb,
+    if (virUSBDeviceFileIterate(usb,
                              virLXCSetupHostUsbDeviceCgroup,
                              &group) < 0)
         goto cleanup;
@@ -3472,7 +3472,7 @@ cleanup:
     if (ret < 0 && created)
         unlink(dstfile);
 
-    usbFreeDevice(usb);
+    virUSBDeviceFree(usb);
     virCgroupFree(&group);
     VIR_FREE(src);
     VIR_FREE(dstfile);
@@ -3963,7 +3963,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     int idx, ret = -1;
     char *dst = NULL;
     char *vroot;
-    usbDevice *usb = NULL;
+    virUSBDevicePtr usb = NULL;
 
     if ((idx = virDomainHostdevFind(vm->def,
                                     dev->data.hostdev,
@@ -3999,8 +3999,8 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(usb = usbGetDevice(def->source.subsys.u.usb.bus,
-                             def->source.subsys.u.usb.device, vroot)))
+    if (!(usb = virUSBDeviceNew(def->source.subsys.u.usb.bus,
+                                def->source.subsys.u.usb.device, vroot)))
         goto cleanup;
 
     VIR_DEBUG("Unlinking %s", dst);
@@ -4012,13 +4012,13 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     }
     virDomainAuditHostdev(vm, def, "detach", true);
 
-    if (usbDeviceFileIterate(usb,
+    if (virUSBDeviceFileIterate(usb,
                              virLXCTeardownHostUsbDeviceCgroup,
                              &group) < 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  dst, vm->def->name);
 
-    usbDeviceListDel(driver->activeUsbHostdevs, usb);
+    virUSBDeviceListDel(driver->activeUsbHostdevs, usb);
 
     virDomainHostdevRemove(vm->def, idx);
     virDomainHostdevDefFree(def);
@@ -4026,7 +4026,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     ret = 0;
 
 cleanup:
-    usbFreeDevice(usb);
+    virUSBDeviceFree(usb);
     VIR_FREE(dst);
     virCgroupFree(&group);
     return ret;

@@ -29,40 +29,42 @@
 
 # define USB_DEVFS "/dev/bus/usb/"
 
-typedef struct _usbDevice usbDevice;
-typedef struct _usbDeviceList usbDeviceList;
+typedef struct _virUSBDevice virUSBDevice;
+typedef virUSBDevice *virUSBDevicePtr;
+typedef struct _virUSBDeviceList virUSBDeviceList;
+typedef virUSBDeviceList *virUSBDeviceListPtr;
 
-usbDevice *usbGetDevice(unsigned int bus,
-                        unsigned int devno,
-                        const char *vroot);
+virUSBDevicePtr virUSBDeviceNew(unsigned int bus,
+                                unsigned int devno,
+                                const char *vroot);
 
-int usbFindDeviceByBus(unsigned int bus,
-                       unsigned int devno,
-                       const char *vroot,
-                       bool mandatory,
-                       usbDevice **usb);
-
-int usbFindDeviceByVendor(unsigned int vendor,
-                          unsigned int product,
+int virUSBDeviceFindByBus(unsigned int bus,
+                          unsigned int devno,
                           const char *vroot,
                           bool mandatory,
-                          usbDeviceList **devices);
+                          virUSBDevicePtr *usb);
 
-int usbFindDevice(unsigned int vendor,
-                  unsigned int product,
-                  unsigned int bus,
-                  unsigned int devno,
-                  const char *vroot,
-                  bool mandatory,
-                  usbDevice **usb);
+int virUSBDeviceFindByVendor(unsigned int vendor,
+                             unsigned int product,
+                             const char *vroot,
+                             bool mandatory,
+                             virUSBDeviceListPtr *devices);
 
-void       usbFreeDevice (usbDevice *dev);
-void       usbDeviceSetUsedBy(usbDevice *dev, const char *name);
-const char *usbDeviceGetUsedBy(usbDevice *dev);
-const char *usbDeviceGetName(usbDevice *dev);
+int virUSBDeviceFind(unsigned int vendor,
+                     unsigned int product,
+                     unsigned int bus,
+                     unsigned int devno,
+                     const char *vroot,
+                     bool mandatory,
+                     virUSBDevicePtr *usb);
 
-unsigned int usbDeviceGetBus(usbDevice *dev);
-unsigned int usbDeviceGetDevno(usbDevice *dev);
+void virUSBDeviceFree(virUSBDevicePtr dev);
+void virUSBDeviceSetUsedBy(virUSBDevicePtr dev, const char *name);
+const char *virUSBDeviceGetUsedBy(virUSBDevicePtr dev);
+const char *virUSBDeviceGetName(virUSBDevicePtr dev);
+
+unsigned int virUSBDeviceGetBus(virUSBDevicePtr dev);
+unsigned int virUSBDeviceGetDevno(virUSBDevicePtr dev);
 
 /*
  * Callback that will be invoked once for each file
@@ -71,25 +73,25 @@ unsigned int usbDeviceGetDevno(usbDevice *dev);
  * Should return 0 if successfully processed, or
  * -1 to indicate error and abort iteration
  */
-typedef int (*usbDeviceFileActor)(usbDevice *dev,
-                                  const char *path, void *opaque);
+typedef int (*virUSBDeviceFileActor)(virUSBDevicePtr dev,
+                                     const char *path, void *opaque);
 
-int usbDeviceFileIterate(usbDevice *dev,
-                         usbDeviceFileActor actor,
-                         void *opaque);
+int virUSBDeviceFileIterate(virUSBDevicePtr dev,
+                            virUSBDeviceFileActor actor,
+                            void *opaque);
 
-usbDeviceList *usbDeviceListNew(void);
-void           usbDeviceListFree(usbDeviceList *list);
-int            usbDeviceListAdd(usbDeviceList *list,
-                                usbDevice *dev);
-usbDevice *    usbDeviceListGet(usbDeviceList *list,
-                                int idx);
-int            usbDeviceListCount(usbDeviceList *list);
-usbDevice *    usbDeviceListSteal(usbDeviceList *list,
-                                  usbDevice *dev);
-void           usbDeviceListDel(usbDeviceList *list,
-                                usbDevice *dev);
-usbDevice *    usbDeviceListFind(usbDeviceList *list,
-                                 usbDevice *dev);
+virUSBDeviceListPtr virUSBDeviceListNew(void);
+void virUSBDeviceListFree(virUSBDeviceListPtr list);
+int virUSBDeviceListAdd(virUSBDeviceListPtr list,
+                        virUSBDevicePtr dev);
+virUSBDevicePtr virUSBDeviceListGet(virUSBDeviceListPtr list,
+                                    int idx);
+int virUSBDeviceListCount(virUSBDeviceListPtr list);
+virUSBDevicePtr virUSBDeviceListSteal(virUSBDeviceListPtr list,
+                                      virUSBDevicePtr dev);
+void virUSBDeviceListDel(virUSBDeviceListPtr list,
+                         virUSBDevicePtr dev);
+virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
+                                     virUSBDevicePtr dev);
 
 #endif /* __VIR_USB_H__ */

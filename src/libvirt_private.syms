@@ -1221,25 +1221,25 @@ virThreadSelfID;
 
 
 # usb.h
-usbDeviceFileIterate;
-usbDeviceGetBus;
-usbDeviceGetDevno;
-usbDeviceGetName;
-usbDeviceGetUsedBy;
-usbDeviceListAdd;
-usbDeviceListCount;
-usbDeviceListDel;
-usbDeviceListFind;
-usbDeviceListFree;
-usbDeviceListGet;
-usbDeviceListNew;
-usbDeviceListSteal;
-usbDeviceSetUsedBy;
-usbFindDevice;
-usbFindDeviceByBus;
-usbFindDeviceByVendor;
-usbFreeDevice;
-usbGetDevice;
+virUSBDeviceFileIterate;
+virUSBDeviceFind;
+virUSBDeviceFindByBus;
+virUSBDeviceFindByVendor;
+virUSBDeviceFree;
+virUSBDeviceGetBus;
+virUSBDeviceGetDevno;
+virUSBDeviceGetName;
+virUSBDeviceGetUsedBy;
+virUSBDeviceListAdd;
+virUSBDeviceListCount;
+virUSBDeviceListDel;
+virUSBDeviceListFind;
+virUSBDeviceListFree;
+virUSBDeviceListGet;
+virUSBDeviceListNew;
+virUSBDeviceListSteal;
+virUSBDeviceNew;
+virUSBDeviceSetUsedBy;
 
 
 # util.h

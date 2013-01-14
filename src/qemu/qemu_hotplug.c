@@ -1118,7 +1118,7 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
 
     if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virCgroupPtr cgroup = NULL;
-        usbDevice *usb;
+        virUSBDevicePtr usb;
         qemuCgroupData data;
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
@@ -1128,14 +1128,14 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
             goto error;
         }
 
-        if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
+        if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
                                 hostdev->source.subsys.u.usb.device,
                                 NULL)) == NULL)
             goto error;
 
         data.vm = vm;
         data.cgroup = cgroup;
-        if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, &data) < 0)
+        if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, &data) < 0)
             goto error;
     }
 
@@ -1166,8 +1166,8 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
-    usbDeviceList *list;
-    usbDevice *usb = NULL;
+    virUSBDeviceList *list;
+    virUSBDevicePtr usb = NULL;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1176,15 +1176,15 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(list = usbDeviceListNew()))
+    if (!(list = virUSBDeviceListNew()))
         goto cleanup;
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
         if (qemuFindHostdevUSBDevice(hostdev, true, &usb) < 0)
             goto cleanup;
 
-        if (usbDeviceListAdd(list, usb) < 0) {
-            usbFreeDevice(usb);
+        if (virUSBDeviceListAdd(list, usb) < 0) {
+            virUSBDeviceFree(usb);
             usb = NULL;
             goto cleanup;
         }
@@ -1194,7 +1194,7 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        usbDeviceListSteal(list, usb);
+        virUSBDeviceListSteal(list, usb);
     }
 
     if (virSecurityManagerSetHostdevLabel(driver->securityManager,
@@ -1221,7 +1221,7 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    usbDeviceListFree(list);
+    virUSBDeviceListFree(list);
     return 0;
 
 error:
@@ -1230,9 +1230,9 @@ error:
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
 cleanup:
-    usbDeviceListFree(list);
+    virUSBDeviceListFree(list);
     if (usb)
-        usbDeviceListSteal(driver->activeUsbHostdevs, usb);
+        virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     return -1;
 }
 
@@ -2401,7 +2401,7 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysPtr subsys = &detach->source.subsys;
-    usbDevice *usb;
+    virUSBDevicePtr usb;
     int ret;
 
     if (!detach->info->alias) {
@@ -2423,10 +2423,10 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
     if (ret < 0)
         return -1;
 
-    usb = usbGetDevice(subsys->u.usb.bus, subsys->u.usb.device, NULL);
+    usb = virUSBDeviceNew(subsys->u.usb.bus, subsys->u.usb.device, NULL);
     if (usb) {
-        usbDeviceListDel(driver->activeUsbHostdevs, usb);
-        usbFreeDevice(usb);
+        virUSBDeviceListDel(driver->activeUsbHostdevs, usb);
+        virUSBDeviceFree(usb);
     } else {
         VIR_WARN("Unable to find device %03d.%03d in list of used USB devices",
                  subsys->u.usb.bus, subsys->u.usb.device);

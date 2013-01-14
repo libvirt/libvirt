@@ -173,7 +173,7 @@ qemuSetupChardevCgroup(virDomainDefPtr def,
 }
 
 
-int qemuSetupHostUsbDeviceCgroup(usbDevice *dev ATTRIBUTE_UNUSED,
+int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                  const char *path,
                                  void *opaque)
 {
@@ -287,7 +287,7 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
 
         for (i = 0; i < vm->def->nhostdevs; i++) {
             virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
-            usbDevice *usb;
+            virUSBDevicePtr usb;
 
             if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
                 continue;
@@ -296,17 +296,17 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
             if (hostdev->missing)
                 continue;
 
-            if ((usb = usbGetDevice(hostdev->source.subsys.u.usb.bus,
-                                    hostdev->source.subsys.u.usb.device,
-                                    NULL)) == NULL)
+            if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
+                                       hostdev->source.subsys.u.usb.device,
+                                       NULL)) == NULL)
                 goto cleanup;
 
-            if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
-                                     &data) < 0) {
-                usbFreeDevice(usb);
+            if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
+                                        &data) < 0) {
+                virUSBDeviceFree(usb);
                 goto cleanup;
             }
-            usbFreeDevice(usb);
+            virUSBDeviceFree(usb);
         }
     }
 

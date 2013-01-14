@@ -183,7 +183,7 @@ struct _virQEMUDriver {
 
     virPCIDeviceListPtr activePciHostdevs;
     virPCIDeviceListPtr inactivePciHostdevs;
-    usbDeviceList *activeUsbHostdevs;
+    virUSBDeviceListPtr activeUsbHostdevs;
 
     virHashTablePtr sharedDisks;
 

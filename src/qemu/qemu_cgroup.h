@@ -42,7 +42,7 @@ int qemuSetupDiskCgroup(virDomainObjPtr vm,
 int qemuTeardownDiskCgroup(virDomainObjPtr vm,
                            virCgroupPtr cgroup,
                            virDomainDiskDefPtr disk);
-int qemuSetupHostUsbDeviceCgroup(usbDevice *dev,
+int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev,
                                  const char *path,
                                  void *opaque);
 int qemuSetupCgroup(virQEMUDriverPtr driver,

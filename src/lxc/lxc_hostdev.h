@@ -31,10 +31,10 @@ int virLXCUpdateActiveUsbHostdevs(virLXCDriverPtr driver,
                                   virDomainDefPtr def);
 int virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
                                bool mandatory,
-                               usbDevice **usb);
+                               virUSBDevicePtr *usb);
 int virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
                                    const char *name,
-                                   usbDeviceList *list);
+                                   virUSBDeviceListPtr list);
 int virLXCPrepareHostDevices(virLXCDriverPtr driver,
                              virDomainDefPtr def);
 void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,

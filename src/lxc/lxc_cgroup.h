@@ -30,12 +30,12 @@ int virLXCCgroupSetup(virDomainDefPtr def);
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo);
 
 int
-virLXCSetupHostUsbDeviceCgroup(usbDevice *dev,
+virLXCSetupHostUsbDeviceCgroup(virUSBDevicePtr dev,
                                const char *path,
                                void *opaque);
 
 int
-virLXCTeardownHostUsbDeviceCgroup(usbDevice *dev,
+virLXCTeardownHostUsbDeviceCgroup(virUSBDevicePtr dev,
                                   const char *path,
                                   void *opaque);
 
