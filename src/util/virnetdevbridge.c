@@ -30,9 +30,8 @@
 #include "intprops.h"
 
 #include <sys/ioctl.h>
-#ifdef HAVE_NET_IF_H
-# include <net/if.h>
-#endif
+#include <sys/socket.h>
+#include <net/if.h>
 #include <netinet/in.h>
 
 #ifdef __linux__
