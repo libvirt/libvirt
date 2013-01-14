@@ -4544,7 +4544,6 @@ static virDriver lxcDriver = {
     .domainShutdown = lxcDomainShutdown, /* 1.0.1 */
     .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */
     .domainReboot = lxcDomainReboot, /* 1.0.1 */
-    .domainLxcOpenNamespace = lxcDomainOpenNamespace, /* 1.0.2 */
 };
 
 static virStateDriver lxcStateDriver = {

@@ -530,6 +530,7 @@ skip_function = (
 )
 
 lxc_skip_function = (
+  "virDomainLxcEnterNamespace",
 )
 qemu_skip_function = (
     #"virDomainQemuAttach",
