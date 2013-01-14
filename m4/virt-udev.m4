@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_CHECK_UDEV],[
   LIBVIRT_CHECK_PKG([UDEV], [libudev], [145])
 
   if test "$with_udev" = "yes" && test "$with_pciaccess" != "yes" ; then
-    AC_MSG_ERROR([You must install the pciaccesss module to build with udev])
+    AC_MSG_ERROR([You must install the pciaccess module to build with udev])
   fi
 ])
 
