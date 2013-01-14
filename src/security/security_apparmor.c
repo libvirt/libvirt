@@ -328,8 +328,8 @@ AppArmorSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
 }
 
 static int
-AppArmorSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
-                           const char *file, void *opaque)
+AppArmorSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+                            const char *file, void *opaque)
 {
     struct SDPDOP *ptr = opaque;
     virDomainDefPtr def = ptr->def;
@@ -783,16 +783,17 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
-                                      dev->source.subsys.u.pci.bus,
-                                      dev->source.subsys.u.pci.slot,
-                                      dev->source.subsys.u.pci.function);
+        virPCIDevicePtr pci =
+            virPCIDeviceNew(dev->source.subsys.u.pci.domain,
+                            dev->source.subsys.u.pci.bus,
+                            dev->source.subsys.u.pci.slot,
+                            dev->source.subsys.u.pci.function);
 
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
-        pciFreeDevice(pci);
+        ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
+        virPCIDeviceFree(pci);
         break;
     }
 

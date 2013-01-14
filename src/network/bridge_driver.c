@@ -3622,7 +3622,7 @@ static int
 networkCreateInterfacePool(virNetworkDefPtr netdef) {
     unsigned int num_virt_fns = 0;
     char **vfname = NULL;
-    struct pci_config_address **virt_fns;
+    virPCIDeviceAddressPtr *virt_fns;
     int ret = -1, ii = 0;
 
     if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev,

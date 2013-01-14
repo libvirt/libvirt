@@ -434,7 +434,7 @@ virSecurityDACRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
+virSecurityDACSetSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
                                   const char *file,
                                   void *opaque)
 {
@@ -507,17 +507,18 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
-                                      dev->source.subsys.u.pci.bus,
-                                      dev->source.subsys.u.pci.slot,
-                                      dev->source.subsys.u.pci.function);
+        virPCIDevicePtr pci =
+            virPCIDeviceNew(dev->source.subsys.u.pci.domain,
+                            dev->source.subsys.u.pci.bus,
+                            dev->source.subsys.u.pci.slot,
+                            dev->source.subsys.u.pci.function);
 
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(pci, virSecurityDACSetSecurityPCILabel,
-                                   params);
-        pciFreeDevice(pci);
+        ret = virPCIDeviceFileIterate(pci, virSecurityDACSetSecurityPCILabel,
+                                      params);
+        virPCIDeviceFree(pci);
 
         break;
     }
@@ -533,7 +534,7 @@ done:
 
 
 static int
-virSecurityDACRestoreSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
+virSecurityDACRestoreSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file,
                                       void *opaque ATTRIBUTE_UNUSED)
 {
@@ -586,16 +587,17 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
-                                      dev->source.subsys.u.pci.bus,
-                                      dev->source.subsys.u.pci.slot,
-                                      dev->source.subsys.u.pci.function);
+        virPCIDevicePtr pci =
+            virPCIDeviceNew(dev->source.subsys.u.pci.domain,
+                            dev->source.subsys.u.pci.bus,
+                            dev->source.subsys.u.pci.slot,
+                            dev->source.subsys.u.pci.function);
 
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(pci, virSecurityDACRestoreSecurityPCILabel, mgr);
-        pciFreeDevice(pci);
+        ret = virPCIDeviceFileIterate(pci, virSecurityDACRestoreSecurityPCILabel, mgr);
+        virPCIDeviceFree(pci);
 
         break;
     }

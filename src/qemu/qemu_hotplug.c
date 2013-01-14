@@ -2331,8 +2331,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysPtr subsys = &detach->source.subsys;
     int ret = -1, rv;
-    pciDevice *pci;
-    pciDevice *activePci;
+    virPCIDevicePtr pci;
+    virPCIDevicePtr activePci;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
@@ -2368,20 +2368,20 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
      if (detach->parent.data.net)
          qemuDomainHostdevNetConfigRestore(detach, cfg->stateDir);
 
-    pci = pciGetDevice(subsys->u.pci.domain, subsys->u.pci.bus,
-                       subsys->u.pci.slot,   subsys->u.pci.function);
+    pci = virPCIDeviceNew(subsys->u.pci.domain, subsys->u.pci.bus,
+                          subsys->u.pci.slot,   subsys->u.pci.function);
     if (pci) {
-        activePci = pciDeviceListSteal(driver->activePciHostdevs, pci);
+        activePci = virPCIDeviceListSteal(driver->activePciHostdevs, pci);
         if (activePci &&
-            pciResetDevice(activePci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs) == 0) {
+            virPCIDeviceReset(activePci, driver->activePciHostdevs,
+                              driver->inactivePciHostdevs) == 0) {
             qemuReattachPciDevice(activePci, driver);
             ret = 0;
         } else {
             /* reset of the device failed, treat it as if it was returned */
-            pciFreeDevice(activePci);
+            virPCIDeviceFree(activePci);
         }
-        pciFreeDevice(pci);
+        virPCIDeviceFree(pci);
     }
 
     if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE) &&

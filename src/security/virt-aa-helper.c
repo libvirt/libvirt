@@ -853,8 +853,8 @@ file_iterate_hostdev_cb(usbDevice *dev ATTRIBUTE_UNUSED,
 }
 
 static int
-file_iterate_pci_cb(pciDevice *dev ATTRIBUTE_UNUSED,
-                        const char *file, void *opaque)
+file_iterate_pci_cb(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+                    const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;
     return vah_add_file(buf, file, "rw");
@@ -1022,7 +1022,7 @@ get_files(vahControl * ctl)
             }
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-                pciDevice *pci = pciGetDevice(
+                virPCIDevicePtr pci = virPCIDeviceNew(
                            dev->source.subsys.u.pci.domain,
                            dev->source.subsys.u.pci.bus,
                            dev->source.subsys.u.pci.slot,
@@ -1031,8 +1031,8 @@ get_files(vahControl * ctl)
                 if (pci == NULL)
                     continue;
 
-                rc = pciDeviceFileIterate(pci, file_iterate_pci_cb, &buf);
-                pciFreeDevice(pci);
+                rc = virPCIDeviceFileIterate(pci, file_iterate_pci_cb, &buf);
+                virPCIDeviceFree(pci);
 
                 break;
             }

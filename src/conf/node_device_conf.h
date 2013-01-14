@@ -28,6 +28,7 @@
 # include "internal.h"
 # include "virutil.h"
 # include "virthread.h"
+# include "virpci.h"
 
 # include <libxml/tree.h>
 
@@ -111,8 +112,8 @@ struct _virNodeDevCapsDef {
             unsigned int class;
             char *product_name;
             char *vendor_name;
-            struct pci_config_address *physical_function;
-            struct pci_config_address **virtual_functions;
+            virPCIDeviceAddressPtr physical_function;
+            virPCIDeviceAddressPtr *virtual_functions;
             unsigned int num_virtual_functions;
             unsigned int flags;
         } pci_dev;

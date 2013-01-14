@@ -33,7 +33,6 @@
 #include <sys/time.h>
 
 #include "qemu_agent.h"
-#include "qemu_command.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"

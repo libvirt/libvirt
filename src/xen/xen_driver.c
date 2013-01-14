@@ -2102,23 +2102,23 @@ out:
 static int
 xenUnifiedNodeDeviceDettach(virNodeDevicePtr dev)
 {
-    pciDevice *pci;
+    virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
 
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciDettachDevice(pci, NULL, NULL, "pciback") < 0)
+    if (virPCIDeviceDetach(pci, NULL, NULL, "pciback") < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(pci);
+    virPCIDeviceFree(pci);
     return ret;
 }
 
@@ -2183,7 +2183,7 @@ out:
 static int
 xenUnifiedNodeDeviceReAttach(virNodeDevicePtr dev)
 {
-    pciDevice *pci;
+    virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
     int domid;
@@ -2191,7 +2191,7 @@ xenUnifiedNodeDeviceReAttach(virNodeDevicePtr dev)
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
@@ -2203,35 +2203,35 @@ xenUnifiedNodeDeviceReAttach(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (pciReAttachDevice(pci, NULL, NULL, "pciback") < 0)
+    if (virPCIDeviceReattach(pci, NULL, NULL, "pciback") < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(pci);
+    virPCIDeviceFree(pci);
     return ret;
 }
 
 static int
 xenUnifiedNodeDeviceReset(virNodeDevicePtr dev)
 {
-    pciDevice *pci;
+    virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
 
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciResetDevice(pci, NULL, NULL) < 0)
+    if (virPCIDeviceReset(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(pci);
+    virPCIDeviceFree(pci);
     return ret;
 }
 

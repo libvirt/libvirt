@@ -774,13 +774,13 @@ qemuStartup(bool privileged,
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
-    if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
+    if ((qemu_driver->activePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
 
     if ((qemu_driver->activeUsbHostdevs = usbDeviceListNew()) == NULL)
         goto error;
 
-    if ((qemu_driver->inactivePciHostdevs = pciDeviceListNew()) == NULL)
+    if ((qemu_driver->inactivePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
 
     if (!(qemu_driver->sharedDisks = virHashCreate(30, NULL)))
@@ -1047,8 +1047,8 @@ qemuShutdown(void) {
 
     qemuDriverLock(qemu_driver);
     virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
-    pciDeviceListFree(qemu_driver->activePciHostdevs);
-    pciDeviceListFree(qemu_driver->inactivePciHostdevs);
+    virPCIDeviceListFree(qemu_driver->activePciHostdevs);
+    virPCIDeviceListFree(qemu_driver->inactivePciHostdevs);
     usbDeviceListFree(qemu_driver->activeUsbHostdevs);
     virHashFree(qemu_driver->sharedDisks);
     virCapabilitiesFree(qemu_driver->caps);
@@ -10021,7 +10021,7 @@ static int
 qemuNodeDeviceDettach(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    pciDevice *pci;
+    virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
     bool in_inactive_list = false;
@@ -10029,22 +10029,22 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
     if (qemuNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
     qemuDriverLock(driver);
-    in_inactive_list = pciDeviceListFind(driver->inactivePciHostdevs, pci);
+    in_inactive_list = virPCIDeviceListFind(driver->inactivePciHostdevs, pci);
 
-    if (pciDettachDevice(pci, driver->activePciHostdevs,
-                         driver->inactivePciHostdevs, "pci-stub") < 0)
+    if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
+                           driver->inactivePciHostdevs, "pci-stub") < 0)
         goto out;
 
     ret = 0;
 out:
     qemuDriverUnlock(driver);
     if (in_inactive_list)
-        pciFreeDevice(pci);
+        virPCIDeviceFree(pci);
     return ret;
 }
 
@@ -10052,43 +10052,43 @@ static int
 qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    pciDevice *pci;
-    pciDevice *other;
+    virPCIDevicePtr pci;
+    virPCIDevicePtr other;
     unsigned domain, bus, slot, function;
     int ret = -1;
 
     if (qemuNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    other = pciDeviceListFind(driver->activePciHostdevs, pci);
+    other = virPCIDeviceListFind(driver->activePciHostdevs, pci);
     if (other) {
-        const char *other_name = pciDeviceGetUsedBy(other);
+        const char *other_name = virPCIDeviceGetUsedBy(other);
 
         if (other_name)
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is still in use by domain %s"),
-                           pciDeviceGetName(pci), other_name);
+                           virPCIDeviceGetName(pci), other_name);
         else
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is still in use"),
-                           pciDeviceGetName(pci));
+                           virPCIDeviceGetName(pci));
     }
 
-    pciDeviceReAttachInit(pci);
+    virPCIDeviceReattachInit(pci);
 
     qemuDriverLock(driver);
-    if (pciReAttachDevice(pci, driver->activePciHostdevs,
-                          driver->inactivePciHostdevs, "pci-stub") < 0)
+    if (virPCIDeviceReattach(pci, driver->activePciHostdevs,
+                             driver->inactivePciHostdevs, "pci-stub") < 0)
         goto out;
 
     ret = 0;
 out:
     qemuDriverUnlock(driver);
-    pciFreeDevice(pci);
+    virPCIDeviceFree(pci);
     return ret;
 }
 
@@ -10096,27 +10096,27 @@ static int
 qemuNodeDeviceReset(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    pciDevice *pci;
+    virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
 
     if (qemuNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(domain, bus, slot, function);
+    pci = virPCIDeviceNew(domain, bus, slot, function);
     if (!pci)
         return -1;
 
     qemuDriverLock(driver);
 
-    if (pciResetDevice(pci, driver->activePciHostdevs,
-                       driver->inactivePciHostdevs) < 0)
+    if (virPCIDeviceReset(pci, driver->activePciHostdevs,
+                          driver->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
     qemuDriverUnlock(driver);
-    pciFreeDevice(pci);
+    virPCIDeviceFree(pci);
     return ret;
 }
 

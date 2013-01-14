@@ -481,10 +481,10 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    if (!pciGetPhysicalFunction(syspath, &data->pci_dev.physical_function))
+    if (!virPCIGetPhysicalFunction(syspath, &data->pci_dev.physical_function))
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
-    if (!pciGetVirtualFunctions(syspath, &data->pci_dev.virtual_functions,
+    if (!virPCIGetVirtualFunctions(syspath, &data->pci_dev.virtual_functions,
         &data->pci_dev.num_virtual_functions) ||
         data->pci_dev.num_virtual_functions > 0)
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;

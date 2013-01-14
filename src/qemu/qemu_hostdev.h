@@ -45,7 +45,7 @@ int qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
 int qemuPrepareHostDevices(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            bool coldBoot);
-void qemuReattachPciDevice(pciDevice *dev, virQEMUDriverPtr driver);
+void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver);
 void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
                                       const char *name,
                                       virDomainHostdevDefPtr *hostdevs,

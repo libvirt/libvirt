@@ -980,7 +980,7 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
 int
 virNetDevGetVirtualFunctions(const char *pfname,
                              char ***vfname,
-                             struct pci_config_address ***virt_fns,
+                             virPCIDeviceAddressPtr **virt_fns,
                              unsigned int *n_vfname)
 {
     int ret = -1, i;
@@ -991,8 +991,8 @@ virNetDevGetVirtualFunctions(const char *pfname,
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
-    if (pciGetVirtualFunctions(pf_sysfs_device_link, virt_fns,
-                               n_vfname) < 0)
+    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, virt_fns,
+                                  n_vfname) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(*vfname, *n_vfname) < 0) {
@@ -1002,22 +1002,22 @@ virNetDevGetVirtualFunctions(const char *pfname,
 
     for (i = 0; i < *n_vfname; i++)
     {
-        if (pciGetDeviceAddrString((*virt_fns)[i]->domain,
-                                   (*virt_fns)[i]->bus,
-                                   (*virt_fns)[i]->slot,
-                                   (*virt_fns)[i]->function,
-                                   &pciConfigAddr) < 0) {
+        if (virPCIGetAddrString((*virt_fns)[i]->domain,
+                                (*virt_fns)[i]->bus,
+                                (*virt_fns)[i]->slot,
+                                (*virt_fns)[i]->function,
+                                &pciConfigAddr) < 0) {
             virReportSystemError(ENOSYS, "%s",
                                  _("Failed to get PCI Config Address String"));
             goto cleanup;
         }
-        if (pciSysfsFile(pciConfigAddr, &pci_sysfs_device_link) < 0) {
+        if (virPCIGetSysfsFile(pciConfigAddr, &pci_sysfs_device_link) < 0) {
             virReportSystemError(ENOSYS, "%s",
                                  _("Failed to get PCI SYSFS file"));
             goto cleanup;
         }
 
-        if (pciDeviceNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0) {
+        if (virPCIGetNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0) {
             VIR_INFO("VF does not have an interface name");
         }
     }
@@ -1053,7 +1053,7 @@ virNetDevIsVirtualFunction(const char *ifname)
     if (virNetDevSysfsFile(&if_sysfs_device_link, ifname, "device") < 0)
         return ret;
 
-    ret = pciDeviceIsVirtualFunction(if_sysfs_device_link);
+    ret = virPCIIsVirtualFunction(if_sysfs_device_link);
 
     VIR_FREE(if_sysfs_device_link);
 
@@ -1086,9 +1086,9 @@ virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
         return ret;
     }
 
-    ret = pciGetVirtualFunctionIndex(pf_sysfs_device_link,
-                                     vf_sysfs_device_link,
-                                     vf_index);
+    ret = virPCIGetVirtualFunctionIndex(pf_sysfs_device_link,
+                                        vf_sysfs_device_link,
+                                        vf_index);
 
     VIR_FREE(pf_sysfs_device_link);
     VIR_FREE(vf_sysfs_device_link);
@@ -1115,7 +1115,7 @@ virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
     if (virNetDevSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
         return ret;
 
-    ret = pciDeviceNetName(physfn_sysfs_path, pfname);
+    ret = virPCIGetNetName(physfn_sysfs_path, pfname);
 
     VIR_FREE(physfn_sysfs_path);
 
@@ -1149,7 +1149,7 @@ virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
     if (virNetDevSysfsFile(&vf_sysfs_path, vfname, "device") < 0)
         goto cleanup;
 
-    ret = pciGetVirtualFunctionIndex(pf_sysfs_path, vf_sysfs_path, vf);
+    ret = virPCIGetVirtualFunctionIndex(pf_sysfs_path, vf_sysfs_path, vf);
 
 cleanup:
     if (ret < 0)
@@ -1165,7 +1165,7 @@ cleanup:
 int
 virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              char ***vfname ATTRIBUTE_UNUSED,
-                             struct pci_config_address ***virt_fns ATTRIBUTE_UNUSED,
+                             virPCIDeviceAddressPtr **virt_fns ATTRIBUTE_UNUSED,
                              unsigned int *n_vfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
