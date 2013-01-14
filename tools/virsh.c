@@ -1417,6 +1417,58 @@ vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
 }
 
 /**
+ * vshCommandOptStringReq:
+ * @ctl virsh control structure
+ * @cmd command structure
+ * @name option name
+ * @value result (updated to NULL or the option argument)
+ *
+ * Gets a option argument as string.
+ *
+ * Returns 0 on success or when the option is not present and not
+ * required, *value is set to the option argument. On error -1 is
+ * returned and error message printed.
+ */
+int
+vshCommandOptStringReq(vshControl *ctl,
+                       const vshCmd *cmd,
+                       const char *name,
+                       const char **value)
+{
+    vshCmdOpt *arg;
+    int ret;
+    const char *error = NULL;
+
+    /* clear out the value */
+    *value = NULL;
+
+    ret = vshCommandOpt(cmd, name, &arg);
+    /* option is not required and not present */
+    if (ret == 0)
+        return 0;
+    /* this should not be propagated here, just to be sure */
+    if (ret == -1)
+        error = N_("Mandatory option not present");
+
+    if (ret == -2)
+        error = N_("Programming error: Invalid option name");
+
+    if (!arg->data)
+        error = N_("Programming error: Requested option is a boolean");
+
+    if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
+        error = N_("Option argument is empty");
+
+    if (error) {
+        vshError(ctl, _("Failed to get option '%s': %s"), name, _(error));
+        return -1;
+    }
+
+    *value = arg->data;
+    return 0;
+}
+
+/**
  * vshCommandOptLongLong:
  * @cmd command reference
  * @name option name

@@ -275,6 +275,10 @@ int vshCommandOptUL(const vshCmd *cmd, const char *name,
 int vshCommandOptString(const vshCmd *cmd, const char *name,
                         const char **value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptStringReq(vshControl *ctl, const vshCmd *cmd,
+                           const char *name, const char **value)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 int vshCommandOptLongLong(const vshCmd *cmd, const char *name,
                           long long *value)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
