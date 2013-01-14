@@ -158,8 +158,6 @@ struct _virQEMUDriver {
 
     virThreadPoolPtr workerPool;
 
-    unsigned int qemuVersion;
-
     int nextvmid;
 
     virCgroupPtr cgroup;

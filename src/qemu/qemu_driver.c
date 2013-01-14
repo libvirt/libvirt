@@ -1501,14 +1501,15 @@ cleanup:
 static int qemuGetVersion(virConnectPtr conn, unsigned long *version) {
     virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
+    unsigned int qemuVersion;
 
     qemuDriverLock(driver);
     if (qemuCapsGetDefaultVersion(driver->caps,
                                   driver->capsCache,
-                                  &driver->qemuVersion) < 0)
+                                  &qemuVersion) < 0)
         goto cleanup;
 
-    *version = driver->qemuVersion;
+    *version = qemuVersion;
     ret = 0;
 
 cleanup:
