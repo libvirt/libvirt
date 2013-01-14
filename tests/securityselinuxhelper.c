@@ -46,6 +46,11 @@ int getcon_raw(security_context_t *context)
     return 0;
 }
 
+int getcon(security_context_t *context)
+{
+    return getcon_raw(context);
+}
+
 int getpidcon_raw(pid_t pid, security_context_t *context)
 {
     if (pid != getpid()) {
@@ -63,22 +68,36 @@ int getpidcon_raw(pid_t pid, security_context_t *context)
     return 0;
 }
 
+int getpidcon(pid_t pid, security_context_t *context)
+{
+    return getpidcon_raw(pid, context);
+}
+
 int setcon_raw(security_context_t context)
 {
     return setenv("FAKE_CONTEXT", context, 1);
 }
 
+int setcon(security_context_t context)
+{
+    return setcon_raw(context);
+}
+
 
 #if WITH_ATTR
-int setfilecon(const char *path, security_context_t con)
+int setfilecon_raw(const char *path, security_context_t con)
 {
     const char *constr = con;
     return setxattr(path, "user.libvirt.selinux",
                     constr, strlen(constr), 0);
 }
 
+int setfilecon(const char *path, security_context_t con)
+{
+    return setfilecon_raw(path, con);
+}
 
-int getfilecon(const char *path, security_context_t *con)
+int getfilecon_raw(const char *path, security_context_t *con)
 {
     char *constr = NULL;
     ssize_t len = getxattr(path, "user.libvirt.selinux",
@@ -95,5 +114,9 @@ int getfilecon(const char *path, security_context_t *con)
     *con = constr;
     constr[len] = '\0';
     return 0;
+}
+int getfilecon(const char *path, security_context_t *con)
+{
+    return getfilecon_raw(path, con);
 }
 #endif

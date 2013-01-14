@@ -300,6 +300,10 @@ cleanup:
         VIR_FREE(files[i].context);
     }
     VIR_FREE(files);
+    if (ret < 0 && virTestGetVerbose()) {
+        virErrorPtr err = virGetLastError();
+        fprintf(stderr, "%s\n", err ? err->message : "<unknown>");
+    }
     return ret;
 }
 
