@@ -129,6 +129,19 @@
         <a href="libvirt-{$ref/@file}.html#{$ref/@name}"><xsl:value-of select="$stem"/></a>
         <xsl:value-of select="substring-after($token, $stem)"/>
       </xsl:when>
+      <xsl:when test="starts-with($token, 'http://')">
+        <a href="{$token}">
+          <xsl:value-of select="$token"/>
+        </a>
+      </xsl:when>
+      <xsl:when test="starts-with($token, '&lt;http://') and contains($token, '&gt;')">
+        <xsl:variable name="link"
+                      select="substring(substring-before($token, '&gt;'), 2)"/>
+        <a href="{$link}">
+          <xsl:value-of select="$link"/>
+        </a>
+        <xsl:value-of select="substring-after($token, '&gt;')"/>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$token"/>
       </xsl:otherwise>
@@ -690,7 +703,11 @@
       <h2 style="font-weight:bold;color:red;text-align:center">This module is deprecated</h2>
     </xsl:if>
     <xsl:if test="description">
-      <p><xsl:value-of select="description"/></p>
+      <p>
+        <xsl:call-template name="dumptext">
+          <xsl:with-param name="text" select="description"/>
+        </xsl:call-template>
+      </p>
     </xsl:if>
   </xsl:template>
 
