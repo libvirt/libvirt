@@ -87,8 +87,12 @@ static const vshCmdInfo info_nwfilter_define[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML network filter description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML network filter description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -129,8 +133,12 @@ static const vshCmdInfo info_nwfilter_undefine[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_undefine[] = {
-    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "nwfilter",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network filter name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -164,8 +172,12 @@ static const vshCmdInfo info_nwfilter_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
-    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "nwfilter",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network filter name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -328,7 +340,7 @@ static const vshCmdInfo info_nwfilter_list[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_list[] = {
-    {NULL, 0, 0, NULL}
+    {.name = NULL}
 };
 
 static bool
@@ -368,8 +380,12 @@ static const vshCmdInfo info_nwfilter_edit[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_edit[] = {
-    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
-    {NULL, 0, 0, NULL}
+    {.name = "nwfilter",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("network filter name or uuid")
+    },
+    {.name = NULL}
 };
 
 static bool
