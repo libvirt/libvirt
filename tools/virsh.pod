@@ -2095,7 +2095,7 @@ destroy and re-start the network.
 I<command> is one of "add-first", "add-last", "add" (a synonym for
 add-last), "delete", or "modify".
 
-I<section> is one of ""bridge", "domain", "ip", "ip-dhcp-host",
+I<section> is one of "bridge", "domain", "ip", "ip-dhcp-host",
 "ip-dhcp-range", "forward", "forward-interface", "forward-pf",
 "portgroup", "dns-host", "dns-txt", or "dns-srv", each section being
 named by a concatenation of the xml element hierarchy leading to the
