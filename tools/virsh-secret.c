@@ -75,8 +75,12 @@ static const vshCmdInfo info_secret_define[] = {
 };
 
 static const vshCmdOptDef opts_secret_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing secret attributes in XML")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing secret attributes in XML")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -120,8 +124,12 @@ static const vshCmdInfo info_secret_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_secret_dumpxml[] = {
-    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, N_("secret UUID")},
-    {NULL, 0, 0, NULL}
+    {.name = "secret",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("secret UUID")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -157,9 +165,17 @@ static const vshCmdInfo info_secret_set_value[] = {
 };
 
 static const vshCmdOptDef opts_secret_set_value[] = {
-    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, N_("secret UUID")},
-    {"base64", VSH_OT_DATA, VSH_OFLAG_REQ, N_("base64-encoded secret value")},
-    {NULL, 0, 0, NULL}
+    {.name = "secret",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("secret UUID")
+    },
+    {.name = "base64",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("base64-encoded secret value")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -214,8 +230,12 @@ static const vshCmdInfo info_secret_get_value[] = {
 };
 
 static const vshCmdOptDef opts_secret_get_value[] = {
-    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, N_("secret UUID")},
-    {NULL, 0, 0, NULL}
+    {.name = "secret",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("secret UUID")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -263,8 +283,12 @@ static const vshCmdInfo info_secret_undefine[] = {
 };
 
 static const vshCmdOptDef opts_secret_undefine[] = {
-    {"secret", VSH_OT_DATA, VSH_OFLAG_REQ, N_("secret UUID")},
-    {NULL, 0, 0, NULL}
+    {.name = "secret",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("secret UUID")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -435,11 +459,27 @@ static const vshCmdInfo info_secret_list[] = {
 };
 
 static const vshCmdOptDef opts_secret_list[] = {
-    {"ephemeral", VSH_OT_BOOL, 0, N_("list ephemeral secrets")},
-    {"no-ephemeral", VSH_OT_BOOL, 0, N_("list non-ephemeral secrets")},
-    {"private", VSH_OT_BOOL, 0, N_("list private secrets")},
-    {"no-private", VSH_OT_BOOL, 0, N_("list non-private secrets")},
-    {NULL, 0, 0, NULL}
+    {.name = "ephemeral",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list ephemeral secrets")
+    },
+    {.name = "no-ephemeral",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list non-ephemeral secrets")
+    },
+    {.name = "private",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list private secrets")
+    },
+    {.name = "no-private",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list non-private secrets")
+    },
+    {.name = NULL}
 };
 
 static bool
