@@ -52,6 +52,7 @@
 #include "domain_nwfilter.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "viratomic.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -781,4 +782,9 @@ qemuRemoveSharedDisk(virHashTablePtr sharedDisks,
 
     VIR_FREE(key);
     return 0;
+}
+
+int qemuDriverAllocateID(virQEMUDriverPtr driver)
+{
+    return virAtomicIntInc(&driver->nextvmid);
 }

@@ -3586,7 +3586,7 @@ int qemuProcessStart(virConnectPtr conn,
     if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
         goto cleanup;
 
-    vm->def->id = driver->nextvmid++;
+    vm->def->id = qemuDriverAllocateID(driver);
     qemuDomainSetFakeReboot(driver, vm, false);
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
@@ -4438,7 +4438,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
         goto cleanup;
 
-    vm->def->id = driver->nextvmid++;
+    vm->def->id = qemuDriverAllocateID(driver);
 
     if (!driver->nactive && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);

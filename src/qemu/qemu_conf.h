@@ -260,4 +260,6 @@ int qemuRemoveSharedDisk(virHashTablePtr sharedDisks,
 char * qemuGetSharedDiskKey(const char *disk_path)
     ATTRIBUTE_NONNULL(1);
 
+int qemuDriverAllocateID(virQEMUDriverPtr driver);
+
 #endif /* __QEMUD_CONF_H */
