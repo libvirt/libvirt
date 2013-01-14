@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#include <netinet/in.h>
 
 #ifdef __linux__
 # include <linux/sockios.h>
