@@ -39,10 +39,12 @@ static int testDriverModule(const void *args)
 {
     const struct testDriverData *data = args;
 
+    /* coverity[leaked_storage] */
     if (data->dep1 &&
         !virDriverLoadModule(data->dep1))
         return -1;
 
+    /* coverity[leaked_storage] */
     if (!virDriverLoadModule(data->name))
         return -1;
 
