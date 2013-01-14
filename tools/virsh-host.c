@@ -74,10 +74,17 @@ static const vshCmdInfo info_connect[] = {
 };
 
 static const vshCmdOptDef opts_connect[] = {
-    {"name",     VSH_OT_DATA, VSH_OFLAG_EMPTY_OK,
-     N_("hypervisor connection URI")},
-    {"readonly", VSH_OT_BOOL, 0, N_("read-only connection")},
-    {NULL, 0, 0, NULL}
+    {.name = "name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_EMPTY_OK,
+     .help = N_("hypervisor connection URI")
+    },
+    {.name = "readonly",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("read-only connection")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -125,9 +132,17 @@ static const vshCmdInfo info_freecell[] = {
 };
 
 static const vshCmdOptDef opts_freecell[] = {
-    {"cellno", VSH_OT_INT, 0, N_("NUMA cell number")},
-    {"all", VSH_OT_BOOL, 0, N_("show free memory for all NUMA cells")},
-    {NULL, 0, 0, NULL}
+    {.name = "cellno",
+     .type = VSH_OT_INT,
+     .flags = 0,
+     .help = N_("NUMA cell number")
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("show free memory for all NUMA cells")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -318,9 +333,17 @@ static const vshCmdInfo info_nodecpustats[] = {
 };
 
 static const vshCmdOptDef opts_node_cpustats[] = {
-    {"cpu", VSH_OT_INT, 0, N_("prints specified cpu statistics only.")},
-    {"percent", VSH_OT_BOOL, 0, N_("prints by percentage during 1 second.")},
-    {NULL, 0, 0, NULL}
+    {.name = "cpu",
+     .type = VSH_OT_INT,
+     .flags = 0,
+     .help = N_("prints specified cpu statistics only.")
+    },
+    {.name = "percent",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("prints by percentage during 1 second.")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -443,8 +466,12 @@ static const vshCmdInfo info_nodememstats[] = {
 };
 
 static const vshCmdOptDef opts_node_memstats[] = {
-    {"cell", VSH_OT_INT, 0, N_("prints specified cell statistics only.")},
-    {NULL, 0, 0, NULL}
+    {.name = "cell",
+     .type = VSH_OT_INT,
+     .flags = 0,
+     .help = N_("prints specified cell statistics only.")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -502,10 +529,18 @@ static const vshCmdInfo info_nodesuspend[] = {
 };
 
 static const vshCmdOptDef opts_node_suspend[] = {
-    {"target", VSH_OT_DATA, VSH_OFLAG_REQ, N_("mem(Suspend-to-RAM), "
-                                               "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")},
-    {"duration", VSH_OT_INT, VSH_OFLAG_REQ, N_("Suspend duration in seconds, at least 60")},
-    {NULL, 0, 0, NULL}
+    {.name = "target",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("mem(Suspend-to-RAM), "
+                "disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)")
+    },
+    {.name = "duration",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("Suspend duration in seconds, at least 60")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -637,8 +672,12 @@ static const vshCmdInfo info_version[] = {
 };
 
 static const vshCmdOptDef opts_version[] = {
-    {"daemon", VSH_OT_BOOL, VSH_OFLAG_NONE, N_("report daemon version too")},
-    {NULL, 0, 0, NULL}
+    {.name = "daemon",
+     .type = VSH_OT_BOOL,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("report daemon version too")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -732,15 +771,24 @@ static const vshCmdInfo info_node_memory_tune[] = {
 };
 
 static const vshCmdOptDef opts_node_memory_tune[] = {
-    {"shm-pages-to-scan", VSH_OT_INT, VSH_OFLAG_NONE,
-      N_("number of pages to scan before the shared memory service "
-         "goes to sleep")},
-    {"shm-sleep-millisecs", VSH_OT_INT, VSH_OFLAG_NONE,
-      N_("number of millisecs the shared memory service should "
-         "sleep before next scan")},
-    {"shm-merge-across-nodes", VSH_OT_INT, VSH_OFLAG_NONE,
-      N_("Specifies if pages from different numa nodes can be merged")},
-    {NULL, 0, 0, NULL}
+    {.name = "shm-pages-to-scan",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_NONE,
+     .help =  N_("number of pages to scan before the shared memory service "
+                 "goes to sleep")
+    },
+    {.name = "shm-sleep-millisecs",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_NONE,
+     .help =  N_("number of millisecs the shared memory service should "
+                 "sleep before next scan")
+    },
+    {.name = "shm-merge-across-nodes",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_NONE,
+     .help =  N_("Specifies if pages from different numa nodes can be merged")
+    },
+    {.name = NULL}
 };
 
 static bool
