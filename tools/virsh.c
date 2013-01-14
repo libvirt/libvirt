@@ -448,8 +448,12 @@ static const vshCmdInfo info_help[] = {
 };
 
 static const vshCmdOptDef opts_help[] = {
-    {"command", VSH_OT_DATA, 0, N_("Prints global help, command specific help, or help for a group of related commands")},
-    {NULL, 0, 0, NULL}
+    {.name = "command",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("Prints global help, command specific help, or help for a group of related commands")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -704,8 +708,12 @@ static const vshCmdInfo info_cd[] = {
 };
 
 static const vshCmdOptDef opts_cd[] = {
-    {"dir", VSH_OT_DATA, 0, N_("directory to switch to (default: home or else root)")},
-    {NULL, 0, 0, NULL}
+    {.name = "dir",
+     .type = VSH_OT_DATA,
+     .flags = 0,
+     .help = N_("directory to switch to (default: home or else root)")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -776,11 +784,27 @@ static const vshCmdInfo info_echo[] = {
 };
 
 static const vshCmdOptDef opts_echo[] = {
-    {"shell", VSH_OT_BOOL, 0, N_("escape for shell use")},
-    {"xml", VSH_OT_BOOL, 0, N_("escape for XML use")},
-    {"str", VSH_OT_ALIAS, 0, "string"},
-    {"string", VSH_OT_ARGV, 0, N_("arguments to echo")},
-    {NULL, 0, 0, NULL}
+    {.name = "shell",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("escape for shell use")
+    },
+    {.name = "xml",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("escape for XML use")
+    },
+    {.name = "str",
+     .type = VSH_OT_ALIAS,
+     .flags = 0,
+     .help = "string"
+    },
+    {.name = "string",
+     .type = VSH_OT_ARGV,
+     .flags = 0,
+     .help = N_("arguments to echo")
+    },
+    {.name = NULL}
 };
 
 /* Exists mainly for debugging virsh, but also handy for adding back
@@ -929,8 +953,12 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
     return 0;
 }
 
-static vshCmdOptDef helpopt = {"help", VSH_OT_BOOL, 0,
-                               N_("print help for this function")};
+static vshCmdOptDef helpopt = {
+    .name = "help",
+    .type = VSH_OT_BOOL,
+    .flags = 0,
+    .help = N_("print help for this function")
+};
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                    uint32_t *opts_seen, int *opt_index)
