@@ -33,6 +33,8 @@
 #ifdef HAVE_NET_IF_H
 # include <net/if.h>
 #endif
+#include <netinet/in.h>
+
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/param.h>     /* HZ                 */
