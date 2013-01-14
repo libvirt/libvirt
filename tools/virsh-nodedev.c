@@ -51,9 +51,12 @@ static const vshCmdInfo info_node_device_create[] = {
 };
 
 static const vshCmdOptDef opts_node_device_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("file containing an XML description of the device")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML description of the device")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -97,9 +100,12 @@ static const vshCmdInfo info_node_device_destroy[] = {
 };
 
 static const vshCmdOptDef opts_node_device_destroy[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ,
-     N_("name of the device to be destroyed")},
-    {NULL, 0, 0, NULL}
+    {.name = "name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("name of the device to be destroyed")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -330,9 +336,17 @@ static const vshCmdInfo info_node_list_devices[] = {
 };
 
 static const vshCmdOptDef opts_node_list_devices[] = {
-    {"tree", VSH_OT_BOOL, 0, N_("list devices in a tree")},
-    {"cap", VSH_OT_STRING, VSH_OFLAG_NONE, N_("capability names, separated by comma")},
-    {NULL, 0, 0, NULL}
+    {.name = "tree",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list devices in a tree")
+    },
+    {.name = "cap",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("capability names, separated by comma")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -459,8 +473,12 @@ static const vshCmdInfo info_node_device_dumpxml[] = {
 
 
 static const vshCmdOptDef opts_node_device_dumpxml[] = {
-    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("device key")},
-    {NULL, 0, 0, NULL}
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device key")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -500,8 +518,12 @@ static const vshCmdInfo info_node_device_detach[] = {
 
 
 static const vshCmdOptDef opts_node_device_detach[] = {
-    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("device key")},
-    {NULL, 0, 0, NULL}
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device key")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -541,8 +563,12 @@ static const vshCmdInfo info_node_device_reattach[] = {
 
 
 static const vshCmdOptDef opts_node_device_reattach[] = {
-    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("device key")},
-    {NULL, 0, 0, NULL}
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device key")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -580,8 +606,12 @@ static const vshCmdInfo info_node_device_reset[] = {
 
 
 static const vshCmdOptDef opts_node_device_reset[] = {
-    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("device key")},
-    {NULL, 0, 0, NULL}
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device key")
+    },
+    {.name = NULL}
 };
 
 static bool
