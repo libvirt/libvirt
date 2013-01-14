@@ -1639,15 +1639,14 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, true))) {
-        /* virDomainAssignDef already set the error */
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
-    }
+
     def = NULL;
     priv = vm->privateData;
     priv->origname = origname;

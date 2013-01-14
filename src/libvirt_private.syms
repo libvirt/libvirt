@@ -479,7 +479,6 @@ virDomainObjListFindByUUID;
 virDomainObjListForEach;
 virDomainObjListGetActiveIDs;
 virDomainObjListGetInactiveNames;
-virDomainObjListIsDuplicate;
 virDomainObjListLoadAllConfigs;
 virDomainObjListNew;
 virDomainObjListNumOfDomains;

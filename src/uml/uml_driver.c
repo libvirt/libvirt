@@ -1499,12 +1499,11 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
     def = NULL;
 
@@ -1921,12 +1920,10 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 0) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   0, NULL)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;

@@ -584,7 +584,7 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     if (!(domobj = virDomainObjListAdd(privconn->domains,
                                        privconn->caps,
-                                       domdef, false)))
+                                       domdef, 0, NULL)))
         goto error;
     domdef = NULL;
 
@@ -929,7 +929,7 @@ static int testOpenFromFile(virConnectPtr conn,
         if (testDomainGenerateIfnames(def) < 0 ||
             !(dom = virDomainObjListAdd(privconn->domains,
                                         privconn->caps,
-                                        def, false))) {
+                                        def, 0, NULL))) {
             virDomainDefFree(def);
             goto error;
         }
@@ -1326,14 +1326,13 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(privconn->domains, def, 1) < 0)
-        goto cleanup;
-
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
                                     privconn->caps,
-                                    def, false)))
+                                    def,
+                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                    NULL)))
         goto cleanup;
     def = NULL;
 
@@ -1943,14 +1942,14 @@ testDomainRestoreFlags(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(privconn->domains, def, 1) < 0)
-        goto cleanup;
-
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
                                     privconn->caps,
-                                    def, true)))
+                                    def,
+                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                    NULL)))
         goto cleanup;
     def = NULL;
 
@@ -2483,7 +2482,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    int dupVM;
+    virDomainDefPtr oldDef = NULL;
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(privconn->caps, xml,
@@ -2491,21 +2490,20 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if ((dupVM = virDomainObjListIsDuplicate(privconn->domains, def, 0)) < 0)
-        goto cleanup;
-
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
                                     privconn->caps,
-                                    def, false)))
+                                    def,
+                                    0,
+                                    &oldDef)))
         goto cleanup;
     def = NULL;
     dom->persistent = 1;
 
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_DEFINED,
-                                     !dupVM ?
+                                     !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
@@ -2515,6 +2513,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
 
 cleanup:
     virDomainDefFree(def);
+    virDomainDefFree(oldDef);
     if (dom)
         virObjectUnlock(dom);
     if (event)

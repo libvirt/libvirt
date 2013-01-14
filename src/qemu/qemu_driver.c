@@ -1589,9 +1589,6 @@ static virDomainPtr qemuDomainCreate(virConnectPtr conn, const char *xml,
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(caps = qemuCapsCacheLookup(driver->capsCache, def->emulator)))
         goto cleanup;
 
@@ -1603,7 +1600,9 @@ static virDomainPtr qemuDomainCreate(virConnectPtr conn, const char *xml,
 
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
 
     def = NULL;
@@ -4992,15 +4991,13 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (fd < 0)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, true))) {
-        /* virDomainLitsAdd already set the error */
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
-    }
     def = NULL;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -5176,7 +5173,7 @@ qemuDomainObjRestore(virConnectPtr conn,
         goto cleanup;
     }
 
-    virDomainObjAssignDef(vm, def, true);
+    virDomainObjAssignDef(vm, def, true, NULL);
     def = NULL;
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
@@ -5590,12 +5587,11 @@ qemuDomainStart(virDomainPtr dom)
 static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def;
-    virDomainDefPtr def_backup = NULL;
+    virDomainDefPtr oldDef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
     qemuCapsPtr caps = NULL;
-    int dupVM;
     virQEMUDriverConfigPtr cfg;
 
     qemuDriverLock(driver);
@@ -5608,9 +5604,6 @@ static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((dupVM = virDomainObjListIsDuplicate(driver->domains, def, 0)) < 0)
-        goto cleanup;
-
     if (!(caps = qemuCapsCacheLookup(driver->capsCache, def->emulator)))
         goto cleanup;
 
@@ -5620,45 +5613,33 @@ static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
     if (qemuDomainAssignAddresses(def, caps, NULL) < 0)
         goto cleanup;
 
-    /* We need to differentiate two cases:
-     * a) updating an existing domain - must preserve previous definition
-     *                                  so we can roll back if something fails
-     * b) defining a brand new domain - virDomainObjListAdd is just sufficient
-     */
-    if ((vm = virDomainObjListFindByUUID(driver->domains, def->uuid))) {
-        if (virDomainObjIsActive(vm)) {
-            def_backup = vm->newDef;
-            vm->newDef = def;
-        } else {
-            def_backup = vm->def;
-            vm->def = def;
-        }
-    } else {
-        if (!(vm = virDomainObjListAdd(driver->domains,
-                                       driver->caps,
-                                       def, false))) {
-            goto cleanup;
-        }
-    }
+    if (!(vm = virDomainObjListAdd(driver->domains,
+                                   driver->caps,
+                                   def,
+                                   0,
+                                   &oldDef)))
+        goto cleanup;
+
     def = NULL;
     if (virDomainHasDiskMirror(vm)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
                        _("domain has active block copy job"));
-        virDomainObjAssignDef(vm, NULL, false);
+        virDomainObjAssignDef(vm, NULL, false, NULL);
         goto cleanup;
     }
     vm->persistent = 1;
 
     if (virDomainSaveConfig(cfg->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
-        if (def_backup) {
+        if (oldDef) {
             /* There is backup so this VM was defined before.
              * Just restore the backup. */
             VIR_INFO("Restoring domain '%s' definition", vm->def->name);
             if (virDomainObjIsActive(vm))
-                vm->newDef = def_backup;
+                vm->newDef = oldDef;
             else
-                vm->def = def_backup;
+                vm->def = oldDef;
+            oldDef = NULL;
         } else {
             /* Brand new domain. Remove it */
             VIR_INFO("Deleting domain '%s'", vm->def->name);
@@ -5666,13 +5647,11 @@ static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
             vm = NULL;
         }
         goto cleanup;
-    } else {
-        virDomainDefFree(def_backup);
     }
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
-                                     !dupVM ?
+                                     !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
@@ -5681,6 +5660,7 @@ static virDomainPtr qemuDomainDefine(virConnectPtr conn, const char *xml) {
     if (dom) dom->id = vm->def->id;
 
 cleanup:
+    virDomainDefFree(oldDef);
     virDomainDefFree(def);
     if (vm)
         virObjectUnlock(vm);
@@ -6556,7 +6536,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainSaveConfig(cfg->configDir, vmdef);
         if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false);
+            virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
         }
     }
@@ -8069,7 +8049,7 @@ qemuSetSchedulerParametersFlags(virDomainPtr dom,
         if (rc < 0)
             goto cleanup;
 
-        virDomainObjAssignDef(vm, vmdef, false);
+        virDomainObjAssignDef(vm, vmdef, false, NULL);
         vmdef = NULL;
     }
 
@@ -12205,13 +12185,13 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
             }
             if (config)
-                virDomainObjAssignDef(vm, config, false);
+                virDomainObjAssignDef(vm, config, false, NULL);
         } else {
             /* Transitions 2, 3 */
         load:
             was_stopped = true;
             if (config)
-                virDomainObjAssignDef(vm, config, false);
+                virDomainObjAssignDef(vm, config, false, NULL);
 
             rc = qemuProcessStart(snapshot->domain->conn,
                                   driver, vm, NULL, -1, NULL, snap,
@@ -12295,7 +12275,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             goto endjob;
         }
         if (config)
-            virDomainObjAssignDef(vm, config, false);
+            virDomainObjAssignDef(vm, config, false, NULL);
 
         if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
@@ -12617,9 +12597,6 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
     if (!(caps = qemuCapsCacheLookup(driver->capsCache, def->emulator)))
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (qemuCanonicalizeMachine(def, caps) < 0)
         goto cleanup;
 
@@ -12628,7 +12605,10 @@ static virDomainPtr qemuDomainAttach(virConnectPtr conn,
 
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
 
     def = NULL;

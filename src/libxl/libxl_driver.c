@@ -902,7 +902,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                 goto error;
             }
 
-            virDomainObjAssignDef(vm, def, true);
+            virDomainObjAssignDef(vm, def, true, NULL);
             def = NULL;
 
             if (unlink(managed_save_path) < 0) {
@@ -1449,12 +1449,11 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
     def = NULL;
 
@@ -2230,12 +2229,12 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
     if (fd < 0)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, true)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
 
     def = NULL;
@@ -3019,7 +3018,7 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    int dupVM;
+    virDomainDefPtr oldDef = NULL;
 
     libxlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -3027,12 +3026,11 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-   if ((dupVM = virDomainObjListIsDuplicate(driver->domains, def, 0)) < 0)
-        goto cleanup;
-
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   0,
+                                   &oldDef)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
@@ -3049,12 +3047,13 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
         dom->id = vm->def->id;
 
     event = virDomainEventNewFromObj(vm, VIR_DOMAIN_EVENT_DEFINED,
-                                     !dupVM ?
+                                     !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
 cleanup:
     virDomainDefFree(def);
+    virDomainDefFree(oldDef);
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -3603,7 +3602,7 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
         ret = virDomainSaveConfig(driver->configDir, vmdef);
         if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false);
+            virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
         }
     }

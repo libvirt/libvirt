@@ -1966,15 +1966,19 @@ void virDomainDefFree(virDomainDefPtr vm);
 
 virDomainChrDefPtr virDomainChrDefNew(void);
 
-/* live == true means def describes an active domain (being migrated or
- * restored) as opposed to a new persistent configuration of the domain */
+enum {
+    VIR_DOMAIN_OBJ_LIST_ADD_LIVE = (1 << 0),
+    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
+};
 virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
                                     virCapsPtr caps,
                                     const virDomainDefPtr def,
-                                    bool live);
+                                    unsigned int flags,
+                                    virDomainDefPtr *oldDef);
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            const virDomainDefPtr def,
-                           bool live);
+                           bool live,
+                           virDomainDefPtr *oldDef);
 int virDomainObjSetDefTransient(virCapsPtr caps,
                                 virDomainObjPtr domain,
                                 bool live);
@@ -2155,10 +2159,6 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
 int virDomainFSIndexByName(virDomainDefPtr def, const char *name);
 int virDomainVideoDefaultType(virDomainDefPtr def);
 int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
-
-int virDomainObjListIsDuplicate(virDomainObjListPtr doms,
-                                virDomainDefPtr def,
-                                unsigned int check_active);
 
 int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active);
 

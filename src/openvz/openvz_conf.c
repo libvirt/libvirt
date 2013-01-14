@@ -586,6 +586,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
     line = outbuf;
     while (line[0] != '\0') {
+        unsigned int flags = 0;
         if (virStrToLong_i(line, &status, 10, &veid) < 0 ||
             *status++ != ' ' ||
             (line = strchr(status, '\n')) == NULL) {
@@ -642,17 +643,15 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         openvzReadMemConf(def, veid);
 
         virUUIDFormat(def->uuid, uuidstr);
-        if (virDomainObjListIsDuplicate(driver->domains, def, true)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Duplicate container UUID %s detected for %d"),
-                           uuidstr,
-                           veid);
-            goto cleanup;
-        }
+        flags = VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE;
+        if (STRNEQ(status, "stopped"))
+            flags |= VIR_DOMAIN_OBJ_LIST_ADD_LIVE;
+
         if (!(dom = virDomainObjListAdd(driver->domains,
                                         driver->caps,
                                         def,
-                                        STRNEQ(status, "stopped"))))
+                                        flags,
+                                        NULL)))
             goto cleanup;
 
         if (STREQ(status, "stopped")) {

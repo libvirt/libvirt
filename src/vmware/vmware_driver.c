@@ -320,9 +320,6 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, vmdef, 1) < 0)
-        goto cleanup;
-
     /* generate vmx file */
     vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
     if (vmx == NULL)
@@ -341,7 +338,9 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   vmdef, false)))
+                                   vmdef,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
 
     pDomain = vm->privateData;
@@ -592,9 +591,6 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, vmdef, 1) < 0)
-        goto cleanup;
-
     /* generate vmx file */
     vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
     if (vmx == NULL)
@@ -613,7 +609,9 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   vmdef, false)))
+                                   vmdef,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
 
     pDomain = vm->privateData;

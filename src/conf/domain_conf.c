@@ -1860,48 +1860,113 @@ error:
 
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            const virDomainDefPtr def,
-                           bool live)
+                           bool live,
+                           virDomainDefPtr *oldDef)
 {
-    if (!virDomainObjIsActive(domain)) {
+    if (oldDef)
+        *oldDef = NULL;
+    if (virDomainObjIsActive(domain)) {
+        if (oldDef)
+            *oldDef = domain->newDef;
+        else
+            virDomainDefFree(domain->newDef);
+        domain->newDef = def;
+    } else {
         if (live) {
-            /* save current configuration to be restored on domain shutdown */
-            if (!domain->newDef)
-                domain->newDef = domain->def;
+            if (domain->def) {
+                /* save current configuration to be restored on domain shutdown */
+                if (!domain->newDef)
+                    domain->newDef = domain->def;
+                else
+                    virDomainDefFree(domain->def);
+            }
             domain->def = def;
         } else {
-            virDomainDefFree(domain->def);
+            if (oldDef)
+                *oldDef = domain->def;
+            else
+                virDomainDefFree(domain->def);
             domain->def = def;
         }
-    } else {
-        virDomainDefFree(domain->newDef);
-        domain->newDef = def;
     }
 }
 
+
+
+/*
+ *
+ * If flags & VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE then
+ * this will refuse updating an existing def if the
+ * current def is Live
+ *
+ * If flags & VIR_DOMAIN_OBJ_LIST_ADD_LIVE then
+ * the @def being added is assumed to represent a
+ * live config, not a future inactive config
+ *
+ */
 virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
                                     virCapsPtr caps,
                                     const virDomainDefPtr def,
-                                    bool live)
+                                    unsigned int flags,
+                                    virDomainDefPtr *oldDef)
 {
-    virDomainObjPtr domain;
+    virDomainObjPtr vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    if (oldDef)
+        *oldDef = false;
 
-    if ((domain = virDomainObjListFindByUUID(doms, def->uuid))) {
-        virDomainObjAssignDef(domain, def, live);
-        return domain;
+    /* See if a VM with matching UUID already exists */
+    if ((vm = virDomainObjListFindByUUID(doms, def->uuid))) {
+        /* UUID matches, but if names don't match, refuse it */
+        if (STRNEQ(vm->def->name, def->name)) {
+            virUUIDFormat(vm->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("domain '%s' is already defined with uuid %s"),
+                           vm->def->name, uuidstr);
+            goto error;
+        }
+
+        if (flags & VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE) {
+            /* UUID & name match, but if VM is already active, refuse it */
+            if (virDomainObjIsActive(vm)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("domain is already active as '%s'"),
+                               vm->def->name);
+                goto error;
+            }
+        }
+
+        virDomainObjAssignDef(vm,
+                              def,
+                              !!(flags & VIR_DOMAIN_OBJ_LIST_ADD_LIVE),
+                              oldDef);
+    } else {
+        /* UUID does not match, but if a name matches, refuse it */
+        if ((vm = virDomainObjListFindByName(doms, def->name))) {
+            virUUIDFormat(vm->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("domain '%s' already exists with uuid %s"),
+                           def->name, uuidstr);
+            goto error;
+        }
+
+        if (!(vm = virDomainObjNew(caps)))
+            goto cleanup;
+        vm->def = def;
+
+        virUUIDFormat(def->uuid, uuidstr);
+        if (virHashAddEntry(doms->objs, uuidstr, vm) < 0) {
+            virObjectUnref(vm);
+            return NULL;
+        }
     }
+cleanup:
+    return vm;
 
-    if (!(domain = virDomainObjNew(caps)))
-        return NULL;
-    domain->def = def;
-
-    virUUIDFormat(def->uuid, uuidstr);
-    if (virHashAddEntry(doms->objs, uuidstr, domain) < 0) {
-        VIR_FREE(domain);
-        return NULL;
-    }
-
-    return domain;
+error:
+    virObjectUnlock(vm);
+    vm = NULL;
+    goto cleanup;
 }
 
 /*
@@ -14825,7 +14890,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom;
     int autostart;
-    int newVM = 1;
+    virDomainDefPtr oldDef = NULL;
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
@@ -14839,32 +14904,15 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    /* if the domain is already in our hashtable, we only need to
-     * update the autostart flag
-     */
-    if ((dom = virDomainObjListFindByUUID(doms, def->uuid))) {
-        dom->autostart = autostart;
-
-        if (virDomainObjIsActive(dom) &&
-            !dom->newDef) {
-            virDomainObjAssignDef(dom, def, false);
-        } else {
-            virDomainDefFree(def);
-        }
-
-        VIR_FREE(configFile);
-        VIR_FREE(autostartLink);
-        return dom;
-    }
-
-    if (!(dom = virDomainObjListAdd(doms, caps, def, false)))
+    if (!(dom = virDomainObjListAdd(doms, caps, def, 0, &oldDef)))
         goto error;
 
     dom->autostart = autostart;
 
     if (notify)
-        (*notify)(dom, newVM, opaque);
+        (*notify)(dom, oldDef == NULL, opaque);
 
+    virDomainDefFree(oldDef);
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     return dom;
@@ -15081,69 +15129,6 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
     }
 
     return NULL;
-}
-
-/*
- * virDomainObjListIsDuplicate:
- * @doms : virDomainObjListPtr to search
- * @def  : virDomainDefPtr definition of domain to lookup
- * @check_active: If true, ensure that domain is not active
- *
- * Returns: -1 on error
- *          0 if domain is new
- *          1 if domain is a duplicate
- */
-int
-virDomainObjListIsDuplicate(virDomainObjListPtr doms,
-                            virDomainDefPtr def,
-                            unsigned int check_active)
-{
-    int ret = -1;
-    int dupVM = 0;
-    virDomainObjPtr vm = NULL;
-
-    /* See if a VM with matching UUID already exists */
-    vm = virDomainObjListFindByUUID(doms, def->uuid);
-    if (vm) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("domain '%s' is already defined with uuid %s"),
-                           vm->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        if (check_active) {
-            /* UUID & name match, but if VM is already active, refuse it */
-            if (virDomainObjIsActive(vm)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain is already active as '%s'"),
-                               vm->def->name);
-                goto cleanup;
-            }
-        }
-
-        dupVM = 1;
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        vm = virDomainObjListFindByName(doms, def->name);
-        if (vm) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("domain '%s' already exists with uuid %s"),
-                           def->name, uuidstr);
-            goto cleanup;
-        }
-    }
-
-    ret = dupVM;
-cleanup:
-    if (vm)
-        virObjectUnlock(vm);
-    return ret;
 }
 
 

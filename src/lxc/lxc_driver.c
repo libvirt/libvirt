@@ -410,7 +410,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    int dupVM;
+    virDomainDefPtr oldDef = NULL;
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,
@@ -421,9 +421,6 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if ((dupVM = virDomainObjListIsDuplicate(driver->domains, def, 0)) < 0)
-        goto cleanup;
-
     if ((def->nets != NULL) && !(driver->have_netns)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("System lacks NETNS support"));
@@ -432,7 +429,9 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   0,
+                                   &oldDef)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
@@ -446,7 +445,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
-                                     !dupVM ?
+                                     !oldDef ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
@@ -456,6 +455,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
 
 cleanup:
     virDomainDefFree(def);
+    virDomainDefFree(oldDef);
     if (vm)
         virObjectUnlock(vm);
     if (event)
@@ -1077,9 +1077,6 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
-    if (virDomainObjListIsDuplicate(driver->domains, def, 1) < 0)
-        goto cleanup;
-
     if ((def->nets != NULL) && !(driver->have_netns)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("System lacks NETNS support"));
@@ -1089,7 +1086,9 @@ lxcDomainCreateAndStart(virConnectPtr conn,
 
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    driver->caps,
-                                   def, false)))
+                                   def,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
         goto cleanup;
     def = NULL;
 
@@ -1864,7 +1863,7 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
         if (rc < 0)
             goto cleanup;
 
-        virDomainObjAssignDef(vm, vmdef, false);
+        virDomainObjAssignDef(vm, vmdef, false, NULL);
         vmdef = NULL;
     }
 
@@ -4412,7 +4411,7 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainSaveConfig(driver->configDir, vmdef);
         if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false);
+            virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
         }
     }

@@ -832,7 +832,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
 
     if (!(dom = virDomainObjListAdd(privconn->domains,
                                     privconn->caps,
-                                    def, false)))
+                                    def, 0, NULL)))
         goto cleanup;
     /* dom is locked here */
 
@@ -2324,7 +2324,6 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL, olddom = NULL;
-    int dupVM;
 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(privconn->caps, xml,
@@ -2335,14 +2334,9 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if ((dupVM = virDomainObjListIsDuplicate(privconn->domains, def, 0)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Already exists"));
-        goto cleanup;
-    }
-
-    if (dupVM == 1) {
-        olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);
-    } else {
+    olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);
+    if (olddom == NULL) {
+        virResetLastError();
         if (STREQ(def->os.type, "hvm")) {
             if (parallelsCreateVm(conn, def))
                 goto cleanup;
@@ -2373,7 +2367,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (!(dom = virDomainObjListAdd(privconn->domains,
                                     privconn->caps,
-                                    def, false))) {
+                                    def, 0, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Can't allocate domobj"));
         goto cleanup;
