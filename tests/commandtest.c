@@ -680,7 +680,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (!outbuf || *outbuf) {
+    if (*outbuf) {
         puts("output buffer is not an allocated empty string");
         goto cleanup;
     }
@@ -702,7 +702,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (!outbuf || *outbuf || !errbuf || *errbuf) {
+    if (*outbuf || *errbuf) {
         puts("output buffers are not allocated empty strings");
         goto cleanup;
     }
@@ -936,6 +936,7 @@ mymain(void)
     int fd;
     virCommandTestDataPtr test = NULL;
     int timer = -1;
+    int virinitret;
 
     if (virThreadInitialize() < 0)
         return EXIT_FAILURE;
@@ -963,18 +964,21 @@ mymain(void)
         dup2(fd, 6) < 0 ||
         dup2(fd, 7) < 0 ||
         dup2(fd, 8) < 0 ||
-        (fd > 8 && VIR_CLOSE(fd) < 0))
+        (fd > 8 && VIR_CLOSE(fd) < 0)) {
+        VIR_FORCE_CLOSE(fd);
         return EXIT_FAILURE;
+    }
 
     /* Prime the debug/verbose settings from the env vars,
      * since we're about to reset 'environ' */
     ignore_value(virTestGetDebug());
     ignore_value(virTestGetVerbose());
 
-    if (virInitialize() < 0)
-        return EXIT_FAILURE;
+    /* Make sure to not leak fd's */
+    virinitret = virInitialize();
 
     /* Phase two of killing interfering fds; see above.  */
+    /* coverity[overwrite_var] - silence the obvious */
     fd = 3;
     VIR_FORCE_CLOSE(fd);
     fd = 4;
@@ -987,6 +991,9 @@ mymain(void)
     VIR_FORCE_CLOSE(fd);
     fd = 8;
     VIR_FORCE_CLOSE(fd);
+
+    if (virinitret < 0)
+        return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
     if (VIR_ALLOC(test) < 0) {
