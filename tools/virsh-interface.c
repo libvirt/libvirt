@@ -89,8 +89,12 @@ static const vshCmdInfo info_interface_edit[] = {
 };
 
 static const vshCmdOptDef opts_interface_edit[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name or MAC address")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name or MAC address")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -311,9 +315,17 @@ static const vshCmdInfo info_interface_list[] = {
 };
 
 static const vshCmdOptDef opts_interface_list[] = {
-    {"inactive", VSH_OT_BOOL, 0, N_("list inactive interfaces")},
-    {"all", VSH_OT_BOOL, 0, N_("list inactive & active interfaces")},
-    {NULL, 0, 0, NULL}
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive interfaces")
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list inactive & active interfaces")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -361,8 +373,12 @@ static const vshCmdInfo info_interface_name[] = {
 };
 
 static const vshCmdOptDef opts_interface_name[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface mac")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface mac")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -389,8 +405,12 @@ static const vshCmdInfo info_interface_mac[] = {
 };
 
 static const vshCmdOptDef opts_interface_mac[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -417,9 +437,17 @@ static const vshCmdInfo info_interface_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_interface_dumpxml[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name or MAC address")},
-    {"inactive", VSH_OT_BOOL, 0, N_("show inactive defined XML")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name or MAC address")
+    },
+    {.name = "inactive",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("show inactive defined XML")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -459,8 +487,12 @@ static const vshCmdInfo info_interface_define[] = {
 };
 
 static const vshCmdOptDef opts_interface_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML interface description")},
-    {NULL, 0, 0, NULL}
+    {.name = "file",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("file containing an XML interface description")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -501,8 +533,12 @@ static const vshCmdInfo info_interface_undefine[] = {
 };
 
 static const vshCmdOptDef opts_interface_undefine[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name or MAC address")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name or MAC address")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -536,8 +572,12 @@ static const vshCmdInfo info_interface_start[] = {
 };
 
 static const vshCmdOptDef opts_interface_start[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name or MAC address")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name or MAC address")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -571,8 +611,12 @@ static const vshCmdInfo info_interface_destroy[] = {
 };
 
 static const vshCmdOptDef opts_interface_destroy[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("interface name or MAC address")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("interface name or MAC address")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -608,7 +652,7 @@ static const vshCmdInfo info_interface_begin[] = {
 };
 
 static const vshCmdOptDef opts_interface_begin[] = {
-    {NULL, 0, 0, NULL}
+    {.name = NULL}
 };
 
 static bool
@@ -633,7 +677,7 @@ static const vshCmdInfo info_interface_commit[] = {
 };
 
 static const vshCmdOptDef opts_interface_commit[] = {
-    {NULL, 0, 0, NULL}
+    {.name = NULL}
 };
 
 static bool
@@ -658,7 +702,7 @@ static const vshCmdInfo info_interface_rollback[] = {
 };
 
 static const vshCmdOptDef opts_interface_rollback[] = {
-    {NULL, 0, 0, NULL}
+    {.name = NULL}
 };
 
 static bool
@@ -683,13 +727,32 @@ static const vshCmdInfo info_interface_bridge[] = {
 };
 
 static const vshCmdOptDef opts_interface_bridge[] = {
-    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, N_("existing interface name")},
-    {"bridge", VSH_OT_DATA, VSH_OFLAG_REQ, N_("new bridge device name")},
-    {"no-stp", VSH_OT_BOOL, 0, N_("do not enable STP for this bridge")},
-    {"delay", VSH_OT_INT, 0,
-     N_("number of seconds to squelch traffic on newly connected ports")},
-    {"no-start", VSH_OT_BOOL, 0, N_("don't start the bridge immediately")},
-    {NULL, 0, 0, NULL}
+    {.name = "interface",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("existing interface name")
+    },
+    {.name = "bridge",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("new bridge device name")
+    },
+    {.name = "no-stp",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("do not enable STP for this bridge")
+    },
+    {.name = "delay",
+     .type = VSH_OT_INT,
+     .flags = 0,
+     .help = N_("number of seconds to squelch traffic on newly connected ports")
+    },
+    {.name = "no-start",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("don't start the bridge immediately")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -901,10 +964,17 @@ static const vshCmdInfo info_interface_unbridge[] = {
 };
 
 static const vshCmdOptDef opts_interface_unbridge[] = {
-    {"bridge", VSH_OT_DATA, VSH_OFLAG_REQ, N_("current bridge device name")},
-    {"no-start", VSH_OT_BOOL, 0,
-     N_("don't start the un-slaved interface immediately (not recommended)")},
-    {NULL, 0, 0, NULL}
+    {.name = "bridge",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("current bridge device name")
+    },
+    {.name = "no-start",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("don't start the un-slaved interface immediately (not recommended)")
+    },
+    {.name = NULL}
 };
 
 static bool
