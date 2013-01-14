@@ -347,6 +347,19 @@ int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
                                        bool *spice_migrated);
 
 typedef enum {
+    QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+
+    QEMU_MONITOR_MIGRATION_CAPS_LAST
+} qemuMonitorMigrationCaps;
+
+VIR_ENUM_DECL(qemuMonitorMigrationCaps);
+
+int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability);
+int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability);
+
+typedef enum {
   QEMU_MONITOR_MIGRATE_BACKGROUND	= 1 << 0,
   QEMU_MONITOR_MIGRATE_NON_SHARED_DISK  = 1 << 1, /* migration with non-shared storage with full disk copy */
   QEMU_MONITOR_MIGRATE_NON_SHARED_INC   = 1 << 2, /* migration with non-shared storage with incremental copy */

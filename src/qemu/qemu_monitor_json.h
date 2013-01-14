@@ -126,6 +126,11 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
                                       unsigned long long *remaining,
                                       unsigned long long *total);
 
+int qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
+                                          qemuMonitorMigrationCaps capability);
+int qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
+                                          qemuMonitorMigrationCaps capability);
+
 int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
                            unsigned int flags,
                            const char *uri);

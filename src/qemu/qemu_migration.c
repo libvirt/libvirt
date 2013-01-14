@@ -1150,6 +1150,47 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
 
 
 static int
+qemuMigrationSetCompression(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            enum qemuDomainAsyncJob job)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
+        return -1;
+
+    ret = qemuMonitorGetMigrationCapability(
+                priv->mon,
+                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
+
+    if (ret < 0) {
+        goto cleanup;
+    } else if (ret == 0) {
+        if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Compressed migration is not supported by "
+                             "target QEMU binary"));
+        } else {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("Compressed migration is not supported by "
+                             "source QEMU binary"));
+        }
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = qemuMonitorSetMigrationCapability(
+                priv->mon,
+                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
+
+cleanup:
+    qemuDomainObjExitMonitor(driver, vm);
+    return ret;
+}
+
+
+static int
 qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              const char *job,
@@ -1704,12 +1745,15 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         if (virFDStreamOpen(st, dataFD[1]) < 0) {
             virReportSystemError(errno, "%s",
                                  _("cannot pass pipe for tunnelled migration"));
-            virDomainAuditStart(vm, "migrated", false);
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
-            goto endjob;
+            goto stop;
         }
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
+
+    if (flags & VIR_MIGRATE_COMPRESSED &&
+        qemuMigrationSetCompression(driver, vm,
+                                    QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stop;
 
     if (mig->lockState) {
         VIR_DEBUG("Received lockstate %s", mig->lockState);
@@ -1775,6 +1819,10 @@ cleanup:
     qemuMigrationCookieFree(mig);
     virObjectUnref(caps);
     return ret;
+
+stop:
+    virDomainAuditStart(vm, "migrated", false);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
 
 endjob:
     if (!qemuMigrationJobFinish(driver, vm)) {
@@ -2254,6 +2302,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         if (qemuMigrationSetOffline(driver, vm) < 0)
             goto cleanup;
     }
+
+    if (flags & VIR_MIGRATE_COMPRESSED &&
+        qemuMigrationSetCompression(driver, vm,
+                                    QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)

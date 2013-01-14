@@ -37,7 +37,8 @@
      VIR_MIGRATE_NON_SHARED_INC |               \
      VIR_MIGRATE_CHANGE_PROTECTION |            \
      VIR_MIGRATE_UNSAFE |                       \
-     VIR_MIGRATE_OFFLINE)
+     VIR_MIGRATE_OFFLINE |                      \
+     VIR_MIGRATE_COMPRESSED)
 
 enum qemuMigrationJobPhase {
     QEMU_MIGRATION_PHASE_NONE = 0,

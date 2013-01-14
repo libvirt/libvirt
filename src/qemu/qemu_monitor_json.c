@@ -4359,3 +4359,124 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int
+qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr caps;
+    int i;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate-capabilities",
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+            goto cleanup;
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    caps = virJSONValueObjectGet(reply, "return");
+    if (!caps || caps->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing migration capabilities"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < virJSONValueArraySize(caps); i++) {
+        virJSONValuePtr cap = virJSONValueArrayGet(caps, i);
+        const char *name;
+
+        if (!cap || cap->type != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing entry in migration capabilities list"));
+            goto cleanup;
+        }
+
+        if (!(name = virJSONValueObjectGetString(cap, "capability"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing migration capability name"));
+            goto cleanup;
+        }
+
+        if (qemuMonitorMigrationCapsTypeFromString(name) == capability) {
+            ret = 1;
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability)
+{
+    int ret = -1;
+
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr cap = NULL;
+    virJSONValuePtr caps;
+
+    if (!(caps = virJSONValueNewArray()))
+        goto cleanup;
+
+    if (!(cap = virJSONValueNewObject()))
+        goto no_memory;
+
+    if (virJSONValueObjectAppendString(
+                cap, "capability",
+                qemuMonitorMigrationCapsTypeToString(capability)) < 0)
+        goto no_memory;
+
+    if (virJSONValueObjectAppendBoolean(cap, "state", 1) < 0)
+        goto no_memory;
+
+    if (virJSONValueArrayAppend(caps, cap) < 0)
+        goto no_memory;
+
+    cap = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("migrate-set-capabilities",
+                                     "a:capabilities", caps,
+                                     NULL);
+    if (!cmd)
+        goto cleanup;
+
+    caps = NULL;
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
+    virJSONValueFree(caps);
+    virJSONValueFree(cap);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}

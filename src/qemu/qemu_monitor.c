@@ -101,6 +101,10 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               QEMU_MONITOR_MIGRATION_STATUS_LAST,
               "inactive", "active", "completed", "failed", "cancelled")
 
+VIR_ENUM_IMPL(qemuMonitorMigrationCaps,
+              QEMU_MONITOR_MIGRATION_CAPS_LAST,
+              "xbzrle")
+
 VIR_ENUM_IMPL(qemuMonitorVMStatus,
               QEMU_MONITOR_VM_STATUS_LAST,
               "debug", "inmigrate", "internal-error", "io-error", "paused",
@@ -3382,4 +3386,46 @@ char *qemuMonitorGetTargetArch(qemuMonitorPtr mon)
     }
 
     return qemuMonitorJSONGetTargetArch(mon);
+}
+
+
+/**
+ * Returns 1 if @capability is supported, 0 if it's not, or -1 on error.
+ */
+int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability)
+{
+    VIR_DEBUG("mon=%p capability=%d", mon, capability);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    /* No capability is supported without JSON monitor */
+    if (!mon->json)
+        return 0;
+
+    return qemuMonitorJSONGetMigrationCapability(mon, capability);
+}
+
+int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
+                                      qemuMonitorMigrationCaps capability)
+{
+    VIR_DEBUG("mon=%p capability=%d", mon, capability);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONSetMigrationCapability(mon, capability);
 }
