@@ -373,26 +373,25 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainBlockInfo info;
     virDomainPtr dom;
-    bool ret = true;
+    bool ret = false;
     const char *device = NULL;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "device", &device) <= 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device) < 0)
+        goto cleanup;
 
-    if (virDomainGetBlockInfo(dom, device, &info, 0) < 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
+        goto cleanup;
 
     vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
     vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
     vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info.physical);
 
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -670,16 +669,13 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &iface) <= 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
+        goto cleanup;
 
     if (vshCommandOptBool(cmd, "config"))
         flags = VIR_DOMAIN_XML_INACTIVE;
 
-    desc = virDomainGetXMLDesc(dom, flags);
-    if (desc == NULL) {
+    if (!(desc = virDomainGetXMLDesc(dom, flags))) {
         vshError(ctl, _("Failed to get domain description xml"));
         goto cleanup;
     }
@@ -752,8 +748,7 @@ cleanup:
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
 
     return ret;
 }
@@ -891,7 +886,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptString(cmd, "device", &device) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device) < 0)
         goto cleanup;
 
     rc = virDomainBlockStatsFlags(dom, device, NULL, &nparams, 0);
@@ -1016,19 +1011,17 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name = NULL, *device = NULL;
     struct _virDomainInterfaceStats stats;
+    bool ret = false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &device) <= 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (vshCommandOptStringReq(ctl, cmd, "interface", &device) < 0)
+        goto cleanup;
 
     if (virDomainInterfaceStats(dom, device, &stats, sizeof(stats)) == -1) {
         vshError(ctl, _("Failed to get interface stats %s %s"), name, device);
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
 
     if (stats.rx_bytes >= 0)
@@ -1055,8 +1048,11 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     if (stats.tx_drop >= 0)
         vshPrint(ctl, "%s tx_drop %lld\n", device, stats.tx_drop);
 
+    ret = true;
+
+cleanup:
     virDomainFree(dom);
-    return true;
+    return ret;
 }
 
 /*
