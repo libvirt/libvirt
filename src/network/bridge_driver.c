@@ -2,7 +2,7 @@
 /*
  * bridge_driver.c: core driver methods for managing network
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3715,10 +3715,6 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     int ii;
     int ret = -1;
 
-    /* it's handy to have this initialized if we skip directly to validate */
-    if (iface->vlan.nTags > 0)
-        vlan = &iface->vlan;
-
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         goto validate;
 
@@ -3762,6 +3758,24 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         if (virNetDevBandwidthCopy(&iface->data.network.actual->bandwidth,
                                    bandwidth) < 0)
             goto error;
+    }
+
+    /* copy appropriate vlan info to actualNet */
+    if (iface->vlan.nTags > 0)
+        vlan = &iface->vlan;
+    else if (portgroup && portgroup->vlan.nTags > 0)
+        vlan = &portgroup->vlan;
+    else if (netdef->vlan.nTags > 0)
+        vlan = &netdef->vlan;
+
+    if (vlan) {
+        if (!iface->data.network.actual
+            && (VIR_ALLOC(iface->data.network.actual) < 0)) {
+            virReportOOMError();
+            goto error;
+        }
+        if (virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
+           goto error;
     }
 
     if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
@@ -4000,24 +4014,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
     if (virNetDevVPortProfileCheckComplete(virtport, true) < 0)
         goto error;
 
-    /* copy appropriate vlan info to actualNet */
-    if (iface->vlan.nTags > 0)
-        vlan = &iface->vlan;
-    else if (portgroup && portgroup->vlan.nTags > 0)
-        vlan = &portgroup->vlan;
-    else if (netdef && netdef->vlan.nTags > 0)
-        vlan = &netdef->vlan;
-
-    if (virNetDevVlanCopy(&iface->data.network.actual->vlan, vlan) < 0)
-        goto error;
-
 validate:
     /* make sure that everything now specified for the device is
      * actually supported on this type of network. NB: network,
      * netdev, and iface->data.network.actual may all be NULL.
      */
 
-    if (vlan) {
+    if (virDomainNetGetActualVlan(iface)) {
         /* vlan configuration via libvirt is only supported for
          * PCI Passthrough SR-IOV devices and openvswitch bridges.
          * otherwise log an error and fail
