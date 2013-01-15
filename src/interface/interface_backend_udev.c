@@ -577,7 +577,7 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
 
     /* MAC address */
     ifacedef->mac = strdup(udev_device_get_sysattr_value(dev, "address"));
-    if (!ifacedef) {
+    if (!ifacedef->mac) {
         virReportOOMError();
         goto cleanup;
     }
