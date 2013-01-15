@@ -7308,8 +7308,9 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 {
     virDomainPtr dom;
     int nparams = 0;
+    int maxparams = 0;
     unsigned int i = 0;
-    virTypedParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL;
     const char *nodeset = NULL;
     bool ret = false;
     unsigned int flags = 0;
@@ -7336,18 +7337,32 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 
     if (vshCommandOptString(cmd, "nodeset", &nodeset) < 0) {
         vshError(ctl, "%s", _("Unable to parse nodeset."));
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
-    if (nodeset)
-        nparams++;
+    if (nodeset &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_NUMA_NODESET, nodeset) < 0)
+        goto save_error;
+
     if (vshCommandOptString(cmd, "mode", &mode) < 0) {
         vshError(ctl, "%s", _("Unable to parse mode."));
-        virDomainFree(dom);
-        return false;
+        goto cleanup;
     }
-    if (mode)
-        nparams++;
+    if (mode) {
+        int m;
+        /* Accept string or integer, in case server understands newer
+         * integer than what strings we were compiled with
+         */
+        if ((m = virDomainNumatuneMemModeTypeFromString(mode)) < 0 &&
+            virStrToLong_i(mode, NULL, 0, &m) < 0) {
+            vshError(ctl, _("Invalid mode: %s"), mode);
+            goto cleanup;
+        }
+
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_DOMAIN_NUMA_MODE, m) < 0)
+            goto save_error;
+    }
 
     if (nparams == 0) {
         /* get the number of numa parameters */
@@ -7381,56 +7396,23 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
                 VIR_FREE(str);
             }
         }
-
-        ret = true;
     } else {
-        /* set the numa parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-
-        for (i = 0; i < nparams; i++) {
-            temp = &params[i];
-
-            /*
-             * Some magic here, this is used to fill the params structure with
-             * the valid arguments passed, after filling the particular
-             * argument we purposely make them 0, so on the next pass it goes
-             * to the next valid argument and so on.
-             */
-            if (mode) {
-                /* Accept string or integer, in case server
-                 * understands newer integer than what strings we were
-                 * compiled with */
-                if ((temp->value.i =
-                    virDomainNumatuneMemModeTypeFromString(mode)) < 0 &&
-                    virStrToLong_i(mode, NULL, 0, &temp->value.i) < 0) {
-                    vshError(ctl, _("Invalid mode: %s"), mode);
-                    goto cleanup;
-                }
-                if (!virStrcpy(temp->field, VIR_DOMAIN_NUMA_MODE,
-                               sizeof(temp->field)))
-                    goto cleanup;
-                temp->type = VIR_TYPED_PARAM_INT;
-                mode = NULL;
-            } else if (nodeset) {
-                temp->value.s = vshStrdup(ctl, nodeset);
-                temp->type = VIR_TYPED_PARAM_STRING;
-                if (!virStrcpy(temp->field, VIR_DOMAIN_NUMA_NODESET,
-                               sizeof(temp->field)))
-                    goto cleanup;
-                nodeset = NULL;
-            }
-        }
         if (virDomainSetNumaParameters(dom, params, nparams, flags) != 0)
-            vshError(ctl, "%s", _("Unable to change numa parameters"));
-        else
-            ret = true;
+            goto error;
     }
 
-  cleanup:
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    ret = true;
+
+cleanup:
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
+
+save_error:
+    vshSaveLibvirtError();
+error:
+    vshError(ctl, "%s", _("Unable to change numa parameters"));
+    goto cleanup;
 }
 
 /*
