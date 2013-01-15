@@ -2053,13 +2053,13 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
 
     openvzDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    vmdef = vm->def;
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
         goto cleanup;
     }
+    vmdef = vm->def;
 
     if (virStrToLong_i(vmdef->name, NULL, 10, &veid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
