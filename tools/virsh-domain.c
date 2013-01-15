@@ -1043,9 +1043,9 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *name, *disk;
-    unsigned long long total_bytes_sec = 0, read_bytes_sec = 0, write_bytes_sec = 0;
-    unsigned long long total_iops_sec = 0, read_iops_sec = 0, write_iops_sec = 0;
+    unsigned long long value;
     int nparams = 0;
+    int maxparams = 0;
     virTypedParameterPtr params = NULL;
     unsigned int flags = 0, i = 0;
     int rv = 0;
@@ -1073,62 +1073,61 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "device", &disk) < 0)
         goto cleanup;
 
-    if ((rv = vshCommandOptULongLong(cmd, "total-bytes-sec",
-                                     &total_bytes_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "total-bytes-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "read-bytes-sec",
-                                     &read_bytes_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "read-bytes-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "write-bytes-sec",
-                                     &write_bytes_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "write-bytes-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "total-iops-sec",
-                                     &total_iops_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "total-iops-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "read-iops-sec",
-                                     &read_iops_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "read-iops-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(cmd, "write-iops-sec",
-                                     &write_iops_sec)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
+    if ((rv = vshCommandOptULongLong(cmd, "write-iops-sec", &value)) < 0) {
+        goto interror;
     } else if (rv > 0) {
-        nparams++;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                                    value) < 0)
+            goto save_error;
     }
 
     if (nparams == 0) {
-
         if (virDomainGetBlockIoTune(dom, NULL, NULL, &nparams, flags) != 0) {
             vshError(ctl, "%s",
                      _("Unable to get number of block I/O throttle parameters"));
@@ -1153,56 +1152,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
             VIR_FREE(str);
         }
-
-        ret = true;
-        goto cleanup;
     } else {
-        /* Set the block I/O throttle, match by opt since parameters can be 0 */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-        i = 0;
-
-        if (i < nparams && vshCommandOptBool(cmd, "total-bytes-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    total_bytes_sec) < 0)
-            goto error;
-
-        if (i < nparams && vshCommandOptBool(cmd, "read-bytes-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    read_bytes_sec) < 0)
-            goto error;
-
-        if (i < nparams && vshCommandOptBool(cmd, "write-bytes-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    write_bytes_sec) < 0)
-            goto error;
-
-        if (i < nparams && vshCommandOptBool(cmd, "total-iops-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    total_iops_sec) < 0)
-            goto error;
-
-        if (i < nparams && vshCommandOptBool(cmd, "read-iops-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    read_iops_sec) < 0)
-            goto error;
-
-        if (i < nparams && vshCommandOptBool(cmd, "write-iops-sec") &&
-            virTypedParameterAssign(&params[i++],
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    write_iops_sec) < 0)
-            goto error;
-
         if (virDomainSetBlockIoTune(dom, disk, params, nparams, flags) < 0)
             goto error;
     }
@@ -1210,12 +1160,18 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
 
+save_error:
+    vshSaveLibvirtError();
 error:
     vshError(ctl, "%s", _("Unable to change block I/O throttle"));
+    goto cleanup;
+
+interror:
+    vshError(ctl, "%s", _("Unable to parse integer parameter"));
     goto cleanup;
 }
 
