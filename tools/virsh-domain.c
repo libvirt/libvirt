@@ -7136,8 +7136,9 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
     long long hard_limit = 0, soft_limit = 0, swap_hard_limit = 0;
     long long min_guarantee = 0;
     int nparams = 0;
+    int maxparams = 0;
     unsigned int i = 0;
-    virTypedParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL;
     bool ret = false;
     unsigned int flags = 0;
     bool current = vshCommandOptBool(cmd, "current");
@@ -7169,17 +7170,41 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (hard_limit)
-        nparams++;
+    if (hard_limit) {
+        if (hard_limit == -1)
+            hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                                    hard_limit) < 0)
+            goto save_error;
+    }
 
-    if (soft_limit)
-        nparams++;
+    if (soft_limit) {
+        if (soft_limit == -1)
+            soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                                    soft_limit) < 0)
+            goto save_error;
+    }
 
-    if (swap_hard_limit)
-        nparams++;
+    if (swap_hard_limit) {
+        if (swap_hard_limit == -1)
+            swap_hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                                    swap_hard_limit) < 0)
+            goto save_error;
+    }
 
-    if (min_guarantee)
-        nparams++;
+    if (min_guarantee) {
+        if (min_guarantee == -1)
+            min_guarantee = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                                    min_guarantee) < 0)
+            goto save_error;
+    }
 
     if (nparams == 0) {
         /* get the number of memory parameters */
@@ -7212,66 +7237,20 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
                 VIR_FREE(str);
             }
         }
-
-        ret = true;
     } else {
-        /* set the memory parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-
-        for (i = 0; i < nparams; i++) {
-            temp = &params[i];
-
-            /*
-             * Some magic here, this is used to fill the params structure with
-             * the valid arguments passed, after filling the particular
-             * argument we purposely make them 0, so on the next pass it goes
-             * to the next valid argument and so on.
-             */
-            if (soft_limit) {
-                if (virTypedParameterAssign(temp,
-                                            VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            soft_limit) < 0)
-                    goto error;
-                soft_limit = 0;
-            } else if (hard_limit) {
-                if (virTypedParameterAssign(temp,
-                                            VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            hard_limit) < 0)
-                    goto error;
-                hard_limit = 0;
-            } else if (swap_hard_limit) {
-                if (virTypedParameterAssign(temp,
-                                            VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            swap_hard_limit) < 0)
-                    goto error;
-                swap_hard_limit = 0;
-            } else if (min_guarantee) {
-                if (virTypedParameterAssign(temp,
-                                            VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                                            VIR_TYPED_PARAM_ULLONG,
-                                            min_guarantee) < 0)
-                    goto error;
-                min_guarantee = 0;
-            }
-
-            /* If the user has passed -1, we interpret it as unlimited */
-            if (temp->value.ul == -1)
-                temp->value.ul = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-        }
         if (virDomainSetMemoryParameters(dom, params, nparams, flags) != 0)
             goto error;
-        else
-            ret = true;
     }
 
+    ret = true;
+
 cleanup:
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
 
+save_error:
+    vshSaveLibvirtError();
 error:
     vshError(ctl, "%s", _("Unable to change memory parameters"));
     goto cleanup;
