@@ -100,9 +100,9 @@ static void
 libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
                      int fd,
                      int vir_events,
-                     void *fdinfo)
+                     void *fd_info)
 {
-    struct libxlOSEventHookFDInfo *info = fdinfo;
+    struct libxlOSEventHookFDInfo *info = fd_info;
     int events = 0;
 
     if (vir_events & VIR_EVENT_HANDLE_READABLE)
@@ -182,11 +182,11 @@ libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
 }
 
 static void
-libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_v)
+libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_info)
 {
-    struct libxlOSEventHookTimerInfo *timer_info = timer_v;
+    struct libxlOSEventHookTimerInfo *info = timer_info;
 
-    libxl_osevent_occurred_timeout(timer_info->priv->ctx, timer_info->xl_priv);
+    libxl_osevent_occurred_timeout(info->priv->ctx, info->xl_priv);
 }
 
 static void
@@ -199,7 +199,7 @@ static int
 libxlTimeoutRegisterEventHook(void *priv,
                               void **hndp,
                               struct timeval abs_t,
-                              void *for_libxl)
+                              void *xl_priv)
 {
     struct timeval now;
     struct libxlOSEventHookTimerInfo *timer_info;
@@ -221,7 +221,7 @@ libxlTimeoutRegisterEventHook(void *priv,
     }
 
     timer_info->priv = priv;
-    timer_info->xl_priv = for_libxl;
+    timer_info->xl_priv = xl_priv;
     timer_info->id = timer_id;
     *hndp = timer_info;
     return 0;
