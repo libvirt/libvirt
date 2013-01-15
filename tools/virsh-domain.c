@@ -1228,9 +1228,10 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     const char *device_weight = NULL;
     int weight = 0;
     int nparams = 0;
+    int maxparams = 0;
     int rv = 0;
     unsigned int i = 0;
-    virTypedParameterPtr params = NULL, temp = NULL;
+    virTypedParameterPtr params = NULL;
     bool ret = false;
     unsigned int flags = 0;
     bool current = vshCommandOptBool(cmd, "current");
@@ -1254,27 +1255,27 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         return false;
 
     if ((rv = vshCommandOptInt(cmd, "weight", &weight)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
+        vshError(ctl, "%s", _("Unable to parse integer parameter"));
         goto cleanup;
-    }
-
-    if (rv > 0) {
-        nparams++;
+    } else if (rv > 0) {
         if (weight <= 0) {
             vshError(ctl, _("Invalid value of %d for I/O weight"), weight);
             goto cleanup;
         }
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BLKIO_WEIGHT, weight) < 0)
+            goto save_error;
     }
 
     rv = vshCommandOptString(cmd, "device-weights", &device_weight);
     if (rv < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse string parameter"));
+        vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
-    }
-    if (rv > 0) {
-        nparams++;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
+                                    device_weight) < 0)
+            goto save_error;
     }
 
     if (nparams == 0) {
@@ -1305,41 +1306,22 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         }
     } else {
         /* set the blkio parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-
-        for (i = 0; i < nparams; i++) {
-            temp = &params[i];
-            temp->type = VIR_TYPED_PARAM_UINT;
-
-            if (weight) {
-                temp->value.ui = weight;
-                if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_WEIGHT,
-                               sizeof(temp->field)))
-                    goto cleanup;
-                weight = 0;
-            } else if (device_weight) {
-                temp->value.s = vshStrdup(ctl, device_weight);
-                temp->type = VIR_TYPED_PARAM_STRING;
-                if (!virStrcpy(temp->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
-                               sizeof(temp->field)))
-                    goto cleanup;
-                device_weight = NULL;
-            }
-        }
-
-        if (virDomainSetBlkioParameters(dom, params, nparams, flags) < 0) {
-            vshError(ctl, "%s", _("Unable to change blkio parameters"));
-            goto cleanup;
-        }
+        if (virDomainSetBlkioParameters(dom, params, nparams, flags) < 0)
+            goto error;
     }
 
     ret = true;
 
-  cleanup:
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+cleanup:
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
+
+save_error:
+    vshSaveLibvirtError();
+error:
+    vshError(ctl, "%s", _("Unable to change blkio parameters"));
+    goto cleanup;
 }
 
 typedef enum {
