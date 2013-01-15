@@ -591,6 +591,7 @@ LIBVIRT_1.0.2 {
         virTypedParamsAddString;
         virTypedParamsAddUInt;
         virTypedParamsAddULLong;
+        virTypedParamsClear;
         virTypedParamsFree;
         virTypedParamsGet;
         virTypedParamsGetBoolean;

@@ -537,6 +537,7 @@ skip_function = (
     "virTypedParamsAddString",
     "virTypedParamsAddUInt",
     "virTypedParamsAddULLong",
+    "virTypedParamsClear",
     "virTypedParamsFree",
     "virTypedParamsGet",
     "virTypedParamsGetBoolean",

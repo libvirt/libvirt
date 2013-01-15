@@ -987,8 +987,8 @@ remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
 
 cleanup:
     if (rv < 0) {
-        virTypedParameterArrayClear(params, i);
-        VIR_FREE(params);
+        virTypedParamsFree(params, i);
+        params = NULL;
     }
     return params;
 }
@@ -1037,8 +1037,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -1147,8 +1146,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -1336,8 +1334,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -1966,8 +1963,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -2031,8 +2027,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -2096,8 +2091,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -2358,8 +2352,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -3862,8 +3855,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -3937,8 +3929,7 @@ success:
 cleanup:
     if (rv < 0)
          virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, args->ncpus * args->nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, args->ncpus * args->nparams);
     if (dom)
         virDomainFree(dom);
     return rv;
@@ -4570,8 +4561,7 @@ success:
 cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     return rv;
 }
 

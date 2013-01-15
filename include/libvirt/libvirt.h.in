@@ -607,6 +607,9 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
                          int type,
                          const char *value);
 void
+virTypedParamsClear     (virTypedParameterPtr params,
+                         int nparams);
+void
 virTypedParamsFree      (virTypedParameterPtr params,
                          int nparams);
 

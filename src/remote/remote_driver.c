@@ -1612,7 +1612,7 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
 
 cleanup:
     if (rv < 0)
-        virTypedParameterArrayClear(params, i);
+        virTypedParamsClear(params, i);
     return rv;
 }
 
@@ -2754,7 +2754,7 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
     rv = ret.nparams;
 cleanup:
     if (rv < 0)
-        virTypedParameterArrayClear(params, nparams * ncpus);
+        virTypedParamsClear(params, nparams * ncpus);
 
     xdr_free((xdrproc_t) xdr_remote_domain_get_cpu_stats_ret,
              (char *) &ret);

@@ -6182,7 +6182,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         }
         cpu += ncpus;
         show_count -= ncpus;
-        virTypedParameterArrayClear(params, nparams * ncpus);
+        virTypedParamsClear(params, nparams * ncpus);
     }
     VIR_FREE(params);
 

@@ -1876,7 +1876,6 @@ virTimeStringThenRaw;
 
 
 # virtypedparam.h
-virTypedParameterArrayClear;
 virTypedParameterArrayValidate;
 virTypedParameterAssign;
 virTypedParameterAssignFromStr;

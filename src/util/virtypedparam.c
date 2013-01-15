@@ -41,20 +41,6 @@ VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
               "boolean",
               "string")
 
-void
-virTypedParameterArrayClear(virTypedParameterPtr params, int nparams)
-{
-    int i;
-
-    if (!params)
-        return;
-
-    for (i = 0; i < nparams; i++) {
-        if (params[i].type == VIR_TYPED_PARAM_STRING)
-            VIR_FREE(params[i].value.s);
-    }
-}
-
 /* Validate that PARAMS contains only recognized parameter names with
  * correct types, and with no duplicates.  Pass in as many name/type
  * pairs as appropriate, and pass NULL to end the list of accepted
@@ -897,7 +883,7 @@ error:
  *
  * Adds new parameter called @name with char * type and sets its value to
  * @value. The function creates its own copy of @value string, which needs to
- * be freed using virTypedParamsFree. If @params array
+ * be freed using virTypedParamsFree or virTypedParamsClear. If @params array
  * points to NULL or to a space that is not large enough to accommodate the
  * new parameter (@maxparams < @nparams + 1), the function allocates more
  * space for it and updates @maxparams. On success, @nparams is incremented
@@ -959,7 +945,7 @@ error:
  * Adds new parameter called @name with the requested @type and parses its
  * value from the @value string. If the requested type is string, the function
  * creates its own copy of the @value string, which needs to be freed using
- * virTypedParamsFree. If @params array points to NULL
+ * virTypedParamsFree or virTypedParamsClear. If @params array points to NULL
  * or to a space that is not large enough to accommodate the new parameter
  * (@maxparams < @nparams + 1), the function allocates more space for it and
  * updates @maxparams. On success, @nparams is incremented by one. The
@@ -1001,6 +987,32 @@ error:
 
 
 /**
+ * virTypedParamsClear:
+ * @params: the array of typed parameters
+ * @nparams: number of parameters in the @params array
+ *
+ * Frees all memory used by string parameters. The memory occupied by @params
+ * is not freed; use virTypedParamsFree if you want it to be freed too.
+ *
+ * Returns nothing.
+ */
+void
+virTypedParamsClear(virTypedParameterPtr params,
+                    int nparams)
+{
+    int i;
+
+    if (!params)
+        return;
+
+    for (i = 0; i < nparams; i++) {
+        if (params[i].type == VIR_TYPED_PARAM_STRING)
+            VIR_FREE(params[i].value.s);
+    }
+}
+
+
+/**
  * virTypedParamsFree:
  * @params: the array of typed parameters
  * @nparams: number of parameters in the @params array
@@ -1015,6 +1027,6 @@ virTypedParamsFree(virTypedParameterPtr params,
                    int nparams)
 {
     virResetLastError();
-    virTypedParameterArrayClear(params, nparams);
+    virTypedParamsClear(params, nparams);
     VIR_FREE(params);
 }
