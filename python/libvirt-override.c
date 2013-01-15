@@ -809,7 +809,7 @@ libvirt_virDomainSetSchedulerParametersFlags(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0;
     Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetScedulerParametersFlags",
@@ -885,7 +885,7 @@ libvirt_virDomainSetBlkioParameters(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0;
     Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetBlkioParameters",
@@ -1007,7 +1007,7 @@ libvirt_virDomainSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0;
     Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetMemoryParameters",
@@ -1129,7 +1129,7 @@ libvirt_virDomainSetNumaParameters(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0;
     Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virDomainSetNumaParameters",
@@ -1252,7 +1252,7 @@ libvirt_virDomainSetInterfaceParameters(PyObject *self ATTRIBUTE_UNUSED,
     Py_ssize_t size = 0;
     unsigned int flags;
     const char *device = NULL;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OzOi:virDomainSetInterfaceParameters",
@@ -4248,7 +4248,7 @@ libvirt_virDomainSetBlockIoTune(PyObject *self ATTRIBUTE_UNUSED,
     Py_ssize_t size = 0;
     const char *disk;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args, (char *)"OzOi:virDomainSetBlockIoTune",
                           &pyobj_domain, &disk, &info, &flags))
@@ -6408,7 +6408,7 @@ libvirt_virNodeSetMemoryParameters(PyObject *self ATTRIBUTE_UNUSED,
     int nparams = 0;
     Py_ssize_t size = 0;
     unsigned int flags;
-    virTypedParameterPtr params, new_params;
+    virTypedParameterPtr params, new_params = NULL;
 
     if (!PyArg_ParseTuple(args,
                           (char *)"OOi:virNodeSetMemoryParameters",
