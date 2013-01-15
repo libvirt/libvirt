@@ -365,6 +365,8 @@ retry:
         VIR_DEBUG("Lockspace %s has been registered", path);
     }
 
+    VIR_FREE(path);
+    VIR_FREE(dir);
     return 0;
 
 error_unlink:
