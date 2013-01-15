@@ -153,10 +153,9 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
     if (!str || !buf || (len == 0 && buf->indent == 0))
         return;
 
-    if (buf->error)
-        return;
-
     indent = virBufferGetIndent(buf, true);
+    if (indent < 0)
+        return;
 
     if (len < 0)
         len = strlen(str);
