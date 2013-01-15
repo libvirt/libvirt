@@ -3985,11 +3985,10 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
     const char *set_arg;
     char *set_field = NULL;
     char *set_val = NULL;
-
     virTypedParameterPtr param;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
-    size_t params_size = 0;
+    int maxparams = 0;
     int ret = -1;
     int rv;
     int val;
@@ -4008,10 +4007,6 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
 
     for (i = 0; i < nsrc_params; i++) {
         param = &(src_params[i]);
-        if (VIR_RESIZE_N(params, params_size, nparams, 1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
 
         /* Legacy 'weight' and 'cap'  parameter */
         if (param->type == VIR_TYPED_PARAM_UINT &&
@@ -4022,10 +4017,8 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
                 goto cleanup;
             }
 
-            if (virTypedParameterAssign(&(params[nparams++]),
-                                        param->field,
-                                        param->type,
-                                        val) < 0) {
+            if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                      param->field, val) < 0) {
                 vshSaveLibvirtError();
                 goto cleanup;
             }
@@ -4033,12 +4026,10 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
             continue;
         }
 
-
         if (set_field && STREQ(set_field, param->field)) {
-            if (virTypedParameterAssignFromStr(&(params[nparams++]),
-                                               param->field,
-                                               param->type,
-                                               set_val) < 0) {
+            if (virTypedParamsAddFromString(&params, &nparams, &maxparams,
+                                            set_field, param->type,
+                                            set_val) < 0) {
                 vshSaveLibvirtError();
                 goto cleanup;
             }
@@ -4053,8 +4044,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
 
 cleanup:
     VIR_FREE(set_field);
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     return ret;
 }
 
@@ -4170,10 +4160,8 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virTypedParameterArrayClear(params, nparams);
-    virTypedParameterArrayClear(updates, nupdates);
-    VIR_FREE(params);
-    VIR_FREE(updates);
+    virTypedParamsFree(params, nparams);
+    virTypedParamsFree(updates, nupdates);
     virDomainFree(dom);
     return ret_val;
 }
