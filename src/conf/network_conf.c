@@ -235,6 +235,7 @@ void virNetworkObjFree(virNetworkObjPtr net)
 
     virNetworkDefFree(net->def);
     virNetworkDefFree(net->newDef);
+    virBitmapFree(net->class_id);
 
     virMutexDestroy(&net->lock);
 
