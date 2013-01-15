@@ -227,7 +227,7 @@ virLockSpaceProtocolDispatchNew(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((lockspace = virLockDaemonFindLockSpace(lockDaemon, args->path))) {
+    if (virLockDaemonFindLockSpace(lockDaemon, args->path) != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Lockspace for path %s already exists"),
                        args->path);
@@ -406,7 +406,7 @@ virLockSpaceProtocolDispatchCreateLockSpace(virNetServerPtr server ATTRIBUTE_UNU
         goto cleanup;
     }
 
-    if ((lockspace = virLockDaemonFindLockSpace(lockDaemon, args->path))) {
+    if (virLockDaemonFindLockSpace(lockDaemon, args->path) != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Lockspace for path %s already exists"),
                        args->path);
