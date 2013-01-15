@@ -2517,6 +2517,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
                *inboundStr = NULL, *outboundStr = NULL;
     unsigned int flags = 0;
     int nparams = 0;
+    int maxparams = 0;
     virTypedParameterPtr params = NULL;
     bool ret = false;
     bool current = vshCommandOptBool(cmd, "current");
@@ -2541,10 +2542,8 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &device) <= 0) {
-        virDomainFree(dom);
-        return false;
-    }
+    if (vshCommandOptString(cmd, "interface", &device) <= 0)
+        goto cleanup;
 
     if (vshCommandOptString(cmd, "inbound", &inboundStr) < 0 ||
         vshCommandOptString(cmd, "outbound", &outboundStr) < 0) {
@@ -2564,10 +2563,25 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("inbound average is mandatory"));
             goto cleanup;
         }
-        nparams++; /* average */
-        if (inbound.peak) nparams++;
-        if (inbound.burst) nparams++;
+
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                                  inbound.average) < 0)
+            goto save_error;
+
+        if (inbound.peak &&
+            virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                                  inbound.peak) < 0)
+            goto save_error;
+
+        if (inbound.burst &&
+            virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                                  inbound.burst) < 0)
+            goto save_error;
     }
+
     if (outboundStr) {
         if (parseRateStr(outboundStr, &outbound) < 0) {
             vshError(ctl, _("outbound format is incorrect"));
@@ -2577,9 +2591,23 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("outbound average is mandatory"));
             goto cleanup;
         }
-        nparams++; /* average */
-        if (outbound.peak) nparams++;
-        if (outbound.burst) nparams++;
+
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
+                                  outbound.average) < 0)
+            goto save_error;
+
+        if (outbound.peak &&
+            virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
+                                  outbound.peak) < 0)
+            goto save_error;
+
+        if (outbound.burst &&
+            virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_OUT_BURST,
+                                  outbound.burst) < 0)
+            goto save_error;
     }
 
     if (nparams == 0) {
@@ -2598,10 +2626,6 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
 
         /* get all interface parameters */
         params = vshCalloc(ctl, nparams, sizeof(*params));
-        if (!params) {
-            virReportOOMError();
-            goto cleanup;
-        }
         if (virDomainGetInterfaceParameters(dom, device, params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get interface parameters"));
             goto cleanup;
@@ -2613,73 +2637,23 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
             VIR_FREE(str);
         }
     } else {
-        /* set the interface parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-        if (!params) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        for (i = 0; i < nparams; i++)
-            params[i].type = VIR_TYPED_PARAM_UINT;
-
-        i = 0;
-        if (inbound.average && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = inbound.average;
-            i++;
-        }
-        if (inbound.peak && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_PEAK,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = inbound.peak;
-            i++;
-        }
-        if (inbound.burst && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_IN_BURST,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = inbound.burst;
-            i++;
-        }
-        if (outbound.average && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = outbound.average;
-            i++;
-        }
-        if (outbound.peak && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = outbound.peak;
-            i++;
-        }
-        if (outbound.burst && i < nparams) {
-            if (!virStrcpy(params[i].field, VIR_DOMAIN_BANDWIDTH_OUT_BURST,
-                           sizeof(params[i].field)))
-                goto cleanup;
-            params[i].value.ui = outbound.burst;
-            i++;
-        }
-
-        if (virDomainSetInterfaceParameters(dom, device, params, nparams, flags) != 0) {
-            vshError(ctl, "%s", _("Unable to set interface parameters"));
-            goto cleanup;
-        }
+        if (virDomainSetInterfaceParameters(dom, device, params,
+                                            nparams, flags) != 0)
+            goto error;
     }
 
     ret = true;
 
 cleanup:
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
+
+save_error:
+    vshSaveLibvirtError();
+error:
+    vshError(ctl, "%s", _("Unable to set interface parameters"));
+    goto cleanup;
 }
 
 /*
