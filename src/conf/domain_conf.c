@@ -11900,26 +11900,25 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
 
     /* No existing vcpupin matches vcpu, adding a new one */
 
-    if (VIR_ALLOC(vcpupin) < 0) {
-        virReportOOMError();
-        return -1;
-    }
+    if (VIR_ALLOC(vcpupin) < 0)
+        goto no_memory;
+
     vcpupin->vcpuid = vcpu;
     vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
-    if (!vcpupin->cpumask) {
-        virReportOOMError();
-        return -1;
-    }
+    if (!vcpupin->cpumask)
+        goto no_memory;
 
-    if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0) {
-        virReportOOMError();
-        VIR_FREE(vcpupin);
-        return -1;
-    }
+    if (VIR_REALLOC_N(*vcpupin_list, *nvcpupin + 1) < 0)
+        goto no_memory;
 
     (*vcpupin_list)[(*nvcpupin)++] = vcpupin;
 
     return 0;
+
+no_memory:
+    virReportOOMError();
+    virDomainVcpuPinDefFree(vpcupin);
+    return -1;
 }
 
 int
