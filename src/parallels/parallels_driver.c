@@ -814,9 +814,6 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
     if (!(pdom->home = strdup(tmp)))
         goto no_memory;
 
-    if (!(tmp = virJSONValueObjectGetString(jobj, "OS")))
-        goto cleanup;
-
     if (!(state = virJSONValueObjectGetString(jobj, "State"))) {
         parallelsParseError();
         goto cleanup;
