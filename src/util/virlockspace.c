@@ -558,13 +558,12 @@ int virLockSpaceCreateResource(virLockSpacePtr lockspace,
 {
     int ret = -1;
     char *respath = NULL;
-    virLockSpaceResourcePtr res;
 
     VIR_DEBUG("lockspace=%p resname=%s", lockspace, resname);
 
     virMutexLock(&lockspace->lock);
 
-    if ((res = virHashLookup(lockspace->resources, resname))) {
+    if (virHashLookup(lockspace->resources, resname) != NULL) {
         virReportError(VIR_ERR_RESOURCE_BUSY,
                        _("Lockspace resource '%s' is locked"),
                        resname);
@@ -591,13 +590,12 @@ int virLockSpaceDeleteResource(virLockSpacePtr lockspace,
 {
     int ret = -1;
     char *respath = NULL;
-    virLockSpaceResourcePtr res;
 
     VIR_DEBUG("lockspace=%p resname=%s", lockspace, resname);
 
     virMutexLock(&lockspace->lock);
 
-    if ((res = virHashLookup(lockspace->resources, resname))) {
+    if (virHashLookup(lockspace->resources, resname) != NULL) {
         virReportError(VIR_ERR_RESOURCE_BUSY,
                        _("Lockspace resource '%s' is locked"),
                        resname);
