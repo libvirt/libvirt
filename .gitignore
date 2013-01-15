@@ -63,8 +63,8 @@
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
 /docs/libvirt-api.xml
-/docs/libvirt-qemu-*.xml
 /docs/libvirt-lxc-*.xml
+/docs/libvirt-qemu-*.xml
 /docs/libvirt-refs.xml
 /docs/search.php
 /docs/todo.html.in
@@ -161,8 +161,8 @@
 /tests/reconnect
 /tests/secaatest
 /tests/seclabeltest
-/tests/securityselinuxtest
 /tests/securityselinuxlabeltest
+/tests/securityselinuxtest
 /tests/sexpr2xmltest
 /tests/shunloadtest
 /tests/sockettest
