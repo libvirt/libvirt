@@ -796,42 +796,41 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
 {
     virTypedParameterPtr params = NULL;
     int nparams = 0;
+    int maxparams = 0;
     unsigned int flags = 0;
-    unsigned int shm_pages_to_scan = 0;
-    unsigned int shm_sleep_millisecs = 0;
-    unsigned int shm_merge_across_nodes = 0;
-    bool has_shm_pages_to_scan = false;
-    bool has_shm_sleep_millisecs = false;
-    bool has_shm_merge_across_nodes = false;
+    unsigned int value;
     bool ret = false;
     int rc = -1;
     int i = 0;
 
-    if ((rc = vshCommandOptUInt(cmd, "shm-pages-to-scan",
-                                &shm_pages_to_scan)) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-pages-to-scan", &value)) < 0) {
         vshError(ctl, "%s", _("invalid shm-pages-to-scan number"));
-        return false;
+        goto cleanup;
     } else if (rc > 0) {
-        nparams++;
-        has_shm_pages_to_scan = true;
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
+                                  value) < 0)
+            goto save_error;
     }
 
-    if ((rc = vshCommandOptUInt(cmd, "shm-sleep-millisecs",
-                                &shm_sleep_millisecs)) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-sleep-millisecs", &value)) < 0) {
         vshError(ctl, "%s", _("invalid shm-sleep-millisecs number"));
-        return false;
+        goto cleanup;
     } else if (rc > 0) {
-        nparams++;
-        has_shm_sleep_millisecs = true;
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
+                                  value) < 0)
+            goto save_error;
     }
 
-    if ((rc = vshCommandOptUInt(cmd, "shm-merge-across-nodes",
-                                &shm_merge_across_nodes)) < 0) {
+    if ((rc = vshCommandOptUInt(cmd, "shm-merge-across-nodes", &value)) < 0) {
         vshError(ctl, "%s", _("invalid shm-merge-across-nodes number"));
-        return false;
+        goto cleanup;
     } else if (rc > 0) {
-        nparams++;
-        has_shm_merge_across_nodes = true;
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
+                                  value) < 0)
+            goto save_error;
     }
 
     if (nparams == 0) {
@@ -863,46 +862,19 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "\t%-15s %s\n", params[i].field, str);
             VIR_FREE(str);
         }
-
-        ret = true;
     } else {
-        /* Set the memory parameters */
-        params = vshCalloc(ctl, nparams, sizeof(*params));
-
-        if (i < nparams && has_shm_pages_to_scan) {
-            if (virTypedParameterAssign(&params[i++],
-                                        VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
-                                        VIR_TYPED_PARAM_UINT,
-                                        shm_pages_to_scan) < 0)
-                goto error;
-        }
-
-        if (i < nparams && has_shm_sleep_millisecs) {
-            if (virTypedParameterAssign(&params[i++],
-                                        VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
-                                        VIR_TYPED_PARAM_UINT,
-                                        shm_sleep_millisecs) < 0)
-                goto error;
-        }
-
-        if (i < nparams && has_shm_merge_across_nodes) {
-            if (virTypedParameterAssign(&params[i++],
-                                        VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
-                                        VIR_TYPED_PARAM_UINT,
-                                        shm_merge_across_nodes) < 0)
-                goto error;
-        }
-
         if (virNodeSetMemoryParameters(ctl->conn, params, nparams, flags) != 0)
             goto error;
-        else
-            ret = true;
     }
 
+    ret = true;
+
 cleanup:
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
     return ret;
 
+save_error:
+    vshSaveLibvirtError();
 error:
     vshError(ctl, "%s", _("Unable to change memory parameters"));
     goto cleanup;
