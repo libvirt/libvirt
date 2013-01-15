@@ -769,7 +769,7 @@ libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     libxl_domain_config_init(&d_config);
 
     if (libxlBuildDomainConfig(driver, vm->def, &d_config) < 0)
-        return -1;
+        goto error;
 
     if (libxlFreeMem(priv, &d_config) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
