@@ -2056,26 +2056,6 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
     return str;
 }
 
-virTypedParameterPtr
-vshFindTypedParamByName(const char *name, virTypedParameterPtr list, int count)
-{
-    int i = count;
-    virTypedParameterPtr found = list;
-
-    if (!list || !name)
-        return NULL;
-
-    while (i-- > 0) {
-        if (STREQ(name, found->field))
-            return found;
-
-        found++; /* go to next struct in array */
-    }
-
-    /* not found */
-    return NULL;
-}
-
 void
 vshDebug(vshControl *ctl, int level, const char *format, ...)
 {

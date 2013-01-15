@@ -941,9 +941,8 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
         /* at first print all known values in desired order */
         for (i = 0; domblkstat_output[i].field != NULL; i++) {
-            if (!(par = vshFindTypedParamByName(domblkstat_output[i].field,
-                                                params,
-                                                nparams)))
+            if (!(par = virTypedParamsGet(params, nparams,
+                                          domblkstat_output[i].field)))
                 continue;
 
             value = vshGetTypedParamValue(ctl, par);
