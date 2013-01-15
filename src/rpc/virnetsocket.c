@@ -473,7 +473,9 @@ int virNetSocketNewConnectTCP(const char *nodename,
             goto error;
         }
 
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+            VIR_WARN("Unable to enable port reuse");
+        }
 
         if (connect(fd, runp->ai_addr, runp->ai_addrlen) >= 0)
             break;
