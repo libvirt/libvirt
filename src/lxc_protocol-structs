@@ -1,0 +1,13 @@
+/* -*- c -*- */
+struct remote_nonnull_domain {
+        remote_nonnull_string      name;
+        remote_uuid                uuid;
+        int                        id;
+};
+struct lxc_domain_open_namespace_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+enum lxc_procedure {
+        LXC_PROC_DOMAIN_OPEN_NAMESPACE = 1,
+};
