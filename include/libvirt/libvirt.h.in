@@ -518,6 +518,98 @@ struct _virTypedParameter {
 typedef virTypedParameter *virTypedParameterPtr;
 
 
+virTypedParameterPtr
+virTypedParamsGet       (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name);
+int
+virTypedParamsGetInt    (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         int *value);
+int
+virTypedParamsGetUInt   (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         unsigned int *value);
+int
+virTypedParamsGetLLong  (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         long long *value);
+int
+virTypedParamsGetULLong (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         unsigned long long *value);
+int
+virTypedParamsGetDouble (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         double *value);
+int
+virTypedParamsGetBoolean(virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         int *value);
+int
+virTypedParamsGetString (virTypedParameterPtr params,
+                         int nparams,
+                         const char *name,
+                         const char **value);
+int
+virTypedParamsAddInt    (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         int value);
+int
+virTypedParamsAddUInt   (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         unsigned int value);
+int
+virTypedParamsAddLLong  (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         long long value);
+int
+virTypedParamsAddULLong (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         unsigned long long value);
+int
+virTypedParamsAddDouble (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         double value);
+int
+virTypedParamsAddBoolean(virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         int value);
+int
+virTypedParamsAddString (virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         const char *value);
+int
+virTypedParamsAddFromString(virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         int type,
+                         const char *value);
+void
+virTypedParamsFree      (virTypedParameterPtr params,
+                         int nparams);
+
 /* data types related to virNodePtr */
 
 /**

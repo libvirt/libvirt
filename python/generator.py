@@ -527,6 +527,25 @@ skip_function = (
     "virNWFilterGetConnect",
     "virStoragePoolGetConnect",
     "virStorageVolGetConnect",
+
+    # only useful in C code, python code uses dict for typed parameters
+    "virTypedParamsAddBoolean",
+    "virTypedParamsAddDouble",
+    "virTypedParamsAddFromString",
+    "virTypedParamsAddInt",
+    "virTypedParamsAddLLong",
+    "virTypedParamsAddString",
+    "virTypedParamsAddUInt",
+    "virTypedParamsAddULLong",
+    "virTypedParamsFree",
+    "virTypedParamsGet",
+    "virTypedParamsGetBoolean",
+    "virTypedParamsGetDouble",
+    "virTypedParamsGetInt",
+    "virTypedParamsGetLLong",
+    "virTypedParamsGetString",
+    "virTypedParamsGetUInt",
+    "virTypedParamsGetULLong",
 )
 
 lxc_skip_function = (
