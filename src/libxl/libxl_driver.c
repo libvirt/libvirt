@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*/
 /*  Copyright (C) 2006-2012 Red Hat, Inc.
- *  Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ *  Copyright (C) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *  Copyright (C) 2011 Univention GmbH.
  *
  * This library is free software; you can redistribute it and/or
@@ -71,15 +71,14 @@ struct libxlOSEventHookTimerInfo {
     int id;
 };
 
-
-static void libxlDomainManagedSaveLoad(void *payload,
-                                       const void *n ATTRIBUTE_UNUSED,
-                                       void *opaque);
-
-
 static libxlDriverPrivatePtr libxl_driver = NULL;
 
 /* Function declarations */
+static void
+libxlDomainManagedSaveLoad(void *payload,
+                           const void *n ATTRIBUTE_UNUSED,
+                           void *opaque);
+
 static int
 libxlVmStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
              bool start_paused, int restore_fd);
@@ -97,11 +96,11 @@ libxlDriverUnlock(libxlDriverPrivatePtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-
-static void libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
-                                 int fd,
-                                 int vir_events,
-                                 void *fdinfo)
+static void
+libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
+                     int fd,
+                     int vir_events,
+                     void *fdinfo)
 {
     struct libxlOSEventHookFDInfo *info = fdinfo;
     int events = 0;
@@ -118,13 +117,15 @@ static void libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
     libxl_osevent_occurred_fd(info->priv->ctx, info->xl_priv, fd, 0, events);
 }
 
-static void libxlFreeFDInfo(void *obj)
+static void
+libxlFreeFDInfo(void *obj)
 {
     VIR_FREE(obj);
 }
 
-static int libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
-                                    short events, void *xl_priv)
+static int
+libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
+                         short events, void *xl_priv)
 {
     int vir_events = VIR_EVENT_HANDLE_ERROR;
     struct libxlOSEventHookFDInfo *fdinfo;
@@ -152,10 +153,11 @@ static int libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
     return 0;
 }
 
-static int libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
-                                  int fd ATTRIBUTE_UNUSED,
-                                  void **hndp,
-                                  short events)
+static int
+libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
+                       int fd ATTRIBUTE_UNUSED,
+                       void **hndp,
+                       short events)
 {
     struct libxlOSEventHookFDInfo *fdinfo = *hndp;
     int vir_events = VIR_EVENT_HANDLE_ERROR;
@@ -169,32 +171,35 @@ static int libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static void libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
-                                       int fd ATTRIBUTE_UNUSED,
-                                       void *hnd)
+static void
+libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
+                           int fd ATTRIBUTE_UNUSED,
+                           void *hnd)
 {
     struct libxlOSEventHookFDInfo *fdinfo = hnd;
 
     virEventRemoveHandle(fdinfo->watch);
 }
 
-
-static void libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_v)
+static void
+libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_v)
 {
     struct libxlOSEventHookTimerInfo *timer_info = timer_v;
 
     libxl_osevent_occurred_timeout(timer_info->priv->ctx, timer_info->xl_priv);
 }
 
-static void libxlTimerInfoFree(void* obj)
+static void
+libxlTimerInfoFree(void* obj)
 {
     VIR_FREE(obj);
 }
 
-static int libxlTimeoutRegisterEventHook(void *priv,
-                                         void **hndp,
-                                         struct timeval abs_t,
-                                         void *for_libxl)
+static int
+libxlTimeoutRegisterEventHook(void *priv,
+                              void **hndp,
+                              struct timeval abs_t,
+                              void *for_libxl)
 {
     struct timeval now;
     struct libxlOSEventHookTimerInfo *timer_info;
@@ -222,9 +227,10 @@ static int libxlTimeoutRegisterEventHook(void *priv,
     return 0;
 }
 
-static int libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
-                                       void **hndp,
-                                       struct timeval abs_t)
+static int
+libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
+                            void **hndp,
+                            struct timeval abs_t)
 {
     struct timeval now;
     int timeout;
@@ -237,8 +243,9 @@ static int libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static void libxlTimeoutDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
-                                            void *hnd)
+static void
+libxlTimeoutDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
+                                void *hnd)
 {
     struct libxlOSEventHookTimerInfo *timer_info = hnd;
 
@@ -282,7 +289,6 @@ libxlDomainObjPrivateFree(void *data)
     libxl_ctx_free(priv->ctx);
     VIR_FREE(priv);
 }
-
 
 /* driver must be locked before calling */
 static void
@@ -521,7 +527,8 @@ libxlVmReap(libxlDriverPrivatePtr driver,
 /*
  * Handle previously registered event notification from libxenlight
  */
-static void libxlEventHandler(void *data, const libxl_event *event)
+static void
+libxlEventHandler(void *data, const libxl_event *event)
 {
     libxlDriverPrivatePtr driver = libxl_driver;
     virDomainObjPtr vm = data;
