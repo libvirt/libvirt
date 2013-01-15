@@ -6222,8 +6222,7 @@ do_show_total:
             VIR_FREE(s);
         }
     }
-    virTypedParameterArrayClear(params, nparams);
-    VIR_FREE(params);
+    virTypedParamsFree(params, nparams);
 
 cleanup:
     virDomainFree(dom);
