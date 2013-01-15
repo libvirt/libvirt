@@ -920,7 +920,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     int if_xml_size;
     xmlDocPtr xml_doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr top_node, br_node, if_node, cur;
+    xmlNodePtr top_node, if_node, cur;
 
     /* Get a handle to the original device */
     if (!(br_handle = vshCommandOptInterfaceBy(ctl, cmd, "bridge",
@@ -963,12 +963,12 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(if_name);
 
     /* Find the <bridge> node under <interface>. */
-    if (!(br_node = virXPathNode("./bridge", ctxt))) {
+    if (virXPathNode("./bridge", ctxt) == NULL) {
         vshError(ctl, "%s", _("No bridge node in xml document"));
         goto cleanup;
     }
 
-    if ((if_node = virXPathNode("./bridge/interface[2]", ctxt))) {
+    if (virXPathNode("./bridge/interface[2]", ctxt) != NULL) {
         vshError(ctl, "%s", _("Multiple interfaces attached to bridge"));
         goto cleanup;
     }
