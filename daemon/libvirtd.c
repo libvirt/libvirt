@@ -1371,5 +1371,7 @@ cleanup:
 
     daemonConfigFree(config);
 
+    virStateCleanup();
+
     return ret;
 }
