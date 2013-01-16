@@ -23,6 +23,7 @@
 # define __THREADS_H_
 
 # include "internal.h"
+# include "virerror.h"
 
 typedef struct virMutex virMutex;
 typedef virMutex *virMutexPtr;
