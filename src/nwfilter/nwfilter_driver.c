@@ -183,6 +183,7 @@ nwfilterDriverStartup(int privileged)
         goto err_free_driverstate;
 
     driverState->watchingFirewallD = (sysbus != NULL);
+    driverState->privileged = privileged;
 
     if (!privileged)
         return 0;
@@ -279,6 +280,9 @@ nwfilterDriverReload(void) {
         return -1;
     }
 
+    if (!driverState->privileged)
+        return 0;
+
     conn = virConnectOpen("qemu:///system");
 
     if (conn) {
@@ -358,21 +362,24 @@ nwfilterDriverShutdown(void) {
     if (!driverState)
         return -1;
 
-    virNWFilterConfLayerShutdown();
-    virNWFilterTechDriversShutdown();
-    virNWFilterDHCPSnoopShutdown();
-    virNWFilterLearnShutdown();
-    virNWFilterIPAddrMapShutdown();
+    if (driverState->privileged) {
+        virNWFilterConfLayerShutdown();
+        virNWFilterTechDriversShutdown();
+        virNWFilterDHCPSnoopShutdown();
+        virNWFilterLearnShutdown();
+        virNWFilterIPAddrMapShutdown();
 
-    nwfilterDriverLock(driverState);
+        nwfilterDriverLock(driverState);
 
-    nwfilterDriverRemoveDBusMatches();
+        nwfilterDriverRemoveDBusMatches();
 
-    /* free inactive nwfilters */
-    virNWFilterObjListFree(&driverState->nwfilters);
+        /* free inactive nwfilters */
+        virNWFilterObjListFree(&driverState->nwfilters);
 
-    VIR_FREE(driverState->configDir);
-    nwfilterDriverUnlock(driverState);
+        VIR_FREE(driverState->configDir);
+        nwfilterDriverUnlock(driverState);
+    }
+
     virMutexDestroy(&driverState->lock);
     VIR_FREE(driverState);
 
