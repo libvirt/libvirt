@@ -851,6 +851,54 @@ static const char *const newenv[] = {
     NULL
 };
 
+static int test21(const void *unused ATTRIBUTE_UNUSED)
+{
+    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    int ret = -1;
+    const char *wrbuf = "Hello world\n";
+    char *outbuf = NULL, *errbuf = NULL;
+    const char *outbufExpected="BEGIN STDOUT\n"
+        "Hello world\n"
+        "END STDOUT\n";
+    const char *errbufExpected="BEGIN STDERR\n"
+        "Hello world\n"
+        "END STDERR\n";
+
+    virCommandSetInputBuffer(cmd, wrbuf);
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+    virCommandDoAsyncIO(cmd);
+
+    if (virCommandRunAsync(cmd, NULL) < 0) {
+        virErrorPtr err = virGetLastError();
+        printf("Cannot run child %s\n", err->message);
+        goto cleanup;
+    }
+
+    if (virCommandWait(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (virTestGetVerbose())
+        printf("STDOUT:%s\nSTDERR:%s\n", NULLSTR(outbuf), NULLSTR(errbuf));
+
+    if (STRNEQ(outbuf, outbufExpected)) {
+        virtTestDifference(stderr, outbufExpected, outbuf);
+        goto cleanup;
+    }
+
+    if (STRNEQ(errbuf, errbufExpected)) {
+        virtTestDifference(stderr, errbufExpected, errbuf);
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(outbuf);
+    VIR_FREE(errbuf);
+    virCommandFree(cmd);
+    return ret;
+}
+
 static void virCommandThreadWorker(void *opaque)
 {
     virCommandTestDataPtr test = opaque;
@@ -983,6 +1031,7 @@ mymain(void)
     DO_TEST(test18);
     DO_TEST(test19);
     DO_TEST(test20);
+    DO_TEST(test21);
 
     virMutexLock(&test->lock);
     if (test->running) {
