@@ -11917,7 +11917,7 @@ int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
 
 no_memory:
     virReportOOMError();
-    virDomainVcpuPinDefFree(vpcupin);
+    virDomainVcpuPinDefFree(vcpupin);
     return -1;
 }
 
