@@ -26,6 +26,7 @@
 # define __VIR_USB_H__
 
 # include "internal.h"
+# include "virobject.h"
 
 # define USB_DEVFS "/dev/bus/usb/"
 
@@ -81,7 +82,6 @@ int virUSBDeviceFileIterate(virUSBDevicePtr dev,
                             void *opaque);
 
 virUSBDeviceListPtr virUSBDeviceListNew(void);
-void virUSBDeviceListFree(virUSBDeviceListPtr list);
 int virUSBDeviceListAdd(virUSBDeviceListPtr list,
                         virUSBDevicePtr dev);
 virUSBDevicePtr virUSBDeviceListGet(virUSBDeviceListPtr list,

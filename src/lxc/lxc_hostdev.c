@@ -167,7 +167,7 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
             *usb = virUSBDeviceListGet(devs, 0);
             virUSBDeviceListSteal(devs, *usb);
         }
-        virUSBDeviceListFree(devs);
+        virObjectUnref(devs);
 
         if (rc == 0) {
             goto out;
@@ -273,7 +273,7 @@ virLXCPrepareHostUSBDevices(virLXCDriverPtr driver,
     ret = 0;
 
 cleanup:
-    virUSBDeviceListFree(list);
+    virObjectUnref(list);
     return ret;
 }
 

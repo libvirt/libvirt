@@ -1221,7 +1221,7 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    virUSBDeviceListFree(list);
+    virObjectUnref(list);
     return 0;
 
 error:
@@ -1230,7 +1230,7 @@ error:
         VIR_WARN("Unable to restore host device labelling on hotplug fail");
 
 cleanup:
-    virUSBDeviceListFree(list);
+    virObjectUnref(list);
     if (usb)
         virUSBDeviceListSteal(driver->activeUsbHostdevs, usb);
     return -1;

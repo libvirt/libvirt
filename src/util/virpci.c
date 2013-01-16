@@ -74,6 +74,8 @@ struct _virPCIDevice {
 };
 
 struct _virPCIDeviceList {
+    virObjectLockable parent;
+
     unsigned count;
     virPCIDevicePtr *devs;
 };
@@ -164,6 +166,23 @@ struct _virPCIDeviceList {
                                  PCI_EXT_CAP_ACS_RR |   \
                                  PCI_EXT_CAP_ACS_CR |   \
                                  PCI_EXT_CAP_ACS_UF)
+
+static virClassPtr virPCIDeviceListClass;
+
+static void virPCIDeviceListDispose(void *obj);
+
+static int virPCIOnceInit(void)
+{
+    if (!(virPCIDeviceListClass = virClassNew(virClassForObjectLockable(),
+                                              "virPCIDeviceList",
+                                              sizeof(virPCIDeviceList),
+                                              virPCIDeviceListDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virPCI)
 
 static int
 virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
@@ -1505,21 +1524,20 @@ virPCIDeviceListNew(void)
 {
     virPCIDeviceListPtr list;
 
-    if (VIR_ALLOC(list) < 0) {
-        virReportOOMError();
+    if (virPCIInitialize() < 0)
         return NULL;
-    }
+
+    if (!(list = virObjectLockableNew(virPCIDeviceListClass)))
+        return NULL;
 
     return list;
 }
 
-void
-virPCIDeviceListFree(virPCIDeviceListPtr list)
+static void
+virPCIDeviceListDispose(void *obj)
 {
+    virPCIDeviceListPtr list = obj;
     int i;
-
-    if (!list)
-        return;
 
     for (i = 0; i < list->count; i++) {
         virPCIDeviceFree(list->devs[i]);
@@ -1528,7 +1546,6 @@ virPCIDeviceListFree(virPCIDeviceListPtr list)
 
     list->count = 0;
     VIR_FREE(list->devs);
-    VIR_FREE(list);
 }
 
 int

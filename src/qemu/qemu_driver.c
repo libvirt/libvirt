@@ -1047,9 +1047,9 @@ qemuShutdown(void) {
 
     qemuDriverLock(qemu_driver);
     virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
-    virPCIDeviceListFree(qemu_driver->activePciHostdevs);
-    virPCIDeviceListFree(qemu_driver->inactivePciHostdevs);
-    virUSBDeviceListFree(qemu_driver->activeUsbHostdevs);
+    virObjectUnref(qemu_driver->activePciHostdevs);
+    virObjectUnref(qemu_driver->inactivePciHostdevs);
+    virObjectUnref(qemu_driver->activeUsbHostdevs);
     virHashFree(qemu_driver->sharedDisks);
     virCapabilitiesFree(qemu_driver->caps);
     qemuCapsCacheFree(qemu_driver->capsCache);

@@ -56,13 +56,13 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
                               hostdev->source.subsys.u.pci.slot,
                               hostdev->source.subsys.u.pci.function);
         if (!dev) {
-            virPCIDeviceListFree(list);
+            virObjectUnref(list);
             return NULL;
         }
 
         if (virPCIDeviceListAdd(list, dev) < 0) {
             virPCIDeviceFree(dev);
-            virPCIDeviceListFree(list);
+            virObjectUnref(list);
             return NULL;
         }
 
@@ -98,14 +98,14 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
                               hostdev->source.subsys.u.pci.slot,
                               hostdev->source.subsys.u.pci.function);
         if (!dev) {
-            virPCIDeviceListFree(list);
+            virObjectUnref(list);
             return NULL;
         }
 
         if ((activeDev = virPCIDeviceListFind(driver->activePciHostdevs, dev))) {
             if (virPCIDeviceListAdd(list, activeDev) < 0) {
                 virPCIDeviceFree(dev);
-                virPCIDeviceListFree(list);
+                virObjectUnref(list);
                 return NULL;
             }
         }
@@ -557,7 +557,7 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
 
 inactivedevs:
     /* Only steal all the devices from driver->activePciHostdevs. We will
-     * free them in virPCIDeviceListFree().
+     * free them in virObjectUnref().
      */
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, 0);
@@ -580,7 +580,7 @@ reattachdevs:
     }
 
 cleanup:
-    virPCIDeviceListFree(pcidevs);
+    virObjectUnref(pcidevs);
     virObjectUnref(cfg);
     return ret;
 }
@@ -686,7 +686,7 @@ qemuFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
             *usb = virUSBDeviceListGet(devs, 0);
             virUSBDeviceListSteal(devs, *usb);
         }
-        virUSBDeviceListFree(devs);
+        virObjectUnref(devs);
 
         if (rc == 0) {
             goto out;
@@ -792,7 +792,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
     ret = 0;
 
 cleanup:
-    virUSBDeviceListFree(list);
+    virObjectUnref(list);
     return ret;
 }
 
@@ -880,7 +880,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
             continue;
         }
 
-        /* virPCIDeviceListFree() will take care of freeing the dev. */
+        /* virObjectUnref() will take care of freeing the dev. */
         virPCIDeviceListSteal(driver->activePciHostdevs, dev);
     }
 
@@ -916,7 +916,7 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
         qemuReattachPciDevice(dev, driver);
     }
 
-    virPCIDeviceListFree(pcidevs);
+    virObjectUnref(pcidevs);
 cleanup:
     virObjectUnref(cfg);
 }

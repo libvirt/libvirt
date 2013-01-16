@@ -25,6 +25,7 @@
 # define __VIR_PCI_H__
 
 # include "internal.h"
+# include "virobject.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef virPCIDevice *virPCIDevicePtr;
@@ -78,7 +79,6 @@ void virPCIDeviceReattachInit(virPCIDevice *dev);
 
 
 virPCIDeviceListPtr virPCIDeviceListNew(void);
-void virPCIDeviceListFree(virPCIDeviceListPtr list);
 int  virPCIDeviceListAdd(virPCIDeviceListPtr list,
                          virPCIDevicePtr dev);
 virPCIDevicePtr virPCIDeviceListGet(virPCIDeviceListPtr list,
