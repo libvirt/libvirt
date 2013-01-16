@@ -1,7 +1,7 @@
 /*
  * vircgroup.h: methods for managing control cgroups
  *
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * This library is free software; you can redistribute it and/or
@@ -24,6 +24,8 @@
 
 #ifndef __VIR_CGROUP_H__
 # define __VIR_CGROUP_H__
+
+# include "virutil.h"
 
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
