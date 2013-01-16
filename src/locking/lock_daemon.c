@@ -1311,18 +1311,15 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        run_dir = strdup(LOCALSTATEDIR "/run/libvirt");
+        if (!(run_dir = strdup(LOCALSTATEDIR "/run/libvirt"))) {
+            virReportOOMError();
+            goto cleanup;
+        }
     } else {
-        run_dir = virGetUserRuntimeDirectory();
-
-        if (!run_dir) {
+        if (!(run_dir = virGetUserRuntimeDirectory())) {
             VIR_ERROR(_("Can't determine user directory"));
             goto cleanup;
         }
-    }
-    if (!run_dir) {
-        virReportOOMError();
-        goto cleanup;
     }
 
     if (privileged)
