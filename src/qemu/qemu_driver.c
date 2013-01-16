@@ -10034,6 +10034,8 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
         return -1;
 
     qemuDriverLock(driver);
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
     in_inactive_list = virPCIDeviceListFind(driver->inactivePciHostdevs, pci);
 
     if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
@@ -10042,6 +10044,8 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
 
     ret = 0;
 out:
+    virObjectUnlock(driver->inactivePciHostdevs);
+    virObjectUnlock(driver->activePciHostdevs);
     qemuDriverUnlock(driver);
     if (in_inactive_list)
         virPCIDeviceFree(pci);
@@ -10064,6 +10068,9 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
+    qemuDriverLock(driver);
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
     other = virPCIDeviceListFind(driver->activePciHostdevs, pci);
     if (other) {
         const char *other_name = virPCIDeviceGetUsedBy(other);
@@ -10076,17 +10083,19 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is still in use"),
                            virPCIDeviceGetName(pci));
+        goto out;
     }
 
     virPCIDeviceReattachInit(pci);
 
-    qemuDriverLock(driver);
     if (virPCIDeviceReattach(pci, driver->activePciHostdevs,
                              driver->inactivePciHostdevs, "pci-stub") < 0)
         goto out;
 
     ret = 0;
 out:
+    virObjectUnlock(driver->inactivePciHostdevs);
+    virObjectUnlock(driver->activePciHostdevs);
     qemuDriverUnlock(driver);
     virPCIDeviceFree(pci);
     return ret;
@@ -10108,6 +10117,8 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
         return -1;
 
     qemuDriverLock(driver);
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
 
     if (virPCIDeviceReset(pci, driver->activePciHostdevs,
                           driver->inactivePciHostdevs) < 0)
@@ -10115,6 +10126,8 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
 
     ret = 0;
 out:
+    virObjectUnlock(driver->inactivePciHostdevs);
+    virObjectUnlock(driver->activePciHostdevs);
     qemuDriverUnlock(driver);
     virPCIDeviceFree(pci);
     return ret;

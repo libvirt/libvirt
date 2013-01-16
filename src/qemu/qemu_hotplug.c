@@ -2368,6 +2368,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
      if (detach->parent.data.net)
          qemuDomainHostdevNetConfigRestore(detach, cfg->stateDir);
 
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
     pci = virPCIDeviceNew(subsys->u.pci.domain, subsys->u.pci.bus,
                           subsys->u.pci.slot,   subsys->u.pci.function);
     if (pci) {
@@ -2383,6 +2385,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
         }
         virPCIDeviceFree(pci);
     }
+    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(driver->inactivePciHostdevs);
 
     if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
@@ -2425,7 +2429,9 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
 
     usb = virUSBDeviceNew(subsys->u.usb.bus, subsys->u.usb.device, NULL);
     if (usb) {
+        virObjectLock(driver->activeUsbHostdevs);
         virUSBDeviceListDel(driver->activeUsbHostdevs, usb);
+        virObjectUnlock(driver->activeUsbHostdevs);
         virUSBDeviceFree(usb);
     } else {
         VIR_WARN("Unable to find device %03d.%03d in list of used USB devices",

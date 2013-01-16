@@ -72,6 +72,9 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     return list;
 }
 
+/*
+ * Pre-condition: driver->activePciHostdevs is locked
+ */
 static virPCIDeviceListPtr
 qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
                                virDomainHostdevDefPtr *hostdevs,
@@ -121,9 +124,13 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
 {
     virDomainHostdevDefPtr hostdev = NULL;
     int i;
+    int ret = -1;
 
     if (!def->nhostdevs)
         return 0;
+
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
 
     for (i = 0; i < def->nhostdevs; i++) {
         virPCIDevicePtr dev = NULL;
@@ -140,7 +147,7 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
                               hostdev->source.subsys.u.pci.function);
 
         if (!dev)
-            return -1;
+            goto cleanup;
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
         virPCIDeviceSetUsedBy(dev, def->name);
@@ -152,11 +159,14 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
 
         if (virPCIDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
             virPCIDeviceFree(dev);
-            return -1;
+            goto cleanup;
         }
     }
 
-    return 0;
+cleanup:
+    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(driver->inactivePciHostdevs);
+    return ret;
 }
 
 int
@@ -165,10 +175,12 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
 {
     virDomainHostdevDefPtr hostdev = NULL;
     int i;
+    int ret = -1;
 
     if (!def->nhostdevs)
         return 0;
 
+    virObjectLock(driver->activeUsbHostdevs);
     for (i = 0; i < def->nhostdevs; i++) {
         virUSBDevicePtr usb = NULL;
         hostdev = def->hostdevs[i];
@@ -193,11 +205,13 @@ qemuUpdateActiveUsbHostdevs(virQEMUDriverPtr driver,
 
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0) {
             virUSBDeviceFree(usb);
-            return -1;
+            goto cleanup;
         }
     }
-
-    return 0;
+    ret = 0;
+cleanup:
+    virObjectUnlock(driver->activeUsbHostdevs);
+    return ret;
 }
 
 static int
@@ -412,6 +426,9 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
+
     if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
         goto cleanup;
 
@@ -580,17 +597,11 @@ reattachdevs:
     }
 
 cleanup:
+    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(driver->inactivePciHostdevs);
     virObjectUnref(pcidevs);
     virObjectUnref(cfg);
     return ret;
-}
-
-static int
-qemuPrepareHostPCIDevices(virQEMUDriverPtr driver,
-                          virDomainDefPtr def)
-{
-    return qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
-                                        def->hostdevs, def->nhostdevs);
 }
 
 int
@@ -602,6 +613,7 @@ qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
     unsigned int count;
     virUSBDevicePtr tmp;
 
+    virObjectLock(driver->activeUsbHostdevs);
     count = virUSBDeviceListCount(list);
 
     for (i = 0; i < count; i++) {
@@ -631,6 +643,8 @@ qemuPrepareHostdevUSBDevices(virQEMUDriverPtr driver,
         if (virUSBDeviceListAdd(driver->activeUsbHostdevs, usb) < 0)
             goto error;
     }
+
+    virObjectUnlock(driver->activeUsbHostdevs);
     return 0;
 
 error:
@@ -638,6 +652,7 @@ error:
         tmp = virUSBDeviceListGet(list, i);
         virUSBDeviceListSteal(driver->activeUsbHostdevs, tmp);
     }
+    virObjectUnlock(driver->activeUsbHostdevs);
     return -1;
 }
 
@@ -803,7 +818,8 @@ int qemuPrepareHostDevices(virQEMUDriverPtr driver,
     if (!def->nhostdevs)
         return 0;
 
-    if (qemuPrepareHostPCIDevices(driver, def) < 0)
+    if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
+                                     def->hostdevs, def->nhostdevs) < 0)
         return -1;
 
     if (qemuPrepareHostUSBDevices(driver, def, coldBoot) < 0)
@@ -813,6 +829,10 @@ int qemuPrepareHostDevices(virQEMUDriverPtr driver,
 }
 
 
+/*
+ * Pre-condition: driver->inactivePciHostdevs & driver->activePciHostdevs
+ * are locked
+ */
 void qemuReattachPciDevice(virPCIDevicePtr dev, virQEMUDriverPtr driver)
 {
     int retries = 100;
@@ -851,6 +871,9 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
     virPCIDeviceListPtr pcidevs;
     int i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    virObjectLock(driver->activePciHostdevs);
+    virObjectLock(driver->inactivePciHostdevs);
 
     if (!(pcidevs = qemuGetActivePciHostDeviceList(driver,
                                                    hostdevs,
@@ -918,6 +941,8 @@ void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 
     virObjectUnref(pcidevs);
 cleanup:
+    virObjectUnlock(driver->activePciHostdevs);
+    virObjectUnlock(driver->inactivePciHostdevs);
     virObjectUnref(cfg);
 }
 
@@ -929,6 +954,7 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
 {
     int i;
 
+    virObjectLock(driver->activeUsbHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virUSBDevicePtr usb, tmp;
@@ -980,6 +1006,7 @@ qemuDomainReAttachHostUsbDevices(virQEMUDriverPtr driver,
             virUSBDeviceListDel(driver->activeUsbHostdevs, tmp);
         }
     }
+    virObjectUnlock(driver->activeUsbHostdevs);
 }
 
 void qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
