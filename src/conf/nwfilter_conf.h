@@ -556,6 +556,7 @@ typedef struct _virNWFilterDriverState virNWFilterDriverState;
 typedef virNWFilterDriverState *virNWFilterDriverStatePtr;
 struct _virNWFilterDriverState {
     virMutex lock;
+    bool privileged;
 
     virNWFilterObjList nwfilters;
 
