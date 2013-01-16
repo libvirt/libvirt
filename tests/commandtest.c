@@ -37,8 +37,18 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virerror.h"
+#include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+typedef struct _virCommandTestData virCommandTestData;
+typedef virCommandTestData *virCommandTestDataPtr;
+struct _virCommandTestData {
+    virMutex lock;
+    virThread thread;
+    bool quit;
+    bool running;
+};
 
 #ifdef WIN32
 
@@ -841,11 +851,46 @@ static const char *const newenv[] = {
     NULL
 };
 
+static void virCommandThreadWorker(void *opaque)
+{
+    virCommandTestDataPtr test = opaque;
+
+    virMutexLock(&test->lock);
+
+    while (!test->quit) {
+        virMutexUnlock(&test->lock);
+
+        if (virEventRunDefaultImpl() < 0) {
+            test->quit = true;
+            break;
+        }
+
+        virMutexLock(&test->lock);
+    }
+
+    test->running = false;
+
+    virMutexUnlock(&test->lock);
+    return;
+}
+
+static void
+virCommandTestFreeTimer(int timer ATTRIBUTE_UNUSED,
+                        void *opaque ATTRIBUTE_UNUSED)
+{
+    /* nothing to be done here */
+}
+
 static int
 mymain(void)
 {
     int ret = 0;
     int fd;
+    virCommandTestDataPtr test = NULL;
+    int timer = -1;
+
+    if (virThreadInitialize() < 0)
+        return EXIT_FAILURE;
 
     if (chdir("/tmp") < 0)
         return EXIT_FAILURE;
@@ -886,6 +931,30 @@ mymain(void)
     fd = 5;
     VIR_FORCE_CLOSE(fd);
 
+    virEventRegisterDefaultImpl();
+    if (VIR_ALLOC(test) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virMutexInit(&test->lock) < 0) {
+        printf("Unable to init mutex: %d\n", errno);
+        goto cleanup;
+    }
+
+    virMutexLock(&test->lock);
+
+    if (virThreadCreate(&test->thread,
+                        true,
+                        virCommandThreadWorker,
+                        test) < 0) {
+        virMutexUnlock(&test->lock);
+        goto cleanup;
+    }
+
+    test->running = true;
+    virMutexUnlock(&test->lock);
+
     environ = (char **)newenv;
 
 # define DO_TEST(NAME)                                                \
@@ -914,6 +983,24 @@ mymain(void)
     DO_TEST(test18);
     DO_TEST(test19);
     DO_TEST(test20);
+
+    virMutexLock(&test->lock);
+    if (test->running) {
+        test->quit = true;
+        /* HACK: Add a dummy timeout to break event loop */
+        timer = virEventAddTimeout(0, virCommandTestFreeTimer, NULL, NULL);
+    }
+    virMutexUnlock(&test->lock);
+
+cleanup:
+    if (test->running)
+        virThreadJoin(&test->thread);
+
+    if (timer != -1)
+        virEventRemoveTimeout(timer);
+
+    virMutexDestroy(&test->lock);
+    VIR_FREE(test);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
