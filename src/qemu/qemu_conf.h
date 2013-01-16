@@ -154,45 +154,67 @@ struct _virQEMUDriverConfig {
 struct _virQEMUDriver {
     virMutex lock;
 
+    /* Require lock to get reference on 'config',
+     * then lockless thereafter */
     virQEMUDriverConfigPtr config;
 
+    /* Immutable pointer, self-locking APIs */
     virThreadPoolPtr workerPool;
 
+    /* Atomic increment only */
     int nextvmid;
 
+    /* Immutable pointer. Unsafe APIs XXX */
     virCgroupPtr cgroup;
 
+    /* Atomic inc/dec only */
     size_t nactive;
 
+    /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
 
+    /* Lazy-load on first use. Unsafe. XXX */
     char *qemuImgBinary;
 
+    /* Immutable pointer, lockless APIs. Pointless abstraction */
     ebtablesContext *ebtables;
 
+    /* Require lock while using. Unsafe. XXX */
     virCapsPtr caps;
 
+    /* Immutable pointer, self-locking APIs */
     qemuCapsCachePtr capsCache;
 
+    /* Immutable pointer, self-locking APIs */
     virDomainEventStatePtr domainEventState;
 
+    /* Immutable pointer. Unsafe APIs. XXX */
     virSecurityManagerPtr securityManager;
 
+    /* Immutable pointers. Requires locks to be held before
+     * calling APIs. activePciHostdevs must be locked before
+     * inactivePciHostdevs */
     virPCIDeviceListPtr activePciHostdevs;
     virPCIDeviceListPtr inactivePciHostdevs;
     virUSBDeviceListPtr activeUsbHostdevs;
 
+    /* Immutable pointer. Unsafe APIs. XXX */
     virHashTablePtr sharedDisks;
 
+    /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr remotePorts;
 
+    /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 
+    /* Immutable pointer. XXX check safety */
     virLockManagerPluginPtr lockManager;
 
+    /* Immutable pointer. Unsafe APIs. XXX */
     virHashTablePtr closeCallbacks;
 };
 
