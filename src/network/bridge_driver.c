@@ -4518,7 +4518,7 @@ networkCheckBandwidth(virNetworkObjPtr net,
 {
     int ret = -1;
     virNetDevBandwidthPtr netBand = net->def->bandwidth;
-    virNetDevBandwidthPtr ifaceBand = iface->bandwidth;
+    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
     unsigned long long tmp_floor_sum = net->floor_sum;
     unsigned long long tmp_new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
@@ -4597,6 +4597,7 @@ networkPlugBandwidth(virNetworkObjPtr net,
     unsigned long long new_rate = 0;
     ssize_t class_id = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
+    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
 
     if ((plug_ret = networkCheckBandwidth(net, iface, &new_rate)) < 0) {
         /* helper reported error */
@@ -4625,11 +4626,8 @@ networkPlugBandwidth(virNetworkObjPtr net,
         goto cleanup;
     }
 
-    plug_ret = virNetDevBandwidthPlug(net->def->bridge,
-                                      net->def->bandwidth,
-                                      &iface->mac,
-                                      iface->bandwidth,
-                                      class_id);
+    plug_ret = virNetDevBandwidthPlug(net->def->bridge, net->def->bandwidth,
+                                      &iface->mac, ifaceBand, class_id);
     if (plug_ret < 0) {
         ignore_value(virNetDevBandwidthUnplug(net->def->bridge, class_id));
         goto cleanup;
@@ -4638,11 +4636,11 @@ networkPlugBandwidth(virNetworkObjPtr net,
     /* QoS was set, generate new class ID */
     iface->data.network.actual->class_id = class_id;
     /* update sum of 'floor'-s of attached NICs */
-    net->floor_sum += iface->bandwidth->in->floor;
+    net->floor_sum += ifaceBand->in->floor;
     /* update status file */
     if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
         ignore_value(virBitmapClearBit(net->class_id, class_id));
-        net->floor_sum -= iface->bandwidth->in->floor;
+        net->floor_sum -= ifaceBand->in->floor;
         iface->data.network.actual->class_id = 0;
         ignore_value(virNetDevBandwidthUnplug(net->def->bridge, class_id));
         goto cleanup;
@@ -4666,6 +4664,7 @@ networkUnplugBandwidth(virNetworkObjPtr net,
 {
     int ret = 0;
     unsigned long long new_rate;
+    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
 
     if (iface->data.network.actual &&
         iface->data.network.actual->class_id) {
@@ -4680,13 +4679,13 @@ networkUnplugBandwidth(virNetworkObjPtr net,
         if (ret < 0)
             goto cleanup;
         /* update sum of 'floor'-s of attached NICs */
-        net->floor_sum -= iface->bandwidth->in->floor;
+        net->floor_sum -= ifaceBand->in->floor;
         /* return class ID */
         ignore_value(virBitmapClearBit(net->class_id,
                                        iface->data.network.actual->class_id));
         /* update status file */
         if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
-            net->floor_sum += iface->bandwidth->in->floor;
+            net->floor_sum += ifaceBand->in->floor;
             ignore_value(virBitmapSetBit(net->class_id,
                                          iface->data.network.actual->class_id));
             goto cleanup;
