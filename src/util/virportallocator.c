@@ -97,7 +97,7 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
                             unsigned short *port)
 {
     int ret = -1;
-    unsigned short i;
+    int i;
     int fd = -1;
 
     *port = 0;
