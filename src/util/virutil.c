@@ -98,7 +98,11 @@ verify(sizeof(gid_t) <= sizeof(unsigned int) &&
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-/* Like read(), but restarts after EINTR */
+/* Like read(), but restarts after EINTR.  Doesn't play
+ * nicely with nonblocking FD and EAGAIN, in which case
+ * you want to use bare read(). Or even use virSocket()
+ * if the FD is related to a socket rather than a plain
+ * file or pipe. */
 ssize_t
 saferead(int fd, void *buf, size_t count)
 {
@@ -118,7 +122,11 @@ saferead(int fd, void *buf, size_t count)
     return nread;
 }
 
-/* Like write(), but restarts after EINTR */
+/* Like write(), but restarts after EINTR. Doesn't play
+ * nicely with nonblocking FD and EAGAIN, in which case
+ * you want to use bare write(). Or even use virSocket()
+ * if the FD is related to a socket rather than a plain
+ * file or pipe. */
 ssize_t
 safewrite(int fd, const void *buf, size_t count)
 {
