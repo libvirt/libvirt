@@ -2168,11 +2168,10 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
     /*
      * Remove values given by the caller from the data structures to prevent
      * them from being freed by the call to esxVI_PropertyFilterSpec_Free().
+     * objectSpec cannot be NULL here.
      */
-    if (objectSpec != NULL) {
-        objectSpec->obj = NULL;
-        objectSpec->selectSet = NULL;
-    }
+    objectSpec->obj = NULL;
+    objectSpec->selectSet = NULL;
 
     if (propertySpec != NULL) {
         propertySpec->type = NULL;
