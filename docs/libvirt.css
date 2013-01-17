@@ -184,23 +184,25 @@ div.api {
     border: 1px solid #999999;
     background: #eeeeee;
     color: black;
+    padding: 3px;
 }
 
 div.api pre {
     margin: 0px;
     border: 0px;
     background: inherit;
+    padding: inherit;
 }
 
 div.api table {
     margin: 0px;
     padding-left: 2em;
-    font-family: fixed;
-    whitespace: pre;
+    border-spacing: 0px;
 }
 
 div.api table td, div.variablelist table td {
     vertical-align: top;
+    padding-left: 1em;
 }
 
 
@@ -411,4 +413,66 @@ table.data tbody td.y {
 table.data tbody td.n {
     background: rgb(255,220,220);
     text-align: center;
+}
+
+.api {
+    font-family: monospace;
+}
+
+.api .type {
+    font-weight: bold;
+    white-space: nowrap;
+    color: darkslateblue;
+}
+
+.api .keyword {
+    font-weight: bold;
+    color: #A2F;
+}
+
+.api .comment {
+    color: #080;
+    margin-left: 2em;
+    position: relative;
+}
+
+.api .comment:before {
+    content: ": ";
+    position: absolute;
+    left: -1.3em;
+}
+
+.api .undisclosed {
+    font-style: italic;
+    letter-spacing: .3ex;
+    font-weight: bolder;
+    text-transform: uppercase;
+}
+
+.api .directive {
+    color: teal;
+}
+
+.api :link:hover, .api :link:focus {
+    color: blue;
+    border-color: blue;
+}
+
+.api :link {
+    text-decoration: none;
+}
+
+dl.variablelist > dt {
+    display: block;
+    float: left;
+    font-style: italic;
+    font-weight: inherit;
+}
+
+.variablelist dd {
+    padding-left: 10em;
+}
+
+dl.variablelist > dt:after {
+    content: ": ";
 }
