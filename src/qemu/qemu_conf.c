@@ -233,10 +233,6 @@ int qemuLoadDriverConfig(virQEMUDriverPtr driver,
                        filename, QEMU_REMOTE_PORT_MAX);
         goto cleanup;
     }
-    /* increasing the value by 1 makes all the loops going through
-    the bitmap (i = remotePortMin; i < remotePortMax; i++), work as
-    expected. */
-    driver->remotePortMax++;
 
     if (driver->remotePortMin > driver->remotePortMax) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -59,7 +59,7 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
 
 static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 {
-    virPortAllocatorPtr alloc = virPortAllocatorNew(5900, 5910);
+    virPortAllocatorPtr alloc = virPortAllocatorNew(5900, 5909);
     int ret = -1;
     unsigned short p1, p2, p3, p4, p5, p6, p7;
 

@@ -84,7 +84,7 @@ virPortAllocatorPtr virPortAllocatorNew(unsigned short start,
     pa->start = start;
     pa->end = end;
 
-    if (!(pa->bitmap = virBitmapNew(end-start))) {
+    if (!(pa->bitmap = virBitmapNew((end-start)+1))) {
         virReportOOMError();
         virObjectUnref(pa);
         return NULL;
@@ -103,7 +103,7 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
     *port = 0;
     virObjectLock(pa);
 
-    for (i = pa->start ; i < pa->end && !*port; i++) {
+    for (i = pa->start ; i <= pa->end && !*port; i++) {
         int reuse = 1;
         struct sockaddr_in addr;
         bool used = false;
@@ -168,7 +168,7 @@ int virPortAllocatorRelease(virPortAllocatorPtr pa,
     virObjectLock(pa);
 
     if (port < pa->start ||
-        port >= pa->end) {
+        port > pa->end) {
         virReportInvalidArg(port, "port %d must be in range (%d, %d)",
                             port, pa->start, pa->end);
         goto cleanup;
