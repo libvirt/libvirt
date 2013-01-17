@@ -511,7 +511,8 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
         dev = pciDeviceListGet(pcidevs, i);
         activeDev = pciDeviceListFind(driver->activePciHostdevs, dev);
 
-        pciDeviceSetUsedBy(activeDev, name);
+        if (activeDev)
+            pciDeviceSetUsedBy(activeDev, name);
     }
 
     /* Loop 8: Now set the original states for hostdev def */
