@@ -17181,7 +17181,7 @@ error:
  * encrypted, or running over a channel which is not exposed
  * to eavesdropping (eg a UNIX domain socket, or pipe)
  *
- * Returns 1 if secure, 0 if secure, -1 on error
+ * Returns 1 if secure, 0 if not secure, -1 on error
  */
 int virConnectIsSecure(virConnectPtr conn)
 {
