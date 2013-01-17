@@ -11598,8 +11598,14 @@ cleanup:
         if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
             if (qemuDomainSnapshotWriteMetadata(vm, snap,
                                                 driver->snapshotDir) < 0) {
-                VIR_WARN("unable to save metadata for snapshot %s",
-                         snap->def->name);
+                /* if writing of metadata fails, error out rather than trying
+                 * to silently carry on  without completing the snapshot */
+                virDomainSnapshotFree(snapshot);
+                snapshot = NULL;
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unable to save metadata for snapshot %s"),
+                               snap->def->name);
+                virDomainSnapshotObjListRemove(vm->snapshots, snap);
             } else {
                 if (update_current)
                     vm->current_snapshot = snap;
