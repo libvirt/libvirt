@@ -74,7 +74,7 @@ VIR_ONCE_GLOBAL_INIT(virObject);
  */
 virClassPtr virClassForObject(void)
 {
-    if (!virObjectInitialize() < 0)
+    if (virObjectInitialize() < 0)
         return NULL;
 
     return virObjectClass;
@@ -88,7 +88,7 @@ virClassPtr virClassForObject(void)
  */
 virClassPtr virClassForObjectLockable(void)
 {
-    if (!virObjectInitialize() < 0)
+    if (virObjectInitialize() < 0)
         return NULL;
 
     return virObjectLockableClass;
