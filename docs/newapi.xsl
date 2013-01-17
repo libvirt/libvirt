@@ -457,28 +457,24 @@
     </xsl:call-template>
     </div>
     <xsl:if test="arg | return">
-      <div class="variablelist"><table border="0"><col align="left"/><tbody>
+      <dl class="variablelist">
       <xsl:for-each select="arg">
-        <tr>
-          <td><span class="term"><i><tt><xsl:value-of select="@name"/></tt></i>:</span></td>
-	  <td>
-	    <xsl:call-template name="dumptext">
+        <dt><xsl:value-of select="@name"/></dt>
+        <dd>
+          <xsl:call-template name="dumptext">
 	      <xsl:with-param name="text" select="@info"/>
 	    </xsl:call-template>
-	  </td>
-        </tr>
+        </dd>
       </xsl:for-each>
       <xsl:if test="return/@info">
-        <tr>
-          <td><span class="term"><i><tt>Returns</tt></i>:</span></td>
-	  <td>
-	    <xsl:call-template name="dumptext">
-	      <xsl:with-param name="text" select="return/@info"/>
-	    </xsl:call-template>
-	  </td>
-        </tr>
+        <dt>Returns</dt>
+        <dd>
+          <xsl:call-template name="dumptext">
+            <xsl:with-param name="text" select="return/@info"/>
+          </xsl:call-template>
+        </dd>
       </xsl:if>
-      </tbody></table></div>
+      </dl>
     </xsl:if>
     <br/>
     <xsl:text>
@@ -538,28 +534,24 @@
     </div><xsl:text>
 </xsl:text>
     <xsl:if test="arg | return/@info">
-      <div class="variablelist"><table border="0"><col align="left"/><tbody>
-      <xsl:for-each select="arg">
-        <tr>
-          <td><span class="term"><i><tt><xsl:value-of select="@name"/></tt></i>:</span></td>
-	  <td>
-	    <xsl:call-template name="dumptext">
-	      <xsl:with-param name="text" select="@info"/>
-	    </xsl:call-template>
-	  </td>
-        </tr>
-      </xsl:for-each>
-      <xsl:if test="return/@info">
-        <tr>
-          <td><span class="term"><i><tt>Returns</tt></i>:</span></td>
-	  <td>
+      <dl class="variablelist">
+        <xsl:for-each select="arg">
+          <dt><xsl:value-of select="@name"/></dt>
+          <dd>
+            <xsl:call-template name="dumptext">
+              <xsl:with-param name="text" select="@info"/>
+            </xsl:call-template>
+          </dd>
+        </xsl:for-each>
+        <xsl:if test="return/@info">
+          <dt>Returns</dt>
+          <dd>
 	    <xsl:call-template name="dumptext">
 	      <xsl:with-param name="text" select="return/@info"/>
 	    </xsl:call-template>
-	  </td>
-        </tr>
-      </xsl:if>
-      </tbody></table></div>
+          </dd>
+        </xsl:if>
+      </dl>
     </xsl:if>
   </xsl:template>
 
