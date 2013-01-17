@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2616,7 +2616,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
             } else if (master == NULL &&
                        xmlStrEqual(cur->name, BAD_CAST "master")) {
                 master = cur;
-            } else if (boot == NULL && bootMap &&
+            } else if (boot == NULL &&
                        (flags & VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) &&
                        xmlStrEqual(cur->name, BAD_CAST "boot")) {
                 boot = cur;
