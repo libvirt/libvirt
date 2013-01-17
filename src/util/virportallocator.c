@@ -23,6 +23,7 @@
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 
 #include "viralloc.h"
 #include "virbitmap.h"

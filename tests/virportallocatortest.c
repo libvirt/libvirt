@@ -25,6 +25,7 @@
 # include <sys/socket.h>
 # include <errno.h>
 # include <arpa/inet.h>
+# include <netinet/in.h>
 
 int bind(int sockfd ATTRIBUTE_UNUSED,
          const struct sockaddr *addr,
