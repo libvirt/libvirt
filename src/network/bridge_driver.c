@@ -1156,9 +1156,6 @@ networkRefreshDhcpDaemon(struct network_driver *driver,
         if (!ipv4def && (ipdef->nranges || ipdef->nhosts))
             ipv4def = ipdef;
     }
-    /* If no IPv4 addresses had dhcp info, pick the first (if there were any). */
-    if (!ipdef)
-        ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, 0);
 
     ipv6def = NULL;
     for (ii = 0;
