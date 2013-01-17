@@ -4879,6 +4879,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     virDomainEventPtr event;
     int intermediatefd = -1;
     virCommandPtr cmd = NULL;
+    char *errbuf = NULL;
 
     if (header->version == 2) {
         const char *prog = qemuSaveCompressionTypeToString(header->compressed);
@@ -4896,6 +4897,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
             virCommandSetInputFD(cmd, intermediatefd);
             virCommandSetOutputFD(cmd, fd);
+            virCommandSetErrorBuffer(cmd, &errbuf);
+            virCommandDoAsyncIO(cmd);
 
             if (virCommandRunAsync(cmd, NULL) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4926,6 +4929,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
             ret = -1;
         }
+        VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
@@ -4975,6 +4979,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
 out:
     virCommandFree(cmd);
+    VIR_FREE(errbuf);
     if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
                                                  vm->def, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
