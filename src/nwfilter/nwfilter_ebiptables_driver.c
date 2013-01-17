@@ -166,7 +166,7 @@ static const char ebiptables_script_set_ifs[] =
     snprintf(buf, sizeof(buf), "%c%c-%s", prefix[0], prefix[1], ifname)
 
 #define PHYSDEV_IN  "--physdev-in"
-#define PHYSDEV_OUT "--physdev-out"
+#define PHYSDEV_OUT "--physdev-is-bridged --physdev-out"
 
 static const char *m_state_out_str   = "-m state --state NEW,ESTABLISHED";
 static const char *m_state_in_str    = "-m state --state ESTABLISHED";
