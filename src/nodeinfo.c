@@ -79,9 +79,11 @@ freebsdNodeGetCPUCount(void)
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define SYSFS_SYSTEM_PATH "/sys/devices/system"
+# define SYSFS_CPU_PATH SYSFS_SYSTEM_PATH"/cpu"
 # define PROCSTAT_PATH "/proc/stat"
 # define MEMINFO_PATH "/proc/meminfo"
 # define SYSFS_MEMORY_SHARED_PATH "/sys/kernel/mm/ksm"
+# define SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX 1024
 
 # define LINUX_NB_CPU_STATS 4
 # define LINUX_NB_MEMORY_STATS_ALL 4
@@ -1473,6 +1475,59 @@ cleanup:
 # define MASK_CPU_ISSET(mask, cpu) \
   (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
 
+static virBitmapPtr
+virNodeGetSiblingsList(const char *dir, int cpu_id)
+{
+    char *path = NULL;
+    char *buf = NULL;
+    virBitmapPtr ret = NULL;
+
+    if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings_list",
+                    dir, cpu_id) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
+        goto cleanup;
+
+    if (virBitmapParse(buf, 0, &ret, NUMA_MAX_N_CPUS) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to parse thread siblings"));
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(buf);
+    VIR_FREE(path);
+    return ret;
+}
+
+/* returns 1 on success, 0 if the detection failed and -1 on hard error */
+static int
+virNodeCapsFillCPUInfo(int cpu_id, virCapsHostNUMACellCPUPtr cpu)
+{
+    int tmp;
+    cpu->id = cpu_id;
+
+    if ((tmp = virNodeGetCpuValue(SYSFS_CPU_PATH, cpu_id,
+                                  "topology/physical_package_id", -1)) < 0)
+        return 0;
+
+    cpu->socket_id = tmp;
+
+    if ((tmp = virNodeGetCpuValue(SYSFS_CPU_PATH, cpu_id,
+                                  "topology/core_id", -1)) < 0)
+        return 0;
+
+    cpu->core_id = tmp;
+
+    if (!(cpu->siblings = virNodeGetSiblingsList(SYSFS_CPU_PATH, cpu_id)))
+        return -1;
+
+    return 0;
+}
+
 int
 nodeCapsInitNUMA(virCapsPtr caps)
 {
@@ -1483,6 +1538,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     int ret = -1;
     int max_n_cpus = NUMA_MAX_N_CPUS;
     int ncpus = 0;
+    bool topology_failed = false;
 
     if (numa_available() < 0)
         return 0;
@@ -1516,20 +1572,28 @@ nodeCapsInitNUMA(virCapsPtr caps)
         if (VIR_ALLOC_N(cpus, ncpus) < 0)
             goto cleanup;
 
-        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
-            if (MASK_CPU_ISSET(mask, i))
-                cpus[ncpus++].id = i;
+        for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++) {
+            if (MASK_CPU_ISSET(mask, i)) {
+                if (virNodeCapsFillCPUInfo(i, cpus + ncpus++) < 0) {
+                    topology_failed = true;
+                    virResetLastError();
+                }
+            }
+        }
 
         if (virCapabilitiesAddHostNUMACell(caps, n, ncpus, cpus) < 0)
             goto cleanup;
-        cpus = NULL;
     }
 
     ret = 0;
 
 cleanup:
-    virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
-    VIR_FREE(cpus);
+    if (topology_failed || ret < 0)
+        virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
+
+    if (ret < 0)
+        VIR_FREE(cpus);
+
     VIR_FREE(mask);
     VIR_FREE(allonesmask);
     return ret;
