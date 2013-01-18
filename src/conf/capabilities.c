@@ -678,6 +678,28 @@ virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
     return NULL;
 }
 
+static void
+virCapabilitiesFormatNUMATopology(virBufferPtr xml,
+                                  size_t ncells,
+                                  virCapsHostNUMACellPtr *cells)
+{
+    int i;
+    int j;
+
+    virBufferAddLit(xml, "    <topology>\n");
+    virBufferAsprintf(xml, "      <cells num='%zu'>\n", ncells);
+    for (i = 0; i < ncells; i++) {
+        virBufferAsprintf(xml, "        <cell id='%d'>\n", cells[i]->num);
+        virBufferAsprintf(xml, "          <cpus num='%d'>\n", cells[i]->ncpus);
+        for (j = 0; j < cells[i]->ncpus; j++)
+            virBufferAsprintf(xml, "            <cpu id='%d'/>\n",
+                              cells[i]->cpus[j]);
+        virBufferAddLit(xml, "          </cpus>\n");
+        virBufferAddLit(xml, "        </cell>\n");
+    }
+    virBufferAddLit(xml, "      </cells>\n");
+    virBufferAddLit(xml, "    </topology>\n");
+}
 
 /**
  * virCapabilitiesFormatXML:
@@ -752,24 +774,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "    </migration_features>\n");
     }
 
-    if (caps->host.nnumaCell) {
-        virBufferAddLit(&xml, "    <topology>\n");
-        virBufferAsprintf(&xml, "      <cells num='%zu'>\n",
-                          caps->host.nnumaCell);
-        for (i = 0 ; i < caps->host.nnumaCell ; i++) {
-            virBufferAsprintf(&xml, "        <cell id='%d'>\n",
-                              caps->host.numaCell[i]->num);
-            virBufferAsprintf(&xml, "          <cpus num='%d'>\n",
-                              caps->host.numaCell[i]->ncpus);
-            for (j = 0 ; j < caps->host.numaCell[i]->ncpus ; j++)
-                virBufferAsprintf(&xml, "            <cpu id='%d'/>\n",
-                                  caps->host.numaCell[i]->cpus[j]);
-            virBufferAddLit(&xml, "          </cpus>\n");
-            virBufferAddLit(&xml, "        </cell>\n");
-        }
-        virBufferAddLit(&xml, "      </cells>\n");
-        virBufferAddLit(&xml, "    </topology>\n");
-    }
+    if (caps->host.nnumaCell)
+        virCapabilitiesFormatNUMATopology(&xml, caps->host.nnumaCell,
+                                          caps->host.numaCell);
 
     for (i = 0; i < caps->host.nsecModels; i++) {
         virBufferAddLit(&xml, "    <secmodel>\n");
