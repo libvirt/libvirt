@@ -206,7 +206,14 @@ static int virLockManagerSanlockSetupLockspace(void)
         goto error;
     }
 
-    memcpy(ls.name, VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE, SANLK_NAME_LEN);
+    if (!virStrcpyStatic(ls.name,
+                         VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Lockspace path '%s' exceeded %d characters"),
+                       VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE,
+                       SANLK_PATH_LEN);
+        goto error;
+    }
     ls.host_id = 0; /* Doesn't matter for initialization */
     ls.flags = 0;
     if (!virStrcpy(ls.host_id_disk.path, path, SANLK_PATH_LEN)) {
