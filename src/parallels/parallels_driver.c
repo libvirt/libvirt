@@ -513,10 +513,9 @@ parallelsGetNetInfo(virDomainNetDefPtr net,
     }
 
     net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
-    if (virJSONValueObjectHasKey(value, "state")) {
-        tmp = virJSONValueObjectGetString(value, "state");
-        if STREQ(tmp, "disconnected")
-            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
+    if ((tmp = virJSONValueObjectGetString(value, "state")) &&
+        STREQ(tmp, "disconnected")) {
+        net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
     }
 
     return 0;
