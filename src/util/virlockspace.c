@@ -459,8 +459,10 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
     virJSONValuePtr resources;
     virHashKeyValuePairPtr pairs = NULL, tmp;
 
-    if (!object)
+    if (!object) {
+        virReportOOMError();
         return NULL;
+    }
 
     virMutexLock(&lockspace->lock);
 
@@ -482,6 +484,11 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         virJSONValuePtr child = virJSONValueNewObject();
         virJSONValuePtr owners = NULL;
         size_t i;
+
+        if (!child) {
+            virReportOOMError();
+            goto error;
+        }
 
         if (virJSONValueArrayAppend(resources, child) < 0) {
             virJSONValueFree(child);
