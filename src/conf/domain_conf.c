@@ -16041,26 +16041,51 @@ virDomainDefAddSecurityLabelDef(virDomainDefPtr def, const char *model)
 {
     virSecurityLabelDefPtr seclabel = NULL;
 
-    if (VIR_ALLOC(seclabel) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
+    if (VIR_ALLOC(seclabel) < 0)
+        goto no_memory;
 
     if (model) {
         seclabel->model = strdup(model);
-        if (seclabel->model == NULL) {
-            virReportOOMError();
-            virSecurityLabelDefFree(seclabel);
-            return NULL;
-        }
+        if (seclabel->model == NULL)
+            goto no_memory;
     }
 
-    if (VIR_EXPAND_N(def->seclabels, def->nseclabels, 1) < 0) {
-        virReportOOMError();
-        virSecurityLabelDefFree(seclabel);
-        return NULL;
-    }
+    if (VIR_EXPAND_N(def->seclabels, def->nseclabels, 1) < 0)
+        goto no_memory;
+
     def->seclabels[def->nseclabels - 1] = seclabel;
 
     return seclabel;
+
+no_memory:
+    virReportOOMError();
+    virSecurityLabelDefFree(seclabel);
+    return NULL;
+}
+
+virSecurityDeviceLabelDefPtr
+virDomainDiskDefAddSecurityLabelDef(virDomainDiskDefPtr def, const char *model)
+{
+    virSecurityDeviceLabelDefPtr seclabel = NULL;
+
+    if (VIR_ALLOC(seclabel) < 0)
+        goto no_memory;
+
+    if (model) {
+        seclabel->model = strdup(model);
+        if (seclabel->model == NULL)
+            goto no_memory;
+    }
+
+    if (VIR_EXPAND_N(def->seclabels, def->nseclabels, 1) < 0)
+        goto no_memory;
+
+    def->seclabels[def->nseclabels - 1] = seclabel;
+
+    return seclabel;
+
+no_memory:
+    virReportOOMError();
+    virSecurityDeviceLabelDefFree(seclabel);
+    return NULL;
 }
