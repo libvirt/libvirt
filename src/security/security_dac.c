@@ -995,7 +995,8 @@ virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         return -1;
 
     if (secdef->label)
-        strcpy(seclabel->label, secdef->label);
+        ignore_value(virStrcpy(seclabel->label, secdef->label,
+                               VIR_SECURITY_LABEL_BUFLEN));
 
     return 0;
 }
