@@ -464,7 +464,7 @@ cleanup:
 }
 
 static xmlChar *
-makeCloneXML(const char *origxml, const char *newname)
+vshMakeCloneXML(const char *origxml, const char *newname)
 {
 
     xmlDocPtr doc = NULL;
@@ -555,7 +555,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     if (!origxml)
         goto cleanup;
 
-    newxml = makeCloneXML(origxml, name);
+    newxml = vshMakeCloneXML(origxml, name);
     if (!newxml) {
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
         goto cleanup;
