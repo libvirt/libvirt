@@ -3684,11 +3684,6 @@
   <!--
        Type library
     -->
-  <define name="cpuset">
-    <data type="string">
-      <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>
-    </data>
-  </define>
   <define name="countCPU">
     <data type="unsignedShort">
       <param name="pattern">[0-9]+</param>

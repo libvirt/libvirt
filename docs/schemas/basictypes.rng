@@ -219,4 +219,10 @@
     </data>
   </define>
 
+  <define name="cpuset">
+    <data type="string">
+      <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>
+    </data>
+  </define>
+
 </grammar>
