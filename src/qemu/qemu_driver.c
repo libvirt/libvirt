@@ -1816,6 +1816,12 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     qemuDomainSetFakeReboot(driver, vm, false);
 
+
+    /* We need to prevent monitor EOF callback from doing our work (and sending
+     * misleading events) while the vm is unlocked inside BeginJob/ProcessKill API
+     */
+    priv->beingDestroyed = true;
+
     /* Although qemuProcessStop does this already, there may
      * be an outstanding job active. We want to make sure we
      * can kill the process even if a job is active. Killing
@@ -1825,16 +1831,15 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         if (qemuProcessKill(driver, vm, 0) < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("failed to kill qemu process with SIGTERM"));
+            priv->beingDestroyed = false;
             goto cleanup;
         }
     } else {
-        ignore_value(qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE));
+        if (qemuProcessKill(driver, vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0) {
+            priv->beingDestroyed = false;
+            goto cleanup;
+        }
     }
-
-    /* We need to prevent monitor EOF callback from doing our work (and sending
-     * misleading events) while the vm is unlocked inside BeginJob API
-     */
-    priv->beingDestroyed = true;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm, QEMU_JOB_DESTROY) < 0)
         goto cleanup;
