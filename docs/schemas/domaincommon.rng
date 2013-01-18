@@ -2251,22 +2251,34 @@
   </define>
   <!--
      A video adapter description, allowing configuration of device
-     model, number of virtual heads, and video ram size
+     model, number of virtual heads, video ram size, and for qxl
+     both ram bar sizes.
    -->
   <define name="video">
     <element name="video">
       <optional>
         <element name="model">
-          <attribute name="type">
-            <choice>
-              <value>vga</value>
-              <value>cirrus</value>
-              <value>vmvga</value>
-              <value>xen</value>
-              <value>vbox</value>
-              <value>qxl</value>
-            </choice>
-          </attribute>
+          <choice>
+            <attribute name="type">
+              <choice>
+                <value>vga</value>
+                <value>cirrus</value>
+                <value>vmvga</value>
+                <value>xen</value>
+                <value>vbox</value>
+              </choice>
+            </attribute>
+            <group>
+              <attribute name="type">
+                <value>qxl</value>
+              </attribute>
+              <optional>
+                <attribute name="ram">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
+            </group>
+          </choice>
           <optional>
             <attribute name="vram">
               <ref name="unsignedInt"/>

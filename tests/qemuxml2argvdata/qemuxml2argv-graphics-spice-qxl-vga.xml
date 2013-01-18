@@ -28,10 +28,10 @@
       <channel name='inputs' mode='insecure'/>
     </graphics>
     <video>
-      <model type='qxl' vram='32768' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' heads='1'/>
     </video>
     <video>
-      <model type='qxl' vram='65536' heads='1'/>
+      <model type='qxl' ram='65536' vram='65536' heads='1'/>
     </video>
     <memballoon model='virtio'/>
   </devices>

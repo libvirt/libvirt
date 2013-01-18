@@ -31,10 +31,10 @@
       <streaming mode='filter'/>
     </graphics>
     <video>
-      <model type='qxl' vram='18432' heads='1'/>
+      <model type='qxl' ram='65536' vram='18432' heads='1'/>
     </video>
     <video>
-      <model type='qxl' vram='32768' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' heads='1'/>
     </video>
     <memballoon model='virtio'/>
   </devices>

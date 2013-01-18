@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1157,7 +1157,8 @@ struct _virDomainVideoAccelDef {
 
 struct _virDomainVideoDef {
     int type;
-    unsigned int vram;
+    unsigned int ram;  /* kibibytes (multiples of 1024) */
+    unsigned int vram; /* kibibytes (multiples of 1024) */
     unsigned int heads;
     bool primary;
     virDomainVideoAccelDefPtr accel;

@@ -7391,6 +7391,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
     char *type = NULL;
     char *heads = NULL;
     char *vram = NULL;
+    char *ram = NULL;
     char *primary = NULL;
 
     if (VIR_ALLOC(def) < 0) {
@@ -7401,9 +7402,10 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!type && !vram && !heads &&
+            if (!type && !vram && !ram && !heads &&
                 xmlStrEqual(cur->name, BAD_CAST "model")) {
                 type = virXMLPropString(cur, "type");
+                ram = virXMLPropString(cur, "ram");
                 vram = virXMLPropString(cur, "vram");
                 heads = virXMLPropString(cur, "heads");
 
@@ -7431,9 +7433,24 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
         }
     }
 
+    if (ram) {
+        if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("ram attribute only supported for type of qxl"));
+            goto error;
+        }
+        if (virStrToLong_ui(ram, NULL, 10, &def->ram) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse video ram '%s'"), ram);
+            goto error;
+        }
+    } else if (def->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+        def->ram = virDomainVideoDefaultRAM(dom, def->type);
+    }
+
     if (vram) {
         if (virStrToLong_ui(vram, NULL, 10, &def->vram) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video ram '%s'"), vram);
             goto error;
         }
@@ -7455,6 +7472,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
         goto error;
 
     VIR_FREE(type);
+    VIR_FREE(ram);
     VIR_FREE(vram);
     VIR_FREE(heads);
 
@@ -13384,6 +13402,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "    <video>\n");
     virBufferAsprintf(buf, "      <model type='%s'",
                       model);
+    if (def->ram)
+        virBufferAsprintf(buf, " ram='%u'", def->ram);
     if (def->vram)
         virBufferAsprintf(buf, " vram='%u'", def->vram);
     if (def->heads)

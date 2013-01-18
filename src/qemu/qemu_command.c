@@ -3558,11 +3558,20 @@ qemuBuildDeviceVideoStr(virDomainVideoDefPtr video,
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
         if (video->vram > (UINT_MAX / 1024)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+            virReportError(VIR_ERR_OVERFLOW,
                            _("value for 'vram' must be less than '%u'"),
                            UINT_MAX / 1024);
             goto error;
         }
+        if (video->ram > (UINT_MAX / 1024)) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("value for 'ram' must be less than '%u'"),
+                           UINT_MAX / 1024);
+            goto error;
+        }
+
+        /* QEMU accepts bytes for ram_size. */
+        virBufferAsprintf(&buf, ",ram_size=%u", video->ram * 1024);
 
         /* QEMU accepts bytes for vram_size. */
         virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
@@ -6568,24 +6577,36 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                 virCommandAddArgList(cmd, "-vga", vgastr, NULL);
 
-                if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-                    if (def->videos[0]->vram &&
-                        qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
-                        if (def->videos[0]->vram > (UINT_MAX / 1024)) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                           _("value for 'vram' must be less than '%u'"),
-                                           UINT_MAX / 1024);
-                            goto error;
-                        }
+                if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+                    (def->videos[0]->vram || def->videos[0]->ram) &&
+                    qemuCapsGet(caps, QEMU_CAPS_DEVICE)) {
+                    const char *dev = (qemuCapsGet(caps, QEMU_CAPS_DEVICE_QXL_VGA)
+                                       ? "qxl-vga" : "qxl");
+                    int ram = def->videos[0]->ram;
+                    int vram = def->videos[0]->vram;
 
+                    if (vram > (UINT_MAX / 1024)) {
+                        virReportError(VIR_ERR_OVERFLOW,
+                               _("value for 'vram' must be less than '%u'"),
+                                       UINT_MAX / 1024);
+                        goto error;
+                    }
+                    if (ram > (UINT_MAX / 1024)) {
+                        virReportError(VIR_ERR_OVERFLOW,
+                           _("value for 'ram' must be less than '%u'"),
+                                       UINT_MAX / 1024);
+                        goto error;
+                    }
+
+                    if (ram) {
                         virCommandAddArg(cmd, "-global");
-
-                        if (qemuCapsGet(caps, QEMU_CAPS_DEVICE_QXL_VGA))
-                            virCommandAddArgFormat(cmd, "qxl-vga.vram_size=%u",
-                                                   def->videos[0]->vram * 1024);
-                        else
-                            virCommandAddArgFormat(cmd, "qxl.vram_size=%u",
-                                                   def->videos[0]->vram * 1024);
+                        virCommandAddArgFormat(cmd, "%s.ram_size=%u",
+                                               dev, ram * 1024);
+                    }
+                    if (vram) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "%s.vram_size=%u",
+                                               dev, vram * 1024);
                     }
                 }
             }
@@ -9247,6 +9268,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         else
             vid->type = video;
         vid->vram = virDomainVideoDefaultRAM(def, vid->type);
+        vid->ram = vid->type == VIR_DOMAIN_VIDEO_TYPE_QXL ?
+                       virDomainVideoDefaultRAM(def, vid->type) : 0;
         vid->heads = 1;
 
         if (VIR_REALLOC_N(def->videos, def->nvideos+1) < 0) {
