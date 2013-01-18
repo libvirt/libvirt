@@ -1356,13 +1356,9 @@ virNetServerClientInitKeepAlive(virNetServerClientPtr client,
     virObjectRef(client);
 
     client->keepalive = ka;
-    ka = NULL;
 
 cleanup:
     virObjectUnlock(client);
-    if (ka)
-        virKeepAliveStop(ka);
-    virObjectUnref(ka);
 
     return ret;
 }
