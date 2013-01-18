@@ -1787,9 +1787,10 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
     int ret;
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
-              "cookieout=%p, cookieoutlen=%p, st=%p, dname=%s, dom_xml=%s",
+              "cookieout=%p, cookieoutlen=%p, st=%p, dname=%s, dom_xml=%s "
+              "flags=%lx",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
-              cookieout, cookieoutlen, st, NULLSTR(dname), dom_xml);
+              cookieout, cookieoutlen, st, NULLSTR(dname), dom_xml, flags);
 
     /* QEMU will be started with -incoming stdio (which qemu_command might
      * convert to exec:cat or fd:n)
@@ -1823,10 +1824,10 @@ qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
 
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
-              "dname=%s, dom_xml=%s",
+              "dname=%s, dom_xml=%s flags=%lx",
               driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
-              NULLSTR(dname), dom_xml);
+              NULLSTR(dname), dom_xml, flags);
 
     /* The URI passed in may be NULL or a string "tcp://somehostname:port".
      *
