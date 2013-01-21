@@ -485,26 +485,28 @@ static bool
 cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
-    virNodeDevicePtr device;
-    char *xml;
+    virNodeDevicePtr device = NULL;
+    char *xml = NULL;
+    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
+
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
 
-    xml = virNodeDeviceGetXMLDesc(device, 0);
-    if (!xml) {
-        virNodeDeviceFree(device);
-        return false;
-    }
+    if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
+        goto cleanup;
 
     vshPrint(ctl, "%s\n", xml);
+    ret = true;
+
+cleanup:
     VIR_FREE(xml);
     virNodeDeviceFree(device);
-    return true;
+    return ret;
 }
 
 /*
@@ -535,8 +537,9 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
+
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
 
@@ -548,6 +551,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to detach device %s"), name);
         ret = false;
     }
+
     virNodeDeviceFree(device);
     return ret;
 }
@@ -580,8 +584,9 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
+
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
 
@@ -591,6 +596,7 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to re-attach device %s"), name);
         ret = false;
     }
+
     virNodeDeviceFree(device);
     return ret;
 }
@@ -623,8 +629,9 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
+
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
 
@@ -634,6 +641,7 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to reset device %s"), name);
         ret = false;
     }
+
     virNodeDeviceFree(device);
     return ret;
 }
