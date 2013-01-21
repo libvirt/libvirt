@@ -79,6 +79,9 @@ struct _libxlDriverPrivate {
     char *saveDir;
 };
 
+typedef struct _libxlEventHookInfo libxlEventHookInfo;
+typedef libxlEventHookInfo *libxlEventHookInfoPtr;
+
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
 typedef libxlDomainObjPrivate *libxlDomainObjPrivatePtr;
 struct _libxlDomainObjPrivate {
@@ -87,6 +90,9 @@ struct _libxlDomainObjPrivate {
     /* per domain libxl ctx */
     libxl_ctx *ctx;
     libxl_evgen_domain_death *deathW;
+
+    /* list of libxl timeout registrations */
+    libxlEventHookInfoPtr timerRegistrations;
 };
 
 # define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"
