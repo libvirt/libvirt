@@ -204,25 +204,16 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_LIVE;
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "xmlfile", &from) <= 0)
+    if (vshCommandOptString(cmd, "xmlfile", &from) <= 0) {
         buffer = vshStrdup(ctl, "<domainsnapshot/>");
-    else {
+    } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
-            /* we have to report the error here because during cleanup
-             * we'll run through virDomainFree(), which loses the
-             * last error
-             */
-            vshReportError(ctl);
+            vshSaveLibvirtError();
             goto cleanup;
         }
-    }
-    if (buffer == NULL) {
-        vshError(ctl, "%s", _("Out of memory"));
-        goto cleanup;
     }
 
     ret = vshSnapshotCreate(ctl, dom, buffer, flags, from);
