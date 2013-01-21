@@ -11347,14 +11347,24 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                 parse_flags)))
         goto cleanup;
 
-    /* reject snapshot names containing slashes as snapshot definitions are
-     * saved in files containing the name */
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA) &&
-        strchr(def->name, '/')) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("invalid snapshot name '%s': name can't contain '/'"),
-                       def->name);
-        goto cleanup;
+    /* reject snapshot names containing slashes or starting with dot as
+     * snapshot definitions are saved in files named by the snapshot name */
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        if (strchr(def->name, '/')) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("invalid snapshot name '%s': "
+                             "name can't contain '/'"),
+                           def->name);
+            goto cleanup;
+        }
+
+        if (def->name[0] == '.') {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("invalid snapshot name '%s': "
+                             "name can't start with '.'"),
+                           def->name);
+            goto cleanup;
+        }
     }
 
     /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
