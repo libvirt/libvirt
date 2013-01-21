@@ -666,26 +666,34 @@ libxlVmReap(libxlDriverPrivatePtr driver,
  * Handle previously registered event notification from libxenlight
  */
 static void
-libxlEventHandler(void *data, const libxl_event *event)
+libxlEventHandler(void *data ATTRIBUTE_UNUSED, const libxl_event *event)
 {
     libxlDriverPrivatePtr driver = libxl_driver;
-    virDomainObjPtr vm = data;
+    virDomainObjPtr vm = NULL;
     virDomainEventPtr dom_event = NULL;
-
-    libxlDriverLock(driver);
-    virObjectLock(vm);
-    libxlDriverUnlock(driver);
+    libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
 
     if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
         virDomainShutoffReason reason;
 
-        if (event->domid != vm->def->id)
+        /*
+         * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
+         * after calling libxl_domain_suspend() are handled by it's callers.
+         */
+        if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
             goto cleanup;
 
-        switch (event->u.domain_shutdown.shutdown_reason) {
+        libxlDriverLock(driver);
+        vm = virDomainFindByID(&driver->domains, event->domid);
+        libxlDriverUnlock(driver);
+
+        if (!vm)
+            goto cleanup;
+
+        switch (xl_reason) {
             case LIBXL_SHUTDOWN_REASON_POWEROFF:
             case LIBXL_SHUTDOWN_REASON_CRASH:
-                if (event->u.domain_shutdown.shutdown_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
+                if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
                     dom_event = virDomainEventNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -704,7 +712,7 @@ libxlEventHandler(void *data, const libxl_event *event)
                 libxlVmStart(driver, vm, 0, -1);
                 break;
             default:
-                VIR_INFO("Unhandled shutdown_reason %d", event->u.domain_shutdown.shutdown_reason);
+                VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
                 break;
         }
     }
