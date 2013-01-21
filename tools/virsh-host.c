@@ -103,10 +103,9 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     }
 
     VIR_FREE(ctl->name);
-    if (vshCommandOptString(cmd, "name", &name) < 0) {
-        vshError(ctl, "%s", _("Please specify valid connection URI"));
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
-    }
+
     ctl->name = vshStrdup(ctl, name);
 
     ctl->useGetInfo = false;
@@ -550,10 +549,8 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     unsigned int suspendTarget;
     long long duration;
 
-    if (vshCommandOptString(cmd, "target", &target) < 0) {
-        vshError(ctl, _("Invalid target argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         return false;
-    }
 
     if (vshCommandOptLongLong(cmd, "duration", &duration) < 0) {
         vshError(ctl, _("Invalid duration argument"));
