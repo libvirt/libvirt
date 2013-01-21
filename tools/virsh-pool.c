@@ -46,7 +46,7 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     const char *n = NULL;
     virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
 
-    if (vshCommandOptString(cmd, optname, &n) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -154,7 +154,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
@@ -227,7 +227,8 @@ static const vshCmdOptDef opts_pool_X_as[] = {
 };
 
 static int
-vshBuildPoolXML(const vshCmd *cmd,
+vshBuildPoolXML(vshControl *ctl,
+                const vshCmd *cmd,
                 const char **retname,
                 char **xml)
 {
@@ -236,20 +237,18 @@ vshBuildPoolXML(const vshCmd *cmd,
                *target = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (vshCommandOptString(cmd, "name", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         goto cleanup;
-    if (vshCommandOptString(cmd, "type", &type) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "source-host", &srcHost) < 0 ||
-        vshCommandOptString(cmd, "source-path", &srcPath) < 0 ||
-        vshCommandOptString(cmd, "source-dev", &srcDev) < 0 ||
-        vshCommandOptString(cmd, "source-name", &srcName) < 0 ||
-        vshCommandOptString(cmd, "source-format", &srcFormat) < 0 ||
-        vshCommandOptString(cmd, "target", &target) < 0) {
-        vshError(NULL, "%s", _("missing argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "source-host", &srcHost) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-path", &srcPath) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-dev", &srcDev) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-name", &srcName) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-format", &srcFormat) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         goto cleanup;
-    }
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAsprintf(&buf, "  <name>%s</name>\n", name);
@@ -307,7 +306,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
 
-    if (!vshBuildPoolXML(cmd, &name, &xml))
+    if (!vshBuildPoolXML(ctl, cmd, &name, &xml))
         return false;
 
     if (printXML) {
@@ -354,7 +353,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
@@ -391,7 +390,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
 
-    if (!vshBuildPoolXML(cmd, &name, &xml))
+    if (!vshBuildPoolXML(ctl, cmd, &name, &xml))
         return false;
 
     if (printXML) {
@@ -963,10 +962,8 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (vshCommandOptBool(cmd, "transient"))
         flags |= VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT;
 
-    if (vshCommandOptString(cmd, "type", &type) < 0) {
-        vshError(ctl, "%s", _("Invalid argument for 'type'"));
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
-    }
 
     if (type) {
         int poolType = -1;
@@ -1356,18 +1353,16 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     char *srcList;
     const char *initiator = NULL;
 
-    if (vshCommandOptString(cmd, "type", &type) <= 0 ||
-        vshCommandOptString(cmd, "host", &host) < 0 ||
-        vshCommandOptString(cmd, "initiator", &initiator) < 0) {
-        vshError(ctl,"%s", _("missing argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "host", &host) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "initiator", &initiator) < 0)
         return false;
-    }
 
     if (host) {
         const char *port = NULL;
         virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-        if (vshCommandOptString(cmd, "port", &port) < 0) {
+        if (vshCommandOptStringReq(ctl, cmd, "port", &port) < 0) {
             vshError(ctl, "%s", _("missing argument"));
             virBufferFreeAndReset(&buf);
             return false;
@@ -1431,13 +1426,11 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     const char *type = NULL, *srcSpecFile = NULL;
     char *srcSpec = NULL, *srcList;
 
-    if (vshCommandOptString(cmd, "type", &type) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
 
-    if (vshCommandOptString(cmd, "srcSpec", &srcSpecFile) < 0) {
-        vshError(ctl, "%s", _("missing option"));
+    if (vshCommandOptStringReq(ctl, cmd, "srcSpec", &srcSpecFile) < 0)
         return false;
-    }
 
     if (srcSpecFile && virFileReadAll(srcSpecFile, VSH_MAX_XML_FILE,
                                       &srcSpec) < 0)
