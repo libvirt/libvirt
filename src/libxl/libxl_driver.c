@@ -111,7 +111,11 @@ libxlDriverUnlock(libxlDriverPrivatePtr driver)
 static void
 libxlEventHookInfoFree(void *obj)
 {
-    VIR_FREE(obj);
+    libxlEventHookInfoPtr info = obj;
+
+    /* Drop reference on libxlDomainObjPrivate */
+    virObjectUnref(info->priv);
+    VIR_FREE(info);
 }
 
 static void
@@ -161,6 +165,13 @@ libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
     }
 
     info->priv = priv;
+    /*
+     * Take a reference on the domain object.  Reference is dropped in
+     * libxlEventHookInfoFree, ensuring the domain object outlives the fd
+     * event objects.
+     */
+    virObjectRef(info->priv);
+
     info->xl_priv = xl_priv;
     *hndp = info;
 
@@ -257,6 +268,13 @@ libxlTimeoutRegisterEventHook(void *priv,
     }
 
     info->priv = priv;
+    /*
+     * Also take a reference on the domain object.  Reference is dropped in
+     * libxlEventHookInfoFree, ensuring the domain object outlives the timeout
+     * event objects.
+     */
+    virObjectRef(info->priv);
+
     info->xl_priv = xl_priv;
     *hndp = info;
 
