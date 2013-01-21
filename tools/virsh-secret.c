@@ -48,7 +48,7 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
-    if (vshCommandOptString(cmd, optname, &n) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_DEBUG,
@@ -90,28 +90,31 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     virSecretPtr res;
     char uuid[VIR_UUID_STRING_BUFLEN];
+    bool ret = false;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    res = virSecretDefineXML(ctl->conn, buffer, 0);
-    VIR_FREE(buffer);
-
-    if (res == NULL) {
+    if (!(res = virSecretDefineXML(ctl->conn, buffer, 0))) {
         vshError(ctl, _("Failed to set attributes from %s"), from);
-        return false;
+        goto cleanup;
     }
+
     if (virSecretGetUUIDString(res, &(uuid[0])) < 0) {
         vshError(ctl, "%s", _("Failed to get UUID of created secret"));
-        virSecretFree(res);
-        return false;
+        goto cleanup;
     }
+
     vshPrint(ctl, _("Secret %s created\n"), uuid);
+    ret = true;
+
+cleanup:
+    VIR_FREE(buffer);
     virSecretFree(res);
-    return true;
+    return ret;
 }
 
 /*
@@ -188,11 +191,10 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     int res;
     bool ret = false;
 
-    secret = vshCommandOptSecret(ctl, cmd, NULL);
-    if (secret == NULL)
+    if (!(secret = vshCommandOptSecret(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "base64", &base64) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "base64", &base64) < 0)
         goto cleanup;
 
     if (!base64_decode_alloc(base64, strlen(base64), &value, &value_size)) {
@@ -201,7 +203,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     }
     if (value == NULL) {
         vshError(ctl, "%s", _("Failed to allocate memory"));
-        return false;
+        goto cleanup;
     }
 
     res = virSecretSetValue(secret, (unsigned char *)value, value_size, 0);
