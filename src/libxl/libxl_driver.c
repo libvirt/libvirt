@@ -186,7 +186,15 @@ libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_info)
 {
     struct libxlOSEventHookTimerInfo *info = timer_info;
 
+    /*
+     * libxl expects the event to be deregistered when calling
+     * libxl_osevent_occurred_timeout, but we dont want the event info
+     * destroyed.  Disable the timeout and only remove it after returning
+     * from libxl.
+     */
+    virEventUpdateTimeout(info->id, -1);
     libxl_osevent_occurred_timeout(info->priv->ctx, info->xl_priv);
+    virEventRemoveTimeout(info->id);
 }
 
 static void
@@ -202,6 +210,8 @@ libxlTimeoutRegisterEventHook(void *priv,
                               void *xl_priv)
 {
     struct timeval now;
+    struct timeval res;
+    static struct timeval zero;
     struct libxlOSEventHookTimerInfo *timer_info;
     int timeout, timer_id;
 
@@ -211,8 +221,15 @@ libxlTimeoutRegisterEventHook(void *priv,
     }
 
     gettimeofday(&now, NULL);
-    timeout = (abs_t.tv_usec - now.tv_usec) / 1000;
-    timeout += (abs_t.tv_sec - now.tv_sec) * 1000;
+    timersub(&abs_t, &now, &res);
+    /* Ensure timeout is not overflowed */
+    if (timercmp(&res, &zero, <)) {
+        timeout = 0;
+    } else if (res.tv_sec > INT_MAX / 1000) {
+        timeout = INT_MAX;
+    } else {
+        timeout = res.tv_sec * 1000 + (res.tv_usec + 999) / 1000;
+    }
     timer_id = virEventAddTimeout(timeout, libxlTimerCallback,
                                   timer_info, libxlTimerInfoFree);
     if (timer_id < 0) {
@@ -227,19 +244,25 @@ libxlTimeoutRegisterEventHook(void *priv,
     return 0;
 }
 
+/*
+ * Note:  There are two changes wrt timeouts starting with xen-unstable
+ * changeset 26469:
+ *
+ * 1. Timeout modify callbacks will only be invoked with an abs_t of {0,0},
+ * i.e. make the timeout fire immediately.  Prior to this commit, timeout
+ * modify callbacks were never invoked.
+ *
+ * 2. Timeout deregister hooks will no longer be called.
+ */
 static int
 libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
                             void **hndp,
-                            struct timeval abs_t)
+                            struct timeval abs_t ATTRIBUTE_UNUSED)
 {
-    struct timeval now;
-    int timeout;
     struct libxlOSEventHookTimerInfo *timer_info = *hndp;
 
-    gettimeofday(&now, NULL);
-    timeout = (abs_t.tv_usec - now.tv_usec) / 1000;
-    timeout += (abs_t.tv_sec - now.tv_sec) * 1000;
-    virEventUpdateTimeout(timer_info->id, timeout);
+    /* Make the timeout fire */
+    virEventUpdateTimeout(timer_info->id, 0);
     return 0;
 }
 
