@@ -1775,31 +1775,26 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
+    if (vshCommandOptStringReq(ctl, cmd, "snapshotname", &name) < 0)
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (!(snapshot = virDomainSnapshotLookupByName(dom, name, 0)))
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "snapshotname", &name) <= 0)
-        goto cleanup;
-
-    snapshot = virDomainSnapshotLookupByName(dom, name, 0);
-    if (snapshot == NULL)
-        goto cleanup;
-
-    xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
-    if (!xml)
+    if (!(xml = virDomainSnapshotGetXMLDesc(snapshot, flags)))
         goto cleanup;
 
     vshPrint(ctl, "%s", xml);
-
     ret = true;
 
 cleanup:
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
 
     return ret;
 }
