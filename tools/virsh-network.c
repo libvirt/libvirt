@@ -50,7 +50,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     if (!vshCmdHasOption(ctl, cmd, optname))
         return NULL;
 
-    if (vshCommandOptString(cmd, optname, &n) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
@@ -158,7 +158,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
@@ -204,7 +204,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
@@ -889,10 +889,8 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     if (!(network = vshCommandOptNetwork(ctl, cmd, NULL)))
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "command", &commandStr) < 0) {
-        vshError(ctl, "%s", _("missing or malformed command argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "command", &commandStr) < 0)
         goto cleanup;
-    }
 
     if (STREQ(commandStr, "add")) {
         /* "add" is a synonym for "add-last" */
@@ -905,10 +903,9 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (vshCommandOptString(cmd, "section", &sectionStr) < 0) {
-        vshError(ctl, "%s", _("missing or malformed section argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "section", &sectionStr) < 0)
         goto cleanup;
-    }
+
     section = virNetworkSectionTypeFromString(sectionStr);
     if (section <= 0 || section >= VIR_NETWORK_SECTION_LAST) {
         vshError(ctl, _("unrecognized section name '%s'"), sectionStr);
@@ -927,10 +924,8 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
      * the desired xml.
      */
 
-    if (vshCommandOptString(cmd, "xml", &xml) < 0) {
-        vshError(ctl, "%s", _("malformed or missing xml argument"));
+    if (vshCommandOptStringReq(ctl, cmd, "xml", &xml) < 0)
         goto cleanup;
-    }
 
     if (*xml != '<') {
         /* contents of xmldata is actually the name of a file that
