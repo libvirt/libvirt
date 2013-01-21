@@ -67,7 +67,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *buffer;
 
-    if (vshCommandOptString(cmd, "file", &from) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
@@ -115,7 +115,7 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name = NULL;
 
-    if (vshCommandOptString(cmd, "name", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
     dev = virNodeDeviceLookupByName(ctl->conn, name);
@@ -488,7 +488,7 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     char *xml;
 
-    if (vshCommandOptString(cmd, "device", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
         vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
@@ -533,7 +533,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (vshCommandOptString(cmd, "device", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
         vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
@@ -578,7 +578,7 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (vshCommandOptString(cmd, "device", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
         vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
@@ -621,7 +621,7 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr device;
     bool ret = true;
 
-    if (vshCommandOptString(cmd, "device", &name) <= 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
         vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
