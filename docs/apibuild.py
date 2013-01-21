@@ -25,7 +25,7 @@ included_files = {
   "virterror.h": "header with error specific API definitions",
   "libvirt.c": "Main interfaces for the libvirt library",
   "virterror.c": "implements error handling and reporting code for libvirt",
-  "event.c": "event loop for monitoring file handles",
+  "virevent.c": "event loop for monitoring file handles",
 }
 
 qemu_included_files = {
@@ -63,12 +63,12 @@ ignored_functions = {
   "virDomainMigratePrepareTunnel3": "private function for tunnelled migration",
   "virDrvSupportsFeature": "private function for remote access",
   "DllMain": "specific function for Win32",
-  "virEventAddHandle": "internal function in event.c",
-  "virEventUpdateHandle": "internal function in event.c",
-  "virEventRemoveHandle": "internal function in event.c",
-  "virEventAddTimeout": "internal function in event.c",
-  "virEventUpdateTimeout": "internal function in event.c",
-  "virEventRemoveTimeout": "internal function in event.c",
+  "virEventAddHandle": "internal function in virevent.c",
+  "virEventUpdateHandle": "internal function in virevent.c",
+  "virEventRemoveHandle": "internal function in virevent.c",
+  "virEventAddTimeout": "internal function in virevent.c",
+  "virEventUpdateTimeout": "internal function in virevent.c",
+  "virEventRemoveTimeout": "internal function in virevent.c",
 }
 
 ignored_macros = {
