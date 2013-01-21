@@ -226,10 +226,14 @@ static const vshCmdOptDef opts_pool_X_as[] = {
     {.name = NULL}
 };
 
-static int buildPoolXML(const vshCmd *cmd, const char **retname, char **xml) {
-
+static int
+vshBuildPoolXML(const vshCmd *cmd,
+                const char **retname,
+                char **xml)
+{
     const char *name = NULL, *type = NULL, *srcHost = NULL, *srcPath = NULL,
-               *srcDev = NULL, *srcName = NULL, *srcFormat = NULL, *target = NULL;
+               *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
+               *target = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptString(cmd, "name", &name) <= 0)
@@ -303,7 +307,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
 
-    if (!buildPoolXML(cmd, &name, &xml))
+    if (!vshBuildPoolXML(cmd, &name, &xml))
         return false;
 
     if (printXML) {
@@ -387,7 +391,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
 
-    if (!buildPoolXML(cmd, &name, &xml))
+    if (!vshBuildPoolXML(cmd, &name, &xml))
         return false;
 
     if (printXML) {
