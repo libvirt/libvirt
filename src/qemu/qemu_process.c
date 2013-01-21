@@ -133,14 +133,29 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
     virObjectLock(vm);
 
     priv = vm->privateData;
-    if (priv->agent == agent &&
-        !virObjectUnref(priv->agent))
-        priv->agent = NULL;
+
+    if (!priv->agent) {
+        VIR_DEBUG("Agent freed already");
+        goto unlock;
+    }
+
+    if (priv->beingDestroyed) {
+        VIR_DEBUG("Domain is being destroyed, agent EOF is expected");
+        goto unlock;
+    }
+
+    priv->agent = NULL;
 
     virObjectUnlock(vm);
     qemuDriverUnlock(driver);
 
     qemuAgentClose(agent);
+    return;
+
+unlock:
+    virObjectUnlock(vm);
+    qemuDriverUnlock(driver);
+    return;
 }
 
 
