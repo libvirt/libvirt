@@ -26,6 +26,7 @@ included_files = {
   "libvirt.c": "Main interfaces for the libvirt library",
   "virterror.c": "implements error handling and reporting code for libvirt",
   "virevent.c": "event loop for monitoring file handles",
+  "virtypedparam.c": "virTypedParameters APIs",
 }
 
 qemu_included_files = {
@@ -69,6 +70,9 @@ ignored_functions = {
   "virEventAddTimeout": "internal function in virevent.c",
   "virEventUpdateTimeout": "internal function in virevent.c",
   "virEventRemoveTimeout": "internal function in virevent.c",
+  "virTypedParameterArrayValidate": "internal function in virtypedparam.c",
+  "virTypedParameterAssign": "internal function in virtypedparam.c",
+  "virTypedParameterAssignFromStr": "internal function in virtypedparam.c",
 }
 
 ignored_macros = {
