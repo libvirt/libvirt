@@ -207,7 +207,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "xmlfile", &from) <= 0) {
+    if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0) {
         buffer = vshStrdup(ctl, "<domainsnapshot/>");
     } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
@@ -431,11 +431,9 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "name", &name) < 0 ||
-        vshCommandOptString(cmd, "description", &desc) < 0) {
-        vshError(ctl, _("argument must not be empty"));
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
         goto cleanup;
-    }
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     if (name)
@@ -443,10 +441,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (desc)
         virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
 
-    if (vshCommandOptString(cmd, "memspec", &memspec) < 0) {
-        vshError(ctl, _("memspec argument must not be empty"));
+    if (vshCommandOptStringReq(ctl, cmd, "memspec", &memspec) < 0)
         goto cleanup;
-    }
 
     if (memspec && vshParseSnapshotMemspec(ctl, &buf, memspec) < 0)
         goto cleanup;
@@ -496,10 +492,8 @@ vshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
     bool current = vshCommandOptBool(cmd, "current");
     const char *snapname = NULL;
 
-    if (vshCommandOptString(cmd, arg, &snapname) < 0) {
-        vshError(ctl, _("invalid argument for --%s"), arg);
+    if (vshCommandOptStringReq(ctl, cmd, arg, &snapname) < 0)
         return -1;
-    }
 
     if (exclusive && current && snapname) {
         vshError(ctl, _("--%s and --current are mutually exclusive"), arg);
@@ -703,10 +697,9 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (dom == NULL)
         goto cleanup;
 
-    if (vshCommandOptString(cmd, "snapshotname", &snapshotname) < 0) {
-        vshError(ctl, _("invalid snapshotname argument '%s'"), snapshotname);
+    if (vshCommandOptStringReq(ctl, cmd, "snapshotname", &snapshotname) < 0)
         goto cleanup;
-    }
+
     if (snapshotname) {
         virDomainSnapshotPtr snapshot2 = NULL;
         flags = (VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
