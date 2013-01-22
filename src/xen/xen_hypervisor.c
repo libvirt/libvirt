@@ -1795,8 +1795,11 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
             return -1;
 
         memset(pm, 0, sizeof(cpumap_t));
-        for (j = 0; j < maplen; j++)
+        for (j = 0; j < maplen; j++) {
+            /* coverity[ptr_arith] */
+            /* coverity[sign_extension] */
             *(pm + (j / 8)) |= cpumap[j] << (8 * (j & 7));
+        }
 
         if (hv_versions.hypervisor == 1) {
             xen_op_v1 op;
