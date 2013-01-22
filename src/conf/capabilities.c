@@ -65,11 +65,28 @@ virCapabilitiesNew(virArch hostarch,
     return caps;
 }
 
+void
+virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpus,
+                                            size_t ncpus)
+{
+    size_t i;
+
+    if (!cpus)
+        return;
+
+    for (i = 0; i < ncpus; i++) {
+        virBitmapFree(cpus[i].siblings);
+        cpus[i].siblings = NULL;
+    }
+}
+
 static void
 virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 {
     if (cell == NULL)
         return;
+
+    virCapabilitiesClearHostNUMACellCPUTopology(cell->cpus, cell->ncpus);
 
     VIR_FREE(cell->cpus);
     VIR_FREE(cell);
@@ -236,7 +253,7 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
  * @caps: capabilities to extend
  * @num: ID number of NUMA cell
  * @ncpus: number of CPUs in cell
- * @cpus: array of CPU ID numbers for cell
+ * @cpus: array of CPU definition structures, the pointer is stolen
  *
  * Registers a new NUMA cell for a host, passing in a
  * array of CPU IDs belonging to the cell
@@ -245,7 +262,7 @@ int
 virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int num,
                                int ncpus,
-                               const int *cpus)
+                               virCapsHostNUMACellCPUPtr cpus)
 {
     virCapsHostNUMACellPtr cell;
 
@@ -256,16 +273,9 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
     if (VIR_ALLOC(cell) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(cell->cpus, ncpus) < 0) {
-        VIR_FREE(cell);
-        return -1;
-    }
-    memcpy(cell->cpus,
-           cpus,
-           ncpus * sizeof(*cpus));
-
     cell->ncpus = ncpus;
     cell->num = num;
+    cell->cpus = cpus;
 
     caps->host.numaCell[caps->host.nnumaCell++] = cell;
 
@@ -693,7 +703,7 @@ virCapabilitiesFormatNUMATopology(virBufferPtr xml,
         virBufferAsprintf(xml, "          <cpus num='%d'>\n", cells[i]->ncpus);
         for (j = 0; j < cells[i]->ncpus; j++)
             virBufferAsprintf(xml, "            <cpu id='%d'/>\n",
-                              cells[i]->cpus[j]);
+                              cells[i]->cpus[j].id);
         virBufferAddLit(xml, "          </cpus>\n");
         virBufferAddLit(xml, "        </cell>\n");
     }

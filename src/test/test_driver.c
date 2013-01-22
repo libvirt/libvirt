@@ -69,7 +69,7 @@ typedef struct _testDomainObjPrivate *testDomainObjPrivatePtr;
 struct _testCell {
     unsigned long mem;
     int numCpus;
-    int cpus[MAX_CPUS];
+    virCapsHostNUMACellCPU cpus[MAX_CPUS];
 };
 typedef struct _testCell testCell;
 typedef struct _testCell *testCellPtr;
@@ -174,8 +174,17 @@ testBuildCapabilities(virConnectPtr conn) {
         goto no_memory;
 
     for (i = 0; i < privconn->numCells; i++) {
+        virCapsHostNUMACellCPUPtr cpu_cells;
+
+        if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0)
+            goto no_memory;
+
+        memcpy(cpu_cells, privconn->cells[i].cpus,
+               sizeof(*cpu_cells) * privconn->cells[i].numCpus);
+
+
         if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].numCpus,
-                                           privconn->cells[i].cpus) < 0)
+                                           cpu_cells) < 0)
             goto no_memory;
     }
 
@@ -549,7 +558,7 @@ static int testOpenDefault(virConnectPtr conn) {
         privconn->cells[u].mem = (u + 1) * 2048 * 1024;
     }
     for (u = 0 ; u < 16 ; u++) {
-        privconn->cells[u % 2].cpus[(u / 2)] = u;
+        privconn->cells[u % 2].cpus[(u / 2)].id = u;
     }
 
     if (!(privconn->caps = testBuildCapabilities(conn)))

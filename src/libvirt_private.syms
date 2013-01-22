@@ -56,6 +56,7 @@ virCapabilitiesAddHostFeature;
 virCapabilitiesAddHostMigrateTransport;
 virCapabilitiesAddHostNUMACell;
 virCapabilitiesAllocMachines;
+virCapabilitiesClearHostNUMACellCPUTopology;
 virCapabilitiesDefaultGuestArch;
 virCapabilitiesDefaultGuestEmulator;
 virCapabilitiesDefaultGuestMachine;

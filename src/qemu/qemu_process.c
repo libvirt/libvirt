@@ -2032,7 +2032,7 @@ qemuPrepareCpumap(virQEMUDriverPtr driver,
             if (result) {
                 for (j = 0; j < cur_ncpus; j++)
                     ignore_value(virBitmapSetBit(cpumap,
-                                                 driver->caps->host.numaCell[i]->cpus[j]));
+                                                 driver->caps->host.numaCell[i]->cpus[j].id));
             }
         }
     }
