@@ -290,7 +290,7 @@ udevIfaceListAllInterfaces(virConnectPtr conn,
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *devices;
     struct udev_list_entry *dev_entry;
-    virInterfacePtr *ifaces_list;
+    virInterfacePtr *ifaces_list = NULL;
     virInterfacePtr iface_obj;
     int tmp_count;
     int count = 0;
