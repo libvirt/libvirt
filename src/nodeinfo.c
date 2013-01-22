@@ -1124,6 +1124,7 @@ nodeSetMemoryParameterValue(virTypedParameterPtr param)
     int ret = -1;
     int rc = -1;
 
+    /* coverity[returned_null] */
     char *field = strchr(param->field, '_');
     field++;
     if (virAsprintf(&path, "%s/%s",
@@ -1161,6 +1162,7 @@ nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
+        /* coverity[returned_null] */
         char *field = strchr(param->field, '_');
         field++;
         if (virAsprintf(&path, "%s/%s",
@@ -1413,6 +1415,7 @@ nodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
 
             break;
 
+        /* coverity[dead_error_begin] */
         default:
             break;
         }
