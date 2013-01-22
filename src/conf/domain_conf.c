@@ -9085,7 +9085,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->maxvcpus = 1;
     } else {
         def->maxvcpus = count;
-        if (count == 0) {
+        if (count == 0 || (unsigned short) count != count) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid maxvcpus %lu"), count);
             goto error;
@@ -9101,7 +9101,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         def->vcpus = def->maxvcpus;
     } else {
         def->vcpus = count;
-        if (count == 0) {
+        if (count == 0 || (unsigned short) count != count) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid current vcpus %lu"), count);
             goto error;
