@@ -6109,9 +6109,10 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virTypedParameterPtr params = NULL;
-    int i, j, pos, max_id, cpu = -1, show_count = -1, nparams;
+    int i, j, pos, max_id, cpu = -1, show_count = -1, nparams = 0;
     bool show_total = false, show_per_cpu = false;
     unsigned int flags = 0;
+    bool ret = false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6151,7 +6152,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (VIR_ALLOC_N(params, nparams * MIN(show_count, 128)) < 0)
-        goto failed_params;
+        goto no_memory;
 
     while (show_count) {
         int ncpus = MIN(show_count, 128);
@@ -6199,8 +6200,8 @@ do_show_total:
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(params, nparams))
-        goto failed_params;
+    if (VIR_ALLOC_N(params, nparams) < 0)
+        goto no_memory;
 
     /* passing start_cpu == -1 gives us domain's total status */
     if ((nparams = virDomainGetCPUStats(dom, params, nparams, -1, 1, flags)) < 0)
@@ -6222,22 +6223,22 @@ do_show_total:
             VIR_FREE(s);
         }
     }
-    virTypedParamsFree(params, nparams);
+
+    ret = true;
 
 cleanup:
+    virTypedParamsFree(params, nparams);
     virDomainFree(dom);
-    return true;
+    return ret;
 
-failed_params:
+no_memory:
     virReportOOMError();
-    virDomainFree(dom);
-    return false;
+    goto cleanup;
 
 failed_stats:
-    vshError(ctl, _("Failed to virDomainGetCPUStats()\n"));
-    VIR_FREE(params);
-    virDomainFree(dom);
-    return false;
+    vshError(ctl, _("Failed to retrieve CPU statistics for domain '%s'"),
+             virDomainGetName(dom));
+    goto cleanup;
 }
 
 /*
