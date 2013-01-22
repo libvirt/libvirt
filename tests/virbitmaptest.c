@@ -29,26 +29,33 @@ static int test1(const void *data ATTRIBUTE_UNUSED)
     int size;
     int bit;
     bool result;
+    int ret = -1;
 
     size = 1024;
     bit = 100;
-    bitmap = virBitmapNew(size);
+    if (!(bitmap = virBitmapNew(size)))
+        goto error;
+
     if (virBitmapSetBit(bitmap, bit) < 0)
-        return -1;
+        goto error;
 
     if (virBitmapGetBit(bitmap, bit, &result) < 0)
-        return -1;
+        goto error;
 
     if (!result)
-        return -1;
+        goto error;
 
     if (virBitmapGetBit(bitmap, bit + 1, &result) < 0)
-        return -1;
+        goto error;
 
     if (result)
-        return -1;
+        goto error;
 
-    return 0;
+    ret = 0;
+
+error:
+    virBitmapFree(bitmap);
+    return ret;
 }
 
 static int
@@ -102,7 +109,8 @@ static int test2(const void *data ATTRIBUTE_UNUSED)
     if (virBitmapCountBits(bitmap) != 48)
         goto error;
 
-    bitsString2 = virBitmapFormat(bitmap);
+    if (!(bitsString2 = virBitmapFormat(bitmap)))
+        goto error;
     if (strcmp(bitsString1, bitsString2))
         goto error;
 
