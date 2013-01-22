@@ -602,7 +602,7 @@ static int virFileLoopDeviceOpen(char **dev_name)
     int fd = -1;
     DIR *dh = NULL;
     struct dirent *de;
-    char *looppath;
+    char *looppath = NULL;
     struct loop_info64 lo;
 
     VIR_DEBUG("Looking for loop devices in /dev");
