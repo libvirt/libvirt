@@ -207,7 +207,7 @@ static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
     virNetSocketPtr csock = NULL; /* Client socket */
     int ret = -1;
 
-    char *path;
+    char *path = NULL;
     char *tmpdir;
     char template[] = "/tmp/libvirt_XXXXXX";
 
@@ -257,7 +257,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     virNetSocketPtr csock = NULL; /* Client socket */
     int ret = -1;
 
-    char *path;
+    char *path = NULL;
     char *tmpdir;
     char template[] = "/tmp/libvirt_XXXXXX";
 
