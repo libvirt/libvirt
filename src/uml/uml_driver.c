@@ -410,11 +410,13 @@ reread:
         }
         if (dom)
             virObjectUnlock(dom);
+        if (event) {
+            umlDomainEventQueue(driver, event);
+            event = NULL;
+        }
     }
 
 cleanup:
-    if (event)
-        umlDomainEventQueue(driver, event);
     umlDriverUnlock(driver);
 }
 
