@@ -150,6 +150,67 @@
     </xsl:for-each>
   </xsl:template>
 
+
+  <!-- process blocks of text. blocks are separated by two consecutive line -->
+  <!-- breaks.                                                              -->
+  <!--                                                                      -->
+  <!-- blocks indented with at least 2 spaces are considered code blocks.   -->
+  <!--                                                                      -->
+  <!-- consecutive code blocks are collapsed into a single code block.      -->
+  <xsl:template name="formatblock">
+    <xsl:param name="block"/>
+    <xsl:param name="rest"/>
+
+    <xsl:variable name="multipleCodeBlocks"
+                  select="starts-with($block, '  ') and starts-with($rest, '  ')"/>
+
+    <xsl:choose>
+      <xsl:when test="$multipleCodeBlocks">
+        <xsl:call-template name="formatblock">
+          <xsl:with-param name="block">
+            <xsl:choose>
+              <xsl:when test="contains($rest, '&#xA;&#xA;')">
+                <xsl:value-of select="concat($block, '&#xA;  &#xA;',
+                                        substring-before($rest, '&#xA;&#xA;'))" />
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="concat($block, '&#xA;  &#xA;', $rest)" />
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+          <xsl:with-param name="rest" select="substring-after($rest, '&#xA;&#xA;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="starts-with($block, '  ')">
+        <pre class="code"><xsl:for-each select="str:tokenize($block, '&#xA;')">
+          <xsl:choose>
+            <xsl:when test="starts-with(., '  ')">
+              <xsl:value-of select="substring(., 3)"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="."/>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:if test="position() != last()">
+            <xsl:text>&#xA;</xsl:text>
+          </xsl:if>
+        </xsl:for-each></pre>
+      </xsl:when>
+      <xsl:otherwise>
+        <p>
+          <xsl:call-template name="dumptext">
+            <xsl:with-param name="text" select="$block"/>
+          </xsl:call-template>
+        </p>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:if test="not($multipleCodeBlocks)">
+      <xsl:call-template name="formattext">
+        <xsl:with-param name="text" select="$rest"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template name="formattext">
     <xsl:param name="text" />
 
@@ -157,28 +218,19 @@
       <xsl:variable name="head" select="substring-before($text, '&#xA;&#xA;')"/>
       <xsl:variable name="rest" select="substring-after($text, '&#xA;&#xA;')"/>
 
-      <xsl:choose>
-        <xsl:when test="$head">
-          <p>
-            <xsl:call-template name="dumptext">
-              <xsl:with-param name="text" select="$head"/>
-            </xsl:call-template>
-          </p>
-        </xsl:when>
-        <xsl:when test="not($rest)">
-          <p>
-            <xsl:call-template name="dumptext">
-              <xsl:with-param name="text" select="$text"/>
-            </xsl:call-template>
-          </p>
-        </xsl:when>
-      </xsl:choose>
-
-      <xsl:if test="$rest">
-        <xsl:call-template name="formattext">
-          <xsl:with-param name="text" select="$rest"/>
-        </xsl:call-template>
-      </xsl:if>
+      <xsl:call-template name="formatblock">
+        <xsl:with-param name="block">
+          <xsl:choose>
+            <xsl:when test="contains($text, '&#xA;&#xA;')">
+              <xsl:value-of select="$head"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$text"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:with-param>
+        <xsl:with-param name="rest" select="$rest"/>
+      </xsl:call-template>
     </xsl:if>
   </xsl:template>
 
