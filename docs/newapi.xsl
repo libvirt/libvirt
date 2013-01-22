@@ -416,7 +416,7 @@
     <xsl:variable name="name" select="string(@name)"/>
     <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="api"><span class="directive">#define</span><xsl:text> </xsl:text><xsl:value-of select="$name"/></pre>
-    <div>
+    <div class="description">
     <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
@@ -568,7 +568,7 @@
     <xsl:text>)
 </xsl:text>
     </pre>
-    <div>
+    <div class="description">
     <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
@@ -644,7 +644,7 @@
     </xsl:for-each>
     <xsl:text>)</xsl:text>
     </pre>
-    <div>
+    <div class="description">
     <xsl:call-template name="formattext">
       <xsl:with-param name="text" select="info"/>
     </xsl:call-template>
