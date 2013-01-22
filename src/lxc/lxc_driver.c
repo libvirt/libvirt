@@ -4513,7 +4513,8 @@ static int lxcDomainOpenNamespace(virDomainPtr dom,
 
     ret = nfds;
 cleanup:
-    virObjectUnlock(vm);
+    if (vm)
+        virObjectUnlock(vm);
     return ret;
 }
 
