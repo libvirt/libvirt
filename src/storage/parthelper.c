@@ -129,6 +129,7 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
+            /* coverity[dead_error_condition] - not true if defined */
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
             else
@@ -142,6 +143,7 @@ int main(int argc, char **argv)
                 content = "free";
             else if (part->type & PED_PARTITION_METADATA)
                 content = "metadata";
+            /* coverity[dead_error_condition] - not true if defined */
             else if (part->type & PED_PARTITION_PROTECTED)
                 content = "protected";
             else
