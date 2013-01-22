@@ -430,6 +430,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                 VIR_FREE(privkey);
             /* DSA */
             if (!privkey) {
+                /* coverity[dead_error_begin] */
                 virBufferAsprintf(&buf, "%s/.ssh/id_dsa", homedir);
                 if (!(privkey = virBufferContentAndReset(&buf)))
                     goto no_memory;
