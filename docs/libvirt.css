@@ -491,3 +491,10 @@ table.acl tr, table.acl td {
 table.acl thead {
     background: #ddd;
 }
+
+div.description pre.code {
+    border: 1px dashed grey;
+    background-color: inherit;
+    padding: 5px 10px 5px 10px;
+    margin-left: 2.5em;
+}
