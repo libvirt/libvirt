@@ -656,7 +656,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
     virCommandPtr cmd = virCommandNew("true");
     int ret = -1;
     char *outbuf;
-    char *errbuf;
+    char *errbuf = NULL;
 
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (outbuf != NULL) {
