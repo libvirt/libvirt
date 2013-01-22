@@ -1124,8 +1124,8 @@ nodeSetMemoryParameterValue(virTypedParameterPtr param)
     int ret = -1;
     int rc = -1;
 
-    /* coverity[returned_null] */
     char *field = strchr(param->field, '_');
+    sa_assert(field);
     field++;
     if (virAsprintf(&path, "%s/%s",
                     SYSFS_MEMORY_SHARED_PATH, field) < 0) {
@@ -1162,8 +1162,8 @@ nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        /* coverity[returned_null] */
         char *field = strchr(param->field, '_');
+        sa_assert(field);
         field++;
         if (virAsprintf(&path, "%s/%s",
                         SYSFS_MEMORY_SHARED_PATH, field) < 0) {
