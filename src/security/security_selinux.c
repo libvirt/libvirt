@@ -110,7 +110,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
     char *mcs = NULL;
     security_context_t ourSecContext = NULL;
     context_t ourContext = NULL;
-    char *sens, *cat, *tmp;
+    char *sens = NULL, *cat, *tmp;
     int catMin, catMax, catRange;
 
     if (getcon_raw(&ourSecContext) < 0) {
