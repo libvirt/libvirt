@@ -201,7 +201,7 @@ virDomainAuditNetDevice(virDomainDefPtr vmDef, virDomainNetDefPtr netDef,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char macstr[VIR_MAC_STRING_BUFLEN];
     char *vmname;
-    char *dev_name;
+    char *dev_name = NULL;
     char *rdev;
     const char *virt;
 
@@ -504,7 +504,7 @@ virDomainAuditCgroupPath(virDomainObjPtr vm, virCgroupPtr cgroup,
 {
     char *detail;
     char *rdev;
-    char *extra;
+    char *extra = NULL;
 
     /* Nothing to audit for regular files.  */
     if (rc > 0)
