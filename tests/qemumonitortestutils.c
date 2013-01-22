@@ -536,6 +536,7 @@ no_memory:
 error:
     VIR_FREE(tmpdir_template);
     qemuMonitorTestFree(test);
+    test = NULL;
     goto cleanup;
 }
 
