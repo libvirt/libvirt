@@ -262,13 +262,15 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr iface = vm->def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(iface);
-        if (iface->ifname)
+        if (iface->ifname) {
             ignore_value(virNetDevSetOnline(iface->ifname, false));
-        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-            ignore_value(virNetDevOpenvswitchRemovePort(
-                            virDomainNetGetActualBridgeName(iface),
-                            iface->ifname));
-        ignore_value(virNetDevVethDelete(iface->ifname));
+            if (vport &&
+                vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
+                ignore_value(virNetDevOpenvswitchRemovePort(
+                                virDomainNetGetActualBridgeName(iface),
+                                iface->ifname));
+            ignore_value(virNetDevVethDelete(iface->ifname));
+        }
         networkReleaseActualDevice(iface);
     }
 
