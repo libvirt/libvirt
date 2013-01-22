@@ -2068,6 +2068,7 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
 
     ret = 0;
 
+    /* coverity[copy_paste_error] */
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
@@ -2105,6 +2106,7 @@ xenDaemonNumOfDomains(virConnectPtr conn)
 
     ret = 0;
 
+    /* coverity[copy_paste_error] */
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
@@ -3431,6 +3433,7 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
 
     ret = 0;
 
+    /* coverity[copy_paste_error] */
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
@@ -3464,6 +3467,7 @@ xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
 
     ret = 0;
 
+    /* coverity[copy_paste_error] */
     for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
