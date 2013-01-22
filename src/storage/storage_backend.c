@@ -141,7 +141,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     size_t rbytes = READ_BLOCK_SIZE_DEFAULT;
     size_t wbytes = 0;
     int interval;
-    char *zerobuf;
+    char *zerobuf = NULL;
     char *buf = NULL;
     struct stat st;
 
