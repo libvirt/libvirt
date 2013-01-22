@@ -558,7 +558,16 @@ static int testOpenDefault(virConnectPtr conn) {
         privconn->cells[u].mem = (u + 1) * 2048 * 1024;
     }
     for (u = 0 ; u < 16 ; u++) {
-        privconn->cells[u % 2].cpus[(u / 2)].id = u;
+        virBitmapPtr siblings = virBitmapNew(16);
+        if (!siblings) {
+            virReportOOMError();
+            goto error;
+        }
+        ignore_value(virBitmapSetBit(siblings, u));
+        privconn->cells[u / 8].cpus[(u % 8)].id = u;
+        privconn->cells[u / 8].cpus[(u % 8)].socket_id = u / 8;
+        privconn->cells[u / 8].cpus[(u % 8)].core_id = u % 8;
+        privconn->cells[u / 8].cpus[(u % 8)].siblings = siblings;
     }
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
