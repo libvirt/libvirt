@@ -213,14 +213,51 @@
         <xsl:text> {
 </xsl:text>
       </pre>
-      <table>
-        <xsl:for-each select="field">
-          <xsl:choose>
-            <xsl:when test='@type = "union"'>
-              <tr><td><span class="keyword">union</span> {</td></tr>
-              <tr>
-              <td><table>
-              <xsl:for-each select="union/field">
+      <xsl:if test="field">
+        <table>
+          <xsl:for-each select="field">
+            <xsl:choose>
+              <xsl:when test='@type = "union"'>
+                <tr><td><span class="keyword">union</span> {</td></tr>
+                <tr>
+                  <td><table>
+                    <xsl:for-each select="union/field">
+                      <tr>
+                        <td>
+                          <span class="type">
+                            <xsl:call-template name="dumptext">
+                              <xsl:with-param name="text" select="@type"/>
+                            </xsl:call-template>
+                          </span>
+                        </td>
+                        <td><xsl:value-of select="@name"/></td>
+                        <xsl:if test="@info != ''">
+                          <td>
+                            <div class="comment">
+                              <xsl:call-template name="dumptext">
+                                <xsl:with-param name="text" select="@info"/>
+                              </xsl:call-template>
+                            </div>
+                          </td>
+                        </xsl:if>
+                      </tr>
+                    </xsl:for-each>
+                  </table></td>
+                <td></td></tr>
+                <tr><td>}</td>
+                <td><xsl:value-of select="@name"/></td>
+                <xsl:if test="@info != ''">
+                  <td>
+                    <div class="comment">
+                      <xsl:call-template name="dumptext">
+                        <xsl:with-param name="text" select="@info"/>
+                      </xsl:call-template>
+                    </div>
+                  </td>
+                </xsl:if>
+                <td></td></tr>
+              </xsl:when>
+              <xsl:otherwise>
                 <tr>
                   <td>
                     <span class="type">
@@ -234,59 +271,20 @@
                     <td>
                       <div class="comment">
                         <xsl:call-template name="dumptext">
-                          <xsl:with-param name="text" select="@info"/>
+                        <xsl:with-param name="text" select="@info"/>
                         </xsl:call-template>
                       </div>
                     </td>
                   </xsl:if>
                 </tr>
-              </xsl:for-each>
-              </table></td>
-              <td></td></tr>
-              <tr><td>}</td>
-              <td><xsl:value-of select="@name"/></td>
-                <xsl:if test="@info != ''">
-                  <td>
-                    <div class="comment">
-                      <xsl:call-template name="dumptext">
-                        <xsl:with-param name="text" select="@info"/>
-                      </xsl:call-template>
-                    </div>
-                  </td>
-                </xsl:if>
-              <td></td></tr>
-            </xsl:when>
-            <xsl:otherwise>
-              <tr>
-                <td>
-                  <span class="type">
-                    <xsl:call-template name="dumptext">
-                      <xsl:with-param name="text" select="@type"/>
-                    </xsl:call-template>
-                  </span>
-                </td>
-                <td><xsl:value-of select="@name"/></td>
-                <xsl:if test="@info != ''">
-                  <td>
-                    <div class="comment">
-                      <xsl:call-template name="dumptext">
-                        <xsl:with-param name="text" select="@info"/>
-                      </xsl:call-template>
-                    </div>
-                  </td>
-                </xsl:if>
-              </tr>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:for-each>
-        <xsl:if test="not(field)">
-          <tr>
-            <td colspan="3">
-              <span class="undisclosed">The content of this structure is not made public by the API</span>
-            </td>
-          </tr>
-        </xsl:if>
-      </table>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:for-each>
+        </table>
+      </xsl:if>
+      <xsl:if test="not(field)">
+        <div class="undisclosed">The content of this structure is not made public by the API</div>
+      </xsl:if>
       <pre>
         <xsl:text>
 }

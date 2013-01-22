@@ -447,6 +447,7 @@ table.data tbody td.n {
     letter-spacing: .3ex;
     font-weight: bolder;
     text-transform: uppercase;
+    margin-left: 2em;
 }
 
 .api .directive {
