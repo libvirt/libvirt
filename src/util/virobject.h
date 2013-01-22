@@ -1,7 +1,7 @@
 /*
  * virobject.h: libvirt reference counted object
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,11 +51,14 @@ struct _virObjectLockable {
 virClassPtr virClassForObject(void);
 virClassPtr virClassForObjectLockable(void);
 
+# ifndef VIR_PARENT_REQUIRED
+#  define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
+# endif
 virClassPtr virClassNew(virClassPtr parent,
                         const char *name,
                         size_t objectSize,
                         virObjectDisposeCallback dispose)
-    ATTRIBUTE_NONNULL(1);
+    VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(2);
 
 const char *virClassName(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);

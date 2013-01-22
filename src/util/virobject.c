@@ -1,7 +1,7 @@
 /*
  * virobject.c: libvirt reference counted object
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#define VIR_PARENT_REQUIRED /* empty, to allow virObject to have no parent */
 #include "virobject.h"
 #include "virthread.h"
 #include "viralloc.h"
