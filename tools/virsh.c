@@ -2268,7 +2268,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
                  va_list ap)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *str;
+    char *str = NULL;
     size_t len;
     const char *lvl = "";
     time_t stTime;
