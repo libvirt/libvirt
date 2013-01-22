@@ -108,7 +108,6 @@ virKeepAliveMessage(virKeepAlivePtr ka, int proc)
 
 error:
     VIR_WARN("Failed to generate keepalive %s", procstr);
-    VIR_FREE(msg);
     return NULL;
 }
 
