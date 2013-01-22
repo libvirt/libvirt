@@ -1,7 +1,7 @@
 /*
  * viralloc.h: safer memory allocation
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -361,11 +361,21 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  * Free the memory stored in 'ptr' and update to point
  * to NULL.
  */
+# if !STATIC_ANALYSIS
 /* The ternary ensures that ptr is a pointer and not an integer type,
- * while evaluating ptr only once.  For now, we intentionally cast
+ * while evaluating ptr only once.  This gives us extra compiler
+ * safety when compiling under gcc.  For now, we intentionally cast
  * away const, since a number of callers safely pass const char *.
  */
-# define VIR_FREE(ptr) virFree((void *) (1 ? (const void *) &(ptr) : (ptr)))
+#  define VIR_FREE(ptr) virFree((void *) (1 ? (const void *) &(ptr) : (ptr)))
+# else
+/* The Coverity static analyzer considers the else path of the "?:" and
+ * flags the VIR_FREE() of the address of the address of memory as a
+ * RESOURCE_LEAK resulting in numerous false positives (eg, VIR_FREE(&ptr))
+ */
+#  define VIR_FREE(ptr) virFree((void *) &(ptr))
+# endif
+
 
 
 # if TEST_OOM
