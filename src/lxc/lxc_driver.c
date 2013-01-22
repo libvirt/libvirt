@@ -3824,7 +3824,7 @@ lxcDomainDetachDeviceDiskLive(virLXCDriverPtr driver,
     virDomainDiskDefPtr def = NULL;
     virCgroupPtr group = NULL;
     int i, ret = -1;
-    char *dst;
+    char *dst = NULL;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -3961,7 +3961,7 @@ lxcDomainDetachDeviceHostdevUSBLive(virLXCDriverPtr driver,
     virDomainHostdevDefPtr def = NULL;
     virCgroupPtr group = NULL;
     int idx, ret = -1;
-    char *dst;
+    char *dst = NULL;
     char *vroot;
     usbDevice *usb = NULL;
 
