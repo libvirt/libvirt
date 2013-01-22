@@ -926,7 +926,7 @@ int virNetServerAddSignalHandler(virNetServerPtr srv,
                                  virNetServerSignalFunc func,
                                  void *opaque)
 {
-    virNetServerSignalPtr sigdata;
+    virNetServerSignalPtr sigdata = NULL;
     struct sigaction sig_action;
 
     virObjectLock(srv);
