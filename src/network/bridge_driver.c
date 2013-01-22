@@ -2530,6 +2530,7 @@ networkStartNetworkVirtual(struct network_driver *driver,
         virSetError(save_err);
         virFreeError(save_err);
     }
+    /* coverity[leaked_handle] - 'tapfd' is not leaked */
     return -1;
 }
 
