@@ -297,7 +297,6 @@ testTLSGenerateCert(struct testTLSCertReq *req)
             abort();
         }
         asn1_delete_structure(&ext);
-        VIR_FREE(der.data);
     }
 
     /*
@@ -324,7 +323,6 @@ testTLSGenerateCert(struct testTLSCertReq *req)
             abort();
         }
         asn1_delete_structure(&ext);
-        VIR_FREE(der.data);
     }
 
     /*
@@ -355,7 +353,6 @@ testTLSGenerateCert(struct testTLSCertReq *req)
             abort();
         }
         asn1_delete_structure(&ext);
-        VIR_FREE(der.data);
     }
 
     /*
