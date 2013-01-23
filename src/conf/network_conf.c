@@ -1856,7 +1856,7 @@ virNetworkObjUpdateParseFile(const char *filename,
         ctxt->node = node;
         class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt);
         if (class_id &&
-            virBitmapParse(class_id, ',',
+            virBitmapParse(class_id, 0,
                            &net->class_id, CLASS_ID_BITMAP_SIZE) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Malformed 'class_id' attribute: %s"),
