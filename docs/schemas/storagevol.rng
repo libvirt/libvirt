@@ -13,7 +13,7 @@
   <define name='vol'>
     <element name='volume'>
       <element name='name'>
-        <ref name='name'/>
+        <ref name='volName'/>
       </element>
       <optional>
         <element name='key'>
@@ -207,12 +207,6 @@
         </attribute>
       </element>
     </optional>
-  </define>
-
-  <define name='name'>
-    <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\+\-\.]+</param>
-    </data>
   </define>
 
 </grammar>
