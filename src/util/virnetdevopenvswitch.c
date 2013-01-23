@@ -211,6 +211,7 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     (*migrate)[strlen(*migrate) - 1] = '\0';
     ret = 0;
 cleanup:
+    virCommandFree(cmd);
     return ret;
 }
 
@@ -242,5 +243,6 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 
     ret = 0;
 cleanup:
+    virCommandFree(cmd);
     return ret;
 }
