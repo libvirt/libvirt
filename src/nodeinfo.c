@@ -389,11 +389,6 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     char *sysfs_nodedir = NULL;
     char *sysfs_cpudir = NULL;
 
-    nodeinfo->cpus = 0;
-    nodeinfo->mhz = 0;
-    nodeinfo->cores = 0;
-    nodeinfo->nodes = 0;
-
     /* Start with parsing CPU clock speed from /proc/cpuinfo */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
 # if defined(__x86_64__) || \
@@ -869,6 +864,8 @@ error:
 int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo)
 {
     virArch hostarch = virArchFromHost();
+
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
 
     if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) == NULL)
         return -1;
