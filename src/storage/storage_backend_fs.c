@@ -648,6 +648,8 @@ virStorageBackendExecuteMKFS(const char *device,
                              format, device);
         ret = -1;
     }
+
+    virCommandFree(cmd);
     return ret;
 }
 #else /* #ifdef MKFS */
