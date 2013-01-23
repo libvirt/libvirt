@@ -183,7 +183,7 @@ load_profile(virSecurityManagerPtr mgr,
 
     xml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
     if (!xml)
-        goto clean;
+        goto cleanup;
 
     if (profile_status_file(profile) >= 0)
         create = false;
@@ -202,8 +202,9 @@ load_profile(virSecurityManagerPtr mgr,
     virCommandSetInputBuffer(cmd, xml);
     rc = virCommandRun(cmd, NULL);
 
-  clean:
+cleanup:
     VIR_FREE(xml);
+    virCommandFree(cmd);
 
     return rc;
 }
