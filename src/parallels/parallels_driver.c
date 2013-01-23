@@ -271,17 +271,17 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
 
     if (!(tmp = virJSONValueObjectGetString(value, "size"))) {
         parallelsParseError();
-        goto cleanup;
+        goto error;
     }
 
     if (virStrToLong_ul(tmp, &endptr, 10, &mem) < 0) {
         parallelsParseError();
-        goto cleanup;
+        goto error;
     }
 
     if (!STREQ(endptr, "Mb")) {
         parallelsParseError();
-        goto cleanup;
+        goto error;
     }
 
     if (VIR_ALLOC(video) < 0)
@@ -304,8 +304,9 @@ parallelsAddVideoInfo(virDomainDefPtr def, virJSONValuePtr value)
 
 no_memory:
     virReportOOMError();
-cleanup:
+    VIR_FREE(accel);
     virDomainVideoDefFree(video);
+error:
     return -1;
 }
 
@@ -1645,7 +1646,7 @@ static int parallelsAddHddByVolume(parallelsDomObjPtr pdom,
         virCommandAddArgFormat(cmd, "--position=%d",
                                disk->info.addr.drive.target);
 
-    if (virCommandRun(cmd, NULL))
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (parallelsStorageVolumeDefRemove(pool, voldef))
@@ -1793,9 +1794,10 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
 {
     bool create = false;
     bool is_changed = false;
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     char strmac[VIR_MAC_STRING_BUFLEN];
     int i;
+    int ret = -1;
 
     if (!oldnet) {
         create = true;
@@ -1808,58 +1810,58 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
     if (!create && oldnet->type != newnet->type) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Changing network type is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->model, newnet->model)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Changing network device model is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->data.network.portgroup,
                         newnet->data.network.portgroup)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Changing network portgroup is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (!virNetDevVPortProfileEqual(oldnet->virtPortProfile,
                                     newnet->virtPortProfile)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Changing virtual port profile is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (newnet->tune.sndbuf_specified) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Setting send buffer size is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->script, newnet->script)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Setting startup script is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (!STREQ_NULLABLE(oldnet->filter, newnet->filter)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Changing filter params is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     if (newnet->bandwidth != NULL) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Setting bandwidth params is not supported"));
-        return -1;
+        goto cleanup;
     }
 
     for (i = 0; i < sizeof(newnet->vlan); i++) {
         if (((char *)&newnet->vlan)[i] != 0) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                            _("Setting vlan params is not supported"));
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -1903,13 +1905,20 @@ static int parallelsApplyIfaceParams(parallelsDomObjPtr pdom,
 
     if (!create && !is_changed) {
         /* nothing changed - no need to run prlctl */
-        return 0;
+        ret = 0;
+        goto cleanup;
     }
 
-    if (virCommandRun(cmd, NULL))
-        return -1;
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    if (create)
+        VIR_FREE(oldnet);
+    virCommandFree(cmd);
+    return ret;
 }
 
 static int
