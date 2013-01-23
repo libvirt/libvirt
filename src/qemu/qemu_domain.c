@@ -1612,14 +1612,9 @@ cleanup:
 const char *
 qemuFindQemuImgBinary(virQEMUDriverPtr driver)
 {
-    if (!driver->qemuImgBinary) {
-        driver->qemuImgBinary = virFindFileInPath("kvm-img");
-        if (!driver->qemuImgBinary)
-            driver->qemuImgBinary = virFindFileInPath("qemu-img");
-        if (!driver->qemuImgBinary)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("unable to find kvm-img or qemu-img"));
-    }
+    if (!driver->qemuImgBinary)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("unable to find kvm-img or qemu-img"));
 
     return driver->qemuImgBinary;
 }

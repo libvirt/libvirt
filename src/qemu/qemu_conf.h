@@ -177,7 +177,7 @@ struct _virQEMUDriver {
     /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
 
-    /* Lazy-load on first use. Unsafe. XXX */
+    /* Immutable pointer */
     char *qemuImgBinary;
 
     /* Immutable pointer, lockless APIs. Pointless abstraction */
