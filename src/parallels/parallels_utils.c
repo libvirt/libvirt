@@ -42,7 +42,7 @@ parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
     if (outbuf)
         virCommandSetOutputBuffer(cmd, outbuf);
 
-    if (virCommandRun(cmd, NULL))
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     ret = 0;
