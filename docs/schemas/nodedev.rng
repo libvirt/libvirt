@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!-- A Relax NG schema for the libvirt node device XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
