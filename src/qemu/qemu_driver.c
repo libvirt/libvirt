@@ -2439,6 +2439,7 @@ endjob:
 cleanup:
     if (vm)
         virObjectUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
