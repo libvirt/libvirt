@@ -265,6 +265,7 @@ char *virBitmapFormat(virBitmapPtr bitmap)
 /**
  * virBitmapParse:
  * @str: points to a string representing a human-readable bitmap
+ * @terminator: character separating the bitmap to parse
  * @bitmap: a bitmap created from @str
  * @bitmapSize: the upper limit of num of bits in created bitmap
  *
@@ -275,13 +276,19 @@ char *virBitmapFormat(virBitmapPtr bitmap)
  * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
  * to set.
  *
+ * To allow parsing of bitmaps within larger strings it is possible to set
+ * a termination character in the argument @terminator. When the character
+ * in @terminator is encountered in @str, the parsing of the bitmap stops.
+ * Pass 0 as @terminator if it is not needed. Whitespace characters may not
+ * be used as terminators.
+ *
  * Returns the number of bits set in @bitmap, or -1 in case of error.
  */
-
-int virBitmapParse(const char *str,
-                   char sep,
-                   virBitmapPtr *bitmap,
-                   size_t bitmapSize)
+int
+virBitmapParse(const char *str,
+               char terminator,
+               virBitmapPtr *bitmap,
+               size_t bitmapSize)
 {
     int ret = 0;
     bool neg = false;
@@ -302,7 +309,7 @@ int virBitmapParse(const char *str,
     if (!*bitmap)
         return -1;
 
-    while (*cur != 0 && *cur != sep) {
+    while (*cur != 0 && *cur != terminator) {
         /*
          * 3 constructs are allowed:
          *     - N   : a single CPU number
@@ -326,7 +333,7 @@ int virBitmapParse(const char *str,
 
         virSkipSpaces(&cur);
 
-        if (*cur == ',' || *cur == 0 || *cur == sep) {
+        if (*cur == ',' || *cur == 0 || *cur == terminator) {
             if (neg) {
                 if (virBitmapIsSet(*bitmap, start)) {
                     ignore_value(virBitmapClearBit(*bitmap, start));
@@ -366,7 +373,7 @@ int virBitmapParse(const char *str,
             cur++;
             virSkipSpaces(&cur);
             neg = false;
-        } else if (*cur == 0 || *cur == sep) {
+        } else if (*cur == 0 || *cur == terminator) {
             break;
         } else {
             goto parse_error;
