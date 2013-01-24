@@ -370,14 +370,14 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 
     data->skipAllLabel = true;
 
-#if HAVE_SELINUX_LABEL_H
+# if HAVE_SELINUX_LABEL_H
     data->label_handle = selabel_open(SELABEL_CTX_FILE, NULL, 0);
     if (!data->label_handle) {
         virReportSystemError(errno, "%s",
                              _("cannot open SELinux label_handle"));
         return -1;
     }
-#endif
+# endif
 
     selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0);
     if (!selinux_conf) {
@@ -430,9 +430,9 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     return 0;
 
 error:
-#if HAVE_SELINUX_LABEL_H
+# if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
-#endif
+# endif
     virConfFree(selinux_conf);
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
