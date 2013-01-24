@@ -48,6 +48,7 @@
 #include "virstoragefile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
+#define CHANGE_MEDIA_RETRIES 10
 
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
@@ -59,6 +60,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     int ret;
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int retries = CHANGE_MEDIA_RETRIES;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (vm->def->disks[i]->bus == disk->bus &&
@@ -86,7 +88,7 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         origdisk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Removable media not supported for %s device"),
-                        virDomainDiskDeviceTypeToString(disk->device));
+                       virDomainDiskDeviceTypeToString(disk->device));
         return -1;
     }
 
@@ -105,8 +107,31 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto error;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
+
+    /* we don't want to report errors from media tray_open polling */
+    while (retries--) {
+        if (origdisk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)
+            break;
+
+        VIR_DEBUG("Waiting 500ms for tray to open. Retries left %d", retries);
+        usleep(500 * 1000); /* sleep 500ms */
+    }
+
     if (disk->src) {
+        /* deliberately don't depend on 'ret' as 'eject' may have failed for the
+         * fist time and we are gonna check the drive state anyway */
         const char *format = NULL;
+
+        /* We haven't succeeded yet */
+        ret = -1;
+
+        if (retries <= 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Unable to eject media before changing it"));
+            goto exit_monitor;
+        }
+
         if (disk->type != VIR_DOMAIN_DISK_TYPE_DIR) {
             if (disk->format > 0)
                 format = virStorageFileFormatTypeToString(disk->format);
@@ -116,9 +141,8 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         ret = qemuMonitorChangeMedia(priv->mon,
                                      driveAlias,
                                      disk->src, format);
-    } else {
-        ret = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
     }
+exit_monitor:
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     virDomainAuditDisk(vm, origdisk->src, disk->src, "update", ret >= 0);
