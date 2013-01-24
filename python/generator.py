@@ -1413,7 +1413,7 @@ def buildWrappers(module):
                 classes.write("        %s.__init__(self, _obj=_obj)\n\n" % (
                               classes_ancestor[classname]))
             else:
-                classes.write("class %s:\n" % (classname))
+                classes.write("class %s(object):\n" % (classname))
                 if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool",
                                   "virStorageVol", "virNodeDevice", "virSecret","virStream",
                                   "virNWFilter" ]:
