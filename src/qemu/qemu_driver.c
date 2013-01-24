@@ -1134,7 +1134,8 @@ qemuShutdown(void) {
     VIR_FREE(qemu_driver->saveImageFormat);
     VIR_FREE(qemu_driver->dumpImageFormat);
 
-    for (i = 0 ; qemu_driver->securityDriverNames[i] != NULL ; i++)
+    for (i = 0 ; (qemu_driver->securityDriverNames != NULL &&
+                  qemu_driver->securityDriverNames[i] != NULL) ; i++)
         VIR_FREE(qemu_driver->securityDriverNames[i]);
     VIR_FREE(qemu_driver->securityDriverNames);
     virSecurityManagerFree(qemu_driver->securityManager);
