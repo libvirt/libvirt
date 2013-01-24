@@ -179,7 +179,6 @@ qemuCapsPtr qemuCapsNew(void);
 qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
 qemuCapsPtr qemuCapsNewForBinary(const char *binary,
                                  const char *libDir,
-                                 const char *runDir,
                                  uid_t runUid,
                                  gid_t runGid);
 
@@ -219,7 +218,7 @@ int qemuCapsGetMachineTypesCaps(qemuCapsPtr caps,
 bool qemuCapsIsValid(qemuCapsPtr caps);
 
 
-qemuCapsCachePtr qemuCapsCacheNew(const char *libDir, const char *runDir,
+qemuCapsCachePtr qemuCapsCacheNew(const char *libDir,
                                   uid_t uid, gid_t gid);
 qemuCapsPtr qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary);
 qemuCapsPtr qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary);
