@@ -177,7 +177,7 @@ load_profile(virSecurityManagerPtr mgr,
     int rc = -1;
     bool create = true;
     char *xml = NULL;
-    virCommandPtr cmd;
+    virCommandPtr cmd = NULL;
     const char *probe = virSecurityManagerGetAllowDiskFormatProbing(mgr)
         ? "1" : "0";
 
