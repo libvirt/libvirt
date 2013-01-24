@@ -2315,6 +2315,7 @@ VIR_ENUM_DECL(virDomainPausedReason)
 VIR_ENUM_DECL(virDomainShutdownReason)
 VIR_ENUM_DECL(virDomainShutoffReason)
 VIR_ENUM_DECL(virDomainCrashedReason)
+VIR_ENUM_DECL(virDomainPMSuspendedReason)
 
 const char *virDomainStateReasonToString(virDomainState state, int reason);
 int virDomainStateReasonFromString(virDomainState state, const char *reason);

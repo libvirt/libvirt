@@ -492,6 +492,8 @@ virDomainPciRombarModeTypeFromString;
 virDomainPciRombarModeTypeToString;
 virDomainPMStateTypeFromString;
 virDomainPMStateTypeToString;
+virDomainPMSuspendedReasonTypeFromString;
+virDomainPMSuspendedReasonTypeToString;
 virDomainRedirdevBusTypeFromString;
 virDomainRedirdevBusTypeToString;
 virDomainRemoveInactive;

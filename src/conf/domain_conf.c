@@ -574,11 +574,9 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_LAST,
               "crashed",
               "pmsuspended")
 
-#define VIR_DOMAIN_NOSTATE_LAST (VIR_DOMAIN_NOSTATE_UNKNOWN + 1)
 VIR_ENUM_IMPL(virDomainNostateReason, VIR_DOMAIN_NOSTATE_LAST,
               "unknown")
 
-#define VIR_DOMAIN_RUNNING_LAST (VIR_DOMAIN_RUNNING_SAVE_CANCELED + 1)
 VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "unknown",
               "booted",
@@ -587,13 +585,12 @@ VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "from snapshot",
               "unpaused",
               "migration canceled",
-              "save canceled")
+              "save canceled",
+              "wakeup")
 
-#define VIR_DOMAIN_BLOCKED_LAST (VIR_DOMAIN_BLOCKED_UNKNOWN + 1)
 VIR_ENUM_IMPL(virDomainBlockedReason, VIR_DOMAIN_BLOCKED_LAST,
               "unknown")
 
-#define VIR_DOMAIN_PAUSED_LAST (VIR_DOMAIN_PAUSED_SHUTTING_DOWN + 1)
 VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "unknown",
               "user",
@@ -603,14 +600,13 @@ VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "ioerror",
               "watchdog",
               "from snapshot",
-              "shutdown")
+              "shutdown",
+              "snapshot")
 
-#define VIR_DOMAIN_SHUTDOWN_LAST (VIR_DOMAIN_SHUTDOWN_USER + 1)
 VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
               "unknown",
               "user")
 
-#define VIR_DOMAIN_SHUTOFF_LAST (VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT + 1)
 VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "unknown",
               "shutdown",
@@ -621,8 +617,10 @@ VIR_ENUM_IMPL(virDomainShutoffReason, VIR_DOMAIN_SHUTOFF_LAST,
               "failed",
               "from snapshot")
 
-#define VIR_DOMAIN_CRASHED_LAST (VIR_DOMAIN_CRASHED_UNKNOWN + 1)
 VIR_ENUM_IMPL(virDomainCrashedReason, VIR_DOMAIN_CRASHED_LAST,
+              "unknown")
+
+VIR_ENUM_IMPL(virDomainPMSuspendedReason, VIR_DOMAIN_PMSUSPENDED_LAST,
               "unknown")
 
 VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
@@ -15438,9 +15436,13 @@ virDomainStateReasonToString(virDomainState state, int reason)
         return virDomainShutoffReasonTypeToString(reason);
     case VIR_DOMAIN_CRASHED:
         return virDomainCrashedReasonTypeToString(reason);
-    default:
-        return NULL;
+    case VIR_DOMAIN_PMSUSPENDED:
+        return virDomainPMSuspendedReasonTypeToString(reason);
+    case VIR_DOMAIN_LAST:
+        break;
     }
+    VIR_WARN("Unexpected domain state: %d", state);
+    return NULL;
 }
 
 
@@ -15462,9 +15464,13 @@ virDomainStateReasonFromString(virDomainState state, const char *reason)
         return virDomainShutoffReasonTypeFromString(reason);
     case VIR_DOMAIN_CRASHED:
         return virDomainCrashedReasonTypeFromString(reason);
-    default:
-        return -1;
+    case VIR_DOMAIN_PMSUSPENDED:
+        return virDomainPMSuspendedReasonTypeFromString(reason);
+    case VIR_DOMAIN_LAST:
+        break;
     }
+    VIR_WARN("Unexpected domain state: %d", state);
+    return -1;
 }
 
 
