@@ -444,6 +444,7 @@ vboxIIDFromUUID_v2_x(vboxGlobalData *data, vboxIID_v2_x *iid,
 
     iid->value = &iid->backing;
 
+    sa_assert(iid->value);
     nsIDFromChar(iid->value, uuid);
 }
 
