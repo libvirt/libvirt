@@ -8,7 +8,7 @@
  */
 
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -80,9 +80,30 @@
 
 
 #define VIR_FROM_THIS                   VIR_FROM_VBOX
-#define VBOX_UTF16_FREE(arg)            data->pFuncs->pfnUtf16Free(arg)
-#define VBOX_UTF8_FREE(arg)             data->pFuncs->pfnUtf8Free(arg)
-#define VBOX_COM_UNALLOC_MEM(arg)       data->pFuncs->pfnComUnallocMem(arg)
+#define VBOX_UTF16_FREE(arg)                                            \
+    do {                                                                \
+        if (arg) {                                                      \
+            data->pFuncs->pfnUtf16Free(arg);                            \
+            (arg) = NULL;                                               \
+        }                                                               \
+    } while (0)
+
+#define VBOX_UTF8_FREE(arg)                                             \
+    do {                                                                \
+        if (arg) {                                                      \
+            data->pFuncs->pfnUtf8Free(arg);                             \
+            (arg) = NULL;                                               \
+        }                                                               \
+    } while (0)
+
+#define VBOX_COM_UNALLOC_MEM(arg)                                       \
+    do {                                                                \
+        if (arg) {                                                      \
+            data->pFuncs->pfnComUnallocMem(arg);                        \
+            (arg) = NULL;                                               \
+        }                                                               \
+    } while (0)
+
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  data->pFuncs->pfnUtf16ToUtf8(arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  data->pFuncs->pfnUtf8ToUtf16(arg1, arg2)
 
@@ -1401,14 +1422,8 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
                     ret->id = i + 1;
             }
 
-            if (machineNameUtf8) {
-                VBOX_UTF8_FREE(machineNameUtf8);
-                machineNameUtf8 = NULL;
-            }
-            if (machineNameUtf16) {
-                VBOX_COM_UNALLOC_MEM(machineNameUtf16);
-                machineNameUtf16 = NULL;
-            }
+            VBOX_UTF8_FREE(machineNameUtf8);
+            VBOX_COM_UNALLOC_MEM(machineNameUtf16);
             if (matched == 1)
                 break;
         }
@@ -1971,10 +1986,8 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info) {
                 ret = 0;
             }
 
-            if (machineName)
-                VBOX_UTF8_FREE(machineName);
-            if (machineNameUtf16)
-                VBOX_COM_UNALLOC_MEM(machineNameUtf16);
+            VBOX_UTF8_FREE(machineName);
+            VBOX_COM_UNALLOC_MEM(machineNameUtf16);
             if (info->nrVirtCpu)
                 break;
         }
@@ -2435,10 +2448,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                             VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
                             VBOX_UTF16_FREE(valueDisplayUtf16);
 
-                            if (strlen(valueDisplayUtf8) <= 0) {
+                            if (strlen(valueDisplayUtf8) <= 0)
                                 VBOX_UTF8_FREE(valueDisplayUtf8);
-                                valueDisplayUtf8 = NULL;
-                            }
                         }
 
                         if (STREQ(valueTypeUtf8, "sdl")) {
@@ -2468,8 +2479,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                             }
                             totalPresent++;
                         }
-                        if (valueDisplayUtf8)
-                            VBOX_UTF8_FREE(valueDisplayUtf8);
+                        VBOX_UTF8_FREE(valueDisplayUtf8);
                     }
 
                     if (STREQ(valueTypeUtf8, "vrdp"))
@@ -3562,10 +3572,8 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
                 VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
                 VBOX_UTF16_FREE(valueDisplayUtf16);
 
-                if (strlen(valueDisplayUtf8) <= 0) {
+                if (strlen(valueDisplayUtf8) <= 0)
                     VBOX_UTF8_FREE(valueDisplayUtf8);
-                    valueDisplayUtf8 = NULL;
-                }
             }
 
             if (STREQ(valueTypeUtf8, "sdl")) {
@@ -3613,8 +3621,7 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
     } else {
         guiPresent = 1;
     }
-    if (valueDisplayUtf8)
-        VBOX_UTF8_FREE(valueDisplayUtf8);
+    VBOX_UTF8_FREE(valueDisplayUtf8);
 
     if (guiPresent) {
         if (guiDisplay) {
@@ -4592,10 +4599,7 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             }
 
             VBOX_RELEASE(serialPort);
-            if (pathUtf16) {
-                VBOX_UTF16_FREE(pathUtf16);
-                pathUtf16 = NULL;
-            }
+            VBOX_UTF16_FREE(pathUtf16);
         }
     }
 }
@@ -4659,10 +4663,7 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             parallelPort->vtbl->SetEnabled(parallelPort, 1);
 
             VBOX_RELEASE(parallelPort);
-            if (pathUtf16) {
-                VBOX_UTF16_FREE(pathUtf16);
-                pathUtf16 = NULL;
-            }
+            VBOX_UTF16_FREE(pathUtf16);
         }
     }
 }
@@ -8459,8 +8460,7 @@ static virStorageVolPtr vboxStorageVolLookupByName(virStoragePoolPtr pool, const
                         break;
                     }
 
-                    if (nameUtf8)
-                        VBOX_UTF8_FREE(nameUtf8);
+                    VBOX_UTF8_FREE(nameUtf8);
                 }
             }
         }
@@ -8591,8 +8591,7 @@ static virStorageVolPtr vboxStorageVolLookupByPath(virConnectPtr conn, const cha
                 vboxIIDUnalloc(&hddIID);
             }
 
-            if (hddNameUtf8)
-                VBOX_UTF8_FREE(hddNameUtf8);
+            VBOX_UTF8_FREE(hddNameUtf8);
         }
 
         VBOX_MEDIUM_RELEASE(hardDisk);
@@ -8832,8 +8831,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
                                                 VIR_DEBUG("deregistering hdd:%d", deregister);
                                             }
 
-                                            if (controller)
-                                                VBOX_UTF16_FREE(controller);
+                                            VBOX_UTF16_FREE(controller);
                                         }
                                         vboxIIDUnalloc(&iid);
                                     }

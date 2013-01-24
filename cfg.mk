@@ -93,6 +93,9 @@ VC_LIST_ALWAYS_EXCLUDE_REGEX = \
 
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
+  --name=VBOX_UTF16_FREE			\
+  --name=VBOX_UTF8_FREE				\
+  --name=VBOX_COM_UNALLOC_MEM			\
   --name=VIR_FREE				\
   --name=qemuCapsFree				\
   --name=qemuMigrationCookieFree                \
