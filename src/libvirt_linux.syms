@@ -2,9 +2,13 @@
 # Linux-specific private symbols.
 #
 
+# nodeinfo.h
+linuxNodeInfoCPUPopulate;
 
 # stats_linux.h
 linuxDomainInterfaceStats;
 
-# nodeinfo.h
-linuxNodeInfoCPUPopulate;
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:

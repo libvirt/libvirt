@@ -5,3 +5,8 @@
 esxUtil_EscapeDatastoreItem;
 esxUtil_ParseDatastorePath;
 esxVI_DateTime_ConvertToCalendarTime;
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:
