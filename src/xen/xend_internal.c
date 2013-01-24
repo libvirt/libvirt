@@ -1113,9 +1113,9 @@ sexpr_to_xend_topology(const struct sexpr *root,
     const char *nodeToCpu;
     const char *cur;
     virCapsHostNUMACellCPUPtr cpuInfo = NULL;
-    int cell, cpu, nb_cpus;
+    int cell, cpu, nb_cpus = 0;
     int n = 0;
-    int numCpus = 0;
+    int numCpus;
 
     nodeToCpu = sexpr_node(root, "node/node_to_cpu");
     if (nodeToCpu == NULL)
