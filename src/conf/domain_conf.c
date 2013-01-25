@@ -1736,7 +1736,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainClockDefClear(&def->clock);
 
     VIR_FREE(def->name);
-    VIR_FREE(def->cpumask);
+    virBitmapFree(def->cpumask);
     VIR_FREE(def->emulator);
     VIR_FREE(def->description);
     VIR_FREE(def->title);
