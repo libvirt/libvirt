@@ -1810,7 +1810,7 @@ dnl check for (ESX)
 dnl
 
 if test "$with_curl" != "yes" ; then
-  if test "$with_esx" = "check"; then
+  if test "$with_esx" != "yes"; then
     with_esx=no
   else
     AC_MSG_ERROR([Curl is required for the ESX driver])
