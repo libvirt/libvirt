@@ -2749,7 +2749,8 @@ The I<--memspec> option can be used to control whether a checkpoint
 is internal or external.  The I<--memspec> flag is mandatory, followed
 by a B<memspec> of the form B<[file=]name[,snapshot=type]>, where
 type can be B<none>, B<internal>, or B<external>.  To include a literal
-comma in B<file=name>, escape it with a second comma.
+comma in B<file=name>, escape it with a second comma. I<--memspec> cannot
+be used together with I<--disk-only>.
 
 The I<--diskspec> option can be used to control how I<--disk-only> and
 external checkpoints create external files.  This option can occur

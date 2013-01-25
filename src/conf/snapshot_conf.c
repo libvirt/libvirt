@@ -309,7 +309,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     if (offline && def->memory &&
         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("memory state cannot be saved with offline snapshot"));
+                       _("memory state cannot be saved with offline or "
+                         "disk-only snapshot"));
         goto cleanup;
     }
     def->file = memoryFile;
