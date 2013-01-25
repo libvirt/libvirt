@@ -1099,7 +1099,10 @@
                           </attribute>
                         </optional>
                         <attribute name="name">
-                          <ref name="dnsName"/>
+                          <choice>
+                            <ref name="dnsName"/>
+                            <ref name="ipAddr"/>
+                          </choice>
                         </attribute>
                         <attribute name="port">
                           <ref name="unsignedInt"/>

@@ -34,6 +34,7 @@
 #include "virerror.h"
 #include "virutil.h"
 #include "virfile.h"
+#include "virstring.h"
 #include "viruuid.h"
 #include "c-ctype.h"
 #include "domain_nwfilter.h"
@@ -1937,12 +1938,15 @@ qemuBuildRBDString(virConnectPtr conn,
             if (i) {
                 virBufferAddLit(opt, "\\;");
             }
-            if (disk->hosts[i].port) {
-                virBufferAsprintf(opt, "%s\\:%s",
-                                  disk->hosts[i].name,
-                                  disk->hosts[i].port);
+
+            /* assume host containing : is ipv6 */
+            if (strchr(disk->hosts[i].name, ':')) {
+                virBufferEscape(opt, '\\', ":", "[%s]", disk->hosts[i].name);
             } else {
                 virBufferAsprintf(opt, "%s", disk->hosts[i].name);
+            }
+            if (disk->hosts[i].port) {
+                virBufferAsprintf(opt, "\\:%s", disk->hosts[i].port);
             }
         }
     }
@@ -1961,15 +1965,25 @@ error:
 static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
 {
     char *port;
+    size_t skip;
+    char **parts;
 
     disk->nhosts++;
     if (VIR_REALLOC_N(disk->hosts, disk->nhosts) < 0)
         goto no_memory;
 
-    port = strstr(hostport, "\\:");
+    if ((port = strchr(hostport, ']'))) {
+        /* ipv6, strip brackets */
+        hostport += 1;
+        skip = 3;
+    } else {
+        port = strstr(hostport, "\\:");
+        skip = 2;
+    }
+
     if (port) {
         *port = '\0';
-        port += 2;
+        port += skip;
         disk->hosts[disk->nhosts-1].port = strdup(port);
         if (!disk->hosts[disk->nhosts-1].port)
             goto no_memory;
@@ -1978,7 +1992,12 @@ static int qemuAddRBDHost(virDomainDiskDefPtr disk, char *hostport)
         if (!disk->hosts[disk->nhosts-1].port)
             goto no_memory;
     }
-    disk->hosts[disk->nhosts-1].name = strdup(hostport);
+
+    parts = virStringSplit(hostport, "\\:", 0);
+    if (!parts)
+        goto no_memory;
+    disk->hosts[disk->nhosts-1].name = virStringJoin((const char **)parts, ":");
+    virStringFreeList(parts);
     if (!disk->hosts[disk->nhosts-1].name)
         goto no_memory;
 
