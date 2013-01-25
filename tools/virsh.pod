@@ -1787,7 +1787,7 @@ needed if the device does not use managed mode.
 [I<--driver driver>] [I<--subdriver subdriver>] [I<--cache cache>]
 [I<--type type>] [I<--mode mode>] [I<--config>] [I<--sourcetype soucetype>]
 [I<--serial serial>] [I<--shareable>] [I<--rawio>] [I<--address address>]
-[I<--multifunction>]
+[I<--multifunction>] [I<--print-xml>]
 
 Attach a new disk device to the domain.
 I<source> is path for the files and devices. I<target> controls the bus or
@@ -1816,6 +1816,9 @@ I<address> is the address of disk device in the form of pci:domain.bus.slot.func
 scsi:controller.bus.unit or ide:controller.bus.unit.
 I<multifunction> indicates specified pci address is a multifunction pci device
 address.
+
+If I<--print-xml> is specified, then the XML of the disk that would be attached
+is printed instead.
 
 =item B<attach-interface> I<domain> I<type> I<source>
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]

@@ -317,6 +317,12 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .flags = 0,
      .help = N_("use multifunction pci under specified address")
     },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("print XML document rather than attach the disk")
+    },
+
     {.name = NULL}
 };
 
@@ -480,11 +486,11 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags;
     const char *stype = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *xml;
+    char *xml = NULL;
     struct stat st;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptString(cmd, "source", &source) <= 0)
         goto cleanup;
@@ -620,6 +626,12 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", xml);
+        functionReturn = true;
+        goto cleanup;
+    }
+
     if (vshCommandOptBool(cmd, "config")) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
         if (virDomainIsActive(dom) == 1)
@@ -629,8 +641,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         ret = virDomainAttachDevice(dom, xml);
     }
 
-    VIR_FREE(xml);
-
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach disk"));
     } else {
@@ -639,8 +649,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    VIR_FREE(xml);
+    virDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
