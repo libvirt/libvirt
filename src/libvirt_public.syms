@@ -605,6 +605,7 @@ LIBVIRT_1.0.2 {
 
 LIBVIRT_1.0.3 {
     global:
+        virDomainGetJobStats;
         virNodeDeviceLookupSCSIHostByWWN;
 } LIBVIRT_1.0.2;
 

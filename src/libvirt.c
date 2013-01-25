@@ -17399,6 +17399,66 @@ error:
 
 
 /**
+ * virDomainGetJobStats:
+ * @domain: a domain object
+ * @type: where to store the job type (one of virDomainJobType)
+ * @params: where to store job statistics
+ * @nparams: number of items in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Extract information about progress of a background job on a domain.
+ * Will return an error if the domain is not active. The function returns
+ * a superset of progress information provided by virDomainGetJobInfo.
+ * Possible fields returned in @params are defined by VIR_DOMAIN_JOB_*
+ * macros and new fields will likely be introduced in the future so callers
+ * may receive fields that they do not understand in case they talk to a
+ * newer server.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetJobStats(virDomainPtr domain,
+                     int *type,
+                     virTypedParameterPtr *params,
+                     int *nparams,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "type=%p, params=%p, nparams=%p, flags=%x",
+                     type, params, nparams, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    virCheckNonNullArgGoto(type, error);
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(nparams, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetJobStats) {
+        int ret;
+        ret = conn->driver->domainGetJobStats(domain, type, params,
+                                              nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainAbortJob:
  * @domain: a domain object
  *

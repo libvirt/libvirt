@@ -590,6 +590,12 @@ typedef char *
 typedef int
     (*virDrvDomainGetJobInfo)(virDomainPtr domain,
                               virDomainJobInfoPtr info);
+typedef int
+    (*virDrvDomainGetJobStats)(virDomainPtr domain,
+                               int *type,
+                               virTypedParameterPtr *params,
+                               int *nparams,
+                               unsigned int flags);
 
 typedef int
     (*virDrvDomainAbortJob)(virDomainPtr domain);
@@ -1060,6 +1066,7 @@ struct _virDriver {
     virDrvCompareCPU                    cpuCompare;
     virDrvBaselineCPU                   cpuBaseline;
     virDrvDomainGetJobInfo              domainGetJobInfo;
+    virDrvDomainGetJobStats             domainGetJobStats;
     virDrvDomainAbortJob                domainAbortJob;
     virDrvDomainMigrateSetMaxDowntime   domainMigrateSetMaxDowntime;
     virDrvDomainMigrateGetMaxSpeed      domainMigrateGetMaxSpeed;

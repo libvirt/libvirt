@@ -389,6 +389,7 @@ skip_impl = (
     'virDomainGetControlInfo',
     'virDomainGetBlockInfo',
     'virDomainGetJobInfo',
+    'virDomainGetJobStats',
     'virNodeGetInfo',
     'virDomainGetUUID',
     'virDomainGetUUIDString',
