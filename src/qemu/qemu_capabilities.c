@@ -2117,11 +2117,16 @@ qemuCapsProbeQMPKVMState(qemuCapsPtr caps,
         return -1;
 
     /* The QEMU_CAPS_KVM flag was initially set according to the QEMU
-     * reporting the recognition of 'query-kvm' QMP command, but the
-     * flag means whether the KVM is enabled by default and should be
-     * disabled in case we want SW emulated machine, so let's fix that
-     * if it's true. */
-    if (!enabled) {
+     * reporting the recognition of 'query-kvm' QMP command. That merely
+     * indicates existance of the command though, not whether KVM support
+     * is actually available, nor whether it is enabled by default.
+     *
+     * If it is not present we need to clear the flag, and if it is
+     * not enabled by default we need to change the flag.
+     */
+    if (!present) {
+        qemuCapsClear(caps, QEMU_CAPS_KVM);
+    } else if (!enabled) {
         qemuCapsClear(caps, QEMU_CAPS_KVM);
         qemuCapsSet(caps, QEMU_CAPS_ENABLE_KVM);
     }
