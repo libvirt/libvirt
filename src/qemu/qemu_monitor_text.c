@@ -809,10 +809,10 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
                         VIR_DEBUG("error reading locked: %s", p);
                     else
                         info->locked = (tmp != 0);
-                } else if (STRPREFIX(p, "tray_open=")) {
-                    p += strlen("tray_open=");
+                } else if (STRPREFIX(p, "tray-open=")) {
+                    p += strlen("tray-open=");
                     if (virStrToLong_i(p, &dummy, 10, &tmp) == -1)
-                        VIR_DEBUG("error reading tray_open: %s", p);
+                        VIR_DEBUG("error reading tray-open: %s", p);
                     else
                         info->tray_open = (tmp != 0);
                 } else if (STRPREFIX(p, "io-status=")) {

@@ -1585,10 +1585,10 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        /* Don't check for success here, because 'tray-open' is presented iff
+        /* Don't check for success here, because 'tray_open' is presented iff
          * medium is ejected.
          */
-        ignore_value(virJSONValueObjectGetBoolean(dev, "tray-open",
+        ignore_value(virJSONValueObjectGetBoolean(dev, "tray_open",
                                                   &info->tray_open));
 
         /* Missing io-status indicates no error */
