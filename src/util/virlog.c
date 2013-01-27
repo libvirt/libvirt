@@ -1261,7 +1261,6 @@ static int virLogAddOutputToJournald(int priority)
  *    x:file:file_path
  *       output to a file, with the given filepath
  * In all case the x prefix is the minimal level, acting as a filter
- *    0: everything
  *    1: DEBUG
  *    2: INFO
  *    3: WARNING
