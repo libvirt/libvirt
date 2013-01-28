@@ -255,7 +255,7 @@
 %endif
 
 # Enable libssh2 transport for new enough distros
-%if 0%{?fedora} >= 17 || 0%{?rhel} >= 6
+%if 0%{?fedora} >= 17
     %define with_libssh2 0%{!?_without_libssh2:1}
 %endif
 
