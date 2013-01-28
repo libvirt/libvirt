@@ -134,6 +134,7 @@
 /src/virtlockd.init
 /tests/*.log
 /tests/*.pid
+/tests/*.trs
 /tests/*xml2*test
 /tests/commandhelper
 /tests/commandtest
