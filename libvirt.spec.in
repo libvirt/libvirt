@@ -1170,6 +1170,9 @@ fi
 %endif
 
 %changelog
+* Mon Jan 28 2013 Cole Robinson <crobinso@redhat.com> - 0.9.6.4-1
+- Maintenance release 0.9.6.4
+
 * Sun Oct 07 2012 Cole Robinson <crobinso@redhat.com> - 0.9.6.3-1
 - Stable release 0.9.6.3
 

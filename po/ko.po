@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2010-04-22 14:04+1000\n"
 "Last-Translator: Hyunsok Oh <hoh@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -12900,7 +12900,7 @@ msgstr "시그널 파이프에서 읽기에 실패했습니다: %s "
 msgid "Failed to register shutdown timeout"
 msgstr "종료 타임아웃을 등록하는 데 실패했습니다"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "예기치 못한 길이가 음수로 된 요청 %lld 입니다"

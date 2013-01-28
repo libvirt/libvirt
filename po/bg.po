@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2007-09-05 08:58+0300\n"
 "Last-Translator: Doncho N. Gunchev <gunchev@gmail.com>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -12862,7 +12862,7 @@ msgstr "неуспешно четене от xen демона"
 msgid "Failed to register shutdown timeout"
 msgstr "Неуспешно изключване на домейн %s"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "неочакван mime тип"

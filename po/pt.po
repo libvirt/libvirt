@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2007-12-21 18:54+0000\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: Portuguese <kde-i18n-pt@kde.org>\n"
@@ -12857,7 +12857,7 @@ msgstr "Não foi possível ler o ficheiro de descrição %s"
 msgid "Failed to register shutdown timeout"
 msgstr "Não foi possível encerrar o domínio %s"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "tipo MIME inesperado"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2009-12-11 17:37+0530\n"
 "Last-Translator: Amitakhya Phukan <aphukan@fedoraproject.org>\n"
 "Language-Team: Assamese <as@li.org>\n"
@@ -13658,7 +13658,7 @@ msgstr "ছিগ্নেল পাইপৰ পৰা পঢ়োঁতে ব�
 msgid "Failed to register shutdown timeout"
 msgstr "বন্ধ কৰাৰ সময়বিৰতি পঞ্জিকৰণ কৰিবলৈ বিফল"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "অপ্ৰত্যাশিত ঋণাত্মক দৈৰ্ঘ্যৰ অনুৰোধ %lld"

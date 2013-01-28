@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ml\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2009-12-11 11:27+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <ml@li.org>\n"
@@ -12942,7 +12942,7 @@ msgstr "സിഗ്നല്‍ പൈപ്പില്‍ നിന്നു�
 msgid "Failed to register shutdown timeout"
 msgstr "അടച്ചുപൂട്ടുന്നതിനുള്ള സമയപരിധി രജിസ്ടര്‍ ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "അപ്രതീക്ഷനായ നെഗറ്റീവ് വ്യാപ്തി ആവശ്യം %lld"

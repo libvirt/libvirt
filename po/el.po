@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2011-06-05 02:45+0000\n"
 "Last-Translator: veillard <veillard@redhat.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12440,7 +12440,7 @@ msgstr "Αδύνατη η ανάγνωση από τη διασωλήνωση σ
 msgid "Failed to register shutdown timeout"
 msgstr "Αδυναμία καταχώρησης διαστήματος αναμονής τερματισμού"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "απρόσμενη αίτηση με αρνητικό μήκος %lld"

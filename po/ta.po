@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ta\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2009-12-09 16:10+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <trans-ta@lists.fedoraproject.org>\n"
@@ -12933,7 +12933,7 @@ msgstr "சிக்னல் பைப்பிலிருந்து வா�
 msgid "Failed to register shutdown timeout"
 msgstr "வெளியேறும் நேரத்தை பதிவு செய்ய முடியவில்லை"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "எதிர்பாராத எதிர் நீள கோரிக்கை %lld"

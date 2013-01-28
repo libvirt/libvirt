@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2011-06-05 02:45+0000\n"
 "Last-Translator: veillard <veillard@redhat.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12539,7 +12539,7 @@ msgstr "ସଂକେତ ପାଇପରୁ ପଢ଼ିବାରେ ବିଫଳ
 msgid "Failed to register shutdown timeout"
 msgstr "ବନ୍ଦ କରିବା ସମୟ ସମାପ୍ତକୁ ପଞ୍ଜିକରଣ କରିବାରେ ବିଫଳ"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ଋଣାତ୍ମକ ଲମ୍ବ ଅନୁରୋଧ %lld"

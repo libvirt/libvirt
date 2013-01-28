@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.kn\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2010-04-22 18:26+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <kn@li.org>\n"
@@ -12963,7 +12963,7 @@ msgstr "ಸಿಗ್ನಲ್ ಪೈಪ್‌ನಿಂದ ಓದುವಲ್ಲ�
 msgid "Failed to register shutdown timeout"
 msgstr "ಸ್ಥಗಿತಗೊಳಿಸುವ ಕಾಲಾವಧಿ ಮೀರುವಿಕೆಯನ್ನು ದಾಖಲಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಋಣಾತ್ಮಕ ಉದ್ದದ ಮನವಿ %lld"

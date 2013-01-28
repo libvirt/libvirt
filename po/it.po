@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2012-10-07 17:35-0400\n"
+"POT-Creation-Date: 2013-01-28 14:16-0500\n"
 "PO-Revision-Date: 2009-09-21 15:23+1000\n"
 "Last-Translator: Silvio Pierro <perplesso82@gmail.com>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -13127,7 +13127,7 @@ msgstr "Impossibile leggere dalla pipe del segnale: %s"
 msgid "Failed to register shutdown timeout"
 msgstr "Impossibile registrare il timeout di spegnimento"
 
-#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:834
+#: src/rpc/virnetserverclient.c:718 src/rpc/virnetserverclient.c:835
 #, fuzzy, c-format
 msgid "unexpected zero/negative length request %lld"
 msgstr "inattesa richiesta di lunghezza negativa %lld"
