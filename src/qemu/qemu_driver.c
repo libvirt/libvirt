@@ -4922,8 +4922,10 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
             VIR_FORCE_CLOSE(*fd);
         }
 
-        if (virCommandWait(cmd, NULL) < 0)
+        if (virCommandWait(cmd, NULL) < 0) {
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
             ret = -1;
+        }
     }
     VIR_FORCE_CLOSE(intermediatefd);
 
