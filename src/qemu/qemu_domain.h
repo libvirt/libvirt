@@ -156,6 +156,7 @@ struct _qemuDomainObjPrivate {
 
     unsigned long migMaxBandwidth;
     char *origname;
+    int nbdPort; /* Port used for migration with NBD */
 
     virChrdevsPtr devs;
 

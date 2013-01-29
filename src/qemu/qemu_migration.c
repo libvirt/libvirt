@@ -74,6 +74,7 @@ enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
     QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT,
     QEMU_MIGRATION_COOKIE_FLAG_NETWORK,
+    QEMU_MIGRATION_COOKIE_FLAG_NBD,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -81,13 +82,18 @@ enum qemuMigrationCookieFlags {
 VIR_ENUM_DECL(qemuMigrationCookieFlag);
 VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               QEMU_MIGRATION_COOKIE_FLAG_LAST,
-              "graphics", "lockstate", "persistent", "network");
+              "graphics",
+              "lockstate",
+              "persistent",
+              "network",
+              "nbd");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
     QEMU_MIGRATION_COOKIE_LOCKSTATE = (1 << QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE),
     QEMU_MIGRATION_COOKIE_PERSISTENT = (1 << QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT),
     QEMU_MIGRATION_COOKIE_NETWORK = (1 << QEMU_MIGRATION_COOKIE_FLAG_NETWORK),
+    QEMU_MIGRATION_COOKIE_NBD = (1 << QEMU_MIGRATION_COOKIE_FLAG_NBD),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -121,6 +127,12 @@ struct _qemuMigrationCookieNetwork {
     qemuMigrationCookieNetDataPtr net;
 };
 
+typedef struct _qemuMigrationCookieNBD qemuMigrationCookieNBD;
+typedef qemuMigrationCookieNBD *qemuMigrationCookieNBDPtr;
+struct _qemuMigrationCookieNBD {
+    int port; /* on which port does NBD server listen for incoming data */
+};
+
 typedef struct _qemuMigrationCookie qemuMigrationCookie;
 typedef qemuMigrationCookie *qemuMigrationCookiePtr;
 struct _qemuMigrationCookie {
@@ -149,6 +161,9 @@ struct _qemuMigrationCookie {
 
     /* If (flags & QEMU_MIGRATION_COOKIE_NETWORK) */
     qemuMigrationCookieNetworkPtr network;
+
+    /* If (flags & QEMU_MIGRATION_COOKIE_NBD) */
+    qemuMigrationCookieNBDPtr nbd;
 };
 
 static void qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
@@ -194,6 +209,7 @@ static void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->name);
     VIR_FREE(mig->lockState);
     VIR_FREE(mig->lockDriver);
+    VIR_FREE(mig->nbd);
     VIR_FREE(mig);
 }
 
@@ -504,6 +520,27 @@ qemuMigrationCookieAddNetwork(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
+                          virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /* It is not a bug if there already is a NBD data */
+    if (!mig->nbd &&
+        VIR_ALLOC(mig->nbd) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    mig->nbd->port = priv->nbdPort;
+    mig->flags |= QEMU_MIGRATION_COOKIE_NBD;
+
+    return 0;
+}
+
+
 static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                                  qemuMigrationCookieGraphicsPtr grap)
 {
@@ -605,6 +642,13 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
     if ((mig->flags & QEMU_MIGRATION_COOKIE_NETWORK) && mig->network)
         qemuMigrationCookieNetworkXMLFormat(buf, mig->network);
+
+    if ((mig->flags & QEMU_MIGRATION_COOKIE_NBD) && mig->nbd) {
+        virBufferAddLit(buf, "  <nbd");
+        if (mig->nbd->port)
+            virBufferAsprintf(buf, " port='%d'", mig->nbd->port);
+        virBufferAddLit(buf, "/>\n");
+    }
 
     virBufferAddLit(buf, "</qemu-migration>\n");
     return 0;
@@ -889,6 +933,26 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         (!(mig->network = qemuMigrationCookieNetworkXMLParse(ctxt))))
         goto error;
 
+    if (flags & QEMU_MIGRATION_COOKIE_NBD &&
+        virXPathBoolean("boolean(./nbd)", ctxt)) {
+        char *port;
+
+        if (VIR_ALLOC(mig->nbd) < 0) {
+            virReportOOMError();
+            goto error;
+        }
+
+        port = virXPathString("string(./nbd/@port)", ctxt);
+        if (port && virStrToLong_i(port, NULL, 10, &mig->nbd->port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Malformed nbd port '%s'"),
+                           port);
+            VIR_FREE(port);
+            goto error;
+        }
+        VIR_FREE(port);
+    }
+
     virObjectUnref(caps);
     return 0;
 
@@ -954,6 +1018,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
         qemuMigrationCookieAddNetwork(mig, driver, dom) < 0) {
         return -1;
     }
+
+    if ((flags & QEMU_MIGRATION_COOKIE_NBD) &&
+        qemuMigrationCookieAddNBD(mig, driver, dom) < 0)
+        return -1;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;
@@ -1486,6 +1554,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     virDomainDefPtr def = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
+    unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p, flags=%lx",
@@ -1508,12 +1577,23 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     if (!(flags & VIR_MIGRATE_UNSAFE) && !qemuMigrationIsSafe(vm->def))
         goto cleanup;
 
+    if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        /* TODO support NBD for TUNNELLED migration */
+        if (flags & VIR_MIGRATE_TUNNELLED)
+            VIR_DEBUG("NBD in tunnelled migration is currently not supported");
+        else {
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+            priv->nbdPort = 0;
+        }
+    }
+
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
 
     if (qemuMigrationBakeCookie(mig, driver, vm,
                                 cookieout, cookieoutlen,
-                                QEMU_MIGRATION_COOKIE_LOCKSTATE) < 0)
+                                cookieFlags) < 0)
         goto cleanup;
 
     if (flags & VIR_MIGRATE_OFFLINE) {
@@ -1713,7 +1793,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     origname = NULL;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
-                                       QEMU_MIGRATION_COOKIE_LOCKSTATE)))
+                                       QEMU_MIGRATION_COOKIE_LOCKSTATE |
+                                       QEMU_MIGRATION_COOKIE_NBD)))
         goto cleanup;
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
@@ -1776,8 +1857,20 @@ done:
     else
         cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS;
 
-    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
-                                cookieFlags) < 0) {
+    if (mig->nbd &&
+        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        /* TODO support NBD for TUNNELLED migration */
+        if (flags & VIR_MIGRATE_TUNNELLED)
+            VIR_DEBUG("NBD in tunnelled migration is currently not supported");
+        else {
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+            priv->nbdPort = 0;
+        }
+    }
+
+    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout,
+                                cookieoutlen, cookieFlags) < 0) {
         /* We could tear down the whole guest here, but
          * cookie data is (so far) non-critical, so that
          * seems a little harsh. We'll just warn for now.
@@ -2278,6 +2371,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     int fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
+    unsigned int cookieFlags = 0;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -2285,6 +2379,16 @@ qemuMigrationRun(virQEMUDriverPtr driver,
               driver, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, resource,
               spec, spec->destType, spec->fwdType);
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK) {
+        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
+        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_INC) {
+        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+    }
 
     if (virLockManagerPluginUsesState(driver->lockManager) &&
         !cookieout) {
@@ -2295,8 +2399,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
-                                       QEMU_MIGRATION_COOKIE_GRAPHICS)))
+    mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
+                                 cookieFlags | QEMU_MIGRATION_COOKIE_GRAPHICS);
+    if (!mig)
         goto cleanup;
 
     if (qemuDomainMigrateGraphicsRelocate(driver, vm, mig) < 0)
@@ -2334,11 +2439,6 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (flags & VIR_MIGRATE_NON_SHARED_DISK)
-        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
-
-    if (flags & VIR_MIGRATE_NON_SHARED_INC)
-        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
 
     /* connect to the destination qemu if needed */
     if (spec->destType == MIGRATION_DEST_CONNECT_HOST &&
@@ -2446,10 +2546,11 @@ cleanup:
         VIR_FORCE_CLOSE(fd);
     }
 
+    cookieFlags |= (QEMU_MIGRATION_COOKIE_PERSISTENT |
+                    QEMU_MIGRATION_COOKIE_NETWORK);
     if (ret == 0 &&
-        qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
-                                QEMU_MIGRATION_COOKIE_PERSISTENT |
-                                QEMU_MIGRATION_COOKIE_NETWORK) < 0) {
+        qemuMigrationBakeCookie(mig, driver, vm, cookieout,
+                                cookieoutlen, cookieFlags) < 0) {
         VIR_WARN("Unable to encode migration cookie");
     }
 
