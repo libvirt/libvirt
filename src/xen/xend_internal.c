@@ -1127,8 +1127,10 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
                 goto error;
         }
 
-        if (VIR_ALLOC_N(cpuInfo, numCpus) < 0)
+        if (VIR_ALLOC_N(cpuInfo, numCpus) < 0) {
+            virBitmapFree(cpuset);
             goto memory_error;
+        }
 
         for (n = 0, cpu = 0; cpu < numCpus; cpu++) {
             bool used;
