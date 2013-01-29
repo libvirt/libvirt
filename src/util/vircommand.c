@@ -1,7 +1,7 @@
 /*
  * vircommand.c: Child command execution
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-/* Flags for virExecWithHook */
+/* Flags for virExec */
 enum {
     VIR_EXEC_NONE       = 0,
     VIR_EXEC_NONBLOCK   = (1 << 0),
@@ -102,6 +102,8 @@ struct _virCommand {
 
     unsigned long long capabilities;
 };
+
+static int virCommandHook(virCommandPtr cmd);
 
 /*
  * virCommandFDIsSet:
@@ -389,21 +391,19 @@ prepareStdFd(int fd, int std)
  *        VIR_EXEC_NONE     : Default function behavior
  *        VIR_EXEC_NONBLOCK : Set child process output fd's as non-blocking
  *        VIR_EXEC_DAEMON   : Daemonize the child process
- * @hook optional virExecHook function to call prior to exec
- * @data data to pass to the hook function
+ * @cmd virCommandPtr to pass to virCommandHook
  * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
  * @capabilities capabilities to keep
  */
 static int
-virExecWithHook(const char *const*argv,
+virExec(virCommandPtr cmd,
+                const char *const*argv,
                 const char *const*envp,
                 const int *keepfd,
                 int keepfd_size,
                 pid_t *retpid,
                 int infd, int *outfd, int *errfd,
                 unsigned int flags,
-                virExecHook hook,
-                void *data,
                 char *pidfile,
                 unsigned long long capabilities)
 {
@@ -416,6 +416,7 @@ virExecWithHook(const char *const*argv,
     int tmpfd;
     const char *binary = NULL;
     int forkRet;
+    struct sigaction waxon, waxoff;
 
     if (argv[0][0] != '/') {
         if (!(binary = virFindFileInPath(argv[0]))) {
@@ -601,33 +602,30 @@ virExecWithHook(const char *const*argv,
         }
     }
 
-    if (hook) {
-        /* virFork reset all signal handlers to the defaults.
-         * This is good for the child process, but our hook
-         * risks running something that generates SIGPIPE,
-         * so we need to temporarily block that again
-         */
-        struct sigaction waxon, waxoff;
-        memset(&waxoff, 0, sizeof(waxoff));
-        waxoff.sa_handler = SIG_IGN;
-        sigemptyset(&waxoff.sa_mask);
-        memset(&waxon, 0, sizeof(waxon));
-        if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Could not disable SIGPIPE"));
-            goto fork_error;
-        }
+    /* virFork reset all signal handlers to the defaults.
+     * This is good for the child process, but our hook
+     * risks running something that generates SIGPIPE,
+     * so we need to temporarily block that again
+     */
+    memset(&waxoff, 0, sizeof(waxoff));
+    waxoff.sa_handler = SIG_IGN;
+    sigemptyset(&waxoff.sa_mask);
+    memset(&waxon, 0, sizeof(waxon));
+    if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Could not disable SIGPIPE"));
+        goto fork_error;
+    }
 
-        if ((hook)(data) != 0) {
-            VIR_DEBUG("Hook function failed.");
-            goto fork_error;
-        }
+    if (virCommandHook(cmd) != 0) {
+        VIR_DEBUG("Hook function failed.");
+        goto fork_error;
+    }
 
-        if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Could not re-enable SIGPIPE"));
-            goto fork_error;
-        }
+    if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Could not re-enable SIGPIPE"));
+        goto fork_error;
     }
 
     /* The steps above may need todo something privileged, so
@@ -711,7 +709,8 @@ virRun(const char *const *argv ATTRIBUTE_UNUSED,
 }
 
 static int
-virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
+virExec(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                const char *const*argv ATTRIBUTE_UNUSED,
                 const char *const*envp ATTRIBUTE_UNUSED,
                 const int *keepfd ATTRIBUTE_UNUSED,
                 int keepfd_size ATTRIBUTE_UNUSED,
@@ -720,15 +719,13 @@ virExecWithHook(const char *const*argv ATTRIBUTE_UNUSED,
                 int *outfd ATTRIBUTE_UNUSED,
                 int *errfd ATTRIBUTE_UNUSED,
                 int flags_unused ATTRIBUTE_UNUSED,
-                virExecHook hook ATTRIBUTE_UNUSED,
-                void *data ATTRIBUTE_UNUSED,
                 char *pidfile ATTRIBUTE_UNUSED,
                 unsigned long long capabilities ATTRIBUTE_UNUSED)
 {
     /* XXX: Some day we can implement pieces of virCommand/virExec on
      * top of _spawn() or CreateProcess(), but we can't implement
      * everything, since mingw completely lacks fork(), so we cannot
-     * run hook code in the child.  */
+     * run our own code in the child process.  */
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virExec is not implemented for WIN32"));
     return -1;
@@ -2026,9 +2023,8 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
  * Perform all virCommand-specific actions, along with the user hook.
  */
 static int
-virCommandHook(void *data)
+virCommandHook(virCommandPtr cmd)
 {
-    virCommandPtr cmd = data;
     int res = 0;
 
     if (cmd->hook) {
@@ -2200,7 +2196,8 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
     VIR_FREE(str);
 
-    ret = virExecWithHook((const char *const *)cmd->args,
+    ret = virExec(cmd,
+                          (const char *const *)cmd->args,
                           (const char *const *)cmd->env,
                           cmd->preserve,
                           cmd->preserve_size,
@@ -2209,8 +2206,6 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
                           cmd->outfdptr,
                           cmd->errfdptr,
                           cmd->flags,
-                          virCommandHook,
-                          cmd,
                           cmd->pidfile,
                           cmd->capabilities);
 
@@ -2355,7 +2350,7 @@ void
 virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
 {
     /* Mingw lacks WNOHANG and kill().  But since we haven't ported
-     * virExecWithHook to mingw yet, there's no process to be killed,
+     * virExec to mingw yet, there's no process to be killed,
      * making this implementation trivially correct for now :)  */
 }
 #endif
