@@ -395,7 +395,7 @@ endif # WITH_LIBVIRTD
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
-$(srcdir)/libvirtd.8.in: libvirtd.pod.in
+$(srcdir)/libvirtd.8.in: libvirtd.pod.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@ \
 	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 

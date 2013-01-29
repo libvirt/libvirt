@@ -61,7 +61,7 @@ virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-virt-xml-validate.1: virt-xml-validate.in
+virt-xml-validate.1: virt-xml-validate.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-XML-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
@@ -70,12 +70,12 @@ virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]sysconfdir@|$(sysconfdir)|' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-virt-pki-validate.1: virt-pki-validate.in
+virt-pki-validate.1: virt-pki-validate.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-PKI-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
 
-virt-host-validate.1: virt-host-validate.c
+virt-host-validate.1: virt-host-validate.c $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-HOST-VALIDATE $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
@@ -85,7 +85,7 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	    -e 's|[@]localstatedir@|$(localstatedir)|' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
 
-virt-sanlock-cleanup.8: virt-sanlock-cleanup.in
+virt-sanlock-cleanup.8: virt-sanlock-cleanup.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
@@ -171,7 +171,7 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	  --output-format coff --output $@
 endif
 
-virsh.1: virsh.pod
+virsh.1: virsh.pod $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
