@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -104,7 +104,7 @@ static int xenInotifyActive(virConnectPtr conn ATTRIBUTE_UNUSED)
 #else
 static int xenInotifyActive(virConnectPtr conn)
 {
-   xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+   xenUnifiedPrivatePtr priv = conn->privateData;
    return priv->inotifyWatch > 0;
 }
 #endif
@@ -124,7 +124,11 @@ struct xenXMConfigReaperData {
 };
 
 /* Remove any configs which were not refreshed recently */
-static int xenXMConfigReaper(const void *payload, const void *key ATTRIBUTE_UNUSED, const void *data) {
+static int
+xenXMConfigReaper(const void *payload,
+                  const void *key ATTRIBUTE_UNUSED,
+                  const void *data)
+{
     const struct xenXMConfigReaperData *args = data;
     xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
 
@@ -143,7 +147,8 @@ static int xenXMConfigReaper(const void *payload, const void *key ATTRIBUTE_UNUS
 
 
 static virDomainDefPtr
-xenXMConfigReadFile(virConnectPtr conn, const char *filename) {
+xenXMConfigReadFile(virConnectPtr conn, const char *filename)
+{
     virConfPtr conf;
     virDomainDefPtr def;
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -158,7 +163,10 @@ xenXMConfigReadFile(virConnectPtr conn, const char *filename) {
 }
 
 static int
-xenXMConfigSaveFile(virConnectPtr conn, const char *filename, virDomainDefPtr def) {
+xenXMConfigSaveFile(virConnectPtr conn,
+                    const char *filename,
+                    virDomainDefPtr def)
+{
     virConfPtr conf;
     xenUnifiedPrivatePtr priv = conn->privateData;
     int ret;
@@ -177,8 +185,7 @@ xenXMConfigSaveFile(virConnectPtr conn, const char *filename, virDomainDefPtr de
  * calling this function
  */
 int
-xenXMConfigCacheRemoveFile(virConnectPtr conn,
-                           const char *filename)
+xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     xenXMConfCachePtr entry;
@@ -309,7 +316,9 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
  * Caller must hold the lock on 'conn->privateData' before
  * calling this function
  */
-int xenXMConfigCacheRefresh(virConnectPtr conn) {
+int
+xenXMConfigCacheRefresh(virConnectPtr conn)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     DIR *dh;
     struct dirent *ent;
@@ -442,7 +451,9 @@ xenXMOpen(virConnectPtr conn,
  * Free the cached config files associated with this
  * connection
  */
-int xenXMClose(virConnectPtr conn) {
+int
+xenXMClose(virConnectPtr conn)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     virHashFree(priv->nameConfigMap);
@@ -456,8 +467,7 @@ int xenXMClose(virConnectPtr conn) {
  */
 int
 xenXMDomainGetState(virDomainPtr domain,
-                    int *state,
-                    int *reason,
+                    int *state, int *reason,
                     unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -477,19 +487,16 @@ xenXMDomainGetState(virDomainPtr domain,
  * Since these are all offline domains, we only return info about
  * VCPUs and memory.
  */
-int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
 
     if (domain->id != -1)
         return -1;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -518,23 +525,19 @@ error:
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
  */
-char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
+char *
+xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     char *ret = NULL;
 
     /* Flags checked by virDomainDefFormat */
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
-    }
     if (domain->id != -1)
         return NULL;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -554,24 +557,18 @@ cleanup:
 /*
  * Update amount of memory in the config file
  */
-int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return -1;
-    if (domain->id != -1)
-        return -1;
-    if (memory < 1024 * MIN_XEN_GUEST_SIZE)
+    if (domain->conn->flags & VIR_CONNECT_RO || domain->id != -1 ||
+        memory < 1024 * MIN_XEN_GUEST_SIZE)
         return -1;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -599,22 +596,17 @@ cleanup:
 /*
  * Update maximum memory limit in config
  */
-int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return -1;
-    if (domain->id != -1)
+    if (domain->conn->flags & VIR_CONNECT_RO || domain->id != -1)
         return -1;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -642,20 +634,17 @@ cleanup:
 /*
  * Get max memory limit from config
  */
-unsigned long long xenXMDomainGetMaxMemory(virDomainPtr domain) {
-    xenUnifiedPrivatePtr priv;
+unsigned long long
+xenXMDomainGetMaxMemory(virDomainPtr domain)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     unsigned long long ret = 0;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return 0;
-    }
     if (domain->id != -1)
         return 0;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -683,10 +672,11 @@ cleanup:
  * the unified driver should keep trying.
  */
 int
-xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
+xenXMDomainSetVcpusFlags(virDomainPtr domain,
+                         unsigned int vcpus,
                          unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
@@ -696,10 +686,6 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virReportError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return -1;
@@ -712,7 +698,6 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
         return -1;
     }
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -771,7 +756,7 @@ cleanup:
 int
 xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -2;
@@ -780,11 +765,6 @@ xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-
     if (domain->id != -1)
         return -2;
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
@@ -792,7 +772,6 @@ xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -820,17 +799,18 @@ cleanup:
  *
  * Returns 0 for success; -1 (with errno) on error
  */
-int xenXMDomainPinVcpu(virDomainPtr domain,
-                       unsigned int vcpu ATTRIBUTE_UNUSED,
-                       unsigned char *cpumap, int maplen)
+int
+xenXMDomainPinVcpu(virDomainPtr domain,
+                   unsigned int vcpu ATTRIBUTE_UNUSED,
+                   unsigned char *cpumap,
+                   int maplen)
 {
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if (domain == NULL || domain->conn == NULL || domain->name == NULL
-        || cpumap == NULL || maplen < 1 || maplen > (int)sizeof(cpumap_t)) {
+    if (maplen > (int)sizeof(cpumap_t)) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;
     }
@@ -845,7 +825,6 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
         return -1;
     }
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name))) {
@@ -875,22 +854,14 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
 /*
  * Find an inactive domain based on its name
  */
-virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
-    xenUnifiedPrivatePtr priv;
+virDomainPtr
+xenXMDomainLookupByName(virConnectPtr conn, const char *domname)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     virDomainPtr ret = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virReportError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return NULL;
-    }
-    if (domname == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
-    }
-
-    priv = conn->privateData;
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
@@ -918,7 +889,11 @@ cleanup:
 /*
  * Hash table iterator to search for a domain based on UUID
  */
-static int xenXMDomainSearchForUUID(const void *payload, const void *name ATTRIBUTE_UNUSED, const void *data) {
+static int
+xenXMDomainSearchForUUID(const void *payload,
+                         const void *name ATTRIBUTE_UNUSED,
+                         const void *data)
+{
     const unsigned char *wantuuid = (const unsigned char *)data;
     const xenXMConfCachePtr entry = (const xenXMConfCachePtr)payload;
 
@@ -931,22 +906,13 @@ static int xenXMDomainSearchForUUID(const void *payload, const void *name ATTRIB
 /*
  * Find an inactive domain based on its UUID
  */
-virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
-                                     const unsigned char *uuid) {
-    xenUnifiedPrivatePtr priv;
+virDomainPtr
+xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
     xenXMConfCachePtr entry;
     virDomainPtr ret = NULL;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virReportError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return NULL;
-    }
-    if (uuid == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
-    }
-
-    priv = conn->privateData;
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
@@ -971,14 +937,14 @@ cleanup:
 /*
  * Start a domain from an existing defined config file
  */
-int xenXMDomainCreate(virDomainPtr domain) {
+int
+xenXMDomainCreate(virDomainPtr domain)
+{
     char *sexpr;
     int ret = -1;
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv= domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-
-    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id != -1)
         return -1;
@@ -1026,7 +992,8 @@ int xenXMDomainCreate(virDomainPtr domain) {
  * Create a config file for a domain, based on an XML
  * document describing its config
  */
-virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
+virDomainPtr
+xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     virDomainPtr ret;
     char *filename = NULL;
@@ -1034,16 +1001,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr def = NULL;
     virConfPtr conf = NULL;
     xenXMConfCachePtr entry = NULL;
-    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virReportError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return NULL;
-    }
-    if (xml == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return NULL;
-    }
     if (conn->flags & VIR_CONNECT_RO)
         return NULL;
 
@@ -1171,23 +1130,19 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 /*
  * Delete a domain from disk
  */
-int xenXMDomainUndefine(virDomainPtr domain) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMDomainUndefine(virDomainPtr domain)
+{
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
-
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
 
     if (domain->id != -1)
         return -1;
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
 
-    priv = domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -1222,7 +1177,8 @@ struct xenXMListIteratorContext {
     char ** names;
 };
 
-static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) {
+static void
+xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) {
     struct xenXMListIteratorContext *ctx = data;
     virDomainPtr dom = NULL;
 
@@ -1248,17 +1204,13 @@ static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, 
  * List all defined domains, filtered to remove any which
  * are currently running
  */
-int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
     struct xenXMListIteratorContext ctx;
     int i, ret = -1;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virReportError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return -1;
-    }
-
-    priv = conn->privateData;
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
@@ -1294,16 +1246,12 @@ cleanup:
  * Return the maximum number of defined domains - not filtered
  * based on number running
  */
-int xenXMNumOfDefinedDomains(virConnectPtr conn) {
-    xenUnifiedPrivatePtr priv;
+int
+xenXMNumOfDefinedDomains(virConnectPtr conn)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
     int ret = -1;
 
-    if (!VIR_IS_CONNECT(conn)) {
-        virReportError(VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return -1;
-    }
-
-    priv = conn->privateData;
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
@@ -1331,7 +1279,8 @@ cleanup:
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
+xenXMDomainAttachDeviceFlags(virDomainPtr domain,
+                             const char *xml,
                              unsigned int flags)
 {
     const char *filename = NULL;
@@ -1339,14 +1288,9 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     int ret = -1;
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def;
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    if ((!domain) || (!domain->conn) || (!domain->name) || (!xml)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
@@ -1358,7 +1302,6 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
         return -1;
     }
 
-    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -1428,22 +1371,19 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
-                             unsigned int flags) {
+xenXMDomainDetachDeviceFlags(virDomainPtr domain,
+                             const char *xml,
+                             unsigned int flags)
+{
     const char *filename = NULL;
     xenXMConfCachePtr entry = NULL;
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def;
     int ret = -1;
     int i;
-    xenUnifiedPrivatePtr priv;
+    xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    if ((!domain) || (!domain->conn) || (!domain->name) || (!xml)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
@@ -1455,7 +1395,6 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
         return -1;
     }
 
-    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     xenUnifiedLock(priv);
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
@@ -1539,7 +1478,8 @@ xenXMDomainBlockPeek(virDomainPtr dom ATTRIBUTE_UNUSED,
 }
 
 
-static char *xenXMAutostartLinkName(virDomainPtr dom)
+static char *
+xenXMAutostartLinkName(virDomainPtr dom)
 {
     char *ret;
     if (virAsprintf(&ret, "/etc/xen/auto/%s", dom->name) < 0)
@@ -1547,7 +1487,8 @@ static char *xenXMAutostartLinkName(virDomainPtr dom)
     return ret;
 }
 
-static char *xenXMDomainConfigName(virDomainPtr dom)
+static char *
+xenXMDomainConfigName(virDomainPtr dom)
 {
     char *ret;
     if (virAsprintf(&ret, "/etc/xen/%s", dom->name) < 0)
@@ -1555,7 +1496,8 @@ static char *xenXMDomainConfigName(virDomainPtr dom)
     return ret;
 }
 
-int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
+int
+xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     char *linkname = xenXMAutostartLinkName(dom);
     char *config = xenXMDomainConfigName(dom);
@@ -1583,7 +1525,8 @@ cleanup:
 }
 
 
-int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
+int
+xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     char *linkname = xenXMAutostartLinkName(dom);
     char *config = xenXMDomainConfigName(dom);
