@@ -1962,11 +1962,16 @@ class docBuilder:
         self.xref = {}
         self.index = {}
         self.basename = name
+        self.errors = 0
 
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
         print msg
+
+    def error(self, msg):
+        self.errors += 1
+        print >>sys.stderr, "Error:", msg
 
     def indexString(self, id, str):
         if str == None:
@@ -2185,6 +2190,8 @@ class docBuilder:
             if ret[0] != None:
                 if ret[0] == "void":
                     output.write("      <return type='void'/>\n")
+                elif (ret[1] == None or ret[1] == '') and not ignored_functions.has_key(name):
+                    self.error("Missing documentation for return of function `%s'" % name)
                 else:
                     output.write("      <return type='%s' info='%s'/>\n" % (
                              ret[0], escape(ret[1])))
@@ -2192,8 +2199,11 @@ class docBuilder:
             for param in params:
                 if param[0] == 'void':
                     continue
-                if param[2] == None:
-                    output.write("      <arg name='%s' type='%s' info=''/>\n" % (param[1], param[0]))
+                if (param[2] == None or param[2] == ''):
+                    if ignored_functions.has_key(name):
+                        output.write("      <arg name='%s' type='%s' info=''/>\n" % (param[1], param[0]))
+                    else:
+                        self.error("Missing documentation for arg `%s' of function `%s'" % (param[1], name))
                 else:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
@@ -2462,6 +2472,10 @@ class docBuilder:
         output.write("  </symbols>\n")
         output.write("</api>\n")
         output.close()
+
+        if self.errors > 0:
+            print >>sys.stderr, "apibuild.py: %d error(s) encountered during generation" % self.errors
+            sys.exit(3)
 
         filename = "%s/%s-refs.xml" % (self.path, self.name)
         if not quiet:
