@@ -4,7 +4,7 @@
  *                /etc/xen
  *                /var/lib/xend/domains
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -51,7 +51,9 @@ struct xenUnifiedDriver xenInotifyDriver = {
 static int
 xenInotifyXenCacheLookup(virConnectPtr conn,
                          const char *filename,
-                         char **name, unsigned char *uuid) {
+                         char **name,
+                         unsigned char *uuid)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     xenXMConfCachePtr entry;
 
@@ -72,8 +74,11 @@ xenInotifyXenCacheLookup(virConnectPtr conn,
 }
 
 static int
-xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
-                               char **name, unsigned char *uuid) {
+xenInotifyXendDomainsDirLookup(virConnectPtr conn,
+                               const char *filename,
+                               char **name,
+                               unsigned char *uuid)
+{
     int i;
     virDomainPtr dom;
     const char *uuid_str;
@@ -131,7 +136,9 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
 static int
 xenInotifyDomainLookup(virConnectPtr conn,
                        const char *filename,
-                       char **name, unsigned char *uuid) {
+                       char **name,
+                       unsigned char *uuid)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     if (priv->useXenConfigCache)
         return xenInotifyXenCacheLookup(conn, filename, name, uuid);
@@ -142,7 +149,9 @@ xenInotifyDomainLookup(virConnectPtr conn,
 static virDomainEventPtr
 xenInotifyDomainEventFromFile(virConnectPtr conn,
                               const char *filename,
-                              int type, int detail) {
+                              int type,
+                              int detail)
+{
     virDomainEventPtr event;
     char *name = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -156,8 +165,8 @@ xenInotifyDomainEventFromFile(virConnectPtr conn,
 }
 
 static int
-xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn,
-                                    const char *fname) {
+xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn, const char *fname)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     const char *uuidstr = fname + strlen(XEND_DOMAINS_DIR) + 1;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -193,8 +202,8 @@ xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn,
 }
 
 static int
-xenInotifyXendDomainsDirAddEntry(virConnectPtr conn,
-                                 const char *fname) {
+xenInotifyXendDomainsDirAddEntry(virConnectPtr conn, const char *fname)
+{
     char *name = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -217,8 +226,8 @@ xenInotifyXendDomainsDirAddEntry(virConnectPtr conn,
 }
 
 static int
-xenInotifyRemoveDomainConfigInfo(virConnectPtr conn,
-                                 const char *fname) {
+xenInotifyRemoveDomainConfigInfo(virConnectPtr conn, const char *fname)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     return priv->useXenConfigCache ?
         xenXMConfigCacheRemoveFile(conn, fname) :
@@ -226,8 +235,8 @@ xenInotifyRemoveDomainConfigInfo(virConnectPtr conn,
 }
 
 static int
-xenInotifyAddDomainConfigInfo(virConnectPtr conn,
-                              const char *fname) {
+xenInotifyAddDomainConfigInfo(virConnectPtr conn, const char *fname)
+{
     xenUnifiedPrivatePtr priv = conn->privateData;
     return priv->useXenConfigCache ?
         xenXMConfigCacheAddFile(conn, fname) :
@@ -348,7 +357,7 @@ xenInotifyOpen(virConnectPtr conn,
     DIR *dh;
     struct dirent *ent;
     char *path;
-    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
