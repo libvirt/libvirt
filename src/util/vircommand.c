@@ -377,40 +377,18 @@ prepareStdFd(int fd, int std)
 }
 
 /*
- * @argv argv to exec
- * @envp optional environment to use for exec
- * @keepfd options fd_ret to keep open for child process
- * @retpid optional pointer to store child process pid
- * @infd optional file descriptor to use as child input, otherwise /dev/null
- * @outfd optional pointer to communicate output fd behavior
- *        outfd == NULL : Use /dev/null
- *        *outfd == -1  : Use a new fd
- *        *outfd != -1  : Use *outfd
- * @errfd optional pointer to communcate error fd behavior. See outfd
- * @flags possible combination of the following:
- *        VIR_EXEC_NONE     : Default function behavior
- *        VIR_EXEC_NONBLOCK : Set child process output fd's as non-blocking
- *        VIR_EXEC_DAEMON   : Daemonize the child process
- * @cmd virCommandPtr to pass to virCommandHook
- * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
- * @capabilities capabilities to keep
+ * virExec:
+ * @cmd virCommandPtr containing all information about the program to
+ *      exec.
  */
 static int
-virExec(virCommandPtr cmd,
-                const char *const*argv,
-                const char *const*envp,
-                const int *keepfd,
-                int keepfd_size,
-                pid_t *retpid,
-                int infd, int *outfd, int *errfd,
-                unsigned int flags,
-                char *pidfile,
-                unsigned long long capabilities)
+virExec(virCommandPtr cmd)
 {
     pid_t pid;
     int null = -1, i, openmax;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
+    int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;
     int tmpfd;
@@ -418,41 +396,41 @@ virExec(virCommandPtr cmd,
     int forkRet;
     struct sigaction waxon, waxoff;
 
-    if (argv[0][0] != '/') {
-        if (!(binary = virFindFileInPath(argv[0]))) {
+    if (cmd->args[0][0] != '/') {
+        if (!(binary = virFindFileInPath(cmd->args[0]))) {
             virReportSystemError(ENOENT,
                                  _("Cannot find '%s' in path"),
-                                 argv[0]);
+                                 cmd->args[0]);
             return -1;
         }
     } else {
-        binary = argv[0];
+        binary = cmd->args[0];
     }
 
-    if (infd < 0) {
+    if (childin < 0) {
         if (getDevNull(&null) < 0)
             goto cleanup;
-        infd = null;
+        childin = null;
     }
 
-    if (outfd != NULL) {
-        if (*outfd == -1) {
+    if (cmd->outfdptr != NULL) {
+        if (*cmd->outfdptr == -1) {
             if (pipe2(pipeout, O_CLOEXEC) < 0) {
                 virReportSystemError(errno,
                                      "%s", _("cannot create pipe"));
                 goto cleanup;
             }
 
-            if ((flags & VIR_EXEC_NONBLOCK) &&
+            if ((cmd->flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
-                virReportSystemError(errno,
-                                     "%s", _("Failed to set non-blocking file descriptor flag"));
+                virReportSystemError(errno, "%s",
+                                     _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             childout = pipeout[1];
         } else {
-            childout = *outfd;
+            childout = *cmd->outfdptr;
         }
     } else {
         if (getDevNull(&null) < 0)
@@ -460,26 +438,26 @@ virExec(virCommandPtr cmd,
         childout = null;
     }
 
-    if (errfd != NULL) {
-        if (errfd == outfd) {
+    if (cmd->errfdptr != NULL) {
+        if (cmd->errfdptr == cmd->outfdptr) {
             childerr = childout;
-        } else if (*errfd == -1) {
+        } else if (*cmd->errfdptr == -1) {
             if (pipe2(pipeerr, O_CLOEXEC) < 0) {
                 virReportSystemError(errno,
                                      "%s", _("Failed to create pipe"));
                 goto cleanup;
             }
 
-            if ((flags & VIR_EXEC_NONBLOCK) &&
+            if ((cmd->flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
-                virReportSystemError(errno,
-                                     "%s", _("Failed to set non-blocking file descriptor flag"));
+                virReportSystemError(errno, "%s",
+                                     _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             childerr = pipeerr[1];
         } else {
-            childerr = *errfd;
+            childerr = *cmd->errfdptr;
         }
     } else {
         if (getDevNull(&null) < 0)
@@ -499,18 +477,18 @@ virExec(virCommandPtr cmd,
         }
 
         VIR_FORCE_CLOSE(null);
-        if (outfd && *outfd == -1) {
+        if (cmd->outfdptr && *cmd->outfdptr == -1) {
             VIR_FORCE_CLOSE(pipeout[1]);
-            *outfd = pipeout[0];
+            *cmd->outfdptr = pipeout[0];
         }
-        if (errfd && *errfd == -1) {
+        if (cmd->errfdptr && *cmd->errfdptr == -1) {
             VIR_FORCE_CLOSE(pipeerr[1]);
-            *errfd = pipeerr[0];
+            *cmd->errfdptr = pipeerr[0];
         }
 
-        *retpid = pid;
+        cmd->pid = pid;
 
-        if (binary != argv[0])
+        if (binary != cmd->args[0])
             VIR_FREE(binary);
 
         return 0;
@@ -527,9 +505,10 @@ virExec(virCommandPtr cmd,
 
     openmax = sysconf(_SC_OPEN_MAX);
     for (i = 3; i < openmax; i++) {
-        if (i == infd || i == childout || i == childerr)
+        if (i == childin || i == childout || i == childerr)
             continue;
-        if (!keepfd || !virCommandFDIsSet(i, keepfd, keepfd_size)) {
+        if (!cmd->preserve ||
+            !virCommandFDIsSet(i, cmd->preserve, cmd->preserve_size)) {
             tmpfd = i;
             VIR_MASS_CLOSE(tmpfd);
         } else if (virSetInherit(i, true) < 0) {
@@ -538,7 +517,7 @@ virExec(virCommandPtr cmd,
         }
     }
 
-    if (prepareStdFd(infd, STDIN_FILENO) < 0) {
+    if (prepareStdFd(childin, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdin file handle"));
         goto fork_error;
@@ -554,9 +533,9 @@ virExec(virCommandPtr cmd,
         goto fork_error;
     }
 
-    if (infd != STDIN_FILENO && infd != null && infd != childerr &&
-        infd != childout)
-        VIR_FORCE_CLOSE(infd);
+    if (childin != STDIN_FILENO && childin != null &&
+        childin != childerr && childin != childout)
+        VIR_FORCE_CLOSE(childin);
     if (childout > STDERR_FILENO && childout != null && childout != childerr)
         VIR_FORCE_CLOSE(childout);
     if (childerr > STDERR_FILENO && childerr != null)
@@ -568,7 +547,7 @@ virExec(virCommandPtr cmd,
 
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
-    if (flags & VIR_EXEC_DAEMON) {
+    if (cmd->flags & VIR_EXEC_DAEMON) {
         if (setsid() < 0) {
             virReportSystemError(errno,
                                  "%s", _("cannot become session leader"));
@@ -589,13 +568,13 @@ virExec(virCommandPtr cmd,
         }
 
         if (pid > 0) {
-            if (pidfile && (virPidFileWritePath(pidfile,pid) < 0)) {
+            if (cmd->pidfile && (virPidFileWritePath(cmd->pidfile, pid) < 0)) {
                 kill(pid, SIGTERM);
                 usleep(500*1000);
                 kill(pid, SIGTERM);
                 virReportSystemError(errno,
                                      _("could not write pidfile %s for %d"),
-                                     pidfile, pid);
+                                     cmd->pidfile, pid);
                 goto fork_error;
             }
             _exit(0);
@@ -630,21 +609,21 @@ virExec(virCommandPtr cmd,
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */
-    if (capabilities || (flags & VIR_EXEC_CLEAR_CAPS))
-        if (virSetCapabilities(capabilities) < 0)
+    if (cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS))
+        if (virSetCapabilities(cmd->capabilities) < 0)
             goto fork_error;
 
     /* Close logging again to ensure no FDs leak to child */
     virLogReset();
 
-    if (envp)
-        execve(binary, (char **) argv, (char**)envp);
+    if (cmd->env)
+        execve(binary, cmd->args, cmd->env);
     else
-        execv(binary, (char **) argv);
+        execv(binary, cmd->args);
 
     virReportSystemError(errno,
                          _("cannot execute binary %s"),
-                         argv[0]);
+                         cmd->args[0]);
 
  fork_error:
     virDispatchError(NULL);
@@ -654,7 +633,7 @@ virExec(virCommandPtr cmd,
     /* This is cleanup of parent process only - child
        should never jump here on error */
 
-    if (binary != argv[0])
+    if (binary != cmd->args[0])
         VIR_FREE(binary);
 
     /* NB we don't virReportError() on any failures here
@@ -709,18 +688,7 @@ virRun(const char *const *argv ATTRIBUTE_UNUSED,
 }
 
 static int
-virExec(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                const char *const*argv ATTRIBUTE_UNUSED,
-                const char *const*envp ATTRIBUTE_UNUSED,
-                const int *keepfd ATTRIBUTE_UNUSED,
-                int keepfd_size ATTRIBUTE_UNUSED,
-                pid_t *retpid ATTRIBUTE_UNUSED,
-                int infd ATTRIBUTE_UNUSED,
-                int *outfd ATTRIBUTE_UNUSED,
-                int *errfd ATTRIBUTE_UNUSED,
-                int flags_unused ATTRIBUTE_UNUSED,
-                char *pidfile ATTRIBUTE_UNUSED,
-                unsigned long long capabilities ATTRIBUTE_UNUSED)
+virExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
 {
     /* XXX: Some day we can implement pieces of virCommand/virExec on
      * top of _spawn() or CreateProcess(), but we can't implement
@@ -2196,19 +2164,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
     VIR_FREE(str);
 
-    ret = virExec(cmd,
-                          (const char *const *)cmd->args,
-                          (const char *const *)cmd->env,
-                          cmd->preserve,
-                          cmd->preserve_size,
-                          &cmd->pid,
-                          cmd->infd,
-                          cmd->outfdptr,
-                          cmd->errfdptr,
-                          cmd->flags,
-                          cmd->pidfile,
-                          cmd->capabilities);
-
+    ret = virExec(cmd);
     VIR_DEBUG("Command result %d, with PID %d",
               ret, (int)cmd->pid);
 
