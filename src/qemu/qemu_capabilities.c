@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.c: QEMU capabilities generation
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@
 #include "virnodesuspend.h"
 #include "qemu_monitor.h"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -203,6 +204,7 @@ VIR_ENUM_IMPL(qemuCaps, QEMU_CAPS_LAST,
 
               "usb-serial", /* 125 */
               "usb-net",
+              "add-fd",
 
     );
 
@@ -1961,9 +1963,27 @@ qemuCapsProbeQMPCommands(qemuCapsPtr caps,
             qemuCapsSet(caps, QEMU_CAPS_DRIVE_MIRROR);
         else if (STREQ(name, "blockdev-snapshot-sync"))
             qemuCapsSet(caps, QEMU_CAPS_DISK_SNAPSHOT);
+        else if (STREQ(name, "add-fd"))
+            qemuCapsSet(caps, QEMU_CAPS_ADD_FD);
         VIR_FREE(name);
     }
     VIR_FREE(commands);
+
+    /* QMP add-fd was introduced in 1.2, but did not support
+     * management control of set numbering, and did not have a
+     * counterpart -add-fd command line option.  We require the
+     * add-fd features from 1.3 or later.  */
+    if (qemuCapsGet(caps, QEMU_CAPS_ADD_FD)) {
+        int fd = open("/dev/null", O_RDONLY);
+        if (fd < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unable to probe for add-fd"));
+            return -1;
+        }
+        if (qemuMonitorAddFd(mon, 0, fd, "/dev/null") < 0)
+            qemuCapsClear(caps, QEMU_CAPS_ADD_FD);
+        VIR_FORCE_CLOSE(fd);
+    }
 
     return 0;
 }
