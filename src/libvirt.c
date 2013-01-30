@@ -17016,37 +17016,37 @@ virStreamRef(virStreamPtr stream)
  * An example using this with a hypothetical file upload
  * API looks like
  *
- *   virStreamPtr st = virStreamNew(conn, 0);
- *   int fd = open("demo.iso", O_RDONLY)
+ *     virStreamPtr st = virStreamNew(conn, 0);
+ *     int fd = open("demo.iso", O_RDONLY)
  *
- *   virConnectUploadFile(conn, "demo.iso", st);
+ *     virConnectUploadFile(conn, "demo.iso", st);
  *
- *   while (1) {
- *       char buf[1024];
- *       int got = read(fd, buf, 1024);
- *       if (got < 0) {
- *          virStreamAbort(st);
- *          break;
- *       }
- *       if (got == 0) {
- *          virStreamFinish(st);
- *          break;
- *       }
- *       int offset = 0;
- *       while (offset < got) {
- *          int sent = virStreamSend(st, buf+offset, got-offset)
- *          if (sent < 0) {
+ *     while (1) {
+ *          char buf[1024];
+ *          int got = read(fd, buf, 1024);
+ *          if (got < 0) {
  *             virStreamAbort(st);
- *             goto done;
+ *             break;
  *          }
- *          offset += sent;
- *       }
- *   }
- *   if (virStreamFinish(st) < 0)
- *      ... report an error ....
- * done:
- *   virStreamFree(st);
- *   close(fd);
+ *          if (got == 0) {
+ *             virStreamFinish(st);
+ *             break;
+ *          }
+ *          int offset = 0;
+ *          while (offset < got) {
+ *             int sent = virStreamSend(st, buf+offset, got-offset)
+ *             if (sent < 0) {
+ *                virStreamAbort(st);
+ *                goto done;
+ *             }
+ *             offset += sent;
+ *          }
+ *      }
+ *      if (virStreamFinish(st) < 0)
+ *         ... report an error ....
+ *    done:
+ *      virStreamFree(st);
+ *      close(fd);
  *
  * Returns the number of bytes written, which may be less
  * than requested.
@@ -17110,35 +17110,35 @@ error:
  * An example using this with a hypothetical file download
  * API looks like
  *
- *   virStreamPtr st = virStreamNew(conn, 0);
- *   int fd = open("demo.iso", O_WRONLY, 0600)
+ *     virStreamPtr st = virStreamNew(conn, 0);
+ *     int fd = open("demo.iso", O_WRONLY, 0600)
  *
- *   virConnectDownloadFile(conn, "demo.iso", st);
+ *     virConnectDownloadFile(conn, "demo.iso", st);
  *
- *   while (1) {
- *       char buf[1024];
- *       int got = virStreamRecv(st, buf, 1024);
- *       if (got < 0)
- *          break;
- *       if (got == 0) {
- *          virStreamFinish(st);
- *          break;
- *       }
- *       int offset = 0;
- *       while (offset < got) {
- *          int sent = write(fd, buf+offset, got-offset)
- *          if (sent < 0) {
- *             virStreamAbort(st);
- *             goto done;
- *          }
- *          offset += sent;
- *       }
- *   }
- *   if (virStreamFinish(st) < 0)
- *      ... report an error ....
- * done:
- *   virStreamFree(st);
- *   close(fd);
+ *     while (1) {
+ *         char buf[1024];
+ *         int got = virStreamRecv(st, buf, 1024);
+ *         if (got < 0)
+ *            break;
+ *         if (got == 0) {
+ *            virStreamFinish(st);
+ *            break;
+ *         }
+ *         int offset = 0;
+ *         while (offset < got) {
+ *            int sent = write(fd, buf+offset, got-offset)
+ *            if (sent < 0) {
+ *               virStreamAbort(st);
+ *               goto done;
+ *            }
+ *            offset += sent;
+ *         }
+ *     }
+ *     if (virStreamFinish(st) < 0)
+ *        ... report an error ....
+ *   done:
+ *     virStreamFree(st);
+ *     close(fd);
  *
  *
  * Returns the number of bytes read, which may be less
