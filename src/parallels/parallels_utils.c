@@ -135,8 +135,10 @@ parallelsAddFileExt(const char *path, const char *ext)
         return NULL;
     }
 
-    if (!virStrcpy(new_path, path, len))
+    if (!virStrcpy(new_path, path, len)) {
+        VIR_FREE(new_path);
         return NULL;
+    }
     strcat(new_path, ext);
 
     return new_path;
