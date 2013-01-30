@@ -1,7 +1,7 @@
 /*
  * virnettlscontext.c: TLS encryption/x509 handling
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -949,6 +949,7 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
     const gnutls_datum_t *certs;
     unsigned int nCerts, i;
     char dname[256];
+    char *dnameptr = dname;
     size_t dnamesize = sizeof(dname);
 
     memset(dname, 0, dnamesize);
@@ -1062,14 +1063,14 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
 
     PROBE(RPC_TLS_CONTEXT_SESSION_ALLOW,
           "ctxt=%p sess=%p dname=%s",
-          ctxt, sess, dname);
+          ctxt, sess, dnameptr);
 
     return 0;
 
 authdeny:
     PROBE(RPC_TLS_CONTEXT_SESSION_DENY,
           "ctxt=%p sess=%p dname=%s",
-          ctxt, sess, dname);
+          ctxt, sess, dnameptr);
 
     return -1;
 
