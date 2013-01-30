@@ -1773,17 +1773,17 @@ virXen_setvcpumap(int handle,
             ret = -1;
     } else {
         cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
-        uint64_t *pm = &xen_cpumap;
+        uint64_t *pm;
         int j;
 
         if ((maplen > (int)sizeof(cpumap_t)) || (sizeof(cpumap_t) & 7))
             return -1;
 
-        memset(pm, 0, sizeof(cpumap_t));
+        memset(&xen_cpumap, 0, sizeof(cpumap_t));
         for (j = 0; j < maplen; j++) {
-            /* coverity[ptr_arith] */
-            /* coverity[sign_extension] */
-            *(pm + (j / 8)) |= cpumap[j] << (8 * (j & 7));
+            if ((j & 7) == 0)
+                pm = (uint64_t *)((uint64_t)&xen_cpumap + (j & ~0x7UL));
+            *pm |= (uint64_t)cpumap[j] << (8 * (j & 7));
         }
 
         if (hv_versions.hypervisor == 1) {
