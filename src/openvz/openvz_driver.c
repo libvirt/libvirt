@@ -1,7 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -1004,7 +1004,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     if (vm->def->maxvcpus > 0) {
         if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not set number of virtual cpu"));
+                           _("Could not set number of vCPUs"));
              goto cleanup;
         }
     }
@@ -1100,7 +1100,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     if (vm->def->maxvcpus > 0) {
         if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not set number of virtual cpu"));
+                           _("Could not set number of vCPUs"));
             goto cleanup;
         }
     }
@@ -1366,11 +1366,16 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (nvcpus <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("VCPUs should be >= 1"));
+                       _("Number of vCPUs should be >= 1"));
         goto cleanup;
     }
 
-    openvzDomainSetVcpusInternal(vm, nvcpus);
+    if (openvzDomainSetVcpusInternal(vm, nvcpus) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not set number of vCPUs"));
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
