@@ -2198,7 +2198,8 @@ class docBuilder:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
         except:
-            self.warning("Failed to save function %s info: " % name, `id.info`)
+            print >>sys.stderr, "Exception:", sys.exc_info()[1]
+            self.warning("Failed to save function %s info: %s" % (name, `id.info`))
         output.write("    </%s>\n" % (id.type))
 
     def serialize_exports(self, output, file):
