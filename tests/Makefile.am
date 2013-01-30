@@ -108,8 +108,10 @@ endif
 
 if WITH_SECDRIVER_SELINUX
 test_programs += securityselinuxtest
+if WITH_QEMU
 if WITH_ATTR
 test_programs += securityselinuxlabeltest
+endif
 endif
 endif
 
