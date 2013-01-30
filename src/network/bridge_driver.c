@@ -994,8 +994,9 @@ cleanup:
 }
 
 /* build the dnsmasq command line */
-static int
-networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdout,
+static int ATTRIBUTE_NONNULL(2)
+networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network,
+                                  virCommandPtr *cmdout,
                                   char *pidfile, dnsmasqContext *dctx,
                                   dnsmasqCapsPtr caps)
 {
@@ -1027,13 +1028,9 @@ networkBuildDhcpDaemonCommandLine(virNetworkObjPtr network, virCommandPtr *cmdou
 
     cmd = virCommandNew(dnsmasqCapsGetBinaryPath(caps));
     virCommandAddArgFormat(cmd, "--conf-file=%s", configfile);
-
-    if (cmdout)
-        *cmdout = cmd;
+    *cmdout = cmd;
     ret = 0;
 cleanup:
-    if (ret < 0)
-        virCommandFree(cmd);
     return ret;
 }
 
