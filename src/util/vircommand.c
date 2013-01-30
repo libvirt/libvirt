@@ -100,6 +100,8 @@ struct _virCommand {
     char *pidfile;
     bool reap;
 
+    uid_t uid;
+    gid_t gid;
     unsigned long long capabilities;
 };
 
@@ -604,6 +606,13 @@ virExec(virCommandPtr cmd)
            goto fork_error;
     }
 
+    if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1) {
+        VIR_DEBUG("Setting child uid:gid to %d:%d",
+                  (int)cmd->uid, (int)cmd->gid);
+        if (virSetUIDGID(cmd->uid, cmd->gid) < 0)
+            goto fork_error;
+    }
+
     if (cmd->pwd) {
         VIR_DEBUG("Running child in %s", cmd->pwd);
         if (chdir(cmd->pwd) < 0) {
@@ -765,6 +774,8 @@ virCommandNewArgs(const char *const*args)
 
     cmd->infd = cmd->inpipe = cmd->outfd = cmd->errfd = -1;
     cmd->pid = -1;
+    cmd->uid = -1;
+    cmd->gid = -1;
 
     virCommandAddArgSet(cmd, args);
 
@@ -902,6 +913,24 @@ virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)
     }
 }
 
+
+void
+virCommandSetGID(virCommandPtr cmd, gid_t gid)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->gid = gid;
+}
+
+void
+virCommandSetUID(virCommandPtr cmd, uid_t uid)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->uid = uid;
+}
 
 /**
  * virCommandClearCaps:
