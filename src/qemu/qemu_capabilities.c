@@ -279,37 +279,10 @@ static const char *virQEMUCapsArchToString(virArch arch)
 }
 
 
-struct _virQEMUCapsHookData {
-    uid_t runUid;
-    gid_t runGid;
-};
-typedef struct _virQEMUCapsHookData virQEMUCapsHookData;
-typedef virQEMUCapsHookData *virQEMUCapsHookDataPtr;
-
-static int virQEMUCapsHook(void * data)
-{
-    int ret;
-    virQEMUCapsHookDataPtr hookData = data;
-
-    if (!hookData) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("QEMU uid:gid not specified by caller"));
-        ret = -1;
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Switch QEMU uid:gid to %d:%d",
-              hookData->runUid, hookData->runGid);
-    ret = virSetUIDGID(hookData->runUid, hookData->runGid);
-
-cleanup:
-    return ret;
-}
-
 static virCommandPtr
 virQEMUCapsProbeCommand(const char *qemu,
                         virQEMUCapsPtr qemuCaps,
-                        virQEMUCapsHookDataPtr hookData)
+                        uid_t runUid, gid_t runGid)
 {
     virCommandPtr cmd = virCommandNew(qemu);
 
@@ -322,7 +295,8 @@ virQEMUCapsProbeCommand(const char *qemu,
 
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
-    virCommandSetPreExecHook(cmd, virQEMUCapsHook, hookData);
+    virCommandSetGID(cmd, runGid);
+    virCommandSetUID(cmd, runUid);
 
     return cmd;
 }
@@ -416,7 +390,8 @@ no_memory:
 }
 
 static int
-virQEMUCapsProbeMachineTypes(virQEMUCapsPtr qemuCaps, virQEMUCapsHookDataPtr hookData)
+virQEMUCapsProbeMachineTypes(virQEMUCapsPtr qemuCaps,
+                             uid_t runUid, gid_t runGid)
 {
     char *output;
     int ret = -1;
@@ -433,7 +408,7 @@ virQEMUCapsProbeMachineTypes(virQEMUCapsPtr qemuCaps, virQEMUCapsHookDataPtr hoo
         return -1;
     }
 
-    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, qemuCaps, hookData);
+    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, qemuCaps, runUid, runGid);
     virCommandAddArgList(cmd, "-M", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
@@ -572,7 +547,7 @@ cleanup:
 }
 
 static int
-virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, virQEMUCapsHookDataPtr hookData)
+virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
 {
     char *output = NULL;
     int ret = -1;
@@ -590,7 +565,7 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, virQEMUCapsHookDataPtr hookDa
         return 0;
     }
 
-    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, qemuCaps, hookData);
+    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, qemuCaps, runUid, runGid);
     virCommandAddArgList(cmd, "-cpu", "?", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
@@ -1601,7 +1576,7 @@ virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str)
 static int
 virQEMUCapsExtractDeviceStr(const char *qemu,
                             virQEMUCapsPtr qemuCaps,
-                            virQEMUCapsHookDataPtr hookData)
+                            uid_t runUid, gid_t runGid)
 {
     char *output = NULL;
     virCommandPtr cmd;
@@ -1615,7 +1590,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
      * understand '-device name,?', and always exits with status 1 for
      * the simpler '-device ?', so this function is really only useful
      * if -help includes "device driver,?".  */
-    cmd = virQEMUCapsProbeCommand(qemu, qemuCaps, hookData);
+    cmd = virQEMUCapsProbeCommand(qemu, qemuCaps, runUid, runGid);
     virCommandAddArgList(cmd,
                          "-device", "?",
                          "-device", "pci-assign,?",
@@ -2183,7 +2158,6 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     char *help = NULL;
     int ret = -1;
     const char *tmp;
-    virQEMUCapsHookData hookData;
 
     VIR_DEBUG("qemuCaps=%p", qemuCaps);
 
@@ -2196,9 +2170,7 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
         qemuCaps->arch = virArchFromHost();
     }
 
-    hookData.runUid = runUid;
-    hookData.runGid = runGid;
-    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, NULL, &hookData);
+    cmd = virQEMUCapsProbeCommand(qemuCaps->binary, NULL, runUid, runGid);
     virCommandAddArgList(cmd, "-help", NULL);
     virCommandSetOutputBuffer(cmd, &help);
 
@@ -2227,13 +2199,15 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
      * understands the 0.13.0+ notion of "-device driver,".  */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         strstr(help, "-device driver,?") &&
-        virQEMUCapsExtractDeviceStr(qemuCaps->binary, qemuCaps, &hookData) < 0)
+        virQEMUCapsExtractDeviceStr(qemuCaps->binary,
+                                    qemuCaps, runUid, runGid) < 0) {
+        goto cleanup;
+    }
+
+    if (virQEMUCapsProbeCPUModels(qemuCaps, runUid, runGid) < 0)
         goto cleanup;
 
-    if (virQEMUCapsProbeCPUModels(qemuCaps, &hookData) < 0)
-        goto cleanup;
-
-    if (virQEMUCapsProbeMachineTypes(qemuCaps, &hookData) < 0)
+    if (virQEMUCapsProbeMachineTypes(qemuCaps, runUid, runGid) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2329,7 +2303,6 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     char *monarg = NULL;
     char *monpath = NULL;
     char *pidfile = NULL;
-    virQEMUCapsHookData hookData;
     char *archstr;
     pid_t pid = 0;
     virDomainObj vm;
@@ -2383,9 +2356,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                                NULL);
     virCommandAddEnvPassCommon(cmd);
     virCommandClearCaps(cmd);
-    hookData.runUid = runUid;
-    hookData.runGid = runGid;
-    virCommandSetPreExecHook(cmd, virQEMUCapsHook, &hookData);
+    virCommandSetGID(cmd, runGid);
+    virCommandSetUID(cmd, runUid);
 
     if (virCommandRun(cmd, &status) < 0)
         goto cleanup;
