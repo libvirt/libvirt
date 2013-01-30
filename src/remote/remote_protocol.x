@@ -2156,6 +2156,17 @@ struct remote_domain_get_job_info_ret { /* insert@1 */
 };
 
 
+struct remote_domain_get_job_stats_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_job_stats_ret {
+    int type;
+    remote_typed_param params<>;
+};
+
+
 struct remote_domain_abort_job_args {
     remote_nonnull_domain dom;
 };
@@ -3060,7 +3071,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_FSTRIM = 294, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295, /* autogen autogen */
     REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296, /* autogen autogen | readstream@2 */
-    REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297 /* autogen autogen priority:high */
+    REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297, /* autogen autogen priority:high */
+    REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298 /* skipgen skipgen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

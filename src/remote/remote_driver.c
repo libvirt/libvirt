@@ -5934,6 +5934,46 @@ done:
     return rv;
 }
 
+static int
+remoteDomainGetJobStats(virDomainPtr domain,
+                        int *type,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_job_stats_args args;
+    remote_domain_get_job_stats_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_JOB_STATS,
+             (xdrproc_t) xdr_remote_domain_get_job_stats_args, (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_job_stats_ret, (char *) &ret) == -1)
+        goto done;
+
+    *type = ret.type;
+
+    if (remoteDeserializeTypedParameters(ret.params.params_val,
+                                         ret.params.params_len,
+                                         0, params, nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+cleanup:
+    xdr_free((xdrproc_t) xdr_remote_domain_get_job_stats_ret,
+             (char *) &ret);
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 static void
 remoteDomainEventQueue(struct private_data *priv, virDomainEventPtr event)
@@ -6193,6 +6233,7 @@ static virDriver remote_driver = {
     .cpuCompare = remoteCPUCompare, /* 0.7.5 */
     .cpuBaseline = remoteCPUBaseline, /* 0.7.7 */
     .domainGetJobInfo = remoteDomainGetJobInfo, /* 0.7.7 */
+    .domainGetJobStats = remoteDomainGetJobStats, /* 1.0.3 */
     .domainAbortJob = remoteDomainAbortJob, /* 0.7.7 */
     .domainMigrateSetMaxDowntime = remoteDomainMigrateSetMaxDowntime, /* 0.8.0 */
     .domainMigrateSetMaxSpeed = remoteDomainMigrateSetMaxSpeed, /* 0.9.0 */

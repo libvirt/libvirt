@@ -1634,6 +1634,17 @@ struct remote_domain_get_job_info_ret {
         uint64_t                   fileProcessed;
         uint64_t                   fileRemaining;
 };
+struct remote_domain_get_job_stats_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_job_stats_ret {
+        int                        type;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 struct remote_domain_abort_job_args {
         remote_nonnull_domain      dom;
 };
@@ -2462,4 +2473,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295,
         REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296,
         REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297,
+        REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298,
 };
