@@ -4359,9 +4359,10 @@ typedef enum {
  * virConnectDomainEventBlockJobCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
- * @path: fully-qualified filename of the affected disk
+ * @disk: fully-qualified filename of the affected disk
  * @type: type of block job (virDomainBlockJobType)
  * @status: final status of the operation (virConnectDomainEventBlockJobStatus)
+ * @opaque: application specified data
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_BLOCK_JOB with virConnectDomainEventRegisterAny()
