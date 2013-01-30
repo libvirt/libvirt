@@ -102,9 +102,8 @@ testDnsmasqLeaseFileName(const char *netname)
 {
     char *leasefile;
 
-    virAsprintf(&leasefile, "/var/lib/libvirt/dnsmasq/%s.leases",
-                netname);
-
+    ignore_value(virAsprintf(&leasefile, "/var/lib/libvirt/dnsmasq/%s.leases",
+                             netname));
     return leasefile;
 }
 

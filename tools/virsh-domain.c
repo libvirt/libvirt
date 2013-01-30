@@ -1,7 +1,7 @@
 /*
  * virsh-domain.c: Commands to manage domain
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -9011,8 +9011,7 @@ vshCompleteXMLFromDomain(vshControl *ctl, virDomainPtr dom, char *oldXML,
     }
 
     /* Get all possible devices */
-    virAsprintf(&xpath, "/domain/devices/%s", node->name);
-    if (!xpath) {
+    if (virAsprintf(&xpath, "/domain/devices/%s", node->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }

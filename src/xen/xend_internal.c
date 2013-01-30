@@ -2738,10 +2738,8 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
             virDevicePCIAddress PCIAddr;
 
             PCIAddr = dev->data.hostdev->source.subsys.u.pci;
-            virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x", PCIAddr.domain,
-                                 PCIAddr.bus, PCIAddr.slot);
-
-            if (target == NULL) {
+            if (virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x",
+                            PCIAddr.domain, PCIAddr.bus, PCIAddr.slot) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
