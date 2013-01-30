@@ -1343,7 +1343,7 @@ elsif ($opt_k) {
                     push(@ret_list2, "if (remoteDeserializeTypedParameters(ret.$1.$1_val,\n" .
                                      "                                         ret.$1.$1_len,\n" .
                                      "                                         $2,\n" .
-                                     "                                         $1,\n" .
+                                     "                                         &$1,\n" .
                                      "                                         n$1) < 0)\n" .
                                      "        goto cleanup;\n");
                     $single_ret_cleanup = 1;
