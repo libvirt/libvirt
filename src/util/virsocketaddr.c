@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -199,7 +199,7 @@ virSocketAddrEqual(const virSocketAddrPtr s1, const virSocketAddrPtr s2)
  *
  * Return true if this address is in its family's defined
  * "private/local" address space. For IPv4, private addresses are in
- * the range of 192.168.0.0/16, 172.16.0.0/16, or 10.0.0.0/8.  For
+ * the range of 192.168.0.0/16, 172.16.0.0/12, or 10.0.0.0/8.  For
  * IPv6, local addresses are in the range of FC00::/7 or FEC0::/10
  * (that last one is deprecated, but still in use).
  *
@@ -215,7 +215,7 @@ virSocketAddrIsPrivate(const virSocketAddrPtr addr)
        val = ntohl(addr->data.inet4.sin_addr.s_addr);
 
        return ((val & 0xFFFF0000) == ((192L << 24) + (168 << 16)) ||
-               (val & 0xFFFF0000) == ((172L << 24) + (16  << 16)) ||
+               (val & 0xFFF00000) == ((172L << 24) + (16  << 16)) ||
                (val & 0xFF000000) == ((10L  << 24)));
 
     case AF_INET6:
