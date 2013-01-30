@@ -1990,6 +1990,14 @@ fi
 %endif
 
 %changelog
+* Wed Jan 30 2013 Daniel Veillard <veillard@redhat.com> - 1.0.2-1
+- LXC improvements
+- S390 architecture improvement
+- Power architecture improvement
+- large Coverity report cleanups and associated bug fixes
+- virTypedParams* APIs to helps with those data structures
+- a lot of bug fixes and overall improvements
+
 * Fri Nov  2 2012 Daniel Veillard <veillard@redhat.com> - 1.0.0-1
 - virNodeGetCPUMap: Define public API
 - Add systemd journal support
