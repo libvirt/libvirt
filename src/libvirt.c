@@ -4077,14 +4077,14 @@ error:
  *
  * Here is a sample code snippet:
  *
- * if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
- *     (nparams != 0)) {
- *     if ((params = malloc(sizeof(*params) * nparams)) == NULL)
- *         goto error;
- *     memset(params, 0, sizeof(*params) * nparams);
- *     if (virDomainGetMemoryParameters(dom, params, &nparams, 0))
- *         goto error;
- * }
+ *   if ((virDomainGetMemoryParameters(dom, NULL, &nparams, 0) == 0) &&
+ *       (nparams != 0)) {
+ *       if ((params = malloc(sizeof(*params) * nparams)) == NULL)
+ *           goto error;
+ *       memset(params, 0, sizeof(*params) * nparams);
+ *       if (virDomainGetMemoryParameters(dom, params, &nparams, 0))
+ *           goto error;
+ *   }
  *
  * This function may require privileged access to the hypervisor. This function
  * expects the caller to allocate the @params.
