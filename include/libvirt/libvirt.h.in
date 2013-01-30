@@ -3441,6 +3441,8 @@ typedef enum {
  * @opaque: opaque user data
  *
  * A callback function to be registered, and called when a domain event occurs
+ *
+ * Returns 0 (the return value is currently ignored)
  */
 typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              virDomainPtr dom,
