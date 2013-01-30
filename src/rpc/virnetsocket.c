@@ -704,6 +704,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
 
     virBufferEscapeShell(&buf, netcat);
     if (virBufferError(&buf)) {
+        virCommandFree(cmd);
         virBufferFreeAndReset(&buf);
         virReportOOMError();
         return -1;
