@@ -1,7 +1,7 @@
 /*
  * virkeepalive.c: keepalive handling
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -117,28 +117,28 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
                           virNetMessagePtr *msg)
 {
     time_t now = time(NULL);
+    int timeval;
 
     if (ka->interval <= 0 || ka->intervalStart == 0)
         return false;
 
     if (now - ka->intervalStart < ka->interval) {
-        int timeout = ka->interval - (now - ka->intervalStart);
-        virEventUpdateTimeout(ka->timer, timeout * 1000);
+        timeval = ka->interval - (now - ka->intervalStart);
+        virEventUpdateTimeout(ka->timer, timeval * 1000);
         return false;
     }
 
+    timeval = now - ka->lastPacketReceived;
     PROBE(RPC_KEEPALIVE_TIMEOUT,
           "ka=%p client=%p countToDeath=%d idle=%d",
-          ka, ka->client, ka->countToDeath,
-          (int) (now - ka->lastPacketReceived));
-
+          ka, ka->client, ka->countToDeath, timeval);
 
     if (ka->countToDeath == 0) {
         VIR_WARN("No response from client %p after %d keepalive messages in"
                  " %d seconds",
                  ka->client,
                  ka->count,
-                 (int) (now - ka->lastPacketReceived));
+                 timeval);
         return true;
     } else {
         ka->countToDeath--;
