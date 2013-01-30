@@ -1352,6 +1352,46 @@ qemuMigrationStopNBDServer(virQEMUDriverPtr driver,
     priv->nbdPort = 0;
 }
 
+static void
+qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
+                               virQEMUDriverPtr driver,
+                               virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+    char *diskAlias = NULL;
+
+    VIR_DEBUG("mig=%p nbdPort=%d", mig->nbd, priv->nbdPort);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        /* skip shared, RO and source-less disks */
+        if (disk->shared || disk->readonly || !disk->src)
+            continue;
+
+        VIR_FREE(diskAlias);
+        if (virAsprintf(&diskAlias, "%s%s",
+                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+            goto cleanup;
+
+        if (qemuMonitorBlockJob(priv->mon, diskAlias, NULL, 0,
+                                NULL, BLOCK_JOB_ABORT, true) < 0)
+            VIR_WARN("Unable to stop block job on %s", diskAlias);
+        qemuDomainObjExitMonitor(driver, vm);
+    }
+
+cleanup:
+    VIR_FREE(diskAlias);
+    return;
+}
+
 /* Validate whether the domain is safe to migrate.  If vm is NULL,
  * then this is being run in the v2 Prepare stage on the destination
  * (where we only have the target xml); if vm is provided, then this
@@ -2817,6 +2857,9 @@ cleanup:
     if (ret < 0 && !orig_err)
         orig_err = virSaveLastError();
 
+    /* cancel any outstanding NBD jobs */
+    qemuMigrationCancelDriveMirror(mig, driver, vm);
+
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (iothread && qemuMigrationStopTunnel(iothread, ret < 0) < 0)
             ret = -1;
@@ -4024,6 +4067,9 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     } else {
+
+        /* cancel any outstanding NBD jobs */
+        qemuMigrationCancelDriveMirror(mig, driver, vm);
 
         /* run 'cont' on the destination, which allows migration on qemu
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
