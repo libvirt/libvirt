@@ -103,7 +103,7 @@ struct _virCommand {
     unsigned long long capabilities;
 };
 
-static int virCommandHook(virCommandPtr cmd);
+static int virCommandHandshakeChild(virCommandPtr cmd);
 
 /*
  * virCommandFDIsSet:
@@ -393,7 +393,7 @@ virExec(virCommandPtr cmd)
     int childerr = -1;
     int tmpfd;
     const char *binary = NULL;
-    int forkRet;
+    int forkRet, ret;
     struct sigaction waxon, waxoff;
 
     if (cmd->args[0][0] != '/') {
@@ -596,10 +596,25 @@ virExec(virCommandPtr cmd)
         goto fork_error;
     }
 
-    if (virCommandHook(cmd) != 0) {
-        VIR_DEBUG("Hook function failed.");
-        goto fork_error;
+    if (cmd->hook) {
+        VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
+        ret = cmd->hook(cmd->opaque);
+        VIR_DEBUG("Done hook %d", ret);
+        if (ret < 0)
+           goto fork_error;
     }
+
+    if (cmd->pwd) {
+        VIR_DEBUG("Running child in %s", cmd->pwd);
+        if (chdir(cmd->pwd) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to change to %s"), cmd->pwd);
+            goto fork_error;
+        }
+    }
+
+    if (virCommandHandshakeChild(cmd) < 0)
+       goto fork_error;
 
     if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
         virReportSystemError(errno, "%s",
@@ -1987,82 +2002,6 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
 }
 
 
-/*
- * Perform all virCommand-specific actions, along with the user hook.
- */
-static int
-virCommandHook(virCommandPtr cmd)
-{
-    int res = 0;
-
-    if (cmd->hook) {
-        VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
-        res = cmd->hook(cmd->opaque);
-        VIR_DEBUG("Done hook %d", res);
-    }
-    if (res == 0 && cmd->pwd) {
-        VIR_DEBUG("Running child in %s", cmd->pwd);
-        res = chdir(cmd->pwd);
-        if (res < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to change to %s"), cmd->pwd);
-        }
-    }
-    if (cmd->handshake) {
-        char c = res < 0 ? '0' : '1';
-        int rv;
-        VIR_DEBUG("Notifying parent for handshake start on %d",
-                  cmd->handshakeWait[1]);
-        if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to notify parent process"));
-            return -1;
-        }
-
-        /* On failure we pass the error message back to parent,
-         * so they don't have to dig through stderr logs
-         */
-        if (res < 0) {
-            virErrorPtr err = virGetLastError();
-            const char *msg = err ? err->message :
-                _("Unknown failure during hook execution");
-            size_t len = strlen(msg) + 1;
-            if (safewrite(cmd->handshakeWait[1], msg, len) != len) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to send error to parent"));
-                return -1;
-            }
-            return -1;
-        }
-
-        VIR_DEBUG("Waiting on parent for handshake complete on %d",
-                  cmd->handshakeNotify[0]);
-        if ((rv = saferead(cmd->handshakeNotify[0], &c,
-                           sizeof(c))) != sizeof(c)) {
-            if (rv < 0)
-                virReportSystemError(errno, "%s",
-                                     _("Unable to wait on parent process"));
-            else
-                virReportSystemError(EIO, "%s",
-                                     _("libvirtd quit during handshake"));
-            return -1;
-        }
-        if (c != '1') {
-            virReportSystemError(EINVAL,
-                                 _("Unexpected confirm code '%c' from parent"),
-                                 c);
-            return -1;
-        }
-        VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
-        VIR_FORCE_CLOSE(cmd->handshakeNotify[0]);
-    }
-
-    VIR_DEBUG("Hook is done %d", res);
-
-    return res;
-}
-
-
 static void
 virCommandDoAsyncIOHelper(void *opaque)
 {
@@ -2350,6 +2289,54 @@ void virCommandRequireHandshake(virCommandPtr cmd)
     virCommandTransferFD(cmd, cmd->handshakeWait[1]);
     virCommandTransferFD(cmd, cmd->handshakeNotify[0]);
     cmd->handshake = true;
+}
+
+/* virCommandHandshakeChild:
+ *
+ *   child side of handshake - called by child process in virExec() to
+ *   indicate to parent that the child process has successfully
+ *   completed its pre-exec initialization.
+ */
+static int
+virCommandHandshakeChild(virCommandPtr cmd)
+{
+    char c = '1';
+    int rv;
+
+    if (!cmd->handshake)
+       return true;
+
+    VIR_DEBUG("Notifying parent for handshake start on %d",
+              cmd->handshakeWait[1]);
+    if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to notify parent process"));
+        return -1;
+    }
+
+    VIR_DEBUG("Waiting on parent for handshake complete on %d",
+              cmd->handshakeNotify[0]);
+    if ((rv = saferead(cmd->handshakeNotify[0], &c,
+                       sizeof(c))) != sizeof(c)) {
+        if (rv < 0)
+            virReportSystemError(errno, "%s",
+                                 _("Unable to wait on parent process"));
+        else
+            virReportSystemError(EIO, "%s",
+                                 _("libvirtd quit during handshake"));
+        return -1;
+    }
+    if (c != '1') {
+        virReportSystemError(EINVAL,
+                             _("Unexpected confirm code '%c' from parent"),
+                             c);
+        return -1;
+    }
+    VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
+    VIR_FORCE_CLOSE(cmd->handshakeNotify[0]);
+
+    VIR_DEBUG("Handshake with parent is done");
+    return 0;
 }
 
 /**
