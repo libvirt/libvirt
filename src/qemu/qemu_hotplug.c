@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.h: QEMU device hotplug management
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1135,8 +1135,12 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
 
         data.vm = vm;
         data.cgroup = cgroup;
-        if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup, &data) < 0)
+        if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
+                                    &data) < 0) {
+            virUSBDeviceFree(usb);
             goto error;
+        }
+        virUSBDeviceFree(usb);
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
