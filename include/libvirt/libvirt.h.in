@@ -1398,6 +1398,15 @@ typedef enum {
 # endif
 } virConnectCloseReason;
 
+/**
+ * virConnectCloseFunc:
+ * @conn: virConnect connection
+ * @reason: reason why the connection was closed (one of virConnectCloseReason)
+ * @opaque: opaque user data
+ *
+ * A callback function to be registered, and called when the connection
+ * is closed.
+ */
 typedef void (*virConnectCloseFunc)(virConnectPtr conn,
                                     int reason,
                                     void *opaque);
