@@ -3533,6 +3533,8 @@ typedef void (*virEventUpdateHandleFunc)(int watch, int event);
  * If a virEventHandleFreeFunc was supplied when the handle was
  * registered, it will be invoked some time during, or after this
  * function call, when it is safe to release the user data.
+ *
+ * Returns -1 if the file handle was not registered, 0 upon success
  */
 typedef int (*virEventRemoveHandleFunc)(int watch);
 
