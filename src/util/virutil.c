@@ -2687,7 +2687,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
     int err;
     char *buf = NULL;
 
-    if (gid > 0) {
+    if (gid != (gid_t)-1) {
         if (setregid(gid, gid) < 0) {
             virReportSystemError(err = errno,
                                  _("cannot change to '%d' group"),
@@ -2696,7 +2696,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
         }
     }
 
-    if (uid > 0) {
+    if (uid != (uid_t)-1) {
 # ifdef HAVE_INITGROUPS
         struct passwd pwd, *pwd_result;
         size_t bufsize;
