@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2631,6 +2631,77 @@ int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("closefd",
                                                      "s:fdname", fdname,
                                                      NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("add-fd",
+                                                     "i:fdset-id", fdset,
+                                                     name ? "s:opaque" : NULL,
+                                                     name, NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (ret == 0) {
+        virJSONValuePtr data = virJSONValueObjectGet(reply, "return");
+
+        if (!data || data->type != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing return information"));
+            goto error;
+        }
+        data = virJSONValueObjectGet(data, "fd");
+        if (!data || data->type != VIR_JSON_TYPE_NUMBER ||
+            virJSONValueGetNumberInt(data, &ret) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("incomplete return information"));
+            goto error;
+        }
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+
+error:
+    /* Best effort cleanup - kill the entire fdset (even if it has
+     * earlier successful fd registrations), since we don't know which
+     * fd qemu got, and don't want to leave the fd leaked in qemu.  */
+    qemuMonitorJSONRemoveFd(mon, fdset, -1);
+    ret = -1;
+    goto cleanup;
+}
+
+
+int
+qemuMonitorJSONRemoveFd(qemuMonitorPtr mon, int fdset, int fd)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("remove-fd",
+                                                     "i:fdset-id", fdset,
+                                                     fd < 0 ? NULL : "i:fd",
+                                                     fd, NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
         return -1;

@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2343,6 +2343,78 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCloseFileHandle(mon, fdname);
     else
         ret = qemuMonitorTextCloseFileHandle(mon, fdname);
+
+cleanup:
+    if (error) {
+        virSetError(error);
+        virFreeError(error);
+    }
+    return ret;
+}
+
+
+/* Add the open file descriptor FD into the non-negative set FDSET.
+ * If NAME is present, it will be passed along for logging purposes.
+ * Returns the counterpart fd that qemu received, or -1 on error.  */
+int
+qemuMonitorAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, fdset=%d, fd=%d, name=%s",
+              mon, fdset, fd, NULLSTR(name));
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (fd < 0 || fdset < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("fd and fdset must be valid"));
+        return -1;
+    }
+
+    if (!mon->hasSendFD) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("qemu is not using a unix socket monitor, "
+                         "cannot send fd %s"), NULLSTR(name));
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONAddFd(mon, fdset, fd, name);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("add fd requires JSON monitor"));
+    return ret;
+}
+
+
+/* Remove one of qemu's fds from the given FDSET, or if FD is
+ * negative, remove the entire set.  Preserve any previous error on
+ * entry.  Returns 0 on success, -1 on error.  */
+int
+qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd)
+{
+    int ret = -1;
+    virErrorPtr error;
+
+    VIR_DEBUG("mon=%p, fdset=%d, fd=%d", mon, fdset, fd);
+
+    error = virSaveLastError();
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        goto cleanup;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONRemoveFd(mon, fdset, fd);
+    else
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("remove fd requires JSON monitor"));
 
 cleanup:
     if (error) {

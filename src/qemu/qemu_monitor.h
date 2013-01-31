@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -439,13 +439,14 @@ int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                               const char *fdname,
                               int fd);
+int qemuMonitorAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name);
 
-/* The function preserves previous error and only sets it's own error if no
- * error was set before.
+/* These two functions preserve previous error and only set their own
+ * error if no error was set before.
  */
 int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname);
-
+int qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 
 /* XXX do we really want to hardcode 'netstr' as the
  * sendable item here

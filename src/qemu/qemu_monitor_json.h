@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009, 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2009, 2011-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -175,9 +175,12 @@ int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd);
+int qemuMonitorJSONAddFd(qemuMonitorPtr mon, int fdset, int fd,
+                         const char *name);
 
 int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
                                    const char *fdname);
+int qemuMonitorJSONRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 
 int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr);
