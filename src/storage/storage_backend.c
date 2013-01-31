@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -533,24 +533,6 @@ cleanup:
     return ret;
 }
 
-struct hookdata {
-    virStorageVolDefPtr vol;
-    bool skip;
-};
-
-static int virStorageBuildSetUIDHook(void *data) {
-    struct hookdata *tmp = data;
-    virStorageVolDefPtr vol = tmp->vol;
-
-    if (tmp->skip)
-        return 0;
-
-    if (virSetUIDGID(vol->target.perms.uid, vol->target.perms.gid) < 0)
-        return -1;
-
-    return 0;
-}
-
 static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                                               virStorageVolDefPtr vol,
                                               virCommandPtr cmd) {
@@ -558,7 +540,6 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     gid_t gid;
     uid_t uid;
     int filecreated = 0;
-    struct hookdata data = {vol, false};
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((getuid() == 0)
@@ -567,7 +548,8 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
             || ((vol->target.perms.gid != -1)
                 && (vol->target.perms.gid != getgid())))) {
 
-        virCommandSetPreExecHook(cmd, virStorageBuildSetUIDHook, &data);
+        virCommandSetUID(cmd, vol->target.perms.uid);
+        virCommandSetGID(cmd, vol->target.perms.gid);
 
         if (virCommandRun(cmd, NULL) == 0) {
             /* command was successfully run, check if the file was created */
@@ -576,7 +558,9 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         }
     }
 
-    data.skip = true;
+    /* don't change uid/gid if we retry */
+    virCommandSetUID(cmd, -1);
+    virCommandSetGID(cmd, -1);
 
     if (!filecreated) {
         if (virCommandRun(cmd, NULL) < 0) {
