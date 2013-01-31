@@ -35,6 +35,7 @@
 #include "qemu_domain.h"
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
+#include "qemu_command.h"
 #include "qemu_cgroup.h"
 
 #include "domain_audit.h"
@@ -1088,6 +1089,72 @@ error:
     return NULL;
 }
 
+/**
+ * qemuMigrationStartNBDServer:
+ * @driver: qemu driver
+ * @vm: domain
+ *
+ * Starts NBD server. This is a newer method to copy
+ * storage during migration than using 'blk' and 'inc'
+ * arguments in 'migrate' monitor command.
+ * Error is reported here.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+static int
+qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned short port = 0;
+    const char *listenAddr = "0.0.0.0";
+    char *diskAlias = NULL;
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        /* skip shared, RO and source-less disks */
+        if (disk->shared || disk->readonly || !disk->src)
+            continue;
+
+        VIR_FREE(diskAlias);
+        if (virAsprintf(&diskAlias, "%s%s",
+                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+            goto cleanup;
+
+        if (!port &&
+            ((virPortAllocatorAcquire(driver->remotePorts, &port) < 0) ||
+             (qemuMonitorNBDServerStart(priv->mon, listenAddr, port) < 0))) {
+            qemuDomainObjExitMonitor(driver, vm);
+            goto cleanup;
+        }
+
+        if (qemuMonitorNBDServerAdd(priv->mon, diskAlias, true) < 0) {
+            qemuDomainObjExitMonitor(driver, vm);
+            goto cleanup;
+        }
+        qemuDomainObjExitMonitor(driver, vm);
+    }
+
+    priv->nbdPort = port;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(diskAlias);
+    if ((ret < 0) && port)
+        virPortAllocatorRelease(driver->remotePorts, port);
+    return ret;
+}
+
+
 /* Validate whether the domain is safe to migrate.  If vm is NULL,
  * then this is being run in the v2 Prepare stage on the destination
  * (where we only have the target xml); if vm is provided, then this
@@ -1864,8 +1931,11 @@ done:
         if (flags & VIR_MIGRATE_TUNNELLED)
             VIR_DEBUG("NBD in tunnelled migration is currently not supported");
         else {
+            if (qemuMigrationStartNBDServer(driver, vm) < 0) {
+                /* error already reported */
+                goto endjob;
+            }
             cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-            priv->nbdPort = 0;
         }
     }
 
@@ -1912,6 +1982,10 @@ cleanup:
             virObjectUnlock(vm);
         else
             qemuDomainRemoveInactive(driver, vm);
+        if (ret < 0 && priv->nbdPort) {
+            virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+            priv->nbdPort = 0;
+        }
     }
     if (event)
         qemuDomainEventQueue(driver, event);

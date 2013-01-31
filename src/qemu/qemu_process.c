@@ -4202,6 +4202,11 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
+    if (priv->nbdPort) {
+        virPortAllocatorRelease(driver->remotePorts, priv->nbdPort);
+        priv->nbdPort = 0;
+    }
+
     if (priv->agent) {
         qemuAgentClose(priv->agent);
         priv->agent = NULL;
