@@ -1336,7 +1336,11 @@ gzip -9 ChangeLog
 %install
 rm -fr %{buildroot}
 
-%makeinstall SYSTEMD_UNIT_DIR=%{buildroot}%{_unitdir}
+# Avoid using makeinstall macro as it changes prefixes rather than setting
+# DESTDIR. Newer make_install macro would be better but it's not available
+# on RHEL 5, thus we need to expand it here.
+make install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
+
 for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter systemtap
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
