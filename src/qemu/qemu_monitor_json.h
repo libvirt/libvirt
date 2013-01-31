@@ -340,4 +340,5 @@ int qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
 int qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
                                 const char *deviceID,
                                 bool writable);
+int qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon);
 #endif /* QEMU_MONITOR_JSON_H */

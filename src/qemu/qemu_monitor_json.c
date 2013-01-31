@@ -4688,3 +4688,24 @@ qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-stop",
+                                           NULL)))
+        return ret;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

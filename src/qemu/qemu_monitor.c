@@ -3507,3 +3507,22 @@ int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
 
     return qemuMonitorJSONNBDServerAdd(mon, deviceID, writable);
 }
+
+int qemuMonitorNBDServerStop(qemuMonitorPtr mon)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONNBDServerStop(mon);
+}
