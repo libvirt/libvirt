@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -439,6 +439,8 @@ static qemuMonitorCallbacks qemuCallbacks = {
 };
 
 #define QEMU_JSON_GREETING "{\"QMP\": {\"version\": {\"qemu\": {\"micro\": 1, \"minor\": 0, \"major\": 1}, \"package\": \" (qemu-kvm-1.0.1)\"}, \"capabilities\": []}}"
+/* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
+
 #define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
