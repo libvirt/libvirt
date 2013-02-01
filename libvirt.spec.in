@@ -2309,7 +2309,7 @@ fi
 * Fri Apr  3 2009 Daniel Veillard <veillard@redhat.com> - 0.6.2-1
 - release of 0.6.2
 
-* Fri Mar  4 2009 Daniel Veillard <veillard@redhat.com> - 0.6.1-1
+* Wed Mar  4 2009 Daniel Veillard <veillard@redhat.com> - 0.6.1-1
 - release of 0.6.1
 
 * Sat Jan 31 2009 Daniel Veillard <veillard@redhat.com> - 0.6.0-1
@@ -2448,7 +2448,7 @@ fi
 - it's pkgconfig not pgkconfig !
 
 * Mon Nov  6 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-2
-- fixing spec file, added %dist, -devel requires pkgconfig and xen-devel
+- fixing spec file, added %%dist, -devel requires pkgconfig and xen-devel
 - Resolves: rhbz#202320
 
 * Mon Oct 16 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-1
