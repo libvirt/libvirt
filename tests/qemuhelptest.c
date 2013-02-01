@@ -11,20 +11,20 @@
 
 struct testInfo {
     const char *name;
-    qemuCapsPtr flags;
+    virQEMUCapsPtr flags;
     unsigned int version;
     unsigned int is_kvm;
     unsigned int kvm_version;
 };
 
-static void printMismatchedFlags(qemuCapsPtr got,
-                                 qemuCapsPtr expect)
+static void printMismatchedFlags(virQEMUCapsPtr got,
+                                 virQEMUCapsPtr expect)
 {
     int i;
 
     for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
-        bool gotFlag = qemuCapsGet(got, i);
-        bool expectFlag = qemuCapsGet(expect, i);
+        bool gotFlag = virQEMUCapsGet(got, i);
+        bool expectFlag = virQEMUCapsGet(expect, i);
         if (gotFlag && !expectFlag)
             fprintf(stderr, "Extra flag %i\n", i);
         if (!gotFlag && expectFlag)
@@ -38,7 +38,7 @@ static int testHelpStrParsing(const void *data)
     char *path = NULL;
     char *help = NULL;
     unsigned int version, is_kvm, kvm_version;
-    qemuCapsPtr flags = NULL;
+    virQEMUCapsPtr flags = NULL;
     int ret = -1;
     char *got = NULL;
     char *expected = NULL;
@@ -49,19 +49,19 @@ static int testHelpStrParsing(const void *data)
     if (virtTestLoadFile(path, &help) < 0)
         goto cleanup;
 
-    if (!(flags = qemuCapsNew()))
+    if (!(flags = virQEMUCapsNew()))
         goto cleanup;
 
-    if (qemuCapsParseHelpStr("QEMU", help, flags,
-                             &version, &is_kvm, &kvm_version, false) == -1)
+    if (virQEMUCapsParseHelpStr("QEMU", help, flags,
+                                &version, &is_kvm, &kvm_version, false) == -1)
         goto cleanup;
 
 # ifndef WITH_YAJL
-    if (qemuCapsGet(info->flags, QEMU_CAPS_MONITOR_JSON))
-        qemuCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
+    if (virQEMUCapsGet(info->flags, QEMU_CAPS_MONITOR_JSON))
+        virQEMUCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
 # endif
 
-    if (qemuCapsGet(info->flags, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(info->flags, QEMU_CAPS_DEVICE)) {
         VIR_FREE(path);
         VIR_FREE(help);
         if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
@@ -71,12 +71,12 @@ static int testHelpStrParsing(const void *data)
         if (virtTestLoadFile(path, &help) < 0)
             goto cleanup;
 
-        if (qemuCapsParseDeviceStr(flags, help) < 0)
+        if (virQEMUCapsParseDeviceStr(flags, help) < 0)
             goto cleanup;
     }
 
-    got = qemuCapsFlagsString(flags);
-    expected = qemuCapsFlagsString(info->flags);
+    got = virQEMUCapsFlagsString(flags);
+    expected = virQEMUCapsFlagsString(info->flags);
     if (!got || !expected)
         goto cleanup;
 
@@ -132,9 +132,9 @@ mymain(void)
         struct testInfo info = {                                            \
             name, NULL, version, is_kvm, kvm_version                        \
         };                                                                  \
-        if (!(info.flags = qemuCapsNew()))                                  \
+        if (!(info.flags = virQEMUCapsNew()))                               \
             return EXIT_FAILURE;                                            \
-        qemuCapsSetList(info.flags, __VA_ARGS__, QEMU_CAPS_LAST);           \
+        virQEMUCapsSetList(info.flags, __VA_ARGS__, QEMU_CAPS_LAST);        \
         if (virtTestRun("QEMU Help String Parsing " name,                   \
                         1, testHelpStrParsing, &info) < 0)                  \
             ret = -1;                                                       \

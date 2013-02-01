@@ -145,7 +145,7 @@ struct _qemuDomainObjPrivate {
     qemuDomainPCIAddressSetPtr pciaddrs;
     int persistentAddrs;
 
-    qemuCapsPtr caps;
+    virQEMUCapsPtr qemuCaps;
     char *lockState;
 
     bool fakeReboot;

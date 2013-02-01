@@ -1414,8 +1414,8 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm)
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorSetCapabilities(priv->mon);
     if (ret == 0 &&
-        qemuCapsGet(priv->caps, QEMU_CAPS_MONITOR_JSON))
-        ret = qemuCapsProbeQMP(priv->caps, priv->mon);
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
+        ret = virQEMUCapsProbeQMP(priv->qemuCaps, priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 error:
@@ -1625,10 +1625,10 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
 
 static int
 qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
-                                     qemuCapsPtr caps,
+                                     virQEMUCapsPtr qemuCaps,
                                      virHashTablePtr paths)
 {
-    bool chardevfmt = qemuCapsGet(caps, QEMU_CAPS_CHARDEV);
+    bool chardevfmt = virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV);
     int i = 0;
 
     if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials,
@@ -1753,7 +1753,7 @@ qemuProcessReadLogFD(int logfd, char *buf, int maxlen, int off)
 static int
 qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          qemuCapsPtr caps,
+                          virQEMUCapsPtr qemuCaps,
                           off_t pos)
 {
     char *buf = NULL;
@@ -1763,7 +1763,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     virHashTablePtr paths = NULL;
     qemuDomainObjPrivatePtr priv;
 
-    if (!qemuCapsUsedQMP(caps) && pos != -1) {
+    if (!virQEMUCapsUsedQMP(qemuCaps) && pos != -1) {
         if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
             return -1;
 
@@ -1798,7 +1798,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
 
     VIR_DEBUG("qemuMonitorGetPtyPaths returned %i", ret);
     if (ret == 0)
-        ret = qemuProcessFindCharDevicePTYsMonitor(vm, caps, paths);
+        ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps, paths);
 
 cleanup:
     virHashFree(paths);
@@ -1806,7 +1806,7 @@ cleanup:
     if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
-        if (qemuCapsUsedQMP(caps)) {
+        if (virQEMUCapsUsedQMP(qemuCaps)) {
             if ((logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
                 return -1;
 
@@ -2124,7 +2124,7 @@ qemuProcessSetLinkStates(virDomainObjPtr vm)
         if (def->nets[i]->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
             VIR_DEBUG("Setting link state: %s", def->nets[i]->info.alias);
 
-            if (!qemuCapsGet(priv->caps, QEMU_CAPS_NETDEV)) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
                 virReportError(VIR_ERR_NO_SUPPORT, "%s",
                                _("Setting of link state is not supported by this qemu"));
                 return -1;
@@ -2225,7 +2225,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
-    if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         for (i = 0 ; i < vm->def->ndisks ; i++) {
             char *secret;
             size_t secretLen;
@@ -3237,14 +3237,14 @@ qemuProcessReconnect(void *opaque)
     /* If upgrading from old libvirtd we won't have found any
      * caps in the domain status, so re-query them
      */
-    if (!priv->caps &&
-        !(priv->caps = qemuCapsCacheLookupCopy(driver->capsCache,
-                                               obj->def->emulator)))
+    if (!priv->qemuCaps &&
+        !(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      obj->def->emulator)))
         goto error;
 
     /* In case the domain shutdown while we were not running,
      * we need to finish the shutdown process. And we need to do it after
-     * we have qemuCaps filled in.
+     * we have virQEMUCaps filled in.
      */
     if (state == VIR_DOMAIN_SHUTDOWN ||
         (state == VIR_DOMAIN_PAUSED &&
@@ -3255,8 +3255,8 @@ qemuProcessReconnect(void *opaque)
         goto endjob;
     }
 
-    if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE))
-        if ((qemuDomainAssignAddresses(obj->def, priv->caps, obj)) < 0)
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
+        if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj)) < 0)
             goto error;
 
     if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
@@ -3330,7 +3330,7 @@ error:
              * to remove danger of it ending up running twice if
              * user tries to start it again later
              */
-            if (qemuCapsGet(priv->caps, QEMU_CAPS_NO_SHUTDOWN)) {
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
                 /* If we couldn't get the monitor and qemu supports
                  * no-shutdown, we can safely say that the domain
                  * crashed ... */
@@ -3732,12 +3732,12 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->caps);
-    if (!(priv->caps = qemuCapsCacheLookupCopy(driver->capsCache,
-                                               vm->def->emulator)))
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      vm->def->emulator)))
         goto cleanup;
 
-    if (qemuAssignDeviceAliases(vm->def, priv->caps) < 0)
+    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
     VIR_DEBUG("Checking for CDROM and floppy presence");
@@ -3777,7 +3777,7 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuProcessPrepareMonitorChr(cfg, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
-    if (qemuCapsGet(priv->caps, QEMU_CAPS_MONITOR_JSON))
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
         priv->monJSON = 1;
     else
         priv->monJSON = 0;
@@ -3808,15 +3808,15 @@ int qemuProcessStart(virConnectPtr conn,
      * we also need to populate the PCi address set cache for later
      * use in hotplug
      */
-    if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        if ((qemuDomainAssignAddresses(vm->def, priv->caps, vm)) < 0)
+        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
             goto cleanup;
     }
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                                     priv->monJSON != 0, priv->caps,
+                                     priv->monJSON != 0, priv->qemuCaps,
                                      migrateFrom, stdin_fd, snapshot, vmop)))
         goto cleanup;
 
@@ -3979,7 +3979,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, priv->caps, pos) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, pos) < 0)
         goto cleanup;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -4016,7 +4016,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
-    if (!qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;
@@ -4370,8 +4370,8 @@ retry:
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
-    virObjectUnref(priv->caps);
-    priv->caps = NULL;
+    virObjectUnref(priv->qemuCaps);
+    priv->qemuCaps = NULL;
     VIR_FREE(priv->pidfile);
 
     /* The "release" hook cleans up additional resources */
@@ -4488,9 +4488,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->caps);
-    if (!(priv->caps = qemuCapsCacheLookupCopy(driver->capsCache,
-                                               vm->def->emulator)))
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      vm->def->emulator)))
         goto cleanup;
 
     VIR_DEBUG("Preparing monitor state");
@@ -4507,9 +4507,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      * we also need to populate the PCi address set cache for later
      * use in hotplug
      */
-    if (qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
-        if ((qemuDomainAssignAddresses(vm->def, priv->caps, vm)) < 0)
+        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
             goto cleanup;
     }
 
@@ -4531,7 +4531,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->pid = pid;
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, priv->caps, -1) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, priv->qemuCaps, -1) < 0)
         goto cleanup;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -4548,7 +4548,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
-    if (!qemuCapsGet(priv->caps, QEMU_CAPS_DEVICE)) {
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Determining domain device PCI addresses");
         if (qemuProcessInitPCIAddresses(driver, vm) < 0)
             goto cleanup;

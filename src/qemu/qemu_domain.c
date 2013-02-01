@@ -231,7 +231,7 @@ static void qemuDomainObjPrivateFree(void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
 
-    virObjectUnref(priv->caps);
+    virObjectUnref(priv->qemuCaps);
 
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
@@ -291,13 +291,13 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         virBufferAddLit(buf, "  </vcpus>\n");
     }
 
-    if (priv->caps) {
+    if (priv->qemuCaps) {
         int i;
         virBufferAddLit(buf, "  <qemuCaps>\n");
         for (i = 0 ; i < QEMU_CAPS_LAST ; i++) {
-            if (qemuCapsGet(priv->caps, i)) {
+            if (virQEMUCapsGet(priv->qemuCaps, i)) {
                 virBufferAsprintf(buf, "    <flag name='%s'/>\n",
-                                  qemuCapsTypeToString(i));
+                                  virQEMUCapsTypeToString(i));
             }
         }
         virBufferAddLit(buf, "  </qemuCaps>\n");
@@ -336,7 +336,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     char *tmp;
     int n, i;
     xmlNodePtr *nodes = NULL;
-    qemuCapsPtr caps = NULL;
+    virQEMUCapsPtr qemuCaps = NULL;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
         virReportOOMError();
@@ -408,13 +408,13 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     }
     if (n > 0) {
-        if (!(caps = qemuCapsNew()))
+        if (!(qemuCaps = virQEMUCapsNew()))
             goto error;
 
         for (i = 0 ; i < n ; i++) {
             char *str = virXMLPropString(nodes[i], "name");
             if (str) {
-                int flag = qemuCapsTypeFromString(str);
+                int flag = virQEMUCapsTypeFromString(str);
                 if (flag < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unknown qemu capabilities flag %s"), str);
@@ -422,11 +422,11 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
                     goto error;
                 }
                 VIR_FREE(str);
-                qemuCapsSet(caps, flag);
+                virQEMUCapsSet(qemuCaps, flag);
             }
         }
 
-        priv->caps = caps;
+        priv->qemuCaps = qemuCaps;
     }
     VIR_FREE(nodes);
 
@@ -477,7 +477,7 @@ error:
     virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
-    virObjectUnref(caps);
+    virObjectUnref(qemuCaps);
     return -1;
 }
 

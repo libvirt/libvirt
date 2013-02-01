@@ -81,7 +81,7 @@ typedef enum {
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
-                                     qemuCapsPtr extraFlags,
+                                     virQEMUCapsPtr extraFlags,
                                      const char *migrateFrom,
                                      int migrateFd,
                                      virQemuXML2ArgvTestFlags flags)
@@ -108,7 +108,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     }
 
-    if (qemuCapsGet(extraFlags, QEMU_CAPS_DOMID))
+    if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DOMID))
         vmdef->id = 6;
     else
         vmdef->id = -1;
@@ -118,11 +118,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
     monitor_chr.data.nix.listen = true;
 
-    qemuCapsSetList(extraFlags,
-                    QEMU_CAPS_VNC_COLON,
-                    QEMU_CAPS_NO_REBOOT,
-                    QEMU_CAPS_NO_ACPI,
-                    QEMU_CAPS_LAST);
+    virQEMUCapsSetList(extraFlags,
+                       QEMU_CAPS_VNC_COLON,
+                       QEMU_CAPS_NO_REBOOT,
+                       QEMU_CAPS_NO_ACPI,
+                       QEMU_CAPS_LAST);
 
     if (STREQ(vmdef->os.machine, "pc") &&
         STREQ(vmdef->emulator, "/usr/bin/qemu-system-x86_64")) {
@@ -131,7 +131,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto out;
     }
 
-    if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DEVICE)) {
         if (qemuDomainAssignAddresses(vmdef, extraFlags, NULL)) {
             if (flags & FLAG_EXPECT_ERROR)
                 goto ok;
@@ -145,7 +145,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (vmdef->os.arch == VIR_ARCH_X86_64 ||
         vmdef->os.arch == VIR_ARCH_I686) {
-        qemuCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
+        virQEMUCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
     if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
@@ -207,7 +207,7 @@ out:
 
 struct testInfo {
     const char *name;
-    qemuCapsPtr extraFlags;
+    virQEMUCapsPtr extraFlags;
     const char *migrateFrom;
     int migrateFd;
     unsigned int flags;
@@ -228,7 +228,7 @@ testCompareXMLToArgvHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    if (qemuCapsGet(info->extraFlags, QEMU_CAPS_MONITOR_JSON))
+    if (virQEMUCapsGet(info->extraFlags, QEMU_CAPS_MONITOR_JSON))
         flags |= FLAG_JSON;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
@@ -243,7 +243,7 @@ cleanup:
 
 
 static int
-testAddCPUModels(qemuCapsPtr caps, bool skipLegacy)
+testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 {
     const char *newModels[] = {
         "Opteron_G3", "Opteron_G2", "Opteron_G1",
@@ -257,13 +257,13 @@ testAddCPUModels(qemuCapsPtr caps, bool skipLegacy)
     size_t i;
 
     for (i = 0 ; i < ARRAY_CARDINALITY(newModels) ; i++) {
-        if (qemuCapsAddCPUDefinition(caps, newModels[i]) < 0)
+        if (virQEMUCapsAddCPUDefinition(caps, newModels[i]) < 0)
             return -1;
     }
     if (skipLegacy)
         return 0;
     for (i = 0 ; i < ARRAY_CARDINALITY(legacyModels) ; i++) {
-        if (qemuCapsAddCPUDefinition(caps, legacyModels[i]) < 0)
+        if (virQEMUCapsAddCPUDefinition(caps, legacyModels[i]) < 0)
             return -1;
     }
     return 0;
@@ -317,11 +317,11 @@ mymain(void)
         static struct testInfo info = {                                 \
             name, NULL, migrateFrom, migrateFd, (flags)                 \
         };                                                              \
-        if (!(info.extraFlags = qemuCapsNew()))                         \
+        if (!(info.extraFlags = virQEMUCapsNew()))                      \
             return EXIT_FAILURE;                                        \
         if (testAddCPUModels(info.extraFlags, skipLegacyCPUs) < 0)      \
             return EXIT_FAILURE;                                        \
-        qemuCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);  \
+        virQEMUCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);\
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
             ret = -1;                                                   \

@@ -31,7 +31,7 @@
 # include "qemu_monitor.h"
 
 /* Internal flags to keep track of qemu command line capabilities */
-enum qemuCapsFlags {
+enum virQEMUCapsFlags {
     QEMU_CAPS_KQEMU              =  0, /* Whether KQEMU is compiled in */
     QEMU_CAPS_VNC_COLON          =  1, /* VNC takes or address + display */
     QEMU_CAPS_NO_REBOOT          =  2, /* Is the -no-reboot flag available */
@@ -170,79 +170,81 @@ enum qemuCapsFlags {
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
 
-typedef struct _qemuCaps qemuCaps;
-typedef qemuCaps *qemuCapsPtr;
+typedef struct _virQEMUCaps virQEMUCaps;
+typedef virQEMUCaps *virQEMUCapsPtr;
 
-typedef struct _qemuCapsCache qemuCapsCache;
-typedef qemuCapsCache *qemuCapsCachePtr;
+typedef struct _virQEMUCapsCache virQEMUCapsCache;
+typedef virQEMUCapsCache *virQEMUCapsCachePtr;
 
-qemuCapsPtr qemuCapsNew(void);
-qemuCapsPtr qemuCapsNewCopy(qemuCapsPtr caps);
-qemuCapsPtr qemuCapsNewForBinary(const char *binary,
-                                 const char *libDir,
-                                 uid_t runUid,
-                                 gid_t runGid);
+virQEMUCapsPtr virQEMUCapsNew(void);
+virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
+virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
+                                       const char *libDir,
+                                       uid_t runUid,
+                                       gid_t runGid);
 
-int qemuCapsProbeQMP(qemuCapsPtr caps,
-                     qemuMonitorPtr mon);
+int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
+                        qemuMonitorPtr mon);
 
-void qemuCapsSet(qemuCapsPtr caps,
-                 enum qemuCapsFlags flag) ATTRIBUTE_NONNULL(1);
+void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
+                    enum virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
-void qemuCapsSetList(qemuCapsPtr caps, ...) ATTRIBUTE_NONNULL(1);
+void virQEMUCapsSetList(virQEMUCapsPtr qemuCaps, ...) ATTRIBUTE_NONNULL(1);
 
-void qemuCapsClear(qemuCapsPtr caps,
-                   enum qemuCapsFlags flag) ATTRIBUTE_NONNULL(1);
+void virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
+                      enum virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
-bool qemuCapsGet(qemuCapsPtr caps,
-                 enum qemuCapsFlags flag);
+bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
+                    enum virQEMUCapsFlags flag);
 
-char *qemuCapsFlagsString(qemuCapsPtr caps);
+char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps);
 
-const char *qemuCapsGetBinary(qemuCapsPtr caps);
-virArch qemuCapsGetArch(qemuCapsPtr caps);
-unsigned int qemuCapsGetVersion(qemuCapsPtr caps);
-unsigned int qemuCapsGetKVMVersion(qemuCapsPtr caps);
-int qemuCapsAddCPUDefinition(qemuCapsPtr caps,
-                             const char *name);
-size_t qemuCapsGetCPUDefinitions(qemuCapsPtr caps,
-                                 char ***names);
-size_t qemuCapsGetMachineTypes(qemuCapsPtr caps,
-                               char ***names);
-const char *qemuCapsGetCanonicalMachine(qemuCapsPtr caps,
-                                        const char *name);
+const char *virQEMUCapsGetBinary(virQEMUCapsPtr qemuCaps);
+virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps);
+unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps);
+unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps);
+int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
+                                const char *name);
+size_t virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                    char ***names);
+size_t virQEMUCapsGetMachineTypes(virQEMUCapsPtr qemuCaps,
+                                  char ***names);
+const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
+                                           const char *name);
 
-int qemuCapsGetMachineTypesCaps(qemuCapsPtr caps,
-                                size_t *nmachines,
-                                virCapsGuestMachinePtr **machines);
+int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
+                                   size_t *nmachines,
+                                   virCapsGuestMachinePtr **machines);
 
-bool qemuCapsIsValid(qemuCapsPtr caps);
+bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps);
 
 
-qemuCapsCachePtr qemuCapsCacheNew(const char *libDir,
-                                  uid_t uid, gid_t gid);
-qemuCapsPtr qemuCapsCacheLookup(qemuCapsCachePtr cache, const char *binary);
-qemuCapsPtr qemuCapsCacheLookupCopy(qemuCapsCachePtr cache, const char *binary);
-void qemuCapsCacheFree(qemuCapsCachePtr cache);
+virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
+                                        uid_t uid, gid_t gid);
+virQEMUCapsPtr virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
+                                      const char *binary);
+virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
+                                          const char *binary);
+void virQEMUCapsCacheFree(virQEMUCapsCachePtr cache);
 
-virCapsPtr qemuCapsInit(qemuCapsCachePtr cache);
+virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache);
 
-int qemuCapsGetDefaultVersion(virCapsPtr caps,
-                              qemuCapsCachePtr capsCache,
-                              unsigned int *version);
+int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
+                                 virQEMUCapsCachePtr capsCache,
+                                 unsigned int *version);
 
 /* Only for use by test suite */
-int qemuCapsParseHelpStr(const char *qemu,
-                         const char *str,
-                         qemuCapsPtr caps,
-                         unsigned int *version,
-                         unsigned int *is_kvm,
-                         unsigned int *kvm_version,
-                         bool check_yajl);
+int virQEMUCapsParseHelpStr(const char *qemu,
+                            const char *str,
+                            virQEMUCapsPtr qemuCaps,
+                            unsigned int *version,
+                            unsigned int *is_kvm,
+                            unsigned int *kvm_version,
+                            bool check_yajl);
 /* Only for use by test suite */
-int qemuCapsParseDeviceStr(qemuCapsPtr caps, const char *str);
+int virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str);
 
-VIR_ENUM_DECL(qemuCaps);
+VIR_ENUM_DECL(virQEMUCaps);
 
-bool qemuCapsUsedQMP(qemuCapsPtr caps);
+bool virQEMUCapsUsedQMP(virQEMUCapsPtr qemuCaps);
 #endif /* __QEMU_CAPABILITIES_H__*/

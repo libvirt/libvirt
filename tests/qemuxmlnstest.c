@@ -25,7 +25,7 @@ static virQEMUDriver driver;
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
-                                     qemuCapsPtr extraFlags,
+                                     virQEMUCapsPtr extraFlags,
                                      const char *migrateFrom,
                                      int migrateFd,
                                      bool json,
@@ -76,7 +76,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto fail;
     }
 
-    if (qemuCapsGet(extraFlags, QEMU_CAPS_DOMID))
+    if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DOMID))
         vmdef->id = 6;
     else
         vmdef->id = -1;
@@ -86,13 +86,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
     monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
     monitor_chr.data.nix.listen = true;
 
-    qemuCapsSetList(extraFlags,
-                    QEMU_CAPS_VNC_COLON,
-                    QEMU_CAPS_NO_REBOOT,
-                    QEMU_CAPS_NO_ACPI,
-                    QEMU_CAPS_LAST);
+    virQEMUCapsSetList(extraFlags,
+                       QEMU_CAPS_VNC_COLON,
+                       QEMU_CAPS_NO_REBOOT,
+                       QEMU_CAPS_NO_ACPI,
+                       QEMU_CAPS_LAST);
 
-    if (qemuCapsGet(extraFlags, QEMU_CAPS_DEVICE))
+    if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DEVICE))
         qemuDomainAssignAddresses(vmdef, extraFlags, NULL);
 
     log = virtTestLogContentAndReset();
@@ -101,7 +101,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (vmdef->os.arch == VIR_ARCH_X86_64 ||
         vmdef->os.arch == VIR_ARCH_I686) {
-        qemuCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
+        virQEMUCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
     if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
@@ -157,7 +157,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
-    qemuCapsPtr extraFlags;
+    virQEMUCapsPtr extraFlags;
     const char *migrateFrom;
     int migrateFd;
     bool json;
@@ -215,9 +215,9 @@ mymain(void)
         struct testInfo info = {                                        \
             name, NULL, migrateFrom, migrateFd, json, expectError       \
         };                                                              \
-        if (!(info.extraFlags = qemuCapsNew()))                         \
+        if (!(info.extraFlags = virQEMUCapsNew()))                      \
             return EXIT_FAILURE;                                        \
-        qemuCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);  \
+        virQEMUCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);\
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
                         1, testCompareXMLToArgvHelper, &info) < 0)      \
             ret = -1;                                                   \
