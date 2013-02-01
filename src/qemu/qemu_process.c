@@ -2763,10 +2763,6 @@ static int qemuProcessHook(void *data)
     if (qemuProcessInitNumaMemoryPolicy(h->vm, h->nodemask) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up security labelling");
-    if (virSecurityManagerSetProcessLabel(h->driver->securityManager, h->vm->def) < 0)
-        goto cleanup;
-
     ret = 0;
 
 cleanup:
@@ -3891,6 +3887,12 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
+
+    VIR_DEBUG("Setting up security labelling");
+    if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
+                                               vm->def, cmd) < 0) {
+        goto cleanup;
+    }
 
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
