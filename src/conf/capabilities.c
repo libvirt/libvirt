@@ -40,6 +40,22 @@ VIR_ENUM_DECL(virCapsHostPMTarget)
 VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,
               "suspend_mem", "suspend_disk", "suspend_hybrid");
 
+static virClassPtr virCapsClass;
+static void virCapabilitiesDispose(void *obj);
+
+static int virCapabilitiesOnceInit(void)
+{
+    if (!(virCapsClass = virClassNew(virClassForObject(),
+                                     "virCaps",
+                                     sizeof(virCaps),
+                                     virCapabilitiesDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virCapabilities)
+
 /**
  * virCapabilitiesNew:
  * @hostarch: host machine architecture
@@ -55,7 +71,10 @@ virCapabilitiesNew(virArch hostarch,
 {
     virCapsPtr caps;
 
-    if (VIR_ALLOC(caps) < 0)
+    if (virCapabilitiesInitialize() < 0)
+        return NULL;
+
+    if (!(caps = virObjectNew(virCapsClass)))
         return NULL;
 
     caps->host.arch = hostarch;
@@ -165,17 +184,11 @@ virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
     caps->host.nnumaCell = 0;
 }
 
-/**
- * virCapabilitiesFree:
- * @caps: object to free
- *
- * Free all memory associated with capabilities
- */
-void
-virCapabilitiesFree(virCapsPtr caps) {
+static void
+virCapabilitiesDispose(void *object)
+{
+    virCapsPtr caps = object;
     int i;
-    if (caps == NULL)
-        return;
 
     for (i = 0 ; i < caps->nguests ; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
@@ -198,8 +211,6 @@ virCapabilitiesFree(virCapsPtr caps) {
     VIR_FREE(caps->host.secModels);
 
     virCPUDefFree(caps->host.cpu);
-
-    VIR_FREE(caps);
 }
 
 

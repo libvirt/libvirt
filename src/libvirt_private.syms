@@ -62,7 +62,6 @@ virCapabilitiesDefaultGuestArch;
 virCapabilitiesDefaultGuestEmulator;
 virCapabilitiesDefaultGuestMachine;
 virCapabilitiesFormatXML;
-virCapabilitiesFree;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
 virCapabilitiesGenerateMac;

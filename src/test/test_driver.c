@@ -230,7 +230,7 @@ testBuildCapabilities(virConnectPtr conn) {
 
 no_memory:
     virReportOOMError();
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -651,7 +651,7 @@ error:
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     virNodeDeviceObjListFree(&privconn->devs);
-    virCapabilitiesFree(privconn->caps);
+    virObjectUnref(privconn->caps);
     testDriverUnlock(privconn);
     conn->privateData = NULL;
     VIR_FREE(privconn);
@@ -1183,7 +1183,7 @@ static int testClose(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
     testDriverLock(privconn);
-    virCapabilitiesFree(privconn->caps);
+    virObjectUnref(privconn->caps);
     virObjectUnref(privconn->domains);
     virNodeDeviceObjListFree(&privconn->devs);
     virNetworkObjListFree(&privconn->networks);

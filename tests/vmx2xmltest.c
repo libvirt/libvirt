@@ -71,7 +71,7 @@ testCapsInit(void)
     return;
 
   failure:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     caps = NULL;
 }
 
@@ -295,7 +295,7 @@ mymain(void)
 
     DO_TEST("svga", "svga");
 
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

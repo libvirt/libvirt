@@ -75,6 +75,6 @@ virCapsPtr testXenCapsInit(void) {
 
 cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }

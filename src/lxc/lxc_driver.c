@@ -1559,7 +1559,7 @@ static int lxcShutdown(void)
 
     virLXCProcessAutoDestroyShutdown(lxc_driver);
 
-    virCapabilitiesFree(lxc_driver->caps);
+    virObjectUnref(lxc_driver->caps);
     virSecurityManagerFree(lxc_driver->securityManager);
     VIR_FREE(lxc_driver->configDir);
     VIR_FREE(lxc_driver->autostartDir);

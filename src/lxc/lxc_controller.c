@@ -182,7 +182,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
 cleanup:
     VIR_FREE(configFile);
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return ctrl;
 
 no_memory:

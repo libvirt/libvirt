@@ -183,7 +183,7 @@ mymain(void)
 
     DO_TEST("boot-grub", "boot-grub", 1);
 
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

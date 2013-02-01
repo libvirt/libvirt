@@ -932,7 +932,7 @@ virCapsPtr qemuCapsInit(qemuCapsCachePtr cache)
     return caps;
 
 error:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 

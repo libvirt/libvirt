@@ -88,7 +88,7 @@ getCapsObject(void)
     return caps;
 
   error_cleanup:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -207,7 +207,7 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
     VIR_FREE(password);
 
     if (privP != NULL) {
-        virCapabilitiesFree(privP->caps);
+        virObjectUnref(privP->caps);
 
         if (privP->session != NULL)
             xenSessionFree(privP->session);
@@ -230,7 +230,7 @@ xenapiClose(virConnectPtr conn)
 {
     struct _xenapiPrivate *priv = conn->privateData;
 
-    virCapabilitiesFree(priv->caps);
+    virObjectUnref(priv->caps);
 
     if (priv->session != NULL) {
         xen_session_logout(priv->session);

@@ -1074,7 +1074,7 @@ libxlShutdown(void)
         return -1;
 
     libxlDriverLock(libxl_driver);
-    virCapabilitiesFree(libxl_driver->caps);
+    virObjectUnref(libxl_driver->caps);
     virObjectUnref(libxl_driver->domains);
     libxl_ctx_free(libxl_driver->ctx);
     xtl_logger_destroy(libxl_driver->logger);

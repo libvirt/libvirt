@@ -447,7 +447,7 @@ xenUnifiedClose(virConnectPtr conn)
     GET_PRIVATE(conn);
     int i;
 
-    virCapabilitiesFree(priv->caps);
+    virObjectUnref(priv->caps);
     virDomainEventStateFree(priv->domainEvents);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)

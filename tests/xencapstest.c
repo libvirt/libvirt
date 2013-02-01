@@ -62,7 +62,7 @@ testCompareFiles(virArch hostmachine, const char *xml_rel,
   VIR_FORCE_FCLOSE(fp1);
   VIR_FORCE_FCLOSE(fp2);
 
-  virCapabilitiesFree(caps);
+  virObjectUnref(caps);
   return ret;
 }
 

@@ -483,7 +483,7 @@ no_memory:
     virReportOOMError();
 err_exit:
     VIR_FREE(sec_managers);
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     virObjectUnref(cfg);
     return NULL;
 }
@@ -1054,7 +1054,7 @@ qemuShutdown(void) {
     virObjectUnref(qemu_driver->inactivePciHostdevs);
     virObjectUnref(qemu_driver->activeUsbHostdevs);
     virHashFree(qemu_driver->sharedDisks);
-    virCapabilitiesFree(qemu_driver->caps);
+    virObjectUnref(qemu_driver->caps);
     qemuCapsCacheFree(qemu_driver->capsCache);
 
     virObjectUnref(qemu_driver->domains);
@@ -1281,12 +1281,10 @@ static char *qemuGetCapabilities(virConnectPtr conn) {
 
     qemuDriverLock(driver);
 
-    if ((caps = qemuCreateCapabilities(qemu_driver)) == NULL) {
-        virCapabilitiesFree(caps);
+    if ((caps = qemuCreateCapabilities(qemu_driver)) == NULL)
         goto cleanup;
-    }
 
-    virCapabilitiesFree(qemu_driver->caps);
+    virObjectUnref(qemu_driver->caps);
     qemu_driver->caps = caps;
 
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)

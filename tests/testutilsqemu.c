@@ -261,7 +261,7 @@ virCapsPtr testQemuCapsInit(void) {
 
 cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 #endif

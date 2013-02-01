@@ -631,7 +631,7 @@ umlShutdown(void) {
     if (uml_driver->inotifyWatch != -1)
         virEventRemoveHandle(uml_driver->inotifyWatch);
     VIR_FORCE_CLOSE(uml_driver->inotifyFD);
-    virCapabilitiesFree(uml_driver->caps);
+    virObjectUnref(uml_driver->caps);
 
     /* shutdown active VMs
      * XXX allow them to stay around & reconnect */

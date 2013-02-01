@@ -169,7 +169,7 @@ libxlBuildCapabilities(virArch hostarch,
     return caps;
 
  no_memory:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -297,7 +297,7 @@ libxlMakeCapabilitiesInternal(virArch hostarch,
 
  no_memory:
     virReportOOMError();
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 

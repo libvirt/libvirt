@@ -2343,7 +2343,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
 
     if (hv_versions.sys_interface >= SYS_IFACE_MIN_VERS_NUMA && conn != NULL) {
         if (xenDaemonNodeGetTopology(conn, caps) != 0) {
-            virCapabilitiesFree(caps);
+            virObjectUnref(caps);
             return NULL;
         }
     }
@@ -2444,7 +2444,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
     return caps;
 
  no_memory:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -2708,7 +2708,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
 
  no_memory:
     virReportOOMError();
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 

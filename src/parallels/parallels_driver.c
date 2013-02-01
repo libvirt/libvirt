@@ -157,7 +157,7 @@ parallelsBuildCapabilities(void)
 
   no_memory:
     virReportOOMError();
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -941,7 +941,7 @@ parallelsOpenDefault(virConnectPtr conn)
 
   error:
     virObjectUnref(privconn->domains);
-    virCapabilitiesFree(privconn->caps);
+    virObjectUnref(privconn->caps);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
@@ -986,7 +986,7 @@ parallelsClose(virConnectPtr conn)
     parallelsConnPtr privconn = conn->privateData;
 
     parallelsDriverLock(privconn);
-    virCapabilitiesFree(privconn->caps);
+    virObjectUnref(privconn->caps);
     virObjectUnref(privconn->domains);
     conn->privateData = NULL;
 

@@ -346,7 +346,7 @@ phypCapsInit(void)
     return caps;
 
 no_memory:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -1222,7 +1222,7 @@ phypOpen(virConnectPtr conn,
 
 failure:
     if (phyp_driver != NULL) {
-        virCapabilitiesFree(phyp_driver->caps);
+        virObjectUnref(phyp_driver->caps);
         VIR_FREE(phyp_driver->managed_system);
         VIR_FREE(phyp_driver);
     }
@@ -1251,7 +1251,7 @@ phypClose(virConnectPtr conn)
     libssh2_session_disconnect(session, "Disconnecting...");
     libssh2_session_free(session);
 
-    virCapabilitiesFree(phyp_driver->caps);
+    virObjectUnref(phyp_driver->caps);
     phypUUIDTable_Free(phyp_driver->uuid_table);
     VIR_FREE(phyp_driver->managed_system);
     VIR_FREE(phyp_driver);

@@ -150,7 +150,7 @@ no_memory:
     virReportOOMError();
 
 error:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 

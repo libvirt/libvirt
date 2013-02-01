@@ -112,7 +112,7 @@ mymain(void)
     DO_TEST("metadata", "c7a5fdbd-edaf-9455-926a-d65c16db1809", 0);
     DO_TEST("external_vm", "c7a5fdbd-edaf-9455-926a-d65c16db1809", 0);
 
-    virCapabilitiesFree(driver.caps);
+    virObjectUnref(driver.caps);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

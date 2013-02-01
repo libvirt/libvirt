@@ -883,7 +883,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA);
 
     virObjectUnref(driver.config);
-    virCapabilitiesFree(driver.caps);
+    virObjectUnref(driver.caps);
     VIR_FREE(map);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

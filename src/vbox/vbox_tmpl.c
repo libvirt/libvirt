@@ -886,7 +886,7 @@ static virCapsPtr vboxCapsInit(void)
     return caps;
 
 no_memory:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -977,7 +977,7 @@ static void vboxUninitialize(vboxGlobalData *data) {
     if (data->pFuncs)
         data->pFuncs->pfnComUninitialize();
 
-    virCapabilitiesFree(data->caps);
+    virObjectUnref(data->caps);
 #if VBOX_API_VERSION == 2002
     /* No domainEventCallbacks in 2.2.* version */
 #else  /* !(VBOX_API_VERSION == 2002) */

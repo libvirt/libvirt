@@ -123,7 +123,7 @@ mymain(void)
     DO_TEST("systemd");
     DO_TEST("hostdev");
 
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -251,7 +251,7 @@ mymain(void)
     DO_TEST("qemu-ns-commandline-ns1", false, NONE);
 
     virObjectUnref(driver.config);
-    virCapabilitiesFree(driver.caps);
+    virObjectUnref(driver.caps);
     VIR_FREE(map);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -210,7 +210,7 @@ virCapsPtr openvzCapsInit(void)
 
     return caps;
 no_memory:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 
@@ -559,7 +559,7 @@ openvzFreeDriver(struct openvz_driver *driver)
         return;
 
     virObjectUnref(driver->domains);
-    virCapabilitiesFree(driver->caps);
+    virObjectUnref(driver->caps);
     VIR_FREE(driver);
 }
 

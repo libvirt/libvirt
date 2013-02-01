@@ -44,7 +44,7 @@ vmwareFreeDriver(struct vmware_driver *driver)
 
     virMutexDestroy(&driver->lock);
     virObjectUnref(driver->domains);
-    virCapabilitiesFree(driver->caps);
+    virObjectUnref(driver->caps);
     VIR_FREE(driver);
 }
 
@@ -133,7 +133,7 @@ cleanup:
     return caps;
 
 error:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     goto cleanup;
 }
 

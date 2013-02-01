@@ -462,7 +462,7 @@ mymain(void)
     DO_TEST(GetCPUDefinitions);
     DO_TEST(GetCommands);
 
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

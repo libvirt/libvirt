@@ -58,7 +58,7 @@ virCapsPtr testLXCCapsInit(void) {
     return caps;
 
 error:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 #endif

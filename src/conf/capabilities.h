@@ -29,6 +29,7 @@
 # include "cpu_conf.h"
 # include "virarch.h"
 # include "virmacaddr.h"
+# include "virobject.h"
 
 # include <libxml/xpath.h>
 
@@ -152,6 +153,8 @@ struct _virDomainXMLNamespace {
 typedef struct _virCaps virCaps;
 typedef virCaps* virCapsPtr;
 struct _virCaps {
+    virObject parent;
+
     virCapsHost host;
     size_t nguests;
     size_t nguests_max;
@@ -176,9 +179,6 @@ extern virCapsPtr
 virCapabilitiesNew(virArch hostarch,
                    int offlineMigrate,
                    int liveMigrate);
-
-extern void
-virCapabilitiesFree(virCapsPtr caps);
 
 extern void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps);

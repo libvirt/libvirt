@@ -70,7 +70,7 @@ esxFreePrivate(esxPrivate **priv)
     esxVI_Context_Free(&(*priv)->host);
     esxVI_Context_Free(&(*priv)->vCenter);
     esxUtil_FreeParsedUri(&(*priv)->parsedUri);
-    virCapabilitiesFree((*priv)->caps);
+    virObjectUnref((*priv)->caps);
     VIR_FREE(*priv);
 }
 
@@ -642,7 +642,7 @@ esxCapsInit(esxPrivate *priv)
     return caps;
 
   failure:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return NULL;
 }

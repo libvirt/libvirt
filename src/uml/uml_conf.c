@@ -107,7 +107,7 @@ virCapsPtr umlCapsInit(void) {
     return caps;
 
  error:
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
     return NULL;
 }
 

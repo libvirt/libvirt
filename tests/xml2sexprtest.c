@@ -168,7 +168,7 @@ mymain(void)
     DO_TEST("boot-grub", "boot-grub", "fvtest", 1);
     DO_TEST("escape", "escape", "fvtest", 1);
 
-    virCapabilitiesFree(caps);
+    virObjectUnref(caps);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
