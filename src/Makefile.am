@@ -792,9 +792,11 @@ noinst_LTLIBRARIES += libvirt_driver.la
 libvirt_la_BUILT_LIBADD += libvirt_driver.la
 libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
-libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) \
+libvirt_driver_la_CFLAGS = \
+		$(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) $(CURL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS) $(DLOPEN_LIBS)
+libvirt_driver_la_LIBADD = \
+		$(NUMACTL_LIBS) $(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
 
 USED_SYM_FILES = $(srcdir)/libvirt_private.syms
 
