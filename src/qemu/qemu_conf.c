@@ -526,6 +526,106 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
     return virObjectRef(driver->config);
 }
 
+
+virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
+{
+    size_t i;
+    virCapsPtr caps;
+    virSecurityManagerPtr *sec_managers = NULL;
+    /* Security driver data */
+    const char *doi, *model;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    /* Basic host arch / guest machine capabilities */
+    if (!(caps = virQEMUCapsInit(driver->qemuCapsCache))) {
+        virReportOOMError();
+        virObjectUnref(cfg);
+        return NULL;
+    }
+
+    if (cfg->allowDiskFormatProbing) {
+        caps->defaultDiskDriverName = NULL;
+        caps->defaultDiskDriverType = VIR_STORAGE_FILE_AUTO;
+    } else {
+        caps->defaultDiskDriverName = "qemu";
+        caps->defaultDiskDriverType = VIR_STORAGE_FILE_RAW;
+    }
+
+    qemuDomainSetPrivateDataHooks(caps);
+    qemuDomainSetNamespaceHooks(caps);
+
+    if (virGetHostUUID(caps->host.host_uuid)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot get the host uuid"));
+        goto err_exit;
+    }
+
+    /* access sec drivers and create a sec model for each one */
+    sec_managers = virSecurityManagerGetNested(driver->securityManager);
+    if (sec_managers == NULL) {
+        goto err_exit;
+    }
+
+    /* calculate length */
+    for (i = 0; sec_managers[i]; i++)
+        ;
+    caps->host.nsecModels = i;
+
+    if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
+        goto no_memory;
+
+    for (i = 0; sec_managers[i]; i++) {
+        doi = virSecurityManagerGetDOI(sec_managers[i]);
+        model = virSecurityManagerGetModel(sec_managers[i]);
+        if (!(caps->host.secModels[i].model = strdup(model)))
+            goto no_memory;
+        if (!(caps->host.secModels[i].doi = strdup(doi)))
+            goto no_memory;
+        VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+                  "DOI \"%s\"", model, doi);
+    }
+    VIR_FREE(sec_managers);
+
+    virObjectUnref(cfg);
+    return caps;
+
+no_memory:
+    virReportOOMError();
+err_exit:
+    VIR_FREE(sec_managers);
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return NULL;
+}
+
+
+/**
+ * virQEMUDriverGetCapabilities:
+ *
+ * Get a reference to the virCapsPtr instance for the
+ * driver. If @refresh is true, the capabilities will be
+ * rebuilt first
+ *
+ * The caller must release the reference with virObjetUnref
+ *
+ * Returns: a reference to a virCapsPtr instance or NULL
+ */
+virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
+                                        bool refresh)
+{
+    if (refresh) {
+        virCapsPtr caps = NULL;
+        if ((caps = virQEMUDriverCreateCapabilities(driver)) == NULL)
+            return NULL;
+
+        virObjectUnref(driver->caps);
+        driver->caps = caps;
+    }
+
+    return virObjectRef(driver->caps);
+}
+
+
 static void
 qemuDriverCloseCallbackFree(void *payload,
                             const void *name ATTRIBUTE_UNUSED)

@@ -4396,7 +4396,7 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
                    bool *hasHwVirt,
                    bool migrating)
 {
-    const virCPUDefPtr host = driver->caps->host.cpu;
+    virCPUDefPtr host = NULL;
     virCPUDefPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
     size_t ncpus = 0;
@@ -4408,8 +4408,14 @@ qemuBuildCpuArgStr(const virQEMUDriverPtr driver,
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
+    virCapsPtr caps = NULL;
 
     *hasHwVirt = false;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    host = caps->host.cpu;
 
     if (def->os.arch == VIR_ARCH_I686)
         default_model = "qemu32";
@@ -4595,7 +4601,7 @@ cleanup:
         cpuDataFree(host->arch, data);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
-
+    virObjectUnref(caps);
     return ret;
 
 no_memory:

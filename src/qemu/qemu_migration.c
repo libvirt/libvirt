@@ -742,9 +742,13 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             unsigned int flags)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *tmp;
+    char *tmp = NULL;
     xmlNodePtr *nodes = NULL;
     int i, n;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto error;
 
     /* We don't store the uuid, name, hostname, or hostuuid
      * values. We just compare them to local data to do some
@@ -870,7 +874,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                            n);
             goto error;
         }
-        mig->persistent = virDomainDefParseNode(driver->caps, doc, nodes[0],
+        mig->persistent = virDomainDefParseNode(caps, doc, nodes[0],
                                                 -1, VIR_DOMAIN_XML_INACTIVE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
@@ -885,11 +889,13 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         (!(mig->network = qemuMigrationCookieNetworkXMLParse(ctxt))))
         goto error;
 
+    virObjectUnref(caps);
     return 0;
 
 error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
+    virObjectUnref(caps);
     return -1;
 }
 
@@ -1434,11 +1440,15 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     qemuMigrationCookiePtr mig = NULL;
     virDomainDefPtr def = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCapsPtr caps = NULL;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p, flags=%lx",
               driver, vm, NULLSTR(xmlin), NULLSTR(dname),
               cookieout, cookieoutlen, flags);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     /* Only set the phase if we are inside QEMU_ASYNC_JOB_MIGRATION_OUT.
      * Otherwise we will start the async job later in the perform phase losing
@@ -1484,7 +1494,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     }
 
     if (xmlin) {
-        if (!(def = virDomainDefParseString(driver->caps, xmlin,
+        if (!(def = virDomainDefParseString(caps, xmlin,
                                             QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
@@ -1505,6 +1515,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
 
 cleanup:
     qemuMigrationCookieFree(mig);
+    virObjectUnref(caps);
     virDomainDefFree(def);
     return rv;
 }
@@ -1555,6 +1566,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     char *origname = NULL;
     char *xmlout = NULL;
     unsigned int cookieFlags;
+    virCapsPtr caps = NULL;
 
     if (virTimeMillisNow(&now) < 0)
         return -1;
@@ -1581,7 +1593,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
-    if (!(def = virDomainDefParseString(driver->caps, dom_xml,
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(caps, dom_xml,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -1622,7 +1637,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 virDomainDefPtr newdef;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(driver->caps, xmlout,
+                newdef = virDomainDefParseString(caps, xmlout,
                                                  QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_XML_INACTIVE);
                 if (!newdef)
@@ -1640,7 +1655,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->caps,
+                                   caps,
                                    def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
@@ -1760,6 +1775,7 @@ cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
+    virObjectUnref(caps);
     return ret;
 
 endjob:
@@ -3323,11 +3339,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     int cookie_flags = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virCapsPtr caps = NULL;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
               driver, dconn, vm, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, flags, retcode);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
         goto cleanup;
@@ -3379,7 +3399,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             if (mig->persistent)
                 vm->newDef = vmdef = mig->persistent;
             else
-                vmdef = virDomainObjGetPersistentDef(driver->caps, vm);
+                vmdef = virDomainObjGetPersistentDef(caps, vm);
             if (!vmdef || virDomainSaveConfig(cfg->configDir, vmdef) < 0) {
                 /* Hmpf.  Migration was successful, but making it persistent
                  * was not.  If we report successful, then when this domain
@@ -3474,7 +3494,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         if (virDomainObjIsActive(vm) &&
-            virDomainSaveStatus(driver->caps, cfg->stateDir, vm) < 0) {
+            virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto endjob;
         }
@@ -3513,6 +3533,7 @@ cleanup:
         virSetError(orig_err);
         virFreeError(orig_err);
     }
+    virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
 }
@@ -3530,6 +3551,7 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
     virDomainEventPtr event = NULL;
     int rv = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virCapsPtr caps = NULL;
 
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "flags=%x, retcode=%d",
@@ -3537,6 +3559,9 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
               flags, retcode);
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     qemuMigrationJobSetPhase(driver, vm,
                              retcode == 0
@@ -3578,7 +3603,7 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        if (virDomainSaveStatus(driver->caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto cleanup;
         }
@@ -3591,6 +3616,7 @@ done:
 cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
+    virObjectUnref(caps);
     virObjectUnref(cfg);
     return rv;
 }

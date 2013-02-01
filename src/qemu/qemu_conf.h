@@ -183,7 +183,9 @@ struct _virQEMUDriver {
     /* Immutable pointer, lockless APIs. Pointless abstraction */
     ebtablesContext *ebtables;
 
-    /* Require lock while using. Unsafe. XXX */
+    /* Require lock to get a reference on the object,
+     * lockless access thereafter
+     */
     virCapsPtr caps;
 
     /* Immutable pointer, self-locking APIs */
@@ -243,6 +245,10 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename);
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
+
+virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver);
+virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
+                                        bool refresh);
 
 struct qemuDomainDiskInfo {
     bool removable;

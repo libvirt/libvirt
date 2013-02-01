@@ -664,13 +664,19 @@ static void
 qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     if (virDomainObjIsActive(obj)) {
-        if (virDomainSaveStatus(driver->caps, cfg->stateDir, obj) < 0)
+        if (virDomainSaveStatus(caps, cfg->stateDir, obj) < 0)
             VIR_WARN("Failed to save status on vm %s", obj->def->name);
     }
 
+cleanup:
     virObjectUnref(cfg);
+    virObjectUnref(caps);
 }
 
 void
@@ -1244,21 +1250,24 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
     virCPUDefPtr def_cpu = def->cpu;
     virDomainControllerDefPtr *controllers = NULL;
     int ncontrollers = 0;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     /* Update guest CPU requirements according to host CPU */
     if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
         def_cpu &&
         (def_cpu->mode != VIR_CPU_MODE_CUSTOM || def_cpu->model)) {
-        if (!driver->caps ||
-            !driver->caps->host.cpu ||
-            !driver->caps->host.cpu->model) {
+        if (!caps->host.cpu ||
+            !caps->host.cpu->model) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("cannot get host CPU capabilities"));
             goto cleanup;
         }
 
         if (!(cpu = virCPUDefCopy(def_cpu)) ||
-            cpuUpdate(cpu, driver->caps->host.cpu) < 0)
+            cpuUpdate(cpu, caps->host.cpu) < 0)
             goto cleanup;
         def->cpu = cpu;
     }
@@ -1310,6 +1319,7 @@ cleanup:
         def->controllers = controllers;
         def->ncontrollers = ncontrollers;
     }
+    virObjectUnref(caps);
     return ret;
 }
 
@@ -1888,16 +1898,22 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virCapsPtr caps = NULL;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
 
     if (priv->fakeReboot == value)
-        return;
+        goto cleanup;
 
     priv->fakeReboot = value;
 
-    if (virDomainSaveStatus(driver->caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
+cleanup:
     virObjectUnref(cfg);
+    virObjectUnref(caps);
 }
 
 int
