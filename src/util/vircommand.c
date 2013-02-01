@@ -33,6 +33,13 @@
 # include <cap-ng.h>
 #endif
 
+#if defined(WITH_SECDRIVER_SELINUX)
+# include <selinux/selinux.h>
+#endif
+#if defined(WITH_SECDRIVER_APPARMOR)
+# include <sys/apparmor.h>
+#endif
+
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -103,6 +110,12 @@ struct _virCommand {
     uid_t uid;
     gid_t gid;
     unsigned long long capabilities;
+#if defined(WITH_SECDRIVER_SELINUX)
+    char *seLinuxLabel;
+#endif
+#if defined(WITH_SECDRIVER_APPARMOR)
+    char *appArmorProfile;
+#endif
 };
 
 static int virCommandHandshakeChild(virCommandPtr cmd);
@@ -606,6 +619,32 @@ virExec(virCommandPtr cmd)
            goto fork_error;
     }
 
+# if defined(WITH_SECDRIVER_SELINUX)
+    if (cmd->seLinuxLabel) {
+        VIR_DEBUG("Setting child security label to %s", cmd->seLinuxLabel);
+        if (setexeccon_raw(cmd->seLinuxLabel) == -1) {
+            virReportSystemError(errno,
+                                 _("unable to set SELinux security context "
+                                   "'%s' for '%s'"),
+                                 cmd->seLinuxLabel, cmd->args[0]);
+            if (security_getenforce() == 1)
+                goto fork_error;
+        }
+    }
+# endif
+# if defined(WITH_SECDRIVER_APPARMOR)
+    if (cmd->appArmorProfile) {
+        VIR_DEBUG("Setting child AppArmor profile to %s", cmd->appArmorProfile);
+        if (aa_change_profile(cmd->appArmorProfile) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set AppArmor profile '%s' "
+                                   "for '%s'"),
+                                 cmd->appArmorProfile, cmd->args[0]);
+            goto fork_error;
+        }
+    }
+# endif
+
     if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1) {
         VIR_DEBUG("Setting child uid:gid to %d:%d",
                   (int)cmd->uid, (int)cmd->gid);
@@ -964,6 +1003,56 @@ virCommandAllowCap(virCommandPtr cmd,
     cmd->capabilities |= (1ULL << capability);
 }
 
+
+/**
+ * virCommandSetSELinuxLabel:
+ * @cmd: the command to modify
+ * @label: the SELinux label to use for the child process
+ *
+ * Saves a copy of @label to use when setting the SELinux context
+ * label (with setexeccon_raw()) after the child process has been
+ * started. If SELinux isn't compiled into libvirt, or if label is
+ * NULL, nothing will be done.
+ */
+void
+virCommandSetSELinuxLabel(virCommandPtr cmd,
+                          const char *label ATTRIBUTE_UNUSED)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+#if defined(WITH_SECDRIVER_SELINUX)
+    VIR_FREE(cmd->seLinuxLabel);
+    if (label && !(cmd->seLinuxLabel = strdup(label)))
+        cmd->has_error = ENOMEM;
+#endif
+    return;
+}
+
+
+/**
+ * virCommandSetAppArmorProfile:
+ * @cmd: the command to modify
+ * @profile: the AppArmor profile to use
+ *
+ * Saves a copy of @profile to use when aa_change_profile() after the
+ * child process has been started. If AppArmor support isn't
+ * configured into libvirt, or if profile is NULL, nothing will be done.
+ */
+void
+virCommandSetAppArmorProfile(virCommandPtr cmd,
+                             const char *profile ATTRIBUTE_UNUSED)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+#if defined(WITH_SECDRIVER_APPARMOR)
+    VIR_FREE(cmd->appArmorProfile);
+    if (profile && !(cmd->appArmorProfile = strdup(profile)))
+        cmd->has_error = ENOMEM;
+#endif
+    return;
+}
 
 
 /**
@@ -2525,6 +2614,12 @@ virCommandFree(virCommandPtr cmd)
 
     VIR_FREE(cmd->transfer);
     VIR_FREE(cmd->preserve);
+#if defined(WITH_SECDRIVER_SELINUX)
+    VIR_FREE(cmd->seLinuxLabel);
+#endif
+#if defined(WITH_SECDRIVER_APPARMOR)
+    VIR_FREE(cmd->appArmorProfile);
+#endif
 
     VIR_FREE(cmd);
 }

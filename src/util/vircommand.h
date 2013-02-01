@@ -70,6 +70,12 @@ void virCommandClearCaps(virCommandPtr cmd);
 void virCommandAllowCap(virCommandPtr cmd,
                         int capability);
 
+void virCommandSetSELinuxLabel(virCommandPtr cmd,
+                               const char *label);
+
+void virCommandSetAppArmorProfile(virCommandPtr cmd,
+                                  const char *profile);
+
 void virCommandDaemonize(virCommandPtr cmd);
 
 void virCommandNonblockingFDs(virCommandPtr cmd);
