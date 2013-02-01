@@ -652,6 +652,12 @@ virExec(virCommandPtr cmd)
             goto fork_error;
     }
 
+    /* The steps above may need todo something privileged, so
+     * we delay clearing capabilities until the last minute */
+    if (cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS))
+        if (virSetCapabilities(cmd->capabilities) < 0)
+            goto fork_error;
+
     if (cmd->pwd) {
         VIR_DEBUG("Running child in %s", cmd->pwd);
         if (chdir(cmd->pwd) < 0) {
@@ -669,12 +675,6 @@ virExec(virCommandPtr cmd)
                              _("Could not re-enable SIGPIPE"));
         goto fork_error;
     }
-
-    /* The steps above may need todo something privileged, so
-     * we delay clearing capabilities until the last minute */
-    if (cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS))
-        if (virSetCapabilities(cmd->capabilities) < 0)
-            goto fork_error;
 
     /* Close logging again to ensure no FDs leak to child */
     virLogReset();
