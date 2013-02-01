@@ -32,6 +32,14 @@ nodist_conf_DATA =
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
 
+SECDRIVER_LIBS =
+if WITH_SECDRIVER_SELINUX
+SECDRIVER_LIBS += $(SELINUX_LIBS)
+endif
+if WITH_SECDRIVER_APPARMOR
+SECDRIVER_LIBS += $(APPARMOR_LIBS)
+endif
+
 if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
 endif
@@ -987,12 +995,7 @@ if WITH_BLKID
 libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)
 endif
-if WITH_SECDRIVER_SELINUX
-libvirt_driver_lxc_impl_la_LIBADD += $(SELINUX_LIBS)
-endif
-if WITH_SECDRIVER_APPARMOR
-libvirt_driver_lxc_impl_la_LIBADD += $(APPARMOR_LIBS)
-endif
+libvirt_driver_lxc_impl_la_LIBADD += $(SECDRIVER_LIBS)
 libvirt_driver_lxc_impl_la_SOURCES = $(LXC_DRIVER_SOURCES)
 
 conf_DATA += lxc/lxc.conf
@@ -1159,12 +1162,7 @@ libvirt_driver_storage_impl_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_storage_impl_la_LIBADD =
-if WITH_SECDRIVER_SELINUX
-libvirt_driver_storage_impl_la_LIBADD += $(SELINUX_LIBS)
-endif
-if WITH_SECDRIVER_APPARMOR
-libvirt_driver_storage_impl_la_LIBADD += $(APPARMOR_LIBS)
-endif
+libvirt_driver_storage_impl_la_LIBADD += $(SECDRIVER_LIBS)
 if WITH_BLKID
 libvirt_driver_storage_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_storage_impl_la_LIBADD += $(BLKID_LIBS)
@@ -1277,16 +1275,14 @@ libvirt_la_BUILT_LIBADD += libvirt_security_manager.la
 libvirt_security_manager_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_security_manager_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_security_manager_la_LIBADD =
+libvirt_security_manager_la_LIBADD = $(SECDRIVER_LIBS)
 if WITH_SECDRIVER_SELINUX
 libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
 libvirt_security_manager_la_CFLAGS += $(SELINUX_CFLAGS)
-libvirt_security_manager_la_LIBADD += $(SELINUX_LIBS)
 endif
 if WITH_SECDRIVER_APPARMOR
 libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
 libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
-libvirt_security_manager_la_LIBADD += $(APPARMOR_LIBS)
 endif
 
 # Add all conditional sources just in case...
@@ -1944,12 +1940,7 @@ libvirt_lxc_LDADD =			\
 if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += libvirt_probes.lo
 endif
-if WITH_SECDRIVER_SELINUX
-libvirt_lxc_LDADD += $(SELINUX_LIBS)
-endif
-if WITH_SECDRIVER_APPARMOR
-libvirt_lxc_LDADD += $(APPARMOR_LIBS)
-endif
+libvirt_lxc_LDADD += $(SECDRIVER_LIBS)
 libvirt_lxc_CFLAGS =				\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)                    \
