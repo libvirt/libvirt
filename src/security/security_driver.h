@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008, 2010 Red Hat, Inc.
+ * Copyright (C) 2008, 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -92,6 +92,9 @@ typedef int (*virSecurityDomainGetProcessLabel) (virSecurityManagerPtr mgr,
                                                  virSecurityLabelPtr sec);
 typedef int (*virSecurityDomainSetProcessLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def);
+typedef int (*virSecurityDomainSetChildProcessLabel) (virSecurityManagerPtr mgr,
+                                                      virDomainDefPtr def,
+                                                      virCommandPtr cmd);
 typedef int (*virSecurityDomainSecurityVerify) (virSecurityManagerPtr mgr,
                                                 virDomainDefPtr def);
 typedef int (*virSecurityDomainSetImageFDLabel) (virSecurityManagerPtr mgr,
@@ -131,6 +134,7 @@ struct _virSecurityDriver {
 
     virSecurityDomainGetProcessLabel domainGetSecurityProcessLabel;
     virSecurityDomainSetProcessLabel domainSetSecurityProcessLabel;
+    virSecurityDomainSetChildProcessLabel domainSetSecurityChildProcessLabel;
 
     virSecurityDomainSetAllLabel domainSetSecurityAllLabel;
     virSecurityDomainRestoreAllLabel domainRestoreSecurityAllLabel;

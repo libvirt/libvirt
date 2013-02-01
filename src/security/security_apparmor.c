@@ -1,7 +1,7 @@
 /*
  * AppArmor security driver for libvirt
  *
- * Copyright (C) 2011 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  * Copyright (C) 2009-2010 Canonical Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -627,6 +627,45 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return rc;
 }
 
+/* Called directly by API user prior to virCommandRun().
+ * virCommandRun() will then call aa_change_profile() (if a
+ * cmd->appArmorProfile has been set) *after forking the child
+ * process*.
+ */
+static int
+AppArmorSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                     virDomainDefPtr def,
+                                     virCommandPtr cmd)
+{
+    int rc = -1;
+    char *profile_name = NULL;
+    const virSecurityLabelDefPtr secdef =
+        virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+
+    if (!secdef)
+        goto cleanup;
+
+    if (STRNEQ(SECURITY_APPARMOR_NAME, secdef->model)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "\'%s\' model configured for domain, but "
+                         "hypervisor driver is \'%s\'."),
+                       secdef->model, SECURITY_APPARMOR_NAME);
+        if (use_apparmor() > 0)
+            goto cleanup;
+    }
+
+    if ((profile_name = get_profile_name(def)) == NULL)
+        goto cleanup;
+
+    virCommandSetAppArmorProfile(cmd, profile_name);
+    rc = 0;
+
+  cleanup:
+    VIR_FREE(profile_name);
+    return rc;
+}
+
 static int
 AppArmorSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                      virDomainDefPtr vm ATTRIBUTE_UNUSED)
@@ -927,6 +966,7 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainGetSecurityProcessLabel      = AppArmorGetSecurityProcessLabel,
     .domainSetSecurityProcessLabel      = AppArmorSetSecurityProcessLabel,
+    .domainSetSecurityChildProcessLabel = AppArmorSetSecurityChildProcessLabel,
 
     .domainSetSecurityAllLabel          = AppArmorSetSecurityAllLabel,
     .domainRestoreSecurityAllLabel      = AppArmorRestoreSecurityAllLabel,

@@ -1,7 +1,7 @@
 /*
  * security_manager.c: Internal security manager API
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -566,6 +566,17 @@ int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
         virObjectUnlock(mgr);
         return ret;
     }
+
+    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
+                                           virDomainDefPtr vm,
+                                           virCommandPtr cmd)
+{
+    if (mgr->drv->domainSetSecurityChildProcessLabel)
+       return mgr->drv->domainSetSecurityChildProcessLabel(mgr, vm, cmd);
 
     virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;

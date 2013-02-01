@@ -1859,6 +1859,37 @@ virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
 }
 
 static int
+virSecuritySELinuxSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                               virDomainDefPtr def,
+                                               virCommandPtr cmd)
+{
+    /* TODO: verify DOI */
+    virSecurityLabelDefPtr secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (secdef == NULL)
+        return -1;
+
+    if (secdef->label == NULL)
+        return 0;
+
+    VIR_DEBUG("label=%s", secdef->label);
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security label driver mismatch: "
+                         "'%s' model configured for domain, but "
+                         "hypervisor driver is '%s'."),
+                       secdef->model, SECURITY_SELINUX_NAME);
+        if (security_getenforce() == 1)
+            return -1;
+    }
+
+    /* save in cmd to be set after fork/before child process is exec'ed */
+    virCommandSetSELinuxLabel(cmd, secdef->label);
+    return 0;
+}
+
+static int
 virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                virDomainDefPtr def)
 {
@@ -2261,6 +2292,7 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainGetSecurityProcessLabel      = virSecuritySELinuxGetSecurityProcessLabel,
     .domainSetSecurityProcessLabel      = virSecuritySELinuxSetSecurityProcessLabel,
+    .domainSetSecurityChildProcessLabel = virSecuritySELinuxSetSecurityChildProcessLabel,
 
     .domainSetSecurityAllLabel          = virSecuritySELinuxSetSecurityAllLabel,
     .domainRestoreSecurityAllLabel      = virSecuritySELinuxRestoreSecurityAllLabel,

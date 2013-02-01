@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -878,6 +878,27 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACSetChildProcessLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                   virCommandPtr cmd)
+{
+    uid_t user;
+    gid_t group;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+
+    if (virSecurityDACGetIds(def, priv, &user, &group))
+        return -1;
+
+    VIR_DEBUG("Setting child to drop privileges of DEF to %u:%u",
+              (unsigned int) user, (unsigned int) group);
+
+    virCommandSetUID(cmd, user);
+    virCommandSetGID(cmd, group);
+    return 0;
+}
+
+
+static int
 virSecurityDACVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                      virDomainDefPtr def ATTRIBUTE_UNUSED)
 {
@@ -1072,6 +1093,7 @@ virSecurityDriver virSecurityDriverDAC = {
 
     .domainGetSecurityProcessLabel      = virSecurityDACGetProcessLabel,
     .domainSetSecurityProcessLabel      = virSecurityDACSetProcessLabel,
+    .domainSetSecurityChildProcessLabel = virSecurityDACSetChildProcessLabel,
 
     .domainSetSecurityAllLabel          = virSecurityDACSetSecurityAllLabel,
     .domainRestoreSecurityAllLabel      = virSecurityDACRestoreSecurityAllLabel,

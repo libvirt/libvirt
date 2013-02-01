@@ -1,7 +1,7 @@
 /*
  * security_manager.h: Internal security manager API
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 # define VIR_SECURITY_MANAGER_H__
 
 # include "domain_conf.h"
+# include "vircommand.h"
 
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
@@ -103,6 +104,9 @@ int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
                                       virSecurityLabelPtr sec);
 int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def);
+int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
+                                           virDomainDefPtr def,
+                                           virCommandPtr cmd);
 int virSecurityManagerVerify(virSecurityManagerPtr mgr,
                              virDomainDefPtr def);
 int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -367,6 +367,23 @@ virSecurityStackSetProcessLabel(virSecurityManagerPtr mgr,
 }
 
 static int
+virSecurityStackSetChildProcessLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     virCommandPtr cmd)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetChildProcessLabel(item->securityManager, vm, cmd) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
 virSecurityStackGetProcessLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm,
                                 pid_t pid,
@@ -540,6 +557,7 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainGetSecurityProcessLabel      = virSecurityStackGetProcessLabel,
     .domainSetSecurityProcessLabel      = virSecurityStackSetProcessLabel,
+    .domainSetSecurityChildProcessLabel = virSecurityStackSetChildProcessLabel,
 
     .domainSetSecurityAllLabel          = virSecurityStackSetSecurityAllLabel,
     .domainRestoreSecurityAllLabel      = virSecurityStackRestoreSecurityAllLabel,
