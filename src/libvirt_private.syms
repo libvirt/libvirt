@@ -18,6 +18,7 @@ virBitmapIsAllSet;
 virBitmapNew;
 virBitmapNewCopy;
 virBitmapNewData;
+virBitmapNextClearBit;
 virBitmapNextSetBit;
 virBitmapParse;
 virBitmapSetAll;

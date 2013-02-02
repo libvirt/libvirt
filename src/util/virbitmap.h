@@ -1,7 +1,7 @@
 /*
  * virbitmap.h: Simple bitmap operations
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -101,6 +101,9 @@ bool virBitmapIsAllSet(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1);
 
 ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
+    ATTRIBUTE_NONNULL(1);
+
+ssize_t virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
     ATTRIBUTE_NONNULL(1);
 
 size_t virBitmapCountBits(virBitmapPtr bitmap)

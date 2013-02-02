@@ -1,7 +1,7 @@
 /*
  * virbitmap.h: Simple bitmap operations
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -595,13 +595,14 @@ bool virBitmapIsAllSet(virBitmapPtr bitmap)
  * @bitmap: the bitmap
  * @pos: the position after which to search for a set bit
  *
- * search the first set bit after position @pos in bitmap @bitmap.
+ * Search for the first set bit after position @pos in bitmap @bitmap.
  * @pos can be -1 to search for the first set bit. Position starts
  * at 0.
  *
- * returns the position of the found bit, or -1 if no bit found.
+ * Returns the position of the found bit, or -1 if no bit found.
  */
-ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
+ssize_t
+virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
 {
     size_t nl;
     size_t nb;
@@ -624,6 +625,54 @@ ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
         bits = bitmap->map[nl];
     }
 
+    if (bits == 0)
+        return -1;
+
+    return ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
+}
+
+/**
+ * virBitmapNextClearBit:
+ * @bitmap: the bitmap
+ * @pos: the position after which to search for a clear bit
+ *
+ * Search for the first clear bit after position @pos in bitmap @bitmap.
+ * @pos can be -1 to search for the first set bit. Position starts
+ * at 0.
+ *
+ * Returns the position of the found bit, or -1 if no bit found.
+ */
+ssize_t
+virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
+{
+    size_t nl;
+    size_t nb;
+    unsigned long bits;
+
+    if (pos < 0)
+        pos = -1;
+
+    pos++;
+
+    if (pos >= bitmap->max_bit)
+        return -1;
+
+    nl = pos / VIR_BITMAP_BITS_PER_UNIT;
+    nb = pos % VIR_BITMAP_BITS_PER_UNIT;
+
+    bits = ~bitmap->map[nl] & ~((1UL << nb) - 1);
+
+    while (bits == 0 && ++nl < bitmap->map_len) {
+        bits = ~bitmap->map[nl];
+    }
+
+    if (nl == bitmap->map_len - 1) {
+        /* Ensure tail bits are ignored.  */
+        int tail = bitmap->max_bit % VIR_BITMAP_BITS_PER_UNIT;
+
+        if (tail)
+            bits &= -1UL >> (VIR_BITMAP_BITS_PER_UNIT - tail);
+    }
     if (bits == 0)
         return -1;
 
