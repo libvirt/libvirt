@@ -160,7 +160,7 @@ testTLSGenerateCert(struct testTLSCertReq *req)
     static char buffer[1024*1024];
     size_t size = sizeof(buffer);
     char serial[5] = { 1, 2, 3, 4, 0 };
-    gnutls_datum_t der = { (unsigned char *)buffer, size };
+    gnutls_datum_t der;
     time_t start = time(NULL) + (60*60*req->start_offset);
     time_t expire = time(NULL) + (60*60*(req->expire_offset
                                          ? req->expire_offset : 24));
@@ -294,9 +294,11 @@ testTLSGenerateCert(struct testTLSCertReq *req)
                                                         der.size,
                                                         req->basicConstraintsCritical)) < 0) {
             VIR_WARN("Failed to set certificate basic constraints %s", gnutls_strerror(err));
+            VIR_FREE(der.data);
             abort();
         }
         asn1_delete_structure(&ext);
+        VIR_FREE(der.data);
     }
 
     /*
@@ -320,9 +322,11 @@ testTLSGenerateCert(struct testTLSCertReq *req)
                                                         der.size,
                                                         req->keyUsageCritical)) < 0) {
             VIR_WARN("Failed to set certificate key usage %s", gnutls_strerror(err));
+            VIR_FREE(der.data);
             abort();
         }
         asn1_delete_structure(&ext);
+        VIR_FREE(der.data);
     }
 
     /*
@@ -350,9 +354,11 @@ testTLSGenerateCert(struct testTLSCertReq *req)
                                                         der.size,
                                                         req->keyPurposeCritical)) < 0) {
             VIR_WARN("Failed to set certificate key purpose %s", gnutls_strerror(err));
+            VIR_FREE(der.data);
             abort();
         }
         asn1_delete_structure(&ext);
+        VIR_FREE(der.data);
     }
 
     /*
