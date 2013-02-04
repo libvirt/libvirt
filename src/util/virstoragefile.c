@@ -1,7 +1,7 @@
 /*
  * virstoragefile.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -66,6 +66,7 @@ enum {
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
+    int magicOffset;    /* Byte offset of the magic */
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */
     const char *extension; /* Optional file extension to check */
@@ -121,77 +122,82 @@ qedGetBackingStore(char **, int *, const unsigned char *, size_t);
 #define QED_F_BACKING_FILE 0x01
 #define QED_F_BACKING_FORMAT_NO_PROBE 0x04
 
-/* VMDK needs at least this to find backing store,
+/* VMDK needs at least 20*512 B to find backing store,
+ * ISO has 5 Byte magic on offset 32769,
  * other formats need less */
-#define STORAGE_MAX_HEAD (20*512)
+#define STORAGE_MAX_HEAD 32769+5
 
 
 static struct FileTypeInfo const fileTypeInfo[] = {
-    [VIR_STORAGE_FILE_NONE] = { NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                 -1, 0, 0, 0, 0, 0, NULL },
-    [VIR_STORAGE_FILE_RAW] = { NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_RAW] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, 0, 0, 0, 0, NULL },
-    [VIR_STORAGE_FILE_DIR] = { NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_DIR] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, 0, 0, 0, 0, NULL },
     [VIR_STORAGE_FILE_BOCHS] = {
-        /*"Bochs Virtual HD Image", */ /* Untested */ NULL,
-        NULL,
+        /*"Bochs Virtual HD Image", */ /* Untested */
+        0, NULL, NULL,
         LV_LITTLE_ENDIAN, 64, 0x20000,
         32+16+16+4+4+4+4+4, 8, 1, -1, NULL
     },
     [VIR_STORAGE_FILE_CLOOP] = {
-        /*"#!/bin/sh\n#V2.0 Format\nmodprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1\n", */ /* Untested */ NULL,
-        NULL,
+        /* #!/bin/sh
+           #V2.0 Format
+           modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1
+        */ /* Untested */
+        0, NULL, NULL,
         LV_LITTLE_ENDIAN, -1, 0,
         -1, 0, 0, -1, NULL
     },
     [VIR_STORAGE_FILE_COW] = {
-        "OOOM", NULL,
+        0, "OOOM", NULL,
         LV_BIG_ENDIAN, 4, 2,
         4+4+1024+4, 8, 1, -1, cowGetBackingStore
     },
     [VIR_STORAGE_FILE_DMG] = {
-        NULL, /* XXX QEMU says there's no magic for dmg, but we should check... */
-        ".dmg",
+        /* XXX QEMU says there's no magic for dmg,
+         * /usr/share/misc/magic lists double magic (both offsets
+         * would have to match) but then disables that check. */
+        0, NULL, ".dmg",
         0, -1, 0,
         -1, 0, 0, -1, NULL
     },
     [VIR_STORAGE_FILE_ISO] = {
-        NULL, /* XXX there's probably some magic for iso we can validate too... */
-        ".iso",
-        0, -1, 0,
+        32769, "CD001", ".iso",
+        LV_LITTLE_ENDIAN, -2, 0,
         -1, 0, 0, -1, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
-        "QFI", NULL,
+        0, "QFI", NULL,
         LV_BIG_ENDIAN, 4, 1,
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore,
     },
     [VIR_STORAGE_FILE_QCOW2] = {
-        "QFI", NULL,
+        0, "QFI", NULL,
         LV_BIG_ENDIAN, 4, 2,
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore,
     },
     [VIR_STORAGE_FILE_QED] = {
         /* http://wiki.qemu.org/Features/QED */
-        "QED", NULL,
+        0, "QED", NULL,
         LV_LITTLE_ENDIAN, -2, -1,
         QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore,
     },
     [VIR_STORAGE_FILE_VMDK] = {
-        "KDMV", NULL,
+        0, "KDMV", NULL,
         LV_LITTLE_ENDIAN, 4, 1,
         4+4+4, 8, 512, -1, vmdk4GetBackingStore
     },
     [VIR_STORAGE_FILE_VPC] = {
-        "conectix", NULL,
+        0, "conectix", NULL,
         LV_BIG_ENDIAN, 12, 0x10000,
         8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL
     },
     /* Not direct file formats, but used for various drivers */
-    [VIR_STORAGE_FILE_FAT] = { NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, 0, 0, 0, 0, NULL },
-    [VIR_STORAGE_FILE_VHD] = { NULL, NULL, LV_LITTLE_ENDIAN,
+    [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, 0, 0, 0, 0, NULL },
 };
 verify(ARRAY_CARDINALITY(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
@@ -571,16 +577,18 @@ virStorageFileMatchesMagic(int format,
                            size_t buflen)
 {
     int mlen;
+    int magicOffset = fileTypeInfo[format].magicOffset;
+    const char *magic = fileTypeInfo[format].magic;
 
-    if (fileTypeInfo[format].magic == NULL)
+    if (magic == NULL)
         return false;
 
     /* Validate magic data */
-    mlen = strlen(fileTypeInfo[format].magic);
-    if (mlen > buflen)
+    mlen = strlen(magic);
+    if (magicOffset + mlen > buflen)
         return false;
 
-    if (memcmp(buf, fileTypeInfo[format].magic, mlen) != 0)
+    if (memcmp(buf + magicOffset, magic, mlen) != 0)
         return false;
 
     return true;
