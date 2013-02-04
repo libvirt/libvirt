@@ -1,7 +1,7 @@
 /*
  * viriptables.c: helper APIs for managing iptables
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -129,15 +129,10 @@ iptRulesNew(const char *table,
     return NULL;
 }
 
-static int ATTRIBUTE_SENTINEL
-iptablesAddRemoveRule(iptRules *rules, int family, int action,
-                      const char *arg, ...)
+static virCommandPtr
+iptablesCommandNew(iptRules *rules, int family, int action)
 {
-    va_list args;
-    int ret;
     virCommandPtr cmd = NULL;
-    const char *s;
-
 #if HAVE_FIREWALLD
     virIpTablesInitialize();
     if (firewall_cmd_path) {
@@ -154,16 +149,36 @@ iptablesAddRemoveRule(iptRules *rules, int family, int action,
 
     virCommandAddArgList(cmd, "--table", rules->table,
                          action == ADD ? "--insert" : "--delete",
-                         rules->chain, arg, NULL);
+                         rules->chain, NULL);
+    return cmd;
+}
+
+static int
+iptablesCommandRunAndFree(virCommandPtr cmd)
+{
+    int ret;
+    ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+    return ret;
+}
+
+static int ATTRIBUTE_SENTINEL
+iptablesAddRemoveRule(iptRules *rules, int family, int action,
+                      const char *arg, ...)
+{
+    va_list args;
+    virCommandPtr cmd = NULL;
+    const char *s;
+
+    cmd = iptablesCommandNew(rules, family, action);
+    virCommandAddArg(cmd, arg);
 
     va_start(args, arg);
     while ((s = va_arg(args, const char *)))
         virCommandAddArg(cmd, s);
     va_end(args);
 
-    ret = virCommandRun(cmd, NULL);
-    virCommandFree(cmd);
-    return ret;
+    return iptablesCommandRunAndFree(cmd);
 }
 
 /**
@@ -372,28 +387,24 @@ iptablesForwardAllowOut(iptablesContext *ctx,
 {
     int ret;
     char *networkstr;
+    virCommandPtr cmd = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
 
-    if (physdev && physdev[0]) {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
-                                    VIR_SOCKET_ADDR_FAMILY(netaddr),
-                                    action,
-                                    "--source", networkstr,
-                                    "--in-interface", iface,
-                                    "--out-interface", physdev,
-                                    "--jump", "ACCEPT",
-                                    NULL);
-    } else {
-        ret = iptablesAddRemoveRule(ctx->forward_filter,
-                                    VIR_SOCKET_ADDR_FAMILY(netaddr),
-                                    action,
-                                    "--source", networkstr,
-                                    "--in-interface", iface,
-                                    "--jump", "ACCEPT",
-                                    NULL);
-    }
+    cmd = iptablesCommandNew(ctx->forward_filter,
+                             VIR_SOCKET_ADDR_FAMILY(netaddr),
+                             action);
+    virCommandAddArgList(cmd,
+                         "--source", networkstr,
+                         "--in-interface", iface, NULL);
+
+    if (physdev && physdev[0])
+        virCommandAddArgList(cmd, "--out-interface", physdev, NULL);
+
+    virCommandAddArgList(cmd, "--jump", "ACCEPT", NULL);
+
+    ret = iptablesCommandRunAndFree(cmd);
     VIR_FREE(networkstr);
     return ret;
 }
@@ -799,6 +810,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
 {
     int ret;
     char *networkstr;
+    virCommandPtr cmd = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
         return -1;
@@ -812,49 +824,23 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         return -1;
     }
 
-    if (protocol && protocol[0]) {
-        if (physdev && physdev[0]) {
-            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        AF_INET,
-                                        action,
-                                        "--source", networkstr,
-                                        "-p", protocol,
-                                        "!", "--destination", networkstr,
-                                        "--out-interface", physdev,
-                                        "--jump", "MASQUERADE",
-                                        "--to-ports", "1024-65535",
-                                        NULL);
-        } else {
-            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        AF_INET,
-                                        action,
-                                        "--source", networkstr,
-                                        "-p", protocol,
-                                        "!", "--destination", networkstr,
-                                        "--jump", "MASQUERADE",
-                                        "--to-ports", "1024-65535",
-                                        NULL);
-        }
-    } else {
-        if (physdev && physdev[0]) {
-            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        AF_INET,
-                                        action,
-                                        "--source", networkstr,
-                                        "!", "--destination", networkstr,
-                                        "--out-interface", physdev,
-                                        "--jump", "MASQUERADE",
-                                        NULL);
-        } else {
-            ret = iptablesAddRemoveRule(ctx->nat_postrouting,
-                                        AF_INET,
-                                        action,
-                                        "--source", networkstr,
-                                        "!", "--destination", networkstr,
-                                        "--jump", "MASQUERADE",
-                                        NULL);
-        }
-    }
+    cmd = iptablesCommandNew(ctx->nat_postrouting, AF_INET, action);
+    virCommandAddArgList(cmd, "--source", networkstr, NULL);
+
+    if (protocol && protocol[0])
+        virCommandAddArgList(cmd, "-p", protocol, NULL);
+
+    virCommandAddArgList(cmd, "!", "--destination", networkstr, NULL);
+
+    if (physdev && physdev[0])
+        virCommandAddArgList(cmd, "--out-interface", physdev, NULL);
+
+    virCommandAddArgList(cmd, "--jump", "MASQUERADE", NULL);
+
+    if (protocol && protocol[0])
+        virCommandAddArgList(cmd, "--to-ports", "1024-65535", NULL);
+
+    ret = iptablesCommandRunAndFree(cmd);
     VIR_FREE(networkstr);
     return ret;
 }
