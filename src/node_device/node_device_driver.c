@@ -224,10 +224,11 @@ cleanup:
 }
 
 
-static virNodeDevicePtr
-nodeDeviceLookupByWWN(virConnectPtr conn,
-                      const char *wwnn,
-                      const char *wwpn)
+virNodeDevicePtr
+nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
+                              const char *wwnn,
+                              const char *wwpn,
+                              unsigned int flags)
 {
     unsigned int i;
     virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
@@ -235,6 +236,8 @@ nodeDeviceLookupByWWN(virConnectPtr conn,
     virNodeDevCapsDefPtr cap = NULL;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDevicePtr dev = NULL;
+
+    virCheckFlags(0, NULL);
 
     nodeDeviceLock(driver);
 
@@ -546,7 +549,7 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 
         virFileWaitForDevices();
 
-        dev = nodeDeviceLookupByWWN(conn, wwnn, wwpn);
+        dev = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
 
         if (dev != NULL) {
             break;

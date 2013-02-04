@@ -1754,6 +1754,7 @@ static virDeviceMonitor udevDeviceMonitor = {
     .listDevices = nodeListDevices, /* 0.7.3 */
     .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
+    .deviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
     .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
     .deviceGetParent = nodeDeviceGetParent, /* 0.7.3 */
     .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.7.3 */

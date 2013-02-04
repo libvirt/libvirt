@@ -767,6 +767,7 @@ static virDeviceMonitor halDeviceMonitor = {
     .listDevices = nodeListDevices, /* 0.5.0 */
     .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
+    .deviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
     .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
     .deviceGetParent = nodeDeviceGetParent, /* 0.5.0 */
     .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.5.0 */
