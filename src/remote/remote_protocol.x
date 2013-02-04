@@ -1852,6 +1852,16 @@ struct remote_node_device_lookup_by_name_ret {
     remote_nonnull_node_device dev;
 };
 
+struct remote_node_device_lookup_scsi_host_by_wwn_args {
+    remote_nonnull_string wwnn;
+    remote_nonnull_string wwpn;
+    unsigned int flags;
+};
+
+struct remote_node_device_lookup_scsi_host_by_wwn_ret {
+    remote_nonnull_node_device dev;
+};
+
 struct remote_node_device_get_xml_desc_args {
     remote_nonnull_string name;
     unsigned int flags;
@@ -3049,7 +3059,8 @@ enum remote_procedure {
     REMOTE_PROC_NODE_GET_CPU_MAP = 293, /* skipgen skipgen */
     REMOTE_PROC_DOMAIN_FSTRIM = 294, /* autogen autogen */
     REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295, /* autogen autogen */
-    REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296 /* autogen autogen | readstream@2 */
+    REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296, /* autogen autogen | readstream@2 */
+    REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297 /* autogen autogen priority:high */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

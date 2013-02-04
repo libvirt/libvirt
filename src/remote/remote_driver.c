@@ -6359,6 +6359,7 @@ static virDeviceMonitor dev_monitor = {
     .listDevices = remoteNodeListDevices, /* 0.5.0 */
     .listAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
     .deviceLookupByName = remoteNodeDeviceLookupByName, /* 0.5.0 */
+    .deviceLookupSCSIHostByWWN = remoteNodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
     .deviceGetXMLDesc = remoteNodeDeviceGetXMLDesc, /* 0.5.0 */
     .deviceGetParent = remoteNodeDeviceGetParent, /* 0.5.0 */
     .deviceNumOfCaps = remoteNodeDeviceNumOfCaps, /* 0.5.0 */
