@@ -31,6 +31,9 @@ fakeSecretGetValue(virSecretPtr obj ATTRIBUTE_UNUSED,
                    unsigned int internalFlags ATTRIBUTE_UNUSED)
 {
     char *secret = strdup("AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A");
+    if (!secret) {
+        return NULL;
+    }
     *value_size = strlen(secret);
     return (unsigned char *) secret;
 }
@@ -559,7 +562,8 @@ mymain(void)
     driver.config->vncTLSx509verify = 1;
     DO_TEST("graphics-vnc-tls", QEMU_CAPS_VNC);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
-    driver.config->vncSASLdir = driver.config->vncTLSx509certdir = NULL;
+    VIR_FREE(driver.config->vncSASLdir);
+    VIR_FREE(driver.config->vncTLSx509certdir);
 
     DO_TEST("graphics-sdl", NONE);
     DO_TEST("graphics-sdl-fullscreen", NONE);
