@@ -198,6 +198,7 @@ cleanup:
     VIR_FREE(virtPortInstanceID);
     VIR_FREE(virtPortProfileID);
     VIR_FREE(virtPortType);
+    VIR_FREE(virtPortInterfaceID);
 
     return virtPort;
 
