@@ -7604,6 +7604,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
     VIR_FREE(ram);
     VIR_FREE(vram);
     VIR_FREE(heads);
+    VIR_FREE(primary);
 
     return def;
 
@@ -9594,6 +9595,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                         goto error;
                     }
 
+                    VIR_FREE(tmp);
                     def->hyperv_features[feature] = value;
                     break;
 
@@ -9922,6 +9924,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
             if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
                 if (usb_other || usb_none) {
+                    virDomainControllerDefFree(controller);
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Can't add another USB controller: "
                                      "USB is disabled for this domain"));
@@ -9930,6 +9933,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 usb_none = true;
             } else {
                 if (usb_none) {
+                    virDomainControllerDefFree(controller);
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Can't add another USB controller: "
                                      "USB is disabled for this domain"));
@@ -10227,6 +10231,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         /* Check if USB bus is required */
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB && usb_none) {
+            virDomainInputDefFree(input);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can't add USB input device. "
                              "USB bus is disabled"));
@@ -10324,6 +10329,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         if (video->primary) {
             if (primaryVideo) {
+                virDomainVideoDefFree(video);
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only one primary video device is supported"));
                 goto error;
@@ -10335,8 +10341,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
                                        ii,
                                        def->nvideos,
-                                       video) < 0)
+                                       video) < 0) {
+            virDomainVideoDefFree(video);
             goto error;
+        }
     }
     VIR_FREE(nodes);
 
@@ -10452,6 +10460,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
 
         if (hub->type == VIR_DOMAIN_HUB_TYPE_USB && usb_none) {
+            virDomainHubDefFree(hub);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can't add USB hub: "
                              "USB is disabled for this domain"));
