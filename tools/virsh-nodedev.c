@@ -101,9 +101,14 @@ static const vshCmdInfo info_node_device_destroy[] = {
 
 static const vshCmdOptDef opts_node_device_destroy[] = {
     {.name = "name",
+     .type = VSH_OT_ALIAS,
+     .flags = 0,
+     .help = "device"
+    },
+    {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("name of the device to be destroyed")
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format")
     },
     {.name = NULL}
 };
@@ -112,21 +117,47 @@ static bool
 cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
 {
     virNodeDevicePtr dev = NULL;
-    bool ret = true;
-    const char *name = NULL;
+    bool ret = false;
+    const char *device_value = NULL;
+    char **arr = NULL;
+    int narr;
 
-    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
         return false;
 
-    dev = virNodeDeviceLookupByName(ctl->conn, name);
+    if (strchr(device_value, ',')) {
+        narr = vshStringToArray(device_value, &arr);
+        if (narr != 2) {
+            vshError(ctl, _("Malformed device value '%s'"), device_value);
+            goto cleanup;
+        }
 
-    if (virNodeDeviceDestroy(dev) == 0) {
-        vshPrint(ctl, _("Destroyed node device '%s'\n"), name);
+        if (!virValidateWWN(arr[0]) || !virValidateWWN(arr[1]))
+            goto cleanup;
+
+        dev = virNodeDeviceLookupSCSIHostByWWN(ctl->conn, arr[0], arr[1], 0);
     } else {
-        vshError(ctl, _("Failed to destroy node device '%s'"), name);
-        ret = false;
+        dev = virNodeDeviceLookupByName(ctl->conn, device_value);
     }
 
+    if (!dev) {
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), device_value);
+        goto cleanup;
+    }
+
+    if (virNodeDeviceDestroy(dev) == 0) {
+        vshPrint(ctl, _("Destroyed node device '%s'\n"), device_value);
+    } else {
+        vshError(ctl, _("Failed to destroy node device '%s'"), device_value);
+        goto cleanup;
+    }
+
+    ret = true;
+cleanup:
+    if (arr) {
+        VIR_FREE(*arr);
+        VIR_FREE(arr);
+    }
     virNodeDeviceFree(dev);
     return ret;
 }
@@ -476,7 +507,7 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("device key")
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
     },
     {.name = NULL}
 };
@@ -484,26 +515,47 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
 static bool
 cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    const char *name = NULL;
     virNodeDevicePtr device = NULL;
     char *xml = NULL;
+    const char *device_value = NULL;
+    char **arr = NULL;
+    int narr;
     bool ret = false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
-        return false;
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
+         return false;
 
-    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, _("Could not find matching device '%s'"), name);
-        return false;
+    if (strchr(device_value, ',')) {
+        narr = vshStringToArray(device_value, &arr);
+        if (narr != 2) {
+            vshError(ctl, _("Malformed device value '%s'"), device_value);
+            goto cleanup;
+        }
+
+        if (!virValidateWWN(arr[0]) || !virValidateWWN(arr[1]))
+            goto cleanup;
+
+        device = virNodeDeviceLookupSCSIHostByWWN(ctl->conn, arr[0], arr[1], 0);
+    } else {
+        device = virNodeDeviceLookupByName(ctl->conn, device_value);
+    }
+
+    if (!device) {
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), device_value);
+        goto cleanup;
     }
 
     if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
         goto cleanup;
 
     vshPrint(ctl, "%s\n", xml);
-    ret = true;
 
+    ret = true;
 cleanup:
+    if (arr) {
+        VIR_FREE(*arr);
+        VIR_FREE(arr);
+    }
     VIR_FREE(xml);
     virNodeDeviceFree(device);
     return ret;

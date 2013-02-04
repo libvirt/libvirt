@@ -1953,11 +1953,12 @@ host nodes are available for use, but this allows registration of
 host hardware that libvirt did not automatically detect.  I<file>
 contains xml for a top-level <device> description of a node device.
 
-=item B<nodedev-destroy> I<nodedev>
+=item B<nodedev-destroy> I<device>
 
-Destroy (stop) a device on the host.  Note that this makes libvirt
-quit managing a host device, and may even make that device unusable
-by the rest of the physical host until a reboot.
+Destroy (stop) a device on the host. I<device> can be either device
+name or wwn pair in "wwnn,wwpn" format (only works for HBA). Note
+that this makes libvirt quit managing a host device, and may even make
+that device unusable by the rest of the physical host until a reboot.
 
 =item B<nodedev-detach> I<nodedev>
 
@@ -1967,12 +1968,14 @@ B<nodedev-reattach>, and is done automatically for managed devices.
 For compatibility purposes, this command can also be spelled
 B<nodedev-dettach>.
 
-=item B<nodedev-dumpxml> I<nodedev>
+=item B<nodedev-dumpxml> I<device>
 
 Dump a <device> XML representation for the given node device, including
 such information as the device name, which bus owns the device, the
 vendor and product id, and any capabilities of the device usable by
-libvirt (such as whether device reset is supported).
+libvirt (such as whether device reset is supported). I<device> can
+be either device name or wwn pair in "wwnn,wwpn" format (only works
+for HBA).
 
 =item B<nodedev-list> I<cap> I<--tree>
 
