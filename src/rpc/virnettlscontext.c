@@ -217,8 +217,8 @@ static int virNetTLSContextCheckCertKeyUsage(gnutls_x509_crt_t cert,
                                              bool isCA)
 {
     int status;
-    unsigned int usage;
-    unsigned int critical;
+    unsigned int usage = 0;
+    unsigned int critical = 0;
 
     status = gnutls_x509_crt_get_key_usage(cert, &usage, &critical);
 
