@@ -308,6 +308,7 @@ static void qemuMonitorTestWorker(void *opaque)
         virMutexUnlock(&test->lock);
 
         if (virEventRunDefaultImpl() < 0) {
+            virMutexLock(&test->lock);
             test->quit = true;
             break;
         }
@@ -370,11 +371,13 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test)
 
     virObjectUnref(test->vm);
 
-    if (test->running)
-        virThreadJoin(&test->thread);
+    virThreadJoin(&test->thread);
 
     if (timer != -1)
         virEventRemoveTimeout(timer);
+
+    VIR_FREE(test->incoming);
+    VIR_FREE(test->outgoing);
 
     for (i = 0 ; i < test->nitems ; i++)
         qemuMonitorTestItemFree(test->items[i]);
