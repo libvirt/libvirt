@@ -1553,6 +1553,11 @@ typedef int (*virDevMonListAllNodeDevices)(virConnectPtr conn,
 typedef virNodeDevicePtr (*virDevMonDeviceLookupByName)(virConnectPtr conn,
                                                         const char *name);
 
+typedef virNodeDevicePtr (*virDevMonDeviceLookupSCSIHostByWWN)(virConnectPtr conn,
+                                                               const char *wwnn,
+                                                               const char *wwpn,
+                                                               unsigned int flags);
+
 typedef char * (*virDevMonDeviceGetXMLDesc)(virNodeDevicePtr dev,
                                             unsigned int flags);
 
@@ -1584,6 +1589,7 @@ struct _virDeviceMonitor {
     virDevMonListDevices        listDevices;
     virDevMonListAllNodeDevices listAllNodeDevices;
     virDevMonDeviceLookupByName deviceLookupByName;
+    virDevMonDeviceLookupSCSIHostByWWN  deviceLookupSCSIHostByWWN;
     virDevMonDeviceGetXMLDesc   deviceGetXMLDesc;
     virDevMonDeviceGetParent    deviceGetParent;
     virDevMonDeviceNumOfCaps    deviceNumOfCaps;

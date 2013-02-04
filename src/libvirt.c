@@ -14334,6 +14334,52 @@ error:
     return NULL;
 }
 
+/**
+ * virNodeDeviceLookupSCSIHostByWWN:
+ * @conn: pointer to the hypervisor connection
+ * @wwnn: WWNN of the SCSI Host.
+ * @wwpn: WWPN of the SCSI Host.
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Lookup SCSI Host which is capable with 'fc_host' by its WWNN and WWPN.
+ *
+ * Returns a virNodeDevicePtr if found, NULL otherwise.
+ */
+virNodeDevicePtr
+virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
+                                 const char *wwnn,
+                                 const char *wwpn,
+                                 unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, wwnn=%p, wwpn=%p, flags=%x", conn, wwnn, wwpn, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    virCheckNonNullArgGoto(wwnn, error);
+    virCheckNonNullArgGoto(wwpn, error);
+
+    if (conn->deviceMonitor &&
+        conn->deviceMonitor->deviceLookupSCSIHostByWWN) {
+        virNodeDevicePtr ret;
+        ret = conn->deviceMonitor->deviceLookupSCSIHostByWWN(conn, wwnn,
+                                                             wwpn, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
 
 /**
  * virNodeDeviceGetXMLDesc:

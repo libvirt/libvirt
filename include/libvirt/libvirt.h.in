@@ -3257,6 +3257,11 @@ int                     virConnectListAllNodeDevices (virConnectPtr conn,
 virNodeDevicePtr        virNodeDeviceLookupByName (virConnectPtr conn,
                                                    const char *name);
 
+virNodeDevicePtr        virNodeDeviceLookupSCSIHostByWWN (virConnectPtr conn,
+                                                          const char *wwnn,
+                                                          const char *wwpn,
+                                                          unsigned int flags);
+
 const char *            virNodeDeviceGetName     (virNodeDevicePtr dev);
 
 const char *            virNodeDeviceGetParent   (virNodeDevicePtr dev);
