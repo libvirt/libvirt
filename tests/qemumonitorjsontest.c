@@ -131,7 +131,7 @@ testQemuMonitorJSONGetVersion(const void *data)
     int major;
     int minor;
     int micro;
-    char *package;
+    char *package = NULL;
 
     if (!test)
         return -1;
@@ -188,6 +188,7 @@ testQemuMonitorJSONGetVersion(const void *data)
                        "Package %s was not ''", package);
         goto cleanup;
     }
+    VIR_FREE(package);
 
     if (qemuMonitorGetVersion(qemuMonitorTestGetMonitor(test),
                               &major, &minor, &micro,
@@ -220,6 +221,7 @@ testQemuMonitorJSONGetVersion(const void *data)
 
 cleanup:
     qemuMonitorTestFree(test);
+    VIR_FREE(package);
     return ret;
 }
 
@@ -230,8 +232,9 @@ testQemuMonitorJSONGetMachines(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
     int ret = -1;
     qemuMonitorMachineInfoPtr *info;
-    int ninfo;
+    int ninfo = 0;
     const char *null = NULL;
+    int i;
 
     if (!test)
         return -1;
@@ -296,6 +299,10 @@ testQemuMonitorJSONGetMachines(const void *data)
 
 cleanup:
     qemuMonitorTestFree(test);
+    for (i = 0; i < ninfo; i++)
+        qemuMonitorMachineInfoFree(info[i]);
+    VIR_FREE(info);
+
     return ret;
 }
 
@@ -307,7 +314,8 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
     int ret = -1;
     char **cpus = NULL;
-    int ncpus;
+    int ncpus = 0;
+    int i;
 
     if (!test)
         return -1;
@@ -358,6 +366,9 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
 
 cleanup:
     qemuMonitorTestFree(test);
+    for (i = 0; i < ncpus; i++)
+        VIR_FREE(cpus[i]);
+    VIR_FREE(cpus);
     return ret;
 }
 
@@ -369,7 +380,8 @@ testQemuMonitorJSONGetCommands(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
     int ret = -1;
     char **commands = NULL;
-    int ncommands;
+    int ncommands = 0;
+    int i;
 
     if (!test)
         return -1;
@@ -419,6 +431,9 @@ testQemuMonitorJSONGetCommands(const void *data)
 
 cleanup:
     qemuMonitorTestFree(test);
+    for (i = 0; i < ncommands; i++)
+        VIR_FREE(commands[i]);
+    VIR_FREE(commands);
     return ret;
 }
 
