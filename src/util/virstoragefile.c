@@ -51,7 +51,7 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               "raw", "dir", "bochs",
               "cloop", "cow", "dmg", "iso",
               "qcow", "qcow2", "qed", "vmdk", "vpc",
-              "fat", "vhd")
+              "fat", "vhd", "vdi")
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */
@@ -194,6 +194,12 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_BIG_ENDIAN, 12, 0x10000,
         8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL
     },
+    /* TODO: add getBackingStore function */
+    [VIR_STORAGE_FILE_VDI] = {
+        64, "\x7f\x10\xda\xbe", ".vdi",
+        LV_LITTLE_ENDIAN, 68, 0x00010001,
+        68 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL},
+
     /* Not direct file formats, but used for various drivers */
     [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, 0, 0, 0, 0, NULL },

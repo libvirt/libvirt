@@ -1,7 +1,7 @@
 /*
  * virstoragefile.h: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2009, 2012 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -44,6 +44,7 @@ enum virStorageFileFormat {
     VIR_STORAGE_FILE_VPC,
     VIR_STORAGE_FILE_FAT,
     VIR_STORAGE_FILE_VHD,
+    VIR_STORAGE_FILE_VDI,
 
     VIR_STORAGE_FILE_LAST,
 };
