@@ -3551,8 +3551,8 @@ virManageVport(const int parent_host,
 
     if (virAsprintf(&vport_name,
                     "%s:%s",
-                    wwpn,
-                    wwnn) < 0) {
+                    wwnn,
+                    wwpn) < 0) {
         virReportOOMError();
         goto cleanup;
     }
