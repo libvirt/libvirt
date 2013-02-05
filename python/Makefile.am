@@ -119,6 +119,11 @@ $(libvirtmod_la_OBJECTS): $(GENERATED)
 $(libvirtmod_qemu_la_OBJECTS): $(QEMU_GENERATED)
 $(libvirtmod_lxc_la_OBJECTS): $(LXC_GENERATED)
 
+EXTRA_DIST += sanitytest.py
+
+check-local:
+	$(AM_V_GEN)PYTHONPATH=$(abs_topbuilddir):$(abs_topbuilddir)/.libs $(PYTHON) $(srcdir)/sanitytest.py
+
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
 	$(INSTALL) -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
