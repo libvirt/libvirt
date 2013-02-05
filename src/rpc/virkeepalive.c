@@ -252,6 +252,12 @@ virKeepAliveStart(virKeepAlivePtr ka,
                            _("keepalive interval already set"));
             goto cleanup;
         }
+        /* Guard against overflow */
+        if (interval > INT_MAX / 1000) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("keepalive interval %d too large"), interval);
+            goto cleanup;
+        }
         ka->interval = interval;
         ka->count = count;
         ka->countToDeath = count;
@@ -323,6 +329,9 @@ virKeepAliveTimeout(virKeepAlivePtr ka)
         timeout = ka->interval - (time(NULL) - ka->intervalStart);
         if (timeout < 0)
             timeout = 0;
+        /* Guard against overflow */
+        if (timeout > INT_MAX / 1000)
+            timeout = INT_MAX / 1000;
     }
 
     virObjectUnlock(ka);
