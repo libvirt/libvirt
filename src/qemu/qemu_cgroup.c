@@ -302,8 +302,11 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                 goto cleanup;
 
             if (usbDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
-                                     &data) < 0)
+                                     &data) < 0) {
+                usbFreeDevice(usb);
                 goto cleanup;
+            }
+            usbFreeDevice(usb);
         }
     }
 

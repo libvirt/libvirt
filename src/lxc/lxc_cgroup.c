@@ -427,8 +427,11 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                 goto cleanup;
 
             if (usbDeviceFileIterate(usb, virLXCSetupHostUsbDeviceCgroup,
-                                     cgroup) < 0)
+                                     cgroup) < 0) {
+                usbFreeDevice(usb);
                 goto cleanup;
+            }
+            usbFreeDevice(usb);
             break;
         case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
             switch (hostdev->source.caps.type) {
