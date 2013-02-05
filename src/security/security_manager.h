@@ -48,8 +48,6 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
 
-void virSecurityManagerFree(virSecurityManagerPtr mgr);
-
 const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);

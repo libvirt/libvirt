@@ -213,7 +213,7 @@ struct _virQEMUDriver {
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
 
-    /* Immutable pointer. XXX check safety */
+    /* Immutable pointer. lockless access */
     virLockManagerPluginPtr lockManager;
 
     /* Immutable pointer. Unsafe APIs. XXX */

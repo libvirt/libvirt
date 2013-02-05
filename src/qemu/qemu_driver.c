@@ -409,8 +409,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
 
 error:
     VIR_ERROR(_("Failed to initialize security drivers"));
-    virSecurityManagerFree(stack);
-    virSecurityManagerFree(mgr);
+    virObjectUnref(stack);
+    virObjectUnref(mgr);
     virObjectUnref(cfg);
     return -1;
 }
@@ -1005,7 +1005,7 @@ qemuShutdown(void) {
 
     VIR_FREE(qemu_driver->qemuImgBinary);
 
-    virSecurityManagerFree(qemu_driver->securityManager);
+    virObjectUnref(qemu_driver->securityManager);
 
     ebtablesContextFree(qemu_driver->ebtables);
 

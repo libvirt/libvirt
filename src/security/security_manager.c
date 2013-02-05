@@ -28,18 +28,39 @@
 #include "security_dac.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virobject.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 
 struct _virSecurityManager {
+    virObjectLockable parent;
+
     virSecurityDriverPtr drv;
     bool allowDiskFormatProbing;
     bool defaultConfined;
     bool requireConfined;
     const char *virtDriver;
+    void *privateData;
 };
+
+static virClassPtr virSecurityManagerClass;
+
+static void virSecurityManagerDispose(void *obj);
+
+static int virSecurityManagerOnceInit(void)
+{
+    if (!(virSecurityManagerClass = virClassNew(virClassForObjectLockable(),
+                                                "virSecurityManagerClass",
+                                                sizeof(virSecurityManager),
+                                                virSecurityManagerDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virSecurityManager);
 
 static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr drv,
                                                          const char *virtDriver,
@@ -48,6 +69,10 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
                                                          bool requireConfined)
 {
     virSecurityManagerPtr mgr;
+    char *privateData;
+
+    if (virSecurityManagerInitialize() < 0)
+        return NULL;
 
     VIR_DEBUG("drv=%p (%s) virtDriver=%s allowDiskFormatProbing=%d "
               "defaultConfined=%d requireConfined=%d",
@@ -55,8 +80,13 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
               allowDiskFormatProbing, defaultConfined,
               requireConfined);
 
-    if (VIR_ALLOC_VAR(mgr, char, drv->privateDataLen) < 0) {
+    if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0) {
         virReportOOMError();
+        return NULL;
+    }
+
+    if (!(mgr = virObjectLockableNew(virSecurityManagerClass))) {
+        VIR_FREE(privateData);
         return NULL;
     }
 
@@ -65,9 +95,10 @@ static virSecurityManagerPtr virSecurityManagerNewDriver(virSecurityDriverPtr dr
     mgr->defaultConfined = defaultConfined;
     mgr->requireConfined = requireConfined;
     mgr->virtDriver = virtDriver;
+    mgr->privateData = privateData;
 
     if (drv->open(mgr) < 0) {
-        virSecurityManagerFree(mgr);
+        virObjectUnref(mgr);
         return NULL;
     }
 
@@ -163,21 +194,17 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
-    /* This accesses the memory just beyond mgr, which was allocated
-     * via VIR_ALLOC_VAR earlier.  */
-    return mgr + 1;
+    return mgr->privateData;
 }
 
 
-void virSecurityManagerFree(virSecurityManagerPtr mgr)
+static void virSecurityManagerDispose(void *obj)
 {
-    if (!mgr)
-        return;
+    virSecurityManagerPtr mgr = obj;
 
     if (mgr->drv->close)
         mgr->drv->close(mgr);
-
-    VIR_FREE(mgr);
+    VIR_FREE(mgr->privateData);
 }
 
 const char *

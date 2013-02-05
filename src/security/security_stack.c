@@ -93,7 +93,7 @@ virSecurityStackClose(virSecurityManagerPtr mgr)
 
     while (item) {
         next = item->next;
-        virSecurityManagerFree(item->securityManager);
+        virObjectUnref(item->securityManager);
         VIR_FREE(item);
         item = next;
     }

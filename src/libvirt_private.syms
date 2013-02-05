@@ -1045,7 +1045,6 @@ virSecurityDriverLookup;
 
 # security_manager.h
 virSecurityManagerClearSocketLabel;
-virSecurityManagerFree;
 virSecurityManagerGenLabel;
 virSecurityManagerGetDOI;
 virSecurityManagerGetModel;

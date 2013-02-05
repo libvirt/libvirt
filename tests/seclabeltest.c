@@ -39,7 +39,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
         exit(EXIT_FAILURE);
     }
 
-    virSecurityManagerFree(mgr);
+    virObjectUnref(mgr);
 
     return 0;
 }

@@ -1399,7 +1399,7 @@ lxcSecurityInit(virLXCDriverPtr driver)
 
 error:
     VIR_ERROR(_("Failed to initialize security drivers"));
-    virSecurityManagerFree(mgr);
+    virObjectUnref(mgr);
     return -1;
 }
 
@@ -1560,7 +1560,7 @@ static int lxcShutdown(void)
     virLXCProcessAutoDestroyShutdown(lxc_driver);
 
     virObjectUnref(lxc_driver->caps);
-    virSecurityManagerFree(lxc_driver->securityManager);
+    virObjectUnref(lxc_driver->securityManager);
     VIR_FREE(lxc_driver->configDir);
     VIR_FREE(lxc_driver->autostartDir);
     VIR_FREE(lxc_driver->stateDir);
