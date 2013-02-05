@@ -54,6 +54,7 @@ int virPipeReadUntilEOF(int outfd, int errfd,
                         char **outbuf, char **errbuf);
 
 int virSetUIDGID(uid_t uid, gid_t gid);
+int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits);
 
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 

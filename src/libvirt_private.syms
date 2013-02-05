@@ -1312,6 +1312,7 @@ virSetDeviceUnprivSGIO;
 virSetInherit;
 virSetNonBlock;
 virSetUIDGID;
+virSetUIDGIDWithCaps;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
