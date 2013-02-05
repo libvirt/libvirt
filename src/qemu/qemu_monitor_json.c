@@ -2660,8 +2660,16 @@ qemuMonitorJSONAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name)
 
     ret = qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply);
 
-    if (ret == 0)
+    if (ret == 0) {
+        /* qemu 1.2 lacks the functionality we need; but we have to
+         * probe to find that out.  Don't log errors in that case.  */
+        if (STREQ_NULLABLE(name, "/dev/null") &&
+            qemuMonitorJSONHasError(reply, "GenericError")) {
+            ret = -2;
+            goto cleanup;
+        }
         ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
     if (ret == 0) {
         virJSONValuePtr data = virJSONValueObjectGet(reply, "return");
 
