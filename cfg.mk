@@ -823,7 +823,7 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*(py|html\.in)|run.in$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(src/util/viralloc\.[ch]|examples/.*|tests/securityselinuxhelper.c)$$
+  ^(docs/hacking\.html\.in)|(src/util/viralloc\.[ch]|examples/.*|tests/securityselinuxhelper.c)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
