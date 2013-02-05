@@ -122,7 +122,7 @@ $(libvirtmod_lxc_la_OBJECTS): $(LXC_GENERATED)
 EXTRA_DIST += sanitytest.py
 
 check-local:
-	$(AM_V_GEN)PYTHONPATH=$(abs_topbuilddir):$(abs_topbuilddir)/.libs $(PYTHON) $(srcdir)/sanitytest.py
+	$(AM_V_GEN)../run $(PYTHON) $(srcdir)/sanitytest.py
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
