@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_CHECK_DBUS],[
 
   if test "$with_dbus" = "yes" ; then
     old_CFLAGS="$CFLAGS"
-    old_LIBS="$CFLAGS"
+    old_LIBS="$LIBS"
     CFLAGS="$CFLAGS $DBUS_CFLAGS"
     LIBS="$LIBS $DBUS_LIBS"
     AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
