@@ -4,256 +4,74 @@
    fun:malloc
    fun:xmalloc
    ...
-   obj:/bin/bash
+   fun:execute_command_internal
+   ...
+   obj:*/bin/bash
 }
 {
    bashMemoryLeak2
    Memcheck:Leak
    fun:malloc
    fun:xmalloc
-   fun:make_bare_simple_command
-   fun:make_simple_command
+   ...
    fun:yyparse
    fun:parse_command
    fun:read_command
-   fun:reader_loop
-   fun:main
-}
-{
-   xenDriverGlobalRegexes1
-   Memcheck:Leak
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes2
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes3
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes4
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   libXMLGlobals1
-   Memcheck:Leak
-   fun:malloc
-   fun:xmlNewMutex
-   fun:xmlInitGlobals
-   fun:xmlInitParser
-   fun:xmlParseDocument
-   obj:/usr/lib64/libxml2.so.2.6.32
-   fun:virDomainDefParseString
-   fun:testOpen
-   fun:do_open
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-}
-{
-   xenDriverGlobalRegexes1
-   Memcheck:Leak
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes2
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes3
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   xenDriverGlobalRegexes4
-   Memcheck:Leak
-   fun:*
-   fun:*
-   fun:*
-   fun:*
-   fun:regcomp
-   fun:xenHypervisorInit
-   fun:xenUnifiedRegister
-   fun:virInitialize
-   fun:virConnectOpenReadOnly
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-}
-{
-   libXMLGlobals1
-   Memcheck:Leak
-   fun:malloc
-   fun:xmlNewMutex
-   fun:xmlInitGlobals
-   fun:xmlInitParser
-   fun:xmlParseDocument
-   obj:/usr/lib64/libxml2.so.2.6.32
-   fun:virDomainDefParseString
-   fun:testOpen
-   fun:do_open
-   fun:testCompareHelper
-   fun:virtTestRun
-   fun:mymain
-}
-{
-   ignoreThreadLocalErrorObject
-   Memcheck:Leak
-   fun:calloc
-   fun:virAlloc
-   fun:virLastErrorObject
-   fun:virRaiseError
-   fun:statsErrorFunc
-   fun:xenLinuxDomainDeviceID
-   fun:testDeviceHelper
-   fun:virtTestRun
-   fun:mymain
-   fun:virtTestMain
-   fun:main
-}
-{
-   cg1
-   Memcheck:Param
-   capget(data)
-   fun:capget
-   fun:*
-   fun:capng_clear
-   fun:virClearCapabilities
-   fun:__virExec
-   fun:virExecWithHook
-}
-{
-   libnlMemoryLeak1
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   obj:/usr/lib/libnl.so.1.1
-}
-{
-   libnlMemoryLeak2
-   Memcheck:Leak
-   fun:calloc
-   obj:/usr/lib/libnl.so.1.1
-}
-{
-   libnlMemoryLeak3
-   Memcheck:Leak
-   fun:?alloc
    ...
-   obj:/lib64/libnl.so.1.1
+   obj:*/bin/bash
 }
 {
-   libselinuxMemoryLeak1
+   bashMemoryLeak3
    Memcheck:Leak
    fun:malloc
-   fun:getdelim
-   obj:/lib/libselinux.so.1
-}
-{
-   dashMemoryLeak1
-   Memcheck:Leak
-   fun:malloc
-   obj:/bin/dash
-}
-{
-   dashMemoryLeak2
-   Memcheck:Leak
-   fun:malloc
-   fun:strdup
-   obj:/bin/dash
-}
-{
-   vboxMemoryLeak1
-   Memcheck:Leak
+   fun:xmalloc
+   fun:array_create
+   fun:array_copy
+   fun:run_exit_trap
+   fun:exit_shell
    ...
-   fun:VBoxNsxpNS_InitXPCOM2
+   obj:*/bin/bash
 }
+#
+# Failure seen in /usr/lib64/ld-2.15.so
+#
 {
-   libnetcfMemoryLeak1
-   fun:malloc
-   fun:xmlStrndup
-   fun:xmlHashUpdateEntry3
-   fun:*
-   fun:xsltRegisterAllExtras
-   fun:drv_init
-   fun:interfaceOpenInterface
+    dlInitMemoryLeak1
+    Memcheck:Leak
+    fun:?alloc
+    ...
+    fun:call_init.part.0
+    fun:_dl_init
+    ...
+    obj:*/lib*/ld-2.*so*
+}
+#
+# Failure seen in
+#  p11_kit_registered_module_to_name: /usr/lib64/libp11-kit.so.0.0.0
+#  gnutls_pkcs11_init: /usr/lib64/libgnutls.so.26.22.4
+#
+{
+    gnutlsInitMemoryLeak
+    Memcheck:Leak
+    fun:malloc
+    fun:strdup
+    fun:p11_kit_registered_module_to_name
+    fun:gnutls_pkcs11_init
+    fun:gnutls_global_init
+    ...
+    obj:*/lib*/libc-2.*so*
+}
+#
+# Failure seen in eventtest
+#
+{
+    eventtestMemoryLeak
+    Memcheck:Leak
+    fun:calloc
+    fun:_dl_allocate_tls
+    fun:pthread_create*
+    fun:mymain
+    fun:virtTestMain
+    ...
+    obj:*/lib*/libc-2.*so*
 }
