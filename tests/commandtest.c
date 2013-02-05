@@ -1,7 +1,7 @@
 /*
  * commandtest.c: Test the libCommand API
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -960,7 +960,10 @@ mymain(void)
         dup2(fd, 3) < 0 ||
         dup2(fd, 4) < 0 ||
         dup2(fd, 5) < 0 ||
-        (fd > 5 && VIR_CLOSE(fd) < 0))
+        dup2(fd, 6) < 0 ||
+        dup2(fd, 7) < 0 ||
+        dup2(fd, 8) < 0 ||
+        (fd > 8 && VIR_CLOSE(fd) < 0))
         return EXIT_FAILURE;
 
     /* Prime the debug/verbose settings from the env vars,
@@ -977,6 +980,12 @@ mymain(void)
     fd = 4;
     VIR_FORCE_CLOSE(fd);
     fd = 5;
+    VIR_FORCE_CLOSE(fd);
+    fd = 6;
+    VIR_FORCE_CLOSE(fd);
+    fd = 7;
+    VIR_FORCE_CLOSE(fd);
+    fd = 8;
     VIR_FORCE_CLOSE(fd);
 
     virEventRegisterDefaultImpl();
