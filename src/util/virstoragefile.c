@@ -497,44 +497,56 @@ qedGetBackingStore(char **res,
 }
 
 /**
- * Return an absolute path corresponding to PATH, which is absolute or relative
- * to the directory containing BASE_FILE, or NULL on error
+ * Given a starting point START (either an original file name, or the
+ * directory containing the original name, depending on START_IS_DIR)
+ * and a possibly relative backing file NAME, compute the relative
+ * DIRECTORY (optional) and CANONICAL (mandatory) location of the
+ * backing file.  Return 0 on success, negative on error.
  */
-static char *
-absolutePathFromBaseFile(const char *base_file, const char *path)
+static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5)
+virFindBackingFile(const char *start, bool start_is_dir, const char *path,
+                   char **directory, char **canonical)
 {
-    char *res = NULL;
-    char *tmp = NULL;
-    size_t d_len = dir_len(base_file);
+    char *combined = NULL;
+    int ret = -1;
 
-    /* If path is already absolute, or if dirname(base_file) is ".",
-       just return a copy of path.  */
-    if (*path == '/' || d_len == 0) {
-        if (!(res = canonicalize_file_name(path)))
-            virReportSystemError(errno,
-                                 _("Can't canonicalize path '%s'"), path);
+    if (*path == '/') {
+        /* Safe to cast away const */
+        combined = (char *)path;
+    } else {
+        size_t d_len = start_is_dir ? strlen(start) : dir_len(start);
 
-        goto cleanup;
+        if (d_len > INT_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("name too long: '%s'"), start);
+            goto cleanup;
+        } else if (d_len == 0) {
+            start = ".";
+            d_len = 1;
+        }
+        if (virAsprintf(&combined, "%.*s/%s", (int)d_len, start, path) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
     }
 
-    /* Ensure that the following cast-to-int is valid.  */
-    if (d_len > INT_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Directory name too long: '%s'"), base_file);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&tmp, "%.*s/%s", (int) d_len, base_file, path) < 0) {
+    if (directory && !(*directory = mdir_name(combined))) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (!(res = canonicalize_file_name(tmp)))
-        virReportSystemError(errno, _("Can't canonicalize path '%s'"), path);
+    if (!(*canonical = canonicalize_file_name(combined))) {
+        virReportSystemError(errno,
+                             _("Can't canonicalize path '%s'"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
 
 cleanup:
-    VIR_FREE(tmp);
-    return res;
+    if (combined != path)
+        VIR_FREE(combined);
+    return ret;
 }
 
 
@@ -657,9 +669,13 @@ cleanup:
 }
 
 
+/* Given a file descriptor FD open on PATH, and optionally opened from
+ * a given DIRECTORY, return metadata about that file, assuming it has
+ * the given FORMAT. */
 static virStorageFileMetadataPtr
 virStorageFileGetMetadataInternal(const char *path,
                                   int fd,
+                                  const char *directory,
                                   int format)
 {
     virStorageFileMetadata *meta = NULL;
@@ -766,8 +782,11 @@ virStorageFileGetMetadataInternal(const char *path,
             if (virBackingStoreIsFile(backing)) {
                 meta->backingStoreIsFile = true;
                 meta->backingStoreRaw = meta->backingStore;
-                meta->backingStore = absolutePathFromBaseFile(path, backing);
-                if (meta->backingStore == NULL) {
+                meta->backingStore = NULL;
+                if (virFindBackingFile(directory ? directory : path,
+                                       !!directory, backing,
+                                       &meta->directory,
+                                       &meta->backingStore) < 0) {
                     /* the backing file is (currently) unavailable, treat this
                      * file as standalone:
                      * backingStoreRaw is kept to mark broken image chains */
@@ -906,13 +925,13 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 int format)
 {
-    return virStorageFileGetMetadataInternal(path, fd, format);
+    return virStorageFileGetMetadataInternal(path, fd, NULL, format);
 }
 
 /* Recursive workhorse for virStorageFileGetMetadata.  */
 static virStorageFileMetadataPtr
-virStorageFileGetMetadataRecurse(const char *path, int format,
-                                 uid_t uid, gid_t gid,
+virStorageFileGetMetadataRecurse(const char *path, const char *directory,
+                                 int format, uid_t uid, gid_t gid,
                                  bool allow_probe, virHashTablePtr cycle)
 {
     int fd;
@@ -935,7 +954,7 @@ virStorageFileGetMetadataRecurse(const char *path, int format,
         return NULL;
     }
 
-    ret = virStorageFileGetMetadataInternal(path, fd, format);
+    ret = virStorageFileGetMetadataInternal(path, fd, directory, format);
 
     if (VIR_CLOSE(fd) < 0)
         VIR_WARN("could not close file %s", path);
@@ -947,6 +966,7 @@ virStorageFileGetMetadataRecurse(const char *path, int format,
             ret->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
         format = ret->backingStoreFormat;
         ret->backingMeta = virStorageFileGetMetadataRecurse(ret->backingStore,
+                                                            ret->directory,
                                                             format,
                                                             uid, gid,
                                                             allow_probe,
@@ -994,7 +1014,7 @@ virStorageFileGetMetadata(const char *path, int format,
 
     if (format <= VIR_STORAGE_FILE_NONE)
         format = allow_probe ? VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
-    ret = virStorageFileGetMetadataRecurse(path, format, uid, gid,
+    ret = virStorageFileGetMetadataRecurse(path, NULL, format, uid, gid,
                                            allow_probe, cycle);
     virHashFree(cycle);
     return ret;
@@ -1014,6 +1034,7 @@ virStorageFileFreeMetadata(virStorageFileMetadata *meta)
     virStorageFileFreeMetadata(meta->backingMeta);
     VIR_FREE(meta->backingStore);
     VIR_FREE(meta->backingStoreRaw);
+    VIR_FREE(meta->directory);
     VIR_FREE(meta);
 }
 
@@ -1316,7 +1337,10 @@ virStorageFileChainLookup(virStorageFileMetadataPtr chain, const char *start,
                    STREQ(name, owner->backingStore)) {
             break;
         } else if (owner->backingStoreIsFile) {
-            char *absName = absolutePathFromBaseFile(*parent, name);
+            char *absName = NULL;
+            if (virFindBackingFile(owner->directory, true, name,
+                                   NULL, &absName) < 0)
+                goto error;
             if (absName && STREQ(absName, owner->backingStore)) {
                 VIR_FREE(absName);
                 break;
