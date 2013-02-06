@@ -1,7 +1,7 @@
 /*
  * qemu_conf.c: QEMU configuration management
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -79,11 +79,13 @@ struct _qemuDriverCloseDef {
     qemuDriverCloseCallback cb;
 };
 
-void qemuDriverLock(virQEMUDriverPtr driver)
+static void
+qemuDriverLock(virQEMUDriverPtr driver)
 {
     virMutexLock(&driver->lock);
 }
-void qemuDriverUnlock(virQEMUDriverPtr driver)
+static void
+qemuDriverUnlock(virQEMUDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
@@ -523,7 +525,11 @@ no_memory:
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
 {
-    return virObjectRef(driver->config);
+    virQEMUDriverConfigPtr conf;
+    qemuDriverLock(driver);
+    conf = virObjectRef(driver->config);
+    qemuDriverUnlock(driver);
+    return conf;
 }
 
 
@@ -613,16 +619,22 @@ err_exit:
 virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
                                         bool refresh)
 {
+    virCapsPtr ret = NULL;
     if (refresh) {
         virCapsPtr caps = NULL;
         if ((caps = virQEMUDriverCreateCapabilities(driver)) == NULL)
             return NULL;
 
+        qemuDriverLock(driver);
         virObjectUnref(driver->caps);
         driver->caps = caps;
+    } else {
+        qemuDriverLock(driver);
     }
 
-    return virObjectRef(driver->caps);
+    ret = virObjectRef(driver->caps);
+    qemuDriverUnlock(driver);
+    return ret;
 }
 
 
@@ -657,7 +669,9 @@ qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     qemuDriverCloseDefPtr closeDef;
+    int ret = -1;
 
+    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, conn=%p, cb=%p",
               vm->def->name, uuidstr, conn, cb);
@@ -669,30 +683,34 @@ qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
                            _("Close callback for domain %s already registered"
                              " with another connection %p"),
                            vm->def->name, closeDef->conn);
-            return -1;
+            goto cleanup;
         }
         if (closeDef->cb && closeDef->cb != cb) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Another close callback is already defined for"
                              " domain %s"), vm->def->name);
-            return -1;
+            goto cleanup;
         }
 
         closeDef->cb = cb;
     } else {
         if (VIR_ALLOC(closeDef) < 0) {
             virReportOOMError();
-            return -1;
+            goto cleanup;
         }
 
         closeDef->conn = conn;
         closeDef->cb = cb;
         if (virHashAddEntry(driver->closeCallbacks, uuidstr, closeDef) < 0) {
             VIR_FREE(closeDef);
-            return -1;
+            goto cleanup;
         }
     }
-    return 0;
+
+    ret = 0;
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
 }
 
 int
@@ -702,23 +720,28 @@ qemuDriverCloseCallbackUnset(virQEMUDriverPtr driver,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     qemuDriverCloseDefPtr closeDef;
+    int ret = -1;
 
+    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, cb=%p",
               vm->def->name, uuidstr, cb);
 
     closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
     if (!closeDef)
-        return -1;
+        goto cleanup;
 
     if (closeDef->cb && closeDef->cb != cb) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Trying to remove mismatching close callback for"
                          " domain %s"), vm->def->name);
-        return -1;
+        goto cleanup;
     }
 
-    return virHashRemoveEntry(driver->closeCallbacks, uuidstr);
+    ret = virHashRemoveEntry(driver->closeCallbacks, uuidstr);
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
 }
 
 qemuDriverCloseCallback
@@ -730,6 +753,7 @@ qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
     qemuDriverCloseDefPtr closeDef;
     qemuDriverCloseCallback cb = NULL;
 
+    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, conn=%p",
               vm->def->name, uuidstr, conn);
@@ -739,6 +763,7 @@ qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
         cb = closeDef->cb;
 
     VIR_DEBUG("cb=%p", cb);
+    qemuDriverUnlock(driver);
     return cb;
 }
 
@@ -794,8 +819,9 @@ qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
         driver, conn
     };
     VIR_DEBUG("conn=%p", conn);
-
+    qemuDriverLock(driver);
     virHashForEach(driver->closeCallbacks, qemuDriverCloseCallbackRun, &data);
+    qemuDriverUnlock(driver);
 }
 
 /* Construct the hash key for sharedDisks as "major:minor" */
@@ -832,6 +858,7 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret = -1;
 
+    qemuDriverLock(driver);
     if (!(key = qemuGetSharedDiskKey(disk_path)))
         goto cleanup;
 
@@ -845,6 +872,7 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
+    qemuDriverUnlock(driver);
     VIR_FREE(key);
     return ret;
 }
@@ -860,6 +888,7 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret = -1;
 
+    qemuDriverLock(driver);
     if (!(key = qemuGetSharedDiskKey(disk_path)))
         goto cleanup;
 
@@ -876,6 +905,7 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
+    qemuDriverUnlock(driver);
     VIR_FREE(key);
     return ret;
 }

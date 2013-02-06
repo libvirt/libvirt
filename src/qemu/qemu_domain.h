@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -175,7 +175,6 @@ int qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 
 void qemuDomainEventFlush(int timer, void *opaque);
 
-/* driver must be locked before calling */
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virDomainEventPtr event);
 
@@ -189,14 +188,6 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
-    ATTRIBUTE_RETURN_CHECK;
-int qemuDomainObjBeginJobWithDriver(virQEMUDriverPtr driver,
-                                    virDomainObjPtr obj,
-                                    enum qemuDomainJob job)
-    ATTRIBUTE_RETURN_CHECK;
-int qemuDomainObjBeginAsyncJobWithDriver(virQEMUDriverPtr driver,
-                                         virDomainObjPtr obj,
-                                         enum qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_RETURN_CHECK;
 
 bool qemuDomainObjEndJob(virQEMUDriverPtr driver,
@@ -224,38 +215,22 @@ void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
 void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
                               virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjEnterMonitorWithDriver(virQEMUDriverPtr driver,
-                                         virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                    virDomainObjPtr obj,
                                    enum qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-void qemuDomainObjExitMonitorWithDriver(virQEMUDriverPtr driver,
-                                        virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 
-void qemuDomainObjEnterAgent(virQEMUDriverPtr driver,
-                             virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjExitAgent(virQEMUDriverPtr driver,
-                            virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjEnterAgentWithDriver(virQEMUDriverPtr driver,
-                                       virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjExitAgentWithDriver(virQEMUDriverPtr driver,
-                                      virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjEnterAgent(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
+void qemuDomainObjExitAgent(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
 
 
-void qemuDomainObjEnterRemoteWithDriver(virQEMUDriverPtr driver,
-                                        virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjExitRemoteWithDriver(virQEMUDriverPtr driver,
-                                       virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void qemuDomainObjEnterRemote(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
+void qemuDomainObjExitRemote(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
 
 int qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                            virDomainDefPtr vm,

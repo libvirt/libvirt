@@ -14,35 +14,24 @@ Basic locking primitives
 
 There are a number of locks on various objects
 
-  * struct qemud_driver: RWLock
+  * virQEMUDriverPtr
 
-    This is the top level lock on the entire driver. Every API call in
-    the QEMU driver is blocked while this is held, though some internal
-    callbacks may still run asynchronously. This lock must never be held
-    for anything which sleeps/waits (i.e. monitor commands)
+    The qemu_conf.h file has inline comments describing the locking
+    needs for each field. Any field marked immutable, self-locking
+    can be accessed without the driver lock. For other fields there
+    are typically helper APIs in qemu_conf.c that provide serialized
+    access to the data. No code outside qemu_conf.c should ever
+    acquire this lock
 
-    When obtaining the driver lock, under *NO* circumstances must
-    any lock be held on a virDomainObjPtr. This *WILL* result in
-    deadlock.
-
-
-
-  * virDomainObjPtr:  Mutex
+  * virDomainObjPtr
 
     Will be locked after calling any of the virDomainFindBy{ID,Name,UUID}
     methods.
 
     Lock must be held when changing/reading any variable in the virDomainObjPtr
 
-    Once the lock is held, you must *NOT* try to lock the driver. You must
-    release all virDomainObjPtr locks before locking the driver, or deadlock
-    *WILL* occur.
-
     If the lock needs to be dropped & then re-acquired for a short period of
     time, the reference count must be incremented first using virDomainObjRef().
-    If the reference count is incremented in this way, it is not necessary
-    to have the driver locked when re-acquiring the dropped locked, since the
-    reference count prevents it being freed by another thread.
 
     This lock must not be held for anything which sleeps/waits (i.e. monitor
     commands).
@@ -103,25 +92,9 @@ There are a number of locks on various objects
     The virDomainObjPtr lock *MUST* then be released when invoking the
     monitor command.
 
-    The driver lock *MUST* be released when invoking the monitor commands.
-
-    This ensures that the virDomainObjPtr & driver are both unlocked while
-    sleeping/waiting for the monitor response.
-
-
 
 Helper methods
 --------------
-
-To lock the driver
-
-  qemuDriverLock()
-    - Acquires the driver lock
-
-  qemuDriverUnlock()
-    - Releases the driver lock
-
-
 
 To lock the virDomainObjPtr
 
@@ -135,7 +108,7 @@ To lock the virDomainObjPtr
 
 To acquire the normal job condition
 
-  qemuDomainObjBeginJob()           (if driver is unlocked)
+  qemuDomainObjBeginJob()
     - Increments ref count on virDomainObjPtr
     - Waits until the job is compatible with current async job or no
       async job is running
@@ -144,23 +117,6 @@ To acquire the normal job condition
     - Rechecks if the job is still compatible and repeats waiting if it
       isn't
     - Sets job.active to the job type
-
-  qemuDomainObjBeginJobWithDriver() (if driver needs to be locked)
-    - Increments ref count on virDomainObjPtr
-    - Unlocks driver
-    - Waits until the job is compatible with current async job or no
-      async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
-      mutex
-    - Rechecks if the job is still compatible and repeats waiting if it
-      isn't
-    - Sets job.active to the job type
-    - Unlocks virDomainObjPtr
-    - Locks driver
-    - Locks virDomainObjPtr
-
-   NB: this variant is required in order to comply with lock ordering
-   rules for virDomainObjPtr vs. driver
 
 
   qemuDomainObjEndJob()
@@ -172,7 +128,7 @@ To acquire the normal job condition
 
 To acquire the asynchronous job condition
 
-  qemuDomainObjBeginAsyncJob()            (if driver is unlocked)
+  qemuDomainObjBeginAsyncJob()
     - Increments ref count on virDomainObjPtr
     - Waits until no async job is running
     - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
@@ -180,22 +136,6 @@ To acquire the asynchronous job condition
     - Rechecks if any async job was started while waiting on job.cond
       and repeats waiting in that case
     - Sets job.asyncJob to the asynchronous job type
-
-  qemuDomainObjBeginAsyncJobWithDriver()  (if driver needs to be locked)
-    - Increments ref count on virDomainObjPtr
-    - Unlocks driver
-    - Waits until no async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
-      mutex
-    - Rechecks if any async job was started while waiting on job.cond
-      and repeats waiting in that case
-    - Sets job.asyncJob to the asynchronous job type
-    - Unlocks virDomainObjPtr
-    - Locks driver
-    - Locks virDomainObjPtr
-
-   NB: this variant is required in order to comply with lock ordering
-   rules for virDomainObjPtr vs driver
 
 
   qemuDomainObjEndAsyncJob()
@@ -215,44 +155,20 @@ To acquire the QEMU monitor lock
     - Releases the qemuMonitorObjPtr lock
     - Acquires the virDomainObjPtr lock
 
-  NB: caller must take care to drop the driver lock if necessary
-
   These functions must not be used by an asynchronous job.
 
 
-To acquire the QEMU monitor lock with the driver lock held
-
-  qemuDomainObjEnterMonitorWithDriver()
-    - Acquires the qemuMonitorObjPtr lock
-    - Releases the virDomainObjPtr lock
-    - Releases the driver lock
-
-  qemuDomainObjExitMonitorWithDriver()
-    - Releases the qemuMonitorObjPtr lock
-    - Acquires the driver lock
-    - Acquires the virDomainObjPtr lock
-
-  NB: caller must take care to drop the driver lock if necessary
-
-  These functions must not be used inside an asynchronous job.
-
-
-To acquire the QEMU monitor lock with the driver lock held and as part
-of an asynchronous job
+To acquire the QEMU monitor lock as part of an asynchronous job
 
   qemuDomainObjEnterMonitorAsync()
     - Validates that the right async job is still running
     - Acquires the qemuMonitorObjPtr lock
     - Releases the virDomainObjPtr lock
-    - Releases the driver lock
     - Validates that the VM is still active
 
-  qemuDomainObjExitMonitorWithDriver()
+  qemuDomainObjExitMonitor()
     - Releases the qemuMonitorObjPtr lock
-    - Acquires the driver lock
     - Acquires the virDomainObjPtr lock
-
-  NB: caller must take care to drop the driver lock if necessary
 
   These functions are for use inside an asynchronous job; the caller
   must check for a return of -1 (VM not running, so nothing to exit).
@@ -260,16 +176,13 @@ of an asynchronous job
   used from a sync job (such as when first starting a domain).
 
 
-To keep a domain alive while waiting on a remote command, starting
-with the driver lock held
+To keep a domain alive while waiting on a remote command
 
-  qemuDomainObjEnterRemoterWithDriver()
+  qemuDomainObjEnterRemote()
     - Increments ref count on virDomainObjPtr
     - Releases the virDomainObjPtr lock
-    - Releases the driver lock
 
-  qemuDomainObjExitRemoteWithDriver()
-    - Acquires the driver lock
+  qemuDomainObjExitRemote()
     - Acquires the virDomainObjPtr lock
     - Decrements ref count on virDomainObjPtr
 
@@ -278,51 +191,22 @@ Design patterns
 ---------------
 
 
- * Accessing or updating something with just the driver
-
-     qemuDriverLock(driver);
-
-     ...do work...
-
-     qemuDriverUnlock(driver);
-
-
-
  * Accessing something directly to do with a virDomainObjPtr
 
      virDomainObjPtr obj;
 
-     qemuDriverLock(driver);
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
-     qemuDriverUnlock(driver);
-
-     ...do work...
-
-     virDomainObjUnlock(obj);
-
-
-
- * Accessing something directly to do with a virDomainObjPtr and driver
-
-     virDomainObjPtr obj;
-
-     qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
 
      ...do work...
 
      virDomainObjUnlock(obj);
-     qemuDriverUnlock(driver);
-
 
 
  * Updating something directly to do with a virDomainObjPtr
 
      virDomainObjPtr obj;
 
-     qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
-     qemuDriverUnlock(driver);
 
      qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
@@ -341,9 +225,7 @@ Design patterns
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
-     qemuDriverUnlock(driver);
 
      qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
 
@@ -362,42 +244,14 @@ Design patterns
 
 
 
-
- * Invoking a monitor command on a virDomainObjPtr with driver locked too
-
+ * Running asynchronous job
 
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
 
-     qemuDomainObjBeginJobWithDriver(obj, QEMU_JOB_TYPE);
-
-     ...do prep work...
-
-     if (virDomainObjIsActive(vm)) {
-         qemuDomainObjEnterMonitorWithDriver(driver, obj);
-         qemuMonitorXXXX(priv->mon);
-         qemuDomainObjExitMonitorWithDriver(driver, obj);
-     }
-
-     ...do final work...
-
-     qemuDomainObjEndJob(obj);
-     virDomainObjUnlock(obj);
-     qemuDriverUnlock(driver);
-
-
- * Running asynchronous job with driver lock held
-
-     virDomainObjPtr obj;
-     qemuDomainObjPrivatePtr priv;
-
-     qemuDriverLock(driver);
-     obj = virDomainFindByUUID(driver->domains, dom->uuid);
-
-     qemuDomainObjBeginAsyncJobWithDriver(obj, QEMU_ASYNC_JOB_TYPE);
+     qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
      qemuDomainObjSetAsyncJobMask(obj, allowedJobs);
 
      ...do prep work...
@@ -408,7 +262,7 @@ Design patterns
          goto error;
      }
      ...start qemu job...
-     qemuDomainObjExitMonitorWithDriver(driver, obj);
+     qemuDomainObjExitMonitor(driver, obj);
 
      while (!finished) {
          if (qemuDomainObjEnterMonitorAsync(driver, obj,
@@ -417,7 +271,7 @@ Design patterns
              goto error;
          }
          ...monitor job progress...
-         qemuDomainObjExitMonitorWithDriver(driver, obj);
+         qemuDomainObjExitMonitor(driver, obj);
 
          virObjectUnlock(obj);
          sleep(aWhile);
@@ -428,7 +282,6 @@ Design patterns
 
      qemuDomainObjEndAsyncJob(obj);
      virDomainObjUnlock(obj);
-     qemuDriverUnlock(driver);
 
 
  * Coordinating with a remote server for migration
@@ -436,17 +289,16 @@ Design patterns
      virDomainObjPtr obj;
      qemuDomainObjPrivatePtr priv;
 
-     qemuDriverLock(driver);
      obj = virDomainFindByUUID(driver->domains, dom->uuid);
 
-     qemuDomainObjBeginAsyncJobWithDriver(obj, QEMU_ASYNC_JOB_TYPE);
+     qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
 
      ...do prep work...
 
      if (virDomainObjIsActive(vm)) {
-         qemuDomainObjEnterRemoteWithDriver(driver, obj);
+         qemuDomainObjEnterRemote(obj);
          ...communicate with remote...
-         qemuDomainObjExitRemoteWithDriver(driver, obj);
+         qemuDomainObjExitRemote(obj);
          /* domain may have been stopped while we were talking to remote */
          if (!virDomainObjIsActive(vm)) {
              qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -458,14 +310,3 @@ Design patterns
 
      qemuDomainObjEndAsyncJob(obj);
      virDomainObjUnlock(obj);
-     qemuDriverUnlock(driver);
-
-
-Summary
--------
-
-  * Respect lock ordering rules: never lock driver if anything else is
-    already locked
-
-  * Don't hold locks in code which sleeps: unlock driver & virDomainObjPtr
-    when using monitor

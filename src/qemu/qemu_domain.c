@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -116,7 +116,6 @@ qemuDomainAsyncJobPhaseFromString(enum qemuDomainAsyncJob job,
 }
 
 
-/* driver must be locked before calling */
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virDomainEventPtr event)
 {
@@ -760,12 +759,10 @@ qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, enum qemuDomainJob job)
 #define QEMU_JOB_WAIT_TIME (1000ull * 30)
 
 /*
- * obj must be locked before calling; driver_locked says if qemu_driver is
- * locked or not.
+ * obj must be locked before calling
  */
 static int ATTRIBUTE_NONNULL(1)
 qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
-                              bool driver_locked,
                               virDomainObjPtr obj,
                               enum qemuDomainJob job,
                               enum qemuDomainAsyncJob asyncJob)
@@ -786,8 +783,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     then = now + QEMU_JOB_WAIT_TIME;
 
     virObjectRef(obj);
-    if (driver_locked)
-        qemuDriverUnlock(driver);
 
 retry:
     if (cfg->maxQueuedJobs &&
@@ -827,12 +822,6 @@ retry:
         priv->job.start = now;
     }
 
-    if (driver_locked) {
-        virObjectUnlock(obj);
-        qemuDriverLock(driver);
-        virObjectLock(obj);
-    }
-
     if (qemuDomainTrackJob(job))
         qemuDomainObjSaveJob(driver, obj);
 
@@ -861,18 +850,13 @@ error:
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
     priv->jobs_queued--;
-    if (driver_locked) {
-        virObjectUnlock(obj);
-        qemuDriverLock(driver);
-        virObjectLock(obj);
-    }
     virObjectUnref(obj);
     virObjectUnref(cfg);
     return -1;
 }
 
 /*
- * obj must be locked before calling, driver must NOT be locked
+ * obj must be locked before calling
  *
  * This must be called by anything that will change the VM state
  * in any way, or anything that will use the QEMU monitor.
@@ -884,7 +868,7 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
                           enum qemuDomainJob job)
 {
-    return qemuDomainObjBeginJobInternal(driver, false, obj, job,
+    return qemuDomainObjBeginJobInternal(driver, obj, job,
                                          QEMU_ASYNC_JOB_NONE);
 }
 
@@ -892,43 +876,13 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
 {
-    return qemuDomainObjBeginJobInternal(driver, false, obj, QEMU_JOB_ASYNC,
+    return qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
                                          asyncJob);
 }
 
-/*
- * obj and driver must be locked before calling.
- *
- * This must be called by anything that will change the VM state
- * in any way, or anything that will use the QEMU monitor.
- *
- * Upon successful return, the object will have its ref count increased,
- * successful calls must be followed by EndJob eventually
- */
-int qemuDomainObjBeginJobWithDriver(virQEMUDriverPtr driver,
-                                    virDomainObjPtr obj,
-                                    enum qemuDomainJob job)
-{
-    if (job <= QEMU_JOB_NONE || job >= QEMU_JOB_ASYNC) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to start invalid job"));
-        return -1;
-    }
-
-    return qemuDomainObjBeginJobInternal(driver, true, obj, job,
-                                         QEMU_ASYNC_JOB_NONE);
-}
-
-int qemuDomainObjBeginAsyncJobWithDriver(virQEMUDriverPtr driver,
-                                         virDomainObjPtr obj,
-                                         enum qemuDomainAsyncJob asyncJob)
-{
-    return qemuDomainObjBeginJobInternal(driver, true, obj, QEMU_JOB_ASYNC,
-                                         asyncJob);
-}
 
 /*
- * obj must be locked before calling, driver does not matter
+ * obj must be locked before calling
  *
  * To be called after completing the work associated with the
  * earlier qemuDomainBeginJob() call
@@ -983,9 +937,17 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
     priv->job.asyncAbort = true;
 }
 
+/*
+ * obj must be locked before calling
+ *
+ * To be called immediately before any QEMU monitor API call
+ * Must have already either called qemuDomainObjBeginJob() and checked
+ * that the VM is still active; may not be used for nested async jobs.
+ *
+ * To be followed with qemuDomainObjExitMonitor() once complete
+ */
 static int
 qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
-                                  bool driver_locked,
                                   virDomainObjPtr obj,
                                   enum qemuDomainAsyncJob asyncJob)
 {
@@ -1000,7 +962,7 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
         if (priv->job.asyncOwner != virThreadSelfID())
             VIR_WARN("This thread doesn't seem to be the async job owner: %d",
                      priv->job.asyncOwner);
-        if (qemuDomainObjBeginJobInternal(driver, driver_locked, obj,
+        if (qemuDomainObjBeginJobInternal(driver, obj,
                                           QEMU_JOB_ASYNC_NESTED,
                                           QEMU_ASYNC_JOB_NONE) < 0)
             return -1;
@@ -1020,15 +982,12 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
     virObjectRef(priv->mon);
     ignore_value(virTimeMillisNow(&priv->monStart));
     virObjectUnlock(obj);
-    if (driver_locked)
-        qemuDriverUnlock(driver);
 
     return 0;
 }
 
 static void ATTRIBUTE_NONNULL(1)
 qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
-                                 bool driver_locked,
                                  virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
@@ -1039,8 +998,6 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
     if (hasRefs)
         virObjectUnlock(priv->mon);
 
-    if (driver_locked)
-        qemuDriverLock(driver);
     virObjectLock(obj);
 
     priv->monStart = 0;
@@ -1056,59 +1013,34 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
     }
 }
 
-/*
- * obj must be locked before calling, driver must be unlocked
- *
- * To be called immediately before any QEMU monitor API call
- * Must have already either called qemuDomainObjBeginJob() and checked
- * that the VM is still active; may not be used for nested async jobs.
- *
- * To be followed with qemuDomainObjExitMonitor() once complete
- */
 void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
                                virDomainObjPtr obj)
 {
-    ignore_value(qemuDomainObjEnterMonitorInternal(driver, false, obj,
+    ignore_value(qemuDomainObjEnterMonitorInternal(driver, obj,
                                                    QEMU_ASYNC_JOB_NONE));
 }
 
-/* obj must NOT be locked before calling, driver must be unlocked
+/* obj must NOT be locked before calling
  *
  * Should be paired with an earlier qemuDomainObjEnterMonitor() call
  */
 void qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
                               virDomainObjPtr obj)
 {
-    qemuDomainObjExitMonitorInternal(driver, false, obj);
+    qemuDomainObjExitMonitorInternal(driver, obj);
 }
 
 /*
- * obj must be locked before calling, driver must be locked
- *
- * To be called immediately before any QEMU monitor API call
- * Must have already either called qemuDomainObjBeginJobWithDriver() and
- * checked that the VM is still active; may not be used for nested async jobs.
- *
- * To be followed with qemuDomainObjExitMonitorWithDriver() once complete
- */
-void qemuDomainObjEnterMonitorWithDriver(virQEMUDriverPtr driver,
-                                         virDomainObjPtr obj)
-{
-    ignore_value(qemuDomainObjEnterMonitorInternal(driver, true, obj,
-                                                   QEMU_ASYNC_JOB_NONE));
-}
-
-/*
- * obj and driver must be locked before calling
+ * obj must be locked before calling
  *
  * To be called immediately before any QEMU monitor API call.
- * Must have already either called qemuDomainObjBeginJobWithDriver()
+ * Must have already either called qemuDomainObjBeginJob()
  * and checked that the VM is still active, with asyncJob of
  * QEMU_ASYNC_JOB_NONE; or already called qemuDomainObjBeginAsyncJob,
  * with the same asyncJob.
  *
  * Returns 0 if job was started, in which case this must be followed with
- * qemuDomainObjExitMonitorWithDriver(); or -1 if the job could not be
+ * qemuDomainObjExitMonitor(); or -1 if the job could not be
  * started (probably because the vm exited in the meantime).
  */
 int
@@ -1116,26 +1048,22 @@ qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                enum qemuDomainAsyncJob asyncJob)
 {
-    return qemuDomainObjEnterMonitorInternal(driver, true, obj, asyncJob);
+    return qemuDomainObjEnterMonitorInternal(driver, obj, asyncJob);
 }
 
-/* obj must NOT be locked before calling, driver must be unlocked,
- * and will be locked after returning
+
+
+/*
+ * obj must be locked before calling
  *
- * Should be paired with an earlier qemuDomainObjEnterMonitorWithDriver() call
+ * To be called immediately before any QEMU agent API call.
+ * Must have already called qemuDomainObjBeginJob() and checked
+ * that the VM is still active.
+ *
+ * To be followed with qemuDomainObjExitAgent() once complete
  */
-void qemuDomainObjExitMonitorWithDriver(virQEMUDriverPtr driver,
-                                        virDomainObjPtr obj)
-{
-    qemuDomainObjExitMonitorInternal(driver, true, obj);
-}
-
-
-
-static int
-qemuDomainObjEnterAgentInternal(virQEMUDriverPtr driver,
-                                bool driver_locked,
-                                virDomainObjPtr obj)
+void
+qemuDomainObjEnterAgent(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
@@ -1143,16 +1071,15 @@ qemuDomainObjEnterAgentInternal(virQEMUDriverPtr driver,
     virObjectRef(priv->agent);
     ignore_value(virTimeMillisNow(&priv->agentStart));
     virObjectUnlock(obj);
-    if (driver_locked)
-        qemuDriverUnlock(driver);
-
-    return 0;
 }
 
-static void ATTRIBUTE_NONNULL(1)
-qemuDomainObjExitAgentInternal(virQEMUDriverPtr driver,
-                               bool driver_locked,
-                               virDomainObjPtr obj)
+
+/* obj must NOT be locked before calling
+ *
+ * Should be paired with an earlier qemuDomainObjEnterAgent() call
+ */
+void
+qemuDomainObjExitAgent(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
     bool hasRefs;
@@ -1162,8 +1089,6 @@ qemuDomainObjExitAgentInternal(virQEMUDriverPtr driver,
     if (hasRefs)
         virObjectUnlock(priv->agent);
 
-    if (driver_locked)
-        qemuDriverLock(driver);
     virObjectLock(obj);
 
     priv->agentStart = 0;
@@ -1171,69 +1096,14 @@ qemuDomainObjExitAgentInternal(virQEMUDriverPtr driver,
         priv->agent = NULL;
 }
 
-/*
- * obj must be locked before calling, driver must be unlocked
- *
- * To be called immediately before any QEMU agent API call.
- * Must have already called qemuDomainObjBeginJob() and checked
- * that the VM is still active.
- *
- * To be followed with qemuDomainObjExitAgent() once complete
- */
-void qemuDomainObjEnterAgent(virQEMUDriverPtr driver,
-                             virDomainObjPtr obj)
-{
-    ignore_value(qemuDomainObjEnterAgentInternal(driver, false, obj));
-}
-
-/* obj must NOT be locked before calling, driver must be unlocked
- *
- * Should be paired with an earlier qemuDomainObjEnterAgent() call
- */
-void qemuDomainObjExitAgent(virQEMUDriverPtr driver,
-                            virDomainObjPtr obj)
-{
-    qemuDomainObjExitAgentInternal(driver, false, obj);
-}
-
-/*
- * obj must be locked before calling, driver must be locked
- *
- * To be called immediately before any QEMU agent API call.
- * Must have already called qemuDomainObjBeginJobWithDriver() and
- * checked that the VM is still active; may not be used for nested async jobs.
- *
- * To be followed with qemuDomainObjExitAgentWithDriver() once complete
- */
-void qemuDomainObjEnterAgentWithDriver(virQEMUDriverPtr driver,
-                                       virDomainObjPtr obj)
-{
-    ignore_value(qemuDomainObjEnterAgentInternal(driver, true, obj));
-}
-
-/* obj must NOT be locked before calling, driver must be unlocked,
- * and will be locked after returning
- *
- * Should be paired with an earlier qemuDomainObjEnterAgentWithDriver() call
- */
-void qemuDomainObjExitAgentWithDriver(virQEMUDriverPtr driver,
-                                      virDomainObjPtr obj)
-{
-    qemuDomainObjExitAgentInternal(driver, true, obj);
-}
-
-void qemuDomainObjEnterRemoteWithDriver(virQEMUDriverPtr driver,
-                                        virDomainObjPtr obj)
+void qemuDomainObjEnterRemote(virDomainObjPtr obj)
 {
     virObjectRef(obj);
     virObjectUnlock(obj);
-    qemuDriverUnlock(driver);
 }
 
-void qemuDomainObjExitRemoteWithDriver(virQEMUDriverPtr driver,
-                                       virDomainObjPtr obj)
+void qemuDomainObjExitRemote(virDomainObjPtr obj)
 {
-    qemuDriverLock(driver);
     virObjectLock(obj);
     virObjectUnref(obj);
 }
@@ -1783,10 +1653,10 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                 goto cleanup;
         } else {
             priv = vm->privateData;
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            qemuDomainObjEnterMonitor(driver, vm);
             /* we continue on even in the face of error */
             qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainObjExitMonitor(driver, vm);
         }
     }
 
@@ -1863,7 +1733,7 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
 }
 
 /*
- * The caller must hold a lock on both driver and vm, and there must
+ * The caller must hold a lock the vm and there must
  * be no remaining references to vm.
  */
 void

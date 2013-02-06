@@ -2,7 +2,7 @@
 /*
  * qemu_migration.c: QEMU migration handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1188,7 +1188,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         ret = qemuMonitorGetSpiceMigrationStatus(priv->mon,
                                                  &spice_migrated);
 
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0) {
         priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
@@ -1277,11 +1277,9 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver, virDomainObjPtr vm,
         }
 
         virObjectUnlock(vm);
-        qemuDriverUnlock(driver);
 
         nanosleep(&ts, NULL);
 
-        qemuDriverLock(driver);
         virObjectLock(vm);
     }
 
@@ -1322,7 +1320,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
                                           cookie->graphics->port,
                                           cookie->graphics->tlsPort,
                                           cookie->graphics->tlsSubject);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     return ret;
@@ -2265,7 +2263,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         /* explicitly do this *after* we entered the monitor,
          * as this is a critical section so we are guaranteed
          * priv->job.asyncAbort will not change */
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                        _("canceled by client"));
@@ -2273,7 +2271,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     }
 
     if (qemuMonitorSetMigrationSpeed(priv->mon, migrate_speed) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
     }
 
@@ -2286,7 +2284,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     /* connect to the destination qemu if needed */
     if (spec->destType == MIGRATION_DEST_CONNECT_HOST &&
         qemuMigrationConnect(driver, vm, spec) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
     }
 
@@ -2323,7 +2321,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         VIR_FORCE_CLOSE(spec->dest.fd.qemu);
         break;
     }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto cleanup;
     ret = -1;
@@ -2412,7 +2410,7 @@ cancel:
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
             qemuMonitorMigrateCancel(priv->mon);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            qemuDomainObjExitMonitor(driver, vm);
         }
     }
     goto cleanup;
@@ -2615,23 +2613,23 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
         if (!(st = virStreamNew(dconn, 0)))
             goto cleanup;
 
-        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        qemuDomainObjEnterRemote(vm);
         ret = dconn->driver->domainMigratePrepareTunnel
             (dconn, st, flags, dname, resource, dom_xml);
-        qemuDomainObjExitRemoteWithDriver(driver, vm);
+        qemuDomainObjExitRemote(vm);
     } else {
-        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        qemuDomainObjEnterRemote(vm);
         ret = dconn->driver->domainMigratePrepare2
             (dconn, &cookie, &cookielen, NULL, &uri_out,
              flags, dname, resource, dom_xml);
-        qemuDomainObjExitRemoteWithDriver(driver, vm);
+        qemuDomainObjExitRemote(vm);
     }
     VIR_FREE(dom_xml);
     if (ret == -1)
         goto cleanup;
 
     /* the domain may have shutdown or crashed while we had the locks dropped
-     * in qemuDomainObjEnterRemoteWithDriver, so check again
+     * in qemuDomainObjEnterRemote, so check again
      */
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2678,11 +2676,11 @@ finish:
      */
     dname = dname ? dname : vm->def->name;
     VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    qemuDomainObjEnterRemote(vm);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, cookie, cookielen,
          uri_out ? uri_out : dconnuri, flags, cancelled);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    qemuDomainObjExitRemote(vm);
 
 cleanup:
     if (ddomain) {
@@ -2759,18 +2757,18 @@ static int doPeer2PeerMigrate3(virQEMUDriverPtr driver,
         if (!(st = virStreamNew(dconn, 0)))
             goto cleanup;
 
-        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        qemuDomainObjEnterRemote(vm);
         ret = dconn->driver->domainMigratePrepareTunnel3
             (dconn, st, cookiein, cookieinlen,
              &cookieout, &cookieoutlen,
              flags, dname, resource, dom_xml);
-        qemuDomainObjExitRemoteWithDriver(driver, vm);
+        qemuDomainObjExitRemote(vm);
     } else {
-        qemuDomainObjEnterRemoteWithDriver(driver, vm);
+        qemuDomainObjEnterRemote(vm);
         ret = dconn->driver->domainMigratePrepare3
             (dconn, cookiein, cookieinlen, &cookieout, &cookieoutlen,
              uri, &uri_out, flags, dname, resource, dom_xml);
-        qemuDomainObjExitRemoteWithDriver(driver, vm);
+        qemuDomainObjExitRemote(vm);
     }
     VIR_FREE(dom_xml);
     if (ret == -1)
@@ -2842,11 +2840,11 @@ finish:
     cookieout = NULL;
     cookieoutlen = 0;
     dname = dname ? dname : vm->def->name;
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    qemuDomainObjEnterRemote(vm);
     ddomain = dconn->driver->domainMigrateFinish3
         (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
          dconnuri, uri_out ? uri_out : uri, flags, cancelled);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    qemuDomainObjExitRemote(vm);
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
@@ -2934,9 +2932,9 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
      * destination side is completely setup before we touch the source
      */
 
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    qemuDomainObjEnterRemote(vm);
     dconn = virConnectOpen(dconnuri);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    qemuDomainObjExitRemote(vm);
     if (dconn == NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to connect to remote libvirt URI %s"), dconnuri);
@@ -2948,7 +2946,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
                                cfg->keepAliveCount) < 0)
         goto cleanup;
 
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    qemuDomainObjEnterRemote(vm);
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);
         /* v3proto reflects whether the caller used Perform3, but with
@@ -2960,7 +2958,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_OFFLINE)
         offline = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                            VIR_DRV_FEATURE_MIGRATION_OFFLINE);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    qemuDomainObjExitRemote(vm);
 
     if (!p2p) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2998,9 +2996,9 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
 
 cleanup:
     orig_err = virSaveLastError();
-    qemuDomainObjEnterRemoteWithDriver(driver, vm);
+    qemuDomainObjEnterRemote(vm);
     virConnectClose(dconn);
-    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    qemuDomainObjExitRemote(vm);
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -3622,7 +3620,7 @@ cleanup:
 }
 
 
-/* Helper function called while driver lock is held and vm is active.  */
+/* Helper function called while vm is active.  */
 int
 qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     int fd, off_t offset, const char *path,
@@ -3646,7 +3644,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         qemuMonitorSetMigrationSpeed(priv->mon,
                                      QEMU_DOMAIN_MIG_BANDWIDTH_MAX);
         priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
@@ -3726,11 +3724,11 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
             if (virSetCloseExec(pipeFD[1]) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("Unable to set cloexec flag"));
-                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                qemuDomainObjExitMonitor(driver, vm);
                 goto cleanup;
             }
             if (virCommandRunAsync(cmd, NULL) < 0) {
-                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                qemuDomainObjExitMonitor(driver, vm);
                 goto cleanup;
             }
             rc = qemuMonitorMigrateToFd(priv->mon,
@@ -3745,7 +3743,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                           args, path, offset);
         }
     }
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0)
         goto cleanup;
@@ -3765,7 +3763,7 @@ cleanup:
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
         qemuMonitorSetMigrationSpeed(priv->mon, saveMigBandwidth);
         priv->migMaxBandwidth = saveMigBandwidth;
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     VIR_FORCE_CLOSE(pipeFD[0]);
@@ -3799,7 +3797,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (qemuDomainObjBeginAsyncJobWithDriver(driver, vm, job) < 0)
+    if (qemuDomainObjBeginAsyncJob(driver, vm, job) < 0)
         return -1;
 
     if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {

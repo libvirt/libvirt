@@ -84,8 +84,7 @@ typedef enum {
    VIR_QEMU_PROCESS_KILL_NOCHECK = 1 << 2, /* bypass the running vm check */
 } virQemuProcessKillMode;
 
-int qemuProcessKill(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm, unsigned int flags);
+int qemuProcessKill(virDomainObjPtr vm, unsigned int flags);
 
 int qemuProcessAutoDestroyInit(virQEMUDriverPtr driver);
 void qemuProcessAutoDestroyShutdown(virQEMUDriverPtr driver);

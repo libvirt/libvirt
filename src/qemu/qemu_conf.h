@@ -1,7 +1,7 @@
 /*
  * qemu_conf.h: QEMU configuration management
  *
- * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -235,9 +235,6 @@ struct _qemuDomainCmdlineDef {
 # define QEMUD_MIGRATION_FIRST_PORT 49152
 # define QEMUD_MIGRATION_NUM_PORTS 64
 
-
-void qemuDriverLock(virQEMUDriverPtr driver);
-void qemuDriverUnlock(virQEMUDriverPtr driver);
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 
