@@ -194,7 +194,7 @@ struct _virQEMUDriver {
     /* Immutable pointer, self-locking APIs */
     virDomainEventStatePtr domainEventState;
 
-    /* Immutable pointer. Unsafe APIs. XXX */
+    /* Immutable pointer. self-locking APIs */
     virSecurityManagerPtr securityManager;
 
     /* Immutable pointers. Requires locks to be held before
