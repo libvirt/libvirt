@@ -107,9 +107,9 @@ def getVersion (name = None):
 
     Versions numbers are integers: 1000000*major + 1000*minor + release."""
     if name is None:
-        ret = libvirtmod.virGetVersion ();
+        ret = libvirtmod.virGetVersion ()
     else:
-        ret = libvirtmod.virGetVersion (name);
+        ret = libvirtmod.virGetVersion (name)
     if ret is None: raise libvirtError ("virGetVersion() failed")
     return ret
 
@@ -132,7 +132,7 @@ def _eventInvokeHandleCallback(watch, fd, event, opaque, opaquecompat=None):
         callback = opaque[0]
         opaque = opaque[1]
 
-    libvirtmod.virEventInvokeHandleCallback(watch, fd, event, callback, opaque);
+    libvirtmod.virEventInvokeHandleCallback(watch, fd, event, callback, opaque)
 
 #
 # Invoke an EventTimeout callback
@@ -152,7 +152,7 @@ def _eventInvokeTimeoutCallback(timer, opaque, opaquecompat=None):
         callback = opaque[0]
         opaque = opaque[1]
 
-    libvirtmod.virEventInvokeTimeoutCallback(timer, callback, opaque);
+    libvirtmod.virEventInvokeTimeoutCallback(timer, callback, opaque)
 
 def _dispatchEventHandleCallback(watch, fd, events, cbData):
     cb = cbData["cb"]
