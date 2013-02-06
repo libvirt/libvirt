@@ -658,22 +658,63 @@ cleanup:
 
 
 static virStorageFileMetadataPtr
-virStorageFileGetMetadataFromBuf(int format,
-                                 const char *path,
-                                 unsigned char *buf,
-                                 size_t len,
-                                 virStorageFileMetadata *meta)
+virStorageFileGetMetadataInternal(const char *path,
+                                  int fd,
+                                  int format)
 {
+    virStorageFileMetadata *meta = NULL;
+    unsigned char *buf = NULL;
+    ssize_t len = STORAGE_MAX_HEAD;
     virStorageFileMetadata *ret = NULL;
+    struct stat sb;
 
-    VIR_DEBUG("path=%s format=%d", path, format);
+    VIR_DEBUG("path=%s, fd=%d, format=%d", path, fd, format);
+
+    if (VIR_ALLOC(meta) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"),
+                             path);
+        goto cleanup;
+    }
+
+    /* No header to probe for directories, but also no backing file */
+    if (S_ISDIR(sb.st_mode))
+        return meta;
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        virReportSystemError(errno, _("cannot seek to start of '%s'"), path);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(buf, len) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if ((len = read(fd, buf, len)) < 0) {
+        virReportSystemError(errno, _("cannot read header '%s'"), path);
+        goto cleanup;
+    }
+
+    if (format == VIR_STORAGE_FILE_AUTO)
+        format = virStorageFileProbeFormatFromBuf(path, buf, len);
+
+    if (format <= VIR_STORAGE_FILE_NONE ||
+        format >= VIR_STORAGE_FILE_LAST) {
+        virReportSystemError(EINVAL, _("unknown storage file format %d"),
+                             format);
+        goto cleanup;
+    }
 
     /* XXX we should consider moving virStorageBackendUpdateVolInfo
      * code into this method, for non-magic files
      */
-    if (format <= VIR_STORAGE_FILE_NONE ||
-        format >= VIR_STORAGE_FILE_LAST ||
-        !fileTypeInfo[format].magic)
+    if (!fileTypeInfo[format].magic)
         goto done;
 
     /* Optionally extract capacity from file */
@@ -747,7 +788,11 @@ virStorageFileGetMetadataFromBuf(int format,
 
 done:
     ret = meta;
+    meta = NULL;
+
 cleanup:
+    virStorageFileFreeMetadata(meta);
+    VIR_FREE(buf);
     return ret;
 }
 
@@ -861,62 +906,7 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 int format)
 {
-    virStorageFileMetadata *meta = NULL;
-    unsigned char *buf = NULL;
-    ssize_t len = STORAGE_MAX_HEAD;
-    virStorageFileMetadata *ret = NULL;
-    struct stat sb;
-
-    if (VIR_ALLOC(meta) < 0) {
-        virReportOOMError();
-        return NULL;
-    }
-
-    if (fstat(fd, &sb) < 0) {
-        virReportSystemError(errno,
-                             _("cannot stat file '%s'"),
-                             path);
-        goto cleanup;
-    }
-
-    /* No header to probe for directories, but also no backing file */
-    if (S_ISDIR(sb.st_mode))
-        return meta;
-
-    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot seek to start of '%s'"), path);
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC_N(buf, len) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if ((len = read(fd, buf, len)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), path);
-        goto cleanup;
-    }
-
-    if (format == VIR_STORAGE_FILE_AUTO)
-        format = virStorageFileProbeFormatFromBuf(path, buf, len);
-
-    if (format <= VIR_STORAGE_FILE_NONE ||
-        format >= VIR_STORAGE_FILE_LAST) {
-        virReportSystemError(EINVAL, _("unknown storage file format %d"),
-                             format);
-        goto cleanup;
-    }
-
-    if (!virStorageFileGetMetadataFromBuf(format, path, buf, len, meta))
-        goto cleanup;
-    ret = meta;
-    meta = NULL;
-
-cleanup:
-    virStorageFileFreeMetadata(meta);
-    VIR_FREE(buf);
-    return ret;
+    return virStorageFileGetMetadataInternal(path, fd, format);
 }
 
 /* Recursive workhorse for virStorageFileGetMetadata.  */
@@ -945,7 +935,7 @@ virStorageFileGetMetadataRecurse(const char *path, int format,
         return NULL;
     }
 
-    ret = virStorageFileGetMetadataFromFD(path, fd, format);
+    ret = virStorageFileGetMetadataInternal(path, fd, format);
 
     if (VIR_CLOSE(fd) < 0)
         VIR_WARN("could not close file %s", path);
