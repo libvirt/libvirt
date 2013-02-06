@@ -825,64 +825,61 @@ qemuGetSharedDiskKey(const char *disk_path)
  * add a new entry.
  */
 int
-qemuAddSharedDisk(virHashTablePtr sharedDisks,
+qemuAddSharedDisk(virQEMUDriverPtr driver,
                   const char *disk_path)
 {
     size_t *ref = NULL;
     char *key = NULL;
+    int ret = -1;
 
     if (!(key = qemuGetSharedDiskKey(disk_path)))
-        return -1;
+        goto cleanup;
 
-    if ((ref = virHashLookup(sharedDisks, key))) {
-        if (virHashUpdateEntry(sharedDisks, key, ++ref) < 0) {
-             VIR_FREE(key);
-             return -1;
-        }
+    if ((ref = virHashLookup(driver->sharedDisks, key))) {
+        if (virHashUpdateEntry(driver->sharedDisks, key, ++ref) < 0)
+             goto cleanup;
     } else {
-        if (virHashAddEntry(sharedDisks, key, (void *)0x1)) {
-            VIR_FREE(key);
-            return -1;
-        }
+        if (virHashAddEntry(driver->sharedDisks, key, (void *)0x1))
+            goto cleanup;
     }
 
+    ret = 0;
+cleanup:
     VIR_FREE(key);
-    return 0;
+    return ret;
 }
 
 /* Decrease the ref count if the entry already exists, otherwise
  * remove the entry.
  */
 int
-qemuRemoveSharedDisk(virHashTablePtr sharedDisks,
+qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                      const char *disk_path)
 {
     size_t *ref = NULL;
     char *key = NULL;
+    int ret = -1;
 
     if (!(key = qemuGetSharedDiskKey(disk_path)))
-        return -1;
+        goto cleanup;
 
-    if (!(ref = virHashLookup(sharedDisks, key))) {
-        VIR_FREE(key);
-        return -1;
-    }
+    if (!(ref = virHashLookup(driver->sharedDisks, key)))
+        goto cleanup;
 
     if (ref != (void *)0x1) {
-        if (virHashUpdateEntry(sharedDisks, key, --ref) < 0) {
-             VIR_FREE(key);
-             return -1;
-        }
+        if (virHashUpdateEntry(driver->sharedDisks, key, --ref) < 0)
+            goto cleanup;
     } else {
-        if (virHashRemoveEntry(sharedDisks, key) < 0) {
-            VIR_FREE(key);
-            return -1;
-        }
+        if (virHashRemoveEntry(driver->sharedDisks, key) < 0)
+            goto cleanup;
     }
 
+    ret = 0;
+cleanup:
     VIR_FREE(key);
-    return 0;
+    return ret;
 }
+
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver)
 {

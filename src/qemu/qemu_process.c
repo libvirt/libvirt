@@ -3557,7 +3557,7 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
  * Returns 0 if no conflicts, otherwise returns -1.
  */
 int
-qemuCheckSharedDisk(virHashTablePtr sharedDisks,
+qemuCheckSharedDisk(virQEMUDriverPtr driver,
                     virDomainDiskDefPtr disk)
 {
     int val;
@@ -3571,7 +3571,7 @@ qemuCheckSharedDisk(virHashTablePtr sharedDisks,
     /* It can't be conflict if no other domain is
      * is sharing it.
      */
-    if (!(ref = virHashLookup(sharedDisks, key)))
+    if (!(ref = virHashLookup(driver->sharedDisks, key)))
         goto cleanup;
 
     if (ref == (void *)0x1)
@@ -3953,10 +3953,10 @@ int qemuProcessStart(virConnectPtr conn,
 #endif
 
         if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
-            if (qemuAddSharedDisk(driver->sharedDisks, disk->src) < 0)
+            if (qemuAddSharedDisk(driver, disk->src) < 0)
                 goto cleanup;
 
-            if (qemuCheckSharedDisk(driver->sharedDisks, disk) < 0)
+            if (qemuCheckSharedDisk(driver, disk) < 0)
                 goto cleanup;
         }
 
@@ -4368,7 +4368,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
-            ignore_value(qemuRemoveSharedDisk(driver->sharedDisks, disk->src));
+            ignore_value(qemuRemoveSharedDisk(driver, disk->src));
         }
     }
 

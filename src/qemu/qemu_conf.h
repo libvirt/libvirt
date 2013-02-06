@@ -275,11 +275,11 @@ qemuDriverCloseCallback qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
 void qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
                                    virConnectPtr conn);
 
-int qemuAddSharedDisk(virHashTablePtr sharedDisks,
+int qemuAddSharedDisk(virQEMUDriverPtr driver,
                       const char *disk_path)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuRemoveSharedDisk(virHashTablePtr sharedDisks,
+int qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                          const char *disk_path)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 char * qemuGetSharedDiskKey(const char *disk_path)

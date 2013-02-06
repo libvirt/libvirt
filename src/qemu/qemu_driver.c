@@ -5827,7 +5827,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 
     if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         disk->shared &&
-        (qemuCheckSharedDisk(driver->sharedDisks, disk) < 0))
+        (qemuCheckSharedDisk(driver, disk) < 0))
         goto end;
 
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
@@ -5883,7 +5883,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 
     if (ret == 0) {
         if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
-            if (qemuAddSharedDisk(driver->sharedDisks, disk->src) < 0)
+            if (qemuAddSharedDisk(driver, disk->src) < 0)
                 VIR_WARN("Failed to add disk '%s' to shared disk table",
                          disk->src);
         }
@@ -6010,7 +6010,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     if (ret == 0 &&
         disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
         disk->shared) {
-        if (qemuRemoveSharedDisk(driver->sharedDisks, disk->src) < 0)
+        if (qemuRemoveSharedDisk(driver, disk->src) < 0)
              VIR_WARN("Failed to remove disk '%s' from shared disk table",
                       disk->src);
     }
