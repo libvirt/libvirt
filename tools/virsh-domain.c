@@ -153,9 +153,13 @@ vshNodeGetCPUCount(virConnectPtr conn)
  * "attach-device" command
  */
 static const vshCmdInfo info_attach_device[] = {
-    {"help", N_("attach device from an XML file")},
-    {"desc", N_("Attach device from an XML <file>.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("attach device from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Attach device from an XML <file>.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_attach_device[] = {
@@ -230,9 +234,13 @@ cleanup:
  * "attach-disk" command
  */
 static const vshCmdInfo info_attach_disk[] = {
-    {"help", N_("attach disk device")},
-    {"desc", N_("Attach new disk device.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("attach disk device")
+    },
+    {.name = "desc",
+     .data = N_("Attach new disk device.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_attach_disk[] = {
@@ -648,9 +656,13 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
  * "attach-interface" command
  */
 static const vshCmdInfo info_attach_interface[] = {
-    {"help", N_("attach network interface")},
-    {"desc", N_("Attach new network interface.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("attach network interface")
+    },
+    {.name = "desc",
+     .data = N_("Attach new network interface.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_attach_interface[] = {
@@ -885,10 +897,13 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
  * "autostart" command
  */
 static const vshCmdInfo info_autostart[] = {
-    {"help", N_("autostart a domain")},
-    {"desc",
-     N_("Configure a domain to be automatically started at boot.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("autostart a domain")
+    },
+    {.name = "desc",
+     .data = N_("Configure a domain to be automatically started at boot.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_autostart[] = {
@@ -939,9 +954,13 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
  * "blkdeviotune" command
  */
 static const vshCmdInfo info_blkdeviotune[] = {
-    {"help", N_("Set or query a block device I/O tuning parameters.")},
-    {"desc", N_("Set or query disk I/O parameters such as block throttling.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Set or query a block device I/O tuning parameters.")
+    },
+    {.name = "desc",
+     .data = N_("Set or query disk I/O parameters such as block throttling.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_blkdeviotune[] = {
@@ -1174,12 +1193,16 @@ interror:
  * "blkiotune" command
  */
 static const vshCmdInfo info_blkiotune[] = {
-    {"help", N_("Get or set blkio parameters")},
-    {"desc", N_("Get or set the current blkio parameters for a guest"
+    {.name = "help",
+     .data = N_("Get or set blkio parameters")
+    },
+    {.name = "desc",
+     .data = N_("Get or set the current blkio parameters for a guest"
                 " domain.\n"
                 "    To get the blkio parameters use following command: \n\n"
-                "    virsh # blkiotune <domain>")},
-    {NULL, NULL}
+                "    virsh # blkiotune <domain>")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_blkiotune[] = {
@@ -1446,9 +1469,13 @@ static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
  * "blockcommit" command
  */
 static const vshCmdInfo info_block_commit[] = {
-    {"help", N_("Start a block commit operation.")},
-    {"desc", N_("Commit changes from a snapshot down to its backing image.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Start a block commit operation.")
+    },
+    {.name = "desc",
+     .data = N_("Commit changes from a snapshot down to its backing image.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_block_commit[] = {
@@ -1625,9 +1652,13 @@ cleanup:
  * "blockcopy" command
  */
 static const vshCmdInfo info_block_copy[] = {
-    {"help", N_("Start a block copy operation.")},
-    {"desc", N_("Populate a disk from its backing image.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Start a block copy operation.")
+    },
+    {.name = "desc",
+     .data = N_("Populate a disk from its backing image.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_block_copy[] = {
@@ -1833,9 +1864,13 @@ cleanup:
  * "blockjob" command
  */
 static const vshCmdInfo info_block_job[] = {
-    {"help", N_("Manage active block operations")},
-    {"desc", N_("Query, adjust speed, or cancel active block operations.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Manage active block operations")
+    },
+    {.name = "desc",
+     .data = N_("Query, adjust speed, or cancel active block operations.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_block_job[] = {
@@ -1932,9 +1967,13 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
  * "blockpull" command
  */
 static const vshCmdInfo info_block_pull[] = {
-    {"help", N_("Populate a disk from its backing image.")},
-    {"desc", N_("Populate a disk from its backing image.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Populate a disk from its backing image.")
+    },
+    {.name = "desc",
+     .data = N_("Populate a disk from its backing image.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_block_pull[] = {
@@ -2100,9 +2139,13 @@ cleanup:
  * "blockresize" command
  */
 static const vshCmdInfo info_block_resize[] = {
-    {"help", N_("Resize block device of domain.")},
-    {"desc", N_("Resize block device of domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Resize block device of domain.")
+    },
+    {.name = "desc",
+     .data = N_("Resize block device of domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_block_resize[] = {
@@ -2166,10 +2209,13 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
  * "console" command
  */
 static const vshCmdInfo info_console[] = {
-    {"help", N_("connect to the guest console")},
-    {"desc",
-     N_("Connect the virtual serial console for the guest")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("connect to the guest console")
+    },
+    {.name = "desc",
+     .data = N_("Connect the virtual serial console for the guest")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_console[] = {
@@ -2262,9 +2308,14 @@ cleanup:
 /* "domif-setlink" command
  */
 static const vshCmdInfo info_domif_setlink[] = {
-    {"help", N_("set link state of a virtual interface")},
-    {"desc", N_("Set link state of a domain's virtual interface. This command wraps usage of update-device command.")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("set link state of a virtual interface")
+    },
+    {.name = "desc",
+     .data = N_("Set link state of a domain's virtual interface. This command "
+                "wraps usage of update-device command.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domif_setlink[] = {
@@ -2454,9 +2505,13 @@ cleanup:
 /* "domiftune" command
  */
 static const vshCmdInfo info_domiftune[] = {
-    {"help", N_("get/set parameters of a virtual interface")},
-    {"desc", N_("Get/set parameters of a domain's virtual interface.")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("get/set parameters of a virtual interface")
+    },
+    {.name = "desc",
+     .data = N_("Get/set parameters of a domain's virtual interface.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domiftune[] = {
@@ -2647,9 +2702,13 @@ error:
  * "suspend" command
  */
 static const vshCmdInfo info_suspend[] = {
-    {"help", N_("suspend a domain")},
-    {"desc", N_("Suspend a running domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("suspend a domain")
+    },
+    {.name = "desc",
+     .data = N_("Suspend a running domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_suspend[] = {
@@ -2686,12 +2745,16 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
  * "dompmsuspend" command
  */
 static const vshCmdInfo info_dom_pm_suspend[] = {
-    {"help", N_("suspend a domain gracefully using power management "
-                "functions")},
-    {"desc", N_("Suspends a running domain using guest OS's power management. "
+    {.name = "help",
+     .data = N_("suspend a domain gracefully using power management "
+                "functions")
+    },
+    {.name = "desc",
+     .data = N_("Suspends a running domain using guest OS's power management. "
                 "(Note: This requires a guest agent configured and running in "
-                "the guest OS).")},
-    {NULL, NULL}
+                "the guest OS).")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dom_pm_suspend[] = {
@@ -2768,10 +2831,14 @@ cleanup:
  */
 
 static const vshCmdInfo info_dom_pm_wakeup[] = {
-    {"help", N_("wakeup a domain from pmsuspended state")},
-    {"desc", N_("Wakeup a domain that was previously suspended "
-                "by power management.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("wakeup a domain from pmsuspended state")
+    },
+    {.name = "desc",
+     .data = N_("Wakeup a domain that was previously suspended "
+                "by power management.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dom_pm_wakeup[] = {
@@ -2814,10 +2881,13 @@ cleanup:
  * "undefine" command
  */
 static const vshCmdInfo info_undefine[] = {
-    {"help", N_("undefine a domain")},
-    {"desc",
-     N_("Undefine an inactive domain, or convert persistent to transient.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("undefine a domain")
+    },
+    {.name = "desc",
+     .data = N_("Undefine an inactive domain, or convert persistent to transient.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_undefine[] = {
@@ -3173,11 +3243,15 @@ error:
  * "start" command
  */
 static const vshCmdInfo info_start[] = {
-    {"help", N_("start a (previously defined) inactive domain")},
-    {"desc", N_("Start a domain, either from the last managedsave\n"
+    {.name = "help",
+     .data = N_("start a (previously defined) inactive domain")
+    },
+    {.name = "desc",
+     .data = N_("Start a domain, either from the last managedsave\n"
                 "    state, or via a fresh boot if no managedsave state\n"
-                "    is present.")},
-    {NULL, NULL}
+                "    is present.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_start[] = {
@@ -3295,9 +3369,13 @@ cleanup:
  * "save" command
  */
 static const vshCmdInfo info_save[] = {
-    {"help", N_("save a domain state to a file")},
-    {"desc", N_("Save the RAM state of a running domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("save a domain state to a file")
+    },
+    {.name = "desc",
+     .data = N_("Save the RAM state of a running domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_save[] = {
@@ -3542,10 +3620,13 @@ cleanup:
  * "save-image-dumpxml" command
  */
 static const vshCmdInfo info_save_image_dumpxml[] = {
-    {"help", N_("saved state domain information in XML")},
-    {"desc",
-     N_("Dump XML of domain information for a saved state file to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("saved state domain information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Dump XML of domain information for a saved state file to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_save_image_dumpxml[] = {
@@ -3592,9 +3673,13 @@ cleanup:
  * "save-image-define" command
  */
 static const vshCmdInfo info_save_image_define[] = {
-    {"help", N_("redefine the XML for a domain's saved state file")},
-    {"desc", N_("Replace the domain XML associated with a saved state file")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("redefine the XML for a domain's saved state file")
+    },
+    {.name = "desc",
+     .data = N_("Replace the domain XML associated with a saved state file")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_save_image_define[] = {
@@ -3661,9 +3746,13 @@ cleanup:
  * "save-image-edit" command
  */
 static const vshCmdInfo info_save_image_edit[] = {
-    {"help", N_("edit XML for a domain's saved state file")},
-    {"desc", N_("Edit the domain XML associated with a saved state file")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("edit XML for a domain's saved state file")
+    },
+    {.name = "desc",
+     .data = N_("Edit the domain XML associated with a saved state file")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_save_image_edit[] = {
@@ -3732,12 +3821,16 @@ cleanup:
  * "managedsave" command
  */
 static const vshCmdInfo info_managedsave[] = {
-    {"help", N_("managed save of a domain state")},
-    {"desc", N_("Save and destroy a running domain, so it can be restarted from\n"
+    {.name = "help",
+     .data = N_("managed save of a domain state")
+    },
+    {.name = "desc",
+     .data = N_("Save and destroy a running domain, so it can be restarted from\n"
                 "    the same state at a later time.  When the virsh 'start'\n"
                 "    command is next run for the domain, it will automatically\n"
-                "    be started from this saved state.")},
-    {NULL, NULL}
+                "    be started from this saved state.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_managedsave[] = {
@@ -3859,9 +3952,13 @@ cleanup:
  * "managedsave-remove" command
  */
 static const vshCmdInfo info_managedsaveremove[] = {
-    {"help", N_("Remove managed save of a domain")},
-    {"desc", N_("Remove an existing managed save state file from a domain")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Remove managed save of a domain")
+    },
+    {.name = "desc",
+     .data = N_("Remove an existing managed save state file from a domain")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_managedsaveremove[] = {
@@ -3914,9 +4011,13 @@ cleanup:
  * "schedinfo" command
  */
 static const vshCmdInfo info_schedinfo[] = {
-    {"help", N_("show/set scheduler parameters")},
-    {"desc", N_("Show/Set scheduler parameters.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("show/set scheduler parameters")
+    },
+    {.name = "desc",
+     .data = N_("Show/Set scheduler parameters.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_schedinfo[] = {
@@ -4151,9 +4252,13 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
  * "restore" command
  */
 static const vshCmdInfo info_restore[] = {
-    {"help", N_("restore a domain from a saved state in a file")},
-    {"desc", N_("Restore a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("restore a domain from a saved state in a file")
+    },
+    {.name = "desc",
+     .data = N_("Restore a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_restore[] = {
@@ -4230,9 +4335,13 @@ cleanup:
  * "dump" command
  */
 static const vshCmdInfo info_dump[] = {
-    {"help", N_("dump the core of a domain to a file for analysis")},
-    {"desc", N_("Core dump a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("dump the core of a domain to a file for analysis")
+    },
+    {.name = "desc",
+     .data = N_("Core dump a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dump[] = {
@@ -4377,10 +4486,14 @@ cleanup:
 }
 
 static const vshCmdInfo info_screenshot[] = {
-    {"help", N_("take a screenshot of a current domain console and store it "
-                "into a file")},
-    {"desc", N_("screenshot of a current domain console")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("take a screenshot of a current domain console and store it "
+                "into a file")
+    },
+    {.name = "desc",
+     .data = N_("screenshot of a current domain console")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_screenshot[] = {
@@ -4523,9 +4636,13 @@ cleanup:
  * "resume" command
  */
 static const vshCmdInfo info_resume[] = {
-    {"help", N_("resume a domain")},
-    {"desc", N_("Resume a previously suspended domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("resume a domain")
+    },
+    {.name = "desc",
+     .data = N_("Resume a previously suspended domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_resume[] = {
@@ -4562,9 +4679,13 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
  * "shutdown" command
  */
 static const vshCmdInfo info_shutdown[] = {
-    {"help", N_("gracefully shutdown a domain")},
-    {"desc", N_("Run shutdown in the target domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("gracefully shutdown a domain")
+    },
+    {.name = "desc",
+     .data = N_("Run shutdown in the target domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_shutdown[] = {
@@ -4645,9 +4766,13 @@ cleanup:
  * "reboot" command
  */
 static const vshCmdInfo info_reboot[] = {
-    {"help", N_("reboot a domain")},
-    {"desc", N_("Run a reboot command in the target domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("reboot a domain")
+    },
+    {.name = "desc",
+     .data = N_("Run a reboot command in the target domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_reboot[] = {
@@ -4723,9 +4848,13 @@ cleanup:
  * "reset" command
  */
 static const vshCmdInfo info_reset[] = {
-    {"help", N_("reset a domain")},
-    {"desc", N_("Reset the target domain as if by power button")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("reset a domain")
+    },
+    {.name = "desc",
+     .data = N_("Reset the target domain as if by power button")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_reset[] = {
@@ -4762,9 +4891,13 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
  * "domjobinfo" command
  */
 static const vshCmdInfo info_domjobinfo[] = {
-    {"help", N_("domain job information")},
-    {"desc", N_("Returns information about jobs running on a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain job information")
+    },
+    {.name = "desc",
+     .data = N_("Returns information about jobs running on a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domjobinfo[] = {
@@ -4845,9 +4978,13 @@ cleanup:
  * "domjobabort" command
  */
 static const vshCmdInfo info_domjobabort[] = {
-    {"help", N_("abort active domain job")},
-    {"desc", N_("Aborts the currently running domain job")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("abort active domain job")
+    },
+    {.name = "desc",
+     .data = N_("Aborts the currently running domain job")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domjobabort[] = {
@@ -4879,9 +5016,13 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
  * "maxvcpus" command
  */
 static const vshCmdInfo info_maxvcpus[] = {
-    {"help", N_("connection vcpu maximum")},
-    {"desc", N_("Show maximum number of virtual CPUs for guests on this connection.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("connection vcpu maximum")
+    },
+    {.name = "desc",
+     .data = N_("Show maximum number of virtual CPUs for guests on this connection.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_maxvcpus[] = {
@@ -4914,9 +5055,13 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
  * "vcpucount" command
  */
 static const vshCmdInfo info_vcpucount[] = {
-    {"help", N_("domain vcpu counts")},
-    {"desc", N_("Returns the number of virtual CPUs used by the domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain vcpu counts")
+    },
+    {.name = "desc",
+     .data = N_("Returns the number of virtual CPUs used by the domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vcpucount[] = {
@@ -5137,9 +5282,13 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
  * "vcpuinfo" command
  */
 static const vshCmdInfo info_vcpuinfo[] = {
-    {"help", N_("detailed domain vcpu information")},
-    {"desc", N_("Returns basic information about the domain virtual CPUs.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("detailed domain vcpu information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about the domain virtual CPUs.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vcpuinfo[] = {
@@ -5242,9 +5391,13 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
  * "vcpupin" command
  */
 static const vshCmdInfo info_vcpupin[] = {
-    {"help", N_("control or query domain vcpu affinity")},
-    {"desc", N_("Pin domain VCPUs to host physical CPUs.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("control or query domain vcpu affinity")
+    },
+    {.name = "desc",
+     .data = N_("Pin domain VCPUs to host physical CPUs.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vcpupin[] = {
@@ -5521,9 +5674,13 @@ parse_error:
  * "emulatorpin" command
  */
 static const vshCmdInfo info_emulatorpin[] = {
-    {"help", N_("control or query domain emulator affinity")},
-    {"desc", N_("Pin domain emulator threads to host physical CPUs.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("control or query domain emulator affinity")
+    },
+    {.name = "desc",
+     .data = N_("Pin domain emulator threads to host physical CPUs.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_emulatorpin[] = {
@@ -5721,9 +5878,13 @@ parse_error:
  * "setvcpus" command
  */
 static const vshCmdInfo info_setvcpus[] = {
-    {"help", N_("change number of virtual CPUs")},
-    {"desc", N_("Change the number of virtual CPUs in the guest domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("change number of virtual CPUs")
+    },
+    {.name = "desc",
+     .data = N_("Change the number of virtual CPUs in the guest domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_setvcpus[] = {
@@ -5836,9 +5997,13 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
  * "cpu-compare" command
  */
 static const vshCmdInfo info_cpu_compare[] = {
-    {"help", N_("compare host CPU with a CPU described by an XML file")},
-    {"desc", N_("compare CPU with host CPU")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("compare host CPU with a CPU described by an XML file")
+    },
+    {.name = "desc",
+     .data = N_("compare CPU with host CPU")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_cpu_compare[] = {
@@ -5934,9 +6099,13 @@ cleanup:
  * "cpu-baseline" command
  */
 static const vshCmdInfo info_cpu_baseline[] = {
-    {"help", N_("compute baseline CPU")},
-    {"desc", N_("Compute baseline CPU for a set of given CPUs.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("compute baseline CPU")
+    },
+    {.name = "desc",
+     .data = N_("Compute baseline CPU for a set of given CPUs.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_cpu_baseline[] = {
@@ -6039,10 +6208,13 @@ no_memory:
  * "cpu-stats" command
  */
 static const vshCmdInfo info_cpu_stats[] = {
-    {"help", N_("show domain cpu statistics")},
-    {"desc",
-     N_("Display per-CPU and total statistics about the domain's CPUs")},
-    {NULL, NULL},
+    {.name = "help",
+     .data = N_("show domain cpu statistics")
+    },
+    {.name = "desc",
+     .data = N_("Display per-CPU and total statistics about the domain's CPUs")
+    },
+    {.name = NULL},
 };
 
 static const vshCmdOptDef opts_cpu_stats[] = {
@@ -6210,9 +6382,13 @@ failed_stats:
  * "create" command
  */
 static const vshCmdInfo info_create[] = {
-    {"help", N_("create a domain from an XML file")},
-    {"desc", N_("Create a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("create a domain from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Create a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_create[] = {
@@ -6286,9 +6462,13 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
  * "define" command
  */
 static const vshCmdInfo info_define[] = {
-    {"help", N_("define (but don't start) a domain from an XML file")},
-    {"desc", N_("Define a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("define (but don't start) a domain from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Define a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_define[] = {
@@ -6332,10 +6512,13 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
  * "destroy" command
  */
 static const vshCmdInfo info_destroy[] = {
-    {"help", N_("destroy (stop) a domain")},
-    {"desc",
-     N_("Forcefully stop a given domain, but leave its resources intact.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("destroy (stop) a domain")
+    },
+    {.name = "desc",
+     .data = N_("Forcefully stop a given domain, but leave its resources intact.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_destroy[] = {
@@ -6387,9 +6570,13 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
  * "desc" command for managing domain description and title
  */
 static const vshCmdInfo info_desc[] = {
-    {"help", N_("show or set domain's description or title")},
-    {"desc", N_("Allows to show or modify description or title of a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("show or set domain's description or title")
+    },
+    {.name = "desc",
+     .data = N_("Allows to show or modify description or title of a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_desc[] = {
@@ -6568,9 +6755,13 @@ cleanup:
  * "inject-nmi" command
  */
 static const vshCmdInfo info_inject_nmi[] = {
-    {"help", N_("Inject NMI to the guest")},
-    {"desc", N_("Inject NMI to the guest domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Inject NMI to the guest")
+    },
+    {.name = "desc",
+     .data = N_("Inject NMI to the guest domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_inject_nmi[] = {
@@ -6602,9 +6793,13 @@ cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
  * "send-key" command
  */
 static const vshCmdInfo info_send_key[] = {
-    {"help", N_("Send keycodes to the guest")},
-    {"desc", N_("Send keycodes (integers or symbolic names) to the guest")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Send keycodes to the guest")
+    },
+    {.name = "desc",
+     .data = N_("Send keycodes (integers or symbolic names) to the guest")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_send_key[] = {
@@ -6698,9 +6893,13 @@ cleanup:
  * "send-process-signal" command
  */
 static const vshCmdInfo info_send_process_signal[] = {
-    {"help", N_("Send signals to processes") },
-    {"desc", N_("Send signals to processes in the guest") },
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Send signals to processes")
+    },
+    {.name = "desc",
+     .data = N_("Send signals to processes in the guest")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_send_process_signal[] = {
@@ -6809,9 +7008,13 @@ cleanup:
  * "setmem" command
  */
 static const vshCmdInfo info_setmem[] = {
-    {"help", N_("change memory allocation")},
-    {"desc", N_("Change the current memory allocation in the guest domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("change memory allocation")
+    },
+    {.name = "desc",
+     .data = N_("Change the current memory allocation in the guest domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_setmem[] = {
@@ -6911,9 +7114,13 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
  * "setmaxmem" command
  */
 static const vshCmdInfo info_setmaxmem[] = {
-    {"help", N_("change maximum memory limit")},
-    {"desc", N_("Change the maximum memory allocation limit in the guest domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("change maximum memory limit")
+    },
+    {.name = "desc",
+     .data = N_("Change the maximum memory allocation limit in the guest domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_setmaxmem[] = {
@@ -7014,12 +7221,16 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
  * "memtune" command
  */
 static const vshCmdInfo info_memtune[] = {
-    {"help", N_("Get or set memory parameters")},
-    {"desc", N_("Get or set the current memory parameters for a guest"
+    {.name = "help",
+     .data = N_("Get or set memory parameters")
+    },
+    {.name = "desc",
+     .data = N_("Get or set the current memory parameters for a guest"
                 " domain.\n"
                 "    To get the memory parameters use following command: \n\n"
-                "    virsh # memtune <domain>")},
-    {NULL, NULL}
+                "    virsh # memtune <domain>")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_memtune[] = {
@@ -7221,13 +7432,16 @@ error:
  * "numatune" command
  */
 static const vshCmdInfo info_numatune[] = {
-    {"help", N_("Get or set numa parameters")},
-    {"desc", N_("Get or set the current numa parameters for a guest"
+    {.name = "help",
+     .data = N_("Get or set numa parameters")
+    },
+    {.name = "desc",
+     .data = N_("Get or set the current numa parameters for a guest"
                 " domain.\n"
                 "    To get the numa parameters use following command: \n\n"
-                "    virsh # numatune <domain>")},
-    {NULL, NULL}
-
+                "    virsh # numatune <domain>")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_numatune[] = {
@@ -7378,9 +7592,13 @@ error:
  * "qemu-monitor-command" command
  */
 static const vshCmdInfo info_qemu_monitor_command[] = {
-    {"help", N_("QEMU Monitor Command")},
-    {"desc", N_("QEMU Monitor Command")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("QEMU Monitor Command")
+    },
+    {.name = "desc",
+     .data = N_("QEMU Monitor Command")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_qemu_monitor_command[] = {
@@ -7475,9 +7693,13 @@ cleanup:
  * "qemu-attach" command
  */
 static const vshCmdInfo info_qemu_attach[] = {
-    {"help", N_("QEMU Attach")},
-    {"desc", N_("QEMU Attach")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("QEMU Attach")
+    },
+    {.name = "desc",
+     .data = N_("QEMU Attach")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_qemu_attach[] = {
@@ -7522,9 +7744,13 @@ cleanup:
  * "qemu-agent-command" command
  */
 static const vshCmdInfo info_qemu_agent_command[] = {
-    {"help", N_("QEMU Guest Agent Command")},
-    {"desc", N_("Run an arbitrary qemu guest agent command; use at your own risk")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("QEMU Guest Agent Command")
+    },
+    {.name = "desc",
+     .data = N_("Run an arbitrary qemu guest agent command; use at your own risk")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_qemu_agent_command[] = {
@@ -7630,9 +7856,13 @@ cleanup:
  * "lxc-enter-namespace" namespace
  */
 static const vshCmdInfo info_lxc_enter_namespace[] = {
-    {"help", N_("LXC Guest Enter Namespace")},
-    {"desc", N_("Run an arbitrary lxc guest enter namespace; use at your own risk")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("LXC Guest Enter Namespace")
+    },
+    {.name = "desc",
+     .data = N_("Run an arbitrary lxc guest enter namespace; use at your own risk")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_lxc_enter_namespace[] = {
@@ -7722,9 +7952,13 @@ cleanup:
  * "dumpxml" command
  */
 static const vshCmdInfo info_dumpxml[] = {
-    {"help", N_("domain information in XML")},
-    {"desc", N_("Output the domain information as an XML dump to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the domain information as an XML dump to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dumpxml[] = {
@@ -7796,9 +8030,13 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
  * "domxml-from-native" command
  */
 static const vshCmdInfo info_domxmlfromnative[] = {
-    {"help", N_("Convert native config to domain XML")},
-    {"desc", N_("Convert native guest configuration format to domain XML format.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Convert native config to domain XML")
+    },
+    {.name = "desc",
+     .data = N_("Convert native guest configuration format to domain XML format.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domxmlfromnative[] = {
@@ -7848,9 +8086,13 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
  * "domxml-to-native" command
  */
 static const vshCmdInfo info_domxmltonative[] = {
-    {"help", N_("Convert domain XML to native config")},
-    {"desc", N_("Convert domain XML config to a native guest configuration format.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Convert domain XML to native config")
+    },
+    {.name = "desc",
+     .data = N_("Convert domain XML config to a native guest configuration format.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domxmltonative[] = {
@@ -7900,9 +8142,13 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
  * "domname" command
  */
 static const vshCmdInfo info_domname[] = {
-    {"help", N_("convert a domain id or UUID to domain name")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("convert a domain id or UUID to domain name")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domname[] = {
@@ -7932,9 +8178,13 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
  * "domid" command
  */
 static const vshCmdInfo info_domid[] = {
-    {"help", N_("convert a domain name or UUID to domain id")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("convert a domain name or UUID to domain id")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domid[] = {
@@ -7969,9 +8219,13 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
  * "domuuid" command
  */
 static const vshCmdInfo info_domuuid[] = {
-    {"help", N_("convert a domain name or id to domain UUID")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("convert a domain name or id to domain UUID")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domuuid[] = {
@@ -8006,9 +8260,13 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
  * "migrate" command
  */
 static const vshCmdInfo info_migrate[] = {
-    {"help", N_("migrate domain to another host")},
-    {"desc", N_("Migrate domain to another host.  Add --live for live migration.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("migrate domain to another host")
+    },
+    {.name = "desc",
+     .data = N_("Migrate domain to another host.  Add --live for live migration.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_migrate[] = {
@@ -8295,9 +8553,13 @@ cleanup:
  * "migrate-setmaxdowntime" command
  */
 static const vshCmdInfo info_migrate_setmaxdowntime[] = {
-    {"help", N_("set maximum tolerable downtime")},
-    {"desc", N_("Set maximum tolerable downtime of a domain which is being live-migrated to another host.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("set maximum tolerable downtime")
+    },
+    {.name = "desc",
+     .data = N_("Set maximum tolerable downtime of a domain which is being live-migrated to another host.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
@@ -8344,10 +8606,14 @@ done:
  * "migrate-setspeed" command
  */
 static const vshCmdInfo info_migrate_setspeed[] = {
-    {"help", N_("Set the maximum migration bandwidth")},
-    {"desc", N_("Set the maximum migration bandwidth (in MiB/s) for a domain "
-                "which is being migrated to another host.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Set the maximum migration bandwidth")
+    },
+    {.name = "desc",
+     .data = N_("Set the maximum migration bandwidth (in MiB/s) for a domain "
+                "which is being migrated to another host.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_migrate_setspeed[] = {
@@ -8393,9 +8659,13 @@ done:
  * "migrate-getspeed" command
  */
 static const vshCmdInfo info_migrate_getspeed[] = {
-    {"help", N_("Get the maximum migration bandwidth")},
-    {"desc", N_("Get the maximum migration bandwidth (in MiB/s) for a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Get the maximum migration bandwidth")
+    },
+    {.name = "desc",
+     .data = N_("Get the maximum migration bandwidth (in MiB/s) for a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_migrate_getspeed[] = {
@@ -8433,9 +8703,13 @@ done:
  * "domdisplay" command
  */
 static const vshCmdInfo info_domdisplay[] = {
-    {"help", N_("domain display connection URI")},
-    {"desc", N_("Output the IP address and port number for the graphical display.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain display connection URI")
+    },
+    {.name = "desc",
+     .data = N_("Output the IP address and port number for the graphical display.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domdisplay[] = {
@@ -8612,9 +8886,13 @@ no_memory:
  * "vncdisplay" command
  */
 static const vshCmdInfo info_vncdisplay[] = {
-    {"help", N_("vnc display")},
-    {"desc", N_("Output the IP address and port number for the VNC display.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("vnc display")
+    },
+    {.name = "desc",
+     .data = N_("Output the IP address and port number for the VNC display.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vncdisplay[] = {
@@ -8681,9 +8959,13 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
  * "ttyconsole" command
  */
 static const vshCmdInfo info_ttyconsole[] = {
-    {"help", N_("tty console")},
-    {"desc", N_("Output the device for the TTY console.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("tty console")
+    },
+    {.name = "desc",
+     .data = N_("Output the device for the TTY console.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_ttyconsole[] = {
@@ -8737,9 +9019,13 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
  * "domhostname" command
  */
 static const vshCmdInfo info_domhostname[] = {
-    {"help", N_("print the domain's hostname")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("print the domain's hostname")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domhostname[] = {
@@ -9026,9 +9312,13 @@ cleanup:
  * "detach-device" command
  */
 static const vshCmdInfo info_detach_device[] = {
-    {"help", N_("detach device from an XML file")},
-    {"desc", N_("Detach device from an XML <file>")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("detach device from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Detach device from an XML <file>")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_detach_device[] = {
@@ -9103,9 +9393,13 @@ cleanup:
  * "update-device" command
  */
 static const vshCmdInfo info_update_device[] = {
-    {"help", N_("update device from an XML file")},
-    {"desc", N_("Update device from an XML <file>.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("update device from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Update device from an XML <file>.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_update_device[] = {
@@ -9186,9 +9480,13 @@ cleanup:
  * "detach-interface" command
  */
 static const vshCmdInfo info_detach_interface[] = {
-    {"help", N_("detach network interface")},
-    {"desc", N_("Detach network interface.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("detach network interface")
+    },
+    {.name = "desc",
+     .data = N_("Detach network interface.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_detach_interface[] = {
@@ -9564,9 +9862,13 @@ error:
  * "detach-disk" command
  */
 static const vshCmdInfo info_detach_disk[] = {
-    {"help", N_("detach disk device")},
-    {"desc", N_("Detach disk device.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("detach disk device")
+    },
+    {.name = "desc",
+     .data = N_("Detach disk device.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_detach_disk[] = {
@@ -9652,9 +9954,13 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
  * "edit" command
  */
 static const vshCmdInfo info_edit[] = {
-    {"help", N_("edit XML configuration for a domain")},
-    {"desc", N_("Edit the XML configuration for a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("edit XML configuration for a domain")
+    },
+    {.name = "desc",
+     .data = N_("Edit the XML configuration for a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_edit[] = {
@@ -9708,9 +10014,13 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
  * "change-media" command
  */
 static const vshCmdInfo info_change_media[] = {
-    {"help", N_("Change media of CD or floppy drive")},
-    {"desc", N_("Change media of CD or floppy drive.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Change media of CD or floppy drive")
+    },
+    {.name = "desc",
+     .data = N_("Change media of CD or floppy drive.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_change_media[] = {
@@ -9874,9 +10184,13 @@ cleanup:
 }
 
 static const vshCmdInfo info_domfstrim[] = {
-    {"help", N_("Invoke fstrim on domain's mounted filesystems.")},
-    {"desc", N_("Invoke fstrim on domain's mounted filesystems.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Invoke fstrim on domain's mounted filesystems.")
+    },
+    {.name = "desc",
+     .data = N_("Invoke fstrim on domain's mounted filesystems.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domfstrim[] = {
