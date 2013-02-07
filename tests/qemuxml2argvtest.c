@@ -285,6 +285,13 @@ mymain(void)
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
 
+    VIR_FREE(driver.config->vncTLSx509certdir);
+    if ((driver.config->vncTLSx509certdir = strdup("/etc/pki/libvirt-vnc")) == NULL)
+        return EXIT_FAILURE;
+    VIR_FREE(driver.config->spiceTLSx509certdir);
+    if ((driver.config->spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")) == NULL)
+        return EXIT_FAILURE;
+
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->stateDir);
