@@ -440,11 +440,14 @@ int vshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
  * "help" command
  */
 static const vshCmdInfo info_help[] = {
-    {"help", N_("print help")},
-    {"desc", N_("Prints global help, command specific help, or help for a\n"
-                "    group of related commands")},
-
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("print help")
+    },
+    {.name = "desc",
+     .data = N_("Prints global help, command specific help, or help for a\n"
+                "    group of related commands")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_help[] = {
@@ -702,9 +705,13 @@ vshEditReadBackFile(vshControl *ctl, const char *filename)
  * "cd" command
  */
 static const vshCmdInfo info_cd[] = {
-    {"help", N_("change the current directory")},
-    {"desc", N_("Change the current directory.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("change the current directory")
+    },
+    {.name = "desc",
+     .data = N_("Change the current directory.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_cd[] = {
@@ -749,9 +756,13 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
  * "pwd" command
  */
 static const vshCmdInfo info_pwd[] = {
-    {"help", N_("print the current directory")},
-    {"desc", N_("Print the current directory.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("print the current directory")
+    },
+    {.name = "desc",
+     .data = N_("Print the current directory.")
+    },
+    {.name = NULL}
 };
 
 static bool
@@ -778,9 +789,13 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  * "echo" command
  */
 static const vshCmdInfo info_echo[] = {
-    {"help", N_("echo arguments")},
-    {"desc", N_("Echo back arguments, possibly with quoting.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("echo arguments")
+    },
+    {.name = "desc",
+     .data = N_("Echo back arguments, possibly with quoting.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_echo[] = {
@@ -868,9 +883,13 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
  * "quit" command
  */
 static const vshCmdInfo info_quit[] = {
-    {"help", N_("quit this interactive terminal")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("quit this interactive terminal")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static bool
