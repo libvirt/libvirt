@@ -427,15 +427,35 @@ cleanup:
 }
 
 const vshCmdDef nwfilterCmds[] = {
-    {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define,
-     info_nwfilter_define, 0},
-    {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml,
-     info_nwfilter_dumpxml, 0},
-    {"nwfilter-edit", cmdNWFilterEdit, opts_nwfilter_edit,
-     info_nwfilter_edit, 0},
-    {"nwfilter-list", cmdNWFilterList, opts_nwfilter_list,
-     info_nwfilter_list, 0},
-    {"nwfilter-undefine", cmdNWFilterUndefine, opts_nwfilter_undefine,
-     info_nwfilter_undefine, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "nwfilter-define",
+     .handler = cmdNWFilterDefine,
+     .opts = opts_nwfilter_define,
+     .info = info_nwfilter_define,
+     .flags = 0
+    },
+    {.name = "nwfilter-dumpxml",
+     .handler = cmdNWFilterDumpXML,
+     .opts = opts_nwfilter_dumpxml,
+     .info = info_nwfilter_dumpxml,
+     .flags = 0
+    },
+    {.name = "nwfilter-edit",
+     .handler = cmdNWFilterEdit,
+     .opts = opts_nwfilter_edit,
+     .info = info_nwfilter_edit,
+     .flags = 0
+    },
+    {.name = "nwfilter-list",
+     .handler = cmdNWFilterList,
+     .opts = opts_nwfilter_list,
+     .info = info_nwfilter_list,
+     .flags = 0
+    },
+    {.name = "nwfilter-undefine",
+     .handler = cmdNWFilterUndefine,
+     .opts = opts_nwfilter_undefine,
+     .info = info_nwfilter_undefine,
+     .flags = 0
+    },
+    {.name = NULL}
 };

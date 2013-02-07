@@ -1812,17 +1812,77 @@ cleanup:
 #undef FILTER
 
 const vshCmdDef domMonitoringCmds[] = {
-    {"domblkerror", cmdDomBlkError, opts_domblkerror, info_domblkerror, 0},
-    {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo, 0},
-    {"domblklist", cmdDomblklist, opts_domblklist, info_domblklist, 0},
-    {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat, 0},
-    {"domcontrol", cmdDomControl, opts_domcontrol, info_domcontrol, 0},
-    {"domif-getlink", cmdDomIfGetLink, opts_domif_getlink, info_domif_getlink, 0},
-    {"domiflist", cmdDomiflist, opts_domiflist, info_domiflist, 0},
-    {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat, 0},
-    {"dominfo", cmdDominfo, opts_dominfo, info_dominfo, 0},
-    {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat, 0},
-    {"domstate", cmdDomstate, opts_domstate, info_domstate, 0},
-    {"list", cmdList, opts_list, info_list, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "domblkerror",
+     .handler = cmdDomBlkError,
+     .opts = opts_domblkerror,
+     .info = info_domblkerror,
+     .flags = 0
+    },
+    {.name = "domblkinfo",
+     .handler = cmdDomblkinfo,
+     .opts = opts_domblkinfo,
+     .info = info_domblkinfo,
+     .flags = 0
+    },
+    {.name = "domblklist",
+     .handler = cmdDomblklist,
+     .opts = opts_domblklist,
+     .info = info_domblklist,
+     .flags = 0
+    },
+    {.name = "domblkstat",
+     .handler = cmdDomblkstat,
+     .opts = opts_domblkstat,
+     .info = info_domblkstat,
+     .flags = 0
+    },
+    {.name = "domcontrol",
+     .handler = cmdDomControl,
+     .opts = opts_domcontrol,
+     .info = info_domcontrol,
+     .flags = 0
+    },
+    {.name = "domif-getlink",
+     .handler = cmdDomIfGetLink,
+     .opts = opts_domif_getlink,
+     .info = info_domif_getlink,
+     .flags = 0
+    },
+    {.name = "domiflist",
+     .handler = cmdDomiflist,
+     .opts = opts_domiflist,
+     .info = info_domiflist,
+     .flags = 0
+    },
+    {.name = "domifstat",
+     .handler = cmdDomIfstat,
+     .opts = opts_domifstat,
+     .info = info_domifstat,
+     .flags = 0
+    },
+    {.name = "dominfo",
+     .handler = cmdDominfo,
+     .opts = opts_dominfo,
+     .info = info_dominfo,
+     .flags = 0
+    },
+    {.name = "dommemstat",
+     .handler = cmdDomMemStat,
+     .opts = opts_dommemstat,
+     .info = info_dommemstat,
+     .flags = 0
+    },
+    {.name = "domstate",
+     .handler = cmdDomstate,
+     .opts = opts_domstate,
+     .info = info_domstate,
+     .flags = 0
+    },
+    {.name = "list",
+     .handler = cmdList,
+     .opts = opts_list,
+     .info = info_list,
+     .flags = 0
+    },
+    {.name = NULL}
 };

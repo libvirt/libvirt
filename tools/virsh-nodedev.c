@@ -699,21 +699,53 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
 }
 
 const vshCmdDef nodedevCmds[] = {
-    {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create,
-     info_node_device_create, 0},
-    {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy,
-     info_node_device_destroy, 0},
-    {"nodedev-detach", cmdNodeDeviceDetach, opts_node_device_detach,
-     info_node_device_detach, 0},
-    {"nodedev-dettach", cmdNodeDeviceDetach, opts_node_device_detach,
-     info_node_device_detach, VSH_CMD_FLAG_ALIAS},
-    {"nodedev-dumpxml", cmdNodeDeviceDumpXML, opts_node_device_dumpxml,
-     info_node_device_dumpxml, 0},
-    {"nodedev-list", cmdNodeListDevices, opts_node_list_devices,
-     info_node_list_devices, 0},
-    {"nodedev-reattach", cmdNodeDeviceReAttach, opts_node_device_reattach,
-     info_node_device_reattach, 0},
-    {"nodedev-reset", cmdNodeDeviceReset, opts_node_device_reset,
-     info_node_device_reset, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "nodedev-create",
+     .handler = cmdNodeDeviceCreate,
+     .opts = opts_node_device_create,
+     .info = info_node_device_create,
+     .flags = 0
+    },
+    {.name = "nodedev-destroy",
+     .handler = cmdNodeDeviceDestroy,
+     .opts = opts_node_device_destroy,
+     .info = info_node_device_destroy,
+     .flags = 0
+    },
+    {.name = "nodedev-detach",
+     .handler = cmdNodeDeviceDetach,
+     .opts = opts_node_device_detach,
+     .info = info_node_device_detach,
+     .flags = 0
+    },
+    {.name = "nodedev-dettach",
+     .handler = cmdNodeDeviceDetach,
+     .opts = opts_node_device_detach,
+     .info = info_node_device_detach,
+     .flags = VSH_CMD_FLAG_ALIAS
+    },
+    {.name = "nodedev-dumpxml",
+     .handler = cmdNodeDeviceDumpXML,
+     .opts = opts_node_device_dumpxml,
+     .info = info_node_device_dumpxml,
+     .flags = 0
+    },
+    {.name = "nodedev-list",
+     .handler = cmdNodeListDevices,
+     .opts = opts_node_list_devices,
+     .info = info_node_list_devices,
+     .flags = 0
+    },
+    {.name = "nodedev-reattach",
+     .handler = cmdNodeDeviceReAttach,
+     .opts = opts_node_device_reattach,
+     .info = info_node_device_reattach,
+     .flags = 0
+    },
+    {.name = "nodedev-reset",
+     .handler = cmdNodeDeviceReset,
+     .opts = opts_node_device_reset,
+     .info = info_node_device_reset,
+     .flags = 0
+    },
+    {.name = NULL}
 };

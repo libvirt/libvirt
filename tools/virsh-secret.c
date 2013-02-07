@@ -544,16 +544,41 @@ cleanup:
 }
 
 const vshCmdDef secretCmds[] = {
-    {"secret-define", cmdSecretDefine, opts_secret_define,
-     info_secret_define, 0},
-    {"secret-dumpxml", cmdSecretDumpXML, opts_secret_dumpxml,
-     info_secret_dumpxml, 0},
-    {"secret-get-value", cmdSecretGetValue, opts_secret_get_value,
-     info_secret_get_value, 0},
-    {"secret-list", cmdSecretList, opts_secret_list, info_secret_list, 0},
-    {"secret-set-value", cmdSecretSetValue, opts_secret_set_value,
-     info_secret_set_value, 0},
-    {"secret-undefine", cmdSecretUndefine, opts_secret_undefine,
-     info_secret_undefine, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "secret-define",
+     .handler = cmdSecretDefine,
+     .opts = opts_secret_define,
+     .info = info_secret_define,
+     .flags = 0
+    },
+    {.name = "secret-dumpxml",
+     .handler = cmdSecretDumpXML,
+     .opts = opts_secret_dumpxml,
+     .info = info_secret_dumpxml,
+     .flags = 0
+    },
+    {.name = "secret-get-value",
+     .handler = cmdSecretGetValue,
+     .opts = opts_secret_get_value,
+     .info = info_secret_get_value,
+     .flags = 0
+    },
+    {.name = "secret-list",
+     .handler = cmdSecretList,
+     .opts = opts_secret_list,
+     .info = info_secret_list,
+     .flags = 0
+    },
+    {.name = "secret-set-value",
+     .handler = cmdSecretSetValue,
+     .opts = opts_secret_set_value,
+     .info = info_secret_set_value,
+     .flags = 0
+    },
+    {.name = "secret-undefine",
+     .handler = cmdSecretUndefine,
+     .opts = opts_secret_undefine,
+     .info = info_secret_undefine,
+     .flags = 0
+    },
+    {.name = NULL}
 };

@@ -2047,25 +2047,65 @@ cleanup:
 }
 
 const vshCmdDef snapshotCmds[] = {
-    {"snapshot-create", cmdSnapshotCreate, opts_snapshot_create,
-     info_snapshot_create, 0},
-    {"snapshot-create-as", cmdSnapshotCreateAs, opts_snapshot_create_as,
-     info_snapshot_create_as, 0},
-    {"snapshot-current", cmdSnapshotCurrent, opts_snapshot_current,
-     info_snapshot_current, 0},
-    {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete,
-     info_snapshot_delete, 0},
-    {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml,
-     info_snapshot_dumpxml, 0},
-    {"snapshot-edit", cmdSnapshotEdit, opts_snapshot_edit,
-     info_snapshot_edit, 0},
-    {"snapshot-info", cmdSnapshotInfo, opts_snapshot_info,
-     info_snapshot_info, 0},
-    {"snapshot-list", cmdSnapshotList, opts_snapshot_list,
-     info_snapshot_list, 0},
-    {"snapshot-parent", cmdSnapshotParent, opts_snapshot_parent,
-     info_snapshot_parent, 0},
-    {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert,
-     info_snapshot_revert, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "snapshot-create",
+     .handler = cmdSnapshotCreate,
+     .opts = opts_snapshot_create,
+     .info = info_snapshot_create,
+     .flags = 0
+    },
+    {.name = "snapshot-create-as",
+     .handler = cmdSnapshotCreateAs,
+     .opts = opts_snapshot_create_as,
+     .info = info_snapshot_create_as,
+     .flags = 0
+    },
+    {.name = "snapshot-current",
+     .handler = cmdSnapshotCurrent,
+     .opts = opts_snapshot_current,
+     .info = info_snapshot_current,
+     .flags = 0
+    },
+    {.name = "snapshot-delete",
+     .handler = cmdSnapshotDelete,
+     .opts = opts_snapshot_delete,
+     .info = info_snapshot_delete,
+     .flags = 0
+    },
+    {.name = "snapshot-dumpxml",
+     .handler = cmdSnapshotDumpXML,
+     .opts = opts_snapshot_dumpxml,
+     .info = info_snapshot_dumpxml,
+     .flags = 0
+    },
+    {.name = "snapshot-edit",
+     .handler = cmdSnapshotEdit,
+     .opts = opts_snapshot_edit,
+     .info = info_snapshot_edit,
+     .flags = 0
+    },
+    {.name = "snapshot-info",
+     .handler = cmdSnapshotInfo,
+     .opts = opts_snapshot_info,
+     .info = info_snapshot_info,
+     .flags = 0
+    },
+    {.name = "snapshot-list",
+     .handler = cmdSnapshotList,
+     .opts = opts_snapshot_list,
+     .info = info_snapshot_list,
+     .flags = 0
+    },
+    {.name = "snapshot-parent",
+     .handler = cmdSnapshotParent,
+     .opts = opts_snapshot_parent,
+     .info = info_snapshot_parent,
+     .flags = 0
+    },
+    {.name = "snapshot-revert",
+     .handler = cmdDomainSnapshotRevert,
+     .opts = opts_snapshot_revert,
+     .info = info_snapshot_revert,
+     .flags = 0
+    },
+    {.name = NULL}
 };

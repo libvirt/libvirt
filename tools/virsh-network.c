@@ -1092,24 +1092,83 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 }
 
 const vshCmdDef networkCmds[] = {
-    {"net-autostart", cmdNetworkAutostart, opts_network_autostart,
-     info_network_autostart, 0},
-    {"net-create", cmdNetworkCreate, opts_network_create,
-     info_network_create, 0},
-    {"net-define", cmdNetworkDefine, opts_network_define,
-     info_network_define, 0},
-    {"net-destroy", cmdNetworkDestroy, opts_network_destroy,
-     info_network_destroy, 0},
-    {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml,
-     info_network_dumpxml, 0},
-    {"net-edit", cmdNetworkEdit, opts_network_edit, info_network_edit, 0},
-    {"net-info", cmdNetworkInfo, opts_network_info, info_network_info, 0},
-    {"net-list", cmdNetworkList, opts_network_list, info_network_list, 0},
-    {"net-name", cmdNetworkName, opts_network_name, info_network_name, 0},
-    {"net-start", cmdNetworkStart, opts_network_start, info_network_start, 0},
-    {"net-undefine", cmdNetworkUndefine, opts_network_undefine,
-     info_network_undefine, 0},
-    {"net-update", cmdNetworkUpdate, opts_network_update, info_network_update, 0},
-    {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "net-autostart",
+     .handler = cmdNetworkAutostart,
+     .opts = opts_network_autostart,
+     .info = info_network_autostart,
+     .flags = 0
+    },
+    {.name = "net-create",
+     .handler = cmdNetworkCreate,
+     .opts = opts_network_create,
+     .info = info_network_create,
+     .flags = 0
+    },
+    {.name = "net-define",
+     .handler = cmdNetworkDefine,
+     .opts = opts_network_define,
+     .info = info_network_define,
+     .flags = 0
+    },
+    {.name = "net-destroy",
+     .handler = cmdNetworkDestroy,
+     .opts = opts_network_destroy,
+     .info = info_network_destroy,
+     .flags = 0
+    },
+    {.name = "net-dumpxml",
+     .handler = cmdNetworkDumpXML,
+     .opts = opts_network_dumpxml,
+     .info = info_network_dumpxml,
+     .flags = 0
+    },
+    {.name = "net-edit",
+     .handler = cmdNetworkEdit,
+     .opts = opts_network_edit,
+     .info = info_network_edit,
+     .flags = 0
+    },
+    {.name = "net-info",
+     .handler = cmdNetworkInfo,
+     .opts = opts_network_info,
+     .info = info_network_info,
+     .flags = 0
+    },
+    {.name = "net-list",
+     .handler = cmdNetworkList,
+     .opts = opts_network_list,
+     .info = info_network_list,
+     .flags = 0
+    },
+    {.name = "net-name",
+     .handler = cmdNetworkName,
+     .opts = opts_network_name,
+     .info = info_network_name,
+     .flags = 0
+    },
+    {.name = "net-start",
+     .handler = cmdNetworkStart,
+     .opts = opts_network_start,
+     .info = info_network_start,
+     .flags = 0
+    },
+    {.name = "net-undefine",
+     .handler = cmdNetworkUndefine,
+     .opts = opts_network_undefine,
+     .info = info_network_undefine,
+     .flags = 0
+    },
+    {.name = "net-update",
+     .handler = cmdNetworkUpdate,
+     .opts = opts_network_update,
+     .info = info_network_update,
+     .flags = 0
+    },
+    {.name = "net-uuid",
+     .handler = cmdNetworkUuid,
+     .opts = opts_network_uuid,
+     .info = info_network_uuid,
+     .flags = 0
+    },
+    {.name = NULL}
 };

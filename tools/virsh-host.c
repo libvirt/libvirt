@@ -878,20 +878,83 @@ error:
 }
 
 const vshCmdDef hostAndHypervisorCmds[] = {
-    {"capabilities", cmdCapabilities, NULL, info_capabilities, 0},
-    {"connect", cmdConnect, opts_connect, info_connect,
-     VSH_CMD_FLAG_NOCONNECT},
-    {"freecell", cmdFreecell, opts_freecell, info_freecell, 0},
-    {"hostname", cmdHostname, NULL, info_hostname, 0},
-    {"node-memory-tune", cmdNodeMemoryTune,
-     opts_node_memory_tune, info_node_memory_tune, 0},
-    {"nodecpumap", cmdNodeCpuMap, NULL, info_node_cpumap, 0},
-    {"nodecpustats", cmdNodeCpuStats, opts_node_cpustats, info_nodecpustats, 0},
-    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo, 0},
-    {"nodememstats", cmdNodeMemStats, opts_node_memstats, info_nodememstats, 0},
-    {"nodesuspend", cmdNodeSuspend, opts_node_suspend, info_nodesuspend, 0},
-    {"sysinfo", cmdSysinfo, NULL, info_sysinfo, 0},
-    {"uri", cmdURI, NULL, info_uri, 0},
-    {"version", cmdVersion, opts_version, info_version, 0},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "capabilities",
+     .handler = cmdCapabilities,
+     .opts = NULL,
+     .info = info_capabilities,
+     .flags = 0
+    },
+    {.name = "connect",
+     .handler = cmdConnect,
+     .opts = opts_connect,
+     .info = info_connect,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "freecell",
+     .handler = cmdFreecell,
+     .opts = opts_freecell,
+     .info = info_freecell,
+     .flags = 0
+    },
+    {.name = "hostname",
+     .handler = cmdHostname,
+     .opts = NULL,
+     .info = info_hostname,
+     .flags = 0
+    },
+    {.name = "node-memory-tune",
+     .handler = cmdNodeMemoryTune,
+     .opts = opts_node_memory_tune,
+     .info = info_node_memory_tune,
+     .flags = 0
+    },
+    {.name = "nodecpumap",
+     .handler = cmdNodeCpuMap,
+     .opts = NULL,
+     .info = info_node_cpumap,
+     .flags = 0
+    },
+    {.name = "nodecpustats",
+     .handler = cmdNodeCpuStats,
+     .opts = opts_node_cpustats,
+     .info = info_nodecpustats,
+     .flags = 0
+    },
+    {.name = "nodeinfo",
+     .handler = cmdNodeinfo,
+     .opts = NULL,
+     .info = info_nodeinfo,
+     .flags = 0
+    },
+    {.name = "nodememstats",
+     .handler = cmdNodeMemStats,
+     .opts = opts_node_memstats,
+     .info = info_nodememstats,
+     .flags = 0
+    },
+    {.name = "nodesuspend",
+     .handler = cmdNodeSuspend,
+     .opts = opts_node_suspend,
+     .info = info_nodesuspend,
+     .flags = 0
+    },
+    {.name = "sysinfo",
+     .handler = cmdSysinfo,
+     .opts = NULL,
+     .info = info_sysinfo,
+     .flags = 0
+    },
+    {.name = "uri",
+     .handler = cmdURI,
+     .opts = NULL,
+     .info = info_uri,
+     .flags = 0
+    },
+    {.name = "version",
+     .handler = cmdVersion,
+     .opts = opts_version,
+     .info = info_version,
+     .flags = 0
+    },
+    {.name = NULL}
 };

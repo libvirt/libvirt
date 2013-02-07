@@ -2974,13 +2974,43 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
 }
 
 static const vshCmdDef virshCmds[] = {
-    {"cd", cmdCd, opts_cd, info_cd, VSH_CMD_FLAG_NOCONNECT},
-    {"echo", cmdEcho, opts_echo, info_echo, VSH_CMD_FLAG_NOCONNECT},
-    {"exit", cmdQuit, NULL, info_quit, VSH_CMD_FLAG_NOCONNECT},
-    {"help", cmdHelp, opts_help, info_help, VSH_CMD_FLAG_NOCONNECT},
-    {"pwd", cmdPwd, NULL, info_pwd, VSH_CMD_FLAG_NOCONNECT},
-    {"quit", cmdQuit, NULL, info_quit, VSH_CMD_FLAG_NOCONNECT},
-    {NULL, NULL, NULL, NULL, 0}
+    {.name = "cd",
+     .handler = cmdCd,
+     .opts = opts_cd,
+     .info = info_cd,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "echo",
+     .handler = cmdEcho,
+     .opts = opts_echo,
+     .info = info_echo,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "exit",
+     .handler = cmdQuit,
+     .opts = NULL,
+     .info = info_quit,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "help",
+     .handler = cmdHelp,
+     .opts = opts_help,
+     .info = info_help,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "pwd",
+     .handler = cmdPwd,
+     .opts = NULL,
+     .info = info_pwd,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "quit",
+     .handler = cmdQuit,
+     .opts = NULL,
+     .info = info_quit,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = NULL}
 };
 
 static const vshCmdGrp cmdGroups[] = {
