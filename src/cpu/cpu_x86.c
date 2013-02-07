@@ -1,7 +1,7 @@
 /*
  * cpu_x86.c: CPU driver for CPUs with x86 compatible CPUID instruction
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@
 #include "cpu_map.h"
 #include "cpu_x86.h"
 #include "virbuffer.h"
+#include "virendian.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_CPU
@@ -548,22 +549,13 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     }
 
     vendor->cpuid.function = 0;
-    vendor->cpuid.ebx = (string[0]) |
-                        (string[1] << 8) |
-                        (string[2] << 16) |
-                        (string[3] << 24);
-    vendor->cpuid.edx = (string[4]) |
-                        (string[5] << 8) |
-                        (string[6] << 16) |
-                        (string[7] << 24);
-    vendor->cpuid.ecx = (string[8]) |
-                        (string[9] << 8) |
-                        (string[10] << 16) |
-                        (string[11] << 24);
+    vendor->cpuid.ebx = virReadBufInt32LE(string);
+    vendor->cpuid.edx = virReadBufInt32LE(string + 4);
+    vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
 
-    if (!map->vendors)
+    if (!map->vendors) {
         map->vendors = vendor;
-    else {
+    } else {
         vendor->next = map->vendors;
         map->vendors = vendor;
     }

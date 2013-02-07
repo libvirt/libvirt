@@ -42,6 +42,7 @@
 #include "c-ctype.h"
 #include "vircommand.h"
 #include "virhash.h"
+#include "virendian.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -255,16 +256,8 @@ qcow2GetBackingStoreFormat(int *format,
      */
     while (offset < (buf_size-8) &&
            offset < (extension_end-8)) {
-        unsigned int magic =
-            (buf[offset] << 24) +
-            (buf[offset+1] << 16) +
-            (buf[offset+2] << 8) +
-            (buf[offset+3]);
-        unsigned int len =
-            (buf[offset+4] << 24) +
-            (buf[offset+5] << 16) +
-            (buf[offset+6] << 8) +
-            (buf[offset+7]);
+        unsigned int magic = virReadBufInt32BE(buf + offset);
+        unsigned int len = virReadBufInt32BE(buf + offset + 4);
 
         offset += 8;
 
@@ -312,20 +305,10 @@ qcowXGetBackingStore(char **res,
 
     if (buf_size < QCOWX_HDR_BACKING_FILE_OFFSET+8+4)
         return BACKING_STORE_INVALID;
-    offset = (((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET] << 56)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+1] << 48)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+2] << 40)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+3] << 32)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+4] << 24)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+5] << 16)
-              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+6] << 8)
-              | buf[QCOWX_HDR_BACKING_FILE_OFFSET+7]); /* QCowHeader.backing_file_offset */
+    offset = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
         return BACKING_STORE_INVALID;
-    size = ((buf[QCOWX_HDR_BACKING_FILE_SIZE] << 24)
-            | (buf[QCOWX_HDR_BACKING_FILE_SIZE+1] << 16)
-            | (buf[QCOWX_HDR_BACKING_FILE_SIZE+2] << 8)
-            | buf[QCOWX_HDR_BACKING_FILE_SIZE+3]); /* QCowHeader.backing_file_size */
+    size = virReadBufInt32BE(buf + QCOWX_HDR_BACKING_FILE_SIZE);
     if (size == 0) {
         if (format)
             *format = VIR_STORAGE_FILE_NONE;
@@ -468,28 +451,6 @@ cleanup:
     return ret;
 }
 
-static unsigned long
-qedGetHeaderUL(const unsigned char *loc)
-{
-    return (((unsigned long)loc[3] << 24) |
-            ((unsigned long)loc[2] << 16) |
-            ((unsigned long)loc[1] << 8) |
-            ((unsigned long)loc[0] << 0));
-}
-
-static unsigned long long
-qedGetHeaderULL(const unsigned char *loc)
-{
-    return (((unsigned long long)loc[7] << 56) |
-            ((unsigned long long)loc[6] << 48) |
-            ((unsigned long long)loc[5] << 40) |
-            ((unsigned long long)loc[4] << 32) |
-            ((unsigned long long)loc[3] << 24) |
-            ((unsigned long long)loc[2] << 16) |
-            ((unsigned long long)loc[1] << 8) |
-            ((unsigned long long)loc[0] << 0));
-}
-
 static int
 qedGetBackingStore(char **res,
                    int *format,
@@ -503,7 +464,7 @@ qedGetBackingStore(char **res,
     /* Check if this image has a backing file */
     if (buf_size < QED_HDR_FEATURES_OFFSET+8)
         return BACKING_STORE_INVALID;
-    flags = qedGetHeaderULL(buf + QED_HDR_FEATURES_OFFSET);
+    flags = virReadBufInt64LE(buf + QED_HDR_FEATURES_OFFSET);
     if (!(flags & QED_F_BACKING_FILE)) {
         *format = VIR_STORAGE_FILE_NONE;
         return BACKING_STORE_OK;
@@ -512,10 +473,10 @@ qedGetBackingStore(char **res,
     /* Parse the backing file */
     if (buf_size < QED_HDR_BACKING_FILE_OFFSET+8)
         return BACKING_STORE_INVALID;
-    offset = qedGetHeaderUL(buf + QED_HDR_BACKING_FILE_OFFSET);
+    offset = virReadBufInt32LE(buf + QED_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
         return BACKING_STORE_INVALID;
-    size = qedGetHeaderUL(buf + QED_HDR_BACKING_FILE_SIZE);
+    size = virReadBufInt32LE(buf + QED_HDR_BACKING_FILE_SIZE);
     if (size == 0)
         return BACKING_STORE_OK;
     if (offset + size > buf_size || offset + size < offset)
@@ -633,19 +594,10 @@ virStorageFileMatchesVersion(int format,
     if ((fileTypeInfo[format].versionOffset + 4) > buflen)
         return false;
 
-    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
-        version =
-            (buf[fileTypeInfo[format].versionOffset+3] << 24) |
-            (buf[fileTypeInfo[format].versionOffset+2] << 16) |
-            (buf[fileTypeInfo[format].versionOffset+1] << 8) |
-            (buf[fileTypeInfo[format].versionOffset]);
-    } else {
-        version =
-            (buf[fileTypeInfo[format].versionOffset] << 24) |
-            (buf[fileTypeInfo[format].versionOffset+1] << 16) |
-            (buf[fileTypeInfo[format].versionOffset+2] << 8) |
-            (buf[fileTypeInfo[format].versionOffset+3]);
-    }
+    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN)
+        version = virReadBufInt32LE(buf + fileTypeInfo[format].versionOffset);
+    else
+        version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
 
     VIR_DEBUG("Compare detected version %d vs expected version %d",
               version, fileTypeInfo[format].versionNumber);
@@ -687,29 +639,15 @@ virStorageFileGetMetadataFromBuf(int format,
         if ((fileTypeInfo[format].sizeOffset + 8) > buflen)
             return 1;
 
-        if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
-            meta->capacity =
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+7] << 56) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+6] << 48) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+5] << 40) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+4] << 32) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+3] << 24) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+2] << 16) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+1] << 8) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset]);
-        } else {
-            meta->capacity =
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset] << 56) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+1] << 48) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+2] << 40) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+3] << 32) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+4] << 24) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+5] << 16) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+6] << 8) |
-                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+7]);
-        }
+        if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN)
+            meta->capacity = virReadBufInt64LE(buf +
+                                               fileTypeInfo[format].sizeOffset);
+        else
+            meta->capacity = virReadBufInt64BE(buf +
+                                               fileTypeInfo[format].sizeOffset);
         /* Avoid unlikely, but theoretically possible overflow */
-        if (meta->capacity > (ULLONG_MAX / fileTypeInfo[format].sizeMultiplier))
+        if (meta->capacity > (ULLONG_MAX /
+                              fileTypeInfo[format].sizeMultiplier))
             return 1;
         meta->capacity *= fileTypeInfo[format].sizeMultiplier;
     }
@@ -717,11 +655,8 @@ virStorageFileGetMetadataFromBuf(int format,
     if (fileTypeInfo[format].qcowCryptOffset != -1) {
         int crypt_format;
 
-        crypt_format =
-            (buf[fileTypeInfo[format].qcowCryptOffset] << 24) |
-            (buf[fileTypeInfo[format].qcowCryptOffset+1] << 16) |
-            (buf[fileTypeInfo[format].qcowCryptOffset+2] << 8) |
-            (buf[fileTypeInfo[format].qcowCryptOffset+3]);
+        crypt_format = virReadBufInt32BE(buf +
+                                         fileTypeInfo[format].qcowCryptOffset);
         meta->encrypted = crypt_format != 0;
     }
 
