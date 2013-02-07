@@ -636,7 +636,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
     virNWFilterHashTableFree(req->vars);
 
     virMutexDestroy(&req->lock);
-    ignore_value(virCondDestroy(&req->threadStatusCond));
+    virCondDestroy(&req->threadStatusCond);
 
     VIR_FREE(req);
 }

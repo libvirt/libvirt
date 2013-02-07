@@ -133,7 +133,7 @@ qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
         return -1;
 
     if (virCondInit(&priv->job.asyncCond) < 0) {
-        ignore_value(virCondDestroy(&priv->job.cond));
+        virCondDestroy(&priv->job.cond);
         return -1;
     }
 
@@ -194,8 +194,8 @@ qemuDomainObjTransferJob(virDomainObjPtr obj)
 static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
-    ignore_value(virCondDestroy(&priv->job.cond));
-    ignore_value(virCondDestroy(&priv->job.asyncCond));
+    virCondDestroy(&priv->job.cond);
+    virCondDestroy(&priv->job.asyncCond);
 }
 
 static bool

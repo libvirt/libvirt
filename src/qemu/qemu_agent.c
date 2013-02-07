@@ -158,7 +158,7 @@ static void qemuAgentDispose(void *obj)
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
-    ignore_value(virCondDestroy(&mon->notify));
+    virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
 }
 

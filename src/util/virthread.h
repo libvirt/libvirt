@@ -87,7 +87,7 @@ void virMutexUnlock(virMutexPtr m);
 
 
 int virCondInit(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
-int virCondDestroy(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
+int virCondDestroy(virCondPtr c);
 
 /* virCondWait, virCondWaitUntil:
  * These functions can return without the associated predicate

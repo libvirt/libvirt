@@ -271,11 +271,11 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     VIR_FREE(pool->workers);
     virMutexUnlock(&pool->mutex);
     virMutexDestroy(&pool->mutex);
-    ignore_value(virCondDestroy(&pool->quit_cond));
-    ignore_value(virCondDestroy(&pool->cond));
+    virCondDestroy(&pool->quit_cond);
+    virCondDestroy(&pool->cond);
     if (priority) {
         VIR_FREE(pool->prioWorkers);
-        ignore_value(virCondDestroy(&pool->prioCond));
+        virCondDestroy(&pool->prioCond);
     }
     VIR_FREE(pool);
 }

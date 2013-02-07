@@ -407,7 +407,7 @@ int vshRunConsole(virDomainPtr dom,
         if (con->st)
             virStreamFree(con->st);
         virMutexDestroy(&con->lock);
-        ignore_value(virCondDestroy(&con->cond));
+        virCondDestroy(&con->cond);
         VIR_FREE(con);
     }
 

@@ -236,8 +236,7 @@ static void qemuMonitorDispose(void *obj)
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
-    if (virCondDestroy(&mon->notify) < 0)
-    {}
+    virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
 }
 
