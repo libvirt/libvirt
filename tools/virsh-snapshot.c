@@ -112,9 +112,13 @@ cleanup:
  * "snapshot-create" command
  */
 static const vshCmdInfo info_snapshot_create[] = {
-    {"help", N_("Create a snapshot from XML")},
-    {"desc", N_("Create a snapshot (disk and RAM) from XML")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Create a snapshot from XML")
+    },
+    {.name = "desc",
+     .data = N_("Create a snapshot (disk and RAM) from XML")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_create[] = {
@@ -325,9 +329,13 @@ cleanup:
 }
 
 static const vshCmdInfo info_snapshot_create_as[] = {
-    {"help", N_("Create a snapshot from a set of args")},
-    {"desc", N_("Create a snapshot (disk and RAM) from arguments")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Create a snapshot from a set of args")
+    },
+    {.name = "desc",
+     .data = N_("Create a snapshot (disk and RAM) from arguments")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_create_as[] = {
@@ -524,9 +532,13 @@ vshLookupSnapshot(vshControl *ctl, const vshCmd *cmd,
  * "snapshot-edit" command
  */
 static const vshCmdInfo info_snapshot_edit[] = {
-    {"help", N_("edit XML for a snapshot")},
-    {"desc", N_("Edit the domain snapshot XML for a named snapshot")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("edit XML for a snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Edit the domain snapshot XML for a named snapshot")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_edit[] = {
@@ -652,9 +664,13 @@ cleanup:
  * "snapshot-current" command
  */
 static const vshCmdInfo info_snapshot_current[] = {
-    {"help", N_("Get or set the current snapshot")},
-    {"desc", N_("Get or set the current snapshot")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Get or set the current snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Get or set the current snapshot")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_current[] = {
@@ -891,9 +907,13 @@ cleanup:
  * "snapshot-info" command
  */
 static const vshCmdInfo info_snapshot_info[] = {
-    {"help", N_("snapshot information")},
-    {"desc", N_("Returns basic information about a snapshot.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("snapshot information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about a snapshot.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_info[] = {
@@ -1446,9 +1466,13 @@ vshSnapshotListLookup(int id, bool parent, void *opaque)
  * "snapshot-list" command
  */
 static const vshCmdInfo info_snapshot_list[] = {
-    {"help", N_("List snapshots for a domain")},
-    {"desc", N_("Snapshot List")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("List snapshots for a domain")
+    },
+    {.name = "desc",
+     .data = N_("Snapshot List")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_list[] = {
@@ -1734,9 +1758,13 @@ cleanup:
  * "snapshot-dumpxml" command
  */
 static const vshCmdInfo info_snapshot_dumpxml[] = {
-    {"help", N_("Dump XML for a domain snapshot")},
-    {"desc", N_("Snapshot Dump XML")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Dump XML for a domain snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Snapshot Dump XML")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_dumpxml[] = {
@@ -1799,9 +1827,13 @@ cleanup:
  * "snapshot-parent" command
  */
 static const vshCmdInfo info_snapshot_parent[] = {
-    {"help", N_("Get the name of the parent of a snapshot")},
-    {"desc", N_("Extract the snapshot's parent, if any")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Get the name of the parent of a snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Extract the snapshot's parent, if any")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_parent[] = {
@@ -1865,9 +1897,13 @@ cleanup:
  * "snapshot-revert" command
  */
 static const vshCmdInfo info_snapshot_revert[] = {
-    {"help", N_("Revert a domain to a snapshot")},
-    {"desc", N_("Revert domain to snapshot")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Revert a domain to a snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Revert domain to snapshot")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_revert[] = {
@@ -1959,9 +1995,13 @@ cleanup:
  * "snapshot-delete" command
  */
 static const vshCmdInfo info_snapshot_delete[] = {
-    {"help", N_("Delete a domain snapshot")},
-    {"desc", N_("Snapshot Delete")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Delete a domain snapshot")
+    },
+    {.name = "desc",
+     .data = N_("Snapshot Delete")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_snapshot_delete[] = {
