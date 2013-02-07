@@ -11697,6 +11697,36 @@ virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
 
 
 static bool
+virDomainRNGDefCheckABIStability(virDomainRNGDefPtr src,
+                                 virDomainRNGDefPtr dst)
+{
+    if (!src && !dst)
+        return true;
+
+    if (!src || !dst) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain RNG device count '%d' "
+                         "does not match source count '%d'"),
+                       src ? 1 : 0, dst ? 1 : 0);
+        return false;
+    }
+
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target RNG model '%s' does not match source '%s'"),
+                       virDomainRNGModelTypeToString(dst->model),
+                       virDomainRNGModelTypeToString(src->model));
+        return false;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        return false;
+
+    return true;
+}
+
+
+static bool
 virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
                                  virDomainHubDefPtr dst)
 {
@@ -12095,6 +12125,9 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     if (src->memballoon &&
         !virDomainMemballoonDefCheckABIStability(src->memballoon,
                                                  dst->memballoon))
+        return false;
+
+    if (!virDomainRNGDefCheckABIStability(src->rng, dst->rng))
         return false;
 
     return true;
