@@ -132,7 +132,7 @@
         opaque = cbData["opaque"]
 
         cb(self, virDomain(self, _obj=dom), oldSrcPath, newSrcPath, devAlias, reason, opaque)
-        return 0;
+        return 0
 
     def _dispatchDomainEventTrayChangeCallback(self, dom, devAlias, reason, cbData):
         """Dispatches event to python user domain trayChange event callbacks
@@ -141,7 +141,7 @@
         opaque = cbData["opaque"]
 
         cb(self, virDomain(self, _obj=dom), devAlias, reason, opaque)
-        return 0;
+        return 0
 
     def _dispatchDomainEventPMWakeupCallback(self, dom, reason, cbData):
         """Dispatches event to python user domain pmwakeup event callbacks
@@ -150,7 +150,7 @@
         opaque = cbData["opaque"]
 
         cb(self, virDomain(self, _obj=dom), reason, opaque)
-        return 0;
+        return 0
 
     def _dispatchDomainEventPMSuspendCallback(self, dom, reason, cbData):
         """Dispatches event to python user domain pmsuspend event callbacks
@@ -159,7 +159,7 @@
         opaque = cbData["opaque"]
 
         cb(self, virDomain(self, _obj=dom), reason, opaque)
-        return 0;
+        return 0
 
     def _dispatchDomainEventBalloonChangeCallback(self, dom, actual, cbData):
         """Dispatches events to python user domain balloon change event callbacks
@@ -177,7 +177,7 @@
         opaque = cbData["opaque"]
 
         cb(self, virDomain(self, _obj=dom), reason, opaque)
-        return 0;
+        return 0
 
     def domainEventDeregisterAny(self, callbackID):
         """Removes a Domain Event Callback. De-registering for a

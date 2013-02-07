@@ -166,15 +166,15 @@ def checkTables(db, verbose = 1):
             print "table %s missing" % (table)
             createTable(db, table)
         try:
-            ret = c.execute("SELECT count(*) from %s" % table);
+            ret = c.execute("SELECT count(*) from %s" % table)
             row = c.fetchone()
             if verbose:
                 print "Table %s contains %d records" % (table, row[0])
         except:
             print "Troubles with table %s : repairing" % (table)
-            ret = c.execute("repair table %s" % table);
+            ret = c.execute("repair table %s" % table)
             print "repairing returned %d" % (ret)
-            ret = c.execute("SELECT count(*) from %s" % table);
+            ret = c.execute("SELECT count(*) from %s" % table)
             row = c.fetchone()
             print "Table %s contains %d records" % (table, row[0])
     if verbose:
@@ -600,7 +600,7 @@ def addWordHTML(word, resource, id, section, relevance):
             pass
     else:
         wordsDictHTML[word] = {}
-    d = wordsDictHTML[word];
+    d = wordsDictHTML[word]
     d[resource] = (relevance, id, section)
     return relevance
 
@@ -647,7 +647,7 @@ def addWordArchive(word, id, relevance):
             pass
     else:
         wordsDictArchive[word] = {}
-    d = wordsDictArchive[word];
+    d = wordsDictArchive[word]
     d[id] = relevance
     return relevance
 
@@ -989,7 +989,7 @@ def analyzeHTML(doc, resource, p, section, id):
     return words
 
 def analyzeHTML(doc, resource):
-    para = 0;
+    para = 0
     ctxt = doc.xpathNewContext()
     try:
         res = ctxt.xpathEval("//head/title")
@@ -1079,7 +1079,7 @@ def scanXMLMsgArchive(url, title, force = 0):
 
     try:
         print "Loading %s" % (url)
-        doc = libxml2.htmlParseFile(url, None);
+        doc = libxml2.htmlParseFile(url, None)
     except:
         doc = None
     if doc == None:
@@ -1102,7 +1102,7 @@ def scanXMLDateArchive(t = None, force = 0):
     url = getXMLDateArchive(t)
     print "loading %s" % (url)
     try:
-        doc = libxml2.htmlParseFile(url, None);
+        doc = libxml2.htmlParseFile(url, None)
     except:
         doc = None
     if doc == None:
@@ -1150,7 +1150,7 @@ def analyzeArchives(t = None, force = 0):
         refs = wordsDictArchive[word]
         if refs  == None:
             skipped = skipped + 1
-            continue;
+            continue
         for id in refs.keys():
             relevance = refs[id]
             updateWordArchive(word, id, relevance)
@@ -1170,7 +1170,7 @@ def analyzeHTMLTop():
         refs = wordsDictHTML[word]
         if refs  == None:
             skipped = skipped + 1
-            continue;
+            continue
         for resource in refs.keys():
             (relevance, id, section) = refs[resource]
             updateWordHTML(word, resource, section, id, relevance)
@@ -1199,7 +1199,7 @@ def analyzeAPITop():
         refs = wordsDict[word]
         if refs  == None:
             skipped = skipped + 1
-            continue;
+            continue
         for (module, symbol) in refs.keys():
             updateWord(word, symbol, refs[(module, symbol)])
             i = i + 1
@@ -1228,26 +1228,26 @@ def main():
             elif args[i] == '--archive':
                 analyzeArchives(None, force)
             elif args[i] == '--archive-year':
-                i = i + 1;
+                i = i + 1
                 year = args[i]
                 months = ["January" , "February", "March", "April", "May",
                           "June", "July", "August", "September", "October",
-                          "November", "December"];
+                          "November", "December"]
                 for month in months:
                     try:
                         str = "%s-%s" % (year, month)
                         T = time.strptime(str, "%Y-%B")
-                        t = time.mktime(T) + 3600 * 24 * 10;
+                        t = time.mktime(T) + 3600 * 24 * 10
                         analyzeArchives(t, force)
                     except:
                         print "Failed to index month archive:"
                         print sys.exc_type, sys.exc_value
             elif args[i] == '--archive-month':
-                i = i + 1;
+                i = i + 1
                 month = args[i]
                 try:
                     T = time.strptime(month, "%Y-%B")
-                    t = time.mktime(T) + 3600 * 24 * 10;
+                    t = time.mktime(T) + 3600 * 24 * 10
                     analyzeArchives(t, force)
                 except:
                     print "Failed to index month archive:"

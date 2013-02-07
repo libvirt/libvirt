@@ -409,7 +409,7 @@ class CLexer:
         return self.lineno
 
     def push(self, token):
-        self.tokens.insert(0, token);
+        self.tokens.insert(0, token)
 
     def debug(self):
         print "Last token: ", self.last
@@ -429,7 +429,7 @@ class CLexer:
             if line[0] == '#':
                 self.tokens = map((lambda x: ('preproc', x)),
                                   string.split(line))
-                break;
+                break
             l = len(line)
             if line[0] == '"' or line[0] == "'":
                 end = line[0]
@@ -699,7 +699,7 @@ class CParser:
         if self.top_comment == "":
             self.top_comment = com
         if self.comment == None or com[0] == '*':
-            self.comment = com;
+            self.comment = com
         else:
             self.comment = self.comment + com
         token = self.lexer.token()
@@ -897,7 +897,7 @@ class CParser:
             while i < nbargs:
                 if args[i][1] == arg:
                     args[i] = (args[i][0], arg, desc)
-                    break;
+                    break
                 i = i + 1
             if i >= nbargs:
                 if not quiet:
@@ -1141,10 +1141,10 @@ class CParser:
                     type = type + token[1]
                     token = self.token()
             elif token != None and token[0] == 'sep' and token[1] == ';':
-                break;
+                break
             elif token != None and token[0] == 'name':
                 type = base_type
-                continue;
+                continue
             else:
                 self.error("parsing typedef: expecting ';'", token)
                 return token
@@ -1239,7 +1239,7 @@ class CParser:
                 else:
                     self.error("parseStruct: name", token)
                     token = self.token()
-                self.type = base_type;
+                self.type = base_type
         self.struct_fields = fields
          #self.debug("end parseStruct", token)
          #print fields
@@ -1289,7 +1289,7 @@ class CParser:
                 else:
                     self.error("parseUnion: name", token)
                     token = self.token()
-                self.type = base_type;
+                self.type = base_type
         self.union_fields = fields
         # self.debug("end parseUnion", token)
         # print fields
@@ -1633,7 +1633,7 @@ class CParser:
                 self.type = self.type + token[1]
                 token = self.token()
             if token == None or token[0] != "name" :
-                self.error("parsing function type, name expected", token);
+                self.error("parsing function type, name expected", token)
                 return token
             self.type = self.type + token[1]
             nametok = token
@@ -1643,14 +1643,14 @@ class CParser:
                 token = self.token()
                 if token != None and token[0] == "sep" and token[1] == '(':
                     token = self.token()
-                    type = self.type;
-                    token = self.parseSignature(token);
-                    self.type = type;
+                    type = self.type
+                    token = self.parseSignature(token)
+                    self.type = type
                 else:
-                    self.error("parsing function type, '(' expected", token);
+                    self.error("parsing function type, '(' expected", token)
                     return token
             else:
-                self.error("parsing function type, ')' expected", token);
+                self.error("parsing function type, ')' expected", token)
                 return token
             self.lexer.push(token)
             token = nametok
@@ -1675,7 +1675,7 @@ class CParser:
                     self.type = self.type + token[1]
                     token = self.token()
                 else:
-                    self.error("parsing array type, ']' expected", token);
+                    self.error("parsing array type, ']' expected", token)
                     return token
             elif token != None and token[0] == "sep" and token[1] == ':':
                  # remove :12 in case it's a limited int size
@@ -1904,7 +1904,7 @@ class CParser:
                         self.index_add(self.name, self.filename, static,
                                         "function", d)
                         token = self.token()
-                        token = self.parseBlock(token);
+                        token = self.parseBlock(token)
                 elif token[1] == ',':
                     self.comment = None
                     self.index_add(self.name, self.filename, static,
@@ -2014,7 +2014,7 @@ class docBuilder:
         for header in self.headers.keys():
             parser = CParser(header)
             idx = parser.parse()
-            self.headers[header] = idx;
+            self.headers[header] = idx
             self.idx.merge(idx)
 
     def scanModules(self):
@@ -2032,19 +2032,19 @@ class docBuilder:
                 skip = 1
                 for incl in self.includes:
                     if string.find(file, incl) != -1:
-                        skip = 0;
+                        skip = 0
                         break
                 if skip == 0:
-                    self.modules[file] = None;
+                    self.modules[file] = None
             files = glob.glob(directory + "/*.h")
             for file in files:
                 skip = 1
                 for incl in self.includes:
                     if string.find(file, incl) != -1:
-                        skip = 0;
+                        skip = 0
                         break
                 if skip == 0:
-                    self.headers[file] = None;
+                    self.headers[file] = None
         self.scanHeaders()
         self.scanModules()
 
@@ -2067,11 +2067,11 @@ class docBuilder:
                     val = eval(info[0])
                 except:
                     val = info[0]
-                output.write(" value='%s'" % (val));
+                output.write(" value='%s'" % (val))
             if info[2] != None and info[2] != '':
-                output.write(" type='%s'" % info[2]);
+                output.write(" type='%s'" % info[2])
             if info[1] != None and info[1] != '':
-                output.write(" info='%s'" % escape(info[1]));
+                output.write(" info='%s'" % escape(info[1]))
         output.write("/>\n")
 
     def serialize_macro(self, output, name):
@@ -2119,7 +2119,7 @@ class docBuilder:
             if self.idx.structs.has_key(name) and ( \
                type(self.idx.structs[name].info) == type(()) or
                 type(self.idx.structs[name].info) == type([])):
-                output.write(">\n");
+                output.write(">\n")
                 try:
                     for field in self.idx.structs[name].info:
                         desc = field[2]
@@ -2136,7 +2136,7 @@ class docBuilder:
                     self.warning("Failed to serialize struct %s" % (name))
                 output.write("    </struct>\n")
             else:
-                output.write("/>\n");
+                output.write("/>\n")
         else :
             output.write("    <typedef name='%s' file='%s' type='%s'" % (
                          name, self.modulename_file(id.header), id.info))
@@ -2176,7 +2176,7 @@ class docBuilder:
                 if apstr != "":
                     apstr = apstr + " &amp;&amp; "
                 apstr = apstr + cond
-            output.write("      <cond>%s</cond>\n"% (apstr));
+            output.write("      <cond>%s</cond>\n"% (apstr))
         try:
             (ret, params, desc) = id.info
             output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
@@ -2388,7 +2388,7 @@ class docBuilder:
                 letter = id[0]
                 output.write("      <letter name='%s'>\n" % (letter))
             output.write("        <word name='%s'>\n" % (id))
-            tokens = index[id];
+            tokens = index[id]
             tokens.sort()
             tok = None
             for token in tokens:

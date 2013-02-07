@@ -615,7 +615,7 @@ def print_function_wrapper(module, name, output, export, include):
             # Don't delete the function entry in the caller.
             return 1
 
-    c_call = "";
+    c_call = ""
     format=""
     format_args=""
     c_args=""
@@ -638,7 +638,7 @@ def print_function_wrapper(module, name, output, export, include):
                 c_args = c_args + "    PyObject *pyobj_%s;\n" % (arg[0])
                 c_convert = c_convert + \
                    "    %s = (%s) Py%s_Get(pyobj_%s);\n" % (arg[0],
-                   arg[1], t, arg[0]);
+                   arg[1], t, arg[0])
             else:
                 format_args = format_args + ", &%s" % (arg[0])
             if f == 't#':
@@ -646,7 +646,7 @@ def print_function_wrapper(module, name, output, export, include):
                 c_args = c_args + "    int py_buffsize%d;\n" % num_bufs
                 num_bufs = num_bufs + 1
             if c_call != "":
-                c_call = c_call + ", ";
+                c_call = c_call + ", "
             c_call = c_call + "%s" % (arg[0])
         else:
             if skipped_types.has_key(arg[1]):
@@ -671,7 +671,7 @@ def print_function_wrapper(module, name, output, export, include):
                 c_call = "\n    %s->%s = %s;\n" % (args[0][0], args[1][0],
                                                    args[1][0])
         else:
-            c_call = "\n    %s(%s);\n" % (name, c_call);
+            c_call = "\n    %s(%s);\n" % (name, c_call)
         ret_convert = "    Py_INCREF(Py_None);\n    return Py_None;\n"
     elif py_types.has_key(ret[0]):
         (f, t, n, c) = py_types[ret[0]]
@@ -679,13 +679,13 @@ def print_function_wrapper(module, name, output, export, include):
         if file == "python_accessor" and ret[2] != None:
             c_call = "\n    c_retval = %s->%s;\n" % (args[0][0], ret[2])
         else:
-            c_call = "\n    c_retval = %s(%s);\n" % (name, c_call);
+            c_call = "\n    c_retval = %s(%s);\n" % (name, c_call)
         ret_convert = "    py_retval = libvirt_%sWrap((%s) c_retval);\n" % (n,c)
         ret_convert = ret_convert + "    return py_retval;\n"
     elif py_return_types.has_key(ret[0]):
         (f, t, n, c) = py_return_types[ret[0]]
         c_return = "    %s c_retval;\n" % (ret[0])
-        c_call = "\n    c_retval = %s(%s);\n" % (name, c_call);
+        c_call = "\n    c_retval = %s(%s);\n" % (name, c_call)
         ret_convert = "    py_retval = libvirt_%sWrap((%s) c_retval);\n" % (n,c)
         ret_convert = ret_convert + "    return py_retval;\n"
     else:
@@ -705,31 +705,31 @@ def print_function_wrapper(module, name, output, export, include):
 
     include.write("PyObject * ")
     if module == "libvirt":
-        include.write("libvirt_%s(PyObject *self, PyObject *args);\n" % (name));
+        include.write("libvirt_%s(PyObject *self, PyObject *args);\n" % (name))
         export.write("    { (char *)\"%s\", libvirt_%s, METH_VARARGS, NULL },\n" %
                      (name, name))
     elif module == "libvirt-lxc":
-        include.write("libvirt_lxc_%s(PyObject *self, PyObject *args);\n" % (name));
+        include.write("libvirt_lxc_%s(PyObject *self, PyObject *args);\n" % (name))
         export.write("    { (char *)\"%s\", libvirt_lxc_%s, METH_VARARGS, NULL },\n" %
                      (name, name))
     elif module == "libvirt-qemu":
-        include.write("libvirt_qemu_%s(PyObject *self, PyObject *args);\n" % (name));
+        include.write("libvirt_qemu_%s(PyObject *self, PyObject *args);\n" % (name))
         export.write("    { (char *)\"%s\", libvirt_qemu_%s, METH_VARARGS, NULL },\n" %
                      (name, name))
 
     if file == "python":
         # Those have been manually generated
         if cond != None and cond != "":
-            include.write("#endif\n");
-            export.write("#endif\n");
-            output.write("#endif\n");
+            include.write("#endif\n")
+            export.write("#endif\n")
+            output.write("#endif\n")
         return 1
     if file == "python_accessor" and ret[0] != "void" and ret[2] is None:
         # Those have been manually generated
         if cond != None and cond != "":
-            include.write("#endif\n");
-            export.write("#endif\n");
-            output.write("#endif\n");
+            include.write("#endif\n")
+            export.write("#endif\n")
+            output.write("#endif\n")
         return 1
 
     output.write("PyObject *\n")
@@ -756,9 +756,9 @@ def print_function_wrapper(module, name, output, export, include):
     if c_convert != "":
         output.write(c_convert + "\n")
 
-    output.write("    LIBVIRT_BEGIN_ALLOW_THREADS;");
-    output.write(c_call);
-    output.write("    LIBVIRT_END_ALLOW_THREADS;\n");
+    output.write("    LIBVIRT_BEGIN_ALLOW_THREADS;")
+    output.write(c_call)
+    output.write("    LIBVIRT_END_ALLOW_THREADS;\n")
     output.write(ret_convert)
     output.write("}\n\n")
     if cond != None and cond != "":
@@ -1195,7 +1195,7 @@ def writeDoc(module, name, args, indent, output):
      if funcs[name][0] is None or funcs[name][0] == "":
          return
      val = funcs[name][0]
-     val = string.replace(val, "NULL", "None");
+     val = string.replace(val, "NULL", "None")
      output.write(indent)
      output.write('"""')
      i = string.find(val, "\n")
@@ -1261,7 +1261,7 @@ def buildWrappers(module):
         ctypes_processed[type] = ()
 
     for name in functions.keys():
-        found = 0;
+        found = 0
         (desc, ret, args, file, mod, cond) = functions[name]
         for type in ctypes:
             classe = classes_type[type][2]
@@ -1331,7 +1331,7 @@ def buildWrappers(module):
                 classes.write("%s" % arg[0])
                 n = n + 1
             classes.write("):\n")
-            writeDoc(module, name, args, '    ', classes);
+            writeDoc(module, name, args, '    ', classes)
 
             for arg in args:
                 if classes_type.has_key(arg[1]):
@@ -1340,19 +1340,19 @@ def buildWrappers(module):
                     classes.write("    else: %s__o = %s%s\n" %
                                   (arg[0], arg[0], classes_type[arg[1]][0]))
             if ret[0] != "void":
-                classes.write("    ret = ");
+                classes.write("    ret = ")
             else:
-                classes.write("    ");
+                classes.write("    ")
             classes.write("libvirtmod.%s(" % name)
             n = 0
             for arg in args:
                 if n != 0:
-                    classes.write(", ");
+                    classes.write(", ")
                 classes.write("%s" % arg[0])
                 if classes_type.has_key(arg[1]):
-                    classes.write("__o");
+                    classes.write("__o")
                 n = n + 1
-            classes.write(")\n");
+            classes.write(")\n")
 
             if ret[0] != "void":
                 if classes_type.has_key(ret[0]):
@@ -1360,15 +1360,15 @@ def buildWrappers(module):
                     # Raise an exception
                     #
                     if functions_noexcept.has_key(name):
-                        classes.write("    if ret is None:return None\n");
+                        classes.write("    if ret is None:return None\n")
                     else:
                         classes.write(
                      "    if ret is None:raise libvirtError('%s() failed')\n" %
                                       (name))
 
-                    classes.write("    return ");
-                    classes.write(classes_type[ret[0]][1] % ("ret"));
-                    classes.write("\n");
+                    classes.write("    return ")
+                    classes.write(classes_type[ret[0]][1] % ("ret"))
+                    classes.write("\n")
 
                 # For functions returning an integral type there are
                 # several things that we can do, depending on the
@@ -1398,7 +1398,7 @@ def buildWrappers(module):
                 else:
                     classes.write("    return ret\n")
 
-            classes.write("\n");
+            classes.write("\n")
 
     for classname in classes_list:
         if classname == "None":
@@ -1441,14 +1441,14 @@ def buildWrappers(module):
                     classes.write("        self._dom = dom\n")
                     classes.write("        self._conn = dom.connect()\n")
                 classes.write("        if _obj != None:self._o = _obj;return\n")
-                classes.write("        self._o = None\n\n");
+                classes.write("        self._o = None\n\n")
             destruct=None
             if classes_destructors.has_key(classname):
                 classes.write("    def __del__(self):\n")
                 classes.write("        if self._o != None:\n")
                 classes.write("            libvirtmod.%s(self._o)\n" %
-                              classes_destructors[classname]);
-                classes.write("        self._o = None\n\n");
+                              classes_destructors[classname])
+                classes.write("        self._o = None\n\n")
                 destruct=classes_destructors[classname]
 
             if not class_skip_connect_impl.has_key(classname):
@@ -1470,7 +1470,7 @@ def buildWrappers(module):
                 # to avoid double free
                 #
                 if name == destruct:
-                    continue;
+                    continue
                 if file != oldfile:
                     if file == "python_accessor":
                         classes.write("    # accessors for %s\n" % (classname))
@@ -1487,7 +1487,7 @@ def buildWrappers(module):
                         classes.write(", %s" % arg[0])
                     n = n + 1
                 classes.write("):\n")
-                writeDoc(module, name, args, '        ', classes);
+                writeDoc(module, name, args, '        ', classes)
                 n = 0
                 for arg in args:
                     if classes_type.has_key(arg[1]):
@@ -1498,24 +1498,24 @@ def buildWrappers(module):
                                           (arg[0], arg[0], classes_type[arg[1]][0]))
                     n = n + 1
                 if ret[0] != "void":
-                    classes.write("        ret = ");
+                    classes.write("        ret = ")
                 else:
-                    classes.write("        ");
+                    classes.write("        ")
                 n = 0
                 classes.write("libvirtmod.%s(" % name)
                 for arg in args:
                     if n != 0:
-                        classes.write(", ");
+                        classes.write(", ")
                     if n != index:
                         classes.write("%s" % arg[0])
                         if classes_type.has_key(arg[1]):
-                            classes.write("__o");
+                            classes.write("__o")
                     else:
-                        classes.write("self");
+                        classes.write("self")
                         if classes_type.has_key(arg[1]):
                             classes.write(classes_type[arg[1]][0])
                     n = n + 1
-                classes.write(")\n");
+                classes.write(")\n")
 
                 if name == "virConnectClose":
                     classes.write("        self._o = None\n")
@@ -1528,7 +1528,7 @@ def buildWrappers(module):
                         #
                         if functions_noexcept.has_key(name):
                             classes.write(
-                                "        if ret is None:return None\n");
+                                "        if ret is None:return None\n")
                         else:
                             if classname == "virConnect":
                                 classes.write(
@@ -1566,9 +1566,9 @@ def buildWrappers(module):
                         #
                         # generate the returned class wrapper for the object
                         #
-                        classes.write("        __tmp = ");
-                        classes.write(classes_type[ret[0]][1] % ("ret"));
-                        classes.write("\n");
+                        classes.write("        __tmp = ")
+                        classes.write(classes_type[ret[0]][1] % ("ret"))
+                        classes.write("\n")
 
                         #
                         # Sometime one need to keep references of the source
@@ -1586,28 +1586,28 @@ def buildWrappers(module):
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
-                                          (function_post[name]));
+                                          (function_post[name]))
 
                         #
                         # return the class
                         #
-                        classes.write("        return __tmp\n");
+                        classes.write("        return __tmp\n")
                     elif converter_type.has_key(ret[0]):
                         #
                         # Raise an exception
                         #
                         if functions_noexcept.has_key(name):
                             classes.write(
-                                "        if ret is None:return None");
+                                "        if ret is None:return None")
 
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
-                                          (function_post[name]));
+                                          (function_post[name]))
 
-                        classes.write("        return ");
-                        classes.write(converter_type[ret[0]] % ("ret"));
-                        classes.write("\n");
+                        classes.write("        return ")
+                        classes.write(converter_type[ret[0]] % ("ret"))
+                        classes.write("\n")
 
                     # For functions returning an integral type there
                     # are several things that we can do, depending on
@@ -1650,7 +1650,7 @@ def buildWrappers(module):
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
-                                          (function_post[name]));
+                                          (function_post[name]))
 
                         classes.write ("        return ret\n")
 
@@ -1692,7 +1692,7 @@ def buildWrappers(module):
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
-                                          (function_post[name]));
+                                          (function_post[name]))
 
                         classes.write ("        return ret\n")
 
@@ -1700,11 +1700,11 @@ def buildWrappers(module):
                         # Post-processing - just before we return.
                         if function_post.has_key(name):
                             classes.write("        %s\n" %
-                                          (function_post[name]));
+                                          (function_post[name]))
 
-                        classes.write("        return ret\n");
+                        classes.write("        return ret\n")
 
-                classes.write("\n");
+                classes.write("\n")
             # Append "<classname>.py" to class def, iff it exists
             try:
                 extra = open(os.path.join(srcPref,"libvirt-override-" + classname + ".py"), "r")
@@ -1726,7 +1726,7 @@ def buildWrappers(module):
         items.sort(lambda i1,i2: cmp(long(i1[1]),long(i2[1])))
         for name,value in items:
             classes.write("%s = %s\n" % (name,value))
-        classes.write("\n");
+        classes.write("\n")
 
     classes.close()
 
@@ -1776,7 +1776,7 @@ def qemuBuildWrappers(module):
     fd.write("        if str(cyg_e).count(\"No module named\"):\n")
     fd.write("            raise lib_e\n\n")
 
-    fd.write("import libvirt\n\n");
+    fd.write("import libvirt\n\n")
     fd.write("#\n# Functions from module %s\n#\n\n" % module)
     #
     # Generate functions directly, no classes
@@ -1792,12 +1792,12 @@ def qemuBuildWrappers(module):
             fd.write("%s" % arg[0])
             n = n + 1
         fd.write("):\n")
-        writeDoc(module, name, args, '    ', fd);
+        writeDoc(module, name, args, '    ', fd)
 
         if ret[0] != "void":
-            fd.write("    ret = ");
+            fd.write("    ret = ")
         else:
-            fd.write("    ");
+            fd.write("    ")
         fd.write("libvirtmod_qemu.%s(" % name)
         n = 0
 
@@ -1808,7 +1808,7 @@ def qemuBuildWrappers(module):
                 conn = arg[0]
 
             if n != 0:
-                fd.write(", ");
+                fd.write(", ")
             if arg[1] in ["virDomainPtr", "virConnectPtr"]:
                 # FIXME: This might have problem if the function
                 # has multiple args which are objects.
@@ -1816,7 +1816,7 @@ def qemuBuildWrappers(module):
             else:
                 fd.write("%s" % arg[0])
             n = n + 1
-        fd.write(")\n");
+        fd.write(")\n")
 
         if ret[0] != "void":
             fd.write("    if ret is None: raise libvirt.libvirtError('" + name + "() failed')\n")
@@ -1837,7 +1837,7 @@ def qemuBuildWrappers(module):
         items.sort(lambda i1,i2: cmp(long(i1[1]),long(i2[1])))
         for name,value in items:
             fd.write("%s = %s\n" % (name,value))
-        fd.write("\n");
+        fd.write("\n")
 
     fd.close()
 
@@ -1888,7 +1888,7 @@ def lxcBuildWrappers(module):
     fd.write("        if str(cyg_e).count(\"No module named\"):\n")
     fd.write("            raise lib_e\n\n")
 
-    fd.write("import libvirt\n\n");
+    fd.write("import libvirt\n\n")
     fd.write("#\n# Functions from module %s\n#\n\n" % module)
     #
     # Generate functions directly, no classes
@@ -1904,12 +1904,12 @@ def lxcBuildWrappers(module):
             fd.write("%s" % arg[0])
             n = n + 1
         fd.write("):\n")
-        writeDoc(module, name, args, '    ', fd);
+        writeDoc(module, name, args, '    ', fd)
 
         if ret[0] != "void":
-            fd.write("    ret = ");
+            fd.write("    ret = ")
         else:
-            fd.write("    ");
+            fd.write("    ")
         fd.write("libvirtmod_lxc.%s(" % name)
         n = 0
 
@@ -1920,7 +1920,7 @@ def lxcBuildWrappers(module):
                 conn = arg[0]
 
             if n != 0:
-                fd.write(", ");
+                fd.write(", ")
             if arg[1] in ["virDomainPtr", "virConnectPtr"]:
                 # FIXME: This might have problem if the function
                 # has multiple args which are objects.
@@ -1928,7 +1928,7 @@ def lxcBuildWrappers(module):
             else:
                 fd.write("%s" % arg[0])
             n = n + 1
-        fd.write(")\n");
+        fd.write(")\n")
 
         if ret[0] != "void":
             fd.write("    if ret is None: raise libvirt.libvirtError('" + name + "() failed')\n")
@@ -1949,7 +1949,7 @@ def lxcBuildWrappers(module):
         items.sort(lambda i1,i2: cmp(long(i1[1]),long(i2[1])))
         for name,value in items:
             fd.write("%s = %s\n" % (name,value))
-        fd.write("\n");
+        fd.write("\n")
 
     fd.close()
 

@@ -128,7 +128,7 @@ while i < 30:
     except:
         okay = 0
         t = -1
-        break;
+        break
 
     if t == 0:
         break

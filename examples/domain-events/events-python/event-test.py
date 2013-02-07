@@ -289,7 +289,7 @@ class virEventLoopPure:
     def update_timer(self, timerID, interval):
         for h in self.timers:
             if h.get_id() == timerID:
-                h.set_interval(interval);
+                h.set_interval(interval)
                 self.interrupt()
 
                 debug("Update timer %d interval %d"  % (timerID, interval))
@@ -325,25 +325,25 @@ class virEventLoopPure:
         if events & libvirt.VIR_EVENT_HANDLE_WRITABLE:
             ret |= select.POLLOUT
         if events & libvirt.VIR_EVENT_HANDLE_ERROR:
-            ret |= select.POLLERR;
+            ret |= select.POLLERR
         if events & libvirt.VIR_EVENT_HANDLE_HANGUP:
-            ret |= select.POLLHUP;
+            ret |= select.POLLHUP
         return ret
 
     # Convert from poll() event constants, to libvirt events constants
     def events_from_poll(self, events):
-        ret = 0;
+        ret = 0
         if events & select.POLLIN:
-            ret |= libvirt.VIR_EVENT_HANDLE_READABLE;
+            ret |= libvirt.VIR_EVENT_HANDLE_READABLE
         if events & select.POLLOUT:
-            ret |= libvirt.VIR_EVENT_HANDLE_WRITABLE;
+            ret |= libvirt.VIR_EVENT_HANDLE_WRITABLE
         if events & select.POLLNVAL:
-            ret |= libvirt.VIR_EVENT_HANDLE_ERROR;
+            ret |= libvirt.VIR_EVENT_HANDLE_ERROR
         if events & select.POLLERR:
-            ret |= libvirt.VIR_EVENT_HANDLE_ERROR;
+            ret |= libvirt.VIR_EVENT_HANDLE_ERROR
         if events & select.POLLHUP:
-            ret |= libvirt.VIR_EVENT_HANDLE_HANGUP;
-        return ret;
+            ret |= libvirt.VIR_EVENT_HANDLE_HANGUP
+        return ret
 
 
 ###########################################################################
@@ -437,8 +437,8 @@ def eventToString(event):
                      "Resumed",
                      "Stopped",
                      "Shutdown",
-                     "PMSuspended" );
-    return eventStrings[event];
+                     "PMSuspended" )
+    return eventStrings[event]
 
 def detailToString(event, detail):
     eventStrings = (
