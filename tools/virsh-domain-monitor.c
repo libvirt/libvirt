@@ -290,9 +290,13 @@ vshDomainStateReasonToString(int state, int reason)
  * "dommemstat" command
  */
 static const vshCmdInfo info_dommemstat[] = {
-    {"help", N_("get memory statistics for a domain")},
-    {"desc", N_("Get memory statistics for a running domain.")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("get memory statistics for a domain")
+    },
+    {.name = "desc",
+     .data = N_("Get memory statistics for a running domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dommemstat[] = {
@@ -349,9 +353,13 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
  * "domblkinfo" command
  */
 static const vshCmdInfo info_domblkinfo[] = {
-    {"help", N_("domain block device size information")},
-    {"desc", N_("Get block device size info for a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain block device size information")
+    },
+    {.name = "desc",
+     .data = N_("Get block device size info for a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domblkinfo[] = {
@@ -400,9 +408,13 @@ cleanup:
  * "domblklist" command
  */
 static const vshCmdInfo info_domblklist[] = {
-    {"help", N_("list all domain blocks")},
-    {"desc", N_("Get the summary of block devices for a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("list all domain blocks")
+    },
+    {.name = "desc",
+     .data = N_("Get the summary of block devices for a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domblklist[] = {
@@ -618,9 +630,13 @@ cleanup:
  * "domif-getlink" command
  */
 static const vshCmdInfo info_domif_getlink[] = {
-    {"help", N_("get link state of a virtual interface")},
-    {"desc", N_("Get link state of a domain's virtual interface.")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("get link state of a virtual interface")
+    },
+    {.name = "desc",
+     .data = N_("Get link state of a domain's virtual interface.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domif_getlink[] = {
@@ -757,9 +773,13 @@ cleanup:
  * "domcontrol" command
  */
 static const vshCmdInfo info_domcontrol[] = {
-    {"help", N_("domain control interface state")},
-    {"desc", N_("Returns state of a control interface to the domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain control interface state")
+    },
+    {.name = "desc",
+     .data = N_("Returns state of a control interface to the domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domcontrol[] = {
@@ -805,10 +825,14 @@ cleanup:
  * "domblkstat" command
  */
 static const vshCmdInfo info_domblkstat[] = {
-    {"help", N_("get device block stats for a domain")},
-    {"desc", N_("Get device block stats for a running domain. See man page or "
-                "use --human for explanation of fields")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("get device block stats for a domain")
+    },
+    {.name = "desc",
+     .data = N_("Get device block stats for a running domain. See man page or "
+                "use --human for explanation of fields")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domblkstat[] = {
@@ -986,9 +1010,13 @@ cleanup:
  * "domifstat" command
  */
 static const vshCmdInfo info_domifstat[] = {
-    {"help", N_("get network interface stats for a domain")},
-    {"desc", N_("Get network interface stats for a running domain.")},
-    {NULL,NULL}
+    {.name = "help",
+     .data = N_("get network interface stats for a domain")
+    },
+    {.name = "desc",
+     .data = N_("Get network interface stats for a running domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domifstat[] = {
@@ -1059,9 +1087,13 @@ cleanup:
  * "domblkerror" command
  */
 static const vshCmdInfo info_domblkerror[] = {
-    {"help", N_("Show errors on block devices")},
-    {"desc", N_("Show block device errors")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Show errors on block devices")
+    },
+    {.name = "desc",
+     .data = N_("Show block device errors")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domblkerror[] = {
@@ -1120,9 +1152,13 @@ cleanup:
  * "dominfo" command
  */
 static const vshCmdInfo info_dominfo[] = {
-    {"help", N_("domain information")},
-    {"desc", N_("Returns basic information about the domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about the domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_dominfo[] = {
@@ -1258,9 +1294,13 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
  * "domstate" command
  */
 static const vshCmdInfo info_domstate[] = {
-    {"help", N_("domain state")},
-    {"desc", N_("Returns state about a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("domain state")
+    },
+    {.name = "desc",
+     .data = N_("Returns state about a domain.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_domstate[] = {
@@ -1311,9 +1351,13 @@ cleanup:
  * "list" command
  */
 static const vshCmdInfo info_list[] = {
-    {"help", N_("list domains")},
-    {"desc", N_("Returns list of domains.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("list domains")
+    },
+    {.name = "desc",
+     .data = N_("Returns list of domains.")
+    },
+    {.name = NULL}
 };
 
 /* compare domains, pack NULLed ones at the end*/
