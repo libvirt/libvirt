@@ -105,9 +105,13 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
  * "vol-create-as" command
  */
 static const vshCmdInfo info_vol_create_as[] = {
-    {"help", N_("create a volume from a set of args")},
-    {"desc", N_("Create a vol.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("create a volume from a set of args")
+    },
+    {.name = "desc",
+     .data = N_("Create a vol.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_create_as[] = {
@@ -306,9 +310,13 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
  * "vol-create" command
  */
 static const vshCmdInfo info_vol_create[] = {
-    {"help", N_("create a vol from an XML file")},
-    {"desc", N_("Create a vol.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("create a vol from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Create a vol.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_create[] = {
@@ -373,9 +381,13 @@ cleanup:
  * "vol-create-from" command
  */
 static const vshCmdInfo info_vol_create_from[] = {
-    {"help", N_("create a vol, using another volume as input")},
-    {"desc", N_("Create a vol from an existing volume.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("create a vol, using another volume as input")
+    },
+    {.name = "desc",
+     .data = N_("Create a vol from an existing volume.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_create_from[] = {
@@ -489,9 +501,13 @@ cleanup:
  * "vol-clone" command
  */
 static const vshCmdInfo info_vol_clone[] = {
-    {"help", N_("clone a volume.")},
-    {"desc", N_("Clone an existing volume.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("clone a volume.")
+    },
+    {.name = "desc",
+     .data = N_("Clone an existing volume.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_clone[] = {
@@ -583,9 +599,13 @@ cleanup:
  * "vol-upload" command
  */
 static const vshCmdInfo info_vol_upload[] = {
-    {"help", N_("upload a file into a volume")},
-    {"desc", N_("Upload a file into a volume")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("upload a file into a volume")
+    },
+    {.name = "desc",
+     .data = N_("Upload a file into a volume")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_upload[] = {
@@ -696,9 +716,13 @@ cleanup:
  * "vol-download" command
  */
 static const vshCmdInfo info_vol_download[] = {
-    {"help", N_("Download a volume to a file")},
-    {"desc", N_("Download a volume to a file")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Download a volume to a file")
+    },
+    {.name = "desc",
+     .data = N_("Download a volume to a file")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_download[] = {
@@ -807,9 +831,13 @@ cleanup:
  * "vol-delete" command
  */
 static const vshCmdInfo info_vol_delete[] = {
-    {"help", N_("delete a vol")},
-    {"desc", N_("Delete a given vol.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("delete a vol")
+    },
+    {.name = "desc",
+     .data = N_("Delete a given vol.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_delete[] = {
@@ -852,9 +880,13 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
  * "vol-wipe" command
  */
 static const vshCmdInfo info_vol_wipe[] = {
-    {"help", N_("wipe a vol")},
-    {"desc", N_("Ensure data previously on a volume is not accessible to future reads")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("wipe a vol")
+    },
+    {.name = "desc",
+     .data = N_("Ensure data previously on a volume is not accessible to future reads")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_wipe[] = {
@@ -926,9 +958,13 @@ out:
  * "vol-info" command
  */
 static const vshCmdInfo info_vol_info[] = {
-    {"help", N_("storage vol information")},
-    {"desc", N_("Returns basic information about the storage vol.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("storage vol information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about the storage vol.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_info[] = {
@@ -998,9 +1034,13 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
  * "vol-resize" command
  */
 static const vshCmdInfo info_vol_resize[] = {
-    {"help", N_("resize a vol")},
-    {"desc", N_("Resizes a storage volume.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("resize a vol")
+    },
+    {.name = "desc",
+     .data = N_("Resizes a storage volume.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_resize[] = {
@@ -1101,9 +1141,13 @@ cleanup:
  * "vol-dumpxml" command
  */
 static const vshCmdInfo info_vol_dumpxml[] = {
-    {"help", N_("vol information in XML")},
-    {"desc", N_("Output the vol information as an XML dump to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("vol information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the vol information as an XML dump to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_dumpxml[] = {
@@ -1271,9 +1315,13 @@ cleanup:
  * "vol-list" command
  */
 static const vshCmdInfo info_vol_list[] = {
-    {"help", N_("list vols")},
-    {"desc", N_("Returns list of vols by pool.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("list vols")
+    },
+    {.name = "desc",
+     .data = N_("Returns list of vols by pool.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_list[] = {
@@ -1548,9 +1596,13 @@ cleanup:
  * "vol-name" command
  */
 static const vshCmdInfo info_vol_name[] = {
-    {"help", N_("returns the volume name for a given volume key or path")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("returns the volume name for a given volume key or path")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_name[] = {
@@ -1580,9 +1632,13 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
  * "vol-pool" command
  */
 static const vshCmdInfo info_vol_pool[] = {
-    {"help", N_("returns the storage pool for a given volume key or path")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("returns the storage pool for a given volume key or path")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_pool[] = {
@@ -1640,9 +1696,13 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
  * "vol-key" command
  */
 static const vshCmdInfo info_vol_key[] = {
-    {"help", N_("returns the volume key for a given volume name or path")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("returns the volume key for a given volume name or path")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_key[] = {
@@ -1676,9 +1736,13 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
  * "vol-path" command
  */
 static const vshCmdInfo info_vol_path[] = {
-    {"help", N_("returns the volume path for a given volume name or key")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("returns the volume path for a given volume name or key")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_vol_path[] = {
