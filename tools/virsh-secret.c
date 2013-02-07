@@ -69,9 +69,13 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
  * "secret-define" command
  */
 static const vshCmdInfo info_secret_define[] = {
-    {"help", N_("define or modify a secret from an XML file")},
-    {"desc", N_("Define or modify a secret.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("define or modify a secret from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Define or modify a secret.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_define[] = {
@@ -121,9 +125,13 @@ cleanup:
  * "secret-dumpxml" command
  */
 static const vshCmdInfo info_secret_dumpxml[] = {
-    {"help", N_("secret attributes in XML")},
-    {"desc", N_("Output attributes of a secret as an XML dump to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("secret attributes in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output attributes of a secret as an XML dump to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_dumpxml[] = {
@@ -162,9 +170,13 @@ cleanup:
  * "secret-set-value" command
  */
 static const vshCmdInfo info_secret_set_value[] = {
-    {"help", N_("set a secret value")},
-    {"desc", N_("Set a secret value.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("set a secret value")
+    },
+    {.name = "desc",
+     .data = N_("Set a secret value.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_set_value[] = {
@@ -226,9 +238,13 @@ cleanup:
  * "secret-get-value" command
  */
 static const vshCmdInfo info_secret_get_value[] = {
-    {"help", N_("Output a secret value")},
-    {"desc", N_("Output a secret value to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("Output a secret value")
+    },
+    {.name = "desc",
+     .data = N_("Output a secret value to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_get_value[] = {
@@ -279,9 +295,13 @@ cleanup:
  * "secret-undefine" command
  */
 static const vshCmdInfo info_secret_undefine[] = {
-    {"help", N_("undefine a secret")},
-    {"desc", N_("Undefine a secret.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("undefine a secret")
+    },
+    {.name = "desc",
+     .data = N_("Undefine a secret.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_undefine[] = {
@@ -455,9 +475,13 @@ cleanup:
  * "secret-list" command
  */
 static const vshCmdInfo info_secret_list[] = {
-    {"help", N_("list secrets")},
-    {"desc", N_("Returns a list of secrets")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("list secrets")
+    },
+    {.name = "desc",
+     .data = N_("Returns a list of secrets")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_secret_list[] = {
