@@ -81,9 +81,13 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
  * "nwfilter-define" command
  */
 static const vshCmdInfo info_nwfilter_define[] = {
-    {"help", N_("define or update a network filter from an XML file")},
-    {"desc", N_("Define a new network filter or update an existing one.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("define or update a network filter from an XML file")
+    },
+    {.name = "desc",
+     .data = N_("Define a new network filter or update an existing one.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_nwfilter_define[] = {
@@ -127,9 +131,13 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
  * "nwfilter-undefine" command
  */
 static const vshCmdInfo info_nwfilter_undefine[] = {
-    {"help", N_("undefine a network filter")},
-    {"desc", N_("Undefine a given network filter.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("undefine a network filter")
+    },
+    {.name = "desc",
+     .data = N_("Undefine a given network filter.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_nwfilter_undefine[] = {
@@ -166,9 +174,13 @@ cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
  * "nwfilter-dumpxml" command
  */
 static const vshCmdInfo info_nwfilter_dumpxml[] = {
-    {"help", N_("network filter information in XML")},
-    {"desc", N_("Output the network filter information as an XML dump to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("network filter information in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the network filter information as an XML dump to stdout.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
@@ -334,9 +346,13 @@ cleanup:
  * "nwfilter-list" command
  */
 static const vshCmdInfo info_nwfilter_list[] = {
-    {"help", N_("list network filters")},
-    {"desc", N_("Returns list of network filters.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("list network filters")
+    },
+    {.name = "desc",
+     .data = N_("Returns list of network filters.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_nwfilter_list[] = {
@@ -374,9 +390,13 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  * "nwfilter-edit" command
  */
 static const vshCmdInfo info_nwfilter_edit[] = {
-    {"help", N_("edit XML configuration for a network filter")},
-    {"desc", N_("Edit the XML configuration for a network filter.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("edit XML configuration for a network filter")
+    },
+    {.name = "desc",
+     .data = N_("Edit the XML configuration for a network filter.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_nwfilter_edit[] = {
