@@ -90,8 +90,6 @@ int virFileWrapperFdClose(virFileWrapperFdPtr dfd);
 
 void virFileWrapperFdFree(virFileWrapperFdPtr dfd);
 
-void virFileWrapperFdCatchError(virFileWrapperFdPtr dfd);
-
 int virFileLock(int fd, bool shared, off_t start, off_t len);
 int virFileUnlock(int fd, off_t start, off_t len);
 

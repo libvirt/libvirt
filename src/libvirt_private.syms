@@ -1382,7 +1382,6 @@ virFileLoopDeviceAssociate;
 virFileRewrite;
 virFileTouch;
 virFileUpdatePerm;
-virFileWrapperFdCatchError;
 virFileWrapperFdClose;
 virFileWrapperFdFree;
 virFileWrapperFdNew;

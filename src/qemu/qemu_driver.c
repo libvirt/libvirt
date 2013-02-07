@@ -2855,7 +2855,6 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    virFileWrapperFdCatchError(wrapperFd);
     virFileWrapperFdFree(wrapperFd);
     VIR_FREE(xml);
 
@@ -3288,10 +3287,8 @@ doCoreDump(virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (ret != 0) {
-        virFileWrapperFdCatchError(wrapperFd);
+    if (ret != 0)
         unlink(path);
-    }
     virFileWrapperFdFree(wrapperFd);
     return ret;
 }

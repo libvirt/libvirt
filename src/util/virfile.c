@@ -282,26 +282,17 @@ virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
 int
 virFileWrapperFdClose(virFileWrapperFdPtr wfd)
 {
+    int ret;
+
     if (!wfd)
         return 0;
 
-    return virCommandWait(wfd->cmd, NULL);
-}
-
-
-/**
- * virFileWrapperFdCatchError:
- * @wfd: fd wrapper, or NULL
- *
- * If iohelper reported any error VIR_WARN() about it.
- */
-void
-virFileWrapperFdCatchError(virFileWrapperFdPtr wfd)
-{
-    if (wfd && wfd->err_msg)
+    ret = virCommandWait(wfd->cmd, NULL);
+    if (wfd->err_msg)
         VIR_WARN("iohelper reports: %s", wfd->err_msg);
-}
 
+    return ret;
+}
 
 /**
  * virFileWrapperFdFree:
