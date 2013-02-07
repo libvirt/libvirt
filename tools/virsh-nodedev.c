@@ -42,12 +42,16 @@
  * "nodedev-create" command
  */
 static const vshCmdInfo info_node_device_create[] = {
-    {"help", N_("create a device defined "
-                          "by an XML file on the node")},
-    {"desc", N_("Create a device on the node.  Note that this "
-                          "command creates devices on the physical host "
-                          "that can then be assigned to a virtual machine.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("create a device defined "
+                "by an XML file on the node")
+    },
+    {.name = "desc",
+     .data = N_("Create a device on the node.  Note that this "
+                "command creates devices on the physical host "
+                "that can then be assigned to a virtual machine.")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_node_device_create[] = {
@@ -93,10 +97,14 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
  * "nodedev-destroy" command
  */
 static const vshCmdInfo info_node_device_destroy[] = {
-    {"help", N_("destroy (stop) a device on the node")},
-    {"desc", N_("Destroy a device on the node.  Note that this "
-                "command destroys devices on the physical host")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("destroy (stop) a device on the node")
+    },
+    {.name = "desc",
+     .data = N_("Destroy a device on the node.  Note that this "
+                "command destroys devices on the physical host")
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_node_device_destroy[] = {
@@ -361,9 +369,13 @@ cleanup:
  * "nodedev-list" command
  */
 static const vshCmdInfo info_node_list_devices[] = {
-    {"help", N_("enumerate devices on this host")},
-    {"desc", ""},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("enumerate devices on this host")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_node_list_devices[] = {
@@ -497,9 +509,13 @@ cleanup:
  * "nodedev-dumpxml" command
  */
 static const vshCmdInfo info_node_device_dumpxml[] = {
-    {"help", N_("node device details in XML")},
-    {"desc", N_("Output the node device details as an XML dump to stdout.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("node device details in XML")
+    },
+    {.name = "desc",
+     .data = N_("Output the node device details as an XML dump to stdout.")
+    },
+    {.name = NULL}
 };
 
 
@@ -565,9 +581,13 @@ cleanup:
  * "nodedev-detach" command
  */
 static const vshCmdInfo info_node_device_detach[] = {
-    {"help", N_("detach node device from its device driver")},
-    {"desc", N_("Detach node device from its device driver before assigning to a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("detach node device from its device driver")
+    },
+    {.name = "desc",
+     .data = N_("Detach node device from its device driver before assigning to a domain.")
+    },
+    {.name = NULL}
 };
 
 
@@ -612,9 +632,13 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
  * "nodedev-reattach" command
  */
 static const vshCmdInfo info_node_device_reattach[] = {
-    {"help", N_("reattach node device to its device driver")},
-    {"desc", N_("Reattach node device to its device driver once released by the domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("reattach node device to its device driver")
+    },
+    {.name = "desc",
+     .data = N_("Reattach node device to its device driver once released by the domain.")
+    },
+    {.name = NULL}
 };
 
 
@@ -657,9 +681,13 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
  * "nodedev-reset" command
  */
 static const vshCmdInfo info_node_device_reset[] = {
-    {"help", N_("reset node device")},
-    {"desc", N_("Reset node device before or after assigning to a domain.")},
-    {NULL, NULL}
+    {.name = "help",
+     .data = N_("reset node device")
+    },
+    {.name = "desc",
+     .data = N_("Reset node device before or after assigning to a domain.")
+    },
+    {.name = NULL}
 };
 
 
