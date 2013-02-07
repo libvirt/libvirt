@@ -182,65 +182,6 @@ virCommandFDSet(int fd,
 
 #ifndef WIN32
 
-static int virClearCapabilities(void) ATTRIBUTE_UNUSED;
-
-# if WITH_CAPNG
-static int virClearCapabilities(void)
-{
-    int ret;
-
-    capng_clear(CAPNG_SELECT_BOTH);
-
-    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot clear process capabilities %d"), ret);
-        return -1;
-    }
-
-    return 0;
-}
-
-/**
- * virSetCapabilities:
- *  @capabilities - capability flag to set.
- *                  In case of 0, this function is identical to
- *                  virClearCapabilities()
- *
- */
-static int virSetCapabilities(unsigned long long capabilities)
-{
-    int ret, i;
-
-    capng_clear(CAPNG_SELECT_BOTH);
-
-    for (i = 0; i <= CAP_LAST_CAP; i++) {
-        if (capabilities & (1ULL << i))
-            capng_update(CAPNG_ADD, CAPNG_BOUNDING_SET, i);
-    }
-
-    if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot apply process capabilities %d"), ret);
-        return -1;
-    }
-
-    return 0;
-}
-# else
-static int virClearCapabilities(void)
-{
-//    VIR_WARN("libcap-ng support not compiled in, unable to clear "
-//             "capabilities");
-    return 0;
-}
-
-static int
-virSetCapabilities(unsigned long long capabilities ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-# endif
-
 /**
  * virFork:
  * @pid - a pointer to a pid_t that will receive the return value from
@@ -645,18 +586,16 @@ virExec(virCommandPtr cmd)
     }
 # endif
 
-    if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1) {
-        VIR_DEBUG("Setting child uid:gid to %d:%d",
-                  (int)cmd->uid, (int)cmd->gid);
-        if (virSetUIDGID(cmd->uid, cmd->gid) < 0)
+    /* The steps above may need to do something privileged, so we delay
+     * setuid and clearing capabilities until the last minute.
+     */
+    if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
+        cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
+        VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
+                  (int)cmd->uid, (int)cmd->gid, cmd->capabilities);
+        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, cmd->capabilities) < 0)
             goto fork_error;
     }
-
-    /* The steps above may need todo something privileged, so
-     * we delay clearing capabilities until the last minute */
-    if (cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS))
-        if (virSetCapabilities(cmd->capabilities) < 0)
-            goto fork_error;
 
     if (cmd->pwd) {
         VIR_DEBUG("Running child in %s", cmd->pwd);
