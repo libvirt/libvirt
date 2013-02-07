@@ -164,7 +164,7 @@ struct _virQEMUDriver {
     /* Atomic increment only */
     int nextvmid;
 
-    /* Immutable pointer. Unsafe APIs XXX */
+    /* Immutable pointer. Immutable object */
     virCgroupPtr cgroup;
 
     /* Atomic inc/dec only */
