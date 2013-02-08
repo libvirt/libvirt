@@ -754,6 +754,9 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
             goto cleanup;
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, &vhostfd) < 0)
+            goto cleanup;
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NET_NAME) ||
