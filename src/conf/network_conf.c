@@ -1895,6 +1895,7 @@ virNetworkObjUpdateParseFile(const char *filename,
     ret = 0;
 
 cleanup:
+    xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return ret;
 }
