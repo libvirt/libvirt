@@ -156,7 +156,7 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStorageVolDefPtr vol)
 {
 
-    int ret;
+    int ret = -1;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -167,10 +167,14 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
-    ret = virCommandRun(cmd, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
-    virStorageBackendSheepdogRefreshVol(conn, pool, vol);
+    if (virStorageBackendSheepdogRefreshVol(conn, pool, vol) < 0)
+        goto cleanup;
 
+    ret = 0;
+cleanup:
     virCommandFree(cmd);
     return ret;
 }
