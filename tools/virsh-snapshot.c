@@ -983,8 +983,8 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
      * external snapshot.  */
     switch (virXPathBoolean("boolean(/domainsnapshot/memory)", ctxt)) {
     case 1:
-        external = virXPathBoolean("boolean(/domainsnapshot/memory/@snapshot=external "
-                                   "| /domainsnapshot/disks/disk/@snapshot=external)",
+        external = virXPathBoolean("boolean(/domainsnapshot/memory[@snapshot='external'] "
+                                   "| /domainsnapshot/disks/disk[@snapshot='external'])",
                                    ctxt);
         break;
     case 0:
