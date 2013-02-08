@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2012 Red Hat, Inc.
+## Copyright (C) 2005-2013 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
@@ -95,7 +95,7 @@ test_programs = virshtest sockettest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
-	virbitmaptest \
+	virbitmaptest virendiantest \
 	virlockspacetest \
 	virstringtest \
         virportallocatortest \
@@ -648,6 +648,10 @@ viratomictest_LDADD = $(LDADDS)
 virbitmaptest_SOURCES = \
 	virbitmaptest.c testutils.h testutils.c
 virbitmaptest_LDADD = $(LDADDS)
+
+virendiantest_SOURCES = \
+	virendiantest.c testutils.h testutils.c
+virendiantest_LDADD = $(LDADDS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

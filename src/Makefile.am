@@ -67,6 +67,7 @@ UTIL_SOURCES =							\
 		util/virdbus.c util/virdbus.h			\
 		util/virdnsmasq.c util/virdnsmasq.h		\
 		util/virebtables.c util/virebtables.h		\
+		util/virendian.h				\
 		util/virerror.c util/virerror.h			\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\

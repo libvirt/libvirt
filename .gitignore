@@ -177,6 +177,7 @@
 /tests/virbitmaptest
 /tests/virbuftest
 /tests/virdrivermoduletest
+/tests/virendiantest
 /tests/virhashtest
 /tests/virkeyfiletest
 /tests/virlockspacetest
