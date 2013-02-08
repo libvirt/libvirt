@@ -185,7 +185,8 @@ VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "ccid",
               "usb",
               "spapr-vio",
-              "virtio-s390")
+              "virtio-s390",
+              "ccw")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -2124,6 +2125,13 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
     virObjectUnlock(doms);
 }
 
+static int
+virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
+{
+    return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
+        addr->ssid <= VIR_DOMAIN_DEVICE_CCW_MAX_SSID &&
+        addr->schid <= VIR_DOMAIN_DEVICE_CCW_MAX_SCHID;
+}
 
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type)
@@ -2137,6 +2145,12 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         return 1;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+        return 1;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        return virDomainDeviceCCWAddressIsValid(&info->addr.ccw);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
         return 1;
@@ -2213,6 +2227,19 @@ static int virDomainDeviceInfoClearPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUS
                                               void *opaque ATTRIBUTE_UNUSED)
 {
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        memset(&info->addr, 0, sizeof(info->addr));
+        info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+    }
+    return 0;
+}
+
+static int
+virDomainDeviceInfoClearCCWAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                   virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+                                   virDomainDeviceInfoPtr info,
+                                   void *opaque ATTRIBUTE_UNUSED)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         memset(&info->addr, 0, sizeof(info->addr));
         info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     }
@@ -2331,6 +2358,11 @@ void virDomainDefClearPCIAddresses(virDomainDefPtr def)
     virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearPCIAddress, NULL);
 }
 
+void virDomainDefClearCCWAddresses(virDomainDefPtr def)
+{
+    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearCCWAddress, NULL);
+}
+
 void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 {
     virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearAlias, NULL);
@@ -2430,6 +2462,13 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
         if (info->addr.spaprvio.has_reg)
             virBufferAsprintf(buf, " reg='0x%llx'", info->addr.spaprvio.reg);
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        virBufferAsprintf(buf, " cssid='0x%x' ssid='0x%x' schid='0x%04x'",
+                          info->addr.ccw.cssid,
+                          info->addr.ccw.ssid,
+                          info->addr.ccw.schid);
         break;
 
     default:
@@ -2538,6 +2577,64 @@ cleanup:
     VIR_FREE(controller);
     VIR_FREE(bus);
     VIR_FREE(port);
+    return ret;
+}
+
+static int
+virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
+                                  virDomainDeviceCCWAddressPtr addr)
+{
+    int   ret = -1;
+    char *cssid;
+    char *ssid;
+    char *schid;
+
+    memset(addr, 0, sizeof(*addr));
+
+    cssid = virXMLPropString(node, "cssid");
+    ssid = virXMLPropString(node, "ssid");
+    schid = virXMLPropString(node, "schid");
+
+    if (cssid && ssid && schid) {
+        if (cssid &&
+            virStrToLong_ui(cssid, NULL, 0, &addr->cssid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <address> 'cssid' attribute"));
+            goto cleanup;
+        }
+        if (ssid &&
+            virStrToLong_ui(ssid, NULL, 0, &addr->ssid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <address> 'ssid' attribute"));
+            goto cleanup;
+        }
+        if (schid &&
+            virStrToLong_ui(schid, NULL, 0, &addr->schid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <address> 'schid' attribute"));
+            goto cleanup;
+        }
+        if (!virDomainDeviceCCWAddressIsValid(addr)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid specification for virtio ccw"
+                             " address: cssid='%s' ssid='%s' schid='%s'"),
+                           cssid, ssid, schid);
+            goto cleanup;
+        }
+        addr->assigned = true;
+    } else if (cssid || ssid || schid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid partial specification for virtio ccw"
+                         " address"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cssid);
+    VIR_FREE(ssid);
+    VIR_FREE(schid);
     return ret;
 }
 
@@ -2831,6 +2928,12 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
         if (virDomainDeviceSpaprVioAddressParseXML(address, &info->addr.spaprvio) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        if (virDomainDeviceCCWAddressParseXML
+                (address, &info->addr.ccw) < 0)
             goto cleanup;
         break;
 
@@ -4685,6 +4788,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5282,6 +5386,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
      * them we should make sure address type is correct */
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
