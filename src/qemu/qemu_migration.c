@@ -1198,12 +1198,11 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
-    int status;
     bool wait_for_spice = false;
     bool spice_migrated = false;
-    unsigned long long memProcessed;
-    unsigned long long memRemaining;
-    unsigned long long memTotal;
+    qemuMonitorMigrationStatus status;
+
+    memset(&status, 0, sizeof(status));
 
     /* If guest uses SPICE and supports seamles_migration we have to hold up
      * migration finish until SPICE server transfers its data */
@@ -1217,19 +1216,18 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         /* Guest already exited; nothing further to update.  */
         return -1;
     }
-    ret = qemuMonitorGetMigrationStatus(priv->mon,
-                                        &status,
-                                        &memProcessed,
-                                        &memRemaining,
-                                        &memTotal);
+    ret = qemuMonitorGetMigrationStatus(priv->mon, &status);
 
     /* If qemu says migrated, check spice */
-    if (wait_for_spice && (ret == 0) &&
-        (status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED))
+    if (wait_for_spice &&
+        ret == 0 &&
+        status.status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED)
         ret = qemuMonitorGetSpiceMigrationStatus(priv->mon,
                                                  &spice_migrated);
 
     qemuDomainObjExitMonitor(driver, vm);
+
+    priv->job.status = status;
 
     if (ret < 0 || virTimeMillisNow(&priv->job.info.timeElapsed) < 0) {
         priv->job.info.type = VIR_DOMAIN_JOB_FAILED;
@@ -1238,7 +1236,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
     priv->job.info.timeElapsed -= priv->job.start;
 
     ret = -1;
-    switch (status) {
+    switch (priv->job.status.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
         priv->job.info.type = VIR_DOMAIN_JOB_NONE;
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -1246,13 +1244,21 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
-        priv->job.info.dataTotal = memTotal;
-        priv->job.info.dataRemaining = memRemaining;
-        priv->job.info.dataProcessed = memProcessed;
+        priv->job.info.fileTotal = priv->job.status.disk_total;
+        priv->job.info.fileRemaining = priv->job.status.disk_remaining;
+        priv->job.info.fileProcessed = priv->job.status.disk_transferred;
 
-        priv->job.info.memTotal = memTotal;
-        priv->job.info.memRemaining = memRemaining;
-        priv->job.info.memProcessed = memProcessed;
+        priv->job.info.memTotal = priv->job.status.ram_total;
+        priv->job.info.memRemaining = priv->job.status.ram_remaining;
+        priv->job.info.memProcessed = priv->job.status.ram_transferred;
+
+        priv->job.info.dataTotal =
+            priv->job.status.ram_total + priv->job.status.disk_total;
+        priv->job.info.dataRemaining =
+            priv->job.status.ram_remaining + priv->job.status.disk_remaining;
+        priv->job.info.dataProcessed =
+            priv->job.status.ram_transferred +
+            priv->job.status.disk_transferred;
 
         ret = 0;
         break;

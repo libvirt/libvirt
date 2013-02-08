@@ -338,11 +338,37 @@ enum {
 
 VIR_ENUM_DECL(qemuMonitorMigrationStatus)
 
+typedef struct _qemuMonitorMigrationStatus qemuMonitorMigrationStatus;
+typedef qemuMonitorMigrationStatus *qemuMonitorMigrationStatusPtr;
+struct _qemuMonitorMigrationStatus {
+    int status;
+    unsigned long long total_time;
+    /* total or expected depending on status */
+    bool downtime_set;
+    unsigned long long downtime;
+
+    unsigned long long ram_transferred;
+    unsigned long long ram_remaining;
+    unsigned long long ram_total;
+    bool ram_duplicate_set;
+    unsigned long long ram_duplicate;
+    unsigned long long ram_normal;
+    unsigned long long ram_normal_bytes;
+
+    unsigned long long disk_transferred;
+    unsigned long long disk_remaining;
+    unsigned long long disk_total;
+
+    bool xbzrle_set;
+    unsigned long long xbzrle_cache_size;
+    unsigned long long xbzrle_bytes;
+    unsigned long long xbzrle_pages;
+    unsigned long long xbzrle_cache_miss;
+    unsigned long long xbzrle_overflow;
+};
+
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
-                                  int *status,
-                                  unsigned long long *transferred,
-                                  unsigned long long *remaining,
-                                  unsigned long long *total);
+                                  qemuMonitorMigrationStatusPtr status);
 int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
                                        bool *spice_migrated);
 

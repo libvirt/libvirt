@@ -110,7 +110,8 @@ struct qemuDomainJobObj {
     unsigned long long mask;            /* Jobs allowed during async job */
     unsigned long long start;           /* When the async job started */
     bool dump_memory_only;              /* use dump-guest-memory to do dump */
-    virDomainJobInfo info;              /* Async job progress data */
+    qemuMonitorMigrationStatus status;  /* Raw async job progress data */
+    virDomainJobInfo info;              /* Processed async job progress data */
     bool asyncAbort;                    /* abort of async job requested */
 };
 

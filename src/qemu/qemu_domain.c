@@ -160,6 +160,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->start = 0;
     job->dump_memory_only = false;
     job->asyncAbort = false;
+    memset(&job->status, 0, sizeof(job->status));
     memset(&job->info, 0, sizeof(job->info));
 }
 

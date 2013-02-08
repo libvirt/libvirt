@@ -1805,10 +1805,7 @@ int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
 
 
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
-                                  int *status,
-                                  unsigned long long *transferred,
-                                  unsigned long long *remaining,
-                                  unsigned long long *total)
+                                  qemuMonitorMigrationStatusPtr status)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1820,15 +1817,9 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONGetMigrationStatus(mon, status,
-                                                transferred,
-                                                remaining,
-                                                total);
+        ret = qemuMonitorJSONGetMigrationStatus(mon, status);
     else
-        ret = qemuMonitorTextGetMigrationStatus(mon, status,
-                                                transferred,
-                                                remaining,
-                                                total);
+        ret = qemuMonitorTextGetMigrationStatus(mon, status);
     return ret;
 }
 

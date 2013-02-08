@@ -2258,14 +2258,11 @@ int qemuMonitorJSONSetMigrationDowntime(qemuMonitorPtr mon,
 
 static int
 qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
-                                       int *status,
-                                       unsigned long long *transferred,
-                                       unsigned long long *remaining,
-                                       unsigned long long *total)
+                                       qemuMonitorMigrationStatusPtr status)
 {
     virJSONValuePtr ret;
     const char *statusstr;
-    unsigned long long t;
+    int rc;
 
     if (!(ret = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2279,13 +2276,25 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
         return -1;
     }
 
-    if ((*status = qemuMonitorMigrationStatusTypeFromString(statusstr)) < 0) {
+    status->status = qemuMonitorMigrationStatusTypeFromString(statusstr);
+    if (status->status < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected migration status in %s"), statusstr);
         return -1;
     }
 
-    if (*status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE) {
+    virJSONValueObjectGetNumberUlong(ret, "total-time", &status->total_time);
+    if (status->status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
+        rc = virJSONValueObjectGetNumberUlong(ret, "downtime",
+                                              &status->downtime);
+    } else {
+        rc = virJSONValueObjectGetNumberUlong(ret, "expected-downtime",
+                                              &status->downtime);
+    }
+    if (rc == 0)
+        status->downtime_set = true;
+
+    if (status->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE) {
         virJSONValuePtr ram = virJSONValueObjectGet(ret, "ram");
         if (!ram) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2294,51 +2303,112 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
         }
 
         if (virJSONValueObjectGetNumberUlong(ram, "transferred",
-                                             transferred) < 0) {
+                                             &status->ram_transferred) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("migration was active, but RAM 'transferred' "
                              "data was missing"));
             return -1;
         }
-        if (virJSONValueObjectGetNumberUlong(ram, "remaining", remaining) < 0) {
+        if (virJSONValueObjectGetNumberUlong(ram, "remaining",
+                                             &status->ram_remaining) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("migration was active, but RAM 'remaining' "
                              "data was missing"));
             return -1;
         }
-        if (virJSONValueObjectGetNumberUlong(ram, "total", total) < 0) {
+        if (virJSONValueObjectGetNumberUlong(ram, "total",
+                                             &status->ram_total) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("migration was active, but RAM 'total' "
                              "data was missing"));
             return -1;
         }
 
+        if (virJSONValueObjectGetNumberUlong(ram, "duplicate",
+                                             &status->ram_duplicate) == 0)
+            status->ram_duplicate_set = true;
+        virJSONValueObjectGetNumberUlong(ram, "normal", &status->ram_normal);
+        virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
+                                         &status->ram_normal_bytes);
+
         virJSONValuePtr disk = virJSONValueObjectGet(ret, "disk");
-        if (!disk) {
-            return 0;
+        if (disk) {
+            rc = virJSONValueObjectGetNumberUlong(disk, "transferred",
+                                                  &status->disk_transferred);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("disk migration was active, but "
+                                 "'transferred' data was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(disk, "remaining",
+                                                  &status->disk_remaining);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("disk migration was active, but 'remaining' "
+                                 "data was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(disk, "total",
+                                                  &status->disk_total);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("disk migration was active, but 'total' "
+                                 "data was missing"));
+                return -1;
+            }
         }
 
-        if (virJSONValueObjectGetNumberUlong(disk, "transferred", &t) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("disk migration was active, but 'transferred' "
-                             "data was missing"));
-            return -1;
+        virJSONValuePtr comp = virJSONValueObjectGet(ret, "xbzrle-cache");
+        if (comp) {
+            status->xbzrle_set = true;
+            rc = virJSONValueObjectGetNumberUlong(comp, "cache-size",
+                                                  &status->xbzrle_cache_size);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("XBZRLE is active, but 'cache-size' data "
+                                 "was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(comp, "bytes",
+                                                  &status->xbzrle_bytes);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("XBZRLE is active, but 'bytes' data "
+                                 "was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(comp, "pages",
+                                                  &status->xbzrle_pages);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("XBZRLE is active, but 'pages' data "
+                                 "was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(comp, "cache-miss",
+                                                  &status->xbzrle_cache_miss);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("XBZRLE is active, but 'cache-miss' data "
+                                 "was missing"));
+                return -1;
+            }
+
+            rc = virJSONValueObjectGetNumberUlong(comp, "overflow",
+                                                  &status->xbzrle_overflow);
+            if (rc < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("XBZRLE is active, but 'overflow' data "
+                                 "was missing"));
+                return -1;
+            }
         }
-        *transferred += t;
-        if (virJSONValueObjectGetNumberUlong(disk, "remaining", &t) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("disk migration was active, but 'remaining' "
-                             "data was missing"));
-            return -1;
-        }
-        *remaining += t;
-        if (virJSONValueObjectGetNumberUlong(disk, "total", &t) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("disk migration was active, but 'total' "
-                             "data was missing"));
-            return -1;
-        }
-        *total += t;
     }
 
     return 0;
@@ -2346,18 +2416,14 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
 
 
 int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
-                                      int *status,
-                                      unsigned long long *transferred,
-                                      unsigned long long *remaining,
-                                      unsigned long long *total)
+                                      qemuMonitorMigrationStatusPtr status)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-migrate",
                                                      NULL);
     virJSONValuePtr reply = NULL;
 
-    *status = 0;
-    *transferred = *remaining = *total = 0;
+    memset(status, 0, sizeof(*status));
 
     if (!cmd)
         return -1;
@@ -2368,13 +2434,11 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetMigrationStatusReply(reply,
-                                               status,
-                                               transferred,
-                                               remaining,
-                                               total) < 0)
+        qemuMonitorJSONGetMigrationStatusReply(reply, status) < 0)
         ret = -1;
 
+    if (ret < 0)
+        memset(status, 0, sizeof(*status));
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

@@ -117,10 +117,7 @@ int qemuMonitorTextSetMigrationDowntime(qemuMonitorPtr mon,
                                         unsigned long long downtime);
 
 int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
-                                      int *status,
-                                      unsigned long long *transferred,
-                                      unsigned long long *remaining,
-                                      unsigned long long *total);
+                                      qemuMonitorMigrationStatusPtr status);
 
 int qemuMonitorTextMigrate(qemuMonitorPtr mon,
                            unsigned int flags,
