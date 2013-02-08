@@ -4914,64 +4914,189 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainJobInfo info;
     virDomainPtr dom;
-    bool ret = true;
+    bool ret = false;
+    const char *unit;
+    double val;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    unsigned long long value;
+    int rc;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virDomainGetJobInfo(dom, &info) == 0) {
-        const char *unit;
-        double val;
+    memset(&info, 0, sizeof(info));
 
-        vshPrint(ctl, "%-17s ", _("Job type:"));
-        switch (info.type) {
-        case VIR_DOMAIN_JOB_BOUNDED:
-            vshPrint(ctl, "%-12s\n", _("Bounded"));
-            break;
-
-        case VIR_DOMAIN_JOB_UNBOUNDED:
-            vshPrint(ctl, "%-12s\n", _("Unbounded"));
-            break;
-
-        case VIR_DOMAIN_JOB_NONE:
-        default:
-            vshPrint(ctl, "%-12s\n", _("None"));
-            goto cleanup;
-        }
-
-        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
-        if (info.type == VIR_DOMAIN_JOB_BOUNDED)
-            vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
-        if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
-            val = vshPrettyCapacity(info.dataProcessed, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data processed:"), val, unit);
-            val = vshPrettyCapacity(info.dataRemaining, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data remaining:"), val, unit);
-            val = vshPrettyCapacity(info.dataTotal, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data total:"), val, unit);
-        }
-        if (info.memTotal || info.memRemaining || info.memProcessed) {
-            val = vshPrettyCapacity(info.memProcessed, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory processed:"), val, unit);
-            val = vshPrettyCapacity(info.memRemaining, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory remaining:"), val, unit);
-            val = vshPrettyCapacity(info.memTotal, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory total:"), val, unit);
-        }
-        if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
-            val = vshPrettyCapacity(info.fileProcessed, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File processed:"), val, unit);
-            val = vshPrettyCapacity(info.fileRemaining, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File remaining:"), val, unit);
-            val = vshPrettyCapacity(info.fileTotal, &unit);
-            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File total:"), val, unit);
-        }
-    } else {
-        ret = false;
+    rc = virDomainGetJobStats(dom, &info.type, &params, &nparams, 0);
+    if (rc == 0) {
+        if (virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_TIME_ELAPSED,
+                                    &info.timeElapsed) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_TIME_REMAINING,
+                                    &info.timeRemaining) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DATA_TOTAL,
+                                    &info.dataTotal) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DATA_PROCESSED,
+                                    &info.dataProcessed) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DATA_REMAINING,
+                                    &info.dataRemaining) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_MEMORY_TOTAL,
+                                    &info.memTotal) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_MEMORY_PROCESSED,
+                                    &info.memProcessed) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_MEMORY_REMAINING,
+                                    &info.memRemaining) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DISK_TOTAL,
+                                    &info.fileTotal) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DISK_PROCESSED,
+                                    &info.fileProcessed) < 0 ||
+            virTypedParamsGetULLong(params, nparams,
+                                    VIR_DOMAIN_JOB_DISK_REMAINING,
+                                    &info.fileRemaining) < 0)
+            goto save_error;
+    } else if (last_error->code == VIR_ERR_NO_SUPPORT) {
+        vshDebug(ctl, VSH_ERR_DEBUG, "detailed statistics not supported\n");
+        vshResetLibvirtError();
+        rc = virDomainGetJobInfo(dom, &info);
     }
+    if (rc < 0)
+        goto cleanup;
+
+    vshPrint(ctl, "%-17s ", _("Job type:"));
+    switch (info.type) {
+    case VIR_DOMAIN_JOB_BOUNDED:
+        vshPrint(ctl, "%-12s\n", _("Bounded"));
+        break;
+
+    case VIR_DOMAIN_JOB_UNBOUNDED:
+        vshPrint(ctl, "%-12s\n", _("Unbounded"));
+        break;
+
+    case VIR_DOMAIN_JOB_NONE:
+    default:
+        vshPrint(ctl, "%-12s\n", _("None"));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
+    if (info.type == VIR_DOMAIN_JOB_BOUNDED)
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
+
+    if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
+        val = vshPrettyCapacity(info.dataProcessed, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data processed:"), val, unit);
+        val = vshPrettyCapacity(info.dataRemaining, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data remaining:"), val, unit);
+        val = vshPrettyCapacity(info.dataTotal, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data total:"), val, unit);
+    }
+
+    if (info.memTotal || info.memRemaining || info.memProcessed) {
+        val = vshPrettyCapacity(info.memProcessed, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory processed:"), val, unit);
+        val = vshPrettyCapacity(info.memRemaining, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory remaining:"), val, unit);
+        val = vshPrettyCapacity(info.memTotal, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory total:"), val, unit);
+    }
+
+    if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
+        val = vshPrettyCapacity(info.fileProcessed, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("File processed:"), val, unit);
+        val = vshPrettyCapacity(info.fileRemaining, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("File remaining:"), val, unit);
+        val = vshPrettyCapacity(info.fileTotal, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("File total:"), val, unit);
+    }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_MEMORY_CONSTANT,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-12llu\n", _("Constant pages:"), value);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_MEMORY_NORMAL,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-12llu\n", _("Normal pages:"), value);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        val = vshPrettyCapacity(value, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Normal data:"), val, unit);
+    }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_DOWNTIME,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Expected downtime:"), value);
+    }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_COMPRESSION_CACHE,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        val = vshPrettyCapacity(value, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Compression cache:"), val, unit);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_COMPRESSION_BYTES,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        val = vshPrettyCapacity(value, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Compressed data:"), val, unit);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_COMPRESSION_PAGES,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-13llu\n", _("Compressed pages:"), value);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-13llu\n", _("Compression cache misses:"), value);
+    }
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-13llu\n", _("Compression overflows:"), value);
+    }
+
+    ret = true;
+
 cleanup:
     virDomainFree(dom);
+    virTypedParamsFree(params, nparams);
     return ret;
+
+save_error:
+    vshSaveLibvirtError();
+    goto cleanup;
 }
 
 /*
