@@ -657,13 +657,15 @@ cleanup:
 }
 
 
-static int
+static virStorageFileMetadataPtr
 virStorageFileGetMetadataFromBuf(int format,
                                  const char *path,
                                  unsigned char *buf,
-                                 size_t buflen,
+                                 size_t len,
                                  virStorageFileMetadata *meta)
 {
+    virStorageFileMetadata *ret = NULL;
+
     VIR_DEBUG("path=%s format=%d", path, format);
 
     /* XXX we should consider moving virStorageBackendUpdateVolInfo
@@ -671,14 +673,13 @@ virStorageFileGetMetadataFromBuf(int format,
      */
     if (format <= VIR_STORAGE_FILE_NONE ||
         format >= VIR_STORAGE_FILE_LAST ||
-        !fileTypeInfo[format].magic) {
-        return 0;
-    }
+        !fileTypeInfo[format].magic)
+        goto done;
 
     /* Optionally extract capacity from file */
     if (fileTypeInfo[format].sizeOffset != -1) {
-        if ((fileTypeInfo[format].sizeOffset + 8) > buflen)
-            return 1;
+        if ((fileTypeInfo[format].sizeOffset + 8) > len)
+            goto done;
 
         if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN)
             meta->capacity = virReadBufInt64LE(buf +
@@ -689,7 +690,7 @@ virStorageFileGetMetadataFromBuf(int format,
         /* Avoid unlikely, but theoretically possible overflow */
         if (meta->capacity > (ULLONG_MAX /
                               fileTypeInfo[format].sizeMultiplier))
-            return 1;
+            goto done;
         meta->capacity *= fileTypeInfo[format].sizeMultiplier;
     }
 
@@ -704,14 +705,14 @@ virStorageFileGetMetadataFromBuf(int format,
     if (fileTypeInfo[format].getBackingStore != NULL) {
         char *backing;
         int backingFormat;
-        int ret = fileTypeInfo[format].getBackingStore(&backing,
-                                                       &backingFormat,
-                                                       buf, buflen);
-        if (ret == BACKING_STORE_INVALID)
-            return 1;
+        int store = fileTypeInfo[format].getBackingStore(&backing,
+                                                         &backingFormat,
+                                                         buf, len);
+        if (store == BACKING_STORE_INVALID)
+            goto done;
 
-        if (ret == BACKING_STORE_ERROR)
-            return -1;
+        if (store == BACKING_STORE_ERROR)
+            goto cleanup;
 
         meta->backingStoreIsFile = false;
         if (backing != NULL) {
@@ -719,7 +720,7 @@ virStorageFileGetMetadataFromBuf(int format,
             if (meta->backingStore == NULL) {
                 virReportOOMError();
                 VIR_FREE(backing);
-                return -1;
+                goto cleanup;
             }
             if (virBackingStoreIsFile(backing)) {
                 meta->backingStoreIsFile = true;
@@ -744,7 +745,10 @@ virStorageFileGetMetadataFromBuf(int format,
         }
     }
 
-    return 0;
+done:
+    ret = meta;
+cleanup:
+    return ret;
 }
 
 
@@ -858,7 +862,7 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int format)
 {
     virStorageFileMetadata *meta = NULL;
-    unsigned char *head = NULL;
+    unsigned char *buf = NULL;
     ssize_t len = STORAGE_MAX_HEAD;
     virStorageFileMetadata *ret = NULL;
     struct stat sb;
@@ -884,18 +888,18 @@ virStorageFileGetMetadataFromFD(const char *path,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(head, len) < 0) {
+    if (VIR_ALLOC_N(buf, len) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if ((len = read(fd, head, len)) < 0) {
+    if ((len = read(fd, buf, len)) < 0) {
         virReportSystemError(errno, _("cannot read header '%s'"), path);
         goto cleanup;
     }
 
     if (format == VIR_STORAGE_FILE_AUTO)
-        format = virStorageFileProbeFormatFromBuf(path, head, len);
+        format = virStorageFileProbeFormatFromBuf(path, buf, len);
 
     if (format <= VIR_STORAGE_FILE_NONE ||
         format >= VIR_STORAGE_FILE_LAST) {
@@ -904,14 +908,14 @@ virStorageFileGetMetadataFromFD(const char *path,
         goto cleanup;
     }
 
-    if (virStorageFileGetMetadataFromBuf(format, path, head, len, meta) < 0)
+    if (!virStorageFileGetMetadataFromBuf(format, path, buf, len, meta))
         goto cleanup;
     ret = meta;
     meta = NULL;
 
 cleanup:
     virStorageFileFreeMetadata(meta);
-    VIR_FREE(head);
+    VIR_FREE(buf);
     return ret;
 }
 
