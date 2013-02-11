@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@ testSELinuxMungePath(char **path)
     char *tmp;
 
     if (virAsprintf(&tmp, "%s/securityselinuxlabeldata%s",
-                    abs_srcdir, *path) < 0) {
+                    abs_builddir, *path) < 0) {
         virReportOOMError();
         return -1;
     }
