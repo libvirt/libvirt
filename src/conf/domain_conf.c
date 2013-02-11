@@ -2116,11 +2116,10 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    virObjectLock(doms);
     virUUIDFormat(dom->def->uuid, uuidstr);
-
     virObjectUnlock(dom);
 
+    virObjectLock(doms);
     virHashRemoveEntry(doms->objs, uuidstr);
     virObjectUnlock(doms);
 }
