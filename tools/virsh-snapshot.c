@@ -427,19 +427,16 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_LIVE;
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
-        goto cleanup;
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
         goto cleanup;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
-    if (name)
-        virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
-    if (desc)
-        virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
+    virBufferEscapeString(&buf, "  <name>%s</name>\n", name);
+    virBufferEscapeString(&buf, "  <description>%s</description>\n", desc);
 
     if (vshCommandOptStringReq(ctl, cmd, "memspec", &memspec) < 0)
         goto cleanup;
@@ -457,11 +454,12 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
-    buffer = virBufferContentAndReset(&buf);
-    if (buffer == NULL) {
+    if (virBufferError(&buf)) {
         vshError(ctl, "%s", _("Out of memory"));
         goto cleanup;
     }
+
+    buffer = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s\n",  buffer);
@@ -474,8 +472,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
 
     return ret;
 }
