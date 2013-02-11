@@ -7,17 +7,22 @@ globals = dir(libvirt)
 # Sanity test that the generator hasn't gone wrong
 
 # Look for core classes
-assert("virConnect" in globals)
-assert("virDomain" in globals)
-assert("virDomainSnapshot" in globals)
-assert("virInterface" in globals)
-assert("virNWFilter" in globals)
-assert("virNodeDevice" in globals)
-assert("virNetwork" in globals)
-assert("virSecret" in globals)
-assert("virStoragePool" in globals)
-assert("virStorageVol" in globals)
-assert("virStream" in globals)
+for clsname in ["virConnect",
+                "virDomain",
+                "virDomainSnapshot",
+                "virInterface",
+                "virNWFilter",
+                "virNodeDevice",
+                "virNetwork",
+                "virSecret",
+                "virStoragePool",
+                "virStorageVol",
+                "virStream",
+                ]:
+    assert(clsname in globals)
+    assert(object in getattr(libvirt, clsname).__bases__)
+
+# Constants
 assert("VIR_CONNECT_RO" in globals)
 
 # Error related bits
