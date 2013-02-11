@@ -192,12 +192,12 @@
         should specify the hypervisor specific URI, using an IP address
         associated with the network to be used.</li>
       <li>The firewall restricts what ports are available. When libvirt
-        generates a migration URI will pick a port number using hypervisor
+        generates a migration URI it will pick a port number using hypervisor
         specific rules. Some hypervisors only require a single port to be
         open in the firewalls, while others require a whole range of port
         numbers. In the latter case the management application may wish
         to choose a specific port number outside the default range in order
-        to comply with local firewall policies</li>
+        to comply with local firewall policies.</li>
     </ol>
 
     <h2><a name="config">Configuration file handling</a></h2>

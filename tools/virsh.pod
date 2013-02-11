@@ -1080,7 +1080,7 @@ such as GFS2 or GPFS. If you are sure the migration is safe or you just do not
 care, use I<--unsafe> to force the migration.
 
 The I<desturi> is the connection URI of the destination host, and
-I<migrateuri> is the migration URI, which usually can be omitted.
+I<migrateuri> is the migration URI, which usually can be omitted (see below).
 I<dname> is used for renaming the domain to new name during migration, which
 also usually can be omitted.  Likewise, I<--xml> B<file> is usually
 omitted, but can be used to supply an alternative XML file for use on
@@ -1105,6 +1105,32 @@ seen from the client machine.
 
 =item * peer2peer migration: the I<desturi> is an address of the target host as
 seen from the source machine.
+
+=back
+
+When I<migrateuri> is not specified, libvirt will automatically determine the
+hypervisor specific URI, by looking up the target host's configured hostname.
+There are a few scenarios where specifying I<migrateuri> may help:
+
+=over 4
+
+=item * The configured hostname is incorrect, or DNS is broken.  If a host has a
+hostname which will not resolve to match one of its public IP addresses, then
+libvirt will generate an incorrect URI.  In this case I<migrateuri> should be
+explicitly specified, using an IP address, or a correct hostname.
+
+=item * The host has multiple network interaces.  If a host has multiple network
+interfaces, it might be desirable for the migration data stream to be sent over
+a specific interface for either security or performance reasons.  In this case
+I<migrateuri> should be explicitly specified, using an IP address associated
+with the network to be used.
+
+=item * The firewall restricts what ports are available.  When libvirt generates
+a migration URI, it will pick a port number using hypervisor specific rules.
+Some hypervisors only require a single port to be open in the firewalls, while
+others require a whole range of port numbers.  In the latter case I<migrateuri>
+might be specified to choose a specific port number outside the default range in
+order to comply with local firewall policies.
 
 =back
 
