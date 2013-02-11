@@ -1773,7 +1773,7 @@ virXen_setvcpumap(int handle,
             ret = -1;
     } else {
         cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
-        uint64_t *pm;
+        uint64_t *pm = &xen_cpumap;
         int j;
 
         if ((maplen > (int)sizeof(cpumap_t)) || (sizeof(cpumap_t) & 7))
