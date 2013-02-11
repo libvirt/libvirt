@@ -2773,6 +2773,7 @@ struct qemuProcessHookData {
     virDomainObjPtr vm;
     virQEMUDriverPtr driver;
     virBitmapPtr nodemask;
+    virQEMUDriverConfigPtr cfg;
 };
 
 static int qemuProcessHook(void *data)
@@ -2780,7 +2781,11 @@ static int qemuProcessHook(void *data)
     struct qemuProcessHookData *h = data;
     int ret = -1;
     int fd;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(h->driver);
+    /* This method cannot use any mutexes, which are not
+     * protected across fork()
+     */
+
+    virSecurityManagerPostFork(h->driver->securityManager);
 
     /* Some later calls want pid present */
     h->vm->pid = getpid();
@@ -2796,7 +2801,7 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerSetSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
     if (virDomainLockProcessStart(h->driver->lockManager,
-                                  cfg->uri,
+                                  h->cfg->uri,
                                   h->vm,
                                   /* QEMU is always paused initially */
                                   true,
@@ -2805,7 +2810,7 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    if (qemuProcessLimits(cfg) < 0)
+    if (qemuProcessLimits(h->cfg) < 0)
         goto cleanup;
 
     /* This must take place before exec(), so that all QEMU
@@ -2831,7 +2836,7 @@ static int qemuProcessHook(void *data)
     ret = 0;
 
 cleanup:
-    virObjectUnref(cfg);
+    virObjectUnref(h->cfg);
     VIR_DEBUG("Hook complete ret=%d", ret);
     return ret;
 }
@@ -3642,6 +3647,7 @@ int qemuProcessStart(virConnectPtr conn,
     hookData.conn = conn;
     hookData.vm = vm;
     hookData.driver = driver;
+    hookData.cfg = virObjectRef(cfg);
 
     VIR_DEBUG("Beginning VM startup process");
 
@@ -3973,7 +3979,9 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandDaemonize(cmd);
     virCommandRequireHandshake(cmd);
 
+    virSecurityManagerPreFork(driver->securityManager);
     ret = virCommandRun(cmd, NULL);
+    virSecurityManagerPostFork(driver->securityManager);
 
     /* wait for qemu process to show up */
     if (ret == 0) {

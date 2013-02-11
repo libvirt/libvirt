@@ -192,6 +192,26 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                        requireConfined);
 }
 
+
+/*
+ * Must be called before fork()'ing to ensure mutex state
+ * is sane for the child to use
+ */
+void virSecurityManagerPreFork(virSecurityManagerPtr mgr)
+{
+    virObjectLock(mgr);
+}
+
+
+/*
+ * Must be called after fork()'ing in both parent and child
+ * to ensure mutex state is sane for the child to use
+ */
+void virSecurityManagerPostFork(virSecurityManagerPtr mgr)
+{
+    virObjectUnlock(mgr);
+}
+
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
     return mgr->privateData;
