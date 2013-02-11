@@ -8,7 +8,7 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
-    <h3>1.0.2: Jan 30 2012</h3>
+    <h3>1.0.2: Jan 30 2013</h3>
     <ul>
       <li> Features:<br/>
       LXC improvements (Daniel P. Berrange),<br/>
