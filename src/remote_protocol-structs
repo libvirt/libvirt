@@ -1401,9 +1401,9 @@ struct remote_node_device_lookup_by_name_ret {
         remote_nonnull_node_device dev;
 };
 struct remote_node_device_lookup_scsi_host_by_wwn_args {
-        remote_nonull_string wwnn;
-        remote_nonull_string wwpn;
-        unsigned int flags;
+        remote_nonnull_string      wwnn;
+        remote_nonnull_string      wwpn;
+        u_int                      flags;
 };
 struct remote_node_device_lookup_scsi_host_by_wwn_ret {
         remote_nonnull_node_device dev;
