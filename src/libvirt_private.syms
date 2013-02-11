@@ -1047,6 +1047,8 @@ virSecurityManagerGetProcessLabel;
 virSecurityManagerNew;
 virSecurityManagerNewStack;
 virSecurityManagerNewDAC;
+virSecurityManagerPostFork;
+virSecurityManagerPreFork;
 virSecurityManagerReleaseLabel;
 virSecurityManagerReserveLabel;
 virSecurityManagerRestoreImageLabel;

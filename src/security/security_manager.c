@@ -161,6 +161,26 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                        requireConfined);
 }
 
+
+/*
+ * Must be called before fork()'ing to ensure mutex state
+ * is sane for the child to use
+ */
+void virSecurityManagerPreFork(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+{
+    /* XXX Grab our own mutex here instead of relying on caller's mutex */
+}
+
+
+/*
+ * Must be called after fork()'ing in both parent and child
+ * to ensure mutex state is sane for the child to use
+ */
+void virSecurityManagerPostFork(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+{
+    /* XXX Release our own mutex here instead of relying on caller's mutex */
+}
+
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {
     /* This accesses the memory just beyond mgr, which was allocated
