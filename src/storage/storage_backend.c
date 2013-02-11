@@ -25,9 +25,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#if HAVE_REGEX_H
-# include <regex.h>
-#endif
+#include <regex.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
