@@ -590,7 +590,8 @@ AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
  * LOCALSTATEDIR/log/libvirt/qemu/<vm name>.log
  */
 static int
-AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr, virDomainDefPtr def)
+AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                virDomainDefPtr def)
 {
     int rc = -1;
     char *profile_name = NULL;
@@ -603,12 +604,12 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr, virDomainDefPtr def)
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
 
-    if (STRNEQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (STRNEQ(SECURITY_APPARMOR_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "\'%s\' model configured for domain, but "
                          "hypervisor driver is \'%s\'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_APPARMOR_NAME);
         if (use_apparmor() > 0)
             goto clean;
     }

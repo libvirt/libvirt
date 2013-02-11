@@ -1803,12 +1803,12 @@ virSecuritySELinuxSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (secdef == NULL)
         return -1;
 
-    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
                          "hypervisor driver is '%s'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_SELINUX_NAME);
         return -1;
     }
 
@@ -1823,7 +1823,7 @@ virSecuritySELinuxSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
+virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                           virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -1837,12 +1837,12 @@ virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
         return 0;
 
     VIR_DEBUG("label=%s", secdef->label);
-    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
                          "hypervisor driver is '%s'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_SELINUX_NAME);
         if (security_getenforce() == 1)
             return -1;
     }
@@ -1859,7 +1859,7 @@ virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
+virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                                virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -1875,12 +1875,12 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr,
     if (secdef->label == NULL)
         return 0;
 
-    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
                          "hypervisor driver is '%s'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_SELINUX_NAME);
         goto done;
     }
 
@@ -1912,7 +1912,7 @@ done:
 }
 
 static int
-virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
+virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                          virDomainDefPtr vm)
 {
     virSecurityLabelDefPtr secdef;
@@ -1925,12 +1925,12 @@ virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr,
     if (secdef->label == NULL)
         return 0;
 
-    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
                          "hypervisor driver is '%s'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_SELINUX_NAME);
         goto done;
     }
 
@@ -1953,7 +1953,7 @@ done:
 }
 
 static int
-virSecuritySELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr,
+virSecuritySELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                            virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -1966,12 +1966,12 @@ virSecuritySELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr,
     if (secdef->label == NULL)
         return 0;
 
-    if (!STREQ(virSecurityManagerGetModel(mgr), secdef->model)) {
+    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
                          "hypervisor driver is '%s'."),
-                       secdef->model, virSecurityManagerGetModel(mgr));
+                       secdef->model, SECURITY_SELINUX_NAME);
         if (security_getenforce() == 1)
             return -1;
     }
