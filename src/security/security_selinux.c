@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 Red Hat, Inc.
+ * Copyright (C) 2008-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -968,7 +968,7 @@ virSecuritySELinuxFSetFilecon(int fd, char *tcon)
 
 /* Set fcon to the appropriate label for path and mode, or return -1.  */
 static int
-getContext(virSecurityManagerPtr mgr,
+getContext(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
            const char *newpath, mode_t mode, security_context_t *fcon)
 {
 #if HAVE_SELINUX_LABEL_H
