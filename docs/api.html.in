@@ -8,26 +8,28 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="Objects">Objects exposed</a></h2>
-    <p> As defined in the <a href="goals.html">goals section</a>, libvirt
-    API need to expose all the resources needed to manage the virtualization
-    support of recent operating systems. The first object manipulated though
-    the API is <code>virConnectPtr</code> which represent a connection to
-    an hypervisor. Any application using libvirt is likely to start using the
+    <h2><a name="Objects">Objects Exposed</a></h2>
+    <p> As defined in the <a href="goals.html">goals section</a>, the libvirt
+    API is designed to expose all the resources needed to manage the
+    virtualization support of recent operating systems. The first object
+    manipulated through the API is the <code>virConnectPtr</code>, which
+    represents the connection to a hypervisor. Any application using libvirt
+    is likely to start using the
     API by calling one of <a href="html/libvirt-libvirt.html#virConnectOpen"
     >the virConnectOpen functions</a>. You will note that those functions take
-    a name argument which is actually an URI to select the right hypervisor to
-    open, this is needed to allow remote connections and also select between
-    different possible hypervisors (for example on a Linux system it may be
-    possible to use both KVM and LinuxContainers on the same node). A NULL
-    name will default to a preselected hypervisor but it's probably not a
+    a name argument which is actually a <a href="uri.html">connection URI</a>
+    to select the right hypervisor to open.
+    A URI is needed to allow remote connections and also select between
+    different possible hypervisors. For example, on a Linux system it may be
+    possible to use both KVM and LinuxContainers on the same node. A NULL
+    name will default to a preselected hypervisor, but it's probably not a
     wise thing to do in most cases. See the <a href="uri.html">connection
     URI</a> page for a full descriptions of the values allowed.</p>
-    <p> Once the application obtained a <code class='docref'>virConnectPtr</code>
-    connection to the
-    hypervisor it can then use it to manage domains and related resources
-    available for virtualization like storage and networking. All those are
-    exposed as first class objects, and connected to the hypervisor connection
+    <p> Once the application obtains a <code class='docref'>virConnectPtr</code>
+    connection to the hypervisor it can then use it to manage the hypervisor's
+    available domains and related virtualization
+    resources, such as storage and networking. All those are
+    exposed as first class objects and connected to the hypervisor connection
     (and the node or cluster where it is available).</p>
     <p class="image">
       <img alt="first class objects exposed by the API"
