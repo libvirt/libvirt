@@ -882,6 +882,11 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA);
 
+    DO_TEST("virtio-rng-random", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_VIRTIO_RNG,
+            QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST("virtio-rng-egd", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_VIRTIO_RNG,
+            QEMU_CAPS_OBJECT_RNG_EGD);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     VIR_FREE(map);
