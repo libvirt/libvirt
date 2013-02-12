@@ -161,14 +161,31 @@
     <p> For more in-depth details of the storage related APIs see
       <a href="storage.html">the storage management page</a>.
     </p>
-    <h2><a name="Driver">The libvirt drivers</a></h2>
-    <p></p>
+    <h2><a name="Drivers">The libvirt Drivers</a></h2>
+    <p>Drivers are the basic building block for libvirt functionality
+    to support the capability to handle specific hypervisor driver calls.
+    Drivers are discovered and registered during connection processing as
+    part of the <code class='docref'>virInitialize</code> API. Each driver
+    has a registration API which loads up the driver specific function
+    references for the libvirt APIs to call. The following is a simplistic
+    view of the hypervisor driver mechanism. Consider the stacked list of
+    drivers as a series of modules that can be plugged into the architecture
+    depending on how libvirt is configured to be built.</p>
     <p class="image">
       <img alt="The libvirt driver architecture"
            src="libvirt-driver-arch.png"/>
     </p>
-    <h2><a name="Remote">Daemon and remote access</a></h2>
-    <p></p>
+    <p>The driver architecture is also used to support other virtualization
+    components such as storage, storage pools, host device, networking,
+    network interfaces, and network filters.</p>
+    <p>See the <a href="drivers.html">libvirt drivers</a> page for more
+    information on hypervisor and storage specific drivers.</p>
+    <p>Not all drivers support every virtualization function possible.
+    The <a href="hvsupport.html">libvirt API support matrix</a> lists
+    the various functions and support found in each driver by the version
+    support was added into libvirt.
+    </p>
+    <h2><a name="Remote">Daemon and Remote Access</a></h2>
     <p class="image">
       <img alt="The libvirt daemon and remote architecture"
            src="libvirt-daemon-arch.png"/>
