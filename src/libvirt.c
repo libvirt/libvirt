@@ -8356,19 +8356,18 @@ error:
  * VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT, for filtering based on whether
  * a domain has snapshots.
  *
- * Returns the number of domains found or -1 and sets domains to NULL in case
- * of error.  On success, the array stored into @doms is guaranteed to have an
+ * Returns the number of domains found or -1 and sets domains to NULL in case of
+ * error.  On success, the array stored into @domains is guaranteed to have an
  * extra allocated element set to NULL but not included in the return count, to
  * make iteration easier. The caller is responsible for calling virDomainFree()
- * on each array element, then calling free() on @doms.
+ * on each array element, then calling free() on @domains.
  *
  * Example of usage:
  * virDomainPtr *domains;
- * virDomainPtr dom;
  * int i;
  * int ret;
- * unsigned int flags = VIR_CONNECT_LIST_RUNNING |
- *                      VIR_CONNECT_LIST_PERSISTENT;
+ * unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
+ *                      VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
  *
  * ret = virConnectListAllDomains(conn, &domains, flags);
  * if (ret < 0)
@@ -10278,7 +10277,7 @@ error:
  * this command is inherently racy; a network can be started between a call
  * to virConnectNumOfNetworks() and this call; you are only guaranteed that
  * all currently active networks were listed if the return is less than
- * @maxnames.
+ * @maxnames. The client must call free() on each returned name.
  */
 int
 virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
@@ -11260,7 +11259,7 @@ error:
  * this command is inherently racy; a interface can be started between a call
  * to virConnectNumOfInterfaces() and this call; you are only guaranteed that
  * all currently active interfaces were listed if the return is less than
- * @maxnames.
+ * @maxnames. The client must call free() on each returned name.
  */
 int
 virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
@@ -12128,7 +12127,7 @@ error:
  * this command is inherently racy; a pool can be started between a call to
  * virConnectNumOfStoragePools() and this call; you are only guaranteed
  * that all currently active pools were listed if the return is less than
- * @maxnames.
+ * @maxnames. The client must call free() on each returned name.
  */
 int
 virConnectListStoragePools(virConnectPtr conn,
@@ -18492,7 +18491,7 @@ error:
  * the results, see virDomainListAllSnapshots().
  *
  * Returns the number of domain snapshots found or -1 in case of error.
- * The caller is responsible for freeing each member of the array.
+ * The caller is responsible to call free() for each member of the array.
  */
 int
 virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
@@ -18741,7 +18740,7 @@ error:
  * the results, see virDomainSnapshotListAllChildren().
  *
  * Returns the number of domain snapshots found or -1 in case of error.
- * The caller is responsible for freeing each member of the array.
+ * The caller is responsible to call free() for each member of the array.
  */
 int
 virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
