@@ -80,6 +80,7 @@
 #include "virfile.h"
 #include "virnodesuspend.h"
 #include "virtypedparam.h"
+#include "virendian.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -1773,18 +1774,13 @@ virXen_setvcpumap(int handle,
             ret = -1;
     } else {
         cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
-        uint64_t *pm = &xen_cpumap;
-        int j;
+        char buf[8] = "";
 
-        if ((maplen > (int)sizeof(cpumap_t)) || (sizeof(cpumap_t) & 7))
+        if (maplen > sizeof(cpumap_t) || sizeof(cpumap_t) != sizeof(uint64_t))
             return -1;
-
-        memset(&xen_cpumap, 0, sizeof(cpumap_t));
-        for (j = 0; j < maplen; j++) {
-            if ((j & 7) == 0)
-                pm = (uint64_t *)((uint64_t)&xen_cpumap + (j & ~0x7UL));
-            *pm |= (uint64_t)cpumap[j] << (8 * (j & 7));
-        }
+        /* Supply trailing 0s if user's input array was short */
+        memcpy(buf, cpumap, maplen);
+        xen_cpumap = virReadBufInt64LE(buf);
 
         if (hv_versions.hypervisor == 1) {
             xen_op_v1 op;
