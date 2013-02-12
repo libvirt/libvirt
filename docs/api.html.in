@@ -89,38 +89,74 @@
       set of nodes.</p></li>
     </ul>
 
-    <h2><a name="Functions">Functions and naming
-      conventions</a></h2>
+    <h2><a name="Functions">Functions and Naming Conventions</a></h2>
     <p> The naming of the functions present in the library is usually
-      made of a prefix describing the object associated to the function
+      composed by a prefix describing the object associated to the function
       and a verb describing the action on that object.</p>
-    <p> For each first class object you will find apis
+    <p> For each first class object you will find APIs
       for the following actions:</p>
     <ul>
-      <li><b>Lookup</b>:...LookupByName,</li>
-      <li><b>Enumeration</b>:virConnectList... and virConnectNumOf...:
-        those are used to enumerate a set of object available to an given
-        hypervisor connection like:
-        <code class='docref'>virConnectListDomains</code>,
-        <code class='docref'>virConnectNumOfDomains</code>,
-        <code class='docref'>virConnectListNetworks</code>,
-        <code class='docref'>virConnectListStoragePools</code>, etc.</li>
-      <li><b>Description</b>: ...GetInfo: those are generic accessor providing
-        a set of informations about an object, they are
-        <code class='docref'>virNodeGetInfo</code>,
-        <code class='docref'>virDomainGetInfo</code>,
-        <code class='docref'>virStoragePoolGetInfo</code>,
-        <code class='docref'>virStorageVolGetInfo</code>.</li>
-      <li><b>Accessors</b>: ...Get... and ...Set...: those are more specific
-        accessors to query or modify the given object, like
-        <code class='docref'>virConnectGetType</code>,
-        <code class='docref'>virDomainGetMaxMemory</code>,
-        <code class='docref'>virDomainSetMemory</code>,
-        <code class='docref'>virDomainGetVcpus</code>,
-        <code class='docref'>virStoragePoolSetAutostart</code>,
-        <code class='docref'>virNetworkGetBridgeName</code>, etc.</li>
-      <li><b>Creation</b>: </li>
-      <li><b>Destruction</b>: ... </li>
+      <li><b>Lookup</b> [...LookupBy...]
+      <p>Used to perform lookups on objects by some type of identifier,
+      such as:</p>
+          <ul>
+            <li><code class='docref'>virDomainLookupByID</code></li>
+            <li><code class='docref'>virDomainLookupByName</code></li>
+            <li><code class='docref'>virDomainLookupByUUID</code></li>
+            <li><code class='docref'>virDomainLookupByUUIDString</code></li>
+          </ul>
+      </li>
+      <li><b>Enumeration</b> [virConnectList..., virConnectNumOf...]
+      <p>Used to enumerate a set of object available to an given
+      hypervisor connection such as:</p>
+          <ul>
+            <li><code class='docref'>virConnectListDomains</code></li>
+            <li><code class='docref'>virConnectNumOfDomains</code></li>
+            <li><code class='docref'>virConnectListNetworks</code></li>
+            <li><code class='docref'>virConnectListStoragePools</code></li>
+          </ul>
+      </li>
+      <li><b>Description</b> [...GetInfo]
+      <p>Generic accessor providing a set of generic information about an
+      object, such as: </p>
+        <ul>
+          <li><code class='docref'>virNodeGetInfo</code></li>
+          <li><code class='docref'>virDomainGetInfo</code></li>
+          <li><code class='docref'>virStoragePoolGetInfo</code></li>
+          <li><code class='docref'>virStorageVolGetInfo</code></li>
+        </ul>
+      </li>
+      <li><b>Accessors</b> [...Get..., ...Set...]
+      <p>Specific accessors used to query or modify data for the given object,
+      such as: </p>
+        <ul>
+          <li><code class='docref'>virConnectGetType</code></li>
+          <li><code class='docref'>virDomainGetMaxMemory</code></li>
+          <li><code class='docref'>virDomainSetMemory</code></li>
+          <li><code class='docref'>virDomainGetVcpus</code></li>
+          <li><code class='docref'>virStoragePoolSetAutostart</code></li>
+          <li><code class='docref'>virNetworkGetBridgeName</code></li>
+        </ul>
+      </li>
+      <li><b>Creation</b> [...Create, ...CreateXML]
+      <p>Used to create and start objects.  The ...CreateXML APIs will create
+      the object based on an XML description, while the ...Create APIs will
+      create the object based on existing object pointer, such as: </p>
+        <ul>
+          <li><code class='docref'>virDomainCreate</code></li>
+          <li><code class='docref'>virDomainCreateXML</code></li>
+          <li><code class='docref'>virNetworkCreate</code></li>
+          <li><code class='docref'>virNetworkCreateXML</code></li>
+        </ul>
+      </li>
+      <li><b>Destruction</b> [...Destroy]
+      <p>Used to shutdown or deactivate and destroy objects, such as: </p>
+        <ul>
+          <li><code class='docref'>virDomainDestroy</code></li>
+          <li><code class='docref'>virNetworkDestroy</code></li>
+          <li><code class='docref'>virStoragePoolDestroy</code></li>
+        </ul>
+      </li>
     </ul>
     <p> For more in-depth details of the storage related APIs see
       <a href="storage.html">the storage management page</a>.
