@@ -37,43 +37,56 @@
     </p>
     <p> The figure above shows the five main objects exported by the API:</p>
     <ul>
-      <li>virConnectPtr: represent a connection to an hypervisor.</li>
-      <li>virDomainPtr: represent one domain either active or defined (i.e.
-      existing as permanent config file and storage but not currently running
-      on that node). The function <code class='docref'>virConnectListDomains</code>
-      allows to list all the IDs for the domains active on this hypervisor.</li>
-      <li>virNetworkPtr: represent one network either active or defined (i.e.
-      existing as permanent config file and storage but not currently activated.
-      The function <code class='docref'>virConnectListNetworks</code>
-      allows to list all the virtualization networks activated on this node.</li>
-      <li>virStorageVolPtr: represent one storage volume, usually this is used
+      <li><code class='docref'>virConnectPtr</code>
+      <p>Represents the connection to a hypervisor. Use one of the
+      <a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a>
+      functions to obtain connection to the hypervisor which is then used
+      as a parameter to other connection API's.</p></li>
+      <li><code class='docref'>virDomainPtr</code>
+      <p>Represents one domain either active or defined (i.e. existing as
+      permanent config file and storage but not currently running on that
+      node). The function <code class='docref'>virConnectListAllDomains</code>
+      lists all the domains for the hypervisor.</p></li>
+      <li><code class='docref'>virNetworkPtr</code>
+      <p>Represents one network either active or defined (i.e. existing
+      as permanent config file and storage but not currently activated).
+      The function <code class='docref'>virConnectListAllNetworks</code>
+      lists all the virtualization networks for the hypervisor.</p></li>
+      <li><code class='docref'>virStorageVolPtr</code>
+      <p>Represents one storage volume generally used
       as a block device available to one of the domains. The function
-      <code class="docref">virStorageVolLookupByPath</code> allows to find
-      the object based on its path on the node.</li>
-      <li>virStoragePoolPtr: represent a storage pool, i.e. a logical area
-      which can be used to allocate and store storage volumes. The function
-      <code class="docref">virStoragePoolLookupByVolume</code> allows to find
-      the storage pool containing a given storage volume.</li>
+      <code class="docref">virStorageVolLookupByPath</code> finds
+      the storage volume object based on its path on the node.</p></li>
+      <li><code class='docref'>virStoragePoolPtr</code>
+      <p>Represents a storage pool, which is a logical area
+      used to allocate and store storage volumes. The function
+      <code class='docref'>virConnectListAllStoragePools</code> lists
+      all of the virtualization storage pools on the hypervisor. The function
+      <code class="docref">virStoragePoolLookupByVolume</code> finds
+      the storage pool containing a given storage volume.</p></li>
     </ul>
-    <p> Most object manipulated by the library can also be represented using
+    <p> Most objects manipulated by the library can also be represented using
       XML descriptions. This is used primarily to create those object, but is
       also helpful to modify or save their description back.</p>
-    <p> Domains, network and storage pools can be either <code>active</code>
+    <p> Domains, networks, and storage pools can be either <code>active</code>
       i.e. either running or available for immediate use, or
       <code>defined</code> in which case they are inactive but there is
       a permanent definition available in the system for them. Based on this
-      thay can be activated dynamically in order to be used.</p>
-    <p> Most kind of object can also be named in various ways:</p>
+      they can be activated dynamically in order to be used.</p>
+    <p> Most objects can also be named in various ways:</p>
     <ul>
-      <li>by their <code>name</code>, an user friendly identifier but
-      whose unicity cannot be guaranteed between two nodes.</li>
-      <li>by their <code>ID</code>, which is a runtime unique identifier
-      provided by the hypervisor for one given activation of the object,
-      but it becomes invalid once the resource is deactivated.</li >
-      <li>by their <code>UUID</code>, a 16 bytes unique identifier
+      <li><code>name</code>
+      <p>A user friendly identifier but whose uniqueness
+      cannot be guaranteed between two nodes.</p></li>
+      <li><code>ID</code>
+      <p>A runtime unique identifier
+      provided by the hypervisor for one given activation of the object;
+      however, it becomes invalid once the resource is deactivated.</p></li >
+      <li><code>UUID</code>
+      <p> A 16 byte unique identifier
       as defined in <a href="http://www.ietf.org/rfc/rfc4122.txt">RFC 4122</a>,
       which is guaranteed to be unique for long term usage and across a
-      set of nodes.</li>
+      set of nodes.</p></li>
     </ul>
 
     <h2><a name="Functions">Functions and naming
