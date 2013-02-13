@@ -1,7 +1,7 @@
 /*
  * virsh.c: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1475,7 +1475,7 @@ vshCommandOptStringReq(vshControl *ctl,
     if (!arg->data)
         error = N_("Programming error: Requested option is a boolean");
 
-    if (!*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
+    if (arg->data && !*arg->data && !(arg->def->flags & VSH_OFLAG_EMPTY_OK))
         error = N_("Option argument is empty");
 
     if (error) {
