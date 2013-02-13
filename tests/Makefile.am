@@ -100,6 +100,7 @@ test_programs = virshtest sockettest \
 	virstringtest \
         virportallocatortest \
 	sysinfotest \
+	virstoragetest \
 	$(NULL)
 
 if WITH_GNUTLS
@@ -564,6 +565,11 @@ virstringtest_SOURCES = \
 	virstringtest.c testutils.h testutils.c
 virstringtest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
 virstringtest_LDADD = $(LDADDS)
+
+virstoragetest_SOURCES = \
+	virstoragetest.c testutils.h testutils.c
+virstoragetest_CFLAGS = -Dabs_builddir="\"$(abs_builddir)\"" $(AM_CFLAGS)
+virstoragetest_LDADD = $(LDADDS)
 
 virlockspacetest_SOURCES = \
 	virlockspacetest.c testutils.h testutils.c
