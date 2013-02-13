@@ -913,12 +913,6 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
     virSecurityLabelDefPtr seclabel;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
 
-    if (mgr == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid security driver"));
-        return rc;
-    }
-
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
     if (seclabel == NULL) {
         return rc;

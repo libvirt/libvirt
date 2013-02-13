@@ -560,12 +560,6 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     virSecuritySELinuxDataPtr data;
     const char *baselabel;
 
-    if (mgr == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("invalid security driver"));
-        return rc;
-    }
-
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (seclabel == NULL) {
         return rc;
