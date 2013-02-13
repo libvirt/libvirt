@@ -1736,6 +1736,8 @@ enum virDomainRNGBackend {
 struct _virDomainRNGDef {
     int model;
     int backend;
+    unsigned int rate; /* bytes per period */
+    unsigned int period; /* milliseconds */
 
     union {
         char *file; /* file name for 'random' source */

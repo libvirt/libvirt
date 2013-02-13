@@ -4492,6 +4492,14 @@ qemuBuildRNGDeviceArgs(virCommandPtr cmd,
 
     virBufferAsprintf(&buf, "virtio-rng-pci,rng=%s", dev->info.alias);
 
+    if (dev->rate > 0) {
+        virBufferAsprintf(&buf, ",max-bytes=%u", dev->rate);
+        if (dev->period)
+            virBufferAsprintf(&buf, ",period=%u", dev->period);
+        else
+            virBufferAddLit(&buf, ",period=1000");
+    }
+
     if (qemuBuildDeviceAddressStr(&buf, &dev->info, qemuCaps) < 0)
         goto cleanup;
 

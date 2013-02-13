@@ -7570,6 +7570,19 @@ virDomainRNGDefParseXML(const xmlNodePtr node,
 
     ctxt->node = node;
 
+    if (virXPathUInt("string(./rate/@bytes)", ctxt, &def->rate) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid RNG rate bytes value"));
+        goto error;
+    }
+
+    if (def->rate > 0 &&
+        virXPathUInt("string(./rate/@period)", ctxt, &def->period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid RNG rate period value"));
+        goto error;
+    }
+
     if ((nbackends = virXPathNodeSet("./backend", ctxt, &backends)) < 0)
         goto error;
 
@@ -13897,6 +13910,12 @@ virDomainRNGDefFormat(virBufferPtr buf,
     const char *backend = virDomainRNGBackendTypeToString(def->backend);
 
     virBufferAsprintf(buf, "    <rng model='%s'>\n", model);
+    if (def->rate) {
+        virBufferAsprintf(buf, "      <rate bytes='%u'", def->rate);
+        if (def->period)
+            virBufferAsprintf(buf, " period='%u'", def->period);
+        virBufferAddLit(buf, "/>\n");
+    }
     virBufferAsprintf(buf, "      <backend model='%s'", backend);
 
     switch ((enum virDomainRNGBackend) def->backend) {

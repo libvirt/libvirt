@@ -3522,7 +3522,12 @@
           <value>virtio</value>
         </choice>
       </attribute>
-      <ref name="rng-backend"/>
+      <interleave>
+        <ref name="rng-backend"/>
+        <optional>
+          <ref name="rng-rate"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -3547,6 +3552,20 @@
           <ref name="qemucdevSrcDef"/>
         </group>
       </choice>
+    </element>
+  </define>
+
+  <define name="rng-rate">
+    <element name="rate">
+      <attribute name="bytes">
+        <ref name="positiveInteger"/>
+      </attribute>
+      <optional>
+        <attribute name="period">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
+      <empty/>
     </element>
   </define>
 

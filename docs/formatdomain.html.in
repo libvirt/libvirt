@@ -4294,6 +4294,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;rng model='virtio'&gt;
+      &lt;rate period="2000" bytes="1234"/&gt;
       &lt;backend model='random'&gt;/dev/random&lt;/backend&gt;
       &lt;!-- OR --&gt;
       &lt;backend model='egd' type='udp'&gt;
@@ -4315,6 +4316,18 @@ qemu-kvm -net nic,model=? /dev/null
         <ul>
           <li>'virtio' &mdash; supported by qemu and virtio-rng kernel module</li>
         </ul>
+      </dd>
+      <dt><code>rate</code></dt>
+      <dd>
+        <p>
+          The optional <code>rate</code> element allows limiting the rate at
+          which entropy can be consumed from the source.  The mandatory
+          attribute <code>bytes</code> specifies how many bytes are permitted
+          to be consumed per period.  An optional <code>period</code> attribute
+          specifies the duration of a period in milliseconds; if omitted, the
+          period is taken as 1000 milliseconds (1 second).
+          <span class='since'>Since 1.0.4</span>
+        </p>
       </dd>
       <dt><code>backend</code></dt>
       <dd>
