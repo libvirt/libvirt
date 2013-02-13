@@ -209,6 +209,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-rng",
 
               "rng-random", /* 130 */
+              "rng-egd",
     );
 
 struct _virQEMUCaps {
@@ -1334,6 +1335,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-net", QEMU_CAPS_DEVICE_USB_NET},
     { "virtio-rng-pci", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
+    { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
 };
 
 

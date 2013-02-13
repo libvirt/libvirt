@@ -4184,6 +4184,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
                         virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *backend = NULL;
     int ret = -1;
 
     switch ((enum virDomainRNGBackend) dev->backend) {
@@ -4204,9 +4205,23 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("egd RNG backend not yet implemented"));
-        goto cleanup;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_EGD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the rng-egd "
+                             "backend"));
+            goto cleanup;
+        }
+
+        if (!(backend = qemuBuildChrChardevStr(dev->source.chardev,
+                                               dev->info.alias, qemuCaps)))
+            goto cleanup;
+
+        virCommandAddArgList(cmd, "-chardev", backend, NULL);
+
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgFormat(cmd, "rng-egd,chardev=char%s,id=%s",
+                               dev->info.alias, dev->info.alias);
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
@@ -4217,6 +4232,7 @@ qemuBuildRNGBackendArgs(virCommandPtr cmd,
 
 cleanup:
     virBufferFreeAndReset(&buf);
+    VIR_FREE(backend);
     return ret;
 }
 

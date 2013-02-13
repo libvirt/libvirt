@@ -170,6 +170,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_VIRTIO_RNG  = 129, /* virtio-rng device */
     QEMU_CAPS_OBJECT_RNG_RANDOM  = 130, /* the rng-random backend for
                                            virtio rng */
+    QEMU_CAPS_OBJECT_RNG_EGD     = 131, /* EGD protocol daemon for rng */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
