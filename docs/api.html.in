@@ -186,9 +186,52 @@
     support was added into libvirt.
     </p>
     <h2><a name="Remote">Daemon and Remote Access</a></h2>
+    <p>Access to libvirt drivers is primarily handled by the libvirtd
+    daemon through the <a href="remote.html">remote</a> driver via an
+    <a href="internals/rpc.html">RPC</a>. Some hypervisors do support
+    client-side connections and responses, such as Test, OpenVZ, VMware,
+    Power VM (phyp), VirtualBox (vbox), ESX, Hyper-V, Xen, and Parallels.
+    The libvirtd daemon service is started on the host at system boot
+    time and can also be restarted at any time by a properly privileged
+    user, such as root. The libvirtd daemon uses the same libvirt API
+    <code class='docref'>virInitialize</code> sequence as applications
+    for client-side driver registrations, but then extends the registered
+    driver list to encompass all known drivers supported for all driver
+    types supported on the host. </p>
+    <p>The libvirt client <a href="apps.html">applications</a> use a
+    <a href="uri.html">URI</a> to obtain the <code>virConnectPtr</code>.
+    The <code>virConnectPtr</code> keeps track of the driver connection
+    plus a variety of other connections (network, interface, storage, etc.).
+    The <code>virConnectPtr</code> is then used as a parameter to other
+    virtualization <a href="#Functions">functions</a>. Depending upon the
+    driver being used, calls will be routed through the remote driver to
+    the libvirtd daemon. The daemon will reference the connection specific
+    driver in order to retreive the requested information and then pass
+    back status and/or data through the connection back to the application.
+    The application can then decide what to do with that data, such as
+    display, write log data, etc. <a href="migration.html">Migration</a>
+    is an example of many facets of the architecture in use.</p>
+
     <p class="image">
       <img alt="The libvirt daemon and remote architecture"
            src="libvirt-daemon-arch.png"/>
     </p>
+    <p>
+    The key takeaway from the above diagram is that there is a remote driver
+    which handles transactions for a majority of the drivers. The libvirtd
+    daemon running on the host will receive transaction requests from the
+    remote driver and will then query the hypervisor driver as specified in
+    the <code>virConnectPtr</code> in order to fetch the data. The data will
+    then be returned through the remote driver to the client application
+    for processing.
+    </p>
+    <p>If you are interested in contributing to libvirt, read the
+    <a href="http://wiki.libvirt.org/page/FAQ">FAQ</a> and
+    <a href="hacking.html">hacking</a> guidelines to gain an understanding
+    of basic rules and guidelines.  In order to add new API functionality
+    follow the instructions regarding
+    <a href="api_extension.html">implementing a new API in libvirt</a>.
+    </p>
+
   </body>
 </html>
