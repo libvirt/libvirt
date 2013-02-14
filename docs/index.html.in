@@ -63,6 +63,12 @@
         The <a href="http://libvirt.org/drvhyperv.html">Microsoft Hyper-V</a> hypervisor
       </li>
       <li>
+        The <a href="http://libvirt.org/drvphyp.html">IBM PowerVM</a> hypervisor
+      </li>
+      <li>
+        The <a href="http://libvirt.org/drvparallels.html">Parallels</a> hypervisor
+      </li>
+      <li>
         Virtual networks using bridging, NAT, VEPA and VN-LINK.
       </li>
       <li>

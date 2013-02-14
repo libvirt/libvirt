@@ -30,6 +30,7 @@
       <li><strong><a href="drvxen.html">Xen</a></strong></li>
       <li><strong><a href="drvhyperv.html">Microsoft Hyper-V</a></strong></li>
       <li><strong><a href="drvphyp.html">IBM PowerVM (phyp)</a></strong></li>
+      <li><strong><a href="drvparallels.html">Parallels</a></strong></li>
     </ul>
 
     <h2><a name="storage">Storage drivers</a></h2>

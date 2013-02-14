@@ -216,6 +216,14 @@
                 <a href="drvhyperv.html">Microsoft Hyper-V</a>
                 <span>Driver for Microsoft Hyper-V</span>
               </li>
+              <li>
+                <a href="drvphyp.html">IBM PowerVM</a>
+                <span>Driver for IBM PowerVM</span>
+              </li>
+              <li>
+                <a href="drvparallels.html">Parallels</a>
+                <span>Driver for Parallels Cloud Server</span>
+              </li>
             </ul>
           </li>
           <li>
