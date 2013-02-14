@@ -5388,10 +5388,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
     dev = virDomainDeviceDefParse(data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
-    if (dev == NULL) {
-        virReportOOMError();
+    if (dev == NULL)
         goto cleanup;
-    }
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
@@ -5625,10 +5623,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
 
     dev = virDomainDeviceDefParse(data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
-    if (dev == NULL) {
-        virReportOOMError();
+    if (dev == NULL)
         goto cleanup;
-    }
 
     vboxIIDFromUUID(&iid, dom->uuid);
     rc = VBOX_OBJECT_GET_MACHINE(iid.value, &machine);
