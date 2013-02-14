@@ -148,7 +148,7 @@ double
 vshPrettyCapacity(unsigned long long val, const char **unit)
 {
     if (val < 1024) {
-        *unit = "";
+        *unit = "B";
         return (double)val;
     } else if (val < (1024.0l * 1024.0l)) {
         *unit = "KiB";
