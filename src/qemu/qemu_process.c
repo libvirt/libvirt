@@ -4223,7 +4223,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     qemuDomainCleanupRun(driver, vm);
 
     /* Stop autodestroy in case guest is restarted */
-    qemuProcessAutoDestroyRemove(driver, vm);
+    if (!priv->autoDestroyed)
+        qemuProcessAutoDestroyRemove(driver, vm);
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -4603,8 +4604,15 @@ qemuProcessAutoDestroy(virQEMUDriverPtr driver,
         goto cleanup;
 
     VIR_DEBUG("Killing domain");
+
+    /* We need to prevent qemuProcessStop from removing this function from
+     * closeCallbacks since that would cause a deadlock.
+     */
+    priv->autoDestroyed = true;
     qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
                     VIR_QEMU_PROCESS_STOP_MIGRATED);
+    priv->autoDestroyed = false;
+
     virDomainAuditStop(dom, "destroyed");
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STOPPED,

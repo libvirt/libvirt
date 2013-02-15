@@ -810,33 +810,22 @@ struct virQEMUCloseCallbacksData {
 
 static void
 virQEMUCloseCallbacksRunOne(void *payload,
-                            const void *name,
+                            const void *uuid,
                             void *opaque)
 {
     struct virQEMUCloseCallbacksData *data = opaque;
     qemuDriverCloseDefPtr closeDef = payload;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr dom;
 
     VIR_DEBUG("conn=%p, thisconn=%p, uuid=%s, cb=%p",
-              closeDef->conn, data->conn, (const char *)name, closeDef->cb);
+              closeDef->conn, data->conn, (const char *) uuid, closeDef->cb);
 
     if (data->conn != closeDef->conn || !closeDef->cb)
         return;
 
-    if (virUUIDParse(name, uuid) < 0) {
-        VIR_WARN("Failed to parse %s", (const char *)name);
-        return;
-    }
-    /* We need to reformat uuidstr, because closeDef->cb
-     * might cause the current hash entry to be removed,
-     * which means 'name' will have been free()d
-     */
-    virUUIDFormat(uuid, uuidstr);
-
     if (!(dom = virDomainObjListFindByUUID(data->driver->domains, uuid))) {
-        VIR_DEBUG("No domain object with UUID %s", uuidstr);
+        VIR_DEBUG("No domain object with UUID %s",
+                  (const char *) uuid);
         return;
     }
 
@@ -844,7 +833,7 @@ virQEMUCloseCallbacksRunOne(void *payload,
     if (dom)
         virObjectUnlock(dom);
 
-    virHashRemoveEntry(data->list, uuidstr);
+    virHashRemoveEntry(data->list, uuid);
 }
 
 void

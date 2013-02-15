@@ -254,6 +254,10 @@ struct qemuDomainDiskInfo {
     int io_status;
 };
 
+/*
+ * To avoid a certain deadlock this callback must never call any
+ * virQEMUCloseCallbacks* API.
+ */
 typedef virDomainObjPtr (*virQEMUCloseCallback)(virQEMUDriverPtr driver,
                                                 virDomainObjPtr vm,
                                                 virConnectPtr conn);
