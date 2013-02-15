@@ -654,6 +654,51 @@ error:
     return -1;
 }
 
+static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+udevIfaceGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
+                         struct udev_device *dev ATTRIBUTE_UNUSED,
+                         const char *name,
+                         virInterfaceDef *ifacedef)
+{
+    char *vid;
+    char *vlan_parent_dev = NULL;
+
+    vlan_parent_dev = strdup(name);
+    if (!vlan_parent_dev) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Find the DEVICE.VID again */
+    vid = strrchr(vlan_parent_dev, '.');
+    if (!vid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("failed to find the VID for the VLAN device '%s'"),
+                name);
+        goto cleanup;
+        }
+
+    /* Replace the dot with a NULL so we can have the device and VID */
+    vid[0] = '\0';
+    vid++;
+
+    /* Set our type to VLAN  */
+    ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
+
+    /* Set the VLAN specifics */
+    ifacedef->data.vlan.tag = vid;
+    ifacedef->data.vlan.devname = vlan_parent_dev;
+
+    return 0;
+
+cleanup:
+    VIR_FREE(vlan_parent_dev);
+
+    return -1;
+}
+
 static virInterfaceDef * ATTRIBUTE_NONNULL(1)
 udevIfaceGetIfaceDef(struct udev *udev, const char *name)
 {
@@ -712,34 +757,8 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
      * other devices */
     vlan_parent_dev = strrchr(name, '.');
     if (vlan_parent_dev) {
-        /* Found the VLAN dot */
-        char *vid;
-
-        vlan_parent_dev = strdup(name);
-        if (!vlan_parent_dev) {
-            virReportOOMError();
+        if (udevIfaceGetIfaceDefVlan(udev, dev, name, ifacedef))
             goto cleanup;
-        }
-
-        /* Find the DEVICE.VID separator again */
-        vid = strrchr(vlan_parent_dev, '.');
-        if (!vid) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to find the VID for the VLAN device '%s'"),
-                           name);
-            goto cleanup;
-        }
-
-        /* Replace the dot with a NULL so we can have the device and VID */
-        vid[0] = '\0';
-        vid++;
-
-        /* Set our type to VLAN  */
-        ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
-
-        /* Set the VLAN specifics */
-        ifacedef->data.vlan.tag = vid;
-        ifacedef->data.vlan.devname = vlan_parent_dev;
     } else if (STREQ_NULLABLE(udev_device_get_devtype(dev), "bridge")) {
         if (udevIfaceGetIfaceDefBridge(udev, dev, name, ifacedef) < 0)
             goto cleanup;
