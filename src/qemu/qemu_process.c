@@ -4626,22 +4626,23 @@ int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,
                               virConnectPtr conn)
 {
     VIR_DEBUG("vm=%s, conn=%p", vm->def->name, conn);
-    return qemuDriverCloseCallbackSet(driver, vm, conn,
-                                      qemuProcessAutoDestroy);
+    return virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                                    qemuProcessAutoDestroy);
 }
 
 int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm)
 {
     VIR_DEBUG("vm=%s", vm->def->name);
-    return qemuDriverCloseCallbackUnset(driver, vm, qemuProcessAutoDestroy);
+    return virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
+                                      qemuProcessAutoDestroy);
 }
 
 bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm)
 {
-    qemuDriverCloseCallback cb;
+    virQEMUCloseCallback cb;
     VIR_DEBUG("vm=%s", vm->def->name);
-    cb = qemuDriverCloseCallbackGet(driver, vm, NULL);
+    cb = virQEMUCloseCallbacksGet(driver->closeCallbacks, vm, NULL);
     return cb == qemuProcessAutoDestroy;
 }

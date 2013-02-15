@@ -757,7 +757,7 @@ qemuStartup(bool privileged,
         cfg->hugepagePath = mempath;
     }
 
-    if (qemuDriverCloseCallbackInit(qemu_driver) < 0)
+    if (!(qemu_driver->closeCallbacks = virQEMUCloseCallbacksNew()))
         goto error;
 
     /* Get all the running persistent or transient configs first */
@@ -955,7 +955,7 @@ qemuShutdown(void) {
 
     virSysinfoDefFree(qemu_driver->hostsysinfo);
 
-    qemuDriverCloseCallbackShutdown(qemu_driver);
+    virObjectUnref(qemu_driver->closeCallbacks);
 
     VIR_FREE(qemu_driver->qemuImgBinary);
 
@@ -1049,11 +1049,12 @@ cleanup:
     return ret;
 }
 
-static int qemuClose(virConnectPtr conn) {
+static int qemuClose(virConnectPtr conn)
+{
     virQEMUDriverPtr driver = conn->privateData;
 
     /* Get rid of callbacks registered for this conn */
-    qemuDriverCloseCallbackRunAll(driver, conn);
+    virQEMUCloseCallbacksRun(driver->closeCallbacks, conn, driver);
 
     conn->privateData = NULL;
 
@@ -9702,8 +9703,8 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
          * This prevents any other APIs being invoked while migration is taking
          * place.
          */
-        if (qemuDriverCloseCallbackSet(driver, vm, domain->conn,
-                                       qemuMigrationCleanup) < 0)
+        if (virQEMUCloseCallbacksSet(driver->closeCallbacks, vm, domain->conn,
+                                     qemuMigrationCleanup) < 0)
             goto endjob;
         if (qemuMigrationJobContinue(vm) == 0) {
             vm = NULL;
@@ -9929,7 +9930,8 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         phase = QEMU_MIGRATION_PHASE_CONFIRM3;
 
     qemuMigrationJobStartPhase(driver, vm, phase);
-    qemuDriverCloseCallbackUnset(driver, vm, qemuMigrationCleanup);
+    virQEMUCloseCallbacksUnset(driver->closeCallbacks, vm,
+                               qemuMigrationCleanup);
 
     ret = qemuMigrationConfirm(driver, domain->conn, vm,
                                cookiein, cookieinlen,

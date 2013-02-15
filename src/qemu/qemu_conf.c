@@ -57,27 +57,46 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+typedef struct _qemuDriverCloseDef qemuDriverCloseDef;
+typedef qemuDriverCloseDef *qemuDriverCloseDefPtr;
+struct _qemuDriverCloseDef {
+    virConnectPtr conn;
+    virQEMUCloseCallback cb;
+};
+
+struct _virQEMUCloseCallbacks {
+    virObjectLockable parent;
+
+    /* UUID string to qemuDriverCloseDef mapping */
+    virHashTablePtr list;
+};
+
+
 static virClassPtr virQEMUDriverConfigClass;
+static virClassPtr virQEMUCloseCallbacksClass;
 static void virQEMUDriverConfigDispose(void *obj);
+static void virQEMUCloseCallbacksDispose(void *obj);
 
 static int virQEMUConfigOnceInit(void)
 {
-    if (!(virQEMUDriverConfigClass = virClassNew(virClassForObject(),
-                                                 "virQEMUDriverConfig",
-                                                 sizeof(virQEMUDriverConfig),
-                                                 virQEMUDriverConfigDispose)))
-        return -1;
+    virQEMUDriverConfigClass = virClassNew(virClassForObject(),
+                                           "virQEMUDriverConfig",
+                                           sizeof(virQEMUDriverConfig),
+                                           virQEMUDriverConfigDispose);
 
-    return 0;
+    virQEMUCloseCallbacksClass = virClassNew(virClassForObjectLockable(),
+                                             "virQEMUCloseCallbacks",
+                                             sizeof(virQEMUCloseCallbacks),
+                                             virQEMUCloseCallbacksDispose);
+
+    if (!virQEMUDriverConfigClass || !virQEMUCloseCallbacksClass)
+        return -1;
+    else
+        return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virQEMUConfig)
 
-
-struct _qemuDriverCloseDef {
-    virConnectPtr conn;
-    qemuDriverCloseCallback cb;
-};
 
 static void
 qemuDriverLock(virQEMUDriverPtr driver)
@@ -639,44 +658,57 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
 
 
 static void
-qemuDriverCloseCallbackFree(void *payload,
-                            const void *name ATTRIBUTE_UNUSED)
+virQEMUCloseCallbacksFreeData(void *payload,
+                              const void *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
 }
 
-int
-qemuDriverCloseCallbackInit(virQEMUDriverPtr driver)
+virQEMUCloseCallbacksPtr
+virQEMUCloseCallbacksNew(void)
 {
-    driver->closeCallbacks = virHashCreate(5, qemuDriverCloseCallbackFree);
-    if (!driver->closeCallbacks)
-        return -1;
+    virQEMUCloseCallbacksPtr closeCallbacks;
 
-    return 0;
+    if (virQEMUConfigInitialize() < 0)
+        return NULL;
+
+    if (!(closeCallbacks = virObjectLockableNew(virQEMUCloseCallbacksClass)))
+        return NULL;
+
+    closeCallbacks->list = virHashCreate(5, virQEMUCloseCallbacksFreeData);
+    if (!closeCallbacks->list) {
+        virObjectUnref(closeCallbacks);
+        return NULL;
+    }
+
+    return closeCallbacks;
 }
 
-void
-qemuDriverCloseCallbackShutdown(virQEMUDriverPtr driver)
+static void
+virQEMUCloseCallbacksDispose(void *obj)
 {
-    virHashFree(driver->closeCallbacks);
+    virQEMUCloseCallbacksPtr closeCallbacks = obj;
+
+    virHashFree(closeCallbacks->list);
 }
 
 int
-qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virConnectPtr conn,
-                           qemuDriverCloseCallback cb)
+virQEMUCloseCallbacksSet(virQEMUCloseCallbacksPtr closeCallbacks,
+                         virDomainObjPtr vm,
+                         virConnectPtr conn,
+                         virQEMUCloseCallback cb)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     qemuDriverCloseDefPtr closeDef;
     int ret = -1;
 
-    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, conn=%p, cb=%p",
               vm->def->name, uuidstr, conn, cb);
 
-    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    virObjectLock(closeCallbacks);
+
+    closeDef = virHashLookup(closeCallbacks->list, uuidstr);
     if (closeDef) {
         if (closeDef->conn != conn) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -701,7 +733,7 @@ qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
 
         closeDef->conn = conn;
         closeDef->cb = cb;
-        if (virHashAddEntry(driver->closeCallbacks, uuidstr, closeDef) < 0) {
+        if (virHashAddEntry(closeCallbacks->list, uuidstr, closeDef) < 0) {
             VIR_FREE(closeDef);
             goto cleanup;
         }
@@ -709,25 +741,26 @@ qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
 
     ret = 0;
 cleanup:
-    qemuDriverUnlock(driver);
+    virObjectUnlock(closeCallbacks);
     return ret;
 }
 
 int
-qemuDriverCloseCallbackUnset(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             qemuDriverCloseCallback cb)
+virQEMUCloseCallbacksUnset(virQEMUCloseCallbacksPtr closeCallbacks,
+                           virDomainObjPtr vm,
+                           virQEMUCloseCallback cb)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     qemuDriverCloseDefPtr closeDef;
     int ret = -1;
 
-    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, cb=%p",
               vm->def->name, uuidstr, cb);
 
-    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    virObjectLock(closeCallbacks);
+
+    closeDef = virHashLookup(closeCallbacks->list, uuidstr);
     if (!closeDef)
         goto cleanup;
 
@@ -738,46 +771,49 @@ qemuDriverCloseCallbackUnset(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    ret = virHashRemoveEntry(driver->closeCallbacks, uuidstr);
+    ret = virHashRemoveEntry(closeCallbacks->list, uuidstr);
 cleanup:
-    qemuDriverUnlock(driver);
+    virObjectUnlock(closeCallbacks);
     return ret;
 }
 
-qemuDriverCloseCallback
-qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virConnectPtr conn)
+virQEMUCloseCallback
+virQEMUCloseCallbacksGet(virQEMUCloseCallbacksPtr closeCallbacks,
+                         virDomainObjPtr vm,
+                         virConnectPtr conn)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     qemuDriverCloseDefPtr closeDef;
-    qemuDriverCloseCallback cb = NULL;
+    virQEMUCloseCallback cb = NULL;
 
-    qemuDriverLock(driver);
     virUUIDFormat(vm->def->uuid, uuidstr);
     VIR_DEBUG("vm=%s, uuid=%s, conn=%p",
               vm->def->name, uuidstr, conn);
 
-    closeDef = virHashLookup(driver->closeCallbacks, uuidstr);
+    virObjectLock(closeCallbacks);
+
+    closeDef = virHashLookup(closeCallbacks->list, uuidstr);
     if (closeDef && (!conn || closeDef->conn == conn))
         cb = closeDef->cb;
 
+    virObjectUnlock(closeCallbacks);
+
     VIR_DEBUG("cb=%p", cb);
-    qemuDriverUnlock(driver);
     return cb;
 }
 
-struct qemuDriverCloseCallbackData {
+struct virQEMUCloseCallbacksData {
+    virHashTablePtr list;
     virQEMUDriverPtr driver;
     virConnectPtr conn;
 };
 
 static void
-qemuDriverCloseCallbackRun(void *payload,
-                           const void *name,
-                           void *opaque)
+virQEMUCloseCallbacksRunOne(void *payload,
+                            const void *name,
+                            void *opaque)
 {
-    struct qemuDriverCloseCallbackData *data = opaque;
+    struct virQEMUCloseCallbacksData *data = opaque;
     qemuDriverCloseDefPtr closeDef = payload;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -808,20 +844,26 @@ qemuDriverCloseCallbackRun(void *payload,
     if (dom)
         virObjectUnlock(dom);
 
-    virHashRemoveEntry(data->driver->closeCallbacks, uuidstr);
+    virHashRemoveEntry(data->list, uuidstr);
 }
 
 void
-qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
-                              virConnectPtr conn)
+virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
+                         virConnectPtr conn,
+                         virQEMUDriverPtr driver)
 {
-    struct qemuDriverCloseCallbackData data = {
-        driver, conn
+    struct virQEMUCloseCallbacksData data = {
+        .driver = driver,
+        .conn = conn
     };
+
     VIR_DEBUG("conn=%p", conn);
-    qemuDriverLock(driver);
-    virHashForEach(driver->closeCallbacks, qemuDriverCloseCallbackRun, &data);
-    qemuDriverUnlock(driver);
+    virObjectLock(closeCallbacks);
+
+    data.list = closeCallbacks->list;
+    virHashForEach(data.list, virQEMUCloseCallbacksRunOne, &data);
+
+    virObjectUnlock(closeCallbacks);
 }
 
 struct _qemuSharedDiskEntry {

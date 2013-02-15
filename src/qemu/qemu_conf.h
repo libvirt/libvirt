@@ -47,8 +47,8 @@
 
 # define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
-typedef struct _qemuDriverCloseDef qemuDriverCloseDef;
-typedef qemuDriverCloseDef *qemuDriverCloseDefPtr;
+typedef struct _virQEMUCloseCallbacks virQEMUCloseCallbacks;
+typedef virQEMUCloseCallbacks *virQEMUCloseCallbacksPtr;
 
 typedef struct _virQEMUDriver virQEMUDriver;
 typedef virQEMUDriver *virQEMUDriverPtr;
@@ -216,8 +216,8 @@ struct _virQEMUDriver {
     /* Immutable pointer. lockless access */
     virLockManagerPluginPtr lockManager;
 
-    /* Immutable pointer. Unsafe APIs. XXX */
-    virHashTablePtr closeCallbacks;
+    /* Immutable pointer, self-clocking APIs */
+    virQEMUCloseCallbacksPtr closeCallbacks;
 };
 
 typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
@@ -254,23 +254,24 @@ struct qemuDomainDiskInfo {
     int io_status;
 };
 
-typedef virDomainObjPtr (*qemuDriverCloseCallback)(virQEMUDriverPtr driver,
-                                                   virDomainObjPtr vm,
-                                                   virConnectPtr conn);
-int qemuDriverCloseCallbackInit(virQEMUDriverPtr driver);
-void qemuDriverCloseCallbackShutdown(virQEMUDriverPtr driver);
-int qemuDriverCloseCallbackSet(virQEMUDriverPtr driver,
+typedef virDomainObjPtr (*virQEMUCloseCallback)(virQEMUDriverPtr driver,
+                                                virDomainObjPtr vm,
+                                                virConnectPtr conn);
+virQEMUCloseCallbacksPtr virQEMUCloseCallbacksNew(void);
+int virQEMUCloseCallbacksSet(virQEMUCloseCallbacksPtr closeCallbacks,
+                             virDomainObjPtr vm,
+                             virConnectPtr conn,
+                             virQEMUCloseCallback cb);
+int virQEMUCloseCallbacksUnset(virQEMUCloseCallbacksPtr closeCallbacks,
                                virDomainObjPtr vm,
-                               virConnectPtr conn,
-                               qemuDriverCloseCallback cb);
-int qemuDriverCloseCallbackUnset(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 qemuDriverCloseCallback cb);
-qemuDriverCloseCallback qemuDriverCloseCallbackGet(virQEMUDriverPtr driver,
-                                                   virDomainObjPtr vm,
-                                                   virConnectPtr conn);
-void qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
-                                   virConnectPtr conn);
+                               virQEMUCloseCallback cb);
+virQEMUCloseCallback
+virQEMUCloseCallbacksGet(virQEMUCloseCallbacksPtr closeCallbacks,
+                         virDomainObjPtr vm,
+                         virConnectPtr conn);
+void virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
+                              virConnectPtr conn,
+                              virQEMUDriverPtr driver);
 
 typedef struct _qemuSharedDiskEntry qemuSharedDiskEntry;
 typedef qemuSharedDiskEntry *qemuSharedDiskEntryPtr;
