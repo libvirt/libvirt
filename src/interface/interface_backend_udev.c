@@ -684,9 +684,6 @@ udevIfaceGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
     vid[0] = '\0';
     vid++;
 
-    /* Set our type to VLAN  */
-    ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
-
     /* Set the VLAN specifics */
     ifacedef->data.vlan.tag = vid;
     ifacedef->data.vlan.devname = vlan_parent_dev;
@@ -707,6 +704,7 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
     unsigned int mtu;
     const char *mtu_str;
     char *vlan_parent_dev = NULL;
+    const char *devtype;
 
     /* Allocate our interface definition structure */
     if (VIR_ALLOC(ifacedef) < 0) {
@@ -716,7 +714,6 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
 
     /* Clear our structure and set safe defaults */
     ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;
-    ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
     ifacedef->name = strdup(name);
 
     if (!ifacedef->name) {
@@ -753,18 +750,43 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
     ifacedef->nprotos = 0;
     ifacedef->protos = NULL;
 
-    /* Check if its a VLAN since we can have a VLAN of any of the
-     * other devices */
-    vlan_parent_dev = strrchr(name, '.');
-    if (vlan_parent_dev) {
+    /* Check the type of device we are working with based on the devtype */
+    devtype = udev_device_get_devtype(dev);
+
+    /* Set our type to ethernet as the default case */
+    ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
+
+    if (STREQ_NULLABLE(devtype, "vlan")) {
+        /* This only works on modern kernels (3.7 and newer)
+         * e949b09b71d975a82f13ac88ce4ad338fed213da
+         */
+        ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
+    } else if (STREQ_NULLABLE(devtype, "bridge")) {
+        ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
+    }
+
+    /* Fallback checks if the devtype check didn't work. */
+    if (ifacedef->type == VIR_INTERFACE_TYPE_ETHERNET) {
+        /* First check if its a VLAN based on the name containing a dot,
+         * to prevent false positives
+         */
+        vlan_parent_dev = strrchr(name, '.');
+        if (vlan_parent_dev) {
+            ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
+        }
+    }
+
+    switch (ifacedef->type) {
+    case VIR_INTERFACE_TYPE_VLAN:
         if (udevIfaceGetIfaceDefVlan(udev, dev, name, ifacedef))
             goto cleanup;
-    } else if (STREQ_NULLABLE(udev_device_get_devtype(dev), "bridge")) {
+        break;
+    case VIR_INTERFACE_TYPE_BRIDGE:
         if (udevIfaceGetIfaceDefBridge(udev, dev, name, ifacedef) < 0)
             goto cleanup;
-    } else {
-        /* Set our type to ethernet */
-        ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
+        break;
+    case VIR_INTERFACE_TYPE_ETHERNET:
+        break;
     }
 
     udev_device_unref(dev);
