@@ -599,7 +599,8 @@ networkBuildDnsmasqDhcpHostsList(dnsmasqContext *dctx,
     for (i = 0; i < ipdef->nhosts; i++) {
         virNetworkDHCPHostDefPtr host = &(ipdef->hosts[i]);
         if (VIR_SOCKET_ADDR_VALID(&host->ip))
-            if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip, host->name, ipv6) < 0)
+            if (dnsmasqAddDhcpHost(dctx, host->mac, &host->ip,
+                                   host->name, host->id, ipv6) < 0)
                 return -1;
     }
 

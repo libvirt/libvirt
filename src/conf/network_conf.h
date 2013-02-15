@@ -66,6 +66,7 @@ typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
 typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
 struct _virNetworkDHCPHostDef {
     char *mac;
+    char *id;
     char *name;
     virSocketAddr ip;
 };

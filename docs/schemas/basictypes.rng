@@ -101,6 +101,65 @@
     </data>
   </define>
 
+  <!--====================================================================-->
+  <!--The duid is a unique identifier used in DHCPv6 to identity an       -->
+  <!--interface on a device (system).  The duid is often used by servers  -->
+  <!--such as dnsmasq to assign a specific IP address (and optionally a   -->
+  <!--name to an interface.  The applicable standards are RFC3315 and     -->
+  <!--RFC6355.  These standards actualy require the duid to be fixed for  -->
+  <!--the hardward device and applicable to all network interfaces on     -->
+  <!--that device.  It is not clear that any software currently enforces  -->
+  <!--this requirement although it could be implemented manually.         -->
+  <!--====================================================================-->
+  <!--There are currently four types of duids defined:                    -->
+  <!--  type 1, duid-LLT, link-layer (MAC) plus 32 bit time when the      -->
+  <!--          duid-LLT was created in seconds from January 1, 2000      -->
+  <!--  type 2, duid-EN, 32 bit "enterprise number" followed by a         -->
+  <!--          variable length unique identifier.                        -->
+  <!--  type 3, duid-LL, link-layer (MAC)                                 -->
+  <!--  type 4, duid-UUID, a 128 bit UUID (16 bytes)                      -->
+  <!--RFC3315 states that the maximum length of a duid is 128 bytes plus  -->
+  <!--the 16 bit type field.  Often, the machine type is "1" which is the -->
+  <!--number assigned to ethernet.                                        -->
+
+  <define name="duidLLT">
+    <data type="string">
+                     <!--   0======| type======| 0======| machine type======| time================| link-layer============|     -->
+      <param name="pattern">[0]{1,2}:[0]{0,1}[1]:[0]{1,2}:[0]{0,1}[a-fA-F1-9](:[a-fA-F0-9]{1,2}){4}(:[a-fA-F0-9]{1,2}){6,8}</param>
+    </data>
+  </define>
+
+  <define name="duidEN">
+    <data type="string">
+                     <!--   0======| type======| Enterprise number===| unique id ==============|     -->
+      <param name="pattern">[0]{1,2}:[0]{0,1}[2](:[a-fA-F0-9]{1,2}){4}(:[a-fA-F0-9]{1,2}){1,124}</param>
+    </data>
+  </define>
+
+  <define name="duidLL">
+    <data type="string">
+                     <!--   0======| type======| 0======| machine type======| link-layer============|     -->
+      <param name="pattern">[0]{1,2}:[0]{0,1}[3]:[0]{1,2}:[0]{0,1}[a-fA-F1-9](:[a-fA-F0-9]{1,2}){6,8}</param>
+    </data>
+  </define>
+
+  <define name="duidUUID">
+    <data type="string">
+                     <!--   0======| type======| UUID=================|     -->
+      <param name="pattern">[0]{1,2}:[0]{0,1}[4](:[a-fA-F0-9]{1,2}){16}</param>
+    </data>
+  </define>
+
+  <define name="DUID">
+    <choice>
+      <ref name="duidLLT"/>
+      <ref name="duidEN"/>
+      <ref name="duidLL"/>
+      <ref name="duidUUID"/>
+    </choice>
+  </define>
+  <!--======================================================================-->
+
   <!-- An ipv4 "dotted quad" address -->
   <define name="ipv4Addr">
     <data type="string">

@@ -118,6 +118,7 @@ static void
 virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
 {
     VIR_FREE(def->mac);
+    VIR_FREE(def->id);
     VIR_FREE(def->name);
 }
 
@@ -678,7 +679,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
                               virNetworkDHCPHostDefPtr host,
                               bool partialOkay)
 {
-    char *mac = NULL, *name = NULL, *ip = NULL;
+    char *mac = NULL, *name = NULL, *ip = NULL, *id = NULL;
     virMacAddr addr;
     virSocketAddr inaddr;
     int ret = -1;
@@ -707,10 +708,20 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
         }
     }
 
+    id = virXMLPropString(node, "id");
+    if (id) {
+        char *cp = id + strspn(id, "0123456789abcdefABCDEF:");
+        if (*cp) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid character '%c' in id '%s' of network '%s'"),
+                           *cp, id, networkName);
+        }
+    }
+
     name = virXMLPropString(node, "name");
     if (name && (!c_isalpha(name[0]))) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot use name address '%s' in network '%s'"),
+                       _("Cannot use host name '%s' in network '%s'"),
                        name, networkName);
         goto cleanup;
     }
@@ -738,10 +749,10 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
          * address or name (IPv4)
          */
         if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
-            if (!name) {
+            if (!(id || name)) {
                 virReportError(VIR_ERR_XML_ERROR,
                            _("Static host definition in IPv6 network '%s' "
-                             "must have name attribute"),
+                             "must have id or name attribute"),
                            networkName);
                 goto cleanup;
             }
@@ -763,6 +774,8 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
 
     host->mac = mac;
     mac = NULL;
+    host->id = id;
+    id = NULL;
     host->name = name;
     name = NULL;
     if (ip)
@@ -771,6 +784,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
 
 cleanup:
     VIR_FREE(mac);
+    VIR_FREE(id);
     VIR_FREE(name);
     VIR_FREE(ip);
     return ret;
@@ -2189,6 +2203,8 @@ virNetworkIpDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, "<host ");
             if (def->hosts[ii].mac)
                 virBufferAsprintf(buf, "mac='%s' ", def->hosts[ii].mac);
+            if (def->hosts[ii].id)
+                virBufferAsprintf(buf, "id='%s' ", def->hosts[ii].id);
             if (def->hosts[ii].name)
                 virBufferAsprintf(buf, "name='%s' ", def->hosts[ii].name);
             if (VIR_SOCKET_ADDR_VALID(&def->hosts[ii].ip)) {

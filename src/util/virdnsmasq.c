@@ -303,6 +303,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
              const char *mac,
              virSocketAddr *ip,
              const char *name,
+             const char *id,
              bool ipv6)
 {
     char *ipstr = NULL;
@@ -314,11 +315,20 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
 
     /* the first test determines if it is a dhcpv6 host */
     if (ipv6) {
-        if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,[%s]",
-                        name, ipstr) < 0)
-            goto alloc_error;
-    }
-    else if (name && mac) {
+        if (name && id) {
+            if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host,
+                            "id:%s,%s,[%s]", id, name, ipstr) < 0)
+                goto alloc_error;
+        } else if (name && !id) {
+            if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host,
+                            "%s,[%s]", name, ipstr) < 0)
+                goto alloc_error;
+        } else if (!name && id) {
+            if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host,
+                            "id:%s,[%s]", id, ipstr) < 0)
+                goto alloc_error;
+        }
+    } else if (name && mac) {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
                         mac, ipstr, name) < 0)
             goto alloc_error;
@@ -511,9 +521,10 @@ dnsmasqAddDhcpHost(dnsmasqContext *ctx,
                    const char *mac,
                    virSocketAddr *ip,
                    const char *name,
+                   const char *id,
                    bool ipv6)
 {
-    return hostsfileAdd(ctx->hostsfile, mac, ip, name, ipv6);
+    return hostsfileAdd(ctx->hostsfile, mac, ip, name, id, ipv6);
 }
 
 /*

@@ -280,7 +280,10 @@
                   <element name="host">
                     <choice>
                       <group>
-                        <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                        <choice>
+                          <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                          <attribute name="id"><ref name="DUID"/></attribute>
+                        </choice>
                         <optional>
                           <attribute name="name"><text/></attribute>
                         </optional>
