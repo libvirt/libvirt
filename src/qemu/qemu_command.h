@@ -194,21 +194,18 @@ int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps,
                                  virDomainObjPtr obj);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
-int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
-                                        int slot, int function);
 int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
-                                    int slot);
+                                    virDevicePCIAddressPtr addr);
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev);
+                                    virDevicePCIAddressPtr addr);
 int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev);
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev);
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev);
-int qemuDomainPCIAddressReleaseFunction(qemuDomainPCIAddressSetPtr addrs,
-                                        int slot, int function);
-int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot);
+                                    virDevicePCIAddressPtr addr);
+int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
+                                    virDevicePCIAddressPtr addr);
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def,

@@ -953,30 +953,30 @@ cleanup:
 #define QEMU_PCI_ADDRESS_LAST_FUNCTION 8
 struct _qemuDomainPCIAddressSet {
     virHashTablePtr used;
-    int nextslot;
+    virDevicePCIAddress lastaddr;
 };
 
 
-static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
+static char *qemuPCIAddressAsString(virDevicePCIAddressPtr addr)
 {
-    char *addr;
+    char *str;
 
-    if (dev->addr.pci.domain != 0 ||
-        dev->addr.pci.bus != 0) {
+    if (addr->domain != 0 ||
+        addr->bus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only PCI domain 0 and bus 0 are available"));
         return NULL;
     }
 
-    if (virAsprintf(&addr, "%d:%d:%d.%d",
-                    dev->addr.pci.domain,
-                    dev->addr.pci.bus,
-                    dev->addr.pci.slot,
-                    dev->addr.pci.function) < 0) {
+    if (virAsprintf(&str, "%d:%d:%d.%d",
+                    addr->domain,
+                    addr->bus,
+                    addr->slot,
+                    addr->function) < 0) {
         virReportOOMError();
         return NULL;
     }
-    return addr;
+    return str;
 }
 
 
@@ -999,7 +999,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return 0;
     }
 
-    addr = qemuPCIAddressAsString(info);
+    addr = qemuPCIAddressAsString(&info->addr.pci);
     if (!addr)
         goto cleanup;
 
@@ -1024,12 +1024,11 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if ((info->addr.pci.function == 0) &&
         (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
-        int function;
-        virDomainDeviceInfo temp_info = *info;
+        virDevicePCIAddress tmp_addr = info->addr.pci;
+        unsigned int *func = &tmp_addr.function;
 
-        for (function = 1; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-            temp_info.addr.pci.function = function;
-            addr = qemuPCIAddressAsString(&temp_info);
+        for (*func = 1; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+            addr = qemuPCIAddressAsString(&tmp_addr);
             if (!addr)
                 goto cleanup;
 
@@ -1142,91 +1141,74 @@ error:
  * is used by the other device.
  */
 static int qemuDomainPCIAddressCheckSlot(qemuDomainPCIAddressSetPtr addrs,
-                                         virDomainDeviceInfoPtr dev)
+                                         virDevicePCIAddressPtr addr)
 {
-    char *addr;
-    virDomainDeviceInfo temp_dev;
-    int function;
+    char *str;
+    virDevicePCIAddress tmp_addr = *addr;
+    unsigned int *func = &(tmp_addr.function);
 
-    temp_dev = *dev;
-    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-        temp_dev.addr.pci.function = function;
-        addr = qemuPCIAddressAsString(&temp_dev);
-        if (!addr)
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+        str = qemuPCIAddressAsString(&tmp_addr);
+        if (!str)
             return -1;
 
-        if (virHashLookup(addrs->used, addr)) {
-            VIR_FREE(addr);
+        if (virHashLookup(addrs->used, str)) {
+            VIR_FREE(str);
             return -1;
         }
 
-        VIR_FREE(addr);
+        VIR_FREE(str);
     }
 
     return 0;
 }
 
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev)
+                                    virDevicePCIAddressPtr addr)
 {
-    char *addr;
+    char *str;
 
-    addr = qemuPCIAddressAsString(dev);
-    if (!addr)
+    str = qemuPCIAddressAsString(addr);
+    if (!str)
         return -1;
 
-    VIR_DEBUG("Reserving PCI addr %s", addr);
+    VIR_DEBUG("Reserving PCI addr %s", str);
 
-    if (virHashLookup(addrs->used, addr)) {
+    if (virHashLookup(addrs->used, str)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to reserve PCI address %s"), addr);
-        VIR_FREE(addr);
+                       _("unable to reserve PCI address %s"), str);
+        VIR_FREE(str);
         return -1;
     }
 
-    if (virHashAddEntry(addrs->used, addr, addr)) {
-        VIR_FREE(addr);
+    if (virHashAddEntry(addrs->used, str, str)) {
+        VIR_FREE(str);
         return -1;
     }
 
-    if (dev->addr.pci.slot > addrs->nextslot) {
-        addrs->nextslot = dev->addr.pci.slot + 1;
-        if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
-            addrs->nextslot = 0;
-    }
-
+    addrs->lastaddr = *addr;
+    addrs->lastaddr.function = 0;
+    addrs->lastaddr.multi = 0;
     return 0;
 }
 
-int qemuDomainPCIAddressReserveFunction(qemuDomainPCIAddressSetPtr addrs,
-                                        int slot, int function)
-{
-    virDomainDeviceInfo dev;
-
-    dev.addr.pci.domain = 0;
-    dev.addr.pci.bus = 0;
-    dev.addr.pci.slot = slot;
-    dev.addr.pci.function = function;
-
-    return qemuDomainPCIAddressReserveAddr(addrs, &dev);
-}
-
 int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
-                                    int slot)
+                                    virDevicePCIAddressPtr addr)
 {
-    int function;
+    virDevicePCIAddress tmp_addr = *addr;
+    unsigned int *func = &tmp_addr.function;
+    unsigned int last;
 
-    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-        if (qemuDomainPCIAddressReserveFunction(addrs, slot, function) < 0)
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
             goto cleanup;
     }
 
     return 0;
 
 cleanup:
-    for (function--; function >= 0; function--) {
-        qemuDomainPCIAddressReleaseFunction(addrs, slot, function);
-    }
+    for (last = *func, *func = 0; *func < last; (*func)++)
+        qemuDomainPCIAddressReleaseAddr(addrs, &tmp_addr);
     return -1;
 }
 
@@ -1245,7 +1227,7 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
             return -1;
         }
 
-        ret = qemuDomainPCIAddressReserveSlot(addrs, dev->addr.pci.slot);
+        ret = qemuDomainPCIAddressReserveSlot(addrs, &dev->addr.pci);
     } else {
         ret = qemuDomainPCIAddressSetNextAddr(addrs, dev);
     }
@@ -1254,59 +1236,43 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
 
 
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev)
+                                    virDevicePCIAddressPtr addr)
 {
-    char *addr;
+    char *str;
     int ret;
 
-    addr = qemuPCIAddressAsString(dev);
-    if (!addr)
+    str = qemuPCIAddressAsString(addr);
+    if (!str)
         return -1;
 
-    ret = virHashRemoveEntry(addrs->used, addr);
+    ret = virHashRemoveEntry(addrs->used, str);
 
-    VIR_FREE(addr);
+    VIR_FREE(str);
 
     return ret;
 }
 
-int qemuDomainPCIAddressReleaseFunction(qemuDomainPCIAddressSetPtr addrs,
-                                        int slot, int function)
+int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
+                                    virDevicePCIAddressPtr addr)
 {
-    virDomainDeviceInfo dev;
-
-    dev.addr.pci.domain = 0;
-    dev.addr.pci.bus = 0;
-    dev.addr.pci.slot = slot;
-    dev.addr.pci.function = function;
-
-    return qemuDomainPCIAddressReleaseAddr(addrs, &dev);
-}
-
-int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs, int slot)
-{
-    virDomainDeviceInfo dev;
-    char *addr;
+    char *str;
     int ret = 0;
-    unsigned int *function = &dev.addr.pci.function;
+    virDevicePCIAddress tmp_addr = *addr;
+    unsigned int *func = &tmp_addr.function;
 
-    dev.addr.pci.domain = 0;
-    dev.addr.pci.bus = 0;
-    dev.addr.pci.slot = slot;
-
-    for (*function = 0; *function < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*function)++) {
-        addr = qemuPCIAddressAsString(&dev);
-        if (!addr)
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+        str = qemuPCIAddressAsString(&tmp_addr);
+        if (!str)
             return -1;
 
-        if (!virHashLookup(addrs->used, addr)) {
-            VIR_FREE(addr);
+        if (!virHashLookup(addrs->used, str)) {
+            VIR_FREE(str);
             continue;
         }
 
-        VIR_FREE(addr);
+        VIR_FREE(str);
 
-        if (qemuDomainPCIAddressReleaseFunction(addrs, slot, *function) < 0)
+        if (qemuDomainPCIAddressReleaseAddr(addrs, &tmp_addr) < 0)
             ret = -1;
     }
 
@@ -1323,28 +1289,24 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
 }
 
 
-static int qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs)
+static int
+qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
+                                virDevicePCIAddressPtr next_addr)
 {
+    virDevicePCIAddress tmp_addr = addrs->lastaddr;
     int i;
-    int iteration;
+    char *addr;
 
-    for (i = addrs->nextslot, iteration = 0;
-         iteration <= QEMU_PCI_ADDRESS_LAST_SLOT; i++, iteration++) {
-        virDomainDeviceInfo maybe;
-        char *addr;
+    tmp_addr.slot++;
+    for (i = 0; i <= QEMU_PCI_ADDRESS_LAST_SLOT; i++, tmp_addr.slot++) {
+        if (QEMU_PCI_ADDRESS_LAST_SLOT < tmp_addr.slot) {
+            tmp_addr.slot = 0;
+        }
 
-        if (QEMU_PCI_ADDRESS_LAST_SLOT < i)
-            i = 0;
-        memset(&maybe, 0, sizeof(maybe));
-        maybe.addr.pci.domain = 0;
-        maybe.addr.pci.bus = 0;
-        maybe.addr.pci.slot = i;
-        maybe.addr.pci.function = 0;
-
-        if (!(addr = qemuPCIAddressAsString(&maybe)))
+        if (!(addr = qemuPCIAddressAsString(&tmp_addr)))
             return -1;
 
-        if (qemuDomainPCIAddressCheckSlot(addrs, &maybe) < 0) {
+        if (qemuDomainPCIAddressCheckSlot(addrs, &tmp_addr) < 0) {
             VIR_DEBUG("PCI addr %s already in use", addr);
             VIR_FREE(addr);
             continue;
@@ -1353,7 +1315,9 @@ static int qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs)
         VIR_DEBUG("Found free PCI addr %s", addr);
         VIR_FREE(addr);
 
-        return i;
+        addrs->lastaddr = tmp_addr;
+        *next_addr = tmp_addr;
+        return 0;
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1364,24 +1328,17 @@ static int qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs)
 int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
-    int slot = qemuDomainPCIAddressGetNextSlot(addrs);
-
-    if (slot < 0)
+    virDevicePCIAddress addr;
+    if (qemuDomainPCIAddressGetNextSlot(addrs, &addr) < 0)
         return -1;
 
-    if (qemuDomainPCIAddressReserveSlot(addrs, slot) < 0)
+    if (qemuDomainPCIAddressReserveSlot(addrs, &addr) < 0)
         return -1;
 
     dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    dev->addr.pci.bus = 0;
-    dev->addr.pci.domain = 0;
-    dev->addr.pci.slot = slot;
-    dev->addr.pci.function = 0;
+    dev->addr.pci = addr;
 
-    addrs->nextslot = slot + 1;
-    if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
-        addrs->nextslot = 0;
-
+    addrs->lastaddr = addr;
     return 0;
 }
 
@@ -1433,11 +1390,15 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     size_t i, j;
     bool reservedIDE = false;
     bool reservedUSB = false;
-    int function;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    virDevicePCIAddress tmp_addr;
+    virDevicePCIAddressPtr addrptr;
+    unsigned int *func = &tmp_addr.function;
 
-    /* Host bridge */
-    if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
+
+    /* Reserve slot 0 for the host bridge */
+    memset(&tmp_addr, 0, sizeof(tmp_addr));
+    if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr) < 0)
         goto error;
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
@@ -1491,13 +1452,15 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
      * hardcoded slot=1, multifunction device
      */
-    for (function = 0; function < QEMU_PCI_ADDRESS_LAST_FUNCTION; function++) {
-        if ((function == 1 && reservedIDE) ||
-            (function == 2 && reservedUSB))
+    memset(&tmp_addr, 0, sizeof(tmp_addr));
+    tmp_addr.slot = 1;
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+        if ((*func == 1 && reservedIDE) ||
+            (*func == 2 && reservedUSB))
             /* we have reserved this pci address */
             continue;
 
-        if (qemuDomainPCIAddressReserveFunction(addrs, 1, function) < 0)
+        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
             goto error;
     }
 
@@ -1509,8 +1472,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             primaryVideo->info.addr.pci.bus = 0;
             primaryVideo->info.addr.pci.slot = 2;
             primaryVideo->info.addr.pci.function = 0;
+            addrptr = &primaryVideo->info.addr.pci;
 
-            if (qemuDomainPCIAddressCheckSlot(addrs, &primaryVideo->info) < 0) {
+            if (qemuDomainPCIAddressCheckSlot(addrs, addrptr) < 0) {
                 if (qemuDeviceVideoUsable) {
                     virResetLastError();
                     if (qemuDomainPCIAddressSetNextAddr(addrs, &primaryVideo->info) < 0)
@@ -1521,7 +1485,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                                      "QEMU needs it for primary video"));
                     goto error;
                 }
-            } else if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0) {
+            } else if (qemuDomainPCIAddressReserveSlot(addrs, addrptr) < 0) {
                 goto error;
             }
         } else if (!qemuDeviceVideoUsable) {
@@ -1537,16 +1501,15 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
              * has already reserved the address, so we must skip */
         }
     } else if (!qemuDeviceVideoUsable) {
-        virDomainDeviceInfo dev;
-        memset(&dev, 0, sizeof(dev));
-        dev.addr.pci.slot = 2;
+        memset(&tmp_addr, 0, sizeof(tmp_addr));
+        tmp_addr.slot = 2;
 
-        if (qemuDomainPCIAddressCheckSlot(addrs, &dev) < 0) {
+        if (qemuDomainPCIAddressCheckSlot(addrs, &tmp_addr) < 0) {
             VIR_DEBUG("PCI address 0:0:2.0 in use, future addition of a video"
                       " device will not be possible without manual"
                       " intervention");
             virResetLastError();
-        } else if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0) {
+        } else if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr) < 0) {
             goto error;
         }
     }
@@ -1609,6 +1572,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         /* USB2 needs special handling to put all companions in the same slot */
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
             virDevicePCIAddress addr = { 0, 0, 0, 0, false };
+            memset(&tmp_addr, 0, sizeof(tmp_addr));
             for (j = 0 ; j < i ; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
                     def->controllers[j]->idx == def->controllers[i]->idx) {
@@ -1636,19 +1600,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             if (addr.slot == 0) {
                 /* This is the first part of the controller, so need
                  * to find a free slot & then reserve a function */
-                int slot = qemuDomainPCIAddressGetNextSlot(addrs);
-                if (slot < 0)
+                if (qemuDomainPCIAddressGetNextSlot(addrs, &tmp_addr) < 0)
                     goto error;
 
-                addr.slot = slot;
-                addrs->nextslot = addr.slot + 1;
-                if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
-                    addrs->nextslot = 0;
+                addr.bus = tmp_addr.bus;
+                addr.slot = tmp_addr.slot;
             }
             /* Finally we can reserve the slot+function */
-            if (qemuDomainPCIAddressReserveFunction(addrs,
-                                                    addr.slot,
-                                                    addr.function) < 0)
+            if (qemuDomainPCIAddressReserveAddr(addrs, &addr) < 0)
                 goto error;
 
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
