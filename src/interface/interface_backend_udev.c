@@ -41,6 +41,8 @@ typedef enum {
     VIR_UDEV_IFACE_ALL
 } virUdevStatus ;
 
+static virInterfaceDef *udevIfaceGetIfaceDef(struct udev *udev, const char *name);
+
 static const char *
 virUdevStatusString(virUdevStatus status)
 {
@@ -492,14 +494,14 @@ err:
 }
 
 /**
- * Helper function for our use of scandir()
+ * Helper function for finding bridge members using scandir()
  *
  * @param entry - directory entry passed by scandir()
  *
  * @return 1 if we want to add it to scandir's list, 0 if not.
  */
 static int
-udevIfaceScanDirFilter(const struct dirent *entry)
+udevIfaceBridgeScanDirFilter(const struct dirent *entry)
 {
     if (STREQ(entry->d_name, ".") || STREQ(entry->d_name, ".."))
         return 0;
@@ -538,18 +540,95 @@ udevIfaceFreeIfaceDef(virInterfaceDef *ifacedef)
     VIR_FREE(ifacedef);
 }
 
+static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+udevIfaceGetIfaceDefBridge(struct udev *udev,
+                           struct udev_device *dev,
+                           const char *name,
+                           virInterfaceDef *ifacedef)
+{
+    struct dirent **member_list = NULL;
+    int member_count = 0;
+    char *member_path;
+    const char *stp_str;
+    int stp;
+    int i;
+
+    /* Set our type to Bridge  */
+    ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
+
+    /* Bridge specifics */
+    ifacedef->data.bridge.delay =
+        strdup(udev_device_get_sysattr_value(dev, "bridge/forward_delay"));
+    if (!ifacedef->data.bridge.delay) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    stp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
+    if (virStrToLong_i(stp_str, NULL, 10, &stp) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse STP state '%s'"), stp_str);
+        goto cleanup;
+    }
+    ifacedef->data.bridge.stp = stp;
+
+    /* Members of the bridge */
+    if (virAsprintf(&member_path, "%s/%s",
+                udev_device_get_syspath(dev), "brif") < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Get each member of the bridge */
+    member_count = scandir(member_path, &member_list,
+            udevIfaceBridgeScanDirFilter, alphasort);
+
+    /* Don't need the path anymore */
+    VIR_FREE(member_path);
+
+    if (member_count < 0) {
+        virReportSystemError(errno,
+                _("Could not get members of bridge '%s'"),
+                name);
+        goto cleanup;
+    }
+
+    /* Allocate our list of member devices */
+    if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    ifacedef->data.bridge.nbItf = member_count;
+
+    for (i = 0; i < member_count; i++) {
+        ifacedef->data.bridge.itf[i] =
+            udevIfaceGetIfaceDef(udev, member_list[i]->d_name);
+        VIR_FREE(member_list[i]);
+    }
+
+    VIR_FREE(member_list);
+
+    return 0;
+
+cleanup:
+    for (i = 0; i < member_count; i++) {
+        VIR_FREE(member_list[i]);
+    }
+    VIR_FREE(member_list);
+
+    return -1;
+}
 
 static virInterfaceDef * ATTRIBUTE_NONNULL(1)
-udevIfaceGetIfaceDef(struct udev *udev, char *name)
+udevIfaceGetIfaceDef(struct udev *udev, const char *name)
 {
     struct udev_device *dev = NULL;
     virInterfaceDef *ifacedef;
     unsigned int mtu;
     const char *mtu_str;
     char *vlan_parent_dev = NULL;
-    struct dirent **member_list = NULL;
-    int member_count = 0;
-    int i;
 
     /* Allocate our interface definition structure */
     if (VIR_ALLOC(ifacedef) < 0) {
@@ -629,66 +708,8 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
         ifacedef->data.vlan.tag = vid;
         ifacedef->data.vlan.devname = vlan_parent_dev;
     } else if (STREQ_NULLABLE(udev_device_get_devtype(dev), "bridge")) {
-        /* Check if its a bridge device */
-        char *member_path;
-        const char *stp_str;
-        int stp;
-
-        /* Set our type to Bridge  */
-        ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
-
-        /* Bridge specifics */
-        ifacedef->data.bridge.delay =
-            strdup(udev_device_get_sysattr_value(dev, "bridge/forward_delay"));
-        if (!ifacedef->data.bridge.delay) {
-            virReportOOMError();
+        if (udevIfaceGetIfaceDefBridge(udev, dev, name, ifacedef) < 0)
             goto cleanup;
-        }
-
-        stp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
-        if (virStrToLong_i(stp_str, NULL, 10, &stp) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not parse STP state '%s'"), stp_str);
-            goto cleanup;
-        }
-        ifacedef->data.bridge.stp = stp;
-
-        /* Members of the bridge */
-        if (virAsprintf(&member_path, "%s/%s",
-                        udev_device_get_syspath(dev), "brif") < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        /* Get each member of the bridge */
-        member_count = scandir(member_path, &member_list,
-                               udevIfaceScanDirFilter, alphasort);
-
-        /* Don't need the path anymore */
-        VIR_FREE(member_path);
-
-        if (member_count < 0) {
-            virReportSystemError(errno,
-                                 _("Could not get members of bridge '%s'"),
-                                 name);
-            goto cleanup;
-        }
-
-        /* Allocate our list of member devices */
-        if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        ifacedef->data.bridge.nbItf = member_count;
-
-        for (i = 0; i < member_count; i++) {
-            ifacedef->data.bridge.itf[i] =
-                udevIfaceGetIfaceDef(udev, member_list[i]->d_name);
-            VIR_FREE(member_list[i]);
-        }
-
-        VIR_FREE(member_list);
-
     } else {
         /* Set our type to ethernet */
         ifacedef->type = VIR_INTERFACE_TYPE_ETHERNET;
@@ -700,10 +721,6 @@ udevIfaceGetIfaceDef(struct udev *udev, char *name)
 
 cleanup:
     udev_device_unref(dev);
-    for (i = 0; i < member_count; i++) {
-        VIR_FREE(member_list[i]);
-    }
-    VIR_FREE(member_list);
 
     udevIfaceFreeIfaceDef(ifacedef);
 
