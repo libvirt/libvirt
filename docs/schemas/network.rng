@@ -278,10 +278,15 @@
                 </zeroOrMore>
                 <zeroOrMore>
                   <element name="host">
-                    <optional>
-                      <attribute name="mac"><ref name="uniMacAddr"/></attribute>
-                    </optional>
-                    <attribute name="name"><text/></attribute>
+                    <choice>
+                      <group>
+                        <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                        <optional>
+                          <attribute name="name"><text/></attribute>
+                        </optional>
+                      </group>
+                      <attribute name="name"><text/></attribute>
+                    </choice>
                     <attribute name="ip"><ref name="ipAddr"/></attribute>
                   </element>
                 </zeroOrMore>
