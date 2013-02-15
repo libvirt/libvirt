@@ -1462,7 +1462,8 @@ EXTRA_DIST += \
   libvirt_xenxs.syms	\
   libvirt_libssh2.syms
 
-GENERATED_SYM_FILES = libvirt.syms libvirt.def libvirt_qemu.def
+GENERATED_SYM_FILES = \
+	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
 
