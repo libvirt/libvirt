@@ -118,8 +118,6 @@ struct _virCommand {
 #endif
 };
 
-static int virCommandHandshakeChild(virCommandPtr cmd);
-
 /*
  * virCommandFDIsSet:
  * @fd: FD to test
@@ -329,6 +327,54 @@ prepareStdFd(int fd, int std)
         return virSetInherit(fd, true);
     if (dup2(fd, std) != std)
         return -1;
+    return 0;
+}
+
+/* virCommandHandshakeChild:
+ *
+ *   child side of handshake - called by child process in virExec() to
+ *   indicate to parent that the child process has successfully
+ *   completed its pre-exec initialization.
+ */
+static int
+virCommandHandshakeChild(virCommandPtr cmd)
+{
+    char c = '1';
+    int rv;
+
+    if (!cmd->handshake)
+       return true;
+
+    VIR_DEBUG("Notifying parent for handshake start on %d",
+              cmd->handshakeWait[1]);
+    if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to notify parent process"));
+        return -1;
+    }
+
+    VIR_DEBUG("Waiting on parent for handshake complete on %d",
+              cmd->handshakeNotify[0]);
+    if ((rv = saferead(cmd->handshakeNotify[0], &c,
+                       sizeof(c))) != sizeof(c)) {
+        if (rv < 0)
+            virReportSystemError(errno, "%s",
+                                 _("Unable to wait on parent process"));
+        else
+            virReportSystemError(EIO, "%s",
+                                 _("libvirtd quit during handshake"));
+        return -1;
+    }
+    if (c != '1') {
+        virReportSystemError(EINVAL,
+                             _("Unexpected confirm code '%c' from parent"),
+                             c);
+        return -1;
+    }
+    VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
+    VIR_FORCE_CLOSE(cmd->handshakeNotify[0]);
+
+    VIR_DEBUG("Handshake with parent is done");
     return 0;
 }
 
@@ -2346,54 +2392,6 @@ void virCommandRequireHandshake(virCommandPtr cmd)
     virCommandTransferFD(cmd, cmd->handshakeWait[1]);
     virCommandTransferFD(cmd, cmd->handshakeNotify[0]);
     cmd->handshake = true;
-}
-
-/* virCommandHandshakeChild:
- *
- *   child side of handshake - called by child process in virExec() to
- *   indicate to parent that the child process has successfully
- *   completed its pre-exec initialization.
- */
-static int
-virCommandHandshakeChild(virCommandPtr cmd)
-{
-    char c = '1';
-    int rv;
-
-    if (!cmd->handshake)
-       return true;
-
-    VIR_DEBUG("Notifying parent for handshake start on %d",
-              cmd->handshakeWait[1]);
-    if (safewrite(cmd->handshakeWait[1], &c, sizeof(c)) != sizeof(c)) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to notify parent process"));
-        return -1;
-    }
-
-    VIR_DEBUG("Waiting on parent for handshake complete on %d",
-              cmd->handshakeNotify[0]);
-    if ((rv = saferead(cmd->handshakeNotify[0], &c,
-                       sizeof(c))) != sizeof(c)) {
-        if (rv < 0)
-            virReportSystemError(errno, "%s",
-                                 _("Unable to wait on parent process"));
-        else
-            virReportSystemError(EIO, "%s",
-                                 _("libvirtd quit during handshake"));
-        return -1;
-    }
-    if (c != '1') {
-        virReportSystemError(EINVAL,
-                             _("Unexpected confirm code '%c' from parent"),
-                             c);
-        return -1;
-    }
-    VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
-    VIR_FORCE_CLOSE(cmd->handshakeNotify[0]);
-
-    VIR_DEBUG("Handshake with parent is done");
-    return 0;
 }
 
 /**
