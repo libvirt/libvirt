@@ -1899,9 +1899,6 @@ virCommandProcessIO(virCommandPtr cmd)
                 fds[i].fd == cmd->inpipe) {
                 int done;
 
-                /* Coverity 5.3.0 can't see that we only get here if
-                 * infd is in the set because it was non-negative.  */
-                sa_assert(infd != -1);
                 done = write(cmd->inpipe, cmd->inbuf + inoff,
                              inlen - inoff);
                 if (done < 0) {
