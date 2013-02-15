@@ -3270,9 +3270,9 @@ virGetDeviceID(const char *path, int *maj, int *min)
 }
 #else
 int
-virGetDeviceID(const char *path ATRRIBUTE_UNUSED,
-               int *maj ATRRIBUTE_UNUSED,
-               int *min ATRRIBUTE_UNUSED)
+virGetDeviceID(const char *path ATTRIBUTE_UNUSED,
+               int *maj ATTRIBUTE_UNUSED,
+               int *min ATTRIBUTE_UNUSED)
 {
 
     return -ENOSYS;

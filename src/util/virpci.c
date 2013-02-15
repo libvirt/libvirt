@@ -1,7 +1,7 @@
 /*
  * virpci.c: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2239,7 +2239,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path ATTRIBUTE_UNUSED,
 }
 
 int
-virPCIDeviceIsVirtualFunction(const char *vf_sysfs_device_link ATTRIBUTE_UNUSED)
+virPCIIsVirtualFunction(const char *vf_sysfs_device_link ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
