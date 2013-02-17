@@ -556,6 +556,8 @@ qemuStartup(bool privileged,
     char *membase = NULL;
     char *mempath = NULL;
     virQEMUDriverConfigPtr cfg;
+    uid_t run_uid = -1;
+    gid_t run_gid = -1;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -707,11 +709,13 @@ qemuStartup(bool privileged,
                                  cfg->snapshotDir, cfg->user, cfg->group);
             goto error;
         }
+        run_uid = cfg->user;
+        run_gid = cfg->group;
     }
 
     qemu_driver->qemuCapsCache = virQEMUCapsCacheNew(cfg->libDir,
-                                                     cfg->user,
-                                                     cfg->group);
+                                                     run_uid,
+                                                     run_gid);
     if (!qemu_driver->qemuCapsCache)
         goto error;
 
