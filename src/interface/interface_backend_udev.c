@@ -494,6 +494,27 @@ err:
 }
 
 /**
+ * Helper function for finding bond slaves using scandir()
+ *
+ * @param entry - directory entry passed by scandir()
+ *
+ * @return 1 if we want to add it to scandir's list, 0 if not.
+ */
+static int
+udevIfaceBondScanDirFilter(const struct dirent *entry)
+{
+    /* This is ugly so if anyone has a better suggestion, please improve
+     * this. Unfortunately the kernel stores everything in the top level
+     * interface sysfs entry and references the slaves as slave_eth0 for
+     * example.
+     */
+    if (STRPREFIX(entry->d_name, "slave_"))
+        return 1;
+
+    return 0;
+}
+
+/**
  * Helper function for finding bridge members using scandir()
  *
  * @param entry - directory entry passed by scandir()
@@ -522,6 +543,14 @@ udevIfaceFreeIfaceDef(virInterfaceDef *ifacedef)
     if (!ifacedef)
         return;
 
+    if (ifacedef->type == VIR_INTERFACE_TYPE_BOND) {
+        VIR_FREE(ifacedef->data.bond.target);
+        for (i = 0; i < ifacedef->data.bond.nbItf; i++) {
+            udevIfaceFreeIfaceDef(ifacedef->data.bond.itf[i]);
+        }
+        VIR_FREE(ifacedef->data.bond.itf);
+    }
+
     if (ifacedef->type == VIR_INTERFACE_TYPE_BRIDGE) {
         VIR_FREE(ifacedef->data.bridge.delay);
         for (i = 0; i < ifacedef->data.bridge.nbItf; i++) {
@@ -538,6 +567,230 @@ udevIfaceFreeIfaceDef(virInterfaceDef *ifacedef)
     VIR_FREE(ifacedef->name);
 
     VIR_FREE(ifacedef);
+}
+
+static int
+ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+udevIfaceGetIfaceDefBond(struct udev *udev,
+                         struct udev_device *dev,
+                         const char *name,
+                         virInterfaceDef *ifacedef)
+{
+    struct dirent **slave_list = NULL;
+    int slave_count = 0;
+    int i;
+    const char *tmp_str;
+    int tmp_int;
+
+    /* Initial defaults */
+    ifacedef->data.bond.target = NULL;
+    ifacedef->data.bond.nbItf = 0;
+    ifacedef->data.bond.itf = NULL;
+
+    /* Set the bond specifics */
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/downdelay");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/downdelay' for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/downdelay' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.downdelay = tmp_int;
+
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/updelay");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/updelay' for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/updelay' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.updelay = tmp_int;
+
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/miimon");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/miimon' for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/miimon' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.frequency = tmp_int;
+
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/arp_interval");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/arp_interval' for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/arp_interval' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.interval = tmp_int;
+
+    /* bonding/mode is in the format: "balance-rr 0" so we find the
+     * space and increment the pointer to get the number and convert
+     * it to an interger. libvirt uses 1 through 7 while the raw
+     * number is 0 through 6 so increment it by 1.
+     */
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/mode");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/mode' for '%s'"), name);
+        goto cleanup;
+    }
+    tmp_str = strchr(tmp_str, ' ');
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Invalid format for 'bonding/mode' for '%s'"), name);
+        goto cleanup;
+    }
+    if (strlen(tmp_str) < 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Unable to find correct value in 'bonding/mode' for '%s'"),
+                name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str + 1, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/mode' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.mode = tmp_int + 1;
+
+    /* bonding/arp_validate is in the format: "none 0" so we find the
+     * space and increment the pointer to get the number and convert
+     * it to an interger.
+     */
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/arp_validate");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/arp_validate' for '%s'"), name);
+        goto cleanup;
+    }
+    tmp_str = strchr(tmp_str, ' ');
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Invalid format for 'bonding/arp_validate' for '%s'"), name);
+        goto cleanup;
+    }
+    if (strlen(tmp_str) < 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Unable to find correct value in 'bonding/arp_validate' "
+                "for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str + 1, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/arp_validate' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.validate = tmp_int;
+
+    /* bonding/use_carrier is 0 or 1 and libvirt stores it as 1 or 2. */
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/use_carrier");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/use_carrier' for '%s'"), name);
+        goto cleanup;
+    }
+    if (virStrToLong_i(tmp_str, NULL, 10, &tmp_int) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bonding/use_carrier' '%s' for '%s'"),
+                tmp_str, name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.carrier = tmp_int + 1;
+
+    /* MII or ARP Monitoring is based on arp_interval and miimon.
+     * if arp_interval > 0 then ARP monitoring is in play, if
+     * miimon > 0 then MII monitoring is in play.
+     */
+    if (ifacedef->data.bond.interval > 0)
+        ifacedef->data.bond.monit = VIR_INTERFACE_BOND_MONIT_ARP;
+    else if (ifacedef->data.bond.frequency > 0)
+        ifacedef->data.bond.monit = VIR_INTERFACE_BOND_MONIT_MII;
+    else
+        ifacedef->data.bond.monit = VIR_INTERFACE_BOND_MONIT_NONE;
+
+    tmp_str = udev_device_get_sysattr_value(dev, "bonding/arp_ip_target");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bonding/arp_ip_target' for '%s'"), name);
+        goto cleanup;
+    }
+    ifacedef->data.bond.target = strdup(tmp_str);
+    if (!ifacedef->data.bond.target) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    /* Slaves of the bond */
+    /* Get each slave in the bond */
+    slave_count = scandir(udev_device_get_syspath(dev), &slave_list,
+            udevIfaceBondScanDirFilter, alphasort);
+
+    if (slave_count < 0) {
+        virReportSystemError(errno,
+                _("Could not get slaves of bond '%s'"), name);
+        goto cleanup;
+    }
+
+    /* Allocate our list of slave devices */
+    if (VIR_ALLOC_N(ifacedef->data.bond.itf, slave_count) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    ifacedef->data.bond.nbItf = slave_count;
+
+    for (i = 0; i < slave_count; i++) {
+        /* Names are slave_interface. e.g. slave_eth0
+         * so we use the part after the _
+         */
+        tmp_str = strchr(slave_list[i]->d_name, '_');
+        tmp_str++;
+
+        ifacedef->data.bond.itf[i] =
+            udevIfaceGetIfaceDef(udev, tmp_str);
+        if (!ifacedef->data.bond.itf[i]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not get interface information for '%s', which is "
+                  "a enslaved in bond '%s'"), slave_list[i]->d_name, name);
+            goto cleanup;
+        }
+        VIR_FREE(slave_list[i]);
+    }
+
+    VIR_FREE(slave_list);
+
+    return 0;
+
+cleanup:
+    for (i = 0; i < slave_count; i++) {
+        VIR_FREE(slave_list[i]);
+    }
+    VIR_FREE(slave_list);
+
+    return -1;
 }
 
 static int
@@ -774,15 +1027,24 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
         if (vlan_parent_dev) {
             ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
         }
+
+        /* Fallback check to see if this is a bond device */
+        if (udev_device_get_sysattr_value(dev, "bonding/mode")) {
+            ifacedef->type = VIR_INTERFACE_TYPE_BOND;
+        }
     }
 
     switch (ifacedef->type) {
     case VIR_INTERFACE_TYPE_VLAN:
-        if (udevIfaceGetIfaceDefVlan(udev, dev, name, ifacedef))
+        if (udevIfaceGetIfaceDefVlan(udev, dev, name, ifacedef) < 0)
             goto cleanup;
         break;
     case VIR_INTERFACE_TYPE_BRIDGE:
         if (udevIfaceGetIfaceDefBridge(udev, dev, name, ifacedef) < 0)
+            goto cleanup;
+        break;
+    case VIR_INTERFACE_TYPE_BOND:
+        if (udevIfaceGetIfaceDefBond(udev, dev, name, ifacedef) < 0)
             goto cleanup;
         break;
     case VIR_INTERFACE_TYPE_ETHERNET:
