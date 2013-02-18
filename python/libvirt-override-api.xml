@@ -491,6 +491,13 @@
       <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
       <return type='virDomainBlockJobInfo' info='A dictionary containing job information.' />
     </function>
+    <function name='virDomainMigrateGetCompressionCache' file='python'>
+      <info>Get current size of the cache (in bytes) used for compressing
+            repeatedly transferred memory pages during live migration.</info>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='unsigned int' info='flags, currently unused, pass 0.'/>
+      <return type='unsigned long long' info='current cache size, or None in case of error'/>
+    </function>
     <function name='virDomainMigrateGetMaxSpeed' file='python'>
       <info>Get currently configured maximum migration speed for a domain</info>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
