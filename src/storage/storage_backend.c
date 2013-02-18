@@ -652,10 +652,6 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     unsigned long long int size_arg;
     bool preallocate = false;
 
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
-
-    preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
-
     const char *type = virStorageFileFormatTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
         virStorageFileFormatTypeToString(vol->backingStore.format) : NULL;
@@ -669,6 +665,10 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                          VIR_STORAGE_FILE_RAW :
                                          inputvol->target.format) :
         NULL;
+
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
+
+    preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA);
 
     if (type == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
