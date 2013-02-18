@@ -7217,15 +7217,15 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                               unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    int i;
     virDomainDefPtr persistentDef = NULL;
     virCgroupPtr group = NULL;
     virDomainObjPtr vm = NULL;
-    virTypedParameterPtr hard_limit = NULL;
-    virTypedParameterPtr swap_hard_limit = NULL;
-    int hard_limit_index = 0;
-    int swap_hard_limit_index = 0;
-    unsigned long long val = 0;
+    unsigned long long swap_hard_limit;
+    unsigned long long memory_hard_limit;
+    unsigned long long memory_soft_limit;
+    bool set_swap_hard_limit = false;
+    bool set_memory_hard_limit = false;
+    bool set_memory_soft_limit = false;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
     int rc;
@@ -7244,13 +7244,9 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                                        NULL) < 0)
         return -1;
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
 
-    if (vm == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No such domain %s"), dom->uuid);
-        goto cleanup;
-    }
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -7275,110 +7271,74 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-    for (i = 0; i < nparams; i++) {
-        if (STREQ(params[i].field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
-            hard_limit = &params[i];
-            hard_limit_index = i;
-        } else if (STREQ(params[i].field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
-            swap_hard_limit = &params[i];
-            swap_hard_limit_index = i;
-        }
-    }
+#define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE)                                \
+    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE) < 0))  \
+        goto cleanup;                                                        \
+                                                                             \
+    if (rc == 1)                                                             \
+        set_ ## VALUE = true;
+
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_HARD_LIMIT, memory_hard_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SOFT_LIMIT, memory_soft_limit)
+
+#undef VIR_GET_LIMIT_PARAMETER
+
 
     /* It will fail if hard limit greater than swap hard limit anyway */
-    if (swap_hard_limit &&
-        hard_limit &&
-        (hard_limit->value.ul > swap_hard_limit->value.ul)) {
+    if (set_swap_hard_limit && set_memory_hard_limit &&
+        memory_hard_limit > swap_hard_limit) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("hard limit must be lower than swap hard limit"));
+                       _("memory hard_limit tunable value must be lower than "
+                         "swap_hard_limit"));
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        /* Get current swap hard limit */
-        rc = virCgroupGetMemSwapHardLimit(group, &val);
-        if (rc != 0) {
+    if (set_swap_hard_limit) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+            (rc = virCgroupSetMemSwapHardLimit(group, swap_hard_limit)) < 0) {
             virReportSystemError(-rc, "%s",
-                                 _("unable to get swap hard limit"));
+                                 _("unable to set memory swap_hard_limit tunable"));
             goto cleanup;
         }
 
-        /* Swap hard_limit and swap_hard_limit to ensure the setting
-         * could succeed if both of them are provided.
-         */
-        if (swap_hard_limit && hard_limit) {
-            virTypedParameter param;
-
-            if (swap_hard_limit->value.ul > val) {
-                if (hard_limit_index < swap_hard_limit_index) {
-                    param = params[hard_limit_index];
-                    params[hard_limit_index] = params[swap_hard_limit_index];
-                    params[swap_hard_limit_index] = param;
-                }
-            } else {
-                if (hard_limit_index > swap_hard_limit_index) {
-                    param = params[hard_limit_index];
-                    params[hard_limit_index] = params[swap_hard_limit_index];
-                    params[swap_hard_limit_index] = param;
-                }
-            }
-        }
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            persistentDef->mem.swap_hard_limit = swap_hard_limit;
     }
+
+    if (set_memory_hard_limit) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+            (rc = virCgroupSetMemoryHardLimit(group, memory_hard_limit)) < 0) {
+            virReportSystemError(-rc, "%s",
+                                 _("unable to set memory hard_limit tunable"));
+            goto cleanup;
+        }
+
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            persistentDef->mem.hard_limit = memory_hard_limit;
+    }
+
+    if (set_memory_soft_limit) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+            (rc = virCgroupSetMemorySoftLimit(group, memory_soft_limit)) < 0) {
+            virReportSystemError(-rc, "%s",
+                                 _("unable to set memory soft_limit tunable"));
+            goto cleanup;
+        }
+
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            persistentDef->mem.soft_limit = memory_soft_limit;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
+        virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        goto cleanup;
 
     ret = 0;
-    for (i = 0; i < nparams; i++) {
-        virTypedParameterPtr param = &params[i];
-
-        if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = virCgroupSetMemoryHardLimit(group, param->value.ul);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set memory hard_limit tunable"));
-                    ret = -1;
-                }
-            }
-
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                persistentDef->mem.hard_limit = param->value.ul;
-            }
-        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = virCgroupSetMemorySoftLimit(group, param->value.ul);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set memory soft_limit tunable"));
-                    ret = -1;
-                }
-            }
-
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                persistentDef->mem.soft_limit = param->value.ul;
-            }
-        } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-                rc = virCgroupSetMemSwapHardLimit(group, param->value.ul);
-                if (rc != 0) {
-                    virReportSystemError(-rc, "%s",
-                                         _("unable to set swap_hard_limit tunable"));
-                    ret = -1;
-                }
-            }
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                persistentDef->mem.swap_hard_limit = param->value.ul;
-            }
-        }
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-            ret = -1;
-    }
 
 cleanup:
     virCgroupFree(&group);
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
