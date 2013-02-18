@@ -773,8 +773,7 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
     cmd = virCommandNew(create_tool);
 
     if (inputvol) {
-        virCommandAddArgList(cmd, "convert", "-f", inputType, "-O", type,
-                             inputPath, vol->target.path, NULL);
+        virCommandAddArgList(cmd, "convert", "-f", inputType, "-O", type, NULL);
 
         if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS &&
             (do_encryption || preallocate)) {
@@ -785,18 +784,18 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
         } else if (do_encryption) {
             virCommandAddArg(cmd, "-e");
         }
+        virCommandAddArgList(cmd, inputPath, vol->target.path, NULL);
     } else if (vol->backingStore.path) {
         virCommandAddArgList(cmd, "create", "-f", type,
                              "-b", vol->backingStore.path, NULL);
 
         switch (imgformat) {
         case QEMU_IMG_BACKING_FORMAT_FLAG:
-            virCommandAddArgList(cmd, "-F", backingType, vol->target.path,
-                                 NULL);
-            virCommandAddArgFormat(cmd, "%lluK", size_arg);
-
+            virCommandAddArgList(cmd, "-F", backingType, NULL);
             if (do_encryption)
                 virCommandAddArg(cmd, "-e");
+            virCommandAddArg(cmd, vol->target.path);
+            virCommandAddArgFormat(cmd, "%lluK", size_arg);
             break;
 
         case QEMU_IMG_BACKING_FORMAT_OPTIONS:
@@ -811,15 +810,13 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
             VIR_INFO("Unable to set backing store format for %s with %s",
                      vol->target.path, create_tool);
 
-            virCommandAddArg(cmd, vol->target.path);
-            virCommandAddArgFormat(cmd, "%lluK", size_arg);
             if (do_encryption)
                 virCommandAddArg(cmd, "-e");
+            virCommandAddArg(cmd, vol->target.path);
+            virCommandAddArgFormat(cmd, "%lluK", size_arg);
         }
     } else {
-        virCommandAddArgList(cmd, "create", "-f", type,
-                             vol->target.path, NULL);
-        virCommandAddArgFormat(cmd, "%lluK", size_arg);
+        virCommandAddArgList(cmd, "create", "-f", type, NULL);
 
         if (imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS &&
             (do_encryption || preallocate)) {
@@ -830,6 +827,8 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
         } else if (do_encryption) {
             virCommandAddArg(cmd, "-e");
         }
+        virCommandAddArg(cmd, vol->target.path);
+        virCommandAddArgFormat(cmd, "%lluK", size_arg);
     }
 
     return cmd;

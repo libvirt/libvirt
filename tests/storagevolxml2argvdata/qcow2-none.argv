@@ -1,1 +1,1 @@
-qemu-img create -f qcow2 -b /dev/null /var/lib/libvirt/images/OtherDemo.img 5242880K -e
+qemu-img create -f qcow2 -b /dev/null -e /var/lib/libvirt/images/OtherDemo.img 5242880K
