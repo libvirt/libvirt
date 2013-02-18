@@ -359,7 +359,6 @@ udevIfaceListAllInterfaces(virConnectPtr conn,
         name = udev_device_get_sysname(dev);
         macaddr = udev_device_get_sysattr_value(dev, "address");
         status = STREQ(udev_device_get_sysattr_value(dev, "operstate"), "up");
-        udev_device_unref(dev);
 
         /* Filter the results */
         if (status && (flags & VIR_CONNECT_LIST_INTERFACES_ACTIVE))
@@ -375,6 +374,7 @@ udevIfaceListAllInterfaces(virConnectPtr conn,
             }
             count++;
         }
+        udev_device_unref(dev);
     }
 
     /* Drop our refcounts */
