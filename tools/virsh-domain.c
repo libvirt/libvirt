@@ -8736,6 +8736,68 @@ done:
 }
 
 /*
+ * "migrate-compcache" command
+ */
+static const vshCmdInfo info_migrate_compcache[] = {
+    {.name = "help",
+     .data = N_("get/set compression cache size")
+    },
+    {.name = "desc",
+     .data = N_("Get/set size of the cache (in bytes) used for compressing "
+                "repeatedly transferred memory pages during live migration.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_migrate_compcache[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "size",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("requested size of the cache (in bytes) used for compression")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    unsigned long long size = 0;
+    bool ret = false;
+    const char *unit;
+    double value;
+    int rc;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    rc = vshCommandOptULongLong(cmd, "size", &size);
+    if (rc < 0) {
+        vshError(ctl, "%s", _("Unable to parse size parameter"));
+        goto cleanup;
+    } else if (rc != 0) {
+        if (virDomainMigrateSetCompressionCache(dom, size, 0) < 0)
+            goto cleanup;
+    }
+
+    if (virDomainMigrateGetCompressionCache(dom, &size, 0) < 0)
+        goto cleanup;
+
+    value = vshPrettyCapacity(size, &unit);
+    vshPrint(ctl, _("Compression cache: %.3lf %s"), value, unit);
+
+    ret = true;
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "migrate-setspeed" command
  */
 static const vshCmdInfo info_migrate_setspeed[] = {
@@ -10677,6 +10739,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdMigrateSetMaxDowntime,
      .opts = opts_migrate_setmaxdowntime,
      .info = info_migrate_setmaxdowntime,
+     .flags = 0
+    },
+    {.name = "migrate-compcache",
+     .handler = cmdMigrateCompCache,
+     .opts = opts_migrate_compcache,
+     .info = info_migrate_compcache,
      .flags = 0
     },
     {.name = "migrate-setspeed",

@@ -1114,6 +1114,18 @@ Set maximum tolerable downtime for a domain which is being live-migrated to
 another host.  The I<downtime> is a number of milliseconds the guest is allowed
 to be down at the end of live migration.
 
+=item B<migrate-compcache> I<domain> [I<--size> B<bytes>]
+
+Sets and/or gets size of the cache (in bytes) used for compressing repeatedly
+transferred memory pages during live migration. When called without I<size>,
+the command just prints current size of the compression cache. When I<size>
+is specified, the hypervisor is asked to change compression cache to I<size>
+bytes and then the current size is printed (the result may differ from the
+requested size due to rounding done by the hypervisor). The I<size> option
+is supposed to be used while the domain is being live-migrated as a reaction
+to migration progress and increasing number of compression cache misses
+obtained from domjobinfo.
+
 =item B<migrate-setspeed> I<domain> I<bandwidth>
 
 Set the maximum migration bandwidth (in Mbps) for a domain which is being
