@@ -636,17 +636,15 @@ cleanup:
     return ret;
 }
 
-
-static int
-virStorageBackendCreateQemuImg(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
-                               virStorageVolDefPtr vol,
-                               virStorageVolDefPtr inputvol,
-                               unsigned int flags)
+virCommandPtr
+virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol,
+                                  virStorageVolDefPtr inputvol,
+                                  unsigned int flags,
+                                  const char *create_tool,
+                                  int imgformat)
 {
-    int ret = -1;
-    char *create_tool;
-    int imgformat = -1;
     virCommandPtr cmd = NULL;
     bool do_encryption = (vol->target.encryption != NULL);
     unsigned long long int size_arg;
@@ -674,18 +672,18 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage vol type %d"),
                        vol->target.format);
-        return -1;
+        return NULL;
     }
     if (inputvol && inputType == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage vol type %d"),
                        inputvol->target.format);
-        return -1;
+        return NULL;
     }
     if (preallocate && vol->target.format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation only available with qcow2"));
-        return -1;
+        return NULL;
     }
 
     if (vol->backingStore.path) {
@@ -696,7 +694,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("metadata preallocation conflicts with backing"
                              " store"));
-            return -1;
+            return NULL;
         }
 
         /* XXX: Not strictly required: qemu-img has an option a different
@@ -709,14 +707,14 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("a different backing store cannot "
                                    "be specified."));
-            return -1;
+            return NULL;
         }
 
         if (backingType == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown storage vol backing store type %d"),
                            vol->backingStore.format);
-            return -1;
+            return NULL;
         }
 
         /* Convert relative backing store paths to absolute paths for access
@@ -726,7 +724,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
                         vol->backingStore.path) < 0) {
             virReportOOMError();
-            return -1;
+            return NULL;
         }
         accessRetCode = access(absolutePath ? absolutePath
                                : vol->backingStore.path, R_OK);
@@ -735,7 +733,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virReportSystemError(errno,
                                  _("inaccessible backing store volume %s"),
                                  vol->backingStore.path);
-            return -1;
+            return NULL;
         }
     }
 
@@ -747,7 +745,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("qcow volume encryption unsupported with "
                              "volume format %s"), type);
-            return -1;
+            return NULL;
         }
         enc = vol->target.encryption;
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
@@ -755,37 +753,22 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported volume encryption format %d"),
                            vol->target.encryption->format);
-            return -1;
+            return NULL;
         }
         if (enc->nsecrets > 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("too many secrets for qcow encryption"));
-            return -1;
+            return NULL;
         }
         if (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
             enc->nsecrets == 0) {
             if (virStorageGenerateQcowEncryption(conn, vol) < 0)
-                return -1;
+                return NULL;
         }
     }
 
     /* Size in KB */
     size_arg = VIR_DIV_UP(vol->capacity, 1024);
-
-    /* KVM is usually ahead of qemu on features, so try that first */
-    create_tool = virFindFileInPath("kvm-img");
-    if (!create_tool)
-        create_tool = virFindFileInPath("qemu-img");
-
-    if (!create_tool) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find kvm-img or qemu-img"));
-        return -1;
-    }
-
-    imgformat = virStorageBackendQEMUImgBackingFormat(create_tool);
-    if (imgformat < 0)
-        goto cleanup;
 
     cmd = virCommandNew(create_tool);
 
@@ -849,11 +832,48 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         }
     }
 
+    return cmd;
+}
+
+static int
+virStorageBackendCreateQemuImg(virConnectPtr conn,
+                               virStoragePoolObjPtr pool,
+                               virStorageVolDefPtr vol,
+                               virStorageVolDefPtr inputvol,
+                               unsigned int flags)
+{
+    int ret = -1;
+    const char *create_tool;
+    int imgformat;
+    virCommandPtr cmd;
+
+    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
+
+    /* KVM is usually ahead of qemu on features, so try that first */
+    create_tool = virFindFileInPath("kvm-img");
+    if (!create_tool)
+        create_tool = virFindFileInPath("qemu-img");
+
+    if (!create_tool) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("unable to find kvm-img or qemu-img"));
+        return -1;
+    }
+
+    imgformat = virStorageBackendQEMUImgBackingFormat(create_tool);
+    if (imgformat < 0)
+        goto cleanup;
+
+    cmd = virStorageBackendCreateQemuImgCmd(conn, pool, vol, inputvol, flags,
+                                            create_tool, imgformat);
+    if (!cmd)
+        goto cleanup;
+
     ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
+
+    virCommandFree(cmd);
 cleanup:
     VIR_FREE(create_tool);
-    virCommandFree(cmd);
-
     return ret;
 }
 

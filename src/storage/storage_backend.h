@@ -156,5 +156,13 @@ int virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
                                 virStorageBackendListVolNulFunc func,
                                 void *data);
 
+virCommandPtr
+virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol,
+                                  virStorageVolDefPtr inputvol,
+                                  unsigned int flags,
+                                  const char *create_tool,
+                                  int imgformat);
 
 #endif /* __VIR_STORAGE_BACKEND_H__ */
