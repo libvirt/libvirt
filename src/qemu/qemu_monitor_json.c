@@ -2256,6 +2256,69 @@ int qemuMonitorJSONSetMigrationDowntime(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONGetMigrationCacheSize(qemuMonitorPtr mon,
+                                     unsigned long long *cacheSize)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    *cacheSize = 0;
+
+    cmd = qemuMonitorJSONMakeCommand("query-migrate-cache-size", NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = virJSONValueObjectGetNumberUlong(reply, "return", cacheSize);
+    if (ret < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-migrate-cache-size reply was missing "
+                         "'return' data"));
+        goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONSetMigrationCacheSize(qemuMonitorPtr mon,
+                                     unsigned long long cacheSize)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("migrate-set-cache-size",
+                                     "U:value", cacheSize,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 static int
 qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
                                        qemuMonitorMigrationStatusPtr status)

@@ -1804,6 +1804,49 @@ int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorGetMigrationCacheSize(qemuMonitorPtr mon,
+                                 unsigned long long *cacheSize)
+{
+    VIR_DEBUG("mon=%p cacheSize=%p", mon, cacheSize);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetMigrationCacheSize(mon, cacheSize);
+}
+
+int
+qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
+                                 unsigned long long cacheSize)
+{
+    VIR_DEBUG("mon=%p cacheSize=%llu", mon, cacheSize);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONSetMigrationCacheSize(mon, cacheSize);
+}
+
+
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
                                   qemuMonitorMigrationStatusPtr status)
 {

@@ -326,6 +326,11 @@ int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
                                     unsigned long long downtime);
 
+int qemuMonitorGetMigrationCacheSize(qemuMonitorPtr mon,
+                                     unsigned long long *cacheSize);
+int qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
+                                     unsigned long long cacheSize);
+
 enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
     QEMU_MONITOR_MIGRATION_STATUS_ACTIVE,
