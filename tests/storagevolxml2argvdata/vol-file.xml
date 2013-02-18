@@ -1,0 +1,20 @@
+<volume>
+  <name>sparse.img</name>
+  <source/>
+  <capacity unit="TiB">1</capacity>
+  <allocation unit="bytes">0</allocation>
+  <target>
+    <path>/var/lib/libvirt/images/sparse.img</path>
+    <permissions>
+      <mode>0</mode>
+      <owner>0744</owner>
+      <group>0</group>
+      <label>virt_image_t</label>
+    </permissions>
+    <timestamps>
+      <atime>1341933637.273190990</atime>
+      <mtime>1341930622.047245868</mtime>
+      <ctime>1341930622.047245868</ctime>
+    </timestamps>
+  </target>
+</volume>

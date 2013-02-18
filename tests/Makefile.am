@@ -74,6 +74,7 @@ EXTRA_DIST =		\
 	storagepoolschematest \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \
+	storagevolxml2argvdata \
 	storagevolschematest \
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
@@ -169,6 +170,8 @@ test_programs += storagebackendsheepdogtest
 endif
 
 test_programs += nwfilterxml2xmltest
+
+test_programs += storagevolxml2argvtest
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
 
@@ -469,6 +472,12 @@ nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
 	testutils.c testutils.h
 nwfilterxml2xmltest_LDADD = $(LDADDS)
+
+storagevolxml2argvtest_SOURCES = \
+    storagevolxml2argvtest.c \
+    testutils.c testutils.h
+storagevolxml2argvtest_LDADD = \
+	../src/libvirt_driver_storage_impl.la $(LDADDS)
 
 storagevolxml2xmltest_SOURCES = \
 	storagevolxml2xmltest.c \
