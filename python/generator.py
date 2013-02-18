@@ -444,6 +444,7 @@ skip_impl = (
     'virNodeGetCPUStats',
     'virNodeGetMemoryStats',
     'virDomainGetBlockJobInfo',
+    'virDomainMigrateGetCompressionCache',
     'virDomainMigrateGetMaxSpeed',
     'virDomainBlockStatsFlags',
     'virDomainSetBlockIoTune',

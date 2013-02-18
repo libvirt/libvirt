@@ -605,6 +605,15 @@ typedef int
                                          unsigned long long downtime,
                                          unsigned int flags);
 typedef int
+    (*virDrvDomainMigrateGetCompressionCache)(virDomainPtr domain,
+                                              unsigned long long *cacheSize,
+                                              unsigned int flags);
+typedef int
+    (*virDrvDomainMigrateSetCompressionCache)(virDomainPtr domain,
+                                              unsigned long long cacheSize,
+                                              unsigned int flags);
+
+typedef int
     (*virDrvDomainMigrateSetMaxSpeed)(virDomainPtr domain,
                                       unsigned long bandwidth,
                                       unsigned int flags);
@@ -1069,6 +1078,8 @@ struct _virDriver {
     virDrvDomainGetJobStats             domainGetJobStats;
     virDrvDomainAbortJob                domainAbortJob;
     virDrvDomainMigrateSetMaxDowntime   domainMigrateSetMaxDowntime;
+    virDrvDomainMigrateGetCompressionCache domainMigrateGetCompressionCache;
+    virDrvDomainMigrateSetCompressionCache domainMigrateSetCompressionCache;
     virDrvDomainMigrateGetMaxSpeed      domainMigrateGetMaxSpeed;
     virDrvDomainMigrateSetMaxSpeed      domainMigrateSetMaxSpeed;
     virDrvDomainEventRegisterAny        domainEventRegisterAny;

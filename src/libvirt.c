@@ -17552,6 +17552,101 @@ error:
 }
 
 /**
+ * virDomainMigrateGetCompressionCache:
+ * @domain: a domain object
+ * @cacheSize: return value of current size of the cache (in bytes)
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Gets current size of the cache (in bytes) used for compressing repeatedly
+ * transferred memory pages during live migration.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateGetCompressionCache(virDomainPtr domain,
+                                    unsigned long long *cacheSize,
+                                    unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cacheSize=%p, flags=%x", cacheSize, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+
+    virCheckNonNullArgGoto(cacheSize, error);
+
+    if (conn->driver->domainMigrateGetCompressionCache) {
+        if (conn->driver->domainMigrateGetCompressionCache(domain, cacheSize,
+                                                           flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainMigrateSetCompressionCache:
+ * @domain: a domain object
+ * @cacheSize: size of the cache (in bytes) used for compression
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Sets size of the cache (in bytes) used for compressing repeatedly
+ * transferred memory pages during live migration. It's supposed to be called
+ * while the domain is being live-migrated as a reaction to migration progress
+ * and increasing number of compression cache misses obtained from
+ * virDomainGetJobStats.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateSetCompressionCache(virDomainPtr domain,
+                                    unsigned long long cacheSize,
+                                    unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "cacheSize=%llu, flags=%x", cacheSize, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateSetCompressionCache) {
+        if (conn->driver->domainMigrateSetCompressionCache(domain, cacheSize,
+                                                           flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
  * virDomainMigrateSetMaxSpeed:
  * @domain: a domain object
  * @bandwidth: migration bandwidth limit in Mbps
