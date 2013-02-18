@@ -1026,7 +1026,6 @@ void
 virTypedParamsFree(virTypedParameterPtr params,
                    int nparams)
 {
-    virResetLastError();
     virTypedParamsClear(params, nparams);
     VIR_FREE(params);
 }
