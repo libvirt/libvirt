@@ -2284,6 +2284,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
 }
 
 
