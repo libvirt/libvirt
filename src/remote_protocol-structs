@@ -1653,6 +1653,18 @@ struct remote_domain_migrate_set_max_downtime_args {
         uint64_t                   downtime;
         u_int                      flags;
 };
+struct remote_domain_migrate_get_compression_cache_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_migrate_get_compression_cache_ret {
+        uint64_t                   cacheSize;
+};
+struct remote_domain_migrate_set_compression_cache_args {
+        remote_nonnull_domain      dom;
+        uint64_t                   cacheSize;
+        u_int                      flags;
+};
 struct remote_domain_migrate_set_max_speed_args {
         remote_nonnull_domain      dom;
         uint64_t                   bandwidth;
@@ -2474,4 +2486,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296,
         REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297,
         REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298,
+        REMOTE_PROC_DOMAIN_MIGRATE_GET_COMPRESSION_CACHE = 299,
+        REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300,
 };

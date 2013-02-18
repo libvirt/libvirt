@@ -2178,6 +2178,21 @@ struct remote_domain_migrate_set_max_downtime_args {
     unsigned int flags;
 };
 
+struct remote_domain_migrate_get_compression_cache_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_get_compression_cache_ret {
+    unsigned hyper cacheSize; /* insert@1 */
+};
+
+struct remote_domain_migrate_set_compression_cache_args {
+    remote_nonnull_domain dom;
+    unsigned hyper cacheSize;
+    unsigned int flags;
+};
+
 struct remote_domain_migrate_set_max_speed_args {
     remote_nonnull_domain dom;
     unsigned hyper bandwidth;
@@ -3072,7 +3087,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SEND_PROCESS_SIGNAL = 295, /* autogen autogen */
     REMOTE_PROC_DOMAIN_OPEN_CHANNEL = 296, /* autogen autogen | readstream@2 */
     REMOTE_PROC_NODE_DEVICE_LOOKUP_SCSI_HOST_BY_WWN = 297, /* autogen autogen priority:high */
-    REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298 /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298, /* skipgen skipgen */
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_COMPRESSION_CACHE = 299, /* autogen autogen */
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300 /* autogen autogen */
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
