@@ -807,8 +807,8 @@ virStorageBackendCreateQemuImgCmd(virConnectPtr conn,
             break;
 
         default:
-            VIR_INFO("Unable to set backing store format for %s with %s",
-                     vol->target.path, create_tool);
+            VIR_DEBUG("Unable to set backing store format for %s with %s",
+                      vol->target.path, create_tool);
 
             if (do_encryption)
                 virCommandAddArg(cmd, "-e");
