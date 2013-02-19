@@ -53,31 +53,14 @@
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainDiskDefPtr disk,
+                                   virDomainDiskDefPtr origdisk,
                                    bool force)
 {
-    virDomainDiskDefPtr origdisk = NULL;
-    int i;
     int ret = -1;
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int retries = CHANGE_MEDIA_RETRIES;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (vm->def->disks[i]->bus == disk->bus &&
-            STREQ(vm->def->disks[i]->dst, disk->dst)) {
-            origdisk = vm->def->disks[i];
-            break;
-        }
-    }
-
-    if (!origdisk) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No device with bus '%s' and target '%s'"),
-                       virDomainDiskBusTypeToString(disk->bus),
-                       disk->dst);
-        goto cleanup;
-    }
 
     if (!origdisk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -3359,6 +3359,26 @@ virDomainDiskFindControllerModel(virDomainDefPtr def,
     return model;
 }
 
+virDomainDiskDefPtr
+virDomainDiskFindByBusAndDst(virDomainDefPtr def,
+                             int bus,
+                             char *dst)
+{
+    int i;
+
+    if (!dst)
+        return NULL;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (def->disks[i]->bus == bus &&
+            STREQ(def->disks[i]->dst, dst)) {
+            return def->disks[i];
+        }
+    }
+
+    return NULL;
+}
+
 int
 virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
 {

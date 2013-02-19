@@ -1936,6 +1936,9 @@ void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
 int virDomainDiskFindControllerModel(virDomainDefPtr def,
                                      virDomainDiskDefPtr disk,
                                      int controllerType);
+virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
+                                                 int bus,
+                                                 char *dst);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);

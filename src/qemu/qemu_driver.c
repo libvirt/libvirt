@@ -5704,7 +5704,11 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk = dev->data.disk;
+    virDomainDiskDefPtr orig_disk = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
+    virDomainDiskDefPtr tmp = NULL;
     virCgroupPtr cgroup = NULL;
+    virCapsPtr caps = NULL;
     int ret = -1;
 
     if (disk->driverName != NULL && !STREQ(disk->driverName, "qemu")) {
@@ -5737,7 +5741,37 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     switch (disk->device)  {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, false);
+        if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
+                                                       disk->bus, disk->dst))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("No device with bus '%s' and target '%s'"),
+                           virDomainDiskBusTypeToString(disk->bus),
+                           disk->dst);
+            goto end;
+        }
+
+        if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+            goto end;
+
+        tmp = dev->data.disk;
+        dev->data.disk = orig_disk;
+
+        if (!(dev_copy = virDomainDeviceDefCopy(caps, vm->def, dev))) {
+            dev->data.disk = tmp;
+            goto end;
+        }
+        dev->data.disk = tmp;
+
+        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, false);
+
+        /* Need to remove the shared disk entry for the original disk src
+         * if the operation is either ejecting or updating.
+         */
+        if (ret == 0 &&
+            orig_disk->src &&
+            STRNEQ_NULLABLE(orig_disk->src, disk->src))
+            ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
+                                              vm->def->name));
         break;
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
@@ -5777,6 +5811,8 @@ end:
         ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
     if (cgroup)
         virCgroupFree(&cgroup);
+    virObjectUnref(caps);
+    virDomainDeviceDefFree(dev_copy);
     return ret;
 }
 
@@ -5955,7 +5991,11 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
                               bool force)
 {
     virDomainDiskDefPtr disk = dev->data.disk;
+    virDomainDiskDefPtr orig_disk = NULL;
+    virDomainDiskDefPtr tmp = NULL;
     virCgroupPtr cgroup = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
+    virCapsPtr caps = NULL;
     int ret = -1;
 
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
@@ -5976,9 +6016,37 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
     switch (disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, force);
-        if (ret == 0)
+        if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
+                                                       disk->bus, disk->dst))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("No device with bus '%s' and target '%s'"),
+                           virDomainDiskBusTypeToString(disk->bus),
+                           disk->dst);
+            goto end;
+        }
+
+        if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+            goto end;
+
+        tmp = dev->data.disk;
+        dev->data.disk = orig_disk;
+
+        if (!(dev_copy = virDomainDeviceDefCopy(caps, vm->def, dev))) {
+            dev->data.disk = tmp;
+            goto end;
+        }
+        dev->data.disk = tmp;
+
+        ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, force);
+        if (ret == 0) {
             dev->data.disk = NULL;
+            /* Need to remove the shared disk entry for the original
+             * disk src if the operation is either ejecting or updating.
+             */
+            if (orig_disk->src && STRNEQ_NULLABLE(orig_disk->src, disk->src))
+                ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
+                                                  vm->def->name));
+        }
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5995,6 +6063,8 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
 end:
     if (cgroup)
         virCgroupFree(&cgroup);
+    virObjectUnref(caps);
+    virDomainDeviceDefFree(dev_copy);
     return ret;
 }
 
