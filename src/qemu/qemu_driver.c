@@ -2507,6 +2507,33 @@ qemuCompressProgramName(int compress)
             qemuSaveCompressionTypeToString(compress));
 }
 
+static virCommandPtr
+qemuCompressGetCommand(virQEMUSaveFormat compression)
+{
+    virCommandPtr ret = NULL;
+    const char *prog = qemuSaveCompressionTypeToString(compression);
+
+    if (!prog) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Invalid compressed save format %d"),
+                       compression);
+        return NULL;
+    }
+
+    ret = virCommandNew(prog);
+    virCommandAddArg(ret, "-dc");
+
+    switch (compression) {
+    case QEMU_SAVE_FORMAT_LZOP:
+        virCommandAddArg(ret, "--ignore-warn");
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
 /* Internal function to properly create or open existing files, with
  * ownership affected by qemu driver setup.  */
 static int
@@ -4775,32 +4802,22 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (header->version == 2) {
-        const char *prog = qemuSaveCompressionTypeToString(header->compressed);
-        if (prog == NULL) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Invalid compressed save format %d"),
-                           header->compressed);
+    if ((header->version == 2) &&
+        (header->compressed != QEMU_SAVE_FORMAT_RAW)) {
+        if (!(cmd = qemuCompressGetCommand(header->compressed)))
             goto cleanup;
-        }
 
-        if (header->compressed != QEMU_SAVE_FORMAT_RAW) {
-            cmd = virCommandNewArgList(prog, "-dc", NULL);
-            intermediatefd = *fd;
-            *fd = -1;
+        intermediatefd = *fd;
+        *fd = -1;
 
-            virCommandSetInputFD(cmd, intermediatefd);
-            virCommandSetOutputFD(cmd, fd);
-            virCommandSetErrorBuffer(cmd, &errbuf);
-            virCommandDoAsyncIO(cmd);
+        virCommandSetInputFD(cmd, intermediatefd);
+        virCommandSetOutputFD(cmd, fd);
+        virCommandSetErrorBuffer(cmd, &errbuf);
+        virCommandDoAsyncIO(cmd);
 
-            if (virCommandRunAsync(cmd, NULL) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to start decompression binary %s"),
-                               prog);
-                *fd = intermediatefd;
-                goto cleanup;
-            }
+        if (virCommandRunAsync(cmd, NULL) < 0) {
+            *fd = intermediatefd;
+            goto cleanup;
         }
     }
 
