@@ -138,9 +138,11 @@
             0.4.2</span>
 
             <p><span class="since">Since 1.0.3</span> it is possible to
-            specify a public IPv4 address range to be used for the NAT by
-            using the <code>&lt;nat&gt;</code> and
-            <code>&lt;address&gt;</code> subelements.
+            specify a public IPv4 address and port range to be used for
+            the NAT by using the <code>&lt;nat&gt;</code> subelement.
+            The address range is set with the <code>&lt;address&gt;</code>
+            subelements and <code>start</code> and <code>stop</code>
+            attributes:
             <pre>
 ...
   &lt;forward mode='nat'&gt;
@@ -153,6 +155,19 @@
             An singe IPv4 address can be set by setting
             <code>start</code> and <code>end</code> attributes to
             the same value.
+            </p>
+            <p>
+            The port range to be used for the <code>&lt;nat&gt;</code> can
+            be set via the subelement <code>&lt;port&gt;</code>:
+            <pre>
+...
+  &lt;forward mode='nat'&gt;
+    &lt;nat&gt;
+      &lt;port start='500' end='1000'/&gt;
+    &lt;/nat&gt;
+  &lt;/forward&gt;
+...
+            </pre>
             </p>
           </dd>
 

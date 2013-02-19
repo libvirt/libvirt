@@ -1589,6 +1589,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      forwardIf,
                                      &network->def->forward.addrStart,
                                      &network->def->forward.addrEnd,
+                                     network->def->forward.portStart,
+                                     network->def->forward.portEnd,
                                      NULL) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        forwardIf ?
@@ -1605,6 +1607,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      forwardIf,
                                      &network->def->forward.addrStart,
                                      &network->def->forward.addrEnd,
+                                     network->def->forward.portStart,
+                                     network->def->forward.portEnd,
                                      "udp") < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        forwardIf ?
@@ -1621,6 +1625,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      forwardIf,
                                      &network->def->forward.addrStart,
                                      &network->def->forward.addrEnd,
+                                     network->def->forward.portStart,
+                                     network->def->forward.portEnd,
                                      "tcp") < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        forwardIf ?
@@ -1639,6 +1645,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                     forwardIf,
                                     &network->def->forward.addrStart,
                                     &network->def->forward.addrEnd,
+                                    network->def->forward.portStart,
+                                    network->def->forward.portEnd,
                                     "udp");
  masqerr4:
     iptablesRemoveForwardMasquerade(driver->iptables,
@@ -1647,6 +1655,8 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                     forwardIf,
                                     &network->def->forward.addrStart,
                                     &network->def->forward.addrEnd,
+                                    network->def->forward.portStart,
+                                    network->def->forward.portEnd,
                                     NULL);
  masqerr3:
     iptablesRemoveForwardAllowRelatedIn(driver->iptables,
@@ -1679,6 +1689,8 @@ networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
                                         forwardIf,
                                         &network->def->forward.addrStart,
                                         &network->def->forward.addrEnd,
+                                        network->def->forward.portStart,
+                                        network->def->forward.portEnd,
                                         "tcp");
         iptablesRemoveForwardMasquerade(driver->iptables,
                                         &ipdef->address,
@@ -1686,6 +1698,8 @@ networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
                                         forwardIf,
                                         &network->def->forward.addrStart,
                                         &network->def->forward.addrEnd,
+                                        network->def->forward.portStart,
+                                        network->def->forward.portEnd,
                                         "udp");
         iptablesRemoveForwardMasquerade(driver->iptables,
                                         &ipdef->address,
@@ -1693,6 +1707,8 @@ networkRemoveMasqueradingIptablesRules(struct network_driver *driver,
                                         forwardIf,
                                         &network->def->forward.addrStart,
                                         &network->def->forward.addrEnd,
+                                        network->def->forward.portStart,
+                                        network->def->forward.portEnd,
                                         NULL);
 
         iptablesRemoveForwardAllowRelatedIn(driver->iptables,
