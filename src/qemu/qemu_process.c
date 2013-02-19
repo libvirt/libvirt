@@ -3189,6 +3189,7 @@ qemuProcessReconnect(void *opaque)
     int reason;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
+    size_t i;
 
     memcpy(&oldjob, &data->oldjob, sizeof(oldjob));
 
@@ -3229,6 +3230,15 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
         goto error;
+
+    /* XXX: Need to change as long as lock is introduced for
+     * qemu_driver->sharedDisks.
+     */
+    for (i = 0; i < obj->def->ndisks; i++) {
+        if (qemuAddSharedDisk(driver, obj->def->disks[i],
+                              obj->def->name) < 0)
+            goto error;
+    }
 
     if (qemuProcessUpdateState(driver, obj) < 0)
         goto error;
