@@ -14267,7 +14267,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected domain type %d"), def->virtType);
-        goto cleanup;
+        goto error;
     }
 
     if (def->id == -1)
@@ -14307,7 +14307,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                         virBufferGetIndent(buf, false) / 2 + 1, 1) < 0) {
             xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
-            goto cleanup;
+            goto error;
         }
         virBufferAsprintf(buf, "  %s\n", (char *) xmlBufferContent(xmlbuf));
         xmlBufferFree(xmlbuf);
@@ -14395,7 +14395,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->cpumask && !virBitmapIsAllSet(def->cpumask)) {
         char *cpumask = NULL;
         if ((cpumask = virBitmapFormat(def->cpumask)) == NULL)
-            goto cleanup;
+            goto error;
         virBufferAsprintf(buf, " cpuset='%s'", cpumask);
         VIR_FREE(cpumask);
     }
@@ -14448,7 +14448,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (cpumask == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("failed to format cpuset for vcpupin"));
-            goto cleanup;
+            goto error;
         }
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
@@ -14463,7 +14463,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (cpumask == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("failed to format cpuset for emulator"));
-                goto cleanup;
+                goto error;
         }
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
@@ -14493,7 +14493,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to format nodeset for "
                                  "NUMA memory tuning"));
-                goto cleanup;
+                goto error;
             }
             virBufferAsprintf(buf, "nodeset='%s'/>\n", nodemask);
             VIR_FREE(nodemask);
@@ -14557,7 +14557,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected boot device type %d"),
                                def->os.bootDevs[n]);
-                goto cleanup;
+                goto error;
             }
             virBufferAsprintf(buf, "    <boot dev='%s'/>\n", boottype);
         }
@@ -14590,7 +14590,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (mode == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected smbios mode %d"), def->os.smbios_mode);
-            goto cleanup;
+            goto error;
         }
         virBufferAsprintf(buf, "    <smbios mode='%s'/>\n", mode);
     }
@@ -14605,7 +14605,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 if (!name) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unexpected feature %d"), i);
-                    goto cleanup;
+                    goto error;
                 }
                 virBufferAsprintf(buf, "    <%s", name);
                 if (i == VIR_DOMAIN_FEATURE_APIC && def->apic_eoi) {
@@ -14640,7 +14640,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     virBufferAdjustIndent(buf, 2);
     if (virCPUDefFormatBufFull(buf, def->cpu, flags) < 0)
-        goto cleanup;
+        goto error;
     virBufferAdjustIndent(buf, -2);
 
     virBufferAsprintf(buf, "  <clock offset='%s'",
@@ -14666,7 +14666,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, ">\n");
         for (n = 0; n < def->clock.ntimers; n++) {
             if (virDomainTimerDefFormat(buf, def->clock.timers[n]) < 0)
-                goto cleanup;
+                goto error;
         }
         virBufferAddLit(buf, "  </clock>\n");
     }
@@ -14674,20 +14674,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (virDomainEventActionDefFormat(buf, def->onPoweroff,
                                       "on_poweroff",
                                       virDomainLifecycleTypeToString) < 0)
-        goto cleanup;
+        goto error;
     if (virDomainEventActionDefFormat(buf, def->onReboot,
                                       "on_reboot",
                                       virDomainLifecycleTypeToString) < 0)
-        goto cleanup;
+        goto error;
     if (virDomainEventActionDefFormat(buf, def->onCrash,
                                       "on_crash",
                                       virDomainLifecycleCrashTypeToString) < 0)
-        goto cleanup;
+        goto error;
     if (def->onLockFailure != VIR_DOMAIN_LOCK_FAILURE_DEFAULT &&
         virDomainEventActionDefFormat(buf, def->onLockFailure,
                                       "on_lockfailure",
                                       virDomainLockFailureTypeToString) < 0)
-        goto cleanup;
+        goto error;
 
     if (def->pm.s3 || def->pm.s4) {
         virBufferAddLit(buf, "  <pm>\n");
@@ -14709,36 +14709,36 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     for (n = 0 ; n < def->ndisks ; n++)
         if (virDomainDiskDefFormat(buf, def->disks[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->ncontrollers ; n++)
         if (virDomainControllerDefFormat(buf, def->controllers[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nleases ; n++)
         if (virDomainLeaseDefFormat(buf, def->leases[n]) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nfss ; n++)
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
 
     for (n = 0 ; n < def->nnets ; n++)
         if (virDomainNetDefFormat(buf, def->nets[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nsmartcards ; n++)
         if (virDomainSmartcardDefFormat(buf, def->smartcards[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nserials ; n++)
         if (virDomainChrDefFormat(buf, def->serials[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nparallels ; n++)
         if (virDomainChrDefFormat(buf, def->parallels[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nconsoles ; n++) {
         virDomainChrDef console;
@@ -14755,7 +14755,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             memcpy(&console, def->consoles[n], sizeof(console));
         }
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
-            goto cleanup;
+            goto error;
     }
     if (STREQ(def->os.type, "hvm") &&
         def->nconsoles == 0 &&
@@ -14764,17 +14764,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         memcpy(&console, def->serials[n], sizeof(console));
         console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
-            goto cleanup;
+            goto error;
     }
 
     for (n = 0 ; n < def->nchannels ; n++)
         if (virDomainChrDefFormat(buf, def->channels[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->ninputs ; n++)
         if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
             virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     if (def->ngraphics > 0) {
         /* If graphics is enabled, add the implicit mouse */
@@ -14786,20 +14786,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         };
 
         if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
-            goto cleanup;
+            goto error;
 
         for (n = 0 ; n < def->ngraphics ; n++)
             if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
-                goto cleanup;
+                goto error;
     }
 
     for (n = 0 ; n < def->nsounds ; n++)
         if (virDomainSoundDefFormat(buf, def->sounds[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nvideos ; n++)
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     for (n = 0 ; n < def->nhostdevs ; n++) {
         /* If parent.type != NONE, this is just a pointer to the
@@ -14808,20 +14808,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
          */
         if (def->hostdevs[n]->parent.type == VIR_DOMAIN_DEVICE_NONE &&
             virDomainHostdevDefFormat(buf, def->hostdevs[n], flags) < 0) {
-            goto cleanup;
+            goto error;
         }
     }
 
     for (n = 0 ; n < def->nredirdevs ; n++)
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     if (def->redirfilter)
         virDomainRedirFilterDefFormat(buf, def->redirfilter);
 
     for (n = 0 ; n < def->nhubs ; n++)
         if (virDomainHubDefFormat(buf, def->hubs[n], flags) < 0)
-            goto cleanup;
+            goto error;
 
     if (def->watchdog)
         virDomainWatchdogDefFormat(buf, def->watchdog, flags);
@@ -14838,7 +14838,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
-            goto cleanup;
+            goto error;
     }
 
     virBufferAddLit(buf, "</domain>\n");
@@ -14850,7 +14850,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
  no_memory:
     virReportOOMError();
- cleanup:
+ error:
     virBufferFreeAndReset(buf);
     return -1;
 }
