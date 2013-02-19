@@ -3477,56 +3477,6 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
     return 0;
 }
 
-/* Check if a shared disk's setting conflicts with the conf
- * used by other domain(s). Currently only checks the sgio
- * setting. Note that this should only be called for disk with
- * block source.
- *
- * Returns 0 if no conflicts, otherwise returns -1.
- */
-int
-qemuCheckSharedDisk(virQEMUDriverPtr driver,
-                    virDomainDiskDefPtr disk)
-{
-    int val;
-    size_t *ref = NULL;
-    char *key = NULL;
-    int ret = 0;
-
-    if (!(key = qemuGetSharedDiskKey(disk->src)))
-        return -1;
-
-    /* It can't be conflict if no other domain is
-     * is sharing it.
-     */
-    if (!(ref = virHashLookup(driver->sharedDisks, key)))
-        goto cleanup;
-
-    if (ref == (void *)0x1)
-        goto cleanup;
-
-    if (virGetDeviceUnprivSGIO(disk->src, NULL, &val) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
-
-    if ((val == 0 &&
-         (disk->sgio == VIR_DOMAIN_DISK_SGIO_FILTERED ||
-          disk->sgio == VIR_DOMAIN_DISK_SGIO_DEFAULT)) ||
-        (val == 1 &&
-         disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED))
-        goto cleanup;
-
-    virReportError(VIR_ERR_OPERATION_INVALID,
-                   _("sgio of shared disk '%s' conflicts with other "
-                     "active domains"), disk->src);
-    ret = -1;
-
-cleanup:
-    VIR_FREE(key);
-    return ret;
-}
-
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -3881,9 +3831,6 @@ int qemuProcessStart(virConnectPtr conn,
 #endif
 
         if (qemuAddSharedDisk(driver, disk) < 0)
-            goto cleanup;
-
-        if (qemuCheckSharedDisk(driver, disk) < 0)
             goto cleanup;
 
         if (qemuSetUnprivSGIO(disk) < 0)

@@ -847,6 +847,75 @@ qemuGetSharedDiskKey(const char *disk_path)
     return key;
 }
 
+/* Check if a shared disk's setting conflicts with the conf
+ * used by other domain(s). Currently only checks the sgio
+ * setting. Note that this should only be called for disk with
+ * block source.
+ *
+ * Returns 0 if no conflicts, otherwise returns -1.
+ */
+static int
+qemuCheckSharedDisk(virHashTablePtr sharedDisks,
+                    virDomainDiskDefPtr disk)
+{
+    int val;
+    size_t *ref = NULL;
+    char *sysfs_path = NULL;
+    char *key = NULL;
+    int ret = 0;
+
+    /* The only conflicts between shared disk we care about now
+     * is sgio setting, which is only valid for device='lun'.
+     */
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
+        return 0;
+
+    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL))) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    /* It can't be conflict if unpriv_sgio is not supported
+     * by kernel.
+     */
+    if (!virFileExists(sysfs_path))
+        goto cleanup;
+
+
+    if (!(key = qemuGetSharedDiskKey(disk->src))) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    /* It can't be conflict if no other domain is
+     * is sharing it.
+     */
+    if (!(ref = virHashLookup(sharedDisks, key)))
+        goto cleanup;
+
+    if (virGetDeviceUnprivSGIO(disk->src, NULL, &val) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if ((val == 0 &&
+         (disk->sgio == VIR_DOMAIN_DISK_SGIO_FILTERED ||
+          disk->sgio == VIR_DOMAIN_DISK_SGIO_DEFAULT)) ||
+        (val == 1 &&
+         disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED))
+        goto cleanup;
+
+    virReportError(VIR_ERR_OPERATION_INVALID,
+                   _("sgio of shared disk '%s' conflicts with other "
+                     "active domains"), disk->src);
+    ret = -1;
+
+cleanup:
+    VIR_FREE(sysfs_path);
+    VIR_FREE(key);
+    return ret;
+}
+
 /* Increase ref count if the entry already exists, otherwise
  * add a new entry.
  */
@@ -867,6 +936,9 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
         return 0;
 
     qemuDriverLock(driver);
+    if (qemuCheckSharedDisk(driver->sharedDisks, disk) < 0)
+        goto cleanup;
+
     if (!(key = qemuGetSharedDiskKey(disk->src)))
         goto cleanup;
 
