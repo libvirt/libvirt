@@ -69,6 +69,7 @@
 #include "virtime.h"
 #include "virnetdevtap.h"
 #include "virbitmap.h"
+#include "viratomic.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -3300,9 +3301,8 @@ qemuProcessReconnect(void *opaque)
             goto error;
     }
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
 endjob:
     if (!qemuDomainObjEndJob(driver, obj))
@@ -3589,9 +3589,8 @@ int qemuProcessStart(virConnectPtr conn,
     qemuDomainSetFakeReboot(driver, vm, false);
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_UNKNOWN);
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -4188,8 +4187,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
      */
     vm->def->id = -1;
 
-    driver->nactive--;
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
     if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
@@ -4442,9 +4440,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     vm->def->id = qemuDriverAllocateID(driver);
 
-    if (!driver->nactive && driver->inhibitCallback)
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
-    driver->nactive++;
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,

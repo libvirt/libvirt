@@ -168,7 +168,7 @@ struct _virQEMUDriver {
     virCgroupPtr cgroup;
 
     /* Atomic inc/dec only */
-    size_t nactive;
+    unsigned int nactive;
 
     /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;
