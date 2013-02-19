@@ -773,7 +773,7 @@ struct _virDomainFSDef {
 };
 
 
-/* 5 different types of networking config */
+/* network config types */
 enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_USER,
     VIR_DOMAIN_NET_TYPE_ETHERNET,
@@ -1410,7 +1410,7 @@ struct _virDomainMemballoonDef {
 
 
 enum virDomainSmbiosMode {
-    VIR_DOMAIN_SMBIOS_NONE,
+    VIR_DOMAIN_SMBIOS_NONE = 0,
     VIR_DOMAIN_SMBIOS_EMULATE,
     VIR_DOMAIN_SMBIOS_HOST,
     VIR_DOMAIN_SMBIOS_SYSINFO,

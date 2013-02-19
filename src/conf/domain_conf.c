@@ -8209,9 +8209,9 @@ virDomainDeviceDefParse(virCapsPtr caps,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDeviceDefPtr dev = NULL;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(device_definition)"), &ctxt))) {
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(device_definition)"), &ctxt)))
         goto error;
-    }
+
     node = ctxt->node;
 
     if (VIR_ALLOC(dev) < 0) {
@@ -8282,20 +8282,18 @@ virDomainDeviceDefParse(virCapsPtr caps,
         if (!(dev->data.rng = virDomainRNGDefParseXML(node, ctxt, flags)))
             goto error;
     } else {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("unknown device type"));
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("unknown device type"));
         goto error;
     }
 
+cleanup:
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return dev;
 
-  error:
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
+error:
     VIR_FREE(dev);
-    return NULL;
+    goto cleanup;
 }
 
 
@@ -9359,8 +9357,7 @@ virDomainDefParseXML(virCapsPtr caps,
         def->mem.cur_balloon = def->mem.max_balloon;
     }
 
-    node = virXPathNode("./memoryBacking/hugepages", ctxt);
-    if (node)
+    if ((node = virXPathNode("./memoryBacking/hugepages", ctxt)))
         def->mem.hugepage_backed = true;
 
     /* Extract blkio cgroup tunables */
@@ -9715,36 +9712,34 @@ virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    n = virXPathNodeSet("./features/*", ctxt, &nodes);
-    if (n < 0)
+    if ((n = virXPathNodeSet("./features/*", ctxt, &nodes)) < 0)
         goto error;
-    if (n) {
-        for (i = 0 ; i < n ; i++) {
-            int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
-            if (val < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected feature %s"),
-                               nodes[i]->name);
-                goto error;
-            }
-            def->features |= (1 << val);
-            if (val == VIR_DOMAIN_FEATURE_APIC) {
-                tmp = virXPathString("string(./features/apic/@eoi)", ctxt);
-                if (tmp) {
-                    int eoi;
-                    if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown value for attribute eoi: %s"),
-                                       tmp);
-                        goto error;
-                    }
-                    def->apic_eoi = eoi;
-                    VIR_FREE(tmp);
+
+    for (i = 0 ; i < n ; i++) {
+        int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
+        if (val < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected feature %s"),
+                           nodes[i]->name);
+            goto error;
+        }
+        def->features |= (1 << val);
+        if (val == VIR_DOMAIN_FEATURE_APIC) {
+            tmp = virXPathString("string(./features/apic/@eoi)", ctxt);
+            if (tmp) {
+                int eoi;
+                if ((eoi = virDomainFeatureStateTypeFromString(tmp)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown value for attribute eoi: %s"),
+                                   tmp);
+                    goto error;
                 }
+                def->apic_eoi = eoi;
+                VIR_FREE(tmp);
             }
         }
-        VIR_FREE(nodes);
     }
+    VIR_FREE(nodes);
 
     if (def->features & (1 << VIR_DOMAIN_FEATURE_HYPERV)) {
         int feature;
@@ -9832,17 +9827,14 @@ virDomainDefParseXML(virCapsPtr caps,
                                  &def->pm.s4) < 0)
         goto error;
 
-    tmp = virXPathString("string(./clock/@offset)", ctxt);
-    if (tmp) {
-        if ((def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown clock offset '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    } else {
-        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+    if ((tmp = virXPathString("string(./clock/@offset)", ctxt)) &&
+        (def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown clock offset '%s'"), tmp);
+        goto error;
     }
+    VIR_FREE(tmp);
+
     switch (def->clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
     case VIR_DOMAIN_CLOCK_OFFSET_UTC:
@@ -9901,11 +9893,12 @@ virDomainDefParseXML(virCapsPtr caps,
         break;
     }
 
-    if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
         goto error;
-    }
+
     if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
         goto no_memory;
+
     for (i = 0 ; i < n ; i++) {
         virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
                                                                ctxt);
@@ -10769,8 +10762,8 @@ virDomainDefParseXML(virCapsPtr caps,
             }
         }
     }
-    tmp = virXPathString("string(./os/smbios/@mode)", ctxt);
-    if (tmp) {
+
+    if ((tmp = virXPathString("string(./os/smbios/@mode)", ctxt))) {
         int mode;
 
         if ((mode = virDomainSmbiosModeTypeFromString(tmp)) < 0) {
@@ -10780,27 +10773,22 @@ virDomainDefParseXML(virCapsPtr caps,
         }
         def->os.smbios_mode = mode;
         VIR_FREE(tmp);
-    } else {
-        def->os.smbios_mode = VIR_DOMAIN_SMBIOS_NONE; /* not present */
     }
 
     /* Extract custom metadata */
-    if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL) {
+    if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL)
         def->metadata = xmlCopyNode(node, 1);
-    }
 
     /* we have to make a copy of all of the callback pointers here since
      * we won't have the virCaps structure available during free
      */
     def->ns = caps->ns;
 
-    if (def->ns.parse) {
-        if ((def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
-            goto error;
-    }
+    if (def->ns.parse &&
+        (def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
+        goto error;
 
-    /* Auto-add any implied controllers which aren't present
-     */
+    /* Auto-add any implied controllers which aren't present */
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
@@ -10810,9 +10798,7 @@ virDomainDefParseXML(virCapsPtr caps,
 
 no_memory:
     virReportOOMError();
-    /* fallthrough */
-
- error:
+error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
     virBitmapFree(bootMap);
@@ -11010,8 +10996,7 @@ virDomainObjParseNode(virCapsPtr caps,
         goto cleanup;
     }
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
+    if (!(ctxt = xmlXPathNewContext(xml))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -15131,8 +15116,7 @@ virDomainSaveConfig(const char *configDir,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainDefFormat(def,
-                                   VIR_DOMAIN_XML_WRITE_FLAGS)))
+    if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_XML_WRITE_FLAGS)))
         goto cleanup;
 
     if (virDomainSaveXML(configDir, def, xml))
@@ -15341,7 +15325,8 @@ virDomainDeleteConfig(const char *configDir,
 
     if ((configFile = virDomainConfigFile(configDir, dom->def->name)) == NULL)
         goto cleanup;
-    if ((autostartLink = virDomainConfigFile(autostartDir, dom->def->name)) == NULL)
+    if ((autostartLink = virDomainConfigFile(autostartDir,
+                                             dom->def->name)) == NULL)
         goto cleanup;
 
     /* Not fatal if this doesn't work */
@@ -15367,12 +15352,10 @@ char
 *virDomainConfigFile(const char *dir,
                      const char *name)
 {
-    char *ret = NULL;
+    char *ret;
 
-    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
+    if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0)
         virReportOOMError();
-        return NULL;
-    }
 
     return ret;
 }
@@ -15544,16 +15527,13 @@ virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
     virObjectUnlock(doms);
     if (data.oom) {
+        for (i = 0 ; i < data.numnames ; i++)
+            VIR_FREE(data.names[i]);
         virReportOOMError();
-        goto cleanup;
+        return -1;
     }
 
     return data.numnames;
-
-cleanup:
-    for (i = 0 ; i < data.numnames ; i++)
-        VIR_FREE(data.names[i]);
-    return -1;
 }
 
 
@@ -15723,8 +15703,7 @@ virDomainDefCopy(virCapsPtr caps, virDomainDefPtr src, bool migratable)
         write_flags |= VIR_DOMAIN_XML_INACTIVE | VIR_DOMAIN_XML_MIGRATABLE;
 
     /* Easiest to clone via a round-trip through XML.  */
-    xml = virDomainDefFormat(src, write_flags);
-    if (!xml)
+    if (!(xml = virDomainDefFormat(src, write_flags)))
         return NULL;
 
     ret = virDomainDefParseString(caps, xml, -1, read_flags);
