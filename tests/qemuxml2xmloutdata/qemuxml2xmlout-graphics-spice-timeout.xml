@@ -62,6 +62,7 @@
     <interface type='ethernet'>
       <mac address='52:54:00:71:70:89'/>
       <script path='/etc/qemu-ifup'/>
+      <model type='rtl8139'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </interface>
     <serial type='pty'>

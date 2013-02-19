@@ -662,6 +662,31 @@ virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
 };
 
 
+static int
+qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                             virDomainDefPtr def ATTRIBUTE_UNUSED,
+                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_NET &&
+        dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        if (!dev->data.net->model &&
+            !(dev->data.net->model = strdup("rtl8139")))
+                goto no_memory;
+    }
+    return 0;
+
+no_memory:
+    virReportOOMError();
+    return -1;
+}
+
+
+virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
+    .devicesPostParseCallback = qemuDomainDeviceDefPostParse,
+};
+
+
 static void
 qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {

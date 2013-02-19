@@ -38,6 +38,7 @@
       <virtualport>
         <parameters instanceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f' interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f'/>
       </virtualport>
+      <model type='rtl8139'/>
     </interface>
     <interface type='network'>
       <mac address='22:11:22:33:44:55'/>
@@ -45,6 +46,7 @@
       <virtualport type='802.1Qbh'>
         <parameters profileid='testhis99'/>
       </virtualport>
+      <model type='rtl8139'/>
     </interface>
     <memballoon model='virtio'/>
   </devices>

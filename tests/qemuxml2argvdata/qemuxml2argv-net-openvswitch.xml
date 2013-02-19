@@ -32,6 +32,7 @@
       <virtualport type='openvswitch'>
         <parameters interfaceid='09b11c53-8b5c-4eeb-8f00-d84eaa0aaa4f' profileid='bob'/>
       </virtualport>
+      <model type='rtl8139'/>
     </interface>
     <memballoon model='virtio'/>
   </devices>

@@ -342,5 +342,6 @@ void qemuDomainCleanupRun(virQEMUDriverPtr driver,
 
 extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
 extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
+extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 
 #endif /* __QEMU_DOMAIN_H__ */

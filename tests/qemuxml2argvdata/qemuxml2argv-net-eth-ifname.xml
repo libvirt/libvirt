@@ -25,6 +25,7 @@
       <mac address='00:11:22:33:44:55'/>
       <script path='/etc/qemu-ifup'/>
       <target dev='nic02'/>
+      <model type='rtl8139'/>
     </interface>
     <memballoon model='virtio'/>
   </devices>
