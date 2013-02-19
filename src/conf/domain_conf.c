@@ -10972,21 +10972,19 @@ static bool
 virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
                                    virDomainTimerDefPtr dst)
 {
-    bool identical = false;
-
     if (src->name != dst->name) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target timer %s does not match source %s"),
                        virDomainTimerNameTypeToString(dst->name),
                        virDomainTimerNameTypeToString(src->name));
-        goto cleanup;
+        return false;
     }
 
     if (src->present != dst->present) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target timer presence %d does not match source %d"),
                        dst->present, src->present);
-        goto cleanup;
+        return false;
     }
 
     if (src->name == VIR_DOMAIN_TIMER_NAME_TSC) {
@@ -10994,7 +10992,7 @@ virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target TSC frequency %lu does not match source %lu"),
                            dst->frequency, src->frequency);
-            goto cleanup;
+            return false;
         }
 
         if (src->mode != dst->mode) {
@@ -11002,14 +11000,11 @@ virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
                            _("Target TSC mode %s does not match source %s"),
                            virDomainTimerModeTypeToString(dst->mode),
                            virDomainTimerModeTypeToString(src->mode));
-            goto cleanup;
+            return false;
         }
     }
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11017,14 +11012,12 @@ static bool
 virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
                                      virDomainDeviceInfoPtr dst)
 {
-    bool identical = false;
-
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target device address type %s does not match source %s"),
                        virDomainDeviceAddressTypeToString(dst->type),
                        virDomainDeviceAddressTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     switch (src->type) {
@@ -11040,7 +11033,7 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
                            dst->addr.pci.slot, dst->addr.pci.function,
                            src->addr.pci.domain, src->addr.pci.bus,
                            src->addr.pci.slot, src->addr.pci.function);
-            goto cleanup;
+            return false;
         }
         break;
 
@@ -11049,12 +11042,13 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
             src->addr.drive.bus != dst->addr.drive.bus ||
             src->addr.drive.unit != dst->addr.drive.unit) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device drive address %d:%d:%d does not match source %d:%d:%d"),
+                           _("Target device drive address %d:%d:%d "
+                             "does not match source %d:%d:%d"),
                            dst->addr.drive.controller, dst->addr.drive.bus,
                            dst->addr.drive.unit,
                            src->addr.drive.controller, src->addr.drive.bus,
                            src->addr.drive.unit);
-            goto cleanup;
+            return false;
         }
         break;
 
@@ -11063,12 +11057,13 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
             src->addr.vioserial.bus != dst->addr.vioserial.bus ||
             src->addr.vioserial.port != dst->addr.vioserial.port) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"),
+                           _("Target device virtio serial address %d:%d:%d "
+                             "does not match source %d:%d:%d"),
                            dst->addr.vioserial.controller, dst->addr.vioserial.bus,
                            dst->addr.vioserial.port,
                            src->addr.vioserial.controller, src->addr.vioserial.bus,
                            src->addr.vioserial.port);
-            goto cleanup;
+            return false;
         }
         break;
 
@@ -11076,20 +11071,18 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
         if (src->addr.ccid.controller != dst->addr.ccid.controller ||
             src->addr.ccid.slot != dst->addr.ccid.slot) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device ccid address %d:%d does not match source %d:%d"),
+                           _("Target device ccid address %d:%d "
+                             "does not match source %d:%d"),
                            dst->addr.ccid.controller,
                            dst->addr.ccid.slot,
                            src->addr.ccid.controller,
                            src->addr.ccid.slot);
-            goto cleanup;
+            return false;
         }
         break;
     }
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11097,14 +11090,12 @@ static bool
 virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
                                   virDomainDiskDefPtr dst)
 {
-    bool identical = false;
-
     if (src->device != dst->device) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target disk device %s does not match source %s"),
                        virDomainDiskDeviceTypeToString(dst->device),
                        virDomainDiskDeviceTypeToString(src->device));
-        goto cleanup;
+        return false;
     }
 
     if (src->bus != dst->bus) {
@@ -11112,36 +11103,33 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
                        _("Target disk bus %s does not match source %s"),
                        virDomainDiskBusTypeToString(dst->bus),
                        virDomainDiskBusTypeToString(src->bus));
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ(src->dst, dst->dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target disk %s does not match source %s"),
                        dst->dst, src->dst);
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ_NULLABLE(src->serial, dst->serial)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target disk serial %s does not match source %s"),
                        NULLSTR(dst->serial), NULLSTR(src->serial));
-        goto cleanup;
+        return false;
     }
 
     if (src->readonly != dst->readonly || src->shared != dst->shared) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target disk access mode does not match source"));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11149,28 +11137,26 @@ static bool
 virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
                                         virDomainControllerDefPtr dst)
 {
-    bool identical = false;
-
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target controller type %s does not match source %s"),
                        virDomainControllerTypeToString(dst->type),
                        virDomainControllerTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (src->idx != dst->idx) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target controller index %d does not match source %d"),
                        dst->idx, src->idx);
-        goto cleanup;
+        return false;
     }
 
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target controller model %d does not match source %d"),
                        dst->model, src->model);
-        goto cleanup;
+        return false;
     }
 
     if (src->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
@@ -11178,24 +11164,21 @@ virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target controller ports %d does not match source %d"),
                            dst->opts.vioserial.ports, src->opts.vioserial.ports);
-            goto cleanup;
+            return false;
         }
 
         if (src->opts.vioserial.vectors != dst->opts.vioserial.vectors) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target controller vectors %d does not match source %d"),
                            dst->opts.vioserial.vectors, src->opts.vioserial.vectors);
-            goto cleanup;
+            return false;
         }
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11203,28 +11186,23 @@ static bool
 virDomainFsDefCheckABIStability(virDomainFSDefPtr src,
                                 virDomainFSDefPtr dst)
 {
-    bool identical = false;
-
     if (STRNEQ(src->dst, dst->dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target filesystem guest target %s does not match source %s"),
                        dst->dst, src->dst);
-        goto cleanup;
+        return false;
     }
 
     if (src->readonly != dst->readonly) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target filesystem access mode does not match source"));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11232,8 +11210,6 @@ static bool
 virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
                                  virDomainNetDefPtr dst)
 {
-    bool identical = false;
-
     if (virMacAddrCmp(&src->mac, &dst->mac) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target network card mac %02x:%02x:%02x:%02x:%02x:%02x"
@@ -11242,23 +11218,20 @@ virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
                        dst->mac.addr[3], dst->mac.addr[4], dst->mac.addr[5],
                        src->mac.addr[0], src->mac.addr[1], src->mac.addr[2],
                        src->mac.addr[3], src->mac.addr[4], src->mac.addr[5]);
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ_NULLABLE(src->model, dst->model)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target network card model %s does not match source %s"),
                        NULLSTR(dst->model), NULLSTR(src->model));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11266,14 +11239,12 @@ static bool
 virDomainInputDefCheckABIStability(virDomainInputDefPtr src,
                                    virDomainInputDefPtr dst)
 {
-    bool identical = false;
-
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target input device type %s does not match source %s"),
                        virDomainInputTypeToString(dst->type),
                        virDomainInputTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (src->bus != dst->bus) {
@@ -11281,16 +11252,13 @@ virDomainInputDefCheckABIStability(virDomainInputDefPtr src,
                        _("Target input device bus %s does not match source %s"),
                        virDomainInputBusTypeToString(dst->bus),
                        virDomainInputBusTypeToString(src->bus));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11298,23 +11266,18 @@ static bool
 virDomainSoundDefCheckABIStability(virDomainSoundDefPtr src,
                                    virDomainSoundDefPtr dst)
 {
-    bool identical = false;
-
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target sound card model %s does not match source %s"),
                        virDomainSoundModelTypeToString(dst->model),
                        virDomainSoundModelTypeToString(src->model));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11322,35 +11285,33 @@ static bool
 virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
                                    virDomainVideoDefPtr dst)
 {
-    bool identical = false;
-
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card model %s does not match source %s"),
                        virDomainVideoTypeToString(dst->type),
                        virDomainVideoTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (src->vram != dst->vram) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card vram %u does not match source %u"),
                        dst->vram, src->vram);
-        goto cleanup;
+        return false;
     }
 
     if (src->heads != dst->heads) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card heads %u does not match source %u"),
                        dst->heads, src->heads);
-        goto cleanup;
+        return false;
     }
 
     if ((src->accel && !dst->accel) ||
         (!src->accel && dst->accel)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target video card acceleration does not match source"));
-        goto cleanup;
+        return false;
     }
 
     if (src->accel) {
@@ -11358,24 +11319,21 @@ virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target video card 2d accel %u does not match source %u"),
                            dst->accel->support2d, src->accel->support2d);
-            goto cleanup;
+            return false;
         }
 
         if (src->accel->support3d != dst->accel->support3d) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target video card 3d accel %u does not match source %u"),
                            dst->accel->support3d, src->accel->support3d);
-            goto cleanup;
+            return false;
         }
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11383,33 +11341,27 @@ static bool
 virDomainHostdevDefCheckABIStability(virDomainHostdevDefPtr src,
                                      virDomainHostdevDefPtr dst)
 {
-    bool identical = false;
-
     if (src->mode != dst->mode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target host device mode %s does not match source %s"),
                        virDomainHostdevModeTypeToString(dst->mode),
                        virDomainHostdevModeTypeToString(src->mode));
-        goto cleanup;
+        return false;
     }
 
-    if (src->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-        if (src->source.subsys.type != dst->source.subsys.type) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target host device subsystem %s does not match source %s"),
-                           virDomainHostdevSubsysTypeToString(dst->source.subsys.type),
-                           virDomainHostdevSubsysTypeToString(src->source.subsys.type));
-            goto cleanup;
-        }
+    if (src->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        src->source.subsys.type != dst->source.subsys.type) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target host device subsystem %s does not match source %s"),
+                       virDomainHostdevSubsysTypeToString(dst->source.subsys.type),
+                       virDomainHostdevSubsysTypeToString(src->source.subsys.type));
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(src->info, dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11417,15 +11369,10 @@ static bool
 virDomainSmartcardDefCheckABIStability(virDomainSmartcardDefPtr src,
                                        virDomainSmartcardDefPtr dst)
 {
-    bool identical = false;
-
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11433,22 +11380,17 @@ static bool
 virDomainSerialDefCheckABIStability(virDomainChrDefPtr src,
                                     virDomainChrDefPtr dst)
 {
-    bool identical = false;
-
     if (src->target.port != dst->target.port) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target serial port %d does not match source %d"),
                        dst->target.port, src->target.port);
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11456,22 +11398,17 @@ static bool
 virDomainParallelDefCheckABIStability(virDomainChrDefPtr src,
                                       virDomainChrDefPtr dst)
 {
-    bool identical = false;
-
     if (src->target.port != dst->target.port) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target serial port %d does not match source %d"),
                        dst->target.port, src->target.port);
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11479,14 +11416,12 @@ static bool
 virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
                                      virDomainChrDefPtr dst)
 {
-    bool identical = false;
-
     if (src->targetType != dst->targetType) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target channel type %s does not match source %s"),
                        virDomainChrChannelTargetTypeToString(dst->targetType),
                        virDomainChrChannelTargetTypeToString(src->targetType));
-        goto cleanup;
+        return false;
     }
 
     switch (src->targetType) {
@@ -11495,7 +11430,7 @@ virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target channel name %s does not match source %s"),
                            NULLSTR(dst->target.name), NULLSTR(src->target.name));
-            goto cleanup;
+            return false;
         }
         if (src->source.type != dst->source.type &&
             (src->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
@@ -11504,7 +11439,7 @@ virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Changing device type to/from spicevmc would"
                              " change default target channel name"));
-            goto cleanup;
+            return false;
         }
         break;
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
@@ -11517,18 +11452,15 @@ virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
                            NULLSTR(daddr), NULLSTR(saddr));
             VIR_FREE(saddr);
             VIR_FREE(daddr);
-            goto cleanup;
+            return false;
         }
         break;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11536,23 +11468,18 @@ static bool
 virDomainConsoleDefCheckABIStability(virDomainChrDefPtr src,
                                      virDomainChrDefPtr dst)
 {
-    bool identical = false;
-
     if (src->targetType != dst->targetType) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target console type %s does not match source %s"),
                        virDomainChrConsoleTargetTypeToString(dst->targetType),
                        virDomainChrConsoleTargetTypeToString(src->targetType));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11560,23 +11487,18 @@ static bool
 virDomainWatchdogDefCheckABIStability(virDomainWatchdogDefPtr src,
                                       virDomainWatchdogDefPtr dst)
 {
-    bool identical = false;
-
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target watchdog model %s does not match source %s"),
                        virDomainWatchdogModelTypeToString(dst->model),
                        virDomainWatchdogModelTypeToString(src->model));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11584,23 +11506,18 @@ static bool
 virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
                                         virDomainMemballoonDefPtr dst)
 {
-    bool identical = false;
-
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target balloon model %s does not match source %s"),
                        virDomainMemballoonModelTypeToString(dst->model),
                        virDomainMemballoonModelTypeToString(src->model));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -11608,23 +11525,18 @@ static bool
 virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
                                  virDomainHubDefPtr dst)
 {
-    bool identical = false;
-
     if (src->type != dst->type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target hub device type %s does not match source %s"),
                        virDomainHubTypeToString(dst->type),
                        virDomainHubTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 static bool
@@ -11632,14 +11544,13 @@ virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
                                          virDomainRedirFilterDefPtr dst)
 {
     int i;
-    bool identical = false;
 
     if (src->nusbdevs != dst->nusbdevs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target USB redirection filter rule "
                          "count %zu does not match source %zu"),
                          dst->nusbdevs, src->nusbdevs);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0; i < src->nusbdevs; i++) {
@@ -11648,25 +11559,25 @@ virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
         if (srcUsbDev->usbClass != dstUsbDev->usbClass) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("Target USB Class code does not match source"));
-            goto cleanup;
+            return false;
         }
 
         if (srcUsbDev->vendor != dstUsbDev->vendor) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("Target USB vendor ID does not match source"));
-            goto cleanup;
+            return false;
         }
 
         if (srcUsbDev->product != dstUsbDev->product) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("Target USB product ID does not match source"));
-            goto cleanup;
+            return false;
         }
 
         if (srcUsbDev->version != dstUsbDev->version) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("Target USB version does not match source"));
-            goto cleanup;
+            return false;
         }
 
         if (srcUsbDev->allow != dstUsbDev->allow) {
@@ -11674,13 +11585,11 @@ virDomainRedirFilterDefCheckABIStability(virDomainRedirFilterDefPtr src,
                            _("Target USB allow '%s' does not match source '%s'"),
                              dstUsbDev->allow ? "yes" : "no",
                              srcUsbDev->allow ? "yes" : "no");
-            goto cleanup;
+            return false;
         }
     }
-    identical = true;
 
-cleanup:
-    return identical;
+    return true;
 }
 
 /* This compares two configurations and looks for any differences
@@ -11691,7 +11600,6 @@ bool
 virDomainDefCheckABIStability(virDomainDefPtr src,
                               virDomainDefPtr dst)
 {
-    bool identical = false;
     int i;
 
     if (src->virtType != dst->virtType) {
@@ -11699,7 +11607,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        _("Target domain virt type %s does not match source %s"),
                        virDomainVirtTypeToString(dst->virtType),
                        virDomainVirtTypeToString(src->virtType));
-        goto cleanup;
+        return false;
     }
 
     if (memcmp(src->uuid, dst->uuid, VIR_UUID_BUFLEN) != 0) {
@@ -11710,60 +11618,60 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain uuid %s does not match source %s"),
                        uuiddst, uuidsrc);
-        goto cleanup;
+        return false;
     }
 
     if (src->mem.max_balloon != dst->mem.max_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain max memory %lld does not match source %lld"),
                        dst->mem.max_balloon, src->mem.max_balloon);
-        goto cleanup;
+        return false;
     }
     if (src->mem.cur_balloon != dst->mem.cur_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain current memory %lld does not match source %lld"),
                        dst->mem.cur_balloon, src->mem.cur_balloon);
-        goto cleanup;
+        return false;
     }
     if (src->mem.hugepage_backed != dst->mem.hugepage_backed) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain huge page backing %d does not match source %d"),
                        dst->mem.hugepage_backed,
                        src->mem.hugepage_backed);
-        goto cleanup;
+        return false;
     }
 
     if (src->vcpus != dst->vcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vpu count %d does not match source %d"),
                        dst->vcpus, src->vcpus);
-        goto cleanup;
+        return false;
     }
     if (src->maxvcpus != dst->maxvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vpu max %d does not match source %d"),
                        dst->maxvcpus, src->maxvcpus);
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ(src->os.type, dst->os.type)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain OS type %s does not match source %s"),
                        dst->os.type, src->os.type);
-        goto cleanup;
+        return false;
     }
     if (src->os.arch != dst->os.arch){
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain architecture %s does not match source %s"),
                        virArchToString(dst->os.arch),
                        virArchToString(src->os.arch));
-        goto cleanup;
+        return false;
     }
     if (STRNEQ(src->os.machine, dst->os.machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain OS type %s does not match source %s"),
                        dst->os.machine, src->os.machine);
-        goto cleanup;
+        return false;
     }
 
     if (src->os.smbios_mode != dst->os.smbios_mode) {
@@ -11771,227 +11679,250 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        _("Target domain SMBIOS mode %s does not match source %s"),
                        virDomainSmbiosModeTypeToString(dst->os.smbios_mode),
                        virDomainSmbiosModeTypeToString(src->os.smbios_mode));
-        goto cleanup;
+        return false;
     }
 
     if (src->features != dst->features) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain features %d does not match source %d"),
                        dst->features, src->features);
-        goto cleanup;
+        return false;
     }
 
     if (src->clock.ntimers != dst->clock.ntimers) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target domain timers do not match source"));
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->clock.ntimers ; i++) {
-        if (!virDomainTimerDefCheckABIStability(src->clock.timers[i], dst->clock.timers[i]))
-            goto cleanup;
+        if (!virDomainTimerDefCheckABIStability(src->clock.timers[i],
+                                                dst->clock.timers[i]))
+            return false;
     }
 
     if (!virCPUDefIsEqual(src->cpu, dst->cpu))
-        goto cleanup;
+        return false;
 
     if (!virSysinfoIsEqual(src->sysinfo, dst->sysinfo))
-        goto cleanup;
+        return false;
 
     if (src->ndisks != dst->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain disk count %zu does not match source %zu"),
                        dst->ndisks, src->ndisks);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->ndisks ; i++)
         if (!virDomainDiskDefCheckABIStability(src->disks[i], dst->disks[i]))
-            goto cleanup;
+            return false;
 
     if (src->ncontrollers != dst->ncontrollers) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain disk controller count %zu does not match source %zu"),
+                       _("Target domain disk controller count %zu "
+                         "does not match source %zu"),
                        dst->ncontrollers, src->ncontrollers);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->ncontrollers ; i++)
-        if (!virDomainControllerDefCheckABIStability(src->controllers[i], dst->controllers[i]))
-            goto cleanup;
+        if (!virDomainControllerDefCheckABIStability(src->controllers[i],
+                                                     dst->controllers[i]))
+            return false;
 
     if (src->nfss != dst->nfss) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain filesystem count %zu does not match source %zu"),
+                       _("Target domain filesystem count %zu "
+                         "does not match source %zu"),
                        dst->nfss, src->nfss);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nfss ; i++)
         if (!virDomainFsDefCheckABIStability(src->fss[i], dst->fss[i]))
-            goto cleanup;
+            return false;
 
     if (src->nnets != dst->nnets) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain net card count %zu does not match source %zu"),
+                       _("Target domain net card count %zu "
+                         "does not match source %zu"),
                        dst->nnets, src->nnets);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nnets ; i++)
         if (!virDomainNetDefCheckABIStability(src->nets[i], dst->nets[i]))
-            goto cleanup;
+            return false;
 
     if (src->ninputs != dst->ninputs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain input device count %zu does not match source %zu"),
+                       _("Target domain input device count %zu "
+                         "does not match source %zu"),
                        dst->ninputs, src->ninputs);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->ninputs ; i++)
         if (!virDomainInputDefCheckABIStability(src->inputs[i], dst->inputs[i]))
-            goto cleanup;
+            return false;
 
     if (src->nsounds != dst->nsounds) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain sound card count %zu does not match source %zu"),
+                       _("Target domain sound card count %zu "
+                         "does not match source %zu"),
                        dst->nsounds, src->nsounds);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nsounds ; i++)
         if (!virDomainSoundDefCheckABIStability(src->sounds[i], dst->sounds[i]))
-            goto cleanup;
+            return false;
 
     if (src->nvideos != dst->nvideos) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain video card count %zu does not match source %zu"),
+                       _("Target domain video card count %zu "
+                         "does not match source %zu"),
                        dst->nvideos, src->nvideos);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nvideos ; i++)
         if (!virDomainVideoDefCheckABIStability(src->videos[i], dst->videos[i]))
-            goto cleanup;
+            return false;
 
     if (src->nhostdevs != dst->nhostdevs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain host device count %zu does not match source %zu"),
+                       _("Target domain host device count %zu "
+                         "does not match source %zu"),
                        dst->nhostdevs, src->nhostdevs);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nhostdevs ; i++)
-        if (!virDomainHostdevDefCheckABIStability(src->hostdevs[i], dst->hostdevs[i]))
-            goto cleanup;
+        if (!virDomainHostdevDefCheckABIStability(src->hostdevs[i],
+                                                  dst->hostdevs[i]))
+            return false;
 
     if (src->nsmartcards != dst->nsmartcards) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain smartcard count %zu does not match source %zu"),
+                       _("Target domain smartcard count %zu "
+                         "does not match source %zu"),
                        dst->nsmartcards, src->nsmartcards);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nsmartcards ; i++)
-        if (!virDomainSmartcardDefCheckABIStability(src->smartcards[i], dst->smartcards[i]))
-            goto cleanup;
+        if (!virDomainSmartcardDefCheckABIStability(src->smartcards[i],
+                                                    dst->smartcards[i]))
+            return false;
 
     if (src->nserials != dst->nserials) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain serial port count %zu does not match source %zu"),
+                       _("Target domain serial port count %zu "
+                         "does not match source %zu"),
                        dst->nserials, src->nserials);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nserials ; i++)
-        if (!virDomainSerialDefCheckABIStability(src->serials[i], dst->serials[i]))
-            goto cleanup;
+        if (!virDomainSerialDefCheckABIStability(src->serials[i],
+                                                 dst->serials[i]))
+            return false;
 
     if (src->nparallels != dst->nparallels) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain parallel port count %zu does not match source %zu"),
+                       _("Target domain parallel port count %zu "
+                         "does not match source %zu"),
                        dst->nparallels, src->nparallels);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nparallels ; i++)
-        if (!virDomainParallelDefCheckABIStability(src->parallels[i], dst->parallels[i]))
-            goto cleanup;
+        if (!virDomainParallelDefCheckABIStability(src->parallels[i],
+                                                   dst->parallels[i]))
+            return false;
 
     if (src->nchannels != dst->nchannels) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain channel count %zu does not match source %zu"),
+                       _("Target domain channel count %zu "
+                         "does not match source %zu"),
                        dst->nchannels, src->nchannels);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nchannels ; i++)
-        if (!virDomainChannelDefCheckABIStability(src->channels[i], dst->channels[i]))
-            goto cleanup;
+        if (!virDomainChannelDefCheckABIStability(src->channels[i],
+                                                  dst->channels[i]))
+            return false;
 
     if (src->nconsoles != dst->nconsoles) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain console count %zu does not match source %zu"),
+                       _("Target domain console count %zu "
+                         "does not match source %zu"),
                        dst->nconsoles, src->nconsoles);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nconsoles ; i++)
-        if (!virDomainConsoleDefCheckABIStability(src->consoles[i], dst->consoles[i]))
-            goto cleanup;
+        if (!virDomainConsoleDefCheckABIStability(src->consoles[i],
+                                                  dst->consoles[i]))
+            return false;
 
     if (src->nhubs != dst->nhubs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain hub device count %zu does not match source %zu"),
+                       _("Target domain hub device count %zu "
+                         "does not match source %zu"),
                        dst->nhubs, src->nhubs);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0 ; i < src->nhubs ; i++)
         if (!virDomainHubDefCheckABIStability(src->hubs[i], dst->hubs[i]))
-            goto cleanup;
+            return false;
 
     if ((!src->redirfilter && dst->redirfilter) ||
         (src->redirfilter && !dst->redirfilter)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain USB redirection filter count %d does not match source %d"),
+                       _("Target domain USB redirection filter count %d "
+                         "does not match source %d"),
                        dst->redirfilter ? 1 : 0, src->redirfilter ? 1 : 0);
-        goto cleanup;
+        return false;
     }
 
     if (src->redirfilter &&
-        !virDomainRedirFilterDefCheckABIStability(src->redirfilter, dst->redirfilter))
-        goto cleanup;
+        !virDomainRedirFilterDefCheckABIStability(src->redirfilter,
+                                                  dst->redirfilter))
+        return false;
 
     if ((!src->watchdog && dst->watchdog) ||
         (src->watchdog && !dst->watchdog)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain watchdog count %d does not match source %d"),
+                       _("Target domain watchdog count %d "
+                         "does not match source %d"),
                        dst->watchdog ? 1 : 0, src->watchdog ? 1 : 0);
-        goto cleanup;
+        return false;
     }
 
     if (src->watchdog &&
         !virDomainWatchdogDefCheckABIStability(src->watchdog, dst->watchdog))
-        goto cleanup;
+        return false;
 
     if ((!src->memballoon && dst->memballoon) ||
         (src->memballoon && !dst->memballoon)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain memory balloon count %d does not match source %d"),
+                       _("Target domain memory balloon count %d "
+                         "does not match source %d"),
                        dst->memballoon ? 1 : 0, src->memballoon ? 1 : 0);
-        goto cleanup;
+        return false;
     }
 
     if (src->memballoon &&
-        !virDomainMemballoonDefCheckABIStability(src->memballoon, dst->memballoon))
-        goto cleanup;
+        !virDomainMemballoonDefCheckABIStability(src->memballoon,
+                                                 dst->memballoon))
+        return false;
 
-    identical = true;
-
-cleanup:
-    return identical;
+    return true;
 }
 
 
