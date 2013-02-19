@@ -16030,7 +16030,7 @@ virDomainDeviceDefCopy(virCapsPtr caps,
     char *xmlStr = NULL;
     int rc = -1;
 
-    switch (src->type) {
+    switch ((virDomainDeviceType) src->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         rc = virDomainDiskDefFormat(&buf, src->data.disk, flags);
         break;
@@ -16070,7 +16070,11 @@ virDomainDeviceDefCopy(virCapsPtr caps,
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         rc = virDomainRedirdevDefFormat(&buf, src->data.redirdev, flags);
         break;
-    default:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Copying definition of '%d' type "
                          "is not implemented yet."),
