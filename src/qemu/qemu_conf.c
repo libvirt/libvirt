@@ -852,14 +852,22 @@ qemuGetSharedDiskKey(const char *disk_path)
  */
 int
 qemuAddSharedDisk(virQEMUDriverPtr driver,
-                  const char *disk_path)
+                  virDomainDiskDefPtr disk)
 {
     size_t *ref = NULL;
     char *key = NULL;
     int ret = -1;
 
+    /* Currently the only conflicts we have to care about
+     * for the shared disk is "sgio" setting, which is only
+     * valid for block disk.
+     */
+    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+        !disk->shared || !disk->src)
+        return 0;
+
     qemuDriverLock(driver);
-    if (!(key = qemuGetSharedDiskKey(disk_path)))
+    if (!(key = qemuGetSharedDiskKey(disk->src)))
         goto cleanup;
 
     if ((ref = virHashLookup(driver->sharedDisks, key))) {
@@ -882,14 +890,18 @@ cleanup:
  */
 int
 qemuRemoveSharedDisk(virQEMUDriverPtr driver,
-                     const char *disk_path)
+                     virDomainDiskDefPtr disk)
 {
     size_t *ref = NULL;
     char *key = NULL;
     int ret = -1;
 
+    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+        !disk->shared || !disk->src)
+        return 0;
+
     qemuDriverLock(driver);
-    if (!(key = qemuGetSharedDiskKey(disk_path)))
+    if (!(key = qemuGetSharedDiskKey(disk->src)))
         goto cleanup;
 
     if (!(ref = virHashLookup(driver->sharedDisks, key)))

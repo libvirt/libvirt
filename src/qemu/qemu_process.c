@@ -3447,6 +3447,13 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
 {
     int val = -1;
 
+    /* "sgio" is only valid for block disk; cdrom
+     * and floopy disk can have empty source.
+     */
+    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+        !disk->src)
+        return 0;
+
     if (disk->sgio)
         val = (disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED);
 
@@ -3873,13 +3880,11 @@ int qemuProcessStart(virConnectPtr conn,
                            _("Raw I/O is not supported on this platform"));
 #endif
 
-        if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
-            if (qemuAddSharedDisk(driver, disk->src) < 0)
-                goto cleanup;
+        if (qemuAddSharedDisk(driver, disk) < 0)
+            goto cleanup;
 
-            if (qemuCheckSharedDisk(driver, disk) < 0)
-                goto cleanup;
-        }
+        if (qemuCheckSharedDisk(driver, disk) < 0)
+            goto cleanup;
 
         if (qemuSetUnprivSGIO(disk) < 0)
             goto cleanup;
@@ -4283,10 +4288,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
-
-        if (disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK && disk->shared) {
-            ignore_value(qemuRemoveSharedDisk(driver, disk->src));
-        }
+        ignore_value(qemuRemoveSharedDisk(driver, disk));
     }
 
     /* Clear out dynamically assigned labels */

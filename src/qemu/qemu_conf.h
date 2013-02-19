@@ -273,11 +273,11 @@ void qemuDriverCloseCallbackRunAll(virQEMUDriverPtr driver,
                                    virConnectPtr conn);
 
 int qemuAddSharedDisk(virQEMUDriverPtr driver,
-                      const char *disk_path)
+                      virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuRemoveSharedDisk(virQEMUDriverPtr driver,
-                         const char *disk_path)
+                         virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 char * qemuGetSharedDiskKey(const char *disk_path)
     ATTRIBUTE_NONNULL(1);
