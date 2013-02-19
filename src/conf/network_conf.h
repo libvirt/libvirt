@@ -174,6 +174,9 @@ struct _virNetworkForwardDef {
 
     size_t nifs;
     virNetworkForwardIfDefPtr ifs;
+
+    /* adresses for SNAT */
+    virSocketAddr addrStart, addrEnd;
 };
 
 typedef struct _virPortGroupDef virPortGroupDef;

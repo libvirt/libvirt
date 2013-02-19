@@ -805,11 +805,16 @@ iptablesForwardMasquerade(iptablesContext *ctx,
                           virSocketAddr *netaddr,
                           unsigned int prefix,
                           const char *physdev,
+                          virSocketAddr *addrStart,
+                          virSocketAddr *addrEnd,
                           const char *protocol,
                           int action)
 {
-    int ret;
-    char *networkstr;
+    int ret = -1;
+    char *networkstr = NULL;
+    char *addrStartStr = NULL;
+    char *addrEndStr = NULL;
+    char *natRangeStr = NULL;
     virCommandPtr cmd = NULL;
 
     if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
@@ -820,8 +825,16 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attempted to NAT '%s'. NAT is only supported for IPv4."),
                        networkstr);
-        VIR_FREE(networkstr);
-        return -1;
+        goto cleanup;
+    }
+
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addrStart, AF_INET)) {
+        if (!(addrStartStr = virSocketAddrFormat(addrStart)))
+            goto cleanup;
+        if (VIR_SOCKET_ADDR_IS_FAMILY(addrEnd, AF_INET)) {
+            if (!(addrEndStr = virSocketAddrFormat(addrEnd)))
+                goto cleanup;
+        }
     }
 
     cmd = iptablesCommandNew(ctx->nat_postrouting, AF_INET, action);
@@ -835,13 +848,42 @@ iptablesForwardMasquerade(iptablesContext *ctx,
     if (physdev && physdev[0])
         virCommandAddArgList(cmd, "--out-interface", physdev, NULL);
 
-    virCommandAddArgList(cmd, "--jump", "MASQUERADE", NULL);
+    /* Use --jump SNAT if public addr is specified */
+    if (addrStartStr && addrStartStr[0]) {
+        const char *portStr = "";
+        int r = 0;
 
-    if (protocol && protocol[0])
-        virCommandAddArgList(cmd, "--to-ports", "1024-65535", NULL);
+        if (protocol && protocol[0])
+            portStr = ":1024-65535";
 
-    ret = iptablesCommandRunAndFree(cmd);
+        if (addrEndStr && addrEndStr[0]) {
+            r = virAsprintf(&natRangeStr, "%s-%s%s", addrStartStr, addrEndStr,
+                            portStr);
+        } else {
+            r = virAsprintf(&natRangeStr, "%s%s", addrStartStr, portStr);
+        }
+
+        if (r < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        virCommandAddArgList(cmd, "--jump", "SNAT",
+                                  "--to-source", natRangeStr, NULL);
+     } else {
+         virCommandAddArgList(cmd, "--jump", "MASQUERADE", NULL);
+
+         if (protocol && protocol[0])
+             virCommandAddArgList(cmd, "--to-ports", "1024-65535", NULL);
+     }
+
+    ret = virCommandRun(cmd, NULL);
+cleanup:
+    virCommandFree(cmd);
     VIR_FREE(networkstr);
+    VIR_FREE(addrStartStr);
+    VIR_FREE(addrEndStr);
+    VIR_FREE(natRangeStr);
     return ret;
 }
 
@@ -863,9 +905,11 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
                              virSocketAddr *netaddr,
                              unsigned int prefix,
                              const char *physdev,
+                             virSocketAddr *addrStart,
+                             virSocketAddr *addrEnd,
                              const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, protocol, ADD);
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addrStart, addrEnd, protocol, ADD);
 }
 
 /**
@@ -886,9 +930,11 @@ iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 virSocketAddr *netaddr,
                                 unsigned int prefix,
                                 const char *physdev,
+                                virSocketAddr *addrStart,
+                                virSocketAddr *addrEnd,
                                 const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, protocol, REMOVE);
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addrStart, addrEnd, protocol, REMOVE);
 }
 
 

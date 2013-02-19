@@ -136,6 +136,24 @@
             network, and to/from the host to the guests, are
             unrestricted and not NATed.<span class="since">Since
             0.4.2</span>
+
+            <p><span class="since">Since 1.0.3</span> it is possible to
+            specify a public IPv4 address range to be used for the NAT by
+            using the <code>&lt;nat&gt;</code> and
+            <code>&lt;address&gt;</code> subelements.
+            <pre>
+...
+  &lt;forward mode='nat'&gt;
+    &lt;nat&gt;
+      &lt;address start='1.2.3.4' end='1.2.3.10'/&gt;
+    &lt;/nat&gt;
+  &lt;/forward&gt;
+...
+            </pre>
+            An singe IPv4 address can be set by setting
+            <code>start</code> and <code>end</code> attributes to
+            the same value.
+            </p>
           </dd>
 
           <dt><code>route</code></dt>
