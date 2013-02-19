@@ -8093,12 +8093,13 @@ error:
     return NULL;
 }
 
-static int virDomainEventActionParseXML(xmlXPathContextPtr ctxt,
-                                        const char *name,
-                                        const char *xpath,
-                                        int *val,
-                                        int defaultVal,
-                                        virEventActionFromStringFunc convFunc)
+static int
+virDomainEventActionParseXML(xmlXPathContextPtr ctxt,
+                             const char *name,
+                             const char *xpath,
+                             int *val,
+                             int defaultVal,
+                             virEventActionFromStringFunc convFunc)
 {
     char *tmp = virXPathString(xpath, ctxt);
     if (tmp == NULL) {
@@ -8138,10 +8139,11 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
-virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
-                                              virDomainDefPtr def,
-                                              const char *xmlStr,
-                                              unsigned int flags)
+virDomainDeviceDefPtr
+virDomainDeviceDefParse(virCapsPtr caps,
+                        virDomainDefPtr def,
+                        const char *xmlStr,
+                        unsigned int flags)
 {
     xmlDocPtr xml;
     xmlNodePtr node;
@@ -9129,12 +9131,13 @@ cleanup:
 }
 
 
-static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
-                                            xmlDocPtr xml,
-                                            xmlNodePtr root,
-                                            xmlXPathContextPtr ctxt,
-                                            unsigned int expectedVirtTypes,
-                                            unsigned int flags)
+static virDomainDefPtr
+virDomainDefParseXML(virCapsPtr caps,
+                     xmlDocPtr xml,
+                     xmlNodePtr root,
+                     xmlXPathContextPtr ctxt,
+                     unsigned int expectedVirtTypes,
+                     unsigned int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
@@ -10739,11 +10742,12 @@ no_memory:
 }
 
 
-static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
-                                            xmlDocPtr xml,
-                                            xmlXPathContextPtr ctxt,
-                                            unsigned int expectedVirtTypes,
-                                            unsigned int flags)
+static virDomainObjPtr
+virDomainObjParseXML(virCapsPtr caps,
+                     xmlDocPtr xml,
+                     xmlXPathContextPtr ctxt,
+                     unsigned int expectedVirtTypes,
+                     unsigned int flags)
 {
     char *tmp = NULL;
     long val;
@@ -10857,28 +10861,31 @@ virDomainDefParse(const char *xmlStr,
     return def;
 }
 
-virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
-                                        const char *xmlStr,
-                                        unsigned int expectedVirtTypes,
-                                        unsigned int flags)
+virDomainDefPtr
+virDomainDefParseString(virCapsPtr caps,
+                        const char *xmlStr,
+                        unsigned int expectedVirtTypes,
+                        unsigned int flags)
 {
     return virDomainDefParse(xmlStr, NULL, caps, expectedVirtTypes, flags);
 }
 
-virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
-                                      const char *filename,
-                                      unsigned int expectedVirtTypes,
-                                      unsigned int flags)
+virDomainDefPtr
+virDomainDefParseFile(virCapsPtr caps,
+                      const char *filename,
+                      unsigned int expectedVirtTypes,
+                      unsigned int flags)
 {
     return virDomainDefParse(NULL, filename, caps, expectedVirtTypes, flags);
 }
 
 
-virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
-                                      xmlDocPtr xml,
-                                      xmlNodePtr root,
-                                      unsigned int expectedVirtTypes,
-                                      unsigned int flags)
+virDomainDefPtr
+virDomainDefParseNode(virCapsPtr caps,
+                      xmlDocPtr xml,
+                      xmlNodePtr root,
+                      unsigned int expectedVirtTypes,
+                      unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
@@ -10961,8 +10968,9 @@ virDomainObjParseFile(virCapsPtr caps,
 }
 
 
-static bool virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
-                                              virDomainTimerDefPtr dst)
+static bool
+virDomainTimerDefCheckABIStability(virDomainTimerDefPtr src,
+                                   virDomainTimerDefPtr dst)
 {
     bool identical = false;
 
@@ -11005,8 +11013,9 @@ cleanup:
 }
 
 
-static bool virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
-                                                 virDomainDeviceInfoPtr dst)
+static bool
+virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
+                                     virDomainDeviceInfoPtr dst)
 {
     bool identical = false;
 
@@ -11084,8 +11093,9 @@ cleanup:
 }
 
 
-static bool virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
-                                              virDomainDiskDefPtr dst)
+static bool
+virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
+                                  virDomainDiskDefPtr dst)
 {
     bool identical = false;
 
@@ -11135,8 +11145,9 @@ cleanup:
 }
 
 
-static bool virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
-                                                    virDomainControllerDefPtr dst)
+static bool
+virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
+                                        virDomainControllerDefPtr dst)
 {
     bool identical = false;
 
@@ -11188,8 +11199,9 @@ cleanup:
 }
 
 
-static bool virDomainFsDefCheckABIStability(virDomainFSDefPtr src,
-                                            virDomainFSDefPtr dst)
+static bool
+virDomainFsDefCheckABIStability(virDomainFSDefPtr src,
+                                virDomainFSDefPtr dst)
 {
     bool identical = false;
 
@@ -11216,8 +11228,9 @@ cleanup:
 }
 
 
-static bool virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
-                                             virDomainNetDefPtr dst)
+static bool
+virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
+                                 virDomainNetDefPtr dst)
 {
     bool identical = false;
 
@@ -11249,8 +11262,9 @@ cleanup:
 }
 
 
-static bool virDomainInputDefCheckABIStability(virDomainInputDefPtr src,
-                                               virDomainInputDefPtr dst)
+static bool
+virDomainInputDefCheckABIStability(virDomainInputDefPtr src,
+                                   virDomainInputDefPtr dst)
 {
     bool identical = false;
 
@@ -11280,8 +11294,9 @@ cleanup:
 }
 
 
-static bool virDomainSoundDefCheckABIStability(virDomainSoundDefPtr src,
-                                               virDomainSoundDefPtr dst)
+static bool
+virDomainSoundDefCheckABIStability(virDomainSoundDefPtr src,
+                                   virDomainSoundDefPtr dst)
 {
     bool identical = false;
 
@@ -11303,8 +11318,9 @@ cleanup:
 }
 
 
-static bool virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
-                                               virDomainVideoDefPtr dst)
+static bool
+virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
+                                   virDomainVideoDefPtr dst)
 {
     bool identical = false;
 
@@ -11363,8 +11379,9 @@ cleanup:
 }
 
 
-static bool virDomainHostdevDefCheckABIStability(virDomainHostdevDefPtr src,
-                                                 virDomainHostdevDefPtr dst)
+static bool
+virDomainHostdevDefCheckABIStability(virDomainHostdevDefPtr src,
+                                     virDomainHostdevDefPtr dst)
 {
     bool identical = false;
 
@@ -11396,8 +11413,9 @@ cleanup:
 }
 
 
-static bool virDomainSmartcardDefCheckABIStability(virDomainSmartcardDefPtr src,
-                                                   virDomainSmartcardDefPtr dst)
+static bool
+virDomainSmartcardDefCheckABIStability(virDomainSmartcardDefPtr src,
+                                       virDomainSmartcardDefPtr dst)
 {
     bool identical = false;
 
@@ -11411,30 +11429,9 @@ cleanup:
 }
 
 
-static bool virDomainSerialDefCheckABIStability(virDomainChrDefPtr src,
-                                                virDomainChrDefPtr dst)
-{
-    bool identical = false;
-
-    if (src->target.port != dst->target.port) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target serial port %d does not match source %d"),
-                       dst->target.port, src->target.port);
-        goto cleanup;
-    }
-
-    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
-        goto cleanup;
-
-    identical = true;
-
-cleanup:
-    return identical;
-}
-
-
-static bool virDomainParallelDefCheckABIStability(virDomainChrDefPtr src,
-                                                  virDomainChrDefPtr dst)
+static bool
+virDomainSerialDefCheckABIStability(virDomainChrDefPtr src,
+                                    virDomainChrDefPtr dst)
 {
     bool identical = false;
 
@@ -11455,8 +11452,32 @@ cleanup:
 }
 
 
-static bool virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
-                                                 virDomainChrDefPtr dst)
+static bool
+virDomainParallelDefCheckABIStability(virDomainChrDefPtr src,
+                                      virDomainChrDefPtr dst)
+{
+    bool identical = false;
+
+    if (src->target.port != dst->target.port) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target serial port %d does not match source %d"),
+                       dst->target.port, src->target.port);
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        goto cleanup;
+
+    identical = true;
+
+cleanup:
+    return identical;
+}
+
+
+static bool
+virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
+                                     virDomainChrDefPtr dst)
 {
     bool identical = false;
 
@@ -11511,8 +11532,9 @@ cleanup:
 }
 
 
-static bool virDomainConsoleDefCheckABIStability(virDomainChrDefPtr src,
-                                                 virDomainChrDefPtr dst)
+static bool
+virDomainConsoleDefCheckABIStability(virDomainChrDefPtr src,
+                                     virDomainChrDefPtr dst)
 {
     bool identical = false;
 
@@ -11534,8 +11556,9 @@ cleanup:
 }
 
 
-static bool virDomainWatchdogDefCheckABIStability(virDomainWatchdogDefPtr src,
-                                                  virDomainWatchdogDefPtr dst)
+static bool
+virDomainWatchdogDefCheckABIStability(virDomainWatchdogDefPtr src,
+                                      virDomainWatchdogDefPtr dst)
 {
     bool identical = false;
 
@@ -11557,8 +11580,9 @@ cleanup:
 }
 
 
-static bool virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
-                                                    virDomainMemballoonDefPtr dst)
+static bool
+virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
+                                        virDomainMemballoonDefPtr dst)
 {
     bool identical = false;
 
@@ -11580,8 +11604,9 @@ cleanup:
 }
 
 
-static bool virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
-                                                   virDomainHubDefPtr dst)
+static bool
+virDomainHubDefCheckABIStability(virDomainHubDefPtr src,
+                                 virDomainHubDefPtr dst)
 {
     bool identical = false;
 
@@ -11662,8 +11687,9 @@ cleanup:
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
  */
-bool virDomainDefCheckABIStability(virDomainDefPtr src,
-                                   virDomainDefPtr dst)
+bool
+virDomainDefCheckABIStability(virDomainDefPtr src,
+                              virDomainDefPtr dst)
 {
     bool identical = false;
     int i;
@@ -11969,9 +11995,10 @@ cleanup:
 }
 
 
-static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
-                                                 int controllerType,
-                                                 int diskBus)
+static int
+virDomainDefAddDiskControllersForType(virDomainDefPtr def,
+                                      int controllerType,
+                                      int diskBus)
 {
     int i;
     int maxController = -1;
@@ -11996,7 +12023,8 @@ static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
 }
 
 
-static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
+static int
+virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
 {
     /* Look for any virtio serial or virtio console devs */
     int i;
@@ -12079,7 +12107,8 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
  * in the XML. This is for compat with existing apps which will
  * not know/care about <controller> info in the XML
  */
-int virDomainDefAddImplicitControllers(virDomainDefPtr def)
+int
+virDomainDefAddImplicitControllers(virDomainDefPtr def)
 {
     if (virDomainDefAddDiskControllersForType(def,
                                               VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
@@ -12148,11 +12177,12 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
     return NULL;
 }
 
-int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
-                        int *nvcpupin,
-                        unsigned char *cpumap,
-                        int maplen,
-                        int vcpu)
+int
+virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
+                    int *nvcpupin,
+                    unsigned char *cpumap,
+                    int maplen,
+                    int vcpu)
 {
     virDomainVcpuPinDefPtr vcpupin = NULL;
 
@@ -12388,8 +12418,9 @@ virDomainLeaseDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static void virDomainDiskGeometryDefFormat(virBufferPtr buf,
-                                           virDomainDiskDefPtr def)
+static void
+virDomainDiskGeometryDefFormat(virBufferPtr buf,
+                               virDomainDiskDefPtr def)
 {
     const char *trans =
         virDomainDiskGeometryTransTypeToString(def->geometry.trans);
@@ -12409,8 +12440,9 @@ static void virDomainDiskGeometryDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 }
-static void virDomainDiskBlockIoDefFormat(virBufferPtr buf,
-                                          virDomainDiskDefPtr def)
+static void
+virDomainDiskBlockIoDefFormat(virBufferPtr buf,
+                              virDomainDiskDefPtr def)
 {
     if (def->blockio.logical_block_size > 0 ||
         def->blockio.physical_block_size > 0) {
@@ -14868,9 +14900,10 @@ virDomainDefFormat(virDomainDefPtr def, unsigned int flags)
 }
 
 
-static char *virDomainObjFormat(virCapsPtr caps,
-                                virDomainObjPtr obj,
-                                unsigned int flags)
+static char *
+virDomainObjFormat(virCapsPtr caps,
+                   virDomainObjPtr obj,
+                   unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int state;
@@ -14964,9 +14997,10 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
     return 0;
 }
 
-int virDomainSaveXML(const char *configDir,
-                     virDomainDefPtr def,
-                     const char *xml)
+int
+virDomainSaveXML(const char *configDir,
+                 virDomainDefPtr def,
+                 const char *xml)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL;
@@ -14992,8 +15026,9 @@ int virDomainSaveXML(const char *configDir,
     return ret;
 }
 
-int virDomainSaveConfig(const char *configDir,
-                        virDomainDefPtr def)
+int
+virDomainSaveConfig(const char *configDir,
+                    virDomainDefPtr def)
 {
     int ret = -1;
     char *xml;
@@ -15011,9 +15046,10 @@ cleanup:
     return ret;
 }
 
-int virDomainSaveStatus(virCapsPtr caps,
-                        const char *statusDir,
-                        virDomainObjPtr obj)
+int
+virDomainSaveStatus(virCapsPtr caps,
+                    const char *statusDir,
+                    virDomainObjPtr obj)
 {
     unsigned int flags = (VIR_DOMAIN_XML_SECURE |
                           VIR_DOMAIN_XML_INTERNAL_STATUS |
@@ -15130,14 +15166,15 @@ error:
     return NULL;
 }
 
-int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
-                                   virCapsPtr caps,
-                                   const char *configDir,
-                                   const char *autostartDir,
-                                   int liveStatus,
-                                   unsigned int expectedVirtTypes,
-                                   virDomainLoadConfigNotify notify,
-                                   void *opaque)
+int
+virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
+                               virCapsPtr caps,
+                               const char *configDir,
+                               const char *autostartDir,
+                               int liveStatus,
+                               unsigned int expectedVirtTypes,
+                               virDomainLoadConfigNotify notify,
+                               void *opaque)
 {
     DIR *dir;
     struct dirent *entry;
@@ -15196,9 +15233,10 @@ int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     return 0;
 }
 
-int virDomainDeleteConfig(const char *configDir,
-                          const char *autostartDir,
-                          virDomainObjPtr dom)
+int
+virDomainDeleteConfig(const char *configDir,
+                      const char *autostartDir,
+                      virDomainObjPtr dom)
 {
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
@@ -15227,8 +15265,9 @@ cleanup:
     return ret;
 }
 
-char *virDomainConfigFile(const char *dir,
-                          const char *name)
+char
+*virDomainConfigFile(const char *dir,
+                     const char *name)
 {
     char *ret = NULL;
 
@@ -15248,9 +15287,10 @@ char *virDomainConfigFile(const char *dir,
  * @param devIdx parsed device number
  * @return 0 on success, -1 on failure
  */
-int virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
-                                int *busIdx,
-                                int *devIdx) {
+int
+virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
+                            int *busIdx,
+                            int *devIdx) {
 
     int idx = virDiskNameToIndex(disk->dst);
     if (idx < 0)
@@ -15278,7 +15318,8 @@ int virDiskNameToBusDeviceIndex(const virDomainDiskDefPtr disk,
     return 0;
 }
 
-virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
+virDomainFSDefPtr
+virDomainGetRootFilesystem(virDomainDefPtr def)
 {
     int i;
 
@@ -15294,7 +15335,10 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
 }
 
 
-static void virDomainObjListCountActive(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
+static void
+virDomainObjListCountActive(void *payload,
+                            const void *name ATTRIBUTE_UNUSED,
+                            void *data)
 {
     virDomainObjPtr obj = payload;
     int *count = data;
@@ -15304,7 +15348,10 @@ static void virDomainObjListCountActive(void *payload, const void *name ATTRIBUT
     virObjectUnlock(obj);
 }
 
-static void virDomainObjListCountInactive(void *payload, const void *name ATTRIBUTE_UNUSED, void *data)
+static void
+virDomainObjListCountInactive(void *payload,
+                              const void *name ATTRIBUTE_UNUSED,
+                              void *data)
 {
     virDomainObjPtr obj = payload;
     int *count = data;
@@ -15314,7 +15361,9 @@ static void virDomainObjListCountInactive(void *payload, const void *name ATTRIB
     virObjectUnlock(obj);
 }
 
-int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active)
+int
+virDomainObjListNumOfDomains(virDomainObjListPtr doms,
+                             int active)
 {
     int count = 0;
     virObjectLock(doms);
@@ -15332,7 +15381,10 @@ struct virDomainIDData {
     int *ids;
 };
 
-static void virDomainObjListCopyActiveIDs(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static void
+virDomainObjListCopyActiveIDs(void *payload,
+                              const void *name ATTRIBUTE_UNUSED,
+                              void *opaque)
 {
     virDomainObjPtr obj = payload;
     struct virDomainIDData *data = opaque;
@@ -15342,9 +15394,10 @@ static void virDomainObjListCopyActiveIDs(void *payload, const void *name ATTRIB
     virObjectUnlock(obj);
 }
 
-int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
-                                 int *ids,
-                                 int maxids)
+int
+virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
+                             int *ids,
+                             int maxids)
 {
     struct virDomainIDData data = { 0, maxids, ids };
     virObjectLock(doms);
@@ -15360,7 +15413,10 @@ struct virDomainNameData {
     char **const names;
 };
 
-static void virDomainObjListCopyInactiveNames(void *payload, const void *name ATTRIBUTE_UNUSED, void *opaque)
+static void
+virDomainObjListCopyInactiveNames(void *payload,
+                                  const void *name ATTRIBUTE_UNUSED,
+                                  void *opaque)
 {
     virDomainObjPtr obj = payload;
     struct virDomainNameData *data = opaque;
@@ -15379,9 +15435,10 @@ static void virDomainObjListCopyInactiveNames(void *payload, const void *name AT
 }
 
 
-int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
-                                     char **const names,
-                                     int maxnames)
+int
+virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
+                                 char **const names,
+                                 int maxnames)
 {
     struct virDomainNameData data = { 0, 0, maxnames, names };
     int i;
@@ -15419,9 +15476,10 @@ virDomainObjListHelper(void *payload,
         data->ret = -1;
 }
 
-int virDomainObjListForEach(virDomainObjListPtr doms,
-                            virDomainObjListIterator callback,
-                            void *opaque)
+int
+virDomainObjListForEach(virDomainObjListPtr doms,
+                        virDomainObjListIterator callback,
+                        void *opaque)
 {
     struct virDomainListIterData data = {
         callback, opaque, 0,
@@ -15433,10 +15491,11 @@ int virDomainObjListForEach(virDomainObjListPtr doms,
 }
 
 
-int virDomainChrDefForeach(virDomainDefPtr def,
-                           bool abortOnError,
-                           virDomainChrDefIterator iter,
-                           void *opaque)
+int
+virDomainChrDefForeach(virDomainDefPtr def,
+                       bool abortOnError,
+                       virDomainChrDefIterator iter,
+                       void *opaque)
 {
     int i;
     int rc = 0;
@@ -15485,10 +15544,11 @@ done:
 }
 
 
-int virDomainSmartcardDefForeach(virDomainDefPtr def,
-                                 bool abortOnError,
-                                 virDomainSmartcardDefIterator iter,
-                                 void *opaque)
+int
+virDomainSmartcardDefForeach(virDomainDefPtr def,
+                             bool abortOnError,
+                             virDomainSmartcardDefIterator iter,
+                             void *opaque)
 {
     int i;
     int rc = 0;
@@ -15513,10 +15573,11 @@ done:
  * ignoreOpenFailure determines whether to warn about a chain that
  * mentions a backing file without also having metadata on that
  * file.  */
-int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
-                                bool ignoreOpenFailure,
-                                virDomainDiskDefPathIterator iter,
-                                void *opaque)
+int
+virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
+                            bool ignoreOpenFailure,
+                            virDomainDiskDefPathIterator iter,
+                            void *opaque)
 {
     int ret = -1;
     size_t depth = 0;
