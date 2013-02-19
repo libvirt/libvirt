@@ -562,11 +562,8 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     /* Basic host arch / guest machine capabilities */
-    if (!(caps = virQEMUCapsInit(driver->qemuCapsCache))) {
-        virReportOOMError();
-        virObjectUnref(cfg);
-        return NULL;
-    }
+    if (!(caps = virQEMUCapsInit(driver->qemuCapsCache)))
+        goto no_memory;
 
     if (cfg->allowDiskFormatProbing) {
         caps->defaultDiskDriverName = NULL;
@@ -582,14 +579,12 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
-        goto err_exit;
+        goto error;
     }
 
     /* access sec drivers and create a sec model for each one */
-    sec_managers = virSecurityManagerGetNested(driver->securityManager);
-    if (sec_managers == NULL) {
-        goto err_exit;
-    }
+    if (!(sec_managers = virSecurityManagerGetNested(driver->securityManager)))
+        goto error;
 
     /* calculate length */
     for (i = 0; sec_managers[i]; i++)
@@ -616,7 +611,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 
 no_memory:
     virReportOOMError();
-err_exit:
+error:
     VIR_FREE(sec_managers);
     virObjectUnref(caps);
     virObjectUnref(cfg);
