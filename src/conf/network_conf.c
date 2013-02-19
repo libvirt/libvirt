@@ -628,9 +628,9 @@ int virNetworkIpDefNetmask(const virNetworkIpDefPtr def,
 
 
 static int
-virNetworkDHCPRangeDefParseXML(const char *networkName,
+virSocketAddrRangeParseXML(const char *networkName,
                                xmlNodePtr node,
-                               virNetworkDHCPRangeDefPtr range)
+                               virSocketAddrRangePtr range)
 {
 
 
@@ -793,7 +793,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
                 virReportOOMError();
                 return -1;
             }
-            if (virNetworkDHCPRangeDefParseXML(networkName, cur,
+            if (virSocketAddrRangeParseXML(networkName, cur,
                                                &def->ranges[def->nranges]) < 0) {
                 return -1;
             }
@@ -1376,14 +1376,14 @@ virNetworkForwardNatDefParseXML(const char *networkName,
         }
     }
 
-    if (addrStart && virSocketAddrParse(&def->addrStart, addrStart, AF_INET) < 0) {
+    if (addrStart && virSocketAddrParse(&def->addr.start, addrStart, AF_INET) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Bad ipv4 start address '%s' in <nat> in <forward> in "
                          "network '%s'"), addrStart, networkName);
         goto cleanup;
     }
 
-    if (addrEnd && virSocketAddrParse(&def->addrEnd, addrEnd, AF_INET) < 0) {
+    if (addrEnd && virSocketAddrParse(&def->addr.end, addrEnd, AF_INET) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Bad ipv4 end address '%s' in <nat> in <forward> in "
                          "network '%s'"), addrEnd, networkName);
@@ -1403,8 +1403,8 @@ virNetworkForwardNatDefParseXML(const char *networkName,
                          "<forward> in network %s"), networkName);
         goto cleanup;
     } else if (nNatPorts == 1) {
-        if (virXPathUInt("string(./port[1]/@start)", ctxt, &def->portStart) < 0
-            || def->portStart > 65535) {
+        if (virXPathUInt("string(./port[1]/@start)", ctxt, &def->port.start) < 0
+            || def->port.start > 65535) {
 
             virReportError(VIR_ERR_XML_DETAIL,
                            _("Missing or invalid 'start' attribute in <port> "
@@ -1412,8 +1412,8 @@ virNetworkForwardNatDefParseXML(const char *networkName,
                              networkName);
             goto cleanup;
         }
-        if (virXPathUInt("string(./port[1]/@end)", ctxt, &def->portEnd) < 0
-            || def->portEnd > 65535 || def->portEnd < def->portStart) {
+        if (virXPathUInt("string(./port[1]/@end)", ctxt, &def->port.end) < 0
+            || def->port.end > 65535 || def->port.end < def->port.start) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("Missing or invalid 'end' attribute in <port> in "
                              "<nat> in <forward> in network %s"), networkName);
@@ -2212,19 +2212,19 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
     char *addrEnd = NULL;
     int ret = -1;
 
-    if (VIR_SOCKET_ADDR_VALID(&fwd->addrStart)) {
-        addrStart = virSocketAddrFormat(&fwd->addrStart);
+    if (VIR_SOCKET_ADDR_VALID(&fwd->addr.start)) {
+        addrStart = virSocketAddrFormat(&fwd->addr.start);
         if (!addrStart)
             goto cleanup;
     }
 
-    if (VIR_SOCKET_ADDR_VALID(&fwd->addrEnd)) {
-        addrEnd = virSocketAddrFormat(&fwd->addrEnd);
+    if (VIR_SOCKET_ADDR_VALID(&fwd->addr.end)) {
+        addrEnd = virSocketAddrFormat(&fwd->addr.end);
         if (!addrEnd)
             goto cleanup;
     }
 
-    if (!addrEnd && !addrStart && !fwd->portStart && !fwd->portEnd)
+    if (!addrEnd && !addrStart && !fwd->port.start && !fwd->port.end)
         return 0;
 
     virBufferAddLit(buf, "<nat>\n");
@@ -2237,10 +2237,10 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (fwd->portStart || fwd->portEnd) {
-        virBufferAsprintf(buf, "<port start='%d'", fwd->portStart);
-        if (fwd->portEnd)
-            virBufferAsprintf(buf, " end='%d'", fwd->portEnd);
+    if (fwd->port.start || fwd->port.end) {
+        virBufferAsprintf(buf, "<port start='%d'", fwd->port.start);
+        if (fwd->port.end)
+            virBufferAsprintf(buf, " end='%d'", fwd->port.end);
         virBufferAddLit(buf, "/>\n");
     }
 
@@ -2299,10 +2299,10 @@ virNetworkDefFormatInternal(virBufferPtr buf,
                 virBufferAddLit(buf, " managed='no'");
         }
         shortforward = !(def->forward.nifs || def->forward.npfs
-                         || VIR_SOCKET_ADDR_VALID(&def->forward.addrStart)
-                         || VIR_SOCKET_ADDR_VALID(&def->forward.addrEnd)
-                         || def->forward.portStart
-                         || def->forward.portEnd);
+                         || VIR_SOCKET_ADDR_VALID(&def->forward.addr.start)
+                         || VIR_SOCKET_ADDR_VALID(&def->forward.addr.end)
+                         || def->forward.port.start
+                         || def->forward.port.end);
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 
@@ -3016,7 +3016,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 {
     int ii, ret = -1;
     virNetworkIpDefPtr ipdef = virNetworkIpDefByIndex(def, parentIndex);
-    virNetworkDHCPRangeDef range;
+    virSocketAddrRange range;
 
     memset(&range, 0, sizeof(range));
 
@@ -3027,7 +3027,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
     if (!ipdef)
         goto cleanup;
 
-    /* parse the xml into a virNetworkDHCPRangeDef */
+    /* parse the xml into a virSocketAddrRange */
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
@@ -3036,7 +3036,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         goto cleanup;
     }
 
-    if (virNetworkDHCPRangeDefParseXML(def->name, ctxt->node, &range) < 0)
+    if (virSocketAddrRangeParseXML(def->name, ctxt->node, &range) < 0)
         goto cleanup;
 
     /* check if an entry with same name/address/ip already exists */

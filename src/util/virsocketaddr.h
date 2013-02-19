@@ -56,6 +56,20 @@ typedef struct {
 
 typedef virSocketAddr *virSocketAddrPtr;
 
+typedef struct _virSocketAddrRange virSocketAddrRange;
+typedef virSocketAddrRange *virSocketAddrRangePtr;
+struct _virSocketAddrRange {
+    virSocketAddr start;
+    virSocketAddr end;
+};
+
+typedef struct _virPortRange virPortRange;
+typedef virPortRange *virPortRangePtr;
+struct _virPortRange {
+    unsigned int start;
+    unsigned int end;
+};
+
 int virSocketAddrParse(virSocketAddrPtr addr,
                        const char *val,
                        int family);

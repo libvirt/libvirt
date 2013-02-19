@@ -805,10 +805,8 @@ iptablesForwardMasquerade(iptablesContext *ctx,
                           virSocketAddr *netaddr,
                           unsigned int prefix,
                           const char *physdev,
-                          virSocketAddr *addrStart,
-                          virSocketAddr *addrEnd,
-                          unsigned int portStart,
-                          unsigned int portEnd,
+                          virSocketAddrRangePtr addr,
+                          virPortRangePtr port,
                           const char *protocol,
                           int action)
 {
@@ -831,11 +829,11 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         goto cleanup;
     }
 
-    if (VIR_SOCKET_ADDR_IS_FAMILY(addrStart, AF_INET)) {
-        if (!(addrStartStr = virSocketAddrFormat(addrStart)))
+    if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, AF_INET)) {
+        if (!(addrStartStr = virSocketAddrFormat(&addr->start)))
             goto cleanup;
-        if (VIR_SOCKET_ADDR_IS_FAMILY(addrEnd, AF_INET)) {
-            if (!(addrEndStr = virSocketAddrFormat(addrEnd)))
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->end, AF_INET)) {
+            if (!(addrEndStr = virSocketAddrFormat(&addr->end)))
                 goto cleanup;
         }
     }
@@ -852,20 +850,21 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         virCommandAddArgList(cmd, "--out-interface", physdev, NULL);
 
     if (protocol && protocol[0]) {
-        if (portStart == 0 && portEnd == 0) {
-            portStart = 1024;
-            portEnd = 65535;
+        if (port->start == 0 && port->end == 0) {
+            port->start = 1024;
+            port->end = 65535;
         }
 
-        if (portStart < portEnd && portEnd < 65536) {
-            if (virAsprintf(&portRangeStr, ":%u-%u", portStart, portEnd) < 0) {
+        if (port->start < port->end && port->end < 65536) {
+            if (virAsprintf(&portRangeStr, ":%u-%u",
+                            port->start, port->end) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid port range '%u-%u'."),
-                           portStart, portEnd);
+                           port->start, port->end);
         }
     }
 
@@ -924,15 +923,11 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
                              virSocketAddr *netaddr,
                              unsigned int prefix,
                              const char *physdev,
-                             virSocketAddr *addrStart,
-                             virSocketAddr *addrEnd,
-                             unsigned int portStart,
-                             unsigned int portEnd,
+                             virSocketAddrRangePtr addr,
+                             virPortRangePtr port,
                              const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev,
-                                     addrStart, addrEnd,
-                                     portStart, portEnd,
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addr, port,
                                      protocol, ADD);
 }
 
@@ -954,15 +949,11 @@ iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 virSocketAddr *netaddr,
                                 unsigned int prefix,
                                 const char *physdev,
-                                virSocketAddr *addrStart,
-                                virSocketAddr *addrEnd,
-                                unsigned int portStart,
-                                unsigned int portEnd,
+                                virSocketAddrRangePtr addr,
+                                virPortRangePtr port,
                                 const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev,
-                                     addrStart, addrEnd,
-                                     portStart, portEnd,
+    return iptablesForwardMasquerade(ctx, netaddr, prefix, physdev, addr, port,
                                      protocol, REMOVE);
 }
 
