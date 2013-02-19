@@ -1453,7 +1453,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     if (!(driver->caps = openvzCapsInit()))
         goto cleanup;
 
-    if (!(driver->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto cleanup;
 
     if (openvzLoadDomains(driver) < 0)
@@ -2085,8 +2085,8 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                         &vmdef) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(driver->caps, vmdef, xml,
-                                  VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
+                                  vmdef, xml, VIR_DOMAIN_XML_INACTIVE);
     if (!dev)
         goto cleanup;
 

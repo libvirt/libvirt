@@ -4353,7 +4353,8 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          goto cleanup;
     }
 
-    dev = dev_copy = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+    dev = dev_copy = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
+                                             vm->def, xml,
                                              VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
@@ -4364,7 +4365,8 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(driver->caps, vm->def, dev);
+        dev_copy = virDomainDeviceDefCopy(driver->caps, driver->xmlopt,
+                                          vm->def, dev);
         if (!dev_copy)
             goto cleanup;
     }

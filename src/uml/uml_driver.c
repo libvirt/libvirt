@@ -505,8 +505,7 @@ umlStartup(bool privileged,
     if ((uml_driver->caps = umlCapsInit()) == NULL)
         goto out_of_memory;
 
-    if (!(uml_driver->xmlopt = virDomainXMLOptionNew(&privcb,
-                                                    NULL)))
+    if (!(uml_driver->xmlopt = virDomainXMLOptionNew(NULL, &privcb, NULL)))
         goto error;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
@@ -2081,7 +2080,7 @@ static int umlDomainAttachDevice(virDomainPtr dom, const char *xml)
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (dev == NULL)
@@ -2199,7 +2198,7 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;

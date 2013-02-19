@@ -73,6 +73,9 @@ struct _virDomainObjList {
 struct _virDomainXMLOption {
     virObject parent;
 
+    /* XML parser callbacks and defaults */
+    virDomainDefParserConfig config;
+
     /* domain private data management callbacks */
     virDomainXMLPrivateDataCallbacks privateData;
 
@@ -723,6 +726,7 @@ static virClassPtr virDomainObjListClass;
 static virClassPtr virDomainXMLOptionClass;
 static void virDomainObjDispose(void *obj);
 static void virDomainObjListDispose(void *obj);
+static void virDomainXMLOptionClassDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
@@ -741,7 +745,7 @@ static int virDomainObjOnceInit(void)
     if (!(virDomainXMLOptionClass = virClassNew(virClassForObject(),
                                                 "virDomainXMLOption",
                                                 sizeof(virDomainXMLOption),
-                                                NULL)))
+                                                virDomainXMLOptionClassDispose)))
         return -1;
 
     return 0;
@@ -750,13 +754,24 @@ static int virDomainObjOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virDomainObj)
 
 
+static void
+virDomainXMLOptionClassDispose(void *obj)
+{
+    virDomainXMLOptionPtr xmlopt = obj;
+
+    if (xmlopt->config.privFree)
+        (xmlopt->config.privFree)(xmlopt->config.priv);
+}
+
+
 /**
  * virDomainXMLOptionNew:
  *
  * Allocate a new domain XML configuration
  */
 virDomainXMLOptionPtr
-virDomainXMLOptionNew(virDomainXMLPrivateDataCallbacksPtr priv,
+virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
+                      virDomainXMLPrivateDataCallbacksPtr priv,
                       virDomainXMLNamespacePtr xmlns)
 {
     virDomainXMLOptionPtr xmlopt;
@@ -769,6 +784,9 @@ virDomainXMLOptionNew(virDomainXMLPrivateDataCallbacksPtr priv,
 
     if (priv)
         xmlopt->privateData = *priv;
+
+    if (config)
+        xmlopt->config = *config;
 
     if (xmlns)
         xmlopt->ns = *xmlns;
@@ -2456,6 +2474,73 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_RNG:
         break;
     }
+
+    return 0;
+}
+
+
+static int
+virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                            virDomainDefPtr def,
+                            virCapsPtr caps,
+                            virDomainXMLOptionPtr xmlopt)
+{
+    int ret;
+
+    if (xmlopt && xmlopt->config.devicesPostParseCallback) {
+        ret = xmlopt->config.devicesPostParseCallback(dev, def, caps,
+                                                      xmlopt->config.priv);
+        if (ret < 0)
+            return ret;
+    }
+
+    return 0;
+}
+
+
+struct virDomainDefPostParseDeviceIteratorData {
+    virDomainDefPtr def;
+    virCapsPtr caps;
+    virDomainXMLOptionPtr xmlopt;
+};
+
+
+static int
+virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virDomainDeviceDefPtr dev,
+                                    virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
+    struct virDomainDefPostParseDeviceIteratorData *data = opaque;
+    return virDomainDeviceDefPostParse(dev, data->def, data->caps, data->xmlopt);
+}
+
+
+static int
+virDomainDefPostParse(virDomainDefPtr def,
+                      virCapsPtr caps,
+                      virDomainXMLOptionPtr xmlopt)
+{
+    int ret;
+    struct virDomainDefPostParseDeviceIteratorData data = {
+        .def = def,
+        .caps = caps,
+        .xmlopt = xmlopt,
+    };
+
+    /* call the domain config callback */
+    if (xmlopt && xmlopt->config.domainPostParseCallback) {
+        ret = xmlopt->config.domainPostParseCallback(def, caps,
+                                                     xmlopt->config.priv);
+        if (ret < 0)
+            return ret;
+    }
+
+    /* iterate the devices */
+    if ((ret = virDomainDeviceInfoIterate(def,
+                                          virDomainDefPostParseDeviceIterator,
+                                          &data)) < 0)
+        return ret;
 
     return 0;
 }
@@ -8386,6 +8471,7 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
 
 virDomainDeviceDefPtr
 virDomainDeviceDefParse(virCapsPtr caps,
+                        virDomainXMLOptionPtr xmlopt,
                         virDomainDefPtr def,
                         const char *xmlStr,
                         unsigned int flags)
@@ -8471,6 +8557,10 @@ virDomainDeviceDefParse(virCapsPtr caps,
         virReportError(VIR_ERR_XML_ERROR, "%s", _("unknown device type"));
         goto error;
     }
+
+    /* callback to fill driver specific device aspects */
+    if (virDomainDeviceDefPostParse(dev, def,  caps, xmlopt) < 0)
+        goto error;
 
 cleanup:
     xmlFreeDoc(xml);
@@ -11027,6 +11117,10 @@ virDomainDefParseXML(virCapsPtr caps,
 
     /* Auto-add any implied controllers which aren't present */
     if (virDomainDefAddImplicitControllers(def) < 0)
+        goto error;
+
+    /* callback to fill driver specific domain aspects */
+    if (virDomainDefPostParse(def, caps, xmlopt) < 0)
         goto error;
 
     virBitmapFree(bootMap);
@@ -16426,6 +16520,7 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
  */
 virDomainDeviceDefPtr
 virDomainDeviceDefCopy(virCapsPtr caps,
+                       virDomainXMLOptionPtr xmlopt,
                        const virDomainDefPtr def,
                        virDomainDeviceDefPtr src)
 {
@@ -16494,7 +16589,7 @@ virDomainDeviceDefCopy(virCapsPtr caps,
         goto cleanup;
 
     xmlStr = virBufferContentAndReset(&buf);
-    ret = virDomainDeviceDefParse(caps, def, xmlStr, flags);
+    ret = virDomainDeviceDefParse(caps, xmlopt, def, xmlStr, flags);
 
 cleanup:
     VIR_FREE(xmlStr);

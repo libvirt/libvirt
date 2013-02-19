@@ -2519,7 +2519,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
                                         def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -2679,7 +2679,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
                                         def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -2786,7 +2786,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
                                         def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

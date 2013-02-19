@@ -854,7 +854,7 @@ static int vboxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 static virDomainXMLOptionPtr
 vboxXMLConfInit(void)
 {
-    return virDomainXMLOptionNew(NULL, NULL);
+    return virDomainXMLOptionNew(NULL, NULL, NULL);
 }
 
 
@@ -5396,8 +5396,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(data->caps, def, xml,
-                                  VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(data->caps, data->xmlopt,
+                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -5631,8 +5631,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(data->caps, def, xml,
-                                  VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(data->caps, data->xmlopt,
+                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 

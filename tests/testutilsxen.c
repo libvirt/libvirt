@@ -18,7 +18,7 @@ static int testXenDefaultConsoleType(const char *ostype,
 virDomainXMLOptionPtr
 testXenXMLConfInit(void)
 {
-    return virDomainXMLOptionNew(NULL, NULL);
+    return virDomainXMLOptionNew(NULL, NULL, NULL);
 }
 
 virCapsPtr testXenCapsInit(void) {

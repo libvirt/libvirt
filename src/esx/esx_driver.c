@@ -1100,7 +1100,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto cleanup;
     }
 
-    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto cleanup;
 
     conn->privateData = priv;

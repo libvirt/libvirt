@@ -1311,6 +1311,7 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
     def = entry->def;
 
     if (!(dev = virDomainDeviceDefParse(priv->caps,
+                                        priv->xmlopt,
                                         entry->def,
                                         xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -1404,6 +1405,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
     def = entry->def;
 
     if (!(dev = virDomainDeviceDefParse(priv->caps,
+                                        priv->xmlopt,
                                         entry->def,
                                         xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;

@@ -1239,8 +1239,9 @@ libxlStartup(bool privileged,
         goto error;
     }
 
-    if (!(libxl_driver->xmlopt = virDomainXMLOptionNew(&libxlDomainXMLPrivateDataCallbacks,
-                                                      NULL)))
+    if (!(libxl_driver->xmlopt = virDomainXMLOptionNew(NULL,
+                                                       &libxlDomainXMLPrivateDataCallbacks,
+                                                       NULL)))
         goto error;
 
     /* Load running domains first. */
@@ -3556,7 +3557,8 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     priv = vm->privateData;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+        if (!(dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
+                                            vm->def, xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
@@ -3586,7 +3588,8 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
-        if (!(dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+        if (!(dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
+                                            vm->def, xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 

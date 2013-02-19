@@ -401,7 +401,7 @@ xenUnifiedOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         goto fail;
     }
 
-    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto fail;
 
 #if WITH_XEN_INOTIFY

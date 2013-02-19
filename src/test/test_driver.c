@@ -164,7 +164,7 @@ testBuildXMLConfig(void)
 {
     virDomainXMLPrivateDataCallbacks priv = { .alloc = testDomainObjPrivateAlloc,
                                               .free = testDomainObjPrivateFree };
-    return virDomainXMLOptionNew(&priv, NULL);
+    return virDomainXMLOptionNew(NULL, &priv, NULL);
 }
 
 

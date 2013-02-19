@@ -174,6 +174,7 @@ static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
 }
 
+
 virCapsPtr openvzCapsInit(void)
 {
     virCapsPtr caps;

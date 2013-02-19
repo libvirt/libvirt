@@ -1938,6 +1938,24 @@ typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
 typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr, void *);
 typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr, void *);
 
+typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
+                                             virCapsPtr caps,
+                                             void *opaque);
+typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
+                                                   virDomainDefPtr def,
+                                                   virCapsPtr caps,
+                                                   void *opaque);
+
+typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
+typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
+struct _virDomainDefParserConfig {
+    virDomainDefPostParseCallback domainPostParseCallback;
+    virDomainDeviceDefPostParseCallback devicesPostParseCallback;
+
+    void *priv;
+    virFreeCallback privFree;
+};
+
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
 typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 struct _virDomainXMLPrivateDataCallbacks {
@@ -1947,9 +1965,9 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataParseFunc  parse;
 };
 
-virDomainXMLOptionPtr
-virDomainXMLOptionNew(virDomainXMLPrivateDataCallbacksPtr priv,
-                    virDomainXMLNamespacePtr xmlns);
+virDomainXMLOptionPtr virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
+                                            virDomainXMLPrivateDataCallbacksPtr priv,
+                                            virDomainXMLNamespacePtr xmlns);
 
 virDomainXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
@@ -2009,6 +2027,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virCapsPtr caps,
+                                             virDomainXMLOptionPtr xmlopt,
                                              const virDomainDefPtr def,
                                              virDomainDeviceDefPtr src);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
@@ -2072,6 +2091,7 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
                             virDomainObjPtr dom);
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
+                                              virDomainXMLOptionPtr xmlopt,
                                               virDomainDefPtr def,
                                               const char *xmlStr,
                                               unsigned int flags);

@@ -929,7 +929,7 @@ parallelsOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = parallelsBuildCapabilities()))
         goto error;
 
-    if (!(privconn->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(privconn->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto error;
 
     if (!(privconn->domains = virDomainObjListNew()))

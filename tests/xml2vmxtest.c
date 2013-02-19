@@ -240,7 +240,7 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         return EXIT_FAILURE;
 
     ctx.opaque = NULL;

@@ -5786,7 +5786,8 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         tmp = dev->data.disk;
         dev->data.disk = orig_disk;
 
-        if (!(dev_copy = virDomainDeviceDefCopy(caps, vm->def, dev))) {
+        if (!(dev_copy = virDomainDeviceDefCopy(caps, driver->xmlopt,
+                                                vm->def, dev))) {
             dev->data.disk = tmp;
             goto end;
         }
@@ -6062,7 +6063,8 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
         tmp = dev->data.disk;
         dev->data.disk = orig_disk;
 
-        if (!(dev_copy = virDomainDeviceDefCopy(caps, vm->def, dev))) {
+        if (!(dev_copy = virDomainDeviceDefCopy(caps, driver->xmlopt,
+                                                vm->def, dev))) {
             dev->data.disk = tmp;
             goto end;
         }
@@ -6468,7 +6470,8 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          goto endjob;
     }
 
-    dev = dev_copy = virDomainDeviceDefParse(caps, vm->def, xml,
+    dev = dev_copy = virDomainDeviceDefParse(caps, driver->xmlopt,
+                                             vm->def, xml,
                                              VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto endjob;
@@ -6479,7 +6482,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(caps, vm->def, dev);
+        dev_copy = virDomainDeviceDefCopy(caps, driver->xmlopt, vm->def, dev);
         if (!dev_copy)
             goto endjob;
     }

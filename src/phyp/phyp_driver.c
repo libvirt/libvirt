@@ -1204,7 +1204,7 @@ phypOpen(virConnectPtr conn,
         goto failure;
     }
 
-    if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
+    if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
         goto failure;
 
     conn->privateData = phyp_driver;
@@ -1754,8 +1754,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(phyp_driver->caps, def, xml,
-                                  VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(phyp_driver->caps, NULL,
+                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
     if (!dev) {
         goto cleanup;
     }
