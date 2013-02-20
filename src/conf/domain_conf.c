@@ -9478,28 +9478,42 @@ virDomainDefParseXML(virCapsPtr caps,
 
     /* Extract cpu tunables. */
     if (virXPathULong("string(./cputune/shares[1])", ctxt,
-                      &def->cputune.shares) < 0)
-        def->cputune.shares = 0;
-
-    if (virXPathULongLong("string(./cputune/period[1])", ctxt,
-                          &def->cputune.period) < 0)
-        def->cputune.period = 0;
-
-    if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
-                         &def->cputune.quota) < 0)
-        def->cputune.quota = 0;
-
-    if (virXPathULongLong("string(./cputune/emulator_period[1])", ctxt,
-                          &def->cputune.emulator_period) < 0)
-        def->cputune.emulator_period = 0;
-
-    if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
-                         &def->cputune.emulator_quota) < 0)
-        def->cputune.emulator_quota = 0;
-
-    if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0) {
+                      &def->cputune.shares) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune shares value"));
         goto error;
     }
+
+    if (virXPathULongLong("string(./cputune/period[1])", ctxt,
+                          &def->cputune.period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune period value"));
+        goto error;
+    }
+
+    if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
+                         &def->cputune.quota) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune quota value"));
+        goto error;
+    }
+
+    if (virXPathULongLong("string(./cputune/emulator_period[1])", ctxt,
+                          &def->cputune.emulator_period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune emulator period value"));
+        goto error;
+    }
+
+    if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
+                         &def->cputune.emulator_quota) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune emulator quota value"));
+        goto error;
+    }
+
+    if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0)
+        goto error;
 
     if (n && VIR_ALLOC_N(def->cputune.vcpupin, n) < 0)
         goto no_memory;
