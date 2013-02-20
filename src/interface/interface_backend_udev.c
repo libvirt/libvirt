@@ -1016,6 +1016,9 @@ udevIfaceGetIfaceDef(struct udev *udev, const char *name)
         ifacedef->type = VIR_INTERFACE_TYPE_VLAN;
     } else if (STREQ_NULLABLE(devtype, "bridge")) {
         ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
+    } else if (STREQ_NULLABLE(devtype, "bond")) {
+        /* This only works on modern kernels (3.9 and newer) */
+        ifacedef->type = VIR_INTERFACE_TYPE_BOND;
     }
 
     /* Fallback checks if the devtype check didn't work. */
