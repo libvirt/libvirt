@@ -817,7 +817,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 
     /* Check to ensure all mandatory features from XML are also
      * present in 'flags' */
-    if ((n = virXPathNodeSet("./features", ctxt, &nodes)) < 0)
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
         goto error;
 
     for (i = 0 ; i < n ; i++) {
