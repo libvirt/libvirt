@@ -920,9 +920,6 @@ qemuStop(void) {
         if (virDomainManagedSave(domains[i], flags[i]) < 0)
             ret = -1;
 
-    VIR_FREE(domains);
-    VIR_FREE(flags);
-
  cleanup:
     for (i = 0 ; i < numDomains ; i++)
         virDomainFree(domains[i]);
