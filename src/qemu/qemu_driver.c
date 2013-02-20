@@ -14331,9 +14331,9 @@ qemuDomainGetPercpuStats(virDomainObjPtr vm,
     param_idx = 0;
 
     /* number of cpus to compute */
-    id = max_id;
-
-    if (max_id - start_cpu > ncpus - 1)
+    if (start_cpu >= max_id - ncpus)
+        id = max_id - 1;
+    else
         id = start_cpu + ncpus - 1;
 
     for (i = 0; i <= id; i++) {
