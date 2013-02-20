@@ -681,7 +681,7 @@ qemuStartup(bool privileged,
     if ((qemu_driver->inactivePciHostdevs = virPCIDeviceListNew()) == NULL)
         goto error;
 
-    if (!(qemu_driver->sharedDisks = virHashCreate(30, NULL)))
+    if (!(qemu_driver->sharedDisks = virHashCreate(30, qemuSharedDiskEntryFree)))
         goto error;
 
     if (privileged) {
@@ -5766,7 +5766,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     }
 
     if (ret == 0) {
-        if (qemuAddSharedDisk(driver, disk) < 0)
+        if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
             VIR_WARN("Failed to add disk '%s' to shared disk table",
                      disk->src);
 
@@ -5890,7 +5890,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     }
 
     if (ret == 0) {
-        if (qemuRemoveSharedDisk(driver, disk) < 0)
+        if (qemuRemoveSharedDisk(driver, disk, vm->def->name) < 0)
              VIR_WARN("Failed to remove disk '%s' from shared disk table",
                       disk->src);
     }

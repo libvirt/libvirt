@@ -3830,7 +3830,7 @@ int qemuProcessStart(virConnectPtr conn,
                            _("Raw I/O is not supported on this platform"));
 #endif
 
-        if (qemuAddSharedDisk(driver, disk) < 0)
+        if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
             goto cleanup;
 
         if (qemuSetUnprivSGIO(disk) < 0)
@@ -4235,7 +4235,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
-        ignore_value(qemuRemoveSharedDisk(driver, disk));
+        ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
     }
 
     /* Clear out dynamically assigned labels */
