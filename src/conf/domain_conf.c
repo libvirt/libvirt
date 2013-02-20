@@ -9265,16 +9265,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto error;
 
     /* and info about it */
-    tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt);
-    if (tmp) {
-        def->mem.dump_core = virDomainMemDumpTypeFromString(tmp);
-
-        if (def->mem.dump_core <= 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("Bad value '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
+    if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
+        (def->mem.dump_core = virDomainMemDumpTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid memory core dump attribute value '%s'"), tmp);
+        goto error;
     }
+    VIR_FREE(tmp);
 
     if (def->mem.cur_balloon > def->mem.max_balloon) {
         /* Older libvirt could get into this situation due to
