@@ -551,34 +551,60 @@ udevIfaceGetIfaceDefBridge(struct udev *udev,
     struct dirent **member_list = NULL;
     int member_count = 0;
     char *member_path;
-    const char *stp_str;
+    const char *tmp_str;
     int stp;
     int i;
 
     /* Set our type to Bridge  */
     ifacedef->type = VIR_INTERFACE_TYPE_BRIDGE;
 
-    /* Bridge specifics */
-    ifacedef->data.bridge.delay =
-        strdup(udev_device_get_sysattr_value(dev, "bridge/forward_delay"));
-    if (!ifacedef->data.bridge.delay) {
-        virReportOOMError();
-        goto cleanup;
+    /* Retrieve the forward delay */
+    tmp_str = udev_device_get_sysattr_value(dev, "bridge/forward_delay");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not retrieve 'bridge/forward_delay' for '%s'"), name);
+        goto error;
     }
 
-    stp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
-    if (virStrToLong_i(stp_str, NULL, 10, &stp) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                _("Could not parse STP state '%s'"), stp_str);
-        goto cleanup;
+    ifacedef->data.bridge.delay = strdup(tmp_str);
+    if (!ifacedef->data.bridge.delay) {
+        virReportOOMError();
+        goto error;
     }
-    ifacedef->data.bridge.stp = stp;
+
+    /* Retrieve Spanning Tree State. Valid values = -1, 0, 1 */
+    tmp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
+    if (!tmp_str) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            _("Could not retrieve 'bridge/stp_state' for '%s'"), name);
+        goto error;
+    }
+
+    if (virStrToLong_i(tmp_str, NULL, 10, &stp) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not parse 'bridge/stp_state' '%s' for '%s'"),
+                tmp_str, name);
+        goto error;
+    }
+
+    switch (stp) {
+    case -1:
+    case 0:
+    case 1:
+        ifacedef->data.bridge.stp = stp;
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            _("Invalid STP state value %d received for '%s'. Must be "
+              "-1, 0, or 1."), stp, name);
+        goto error;
+    }
 
     /* Members of the bridge */
     if (virAsprintf(&member_path, "%s/%s",
                 udev_device_get_syspath(dev), "brif") < 0) {
         virReportOOMError();
-        goto cleanup;
+        goto error;
     }
 
     /* Get each member of the bridge */
@@ -592,19 +618,26 @@ udevIfaceGetIfaceDefBridge(struct udev *udev,
         virReportSystemError(errno,
                 _("Could not get members of bridge '%s'"),
                 name);
-        goto cleanup;
+        goto error;
     }
 
     /* Allocate our list of member devices */
     if (VIR_ALLOC_N(ifacedef->data.bridge.itf, member_count) < 0) {
         virReportOOMError();
-        goto cleanup;
+        goto error;
     }
     ifacedef->data.bridge.nbItf = member_count;
 
+    /* Get the interface defintions for each member of the bridge */
     for (i = 0; i < member_count; i++) {
         ifacedef->data.bridge.itf[i] =
             udevIfaceGetIfaceDef(udev, member_list[i]->d_name);
+        if (!ifacedef->data.bridge.itf[i]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                _("Could not get interface information for '%s', which is "
+                  "a member of bridge '%s'"), member_list[i]->d_name, name);
+            goto error;
+        }
         VIR_FREE(member_list[i]);
     }
 
@@ -612,7 +645,7 @@ udevIfaceGetIfaceDefBridge(struct udev *udev,
 
     return 0;
 
-cleanup:
+error:
     for (i = 0; i < member_count; i++) {
         VIR_FREE(member_list[i]);
     }
