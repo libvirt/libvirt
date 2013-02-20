@@ -2299,8 +2299,9 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
             return -1;
     }
     for (i = 0; i < def->nconsoles ; i++) {
-        if ((STREQ(def->os.type, "hvm")) && i == 0 &&
-            def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
+        if (i == 0 &&
+            def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
+            STREQ_NULLABLE(def->os.type, "hvm"))
             continue;
         device.data.chr = def->consoles[i];
         if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
