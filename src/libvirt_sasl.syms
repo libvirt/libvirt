@@ -2,10 +2,10 @@
 # SASL-specific symbols
 #
 
-# virnetclient.h
+# rpc/virnetclient.h
 virNetClientSetSASLSession;
 
-# virnetsaslcontext.h
+# rpc/virnetsaslcontext.h
 virNetSASLContextCheckIdentity;
 virNetSASLContextNewClient;
 virNetSASLContextNewServer;
@@ -25,11 +25,11 @@ virNetSASLSessionServerStart;
 virNetSASLSessionServerStep;
 
 
-# virnetserverclient.h
+# rpc/virnetserverclient.h
 virNetServerClientSetSASLSession;
 
 
-# virnetsocket.h
+# rpc/virnetsocket.h
 virNetSocketSetSASLSession;
 
 # Let emacs know we want case-insensitive sorting

@@ -420,7 +420,7 @@ virNetDevVlanFormat;
 virNetDevVlanParse;
 
 
-# conf/netdev_vportprofile_conf.h
+# conf/netdev_vport_profile_conf.h
 virNetDevVPortProfileFormat;
 virNetDevVPortProfileParse;
 virNetDevVPortTypeFromString;

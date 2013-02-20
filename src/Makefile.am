@@ -388,7 +388,8 @@ else
 check-symfile:
 endif
 check-symsorting:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl $(USED_SYM_FILES)
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
+		$(srcdir) $(USED_SYM_FILES)
 EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 PROTOCOL_STRUCTS = \

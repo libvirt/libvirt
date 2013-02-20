@@ -2,8 +2,7 @@
 # ssh session - specific symbols
 #
 
-# virnetsshsession.h
-#
+# rpc/virnetsshsession.h
 virNetSSHChannelRead;
 virNetSSHChannelWrite;
 virNetSSHSessionAuthAddAgentAuth;

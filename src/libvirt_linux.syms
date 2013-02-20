@@ -5,7 +5,7 @@
 # nodeinfo.h
 linuxNodeInfoCPUPopulate;
 
-# stats_linux.h
+# util/virstatslinux.h
 linuxDomainInterfaceStats;
 
 # Let emacs know we want case-insensitive sorting
