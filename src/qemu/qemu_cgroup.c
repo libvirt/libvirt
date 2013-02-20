@@ -234,9 +234,7 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuDomainDetermineDiskChain(driver, vm->def->disks[i],
-                                             false) < 0 ||
-                qemuSetupDiskCgroup(vm, cgroup, vm->def->disks[i]) < 0)
+            if (qemuSetupDiskCgroup(vm, cgroup, vm->def->disks[i]) < 0)
                 goto cleanup;
         }
 

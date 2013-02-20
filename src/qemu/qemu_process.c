@@ -3706,6 +3706,11 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Checking for CDROM and floppy presence");
+    for (i = 0; i < vm->def->ndisks ; i++) {
+        if (qemuDomainDetermineDiskChain(driver, vm->def->disks[i],
+                                         false) < 0)
+            goto cleanup;
+    }
     if (qemuDomainCheckDiskPresence(driver, vm,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
