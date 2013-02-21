@@ -9,6 +9,7 @@
     <dhcp>
       <range start="192.168.122.2" end="192.168.122.254" />
       <bootp file="pxeboot.img" />
+      <option number="252" value="\n"/>
     </dhcp>
   </ip>
 </network>
