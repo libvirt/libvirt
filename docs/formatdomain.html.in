@@ -3583,7 +3583,8 @@ qemu-kvm -net nic,model=? /dev/null
         attribute <code>ram</code> (<span class="since">since
         1.0.2</span>) is allowed for "qxl" type only and specifies
         the size of the primary bar, while <code>vram</code> specifies the
-        secondary bar size.  If "ram" is not supplied a default value is used.
+        secondary bar size.  If "ram" or "vram" are not supplied a default
+        value is used.
       </dd>
 
       <dt><code>model</code></dt>
