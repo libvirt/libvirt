@@ -1042,6 +1042,7 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
         if ((VIR_ALLOC(entry) < 0) ||
             (VIR_ALLOC_N(entry->domains, 1) < 0) ||
             !(entry->domains[0] = strdup(name))) {
+            qemuSharedDiskEntryFree(entry, NULL);
             virReportOOMError();
             goto cleanup;
         }
