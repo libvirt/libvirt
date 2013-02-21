@@ -143,6 +143,7 @@
             The address range is set with the <code>&lt;address&gt;</code>
             subelements and <code>start</code> and <code>stop</code>
             attributes:
+            </p>
             <pre>
 ...
   &lt;forward mode='nat'&gt;
@@ -150,8 +151,8 @@
       &lt;address start='1.2.3.4' end='1.2.3.10'/&gt;
     &lt;/nat&gt;
   &lt;/forward&gt;
-...
-            </pre>
+...</pre>
+            <p>
             An singe IPv4 address can be set by setting
             <code>start</code> and <code>end</code> attributes to
             the same value.
@@ -159,6 +160,7 @@
             <p>
             The port range to be used for the <code>&lt;nat&gt;</code> can
             be set via the subelement <code>&lt;port&gt;</code>:
+            </p>
             <pre>
 ...
   &lt;forward mode='nat'&gt;
@@ -166,9 +168,7 @@
       &lt;port start='500' end='1000'/&gt;
     &lt;/nat&gt;
   &lt;/forward&gt;
-...
-            </pre>
-            </p>
+...</pre>
           </dd>
 
           <dt><code>route</code></dt>
