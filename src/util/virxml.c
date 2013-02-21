@@ -468,6 +468,16 @@ virXPathLongLong(const char *xpath,
     return ret;
 }
 
+/**
+ * virXMLPropString:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ *
+ * Convenience function to return copy of an attribute value of a XML node.
+ *
+ * Returns the property (attribute) value as string or NULL in case of failure.
+ * The caller is responsible for freeing the returned buffer.
+ */
 char *
 virXMLPropString(xmlNodePtr node,
                  const char *name)
