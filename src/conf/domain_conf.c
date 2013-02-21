@@ -7736,6 +7736,7 @@ virDomainVideoDefParseXML(const xmlNodePtr node,
 error:
     virDomainVideoDefFree(def);
     VIR_FREE(type);
+    VIR_FREE(ram);
     VIR_FREE(vram);
     VIR_FREE(heads);
     return NULL;
