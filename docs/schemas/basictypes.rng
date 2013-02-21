@@ -231,4 +231,38 @@
     </data>
   </define>
 
+  <define name='archnames'>
+    <choice>
+      <value>alpha</value>
+      <value>armv7l</value>
+      <value>cris</value>
+      <value>i686</value>
+      <value>ia64</value>
+      <value>lm32</value>
+      <value>m68k</value>
+      <value>microblaze</value>
+      <value>microblazeel</value>
+      <value>mips</value>
+      <value>mipsel</value>
+      <value>mips64</value>
+      <value>mips64el</value>
+      <value>openrisc</value>
+      <value>parisc</value>
+      <value>parisc64</value>
+      <value>ppc</value>
+      <value>ppc64</value>
+      <value>ppcemb</value>
+      <value>s390</value>
+      <value>s390x</value>
+      <value>sh4</value>
+      <value>sh4eb</value>
+      <value>sparc</value>
+      <value>sparc64</value>
+      <value>unicore32</value>
+      <value>x86_64</value>
+      <value>xtensa</value>
+      <value>xtensaeb</value>
+    </choice>
+  </define>
+
 </grammar>

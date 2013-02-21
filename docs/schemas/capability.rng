@@ -367,23 +367,6 @@
     </attribute>
   </define>
 
-  <define name='archnames'>
-    <choice>
-      <value>arm</value>
-      <value>i686</value>
-      <value>ia64</value>
-      <value>microblaze</value>
-      <value>microblazeel</value>
-      <value>mips</value>
-      <value>mipsel</value>
-      <value>ppc64</value>
-      <value>ppc</value>
-      <value>s390</value>
-      <value>sparc</value>
-      <value>x86_64</value>
-    </choice>
-  </define>
-
   <define name='featureName'>
     <data type='string'>
       <param name='pattern'>[a-zA-Z0-9\-_]+</param>
