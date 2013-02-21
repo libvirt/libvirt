@@ -2348,6 +2348,35 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
         if (cb(def, &device, &def->hubs[i]->info, opaque) < 0)
             return -1;
     }
+
+    /* This switch statement is here to trigger compiler warning when adding
+     * a new device type. When you are adding a new field to the swtich you
+     * also have to add a iteration statement above. Otherwise the switch
+     * statement has no real function here and should be optimized out by the
+     * compiler. */
+    i = VIR_DOMAIN_DEVICE_LAST;
+    switch ((virDomainDeviceType) i) {
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
+    }
+
     return 0;
 }
 
