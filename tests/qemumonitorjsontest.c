@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -443,6 +443,11 @@ mymain(void)
 {
     int ret = 0;
     virCapsPtr caps;
+
+#if !WITH_YAJL
+    fprintf(stderr, "libvirt not compiled with yajl, skipping");
+    return EXIT_AM_SKIP;
+#endif
 
     if (virThreadInitialize() < 0)
         exit(EXIT_FAILURE);
