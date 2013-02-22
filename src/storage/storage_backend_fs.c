@@ -910,7 +910,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     pool->def->capacity = ((unsigned long long)sb.f_frsize *
                            (unsigned long long)sb.f_blocks);
     pool->def->available = ((unsigned long long)sb.f_bfree *
-                            (unsigned long long)sb.f_bsize);
+                            (unsigned long long)sb.f_frsize);
     pool->def->allocation = pool->def->capacity - pool->def->available;
 
     return 0;
