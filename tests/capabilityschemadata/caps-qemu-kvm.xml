@@ -82,7 +82,7 @@
 
   <guest>
     <os_type>hvm</os_type>
-    <arch name='arm'>
+    <arch name='armv7l'>
       <wordsize>32</wordsize>
       <emulator>/usr/bin/qemu-system-arm</emulator>
       <machine>integratorcp</machine>
