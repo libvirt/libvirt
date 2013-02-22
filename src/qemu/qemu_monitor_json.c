@@ -249,10 +249,8 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
         }
     }
 
-    if (!(cmdstr = virJSONValueToString(cmd, false))) {
-        virReportOOMError();
+    if (!(cmdstr = virJSONValueToString(cmd, false)))
         goto cleanup;
-    }
     if (virAsprintf(&msg.txBuffer, "%s\r\n", cmdstr) < 0) {
         virReportOOMError();
         goto cleanup;
@@ -339,7 +337,7 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
 
         /* Log the full JSON formatted command & error */
         VIR_DEBUG("unable to execute QEMU command %s: %s",
-                  cmdstr, replystr);
+                  NULLSTR(cmdstr), NULLSTR(replystr));
 
         /* Only send the user the command name + friendly error */
         if (!error)
@@ -360,7 +358,7 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
         char *replystr = virJSONValueToString(reply, false);
 
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
-                  cmdstr, replystr);
+                  NULLSTR(cmdstr), NULLSTR(replystr));
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to execute QEMU command '%s'"),
                        qemuMonitorJSONCommandName(cmd));
