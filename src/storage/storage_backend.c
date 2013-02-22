@@ -283,7 +283,8 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
         && (fchown(fd, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown '%s' to (%u, %u)"),
-                             vol->target.path, uid, gid);
+                             vol->target.path, (unsigned int) uid,
+                             (unsigned int) gid);
         goto cleanup;
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
@@ -577,7 +578,8 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         && (chown(vol->target.path, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown %s to (%u, %u)"),
-                             vol->target.path, uid, gid);
+                             vol->target.path, (unsigned int) uid,
+                             (unsigned int) gid);
         return -1;
     }
     if (chmod(vol->target.path, vol->target.perms.mode) < 0) {
