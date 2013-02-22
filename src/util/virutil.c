@@ -2691,7 +2691,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
     if (gid != (gid_t)-1) {
         if (setregid(gid, gid) < 0) {
             virReportSystemError(err = errno,
-                                 _("cannot change to '%d' group"),
+                                 _("cannot change to '%u' group"),
                                  (unsigned int) gid);
             goto error;
         }
@@ -2722,7 +2722,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
         }
 
         if (rc) {
-            virReportSystemError(err = rc, _("cannot getpwuid_r(%d)"),
+            virReportSystemError(err = rc, _("cannot getpwuid_r(%u)"),
                                  (unsigned int) uid);
             goto error;
         }
@@ -2730,7 +2730,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
         if (!pwd_result) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("getpwuid_r failed to retrieve data "
-                             "for uid '%d'"),
+                             "for uid '%u'"),
                            (unsigned int) uid);
             err = EINVAL;
             goto error;
@@ -2745,7 +2745,7 @@ virSetUIDGID(uid_t uid, gid_t gid)
 # endif
         if (setreuid(uid, uid) < 0) {
             virReportSystemError(err = errno,
-                                 _("cannot change to uid to '%d'"),
+                                 _("cannot change to uid to '%u'"),
                                  (unsigned int) uid);
             goto error;
         }
