@@ -214,6 +214,10 @@ static void qemuMonitorTestIO(virNetSocketPtr sock,
     bool err = false;
 
     virMutexLock(&test->lock);
+    if (test->quit) {
+        virMutexUnlock(&test->lock);
+        return;
+    }
     if (events & VIR_EVENT_HANDLE_WRITABLE) {
         ssize_t ret;
         if ((ret = virNetSocketWrite(sock,
