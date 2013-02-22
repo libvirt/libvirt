@@ -389,7 +389,7 @@ check-symfile:
 endif
 check-symsorting:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
-		$(srcdir) $(USED_SYM_FILES)
+		$(srcdir) $(SYM_FILES)
 EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 PROTOCOL_STRUCTS = \
@@ -809,6 +809,7 @@ libvirt_driver_la_CFLAGS = \
 libvirt_driver_la_LIBADD = \
 		$(NUMACTL_LIBS) $(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
 
+SYM_FILES = $(USED_SYM_FILES)
 USED_SYM_FILES = $(srcdir)/libvirt_private.syms
 
 if WITH_TEST
@@ -1410,42 +1411,62 @@ check-augeas-lockd: test_libvirt_lockd.aug
 
 if WITH_DRIVER_MODULES
 USED_SYM_FILES += $(srcdir)/libvirt_driver_modules.syms
+else
+SYM_FILES += $(srcdir)/libvirt_driver_modules.syms
 endif
 
 if WITH_LINUX
 USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
+else
+SYM_FILES += $(srcdir)/libvirt_linux.syms
 endif
 
 if WITH_ESX
 USED_SYM_FILES += $(srcdir)/libvirt_esx.syms
+else
+SYM_FILES += $(srcdir)/libvirt_esx.syms
 endif
 
 if WITH_LIBVIRTD
 USED_SYM_FILES += $(srcdir)/libvirt_daemon.syms
+else
+SYM_FILES += $(srcdir)/libvirt_daemon.syms
 endif
 
 if WITH_OPENVZ
 USED_SYM_FILES += $(srcdir)/libvirt_openvz.syms
+else
+SYM_FILES += $(srcdir)/libvirt_openvz.syms
 endif
 
 if WITH_VMX
 USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
+else
+SYM_FILES += $(srcdir)/libvirt_vmx.syms
 endif
 
 if WITH_XENXS
 USED_SYM_FILES += $(srcdir)/libvirt_xenxs.syms
+else
+SYM_FILES += $(srcdir)/libvirt_xenxs.syms
 endif
 
 if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
+else
+SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif
 
 if WITH_SSH2
 USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
+else
+SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 endif
 
 if WITH_ATOMIC_OPS_PTHREAD
 USED_SYM_FILES += $(srcdir)/libvirt_atomic.syms
+else
+SYM_FILES += $(srcdir)/libvirt_atomic.syms
 endif
 
 EXTRA_DIST += \

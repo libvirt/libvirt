@@ -2,7 +2,7 @@
 # These symbols are dependent upon !VIR_ATOMIC_OPS_GCC.
 #
 
-# viratomic.h
+# util/viratomic.h
 virAtomicLock;
 
 # Let emacs know we want case-insensitive sorting
