@@ -277,9 +277,9 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
                              vol->target.path);
         goto cleanup;
     }
-    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : -1;
-    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
-    if (((uid != -1) || (gid != -1))
+    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : (uid_t) -1;
+    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : (gid_t) -1;
+    if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
         && (fchown(fd, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown '%s' to (%u, %u)"),
@@ -542,9 +542,9 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((getuid() == 0)
-             && (vol->target.perms.uid != -1)
+             && (vol->target.perms.uid != (uid_t) -1)
              && (vol->target.perms.uid != 0))
-            || ((vol->target.perms.gid != -1)
+            || ((vol->target.perms.gid != (gid_t) -1)
                 && (vol->target.perms.gid != getgid())))) {
 
         virCommandSetUID(cmd, vol->target.perms.uid);
@@ -572,9 +572,9 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         }
     }
 
-    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : -1;
-    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
-    if (((uid != -1) || (gid != -1))
+    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : (uid_t) -1;
+    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : (gid_t) -1;
+    if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
         && (chown(vol->target.path, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown %s to (%u, %u)"),

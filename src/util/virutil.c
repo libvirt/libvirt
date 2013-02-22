@@ -1206,7 +1206,7 @@ parenterror:
                              _("stat of '%s' failed"), path);
         goto childerror;
     }
-    if ((st.st_gid != gid) && (chown(path, -1, gid) < 0)) {
+    if ((st.st_gid != gid) && (chown(path, (uid_t) -1, gid) < 0)) {
         ret = -errno;
         virReportSystemError(errno,
                              _("cannot chown '%s' to group %u"),
