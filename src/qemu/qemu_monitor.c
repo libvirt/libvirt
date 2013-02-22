@@ -717,7 +717,6 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     if (json)
         mon->wait_greeting = 1;
     mon->cb = cb;
-    virObjectLock(mon);
 
     if (virSetCloseExec(mon->fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -731,6 +730,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     }
 
 
+    virObjectLock(mon);
     virObjectRef(mon);
     if ((mon->watch = virEventAddHandle(mon->fd,
                                         VIR_EVENT_HANDLE_HANGUP |
@@ -740,6 +740,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
                                         mon,
                                         virObjectFreeCallback)) < 0) {
         virObjectUnref(mon);
+        virObjectUnlock(mon);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
         goto cleanup;
@@ -759,11 +760,8 @@ cleanup:
      * so kill the callbacks now.
      */
     mon->cb = NULL;
-    virObjectUnlock(mon);
     /* The caller owns 'fd' on failure */
     mon->fd = -1;
-    if (mon->watch)
-        virEventRemoveHandle(mon->watch);
     qemuMonitorClose(mon);
     return NULL;
 }
@@ -1508,8 +1506,7 @@ int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
                               unsigned long long *extent)
 {
     int ret;
-    VIR_DEBUG("mon=%p, fd=%d, dev_name=%p",
-          mon, mon->fd, dev_name);
+    VIR_DEBUG("mon=%p, dev_name=%p", mon, dev_name);
 
     if (mon->json)
         ret = qemuMonitorJSONGetBlockExtent(mon, dev_name, extent);
@@ -1524,8 +1521,7 @@ int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            unsigned long long size)
 {
     int ret;
-    VIR_DEBUG("mon=%p, fd=%d, devname=%p size=%llu",
-              mon, mon->fd, device, size);
+    VIR_DEBUG("mon=%p, devname=%p size=%llu", mon, device, size);
 
     if (mon->json)
         ret = qemuMonitorJSONBlockResize(mon, device, size);
