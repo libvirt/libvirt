@@ -709,6 +709,13 @@ sc_prohibit_semicolon_at_eol_in_python:
 	halt="Don't use semicolon at eol in python files"		\
 	  $(_sc_search_regexp)
 
+# mymain() in test files should use return, not exit, for nicer output
+sc_prohibit_exit_in_tests:
+	@prohibit='\<exit *\('						\
+	in_vc_files='^tests/'						\
+	halt='use return, not exit(), in tests'				\
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 

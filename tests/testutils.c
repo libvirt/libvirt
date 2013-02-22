@@ -317,7 +317,7 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
         virtTestCaptureProgramExecChild(argv, pipefd[1]);
 
         VIR_FORCE_CLOSE(pipefd[1]);
-        _exit(1);
+        _exit(EXIT_FAILURE);
 
     case -1:
         return -1;
@@ -586,7 +586,7 @@ int virtTestMain(int argc,
         abs_srcdir_cleanup = true;
     }
     if (!abs_srcdir)
-        exit(EXIT_AM_HARDFAIL);
+        return EXIT_AM_HARDFAIL;
 
     progname = last_component(argv[0]);
     if (STRPREFIX(progname, "lt-"))
@@ -603,13 +603,13 @@ int virtTestMain(int argc,
 
     if (virThreadInitialize() < 0 ||
         virErrorInitialize() < 0)
-        return 1;
+        return EXIT_FAILURE;
 
     virLogSetFromEnv();
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
                                VIR_LOG_DEBUG, VIR_LOG_TO_STDERR, NULL, 0) < 0)
-            return 1;
+            return EXIT_FAILURE;
     }
 
 #if TEST_OOM

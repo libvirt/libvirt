@@ -1,7 +1,7 @@
 /*
  * utils.c: test utils
  *
- * Copyright (C) 2005, 2008-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2008-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,7 +78,7 @@ int virtTestMain(int argc,
             if (virAsprintf(&newenv, "%s%s%s", preload ? preload : "",  \
                             preload ? ":" : "", lib) < 0) {             \
                 perror("virAsprintf");                                  \
-                exit(EXIT_FAILURE);                                     \
+                return EXIT_FAILURE;                                    \
             }                                                           \
             setenv("LD_PRELOAD", newenv, 1);                            \
             execv(argv[0], argv);                                       \

@@ -449,11 +449,9 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    if (virThreadInitialize() < 0)
-        exit(EXIT_FAILURE);
-
-    if (!(caps = testQemuCapsInit()))
-        exit(EXIT_FAILURE);
+    if (virThreadInitialize() < 0 ||
+        !(caps = testQemuCapsInit()))
+        return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
 

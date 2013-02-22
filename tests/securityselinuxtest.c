@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -274,11 +274,11 @@ mymain(void)
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false))) {
         virErrorPtr err = virGetLastError();
         if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
-            exit(EXIT_AM_SKIP);
+            return EXIT_AM_SKIP;
 
         fprintf(stderr, "Unable to initialize security driver: %s\n",
                 err->message);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
 #define DO_TEST_GEN_LABEL(desc, pidcon,                                 \

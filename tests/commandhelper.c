@@ -1,7 +1,7 @@
 /*
  * commandhelper.c: Auxiliary program for commandtest
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,9 +71,8 @@ int main(int argc, char **argv) {
         origenv++;
     }
 
-    if (VIR_ALLOC_N(newenv, n) < 0) {
-        exit(EXIT_FAILURE);
-    }
+    if (VIR_ALLOC_N(newenv, n) < 0)
+        return EXIT_FAILURE;
 
     origenv = environ;
     n = i = 0;

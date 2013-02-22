@@ -317,15 +317,15 @@ mymain(void)
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false))) {
         virErrorPtr err = virGetLastError();
         if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
-            exit(EXIT_AM_SKIP);
+            return EXIT_AM_SKIP;
 
         fprintf(stderr, "Unable to initialize security driver: %s\n",
                 err->message);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     if ((caps = testQemuCapsInit()) == NULL)
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name) \
     if (virtTestRun("Labelling " # name, 1, testSELinuxLabeling, name) < 0) \
