@@ -197,7 +197,7 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  *      char[1]), or generates a compile error if it wasn't successful
  *      (char[2*0 -1] i.e. char[-1], which isn't valid in C).
  *
- * So VIR_TYPECHECK(a, b) will either abort the compile with an error,
+ * So VIR_TYPEMATCH(a, b) will either abort the compile with an error,
  * or evaluate to "1", and in the meantime check that we've actually
  * added the correct &'s and/or *'s to the arguments. (Whew!)
 */
