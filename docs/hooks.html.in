@@ -239,13 +239,14 @@
     <p>If a hook script returns with an exit code of 0, the libvirt daemon
        regards this as successful and performs no logging of it.</p>
     <p>However, if a hook script returns with a non zero exit code, the libvirt
-       daemon regards this as a failure, logs it with return code 256, and
+       daemon regards this as a failure, logs its return code, and
        additionally logs anything on stderr the hook script returns.</p>
     <p>For example, a hook script might use this code to indicate failure,
        and send a text string to stderr:</p>
     <pre>echo "Could not find required XYZZY" &gt;&amp;2
 exit 1</pre>
     <p>The resulting entry in the libvirt log will appear as:</p>
-    <pre>20:02:40.297: error : virHookCall:416 : Hook script execution failed: Hook script /etc/libvirt/hooks/qemu qemu failed with error code 256:Could not find required XYZZY</pre>
+    <pre>20:02:40.297: error : virHookCall:285 : Hook script execution failed: internal error Child process (LC_ALL=C PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+                       HOME=/root USER=root LOGNAME=root /etc/libvirt/hooks/qemu qemu prepare begin -) unexpected exit status 1: Could not find required XYZZY</pre>
   </body>
 </html>
