@@ -2374,6 +2374,45 @@ error:
 }
 
 static int
+qemuParseNBDString(virDomainDiskDefPtr disk)
+{
+    virDomainDiskHostDefPtr h = NULL;
+    char *host, *port;
+
+    if (VIR_ALLOC(h) < 0)
+        goto no_memory;
+
+    host = disk->src + strlen("nbd:");
+    port = strchr(host, ':');
+    if (!port) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse nbd filename '%s'"), disk->src);
+        goto error;
+    }
+
+    *port++ = '\0';
+    h->name = strdup(host);
+    if (!h->name)
+        goto no_memory;
+
+    h->port = strdup(port);
+    if (!h->port)
+        goto no_memory;
+
+    VIR_FREE(disk->src);
+    disk->nhosts = 1;
+    disk->hosts = h;
+    return 0;
+
+no_memory:
+    virReportOOMError();
+error:
+    virDomainDiskHostDefFree(h);
+    VIR_FREE(h);
+    return -1;
+}
+
+static int
 qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
 {
     int ret = -1;
@@ -2432,6 +2471,39 @@ cleanup:
 no_memory:
     virReportOOMError();
     goto cleanup;
+}
+
+#define QEMU_DEFAULT_NBD_PORT "10809"
+
+static int
+qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
+{
+    const char *transp;
+
+    if (disk->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("nbd accepts only one host"));
+        return -1;
+    }
+
+    virBufferAddLit(opt, "file=nbd:");
+
+    switch (disk->hosts->transport) {
+    case VIR_DOMAIN_DISK_PROTO_TRANS_TCP:
+        if (disk->hosts->name)
+            virBufferEscape(opt, ',', ",", "%s", disk->hosts->name);
+        virBufferEscape(opt, ',', ",", ":%s",
+                        disk->hosts->port ? disk->hosts->port :
+                        QEMU_DEFAULT_NBD_PORT);
+        break;
+    default:
+        transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("nbd does not support transport '%s'"), transp);
+        break;
+    }
+
+    return 0;
 }
 
 char *
@@ -2553,13 +2625,9 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
             switch (disk->protocol) {
             case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-                if (disk->nhosts != 1) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("NBD accepts only one host"));
+                if (qemuBuildNBDString(disk, &opt) < 0)
                     goto error;
-                }
-                virBufferAsprintf(&opt, "file=nbd:%s:%s,",
-                                  disk->hosts->name, disk->hosts->port);
+                virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                 virBufferAddLit(&opt, "file=");
@@ -7731,39 +7799,11 @@ qemuParseCommandLineDisk(virCapsPtr qemuCaps,
                 if (STRPREFIX(def->src, "/dev/"))
                     def->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
                 else if (STRPREFIX(def->src, "nbd:")) {
-                    char *host, *port;
-
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
-                    host = def->src + strlen("nbd:");
-                    port = strchr(host, ':');
-                    if (!port) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse nbd filename '%s'"),
-                                       def->src);
-                        goto error;
-                    }
-                    *port++ = '\0';
-                    if (VIR_ALLOC(def->hosts) < 0) {
-                        virReportOOMError();
-                        goto error;
-                    }
-                    def->nhosts = 1;
-                    def->hosts->name = strdup(host);
-                    if (!def->hosts->name) {
-                        virReportOOMError();
-                        goto error;
-                    }
-                    def->hosts->port = strdup(port);
-                    if (!def->hosts->port) {
-                        virReportOOMError();
-                        goto error;
-                    }
-                    def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-                    def->hosts->socket = NULL;
 
-                    VIR_FREE(def->src);
-                    def->src = NULL;
+                    if (qemuParseNBDString(def) < 0)
+                        goto error;
                 } else if (STRPREFIX(def->src, "rbd:")) {
                     char *p = def->src;
 
@@ -8994,7 +9034,6 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             else if (STRPREFIX(val, "nbd:")) {
                 disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                 disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
-                val += strlen("nbd:");
             } else if (STRPREFIX(val, "rbd:")) {
                 disk->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                 disk->protocol = VIR_DOMAIN_DISK_PROTOCOL_RBD;
@@ -9034,26 +9073,12 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto no_memory;
 
             if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-                char *host, *port;
+                char *port;
 
                 switch (disk->protocol) {
                 case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-                    host = disk->src;
-                    port = strchr(host, ':');
-                    if (!port) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse nbd filename '%s'"), disk->src);
+                    if (qemuParseNBDString(disk) < 0)
                         goto error;
-                    }
-                    *port++ = '\0';
-                    if (VIR_ALLOC(disk->hosts) < 0)
-                        goto no_memory;
-                    disk->nhosts = 1;
-                    disk->hosts->name = disk->src;
-                    disk->src = NULL;
-                    disk->hosts->port = strdup(port);
-                    if (!disk->hosts->port)
-                        goto no_memory;
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                     /* old-style CEPH_ARGS env variable is parsed later */
