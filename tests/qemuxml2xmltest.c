@@ -169,6 +169,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-v1-wt");
     DO_TEST("disk-drive-cache-v1-wb");
     DO_TEST("disk-drive-cache-v1-none");
+    DO_TEST("disk-drive-network-nbd");
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
     DO_TEST("disk-scsi-virtio-scsi");
