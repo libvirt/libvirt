@@ -6284,57 +6284,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
                 }
             } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
-                switch (disk->protocol) {
-                case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-                    if (disk->nhosts != 1) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("NBD accepts only one host"));
-                        goto error;
-                    }
-                    if (virAsprintf(&file, "nbd:%s:%s,", disk->hosts->name,
-                                    disk->hosts->port) < 0) {
-                        goto no_memory;
-                    }
-                    break;
-                case VIR_DOMAIN_DISK_PROTOCOL_RBD:
-                    {
-                        virBuffer opt = VIR_BUFFER_INITIALIZER;
-                        if (qemuBuildRBDString(conn, disk, &opt) < 0)
-                            goto error;
-                        if (virBufferError(&opt)) {
-                            virReportOOMError();
-                            goto error;
-                        }
-                        file = virBufferContentAndReset(&opt);
-                    }
-                    break;
-                case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-                    {
-                        virBuffer opt = VIR_BUFFER_INITIALIZER;
-                        if (qemuBuildGlusterString(disk, &opt) < 0)
-                            goto error;
-                        if (virBufferError(&opt)) {
-                            virReportOOMError();
-                            goto error;
-                        }
-                        file = virBufferContentAndReset(&opt);
-                    }
-                    break;
-                case VIR_DOMAIN_DISK_PROTOCOL_SHEEPDOG:
-                    if (disk->nhosts == 0) {
-                        if (virAsprintf(&file, "sheepdog:%s,", disk->src) < 0) {
-                            goto no_memory;
-                        }
-                    } else {
-                        /* only one host is supported now */
-                        if (virAsprintf(&file, "sheepdog:%s:%s:%s,",
-                                        disk->hosts->name, disk->hosts->port,
-                                        disk->src) < 0) {
-                            goto no_memory;
-                        }
-                    }
-                    break;
-                }
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("network disks are only supported with -drive"));
             } else {
                 if (!(file = strdup(disk->src))) {
                     goto no_memory;
