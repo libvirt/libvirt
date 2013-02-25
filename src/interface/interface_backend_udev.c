@@ -24,7 +24,9 @@
 #include <libudev.h>
 
 #include "virerror.h"
+#include "c-ctype.h"
 #include "datatypes.h"
+#include "domain_conf.h"
 #include "interface_driver.h"
 #include "interface_conf.h"
 #include "viralloc.h"
@@ -526,6 +528,16 @@ udevIfaceBridgeScanDirFilter(const struct dirent *entry)
 {
     if (STREQ(entry->d_name, ".") || STREQ(entry->d_name, ".."))
         return 0;
+
+    /* Omit the domain interfaces from the list of bridge attached
+     * devices. All we can do is check for the device name matching
+     * vnet%d. Improvements to this check are welcome.
+     */
+    if (strlen(entry->d_name) >= 5) {
+        if (STRPREFIX(entry->d_name, VIR_NET_GENERATED_PREFIX) &&
+            c_isdigit(entry->d_name[4]))
+            return 0;
+    }
 
     return 1;
 }
