@@ -1090,6 +1090,7 @@
                     <value>rbd</value>
                     <value>sheepdog</value>
                     <value>gluster</value>
+                    <value>iscsi</value>
                   </choice>
                 </attribute>
                 <optional>

@@ -174,6 +174,7 @@ mymain(void)
     DO_TEST("disk-drive-network-nbd-ipv6");
     DO_TEST("disk-drive-network-nbd-ipv6-export");
     DO_TEST("disk-drive-network-nbd-unix");
+    DO_TEST("disk-drive-network-iscsi");
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
     DO_TEST("disk-scsi-virtio-scsi");

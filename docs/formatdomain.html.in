@@ -1443,7 +1443,7 @@
         to the directory to use as the disk. If the disk <code>type</code>
         is "network", then the <code>protocol</code> attribute specifies
         the protocol to access to the requested image; possible values
-        are "nbd", "rbd", "sheepdog" or "gluster".  If the
+        are "nbd", "iscsi", "rbd", "sheepdog" or "gluster".  If the
         <code>protocol</code> attribute is "rbd", "sheepdog" or "gluster", an
         additional attribute <code>name</code> is mandatory to specify which
         volume/image will be used; for "nbd" it is optional.  When the disk
@@ -1451,7 +1451,8 @@
         or more <code>host</code> sub-elements used to specify the hosts
         to connect.
         <span class="since">Since 0.0.3; <code>type='dir'</code> since
-        0.7.5; <code>type='network'</code> since 0.8.7</span><br/>
+        0.7.5; <code>type='network'</code> since
+        0.8.7; <code>protocol='iscsi'</code> since 1.0.4</span><br/>
         For a "file" disk type which represents a cdrom or floppy
         (the <code>device</code> attribute), it is possible to define
         policy what to do with the disk if the source file is not accessible.
@@ -1700,6 +1701,11 @@
           <tr>
             <td> nbd </td>
             <td> a server running nbd-server </td>
+            <td> only one </td>
+          </tr>
+          <tr>
+            <td> iscsi </td>
+            <td> an iSCSI server </td>
             <td> only one </td>
           </tr>
           <tr>
