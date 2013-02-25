@@ -2378,6 +2378,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
 {
     virDomainDiskHostDefPtr h = NULL;
     char *host, *port;
+    char *src;
 
     if (VIR_ALLOC(h) < 0)
         goto no_memory;
@@ -2395,11 +2396,24 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
     if (!h->name)
         goto no_memory;
 
+    src = strchr(port, ':');
+    if (src)
+        *src++ = '\0';
+
     h->port = strdup(port);
     if (!h->port)
         goto no_memory;
 
+    if (src && STRPREFIX(src, "exportname=")) {
+        src = strdup(strchr(src, '=') + 1);
+        if (!src)
+            goto no_memory;
+    } else {
+        src = NULL;
+    }
+
     VIR_FREE(disk->src);
+    disk->src = src;
     disk->nhosts = 1;
     disk->hosts = h;
     return 0;
@@ -2502,6 +2516,9 @@ qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
                        _("nbd does not support transport '%s'"), transp);
         break;
     }
+
+    if (disk->src)
+        virBufferEscape(opt, ',', ",", ":exportname=%s", disk->src);
 
     return 0;
 }

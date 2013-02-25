@@ -185,6 +185,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-directsync");
     DO_TEST("disk-drive-cache-unsafe");
     DO_TEST("disk-drive-network-nbd");
+    DO_TEST("disk-drive-network-nbd-export");
     DO_TEST("disk-drive-network-gluster");
     DO_TEST("disk-drive-network-rbd");
     DO_TEST("disk-drive-network-rbd-ipv6");
