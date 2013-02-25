@@ -3455,36 +3455,35 @@ qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
 int
 qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
 {
+    char *sysfs_path = NULL;
     int val = -1;
+    int ret = 0;
 
     /* "sgio" is only valid for block disk; cdrom
      * and floopy disk can have empty source.
      */
     if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+        disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
         !disk->src)
         return 0;
 
-    if (disk->sgio)
-        val = (disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED);
-
-    /* Ignore the setting if unpriv_sgio is not supported by the
-     * kernel, otherwise defaults to filter the SG_IO commands,
-     * I.E. Set unpriv_sgio to 0.
-     */
-    if (disk->sgio == VIR_DOMAIN_DISK_SGIO_DEFAULT &&
-        disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        char *sysfs_path = NULL;
-
-        if ((sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL)) &&
-            virFileExists(sysfs_path))
-            val = 0;
-        VIR_FREE(sysfs_path);
-    }
-
-    if (val >= 0 && virSetDeviceUnprivSGIO(disk->src, NULL, val) < 0)
+    sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL);
+    if (sysfs_path == NULL)
         return -1;
 
-    return 0;
+    /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
+    val = (disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED);
+
+    /* Do not do anything if unpriv_sgio is not supported by the kernel and the
+     * whitelist is enabled.  But if requesting unfiltered access, always call
+     * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
+     */
+    if ((virFileExists(sysfs_path) || val == 1) &&
+        virSetDeviceUnprivSGIO(disk->src, NULL, val) < 0)
+        ret = -1;
+
+    VIR_FREE(sysfs_path);
+    return ret;
 }
 
 int qemuProcessStart(virConnectPtr conn,
