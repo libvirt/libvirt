@@ -874,8 +874,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0; i < vm->def->nsmartcards; i++)
         virDomainAuditSmartcard(vm, vm->def->smartcards[i], "start", true);
 
-    if (vm->def->rng)
-        virDomainAuditRNG(vm, NULL, vm->def->rng, "start", true);
+    for (i = 0; i < vm->def->nrngs; i++)
+        virDomainAuditRNG(vm, NULL, vm->def->rngs[i], "start", true);
 
     if (vm->def->tpm)
         virDomainAuditTPM(vm, vm->def->tpm, "start", true);

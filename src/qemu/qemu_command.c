@@ -1050,8 +1050,8 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (virAsprintf(&def->memballoon->info.alias, "balloon%d", 0) < 0)
             return -1;
     }
-    if (def->rng) {
-        if (virAsprintf(&def->rng->info.alias, "rng%d", 0) < 0)
+    for (i = 0; i < def->nrngs; i++) {
+        if (virAsprintf(&def->rngs[i]->info.alias, "rng%zu", i) < 0)
             return -1;
     }
     if (def->tpm) {
@@ -1102,10 +1102,11 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
         def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         def->memballoon->info.type = type;
 
-    if (def->rng &&
-        def->rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
-        def->rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-        def->rng->info.type = type;
+    for (i = 0; i < def->nrngs; i++) {
+        if (def->rngs[i]->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
+            def->rngs[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->rngs[i]->info.type = type;
+    }
 }
 
 
@@ -2232,11 +2233,13 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     /* VirtIO RNG */
-    if (def->rng &&
-        def->rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
-        def->rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+    for (i = 0; i < def->nrngs; i++) {
+        if (def->rngs[i]->model != VIR_DOMAIN_RNG_MODEL_VIRTIO ||
+            def->rngs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
         if (virDomainPCIAddressReserveNextSlot(addrs,
-                                               &def->rng->info, flags) < 0)
+                                               &def->rngs[i]->info, flags) < 0)
             goto error;
     }
 
@@ -9163,13 +9166,13 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->rng) {
+    for (i = 0; i < def->nrngs; i++) {
         /* add the RNG source backend */
-        if (qemuBuildRNGBackendArgs(cmd, def->rng, qemuCaps) < 0)
+        if (qemuBuildRNGBackendArgs(cmd, def->rngs[i], qemuCaps) < 0)
             goto error;
 
         /* add the device */
-        if (qemuBuildRNGDeviceArgs(cmd, def, def->rng, qemuCaps) < 0)
+        if (qemuBuildRNGDeviceArgs(cmd, def, def->rngs[i], qemuCaps) < 0)
             goto error;
     }
 

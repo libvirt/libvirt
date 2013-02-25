@@ -1981,6 +1981,9 @@ struct _virDomainDef {
     size_t nseclabels;
     virSecurityLabelDefPtr *seclabels;
 
+    size_t nrngs;
+    virDomainRNGDefPtr *rngs;
+
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
@@ -1989,7 +1992,6 @@ struct _virDomainDef {
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
-    virDomainRNGDefPtr rng;
     virDomainPanicDefPtr panic;
 
     void *namespaceData;

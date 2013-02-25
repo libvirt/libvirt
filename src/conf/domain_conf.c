@@ -2057,7 +2057,9 @@ void virDomainDefFree(virDomainDefPtr def)
         virDomainRedirdevDefFree(def->redirdevs[i]);
     VIR_FREE(def->redirdevs);
 
-    virDomainRNGDefFree(def->rng);
+    for (i = 0; i < def->nrngs; i++)
+        virDomainRNGDefFree(def->rngs[i]);
+    VIR_FREE(def->rngs);
 
     virDomainTPMDefFree(def->tpm);
 
@@ -2745,10 +2747,10 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->memballoon->info, opaque) < 0)
             return -1;
     }
-    if (def->rng) {
-        device.type = VIR_DOMAIN_DEVICE_RNG;
-        device.data.rng = def->rng;
-        if (cb(def, &device, &def->rng->info, opaque) < 0)
+    device.type = VIR_DOMAIN_DEVICE_RNG;
+    for (i = 0; i < def->nrngs; i++) {
+        device.data.rng = def->rngs[i];
+        if (cb(def, &device, &def->rngs[i]->info, opaque) < 0)
             return -1;
     }
     if (def->nvram) {
@@ -12821,20 +12823,19 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(nodes);
     }
 
-    /* Parse the RNG device */
+    /* Parse the RNG devices */
     if ((n = virXPathNodeSet("./devices/rng", ctxt, &nodes)) < 0)
         goto error;
-
-    if (n > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("only a single RNG device is supported"));
+    if (n && VIR_ALLOC_N(def->rngs, n) < 0)
         goto error;
-    }
-
-    if (n > 0) {
-        if (!(def->rng = virDomainRNGDefParseXML(nodes[0], ctxt, flags)))
+    for (i = 0; i < n; i++) {
+        virDomainRNGDefPtr rng = virDomainRNGDefParseXML(nodes[i],
+                                                         ctxt,
+                                                         flags);
+        if (!rng)
             goto error;
-        VIR_FREE(nodes);
+
+        def->rngs[def->nrngs++] = rng;
     }
     VIR_FREE(nodes);
 
@@ -13864,17 +13865,6 @@ static bool
 virDomainRNGDefCheckABIStability(virDomainRNGDefPtr src,
                                  virDomainRNGDefPtr dst)
 {
-    if (!src && !dst)
-        return true;
-
-    if (!src || !dst) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain RNG device count '%d' "
-                         "does not match source count '%d'"),
-                       src ? 1 : 0, dst ? 1 : 0);
-        return false;
-    }
-
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target RNG model '%s' does not match source '%s'"),
@@ -14439,8 +14429,16 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                                                  dst->memballoon))
         goto error;
 
-    if (!virDomainRNGDefCheckABIStability(src->rng, dst->rng))
+    if (src->nrngs != dst->nrngs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain RNG device count %zu "
+                         "does not match source %zu"), dst->nrngs, src->nrngs);
         goto error;
+    }
+
+    for (i = 0; i < src->nrngs; i++)
+        if (!virDomainRNGDefCheckABIStability(src->rngs[i], dst->rngs[i]))
+            goto error;
 
     if (!virDomainPanicCheckABIStability(src->panic, dst->panic))
         goto error;
@@ -18020,8 +18018,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->memballoon)
         virDomainMemballoonDefFormat(buf, def->memballoon, flags);
 
-    if (def->rng)
-        virDomainRNGDefFormat(buf, def->rng, flags);
+    for (n = 0; n < def->nrngs; n++) {
+        if (virDomainRNGDefFormat(buf, def->rngs[n], flags))
+            goto error;
+    }
 
     if (def->nvram)
         virDomainNVRAMDefFormat(buf, def->nvram, flags);
