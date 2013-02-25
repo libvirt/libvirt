@@ -8832,12 +8832,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                     if (VIR_ALLOC(disk->hosts) < 0)
                         goto no_memory;
                     disk->nhosts = 1;
-                    disk->hosts->name = host;
+                    disk->hosts->name = disk->src;
+                    disk->src = NULL;
                     disk->hosts->port = strdup(port);
                     if (!disk->hosts->port)
                         goto no_memory;
-                    VIR_FREE(disk->src);
-                    disk->src = NULL;
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_RBD:
                     /* old-style CEPH_ARGS env variable is parsed later */
