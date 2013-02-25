@@ -2384,25 +2384,34 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         goto no_memory;
 
     host = disk->src + strlen("nbd:");
-    port = strchr(host, ':');
-    if (!port) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse nbd filename '%s'"), disk->src);
-        goto error;
+    if (STRPREFIX(host, "unix:/")) {
+        src = strchr(host + strlen("unix:"), ':');
+        if (src)
+            *src++ = '\0';
+
+        h->transport = VIR_DOMAIN_DISK_PROTO_TRANS_UNIX;
+        h->socket = strdup(host + strlen("unix:"));
+    } else {
+        port = strchr(host, ':');
+        if (!port) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse nbd filename '%s'"), disk->src);
+            goto error;
+        }
+
+        *port++ = '\0';
+        h->name = strdup(host);
+        if (!h->name)
+            goto no_memory;
+
+        src = strchr(port, ':');
+        if (src)
+            *src++ = '\0';
+
+        h->port = strdup(port);
+        if (!h->port)
+            goto no_memory;
     }
-
-    *port++ = '\0';
-    h->name = strdup(host);
-    if (!h->name)
-        goto no_memory;
-
-    src = strchr(port, ':');
-    if (src)
-        *src++ = '\0';
-
-    h->port = strdup(port);
-    if (!h->port)
-        goto no_memory;
 
     if (src && STRPREFIX(src, "exportname=")) {
         src = strdup(strchr(src, '=') + 1);
@@ -2509,6 +2518,14 @@ qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
         virBufferEscape(opt, ',', ",", ":%s",
                         disk->hosts->port ? disk->hosts->port :
                         QEMU_DEFAULT_NBD_PORT);
+        break;
+    case VIR_DOMAIN_DISK_PROTO_TRANS_UNIX:
+        if (!disk->hosts->socket) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("socket attribute required for unix transport"));
+            return -1;
+        }
+        virBufferEscape(opt, ',', ",", "unix:%s", disk->hosts->socket);
         break;
     default:
         transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);

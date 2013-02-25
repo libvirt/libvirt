@@ -1713,9 +1713,11 @@
             <td> only one </td>
           </tr>
         </table>
-        In case of gluster, valid values for transport attribute are tcp, rdma
-        or unix. If nothing is specified, tcp is assumed. If transport is unix,
-        socket attribute specifies path to unix socket.
+        gluster supports "tcp", "rdma", "unix" as valid values for the
+        transport attribute.  nbd supports "tcp" and "unix".  Others only
+        support "tcp".  If nothing is specified, "tcp" is assumed. If the
+        transport is "unix", the socket attribute specifies the path to an
+        AF_UNIX socket.
       </dd>
       <dt><code>address</code></dt>
       <dd>If present, the <code>address</code> element ties the disk
