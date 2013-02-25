@@ -2296,35 +2296,36 @@ no_memory:
 }
 
 static int
-qemuParseGlusterString(virDomainDiskDefPtr def)
+qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
+                        const char *scheme)
 {
     int ret = -1;
     char *transp = NULL;
     char *sock = NULL;
     char *volimg = NULL;
-    virURIPtr uri = NULL;
-
-    if (!(uri = virURIParse(def->src))) {
-        return -1;
-    }
 
     if (VIR_ALLOC(def->hosts) < 0)
         goto no_memory;
 
-    if (STREQ(uri->scheme, "gluster")) {
-        def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
-    } else if (STRPREFIX(uri->scheme, "gluster+")) {
-        transp = strchr(uri->scheme, '+') + 1;
-        def->hosts->transport = virDomainDiskProtocolTransportTypeFromString(transp);
-        if (def->hosts->transport < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid gluster transport type '%s'"), transp);
-            goto error;
-        }
-    } else {
+    transp = strchr(uri->scheme, '+');
+    if (transp)
+        *transp++ = 0;
+
+    if (!STREQ(uri->scheme, scheme)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid transport/scheme '%s'"), uri->scheme);
         goto error;
+    }
+
+    if (!transp) {
+        def->hosts->transport = VIR_DOMAIN_DISK_PROTO_TRANS_TCP;
+    } else {
+        def->hosts->transport = virDomainDiskProtocolTransportTypeFromString(transp);
+        if (def->hosts->transport < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid %s transport type '%s'"), scheme, transp);
+            goto error;
+        }
     }
     def->nhosts = 0; /* set to 1 once everything succeeds */
 
@@ -2351,11 +2352,16 @@ qemuParseGlusterString(virDomainDiskDefPtr def)
             }
         }
     }
-    volimg = uri->path + 1; /* skip the prefix slash */
-    VIR_FREE(def->src);
-    def->src = strdup(volimg);
-    if (!def->src)
-        goto no_memory;
+    if (uri->path) {
+        volimg = uri->path + 1; /* skip the prefix slash */
+        VIR_FREE(def->src);
+        def->src = strdup(volimg);
+        if (!def->src)
+            goto no_memory;
+    } else {
+        VIR_FREE(def->src);
+        def->src = NULL;
+    }
 
     def->nhosts = 1;
     ret = 0;
@@ -2374,11 +2380,30 @@ error:
 }
 
 static int
+qemuParseGlusterString(virDomainDiskDefPtr def)
+{
+    virURIPtr uri = NULL;
+
+    if (!(uri = virURIParse(def->src)))
+        return -1;
+
+    return qemuParseDriveURIString(def, uri, "gluster");
+}
+
+static int
 qemuParseNBDString(virDomainDiskDefPtr disk)
 {
     virDomainDiskHostDefPtr h = NULL;
     char *host, *port;
     char *src;
+
+    virURIPtr uri = NULL;
+
+    if (strstr(disk->src, "://")) {
+        uri = virURIParse(disk->src);
+        if (uri)
+            return qemuParseDriveURIString(disk, uri, "nbd");
+    }
 
     if (VIR_ALLOC(h) < 0)
         goto no_memory;
@@ -2436,7 +2461,8 @@ error:
 }
 
 static int
-qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
+qemuBuildDriveURIString(virDomainDiskDefPtr disk, virBufferPtr opt,
+                        const char *scheme)
 {
     int ret = -1;
     int port = 0;
@@ -2450,18 +2476,18 @@ qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
     };
 
     if (disk->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("gluster accepts only one host"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s accepts only one host"), scheme);
         return -1;
     }
 
     virBufferAddLit(opt, "file=");
     transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
 
-    if (virAsprintf(&tmpscheme, "gluster+%s", transp) < 0)
+    if (virAsprintf(&tmpscheme, "%s+%s", scheme, transp) < 0)
         goto no_memory;
 
-    if (virAsprintf(&volimg, "/%s", disk->src) < 0)
+    if (disk->src && virAsprintf(&volimg, "/%s", disk->src) < 0)
         goto no_memory;
 
     if (disk->hosts->port) {
@@ -2496,6 +2522,12 @@ no_memory:
     goto cleanup;
 }
 
+static int
+qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
+{
+    return qemuBuildDriveURIString(disk, opt, "gluster");
+}
+
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
 static int
@@ -2508,6 +2540,13 @@ qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
                        _("nbd accepts only one host"));
         return -1;
     }
+
+    if ((disk->hosts->name && strchr(disk->hosts->name, ':'))
+        || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP
+            && !disk->hosts->name)
+        || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX
+            && disk->hosts->socket && disk->hosts->socket[0] != '/'))
+        return qemuBuildDriveURIString(disk, opt, "nbd");
 
     virBufferAddLit(opt, "file=nbd:");
 
@@ -7832,7 +7871,8 @@ qemuParseCommandLineDisk(virCapsPtr qemuCaps,
                 values[i] = NULL;
                 if (STRPREFIX(def->src, "/dev/"))
                     def->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
-                else if (STRPREFIX(def->src, "nbd:")) {
+                else if (STRPREFIX(def->src, "nbd:") ||
+                         STRPREFIX(def->src, "nbd+")) {
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_NBD;
 
@@ -7853,7 +7893,8 @@ qemuParseCommandLineDisk(virCapsPtr qemuCaps,
                         goto cleanup;
 
                     VIR_FREE(p);
-                } else if (STRPREFIX(def->src, "gluster")) {
+                } else if (STRPREFIX(def->src, "gluster:") ||
+                           STRPREFIX(def->src, "gluster+")) {
                     def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
                     def->protocol = VIR_DOMAIN_DISK_PROTOCOL_GLUSTER;
 

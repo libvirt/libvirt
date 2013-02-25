@@ -171,6 +171,8 @@ mymain(void)
     DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-drive-network-nbd");
     DO_TEST("disk-drive-network-nbd-export");
+    DO_TEST("disk-drive-network-nbd-ipv6");
+    DO_TEST("disk-drive-network-nbd-ipv6-export");
     DO_TEST("disk-drive-network-nbd-unix");
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
