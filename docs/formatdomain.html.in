@@ -4314,7 +4314,7 @@ qemu-kvm -net nic,model=? /dev/null
           <li>'egd' &mdash; a EGD protocol backend</li>
         </ul>
       </dd>
-      <dt><code>backend type='random'</code></dt>
+      <dt><code>backend model='random'</code></dt>
       <dd>
         <p>
           This backend type expects a non-blocking character device as input.
@@ -4323,7 +4323,7 @@ qemu-kvm -net nic,model=? /dev/null
           When no file name is specified the hypervisor default is used.
         </p>
       </dd>
-      <dt><code>backend type='egd'</code></dt>
+      <dt><code>backend model='egd'</code></dt>
       <dd>
         <p>
           This backend connects to a source using the EGD protocol.
