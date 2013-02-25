@@ -1775,6 +1775,8 @@ void virDomainDefFree(virDomainDefPtr def)
         virDomainRedirdevDefFree(def->redirdevs[i]);
     VIR_FREE(def->redirdevs);
 
+    virDomainRNGDefFree(def->rng);
+
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
