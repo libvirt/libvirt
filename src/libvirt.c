@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005-2006, 2008-2012 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2008-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
-#include <gcrypt.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -56,6 +55,7 @@
 #include "intprops.h"
 #include "virconf.h"
 #if WITH_GNUTLS
+# include <gcrypt.h>
 # include "rpc/virnettlscontext.h"
 #endif
 #include "vircommand.h"
