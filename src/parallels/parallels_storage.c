@@ -129,9 +129,11 @@ static char *parallelsMakePoolName(virConnectPtr conn, const char *path)
 {
     parallelsConnPtr privconn = conn->privateData;
     char *name;
+    unsigned int i;
 
-    for (unsigned int i = 0; i < UINT_MAX; i++) {
+    for (i = 0; i < UINT_MAX; i++) {
         bool found = false;
+        int j;
 
         if (!(name = strdup(path))) {
             virReportOOMError();
@@ -148,11 +150,11 @@ static char *parallelsMakePoolName(virConnectPtr conn, const char *path)
             return 0;
         }
 
-        for (int j = 0; j < strlen(name); j++)
+        for (j = 0; j < strlen(name); j++)
             if (name[j] == '/')
                 name[j] = '-';
 
-        for (int j = 0; j < privconn->pools.count; j++) {
+        for (j = 0; j < privconn->pools.count; j++) {
             if (STREQ(name, privconn->pools.objs[j]->def->name)) {
                 found = true;
                 break;
@@ -226,6 +228,7 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
     virStoragePoolObjListPtr pools = &privconn->pools;
     char *poolPath;
     virStoragePoolObjPtr pool = NULL;
+    int j;
 
     if (!(poolPath = strdup(pdom->home))) {
         virReportOOMError();
@@ -234,7 +237,7 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
 
     poolPath = dirname(poolPath);
 
-    for (int j = 0; j < pools->count; j++) {
+    for (j = 0; j < pools->count; j++) {
         if (STREQ(poolPath, pools->objs[j]->def->target.path)) {
             pool = pools->objs[j];
             break;
