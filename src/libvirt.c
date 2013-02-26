@@ -5161,6 +5161,10 @@ virDomainMigrateDirect(virDomainPtr domain,
  * XML includes details of the support URI schemes. If omitted
  * the dconn will be asked for a default URI.
  *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
  * In either case it is typically only necessary to specify a
  * URI if the destination host has multiple interfaces and a
  * specific interface is required to transmit migration data.
@@ -5218,6 +5222,15 @@ virDomainMigrate(virDomainPtr domain,
     if (dconn->flags & VIR_CONNECT_RO) {
         /* NB, deliberately report error against source object, not dest */
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
         goto error;
     }
 
@@ -5375,6 +5388,10 @@ error:
  * XML includes details of the support URI schemes. If omitted
  * the dconn will be asked for a default URI.
  *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
  * In either case it is typically only necessary to specify a
  * URI if the destination host has multiple interfaces and a
  * specific interface is required to transmit migration data.
@@ -5445,6 +5462,15 @@ virDomainMigrate2(virDomainPtr domain,
     if (dconn->flags & VIR_CONNECT_RO) {
         /* NB, deliberately report error against source object, not dest */
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
         goto error;
     }
 
@@ -5601,6 +5627,10 @@ error:
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
  * If a hypervisor supports renaming domains during migration,
  * the dname parameter specifies the new name for the domain.
  * Setting dname to NULL keeps the domain name the same.  If domain
@@ -5647,6 +5677,15 @@ virDomainMigrateToURI(virDomainPtr domain,
     }
 
     virCheckNonNullArgGoto(duri, error);
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
+        goto error;
+    }
 
     if (flags & VIR_MIGRATE_OFFLINE &&
         !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
@@ -5741,6 +5780,10 @@ error:
  *
  * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
  *
+ * If you want to copy non-shared storage within migration you
+ * can use either VIR_MIGRATE_NON_SHARED_DISK or
+ * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
  * If a hypervisor supports changing the configuration of the guest
  * during migration, the @dxml parameter specifies the new config
  * for the guest. The configuration must include an identical set
@@ -5796,6 +5839,15 @@ virDomainMigrateToURI2(virDomainPtr domain,
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
+        flags & VIR_MIGRATE_NON_SHARED_INC) {
+        virReportInvalidArg(flags,
+                            _("flags 'shared disk' and 'shared incremental' "
+                              "in %s are mutually exclusive"),
+                            __FUNCTION__);
         goto error;
     }
 
