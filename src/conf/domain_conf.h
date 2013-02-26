@@ -195,7 +195,6 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390,
-    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -223,19 +222,6 @@ struct _virDomainDeviceVirtioSerialAddress {
     unsigned int controller;
     unsigned int bus;
     unsigned int port;
-};
-
-# define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
-# define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
-# define VIR_DOMAIN_DEVICE_CCW_MAX_SCHID  65535
-
-typedef struct _virDomainDeviceCCWAddress virDomainDeviceCCWAddress;
-typedef virDomainDeviceCCWAddress *virDomainDeviceCCWAddressPtr;
-struct _virDomainDeviceCCWAddress {
-    unsigned int cssid;
-    unsigned int ssid;
-    unsigned int schid;
-    bool         assigned;
 };
 
 typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
@@ -288,7 +274,6 @@ struct _virDomainDeviceInfo {
         virDomainDeviceCcidAddress ccid;
         virDomainDeviceUSBAddress usb;
         virDomainDeviceSpaprVioAddress spaprvio;
-        virDomainDeviceCCWAddress ccw;
     } addr;
     int mastertype;
     union {
@@ -2002,7 +1987,6 @@ int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
                             virDomainDeviceInfoPtr src);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
-void virDomainDefClearCCWAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
 
 typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,

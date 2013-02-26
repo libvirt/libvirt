@@ -110,7 +110,6 @@ virDomainCpuPlacementModeTypeToString;
 virDomainDefAddImplicitControllers;
 virDomainDefAddSecurityLabelDef;
 virDomainDefCheckABIStability;
-virDomainDefClearCCWAddresses;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;
 virDomainDefCompatibleDevice;
