@@ -445,7 +445,7 @@ mymain(void)
     virCapsPtr caps;
 
 #if !WITH_YAJL
-    fprintf(stderr, "libvirt not compiled with yajl, skipping");
+    fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif
 

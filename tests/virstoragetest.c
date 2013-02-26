@@ -90,7 +90,7 @@ testPrepImages(void)
     if (!qemuimg)
         qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg) {
-        fprintf(stderr, "qemu-img missing or too old; skipping this test\n");
+        fputs("qemu-img missing or too old; skipping this test\n", stderr);
         return EXIT_AM_SKIP;
     }
 
@@ -136,7 +136,7 @@ testPrepImages(void)
     cmd = virCommandNewArgList("qemu-img", "rebase", "-u", "-f", "qcow2",
                                "-F", "raw", "-b", "raw", "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0) {
-        fprintf(stderr, "qemu-img is too old; skipping this test\n");
+        fputs("qemu-img is too old; skipping this test\n", stderr);
         ret = EXIT_AM_SKIP;
         goto cleanup;
     }
