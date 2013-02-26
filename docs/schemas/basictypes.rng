@@ -20,6 +20,12 @@
     </data>
   </define>
 
+  <define name='octalMode'>
+    <data type="unsignedInt">
+      <param name='pattern'>[0-7]+</param>
+    </data>
+  </define>
+
   <define name="uint8range">
     <choice>
       <data type="string">

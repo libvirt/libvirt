@@ -175,7 +175,7 @@
     <optional>
       <element name='permissions'>
         <element name='mode'>
-          <ref name='unsignedInt'/>
+          <ref name='octalMode'/>
         </element>
         <element name='owner'>
           <choice>
