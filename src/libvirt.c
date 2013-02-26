@@ -1216,7 +1216,7 @@ do_open(const char *name,
     if (!ret->driver) {
         /* If we reach here, then all drivers declined the connection. */
         virLibConnError(VIR_ERR_NO_CONNECT,
-                        _("No connection for URI %s"),
+                        "%s",
                         NULLSTR(name));
         goto failed;
     }
