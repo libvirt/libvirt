@@ -153,6 +153,7 @@
       <li><code>iso</code>: CDROM disk image format</li>
       <li><code>qcow</code>: QEMU v1 disk image format</li>
       <li><code>qcow2</code>: QEMU v2 disk image format</li>
+      <li><code>qed</code>: QEMU Enhanced Disk image format</li>
       <li><code>vmdk</code>: VMWare disk image format</li>
       <li><code>vpc</code>: VirtualPC disk image format</li>
     </ul>
@@ -229,6 +230,9 @@
       <li>
         <code>xfs</code>
       </li>
+      <li>
+        <code>ocfs2</code>
+      </li>
     </ul>
 
     <h3>Valid volume format types</h3>
@@ -269,6 +273,12 @@
       <li>
         <code>nfs</code>
       </li>
+      <li>
+        <code>glusterfs</code>
+      </li>
+      <li>
+        <code>cifs</code>
+      </li>
     </ul>
 
     <h3>Valid volume format types</h3>
@@ -304,8 +314,14 @@
 
     <h3>Valid pool format types</h3>
     <p>
-      The logical volume pool does not use the pool format type element.
+      The logical volume pool supports the following formats:
     </p>
+    <ul>
+      <li><code>auto</code> - automatically determine format</li>
+      <li>
+        <code>lvm2</code>
+      </li>
+    </ul>
 
     <h3>Valid volume format types</h3>
     <p>
@@ -360,6 +376,9 @@
       </li>
       <li>
         <code>sun</code>
+      </li>
+      <li>
+        <code>lvm2</code>
       </li>
     </ul>
     <p>
