@@ -779,6 +779,13 @@ udevIfaceGetIfaceDefBond(struct udev *udev,
          * so we use the part after the _
          */
         tmp_str = strchr(slave_list[i]->d_name, '_');
+        if (!tmp_str || strlen(tmp_str) < 2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid enslaved interface name '%s' seen for "
+                             "bond '%s'"), slave_list[i]->d_name, name);
+            goto cleanup;
+        }
+        /* go past the _ */
         tmp_str++;
 
         ifacedef->data.bond.itf[i] =
