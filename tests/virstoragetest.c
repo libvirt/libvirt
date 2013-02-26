@@ -89,10 +89,8 @@ testPrepImages(void)
     qemuimg = virFindFileInPath("kvm-img");
     if (!qemuimg)
         qemuimg = virFindFileInPath("qemu-img");
-    if (!qemuimg) {
-        fputs("qemu-img missing or too old; skipping this test\n", stderr);
-        return EXIT_AM_SKIP;
-    }
+    if (!qemuimg)
+        goto skip;
 
     if (virAsprintf(&absraw, "%s/raw", datadir) < 0 ||
         virAsprintf(&absqcow2, "%s/qcow2", datadir) < 0 ||
@@ -116,8 +114,10 @@ testPrepImages(void)
     /* I'm lazy enough to use a shell one-liner instead of open/write/close */
     virCommandFree(cmd);
     cmd = virCommandNewArgList("sh", "-c", "printf %1024d 0 > raw", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, NULL) < 0) {
+        fprintf(stderr, "unable to create raw file\n");
         goto cleanup;
+    }
     if (!(canonraw = canonicalize_file_name(absraw))) {
         virReportOOMError();
         goto cleanup;
@@ -126,20 +126,17 @@ testPrepImages(void)
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList("qemu-img", "create", "-f", "qcow2",
+    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2",
                                "-obacking_file=raw,backing_fmt=raw", "qcow2",
                                NULL);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        goto skip;
     /* Make sure our later uses of 'qemu-img rebase' will work */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList("qemu-img", "rebase", "-u", "-f", "qcow2",
+    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
                                "-F", "raw", "-b", "raw", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0) {
-        fputs("qemu-img is too old; skipping this test\n", stderr);
-        ret = EXIT_AM_SKIP;
-        goto cleanup;
-    }
+    if (virCommandRun(cmd, NULL) < 0)
+        goto skip;
     if (!(canonqcow2 = canonicalize_file_name(absqcow2))) {
         virReportOOMError();
         goto cleanup;
@@ -148,21 +145,21 @@ testPrepImages(void)
     /* Create a second qcow2 wrapping the first, to be sure that we
      * can correctly avoid insecure probing.  */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList("qemu-img", "create", "-f", "qcow2", NULL);
+    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2", NULL);
     virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=qcow2",
                            absqcow2);
     virCommandAddArg(cmd, "wrap");
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        goto skip;
 
     /* Create a qed file. */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList("qemu-img", "create", "-f", "qed", NULL);
+    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qed", NULL);
     virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=raw",
                            absraw);
     virCommandAddArg(cmd, "qed");
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        goto skip;
 
     /* Create some symlinks in a sub-directory. */
     if (symlink("../qcow2", datadir "/sub/link1") < 0 ||
@@ -177,6 +174,11 @@ cleanup:
     if (ret)
         testCleanupImages();
     return ret;
+
+skip:
+    fputs("qemu-img is too old; skipping this test\n", stderr);
+    ret = EXIT_AM_SKIP;
+    goto cleanup;
 }
 
 typedef struct _testFileData testFileData;
