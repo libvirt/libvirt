@@ -1,5 +1,6 @@
 /* This file contains trivial example code to connect to the running
- * hypervisor and gather a few bits of information.  */
+ * hypervisor and gather a few bits of information about domains.
+ * Similar API's exist for storage pools, networks, and interfaces. */
 
 #include <config.h>
 
@@ -15,7 +16,7 @@ showError(virConnectPtr conn)
     virErrorPtr err;
 
     err = malloc(sizeof(*err));
-    if (NULL == err) {
+    if (!err) {
         printf("Could not allocate memory for error data\n");
         goto out;
     }
@@ -56,7 +57,7 @@ showHypervisorInfo(virConnectPtr conn)
      * to fail if, for example, there is no connection to a
      * hypervisor, so check what it returns. */
     hvType = virConnectGetType(conn);
-    if (NULL == hvType) {
+    if (!hvType) {
         ret = 1;
         printf("Failed to get hypervisor type\n");
         showError(conn);
@@ -90,10 +91,16 @@ static int
 showDomains(virConnectPtr conn)
 {
     int ret = 0, i, numNames, numInactiveDomains, numActiveDomains;
-    char **nameList = NULL;
+    int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE |
+                VIR_CONNECT_LIST_DOMAINS_INACTIVE;
+    virDomainPtr *nameList = NULL;
 
+    /* NB: The return from the virConnectNum*() APIs is only useful for
+     * the current call.  A domain could be started or stopped and any
+     * assumptions made purely on these return values could result in
+     * unexpected results */
     numActiveDomains = virConnectNumOfDomains(conn);
-    if (-1 == numActiveDomains) {
+    if (numActiveDomains == -1) {
         ret = 1;
         printf("Failed to get number of active domains\n");
         showError(conn);
@@ -101,7 +108,7 @@ showDomains(virConnectPtr conn)
     }
 
     numInactiveDomains = virConnectNumOfDefinedDomains(conn);
-    if (-1 == numInactiveDomains) {
+    if (numInactiveDomains == -1) {
         ret = 1;
         printf("Failed to get number of inactive domains\n");
         showError(conn);
@@ -111,39 +118,24 @@ showDomains(virConnectPtr conn)
     printf("There are %d active and %d inactive domains\n",
            numActiveDomains, numInactiveDomains);
 
-    nameList = malloc(sizeof(*nameList) * numInactiveDomains);
-
-    if (NULL == nameList) {
-        ret = 1;
-        printf("Could not allocate memory for list of inactive domains\n");
-        goto out;
+    /* Return a list of all active and inactive domains. Using this API
+     * instead of virConnectListDomains() and virConnectListDefinedDomains()
+     * is preferred since it "solves" an inherit race between separated API
+     * calls if domains are started or stopped between calls */
+    numNames = virConnectListAllDomains(conn,
+                                        &nameList,
+                                        flags);
+    for (i = 0; i < numNames; i++) {
+        int active = virDomainIsActive(nameList[i]);
+        printf("  %8s (%s)\n",
+               virDomainGetName(nameList[i]),
+               (active == 1 ? "active" : "non-active"));
+        /* must free the returned named per the API documentation */
+        virDomainFree(nameList[i]);
     }
-
-    numNames = virConnectListDefinedDomains(conn,
-                                            nameList,
-                                            numInactiveDomains);
-
-    if (-1 == numNames) {
-        ret = 1;
-        printf("Could not get list of defined domains from hypervisor\n");
-        showError(conn);
-        goto out;
-    }
-
-    if (numNames > 0) {
-        printf("Inactive domains:\n");
-    }
-
-    for (i = 0 ; i < numNames ; i++) {
-        printf("  %s\n", *(nameList + i));
-        /* The API documentation doesn't say so, but the names
-         * returned by virConnectListDefinedDomains are strdup'd and
-         * must be freed here.  */
-        free(*(nameList + i));
-    }
+    free(nameList);
 
 out:
-    free(nameList);
     return ret;
 }
 
@@ -163,7 +155,7 @@ main(int argc, char *argv[])
      * except, possibly, the URI of the hypervisor. */
     conn = virConnectOpenAuth(uri, virConnectAuthPtrDefault, 0);
 
-    if (NULL == conn) {
+    if (!conn) {
         ret = 1;
         printf("No connection to hypervisor\n");
         showError(conn);
@@ -171,7 +163,7 @@ main(int argc, char *argv[])
     }
 
     uri = virConnectGetURI(conn);
-    if (NULL == uri) {
+    if (!uri) {
         ret = 1;
         printf("Failed to get URI for hypervisor connection\n");
         showError(conn);
