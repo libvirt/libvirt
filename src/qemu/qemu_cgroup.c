@@ -265,6 +265,12 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
         }
 
         for (i = 0; deviceACL[i] != NULL ; i++) {
+            if (access(deviceACL[i], F_OK) < 0) {
+                VIR_DEBUG("Ignoring non-existant device %s",
+                          deviceACL[i]);
+                continue;
+            }
+
             rc = virCgroupAllowDevicePath(cgroup, deviceACL[i],
                                           VIR_CGROUP_DEVICE_RW);
             virDomainAuditCgroupPath(vm, cgroup, "allow", deviceACL[i], "rw", rc);
