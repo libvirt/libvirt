@@ -805,22 +805,26 @@ struct virQEMUCloseCallbacksData {
 
 static void
 virQEMUCloseCallbacksRunOne(void *payload,
-                            const void *uuid,
+                            const void *key,
                             void *opaque)
 {
     struct virQEMUCloseCallbacksData *data = opaque;
     qemuDriverCloseDefPtr closeDef = payload;
     virDomainObjPtr dom;
+    const char *uuidstr = key;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+
+    if (virUUIDParse(uuidstr, uuid) < 0)
+        return;
 
     VIR_DEBUG("conn=%p, thisconn=%p, uuid=%s, cb=%p",
-              closeDef->conn, data->conn, (const char *) uuid, closeDef->cb);
+              closeDef->conn, data->conn, uuidstr, closeDef->cb);
 
     if (data->conn != closeDef->conn || !closeDef->cb)
         return;
 
     if (!(dom = virDomainObjListFindByUUID(data->driver->domains, uuid))) {
-        VIR_DEBUG("No domain object with UUID %s",
-                  (const char *) uuid);
+        VIR_DEBUG("No domain object with UUID %s", uuidstr);
         return;
     }
 
