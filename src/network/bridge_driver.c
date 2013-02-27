@@ -927,23 +927,6 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                     virBufferAsprintf(&configbuf, "dhcp-boot=%s\n", ipdef->bootfile);
                 }
             }
-
-            for (r = 0 ; r < ipdef->noptions ; r++) {
-                virBufferAsprintf(&configbuf, "dhcp-option=%u",
-                                  ipdef->options[r].number);
-                /* value is optional, and only needs quoting if it contains spaces */
-                if (ipdef->options[r].value) {
-                    const char *quote = "";
-
-                    if (strchr(ipdef->options[r].value, ' ') ||
-                        strchr(ipdef->options[r].value, '\\')) {
-                        quote = "\"";
-                    }
-                    virBufferAsprintf(&configbuf, ",%s%s%s",
-                                      quote, ipdef->options[r].value, quote);
-                }
-                virBufferAddLit(&configbuf, "\n");
-            }
         }
         ipdef = (ipdef == ipv6def) ? NULL : ipv6def;
     }

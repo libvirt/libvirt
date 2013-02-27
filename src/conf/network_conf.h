@@ -71,13 +71,6 @@ struct _virNetworkDHCPHostDef {
     virSocketAddr ip;
 };
 
-typedef struct _virNetworkDHCPOptionDef virNetworkDHCPOptionDef;
-typedef virNetworkDHCPOptionDef *virNetworkDHCPOptionDefPtr;
-struct _virNetworkDHCPOptionDef {
-    unsigned int number;
-    char *value;
-};
-
 typedef struct _virNetworkDNSTxtDef virNetworkDNSTxtDef;
 typedef virNetworkDNSTxtDef *virNetworkDNSTxtDefPtr;
 struct _virNetworkDNSTxtDef {
@@ -137,13 +130,9 @@ struct _virNetworkIpDef {
     size_t nhosts;              /* Zero or more dhcp hosts */
     virNetworkDHCPHostDefPtr hosts;
 
-    size_t noptions;            /* Zero or more additional dhcp options */
-    virNetworkDHCPOptionDefPtr options;
-
     char *tftproot;
     char *bootfile;
     virSocketAddr bootserver;
-
    };
 
 typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;

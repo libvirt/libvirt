@@ -791,37 +791,6 @@ cleanup:
 }
 
 static int
-virNetworkDHCPOptionDefParseXML(const char *networkName,
-                                xmlNodePtr node,
-                                virNetworkDHCPOptionDefPtr option)
-{
-    char *number = NULL;
-    int ret = -1;
-
-    if (!(number = virXMLPropString(node, "number"))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Option definition in IPv4 network '%s' "
-                         "must have number attribute"),
-                       networkName);
-        goto cleanup;
-    }
-    if (virStrToLong_ui(number, NULL, 10, &option->number) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed <option> number attribute: %s"),
-                       number);
-        goto cleanup;
-    }
-    option->value = virXMLPropString(node, "value");
-
-    ret = 0;
-
-cleanup:
-    VIR_FREE(number);
-    return ret;
-}
-
-
-static int
 virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
                           virNetworkIpDefPtr def)
@@ -882,17 +851,6 @@ virNetworkDHCPDefParseXML(const char *networkName,
             def->bootfile = file;
             def->bootserver = inaddr;
             VIR_FREE(server);
-        } else if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "option")) {
-            if (VIR_REALLOC_N(def->options, def->noptions + 1) < 0) {
-                virReportOOMError();
-                return -1;
-            }
-            if (virNetworkDHCPOptionDefParseXML(networkName, cur,
-                                                &def->options[def->noptions])) {
-                return -1;
-            }
-            def->noptions++;
         }
 
         cur = cur->next;
@@ -2228,12 +2186,6 @@ virNetworkIpDefFormat(virBufferPtr buf,
             }
             virBufferAddLit(buf, "/>\n");
 
-        }
-        for (ii = 0 ; ii < def->noptions ; ii++) {
-            virBufferAsprintf(buf, "<option number='%u'",
-                              def->options[ii].number);
-            virBufferEscapeString(buf, " value='%s'", def->options[ii].value);
-            virBufferAddLit(buf, "/>\n");
         }
 
         virBufferAdjustIndent(buf, -2);

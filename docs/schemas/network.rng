@@ -301,12 +301,6 @@
                     </optional>
                   </element>
                 </optional>
-                <zeroOrMore>
-                  <element name="option">
-                    <attribute name="number"><ref name="uint8range"/></attribute>
-                    <attribute name="value"><text/></attribute>
-                  </element>
-                </zeroOrMore>
               </element>
             </optional>
           </element>
