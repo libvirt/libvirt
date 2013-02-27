@@ -884,8 +884,7 @@ int virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group,
 
     if (!src_group->controllers[controller].mountPoint ||
         !dest_group->controllers[controller].mountPoint) {
-        VIR_WARN("no vm cgroup in controller %d", controller);
-        return 0;
+        return -EINVAL;
     }
 
     rc = virCgroupGetValueStr(src_group, controller, "tasks", &content);
