@@ -47,7 +47,7 @@ int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
 typedef enum {
     VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
     VIR_QEMU_PROCESS_START_PAUSED       = 1 << 1,
-    VIR_QEMU_PROCESS_START_AUTODESROY   = 1 << 2,
+    VIR_QEMU_PROCESS_START_AUTODESTROY  = 1 << 2,
 } qemuProcessStartFlags;
 
 int qemuProcessStart(virConnectPtr conn,

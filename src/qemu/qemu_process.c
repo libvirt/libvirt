@@ -3516,7 +3516,7 @@ int qemuProcessStart(virConnectPtr conn,
      * but doesn't hurt to check */
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
-                  VIR_QEMU_PROCESS_START_AUTODESROY, -1);
+                  VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -4043,7 +4043,7 @@ int qemuProcessStart(virConnectPtr conn,
                              VIR_DOMAIN_PAUSED_USER);
     }
 
-    if (flags & VIR_QEMU_PROCESS_START_AUTODESROY &&
+    if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
         qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;
 

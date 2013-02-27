@@ -1460,7 +1460,7 @@ static virDomainPtr qemuDomainCreate(virConnectPtr conn, const char *xml,
     if (flags & VIR_DOMAIN_START_PAUSED)
         start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
-        start_flags |= VIR_QEMU_PROCESS_START_AUTODESROY;
+        start_flags |= VIR_QEMU_PROCESS_START_AUTODESTROY;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -5403,7 +5403,7 @@ qemuDomainObjStart(virConnectPtr conn,
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
 
     start_flags |= start_paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
-    start_flags |= autodestroy ? VIR_QEMU_PROCESS_START_AUTODESROY : 0;
+    start_flags |= autodestroy ? VIR_QEMU_PROCESS_START_AUTODESTROY : 0;
 
     /*
      * If there is a managed saved state restore it instead of starting
