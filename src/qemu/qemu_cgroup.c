@@ -685,6 +685,11 @@ int qemuSetupCgroupForEmulator(struct qemud_driver *driver,
     }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        if (i != VIR_CGROUP_CONTROLLER_CPU &&
+            i != VIR_CGROUP_CONTROLLER_CPUACCT &&
+            i != VIR_CGROUP_CONTROLLER_CPUSET)
+            continue;
+
         if (!qemuCgroupControllerActive(driver, i))
             continue;
         rc = virCgroupMoveTask(cgroup, cgroup_emulator, i);
