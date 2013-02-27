@@ -4756,32 +4756,47 @@ qemuBuildNumaArgStr(const virDomainDefPtr def, virCommandPtr cmd)
 {
     int i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *cpumask;
+    char *cpumask = NULL;
+    int ret = -1;
 
     for (i = 0; i < def->cpu->ncells; i++) {
+        VIR_FREE(cpumask);
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%d", def->cpu->cells[i].cellid);
         virBufferAddLit(&buf, ",cpus=");
         cpumask = virBitmapFormat(def->cpu->cells[i].cpumask);
         if (cpumask) {
-            virBufferAsprintf(&buf, "%s", cpumask);
-            VIR_FREE(cpumask);
+            /* Up through qemu 1.4, -numa does not accept a cpus
+             * argument any more complex than start-stop.
+             *
+             * XXX For qemu 1.5, the syntax has not yet been decided;
+             * but when it is, we need a capability bit and
+             * translation of our cpumask into the qemu syntax.  */
+            if (strchr(cpumask, ',')) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("disjoint NUMA cpu ranges are not supported "
+                                 "with this QEMU"));
+                goto cleanup;
+            }
+            virBufferAdd(&buf, cpumask, -1);
         }
         def->cpu->cells[i].mem = VIR_DIV_UP(def->cpu->cells[i].mem,
                                             1024) * 1024;
         virBufferAsprintf(&buf, ",mem=%d", def->cpu->cells[i].mem / 1024);
 
-        if (virBufferError(&buf))
-            goto error;
+        if (virBufferError(&buf)) {
+            virReportOOMError();
+            goto cleanup;
+        }
 
         virCommandAddArgBuffer(cmd, &buf);
     }
-    return 0;
+    ret = 0;
 
-error:
+cleanup:
+    VIR_FREE(cpumask);
     virBufferFreeAndReset(&buf);
-    virReportOOMError();
-    return -1;
+    return ret;
 }
 
 static int
