@@ -89,6 +89,10 @@ cleanup:
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
     VIR_FREE(expectedCmdline);
+    VIR_FREE(poolXmlData);
+    VIR_FREE(volXmlData);
+    VIR_FREE(inputvolXmlData);
+    virObjectUnref(conn);
     return ret;
 }
 
