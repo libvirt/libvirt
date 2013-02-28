@@ -795,11 +795,11 @@ def buildStubs(module):
     elif module == "libvirt-lxc":
         funcs = lxc_functions
         funcs_failed = lxc_functions_failed
-        funcs_skipped = functions_skipped
+        funcs_skipped = lxc_functions_skipped
     elif module == "libvirt-qemu":
         funcs = qemu_functions
         funcs_failed = qemu_functions_failed
-        funcs_skipped = functions_skipped
+        funcs_skipped = qemu_functions_skipped
 
     api_xml = "%s-api.xml" % module
 
@@ -1219,12 +1219,9 @@ def buildWrappers(module):
     global function_classes
     global classes_type
     global classes_list
-    global converter_type
     global primary_classes
-    global converter_type
     global classes_ancestor
     global converter_type
-    global primary_classes
     global classes_destructors
     global functions_noexcept
 
