@@ -780,7 +780,7 @@
       &lt;/network&gt;</pre>
 
     <p>
-      Below is another IPv6 varition.  Instead of a dhcp range being
+      Below is another IPv6 variation.  Instead of a dhcp range being
       specified, this example has a couple of IPv6 host definitions.
       Note that most of the dhcp host definitions use an "id" (client
       id or DUID) since this has proven to be a more reliable way
