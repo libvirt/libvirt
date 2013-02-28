@@ -797,20 +797,37 @@ virQEMUCloseCallbacksGet(virQEMUCloseCallbacksPtr closeCallbacks,
     return cb;
 }
 
-struct virQEMUCloseCallbacksData {
-    virHashTablePtr list;
-    virQEMUDriverPtr driver;
-    virConnectPtr conn;
+
+typedef struct _virQEMUCloseCallbacksListEntry virQEMUCloseCallbacksListEntry;
+typedef virQEMUCloseCallbacksListEntry *virQEMUCloseCallbacksListEntryPtr;
+struct _virQEMUCloseCallbacksListEntry {
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virQEMUCloseCallback callback;
 };
 
+
+typedef struct _virQEMUCloseCallbacksList virQEMUCloseCallbacksList;
+typedef virQEMUCloseCallbacksList *virQEMUCloseCallbacksListPtr;
+struct _virQEMUCloseCallbacksList {
+    size_t nentries;
+    virQEMUCloseCallbacksListEntryPtr entries;
+};
+
+
+struct virQEMUCloseCallbacksData {
+    virConnectPtr conn;
+    virQEMUCloseCallbacksListPtr list;
+    bool oom;
+};
+
+
 static void
-virQEMUCloseCallbacksRunOne(void *payload,
+virQEMUCloseCallbacksGetOne(void *payload,
                             const void *key,
                             void *opaque)
 {
     struct virQEMUCloseCallbacksData *data = opaque;
     qemuDriverCloseDefPtr closeDef = payload;
-    virDomainObjPtr dom;
     const char *uuidstr = key;
     unsigned char uuid[VIR_UUID_BUFLEN];
 
@@ -823,35 +840,90 @@ virQEMUCloseCallbacksRunOne(void *payload,
     if (data->conn != closeDef->conn || !closeDef->cb)
         return;
 
-    if (!(dom = virDomainObjListFindByUUID(data->driver->domains, uuid))) {
-        VIR_DEBUG("No domain object with UUID %s", uuidstr);
+    if (VIR_EXPAND_N(data->list->entries,
+                     data->list->nentries, 1) < 0) {
+        data->oom = true;
         return;
     }
 
-    dom = closeDef->cb(data->driver, dom, data->conn);
-    if (dom)
-        virObjectUnlock(dom);
-
-    virHashRemoveEntry(data->list, uuid);
+    memcpy(data->list->entries[data->list->nentries - 1].uuid,
+           uuid, VIR_UUID_BUFLEN);
+    data->list->entries[data->list->nentries - 1].callback = closeDef->cb;
 }
+
+
+static virQEMUCloseCallbacksListPtr
+virQEMUCloseCallbacksGetForConn(virQEMUCloseCallbacksPtr closeCallbacks,
+                                virConnectPtr conn)
+{
+    virQEMUCloseCallbacksListPtr list = NULL;
+    struct virQEMUCloseCallbacksData data;
+
+    if (VIR_ALLOC(list) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    data.conn = conn;
+    data.list = list;
+    data.oom = false;
+
+    virHashForEach(closeCallbacks->list, virQEMUCloseCallbacksGetOne, &data);
+
+    if (data.oom) {
+        VIR_FREE(list->entries);
+        VIR_FREE(list);
+        virReportOOMError();
+        return NULL;
+    }
+
+    return list;
+}
+
 
 void
 virQEMUCloseCallbacksRun(virQEMUCloseCallbacksPtr closeCallbacks,
                          virConnectPtr conn,
                          virQEMUDriverPtr driver)
 {
-    struct virQEMUCloseCallbacksData data = {
-        .driver = driver,
-        .conn = conn
-    };
+    virQEMUCloseCallbacksListPtr list;
+    size_t i;
 
     VIR_DEBUG("conn=%p", conn);
+
+    /* We must not hold the lock while running the callbacks,
+     * so first we obtain the list of callbacks, then remove
+     * them all from the hash. At that point we can release
+     * the lock and run the callbacks safely. */
+
     virObjectLock(closeCallbacks);
+    list = virQEMUCloseCallbacksGetForConn(closeCallbacks, conn);
+    if (!list)
+        return;
 
-    data.list = closeCallbacks->list;
-    virHashForEach(data.list, virQEMUCloseCallbacksRunOne, &data);
-
+    for (i = 0 ; i < list->nentries ; i++) {
+        virHashRemoveEntry(closeCallbacks->list,
+                           list->entries[i].uuid);
+    }
     virObjectUnlock(closeCallbacks);
+
+    for (i = 0 ; i < list->nentries ; i++) {
+        virDomainObjPtr vm;
+
+        if (!(vm = virDomainObjListFindByUUID(driver->domains,
+                                              list->entries[i].uuid))) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(list->entries[i].uuid, uuidstr);
+            VIR_DEBUG("No domain object with UUID %s", uuidstr);
+            continue;
+        }
+
+        vm = list->entries[i].callback(driver, vm, conn);
+        if (vm)
+            virObjectUnlock(vm);
+    }
+    VIR_FREE(list->entries);
+    VIR_FREE(list);
 }
 
 struct _qemuSharedDiskEntry {
