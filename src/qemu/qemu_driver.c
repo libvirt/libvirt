@@ -1382,7 +1382,7 @@ cleanup:
 static int qemuGetVersion(virConnectPtr conn, unsigned long *version) {
     virQEMUDriverPtr driver = conn->privateData;
     int ret = -1;
-    unsigned int qemuVersion;
+    unsigned int qemuVersion = 0;
     virCapsPtr caps = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
