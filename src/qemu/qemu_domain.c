@@ -881,6 +881,29 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                          asyncJob);
 }
 
+int
+qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
+                            virDomainObjPtr obj,
+                            enum qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+
+    if (asyncJob != priv->job.asyncJob) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected async job %d"), asyncJob);
+        return -1;
+    }
+
+    if (priv->job.asyncOwner != virThreadSelfID()) {
+        VIR_WARN("This thread doesn't seem to be the async job owner: %d",
+                 priv->job.asyncOwner);
+    }
+
+    return qemuDomainObjBeginJobInternal(driver, obj,
+                                         QEMU_JOB_ASYNC_NESTED,
+                                         QEMU_ASYNC_JOB_NONE);
+}
+
 
 /*
  * obj must be locked before calling
@@ -955,17 +978,7 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     if (asyncJob != QEMU_ASYNC_JOB_NONE) {
-        if (asyncJob != priv->job.asyncJob) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected async job %d"), asyncJob);
-            return -1;
-        }
-        if (priv->job.asyncOwner != virThreadSelfID())
-            VIR_WARN("This thread doesn't seem to be the async job owner: %d",
-                     priv->job.asyncOwner);
-        if (qemuDomainObjBeginJobInternal(driver, obj,
-                                          QEMU_JOB_ASYNC_NESTED,
-                                          QEMU_ASYNC_JOB_NONE) < 0)
+        if (qemuDomainObjBeginNestedJob(driver, obj, asyncJob) < 0)
             return -1;
         if (!virDomainObjIsActive(obj)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
