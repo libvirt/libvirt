@@ -31,6 +31,7 @@
 #include "virmacaddr.h"
 #include "virutil.h"
 #include "virerror.h"
+#include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
@@ -70,6 +71,19 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 
 # define MACVLAN_NAME_PREFIX	"macvlan"
 # define MACVLAN_NAME_PATTERN	"macvlan%d"
+
+virMutex virNetDevMacVLanCreateMutex;
+
+static int virNetDevMacVLanCreateMutexOnceInit(void)
+{
+    if (virMutexInit(&virNetDevMacVLanCreateMutex) < 0) {
+        virReportSystemError(errno, "%s", _("unable to init mutex"));
+        return -1;
+    }
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetDevMacVLanCreateMutex);
 
 /**
  * virNetDevMacVLanCreate:
@@ -829,7 +843,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
     uint32_t macvtapMode;
-    const char *cr_ifname;
+    const char *cr_ifname = NULL;
     int ret;
     int vf = -1;
 
@@ -871,22 +885,35 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     } else {
 create_name:
         retries = 5;
+        if (virNetDevMacVLanCreateMutexInitialize() < 0)
+            return -1;
+        virMutexLock(&virNetDevMacVLanCreateMutex);
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), pattern, c);
-            if ((ret = virNetDevExists(ifname)) < 0)
+            if ((ret = virNetDevExists(ifname)) < 0) {
+                virMutexUnlock(&virNetDevMacVLanCreateMutex);
                 return -1;
+            }
             if (!ret) {
                 rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
                                             macvtapMode, &do_retry);
-                if (rc == 0)
+                if (rc == 0) {
+                    cr_ifname = ifname;
                     break;
+                }
 
                 if (do_retry && --retries)
                     continue;
-                return -1;
+                break;
             }
         }
-        cr_ifname = ifname;
+
+        virMutexUnlock(&virNetDevMacVLanCreateMutex);
+        if (!cr_ifname) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Unable to create macvlan device"));
+            return -1;
+        }
     }
 
     if (virNetDevVPortProfileAssociate(cr_ifname,
