@@ -138,7 +138,6 @@ struct _qemuDomainObjPrivate {
 
     bool gotShutdown;
     bool beingDestroyed;
-    bool autoDestroyed;
     char *pidfile;
 
     int nvcpupids;
