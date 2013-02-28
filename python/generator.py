@@ -806,6 +806,7 @@ def buildStubs(module):
     try:
         f = open(os.path.join(srcPref,api_xml))
         data = f.read()
+        f.close()
         (parser, target)  = getparser()
         parser.feed(data)
         parser.close()
@@ -813,6 +814,7 @@ def buildStubs(module):
         try:
             f = open(os.path.join(srcPref,"..","docs",api_xml))
             data = f.read()
+            f.close()
             (parser, target)  = getparser()
             parser.feed(data)
             parser.close()
@@ -830,6 +832,7 @@ def buildStubs(module):
     try:
         f = open(os.path.join(srcPref, override_api_xml))
         data = f.read()
+        f.close()
         (parser, target)  = getparser()
         parser.feed(data)
         parser.close()
