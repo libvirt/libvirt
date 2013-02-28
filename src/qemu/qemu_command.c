@@ -1743,7 +1743,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             if (info->addr.pci.function > 7) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("The function of PCI device addresses must "
-                                 "less than 8"));
+                                 "be less than 8"));
                 return -1;
             }
         } else {
