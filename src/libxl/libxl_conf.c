@@ -769,10 +769,19 @@ error:
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
+    int err;
     libxl_physinfo phy_info;
     const libxl_version_info *ver_info;
 
-    regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
+    err = regcomp(&xen_cap_rec, xen_cap_re, REG_EXTENDED);
+    if (err != 0) {
+        char error[100];
+        regerror(err, &xen_cap_rec, error, sizeof(error));
+        regfree(&xen_cap_rec);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"), error);
+        return NULL;
+    }
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
