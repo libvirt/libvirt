@@ -1527,66 +1527,34 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    bool show_parent = false;
     int i;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     char *doc = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     char *state = NULL;
-    char *parent = NULL;
     long long creation_longlong;
     time_t creation_time_t;
     char timestr[100];
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool name = vshCommandOptBool(cmd, "name");
-    const char *from = NULL;
+    bool from = vshCommandOptBool(cmd, "from");
+    bool parent = vshCommandOptBool(cmd, "parent");
+    bool roots = vshCommandOptBool(cmd, "roots");
+    bool current = vshCommandOptBool(cmd, "current");
+    const char *from_snap = NULL;
+    char *parent_snap = NULL;
     virDomainSnapshotPtr start = NULL;
     vshSnapshotListPtr snaplist = NULL;
 
-    if (tree && name) {
-        vshError(ctl, "%s",
-                 _("--tree and --name are mutually exclusive"));
-        return false;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
+    VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);
+    VSH_EXCLUSIVE_OPTIONS_VAR(parent, tree);
+    VSH_EXCLUSIVE_OPTIONS_VAR(roots, tree);
+    VSH_EXCLUSIVE_OPTIONS_VAR(roots, from);
+    VSH_EXCLUSIVE_OPTIONS_VAR(roots, current);
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
-        goto cleanup;
-
-    if ((vshCommandOptBool(cmd, "from") ||
-         vshCommandOptBool(cmd, "current")) &&
-        vshLookupSnapshot(ctl, cmd, "from", true, dom, &start, &from) < 0)
-        goto cleanup;
-
-    if (vshCommandOptBool(cmd, "parent")) {
-        if (vshCommandOptBool(cmd, "roots")) {
-            vshError(ctl, "%s",
-                     _("--parent and --roots are mutually exclusive"));
-            goto cleanup;
-        }
-        if (tree) {
-            vshError(ctl, "%s",
-                     _("--parent and --tree are mutually exclusive"));
-            goto cleanup;
-        }
-        show_parent = true;
-    } else if (vshCommandOptBool(cmd, "roots")) {
-        if (tree) {
-            vshError(ctl, "%s",
-                     _("--roots and --tree are mutually exclusive"));
-            goto cleanup;
-        }
-        if (from) {
-            vshError(ctl, "%s",
-                     vshCommandOptBool(cmd, "current") ?
-                     _("--roots and --current are mutually exclusive") :
-                     _("--roots and --from are mutually exclusive"));
-            goto cleanup;
-        }
-        flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
-    }
 #define FILTER(option, flag)                                          \
     do {                                                              \
         if (vshCommandOptBool(cmd, option)) {                         \
@@ -1594,7 +1562,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                 vshError(ctl,                                         \
                          _("--%s and --tree are mutually exclusive"), \
                          option);                                     \
-                goto cleanup;                                         \
+                return false;                                         \
             }                                                         \
             flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag;               \
         }                                                             \
@@ -1609,28 +1577,36 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     FILTER("external", EXTERNAL);
 #undef FILTER
 
-    if (vshCommandOptBool(cmd, "metadata")) {
+    if (roots)
+        flags |= VIR_DOMAIN_SNAPSHOT_LIST_ROOTS;
+
+    if (vshCommandOptBool(cmd, "metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_METADATA;
-    }
-    if (vshCommandOptBool(cmd, "no-metadata")) {
+
+    if (vshCommandOptBool(cmd, "no-metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA;
-    }
 
     if (vshCommandOptBool(cmd, "descendants")) {
-        if (!from) {
+        if (!from && !current) {
             vshError(ctl, "%s",
                      _("--descendants requires either --from or --current"));
-            goto cleanup;
+            return false;
         }
         flags |= VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
     }
 
-    if ((snaplist = vshSnapshotListCollect(ctl, dom, start, flags,
-                                           tree)) == NULL)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if ((from || current) &&
+        vshLookupSnapshot(ctl, cmd, "from", true, dom, &start, &from_snap) < 0)
+        goto cleanup;
+
+    if (!(snaplist = vshSnapshotListCollect(ctl, dom, start, flags, tree)))
         goto cleanup;
 
     if (!tree && !name) {
-        if (show_parent)
+        if (parent)
             vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
                           _("Name"), _("Creation Time"), _("State"),
                           _("Parent"));
@@ -1638,12 +1614,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, " %-20s %-25s %s",
                           _("Name"), _("Creation Time"), _("State"));
         vshPrintExtra(ctl, "\n"
-"------------------------------------------------------------\n");
-    }
-
-    if (!snaplist->nsnaps) {
-        ret = true;
-        goto cleanup;
+                           "------------------------------"
+                           "------------------------------\n");
     }
 
     if (tree) {
@@ -1661,7 +1633,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         const char *snap_name;
 
         /* free up memory from previous iterations of the loop */
-        VIR_FREE(parent);
+        VIR_FREE(parent_snap);
         VIR_FREE(state);
         xmlXPathFreeContext(ctxt);
         xmlFreeDoc(xml);
@@ -1672,25 +1644,24 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         assert(snap_name);
 
         if (name) {
+            /* just print the snapshot name */
             vshPrint(ctl, "%s\n", snap_name);
             continue;
         }
 
-        doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
-        if (!doc)
+        if (!(doc = virDomainSnapshotGetXMLDesc(snapshot, 0)))
             continue;
 
-        xml = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt);
-        if (!xml)
+        if (!(xml = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt)))
             continue;
 
-        if (show_parent)
-            parent = virXPathString("string(/domainsnapshot/parent/name)",
-                                    ctxt);
+        if (parent)
+            parent_snap = virXPathString("string(/domainsnapshot/parent/name)",
+                                         ctxt);
 
-        state = virXPathString("string(/domainsnapshot/state)", ctxt);
-        if (state == NULL)
+        if (!(state = virXPathString("string(/domainsnapshot/state)", ctxt)))
             continue;
+
         if (virXPathLongLong("string(/domainsnapshot/creationTime)", ctxt,
                              &creation_longlong) < 0)
             continue;
@@ -1705,7 +1676,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
         if (parent)
             vshPrint(ctl, " %-20s %-25s %-15s %s\n",
-                     snap_name, timestr, state, parent);
+                     snap_name, timestr, state, parent_snap);
         else
             vshPrint(ctl, " %-20s %-25s %s\n", snap_name, timestr, state);
     }
@@ -1715,15 +1686,13 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 cleanup:
     /* this frees up memory from the last iteration of the loop */
     vshSnapshotListFree(snaplist);
-    VIR_FREE(parent);
+    VIR_FREE(parent_snap);
     VIR_FREE(state);
-    if (start)
-        virDomainSnapshotFree(start);
+    virDomainSnapshotFree(start);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
 
     return ret;
 }
