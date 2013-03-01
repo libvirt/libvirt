@@ -1556,6 +1556,12 @@ static const vshCmdOptDef opts_snapshot_list[] = {
      .flags = 0,
      .help = N_("with --from, list all descendants")
     },
+    {.name = "name",
+     .type = VSH_OT_BOOL,
+     .flags = 0,
+     .help = N_("list snapshot names only")
+    },
+
     {.name = NULL}
 };
 
@@ -1578,9 +1584,16 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     char timestr[100];
     struct tm time_info;
     bool tree = vshCommandOptBool(cmd, "tree");
+    bool name = vshCommandOptBool(cmd, "name");
     const char *from = NULL;
     virDomainSnapshotPtr start = NULL;
     vshSnapshotListPtr snaplist = NULL;
+
+    if (tree && name) {
+        vshError(ctl, "%s",
+                 _("--tree and --name are mutually exclusive"));
+        return false;
+    }
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -1660,7 +1673,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                                            tree)) == NULL)
         goto cleanup;
 
-    if (!tree) {
+    if (!tree && !name) {
         if (show_parent)
             vshPrintExtra(ctl, " %-20s %-25s %-15s %s",
                           _("Name"), _("Creation Time"), _("State"),
@@ -1689,7 +1702,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < snaplist->nsnaps; i++) {
-        const char *name;
+        const char *snap_name;
 
         /* free up memory from previous iterations of the loop */
         VIR_FREE(parent);
@@ -1699,8 +1712,13 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(doc);
 
         snapshot = snaplist->snaps[i].snap;
-        name = virDomainSnapshotGetName(snapshot);
-        assert(name);
+        snap_name = virDomainSnapshotGetName(snapshot);
+        assert(snap_name);
+
+        if (name) {
+            vshPrint(ctl, "%s\n", snap_name);
+            continue;
+        }
 
         doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
         if (!doc)
@@ -1731,9 +1749,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
         if (parent)
             vshPrint(ctl, " %-20s %-25s %-15s %s\n",
-                     name, timestr, state, parent);
+                     snap_name, timestr, state, parent);
         else
-            vshPrint(ctl, " %-20s %-25s %s\n", name, timestr, state);
+            vshPrint(ctl, " %-20s %-25s %s\n", snap_name, timestr, state);
     }
 
     ret = true;

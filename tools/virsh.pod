@@ -2854,10 +2854,11 @@ accessible only from the original name.
 Output basic information about a named <snapshot>, or the current snapshot
 with I<--current>.
 
-=item B<snapshot-list> I<domain> [{I<--parent> | I<--roots> | I<--tree>}]
+=item B<snapshot-list> I<domain> [I<--metadata>] [I<--no-metadata>]
+[{I<--parent> | I<--roots> | [{I<--tree> | I<--name>}]}]
 [{[I<--from>] B<snapshot> | I<--current>} [I<--descendants>]]
-[I<--metadata>] [I<--no-metadata>] [I<--leaves>] [I<--no-leaves>]
-[I<--inactive>] [I<--active>] [I<--disk-only>] [I<--internal>] [I<--external>]
+[I<--leaves>] [I<--no-leaves>] p[I<--inactive>] [I<--active>]
+[I<--disk-only>] [I<--internal>] [I<--external>]
 
 List all of the available snapshots for the given domain, defaulting
 to show columns for the snapshot name, creation time, and domain state.
@@ -2866,7 +2867,9 @@ If I<--parent> is specified, add a column to the output table giving
 the name of the parent of each snapshot.  If I<--roots> is specified,
 the list will be filtered to just snapshots that have no parents.
 If I<--tree> is specified, the output will be in a tree format, listing
-just snapshot names.  These three options are mutually exclusive.
+just snapshot names.  These three options are mutually exclusive. If
+I<--name> is specified only the snapshot name is printed. This option is
+mutually exclusive with I<--tree>.
 
 If I<--from> is provided, filter the list to snapshots which are
 children of the given B<snapshot>; or if I<--current> is provided,
