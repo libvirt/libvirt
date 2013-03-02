@@ -129,8 +129,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         if (virGetGroupID(QEMU_GROUP, &cfg->group) < 0)
             goto error;
     } else {
-        cfg->user = 0;
-        cfg->group = 0;
+        cfg->user = (uid_t)-1;
+        cfg->group = (gid_t)-1;
     }
     cfg->dynamicOwnership = privileged;
 
