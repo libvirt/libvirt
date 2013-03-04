@@ -7280,7 +7280,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
 #define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE)                                \
-    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE) < 0))  \
+    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0)  \
         goto cleanup;                                                        \
                                                                              \
     if (rc == 1)                                                             \
