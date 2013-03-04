@@ -383,12 +383,13 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
     int ret = -1;
 
     for (i = 0 ; i < ctrl->def->nfss ; i++) {
+        virDomainFSDefPtr fs = ctrl->def->fss[i];
         int fd;
 
-        if (ctrl->def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE)
+        if (fs->type != VIR_DOMAIN_FS_TYPE_FILE)
             continue;
 
-        fd = virLXCControllerSetupLoopDevice(ctrl->def->fss[i]);
+        fd = virLXCControllerSetupLoopDevice(fs);
         if (fd < 0)
             goto cleanup;
 
