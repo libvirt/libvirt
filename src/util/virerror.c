@@ -525,13 +525,13 @@ virDefaultErrorFunc(virErrorPtr err)
     len = strlen(err->message);
     if ((err->domain == VIR_FROM_XML) && (err->code == VIR_ERR_XML_DETAIL) &&
         (err->int1 != 0))
-        fprintf(stderr, "libvir: %s %s %s%s: line %d: %s",
+        fprintf(stderr, "libvirt: %s %s %s%s: line %d: %s",
                 dom, lvl, domain, network, err->int1, err->message);
     else if ((len == 0) || (err->message[len - 1] != '\n'))
-        fprintf(stderr, "libvir: %s %s %s%s: %s\n",
+        fprintf(stderr, "libvirt: %s %s %s%s: %s\n",
                 dom, lvl, domain, network, err->message);
     else
-        fprintf(stderr, "libvir: %s %s %s%s: %s",
+        fprintf(stderr, "libvirt: %s %s %s%s: %s",
                 dom, lvl, domain, network, err->message);
 }
 
