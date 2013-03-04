@@ -268,8 +268,6 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
         virLXCControllerConsoleClose(&(ctrl->consoles[i]));
     VIR_FREE(ctrl->consoles);
 
-    VIR_FORCE_CLOSE(ctrl->handshakeFd);
-
     VIR_FREE(ctrl->devptmx);
 
     virDomainDefFree(ctrl->def);
@@ -281,6 +279,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
     virObjectUnref(ctrl->server);
     virLXCControllerFreeFuse(ctrl);
 
+    /* This must always be the last thing to be closed */
+    VIR_FORCE_CLOSE(ctrl->handshakeFd);
     VIR_FREE(ctrl);
 }
 
@@ -1706,6 +1706,15 @@ int main(int argc, char *argv[])
     rc = virLXCControllerRun(ctrl);
 
 cleanup:
+    if (rc < 0) {
+        virErrorPtr err = virGetLastError();
+        if (err && err->message)
+            fprintf(stderr, "%s\n", err->message);
+        else
+            fprintf(stderr, "%s\n",
+                    _("Unknown failure in libvirt_lxc startup"));
+    }
+
     virPidFileDelete(LXC_STATE_DIR, name);
     if (ctrl)
         virLXCControllerDeleteInterfaces(ctrl);

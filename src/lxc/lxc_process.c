@@ -690,6 +690,11 @@ int virLXCProcessStop(virLXCDriverPtr driver,
 
     VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
               vm->def->name, (int)vm->pid, (int)reason);
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("VM '%s' not active", vm->def->name);
+        return 0;
+    }
+
     if (vm->pid <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PID %d for container"), vm->pid);
@@ -813,50 +818,27 @@ cleanup:
     return NULL;
 }
 
+
 static int
-virLXCProcessReadLogOutput(virDomainObjPtr vm,
-                           char *logfile,
-                           off_t pos,
-                           char *buf,
-                           size_t buflen)
+virLXCProcessReadLogOutputData(virDomainObjPtr vm,
+                               int fd,
+                               char *buf,
+                               size_t buflen)
 {
-    int fd;
-    off_t off;
-    int whence;
-    int got = 0, ret = -1;
     int retries = 10;
+    int got = 0;
+    int ret = -1;
+    char *filter_next = buf;
 
-    if ((fd = open(logfile, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("failed to open logfile %s"),
-                             logfile);
-        goto cleanup;
-    }
-
-    if (pos < 0) {
-        off = 0;
-        whence = SEEK_END;
-    } else {
-        off = pos;
-        whence = SEEK_SET;
-    }
-
-    if (lseek(fd, off, whence) < 0) {
-        if (whence == SEEK_END)
-            virReportSystemError(errno,
-                                 _("unable to seek to end of log for %s"),
-                                 logfile);
-        else
-            virReportSystemError(errno,
-                                 _("unable to seek to %lld from start for %s"),
-                                 (long long)off, logfile);
-        goto cleanup;
-    }
+    buf[0] = '\0';
 
     while (retries) {
         ssize_t bytes;
         int isdead = 0;
+        char *eol;
 
-        if (kill(vm->pid, 0) == -1 && errno == ESRCH)
+        if (vm->pid <= 0 ||
+            (kill(vm->pid, 0) == -1 && errno == ESRCH))
             isdead = 1;
 
         /* Any failures should be detected before we read the log, so we
@@ -864,24 +846,80 @@ virLXCProcessReadLogOutput(virDomainObjPtr vm,
         bytes = saferead(fd, buf+got, buflen-got-1);
         if (bytes < 0) {
             virReportSystemError(errno, "%s",
-                                 _("Failure while reading guest log output"));
+                                 _("Failure while reading log output"));
             goto cleanup;
         }
 
         got += bytes;
         buf[got] = '\0';
 
-        if ((got == buflen-1) || isdead) {
-            break;
+        /* Filter out debug messages from intermediate libvirt process */
+        while ((eol = strchr(filter_next, '\n'))) {
+            *eol = '\0';
+            if (virLogProbablyLogMessage(filter_next)) {
+                memmove(filter_next, eol + 1, got - (eol - buf));
+                got -= eol + 1 - filter_next;
+            } else {
+                filter_next = eol + 1;
+                *eol = '\n';
+            }
+        }
+
+        if (got == buflen-1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Out of space while reading log output: %s"),
+                           buf);
+            goto cleanup;
+        }
+
+        if (isdead) {
+            ret = got;
+            goto cleanup;
         }
 
         usleep(100*1000);
         retries--;
     }
 
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Timed out while reading log output: %s"),
+                   buf);
 
-    ret = got;
 cleanup:
+    return ret;
+}
+
+
+static int
+virLXCProcessReadLogOutput(virDomainObjPtr vm,
+                           char *logfile,
+                           off_t pos,
+                           char *buf,
+                           size_t buflen)
+{
+    int fd = -1;
+    int ret;
+
+    if ((fd = open(logfile, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open log file %s"),
+                             logfile);
+        return -1;
+    }
+
+    if (lseek(fd, pos, SEEK_SET) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to seek log file %s to %llu"),
+                             logfile, (unsigned long long)pos);
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
+    ret = virLXCProcessReadLogOutputData(vm,
+                                         fd,
+                                         buf,
+                                         buflen);
+
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -1124,9 +1162,15 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* And get its pid */
     if ((r = virPidFileRead(driver->stateDir, vm->def->name, &vm->pid)) < 0) {
-        virReportSystemError(-r,
-                             _("Failed to read pid file %s/%s.pid"),
-                             driver->stateDir, vm->def->name);
+        char out[1024];
+
+        if (virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) > 0)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("guest failed to start: %s"), out);
+        else
+            virReportSystemError(-r,
+                                 _("Failed to read pid file %s/%s.pid"),
+                                 driver->stateDir, vm->def->name);
         goto cleanup;
     }
 
