@@ -17,7 +17,7 @@
     <controller type='usb' index='0'/>
     <memballoon model='virtio'/>
     <rng model='virtio'>
-      <backend model='random'>/test/ph&lt;ile</backend>
+      <backend model='random'>/dev/hwrng</backend>
     </rng>
   </devices>
 </domain>

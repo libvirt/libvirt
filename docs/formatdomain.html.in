@@ -4310,7 +4310,8 @@ qemu-kvm -net nic,model=? /dev/null
           <code>model</code> attribute. Supported source models are:
         </p>
         <ul>
-          <li>'random' &mdash; /dev/random (default) or similar device as source</li>
+          <li>'random' &mdash; /dev/random (default) or /dev/hwrng
+            device as source (for now, no other sources are permitted)</li>
           <li>'egd' &mdash; a EGD protocol backend</li>
         </ul>
       </dd>

@@ -3511,7 +3511,10 @@
           <attribute name="model">
             <value>random</value>
           </attribute>
-          <ref name="filePath"/>
+          <choice>
+            <value>/dev/random</value>
+            <value>/dev/hwrng</value>
+          </choice>
         </group>
         <group>
           <attribute name="model">
