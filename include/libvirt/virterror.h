@@ -122,6 +122,7 @@ typedef enum {
     VIR_FROM_SYSTEMD = 56,      /* Error from systemd code */
     VIR_FROM_BHYVE = 57,        /* Error from bhyve driver */
     VIR_FROM_CRYPTO = 58,       /* Error from crypto code */
+    VIR_FROM_FIREWALL = 59,     /* Error from firewall */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

@@ -152,6 +152,7 @@ test_programs = virshtest sockettest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
+	virfirewalltest \
 	viriscsitest \
 	virkeycodetest \
 	virlockspacetest \
@@ -1005,6 +1006,11 @@ virendiantest_LDADD = $(LDADDS)
 virfiletest_SOURCES = \
 	virfiletest.c testutils.h testutils.c
 virfiletest_LDADD = $(LDADDS)
+
+virfirewalltest_SOURCES = \
+	virfirewalltest.c testutils.h testutils.c
+virfirewalltest_LDADD = $(LDADDS)
+virfirewalltest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 
 jsontest_SOURCES = \
 	jsontest.c testutils.h testutils.c

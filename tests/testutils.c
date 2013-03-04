@@ -459,10 +459,20 @@ int virtTestDifference(FILE *stream,
                        const char *expect,
                        const char *actual)
 {
-    const char *expectStart = expect;
-    const char *expectEnd = expect + (strlen(expect)-1);
-    const char *actualStart = actual;
-    const char *actualEnd = actual + (strlen(actual)-1);
+    const char *expectStart;
+    const char *expectEnd;
+    const char *actualStart;
+    const char *actualEnd;
+
+    if (!expect)
+        expect = "";
+    if (!actual)
+        actual = "";
+
+    expectStart = expect;
+    expectEnd = expect + (strlen(expect)-1);
+    actualStart = actual;
+    actualEnd = actual + (strlen(actual)-1);
 
     if (!virTestGetDebug())
         return 0;

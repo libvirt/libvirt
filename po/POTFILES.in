@@ -161,6 +161,7 @@ src/util/virdbus.c
 src/util/virdnsmasq.c
 src/util/vireventpoll.c
 src/util/virfile.c
+src/util/virfirewall.c
 src/util/virhash.c
 src/util/virhook.c
 src/util/virhostdev.c

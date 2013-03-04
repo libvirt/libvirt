@@ -108,6 +108,8 @@ UTIL_SOURCES =							\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\
 		util/virfile.c util/virfile.h			\
+		util/virfirewall.c util/virfirewall.h		\
+		util/virfirewallpriv.h				\
 		util/virhash.c util/virhash.h			\
 		util/virhashcode.c util/virhashcode.h		\
 		util/virhook.c util/virhook.h			\

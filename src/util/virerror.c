@@ -129,6 +129,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Systemd",
               "Bhyve",
               "Crypto",
+              "Firewall",
     )
 
 

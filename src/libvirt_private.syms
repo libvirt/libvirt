@@ -1275,6 +1275,23 @@ virFileWriteStr;
 virFindFileInPath;
 
 
+# util/virfirewall.h
+virFirewallAddRule;
+virFirewallAddRuleFull;
+virFirewallApply;
+virFirewallFree;
+virFirewallNew;
+virFirewallRemoveRule;
+virFirewallRuleAddArg;
+virFirewallRuleAddArgFormat;
+virFirewallRuleAddArgList;
+virFirewallRuleAddArgSet;
+virFirewallRuleGetArgCount;
+virFirewallSetBackend;
+virFirewallStartRollback;
+virFirewallStartTransaction;
+
+
 # util/virhash.h
 virHashAddEntry;
 virHashCreate;
