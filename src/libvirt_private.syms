@@ -1429,6 +1429,7 @@ virLogMessage;
 virLogParseDefaultPriority;
 virLogParseFilters;
 virLogParseOutputs;
+virLogProbablyLogMessage;
 virLogReset;
 virLogSetBufferSize;
 virLogSetDefaultPriority;
