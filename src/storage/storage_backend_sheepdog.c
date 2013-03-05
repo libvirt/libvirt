@@ -66,7 +66,7 @@ virStorageBackendSheepdogParseNodeInfo(virStoragePoolDefPtr pool,
         if ((next = strchr(p, '\n')))
             ++next;
         else
-            return -1;
+            break;
 
         if (!STRPREFIX(p, "Total "))
             continue;
@@ -74,13 +74,13 @@ virStorageBackendSheepdogParseNodeInfo(virStoragePoolDefPtr pool,
         p = p + 6;
 
         if (virStrToLong_ull(p, &end, 10, &pool->capacity) < 0)
-            return -1;
+            break;
 
         if ((p = end + 1) > next)
-            return -1;
+            break;
 
         if (virStrToLong_ull(p, &end, 10, &pool->allocation) < 0)
-            return -1;
+            break;
 
         pool->available = pool->capacity - pool->allocation;
         return 0;
