@@ -1994,6 +1994,14 @@ fi
 %endif
 
 %changelog
+* Tue Mar  5 2013 Daniel Veillard <veillard@redhat.com> - 1.0.3-1
+- Introduce virDomainMigrate*CompressionCache APIs
+- Introduce virDomainGetJobStats API
+- Add basic support for VDI images
+- Introduce API virNodeDeviceLookupSCSIHostByWWN
+- Various locking improvements
+- a lot of bug fixes and overall improvements
+
 * Wed Jan 30 2013 Daniel Veillard <veillard@redhat.com> - 1.0.2-1
 - LXC improvements
 - S390 architecture improvement
