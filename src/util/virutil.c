@@ -1809,7 +1809,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
         }
     }
 
-    if (*value && *value >= (limit / scale)) {
+    if (*value && *value > (limit / scale)) {
         virReportError(VIR_ERR_OVERFLOW, _("value too large: %llu%s"),
                        *value, suffix);
         return -1;
