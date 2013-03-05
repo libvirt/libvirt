@@ -2018,6 +2018,20 @@
         of the starting register).  <span class="since">Since
         0.9.9.</span>
       </dd>
+      <dt><code>type='ccw'</code></dt>
+      <dd>s390 guests with a <code>machine</code> value of
+        s390-ccw-virtio use the native CCW bus for I/O devices.
+        CCW bus addresses have the following additional attributes:
+        <code>cssid</code> (a hex value between 0 and 0xfe, inclusive),
+        <code>ssid</code> (a value between 0 and 3, inclusive) and
+        <code>devno</code> (a hex value between 0 and 0xffff, inclusive).
+        Partially specified bus addresses are not allowed.
+        If omitted, libvirt will assign a free bus address with
+        cssid=0xfe and ssid=0. Virtio devices for s390 must have their
+        cssid set to 0xfe in order to be recognized by the guest
+        operating system.
+        <span class="since">Since 1.0.4</span>
+      </dd>
     </dl>
 
     <h4><a name="elementsControllers">Controllers</a></h4>
