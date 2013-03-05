@@ -215,6 +215,12 @@ int  qemuAssignDevicePCISlots(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               qemuDomainPCIAddressSetPtr addrs);
 
+int qemuDomainCCWAddressReleaseAddr(qemuDomainCCWAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev);
+int qemuDomainCCWAddressAssign(virDomainDeviceInfoPtr dev, qemuDomainCCWAddressSetPtr addrs,
+                               bool autoassign);
+void qemuDomainCCWAddressSetFree(qemuDomainCCWAddressSetPtr addrs);
+
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);

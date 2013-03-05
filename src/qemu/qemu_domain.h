@@ -120,6 +120,8 @@ typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm);
+typedef struct _qemuDomainCCWAddressSet qemuDomainCCWAddressSet;
+typedef qemuDomainCCWAddressSet *qemuDomainCCWAddressSetPtr;
 
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
@@ -144,6 +146,7 @@ struct _qemuDomainObjPrivate {
     int *vcpupids;
 
     qemuDomainPCIAddressSetPtr pciaddrs;
+    qemuDomainCCWAddressSetPtr ccwaddrs;
     int persistentAddrs;
 
     virQEMUCapsPtr qemuCaps;

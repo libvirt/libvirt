@@ -210,6 +210,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "rng-random", /* 130 */
               "rng-egd",
+              "virtio-ccw"
     );
 
 struct _virQEMUCaps {
@@ -1318,6 +1319,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-hub", QEMU_CAPS_USB_HUB },
     { "ich9-ahci", QEMU_CAPS_ICH9_AHCI },
     { "virtio-blk-s390", QEMU_CAPS_VIRTIO_S390 },
+    { "virtio-blk-ccw", QEMU_CAPS_VIRTIO_CCW },
     { "sclpconsole", QEMU_CAPS_SCLP_S390 },
     { "lsi53c895a", QEMU_CAPS_SCSI_LSI },
     { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI_PCI },
@@ -1337,7 +1339,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
     { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
 };
-
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
     { "multifunction", QEMU_CAPS_PCI_MULTIFUNCTION },
@@ -1392,6 +1393,10 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "virtio-blk-pci", virQEMUCapsObjectPropsVirtioBlk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
     { "virtio-net-pci", virQEMUCapsObjectPropsVirtioNet,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet) },
+    { "virtio-blk-ccw", virQEMUCapsObjectPropsVirtioBlk,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
+    { "virtio-net-ccw", virQEMUCapsObjectPropsVirtioNet,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet) },
     { "virtio-blk-s390", virQEMUCapsObjectPropsVirtioBlk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
