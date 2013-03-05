@@ -5814,7 +5814,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
             ret = qemuDomainAttachUsbMassstorageDevice(conn, driver, vm,
                                                        disk);
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            ret = qemuDomainAttachPciDiskDevice(conn, driver, vm, disk);
+            ret = qemuDomainAttachVirtioDiskDevice(conn, driver, vm, disk);
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             ret = qemuDomainAttachSCSIDisk(conn, driver, vm, disk);
         } else {
@@ -5940,7 +5940,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
-            ret = qemuDomainDetachPciDiskDevice(driver, vm, dev);
+            ret = qemuDomainDetachVirtioDiskDevice(driver, vm, dev);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                  disk->bus == VIR_DOMAIN_DISK_BUS_USB)
             ret = qemuDomainDetachDiskDevice(driver, vm, dev);
@@ -5951,7 +5951,7 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk device type '%s' cannot be detached"),
-                       virDomainDiskDeviceTypeToString(disk->type));
+                       virDomainDiskDeviceTypeToString(disk->device));
         break;
     }
 

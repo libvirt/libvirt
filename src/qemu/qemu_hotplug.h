@@ -36,10 +36,10 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 int qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   enum qemuDomainAsyncJob asyncJob);
-int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
-                                  virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDiskDefPtr disk);
+int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
+                                     virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDiskDefPtr disk);
 int qemuDomainAttachPciControllerDevice(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         virDomainControllerDefPtr controller);
@@ -83,9 +83,9 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainNetDefPtr dev,
                                  int linkstate);
-int qemuDomainDetachPciDiskDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDeviceDefPtr dev);
+int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDeviceDefPtr dev);
 int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev);

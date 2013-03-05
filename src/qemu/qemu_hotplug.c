@@ -207,11 +207,10 @@ cleanup:
     return ret;
 }
 
-
-int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
-                                  virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDiskDefPtr disk)
+int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
+                                     virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDiskDefPtr disk)
 {
     int i, ret = -1;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
@@ -220,6 +219,15 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
     char *drivestr = NULL;
     bool releaseaddr = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    if (!disk->info.type) {
+        if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+        else disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    }
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -241,8 +249,14 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
-            goto error;
+        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            if (qemuDomainCCWAddressAssign(&disk->info, priv->ccwaddrs,
+                                           !disk->info.addr.ccw.assigned) < 0)
+                goto error;
+        } else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
+                goto error;
+        }
         releaseaddr = true;
         if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
             goto error;
@@ -277,16 +291,14 @@ int qemuDomainAttachPciDiskDevice(virConnectPtr conn,
                 }
             }
         }
-    } else {
+    } else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI){
         virDevicePCIAddress guestAddr = disk->info.addr.pci;
         ret = qemuMonitorAddPCIDisk(priv->mon,
                                     disk->src,
                                     type,
                                     &guestAddr);
-        if (ret == 0) {
-            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        if (ret == 0)
             memcpy(&disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
-        }
     }
     qemuDomainObjExitMonitor(driver, vm);
 
@@ -304,12 +316,16 @@ cleanup:
     return ret;
 
 error:
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
-        releaseaddr &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &disk->info.addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on %s", disk->src);
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) && releaseaddr) {
+        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                            &disk->info.addr.pci) < 0)
+            VIR_WARN("Unable to release PCI address on %s", disk->src);
+        else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+                 qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs,
+                                                 &disk->info) < 0)
+            VIR_WARN("Unable to release CCW address on %s", disk->src);
+    }
 
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
                                             vm->def, disk) < 0)
@@ -391,7 +407,6 @@ cleanup:
     VIR_FREE(devstr);
     return ret;
 }
-
 
 static virDomainControllerDefPtr
 qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
@@ -748,9 +763,18 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
-        goto cleanup;
+    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+        net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        if (qemuDomainCCWAddressAssign(&net->info, priv->ccwaddrs,
+                                       !net->info.addr.ccw.assigned) < 0)
+            goto cleanup;
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("virtio-s390 net device cannot be hotplugged."));
+    else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+             qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
+             goto cleanup;
 
     releaseaddr = true;
 
@@ -879,11 +903,18 @@ cleanup:
         vm->def->nets[vm->def->nnets++] = net;
     } else {
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-            (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+            net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
             releaseaddr &&
             qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
                                             &net->info.addr.pci) < 0)
             VIR_WARN("Unable to release PCI address on NIC");
+        else if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+                 virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
+                 net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+                 releaseaddr &&
+                 qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs,
+                                                 &net->info) < 0)
+            VIR_WARN("Unable to release CCW address on NIC");
 
         if (iface_connected) {
             virDomainConfNWFilterTeardown(net);
@@ -1991,9 +2022,9 @@ static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
 }
 
 
-int qemuDomainDetachPciDiskDevice(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDeviceDefPtr dev)
+int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDeviceDefPtr dev)
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
@@ -2027,11 +2058,21 @@ int qemuDomainDetachPciDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if (!virDomainDeviceAddressIsValid(&detach->info,
-                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("device cannot be detached without a PCI address"));
-        goto cleanup;
+    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+        if (!virDomainDeviceAddressIsValid(&detach->info,
+                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("device cannot be detached without a valid CCW address"));
+            goto cleanup;
+        }
+    } else {
+        if (!virDomainDeviceAddressIsValid(&detach->info,
+                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("device cannot be detached without a valid PCI address"));
+            goto cleanup;
+        }
     }
 
     /* build the actual drive id string as the disk->info.alias doesn't
@@ -2065,9 +2106,15 @@ int qemuDomainDetachPciDiskDevice(virQEMUDriverPtr driver,
 
     virDomainAuditDisk(vm, detach->src, NULL, "detach", true);
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
-                                        &detach->info.addr.pci) < 0)
+    if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+        STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
+        qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, &detach->info) < 0) {
+        VIR_WARN("Unable to release CCW address on %s", dev->data.disk->src);
+    } else if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+               virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+               qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
+                                               &detach->info.addr.pci) < 0)
         VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
 
     virDomainDiskRemove(vm->def, i);
@@ -2570,19 +2617,28 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                                              -1);
         goto cleanup;
     }
+    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+        if (!virDomainDeviceAddressIsValid(&detach->info,
+                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("device cannot be detached without a CCW address"));
+            goto cleanup;
+        }
+    } else {
+        if (!virDomainDeviceAddressIsValid(&detach->info,
+                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("device cannot be detached without a PCI address"));
+            goto cleanup;
+        }
 
-    if (!virDomainDeviceAddressIsValid(&detach->info,
-                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("device cannot be detached without a PCI address"));
-        goto cleanup;
-    }
-
-    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot hot unplug multifunction PCI device :%s"),
-                       dev->data.disk->dst);
-        goto cleanup;
+        if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                            _("cannot hot unplug multifunction PCI device :%s"),
+                            dev->data.disk->dst);
+            goto cleanup;
+        }
     }
 
     if ((vlan = qemuDomainNetVLAN(detach)) < 0) {
@@ -2630,7 +2686,11 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
 
     virDomainAuditNet(vm, detach, NULL, "detach", true);
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
+    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+        if (qemuDomainCCWAddressReleaseAddr(priv->ccwaddrs, &detach->info) < 0)
+            VIR_WARN("Unable to release CCW address on NIC");
+    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         qemuDomainPCIAddressReleaseSlot(priv->pciaddrs,
                                         &detach->info.addr.pci) < 0)
         VIR_WARN("Unable to release PCI address on NIC");
