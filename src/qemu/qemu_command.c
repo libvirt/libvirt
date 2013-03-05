@@ -1185,8 +1185,8 @@ cleanup:
     return ret;
 }
 
-#define QEMU_PCI_ADDRESS_LAST_SLOT 31
-#define QEMU_PCI_ADDRESS_LAST_FUNCTION 8
+#define QEMU_PCI_ADDRESS_SLOT_LAST 32
+#define QEMU_PCI_ADDRESS_FUNCTION_LAST 8
 struct _qemuDomainPCIAddressSet {
     virHashTablePtr used;
     virDevicePCIAddress lastaddr;
@@ -1263,7 +1263,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         virDevicePCIAddress tmp_addr = info->addr.pci;
         unsigned int *func = &tmp_addr.function;
 
-        for (*func = 1; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+        for (*func = 1; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
             addr = qemuPCIAddressAsString(&tmp_addr);
             if (!addr)
                 goto cleanup;
@@ -1385,7 +1385,7 @@ static int qemuDomainPCIAddressCheckSlot(qemuDomainPCIAddressSetPtr addrs,
     virDevicePCIAddress tmp_addr = *addr;
     unsigned int *func = &(tmp_addr.function);
 
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
         str = qemuPCIAddressAsString(&tmp_addr);
         if (!str)
             return -1;
@@ -1437,7 +1437,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
     unsigned int *func = &tmp_addr.function;
     unsigned int last;
 
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
         if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
             goto cleanup;
     }
@@ -1498,7 +1498,7 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
     virDevicePCIAddress tmp_addr = *addr;
     unsigned int *func = &tmp_addr.function;
 
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
         str = qemuPCIAddressAsString(&tmp_addr);
         if (!str)
             return -1;
@@ -1536,8 +1536,8 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
     char *addr;
 
     tmp_addr.slot++;
-    for (i = 0; i <= QEMU_PCI_ADDRESS_LAST_SLOT; i++, tmp_addr.slot++) {
-        if (QEMU_PCI_ADDRESS_LAST_SLOT < tmp_addr.slot) {
+    for (i = 0; i < QEMU_PCI_ADDRESS_SLOT_LAST; i++, tmp_addr.slot++) {
+        if (QEMU_PCI_ADDRESS_SLOT_LAST <= tmp_addr.slot) {
             tmp_addr.slot = 0;
         }
 
@@ -1692,7 +1692,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
      */
     memset(&tmp_addr, 0, sizeof(tmp_addr));
     tmp_addr.slot = 1;
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_LAST_FUNCTION; (*func)++) {
+    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
         if ((*func == 1 && reservedIDE) ||
             (*func == 2 && reservedUSB))
             /* we have reserved this pci address */
