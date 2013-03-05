@@ -100,7 +100,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     conn->secretDriver = &fakeSecretDriver;
 
-    if (!(vmdef = virDomainDefParseFile(driver.caps, xml,
+    if (!(vmdef = virDomainDefParseFile(driver.caps, driver.xmlconf, xml,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
@@ -293,6 +293,8 @@ mymain(void)
         return EXIT_FAILURE;
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
+        return EXIT_FAILURE;
+    if (!(driver.xmlconf = virQEMUDriverCreateXMLConf()))
         return EXIT_FAILURE;
     VIR_FREE(driver.config->stateDir);
     if ((driver.config->stateDir = strdup("/nowhere")) == NULL)
@@ -891,6 +893,7 @@ mymain(void)
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
+    virObjectUnref(driver.xmlconf);
     VIR_FREE(map);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -71,6 +71,7 @@ typedef struct {
     char *files;                /* list of files */
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
+    virDomainXMLConfPtr xmlconf;/* XML parser data */
     char *hvm;                  /* type of hypervisor (eg hvm, xen) */
     virArch arch;               /* machine architecture */
     char *newfile;              /* newly added file */
@@ -85,6 +86,7 @@ vahDeinit(vahControl * ctl)
 
     VIR_FREE(ctl->def);
     virObjectUnref(ctl->caps);
+    virObjectUnref(ctl->xmlconf);
     VIR_FREE(ctl->files);
     VIR_FREE(ctl->hvm);
     VIR_FREE(ctl->newfile);
@@ -709,6 +711,11 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
+    if (!(ctl->xmlconf = virDomainXMLConfNew(NULL, NULL))) {
+        vah_error(ctl, 0, _("Failed to create XML config object"));
+        goto exit;
+    }
+
     ctl->caps->defaultConsoleTargetType = aaDefaultConsoleType;
 
     if ((guest = virCapabilitiesAddGuest(ctl->caps,
@@ -722,7 +729,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
-    ctl->def = virDomainDefParseString(ctl->caps, xmlStr, -1,
+    ctl->def = virDomainDefParseString(ctl->caps, ctl->xmlconf,
+                                       xmlStr, -1,
                                        VIR_DOMAIN_XML_INACTIVE);
     if (ctl->def == NULL) {
         vah_error(ctl, 0, _("could not parse XML"));

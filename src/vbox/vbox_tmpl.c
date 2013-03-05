@@ -193,6 +193,7 @@ typedef struct {
     unsigned long version;
 
     virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
 
     IVirtualBox *vboxObj;
     ISession *vboxSession;
@@ -850,6 +851,13 @@ static int vboxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 }
 
 
+static virDomainXMLConfPtr
+vboxXMLConfInit(void)
+{
+    return virDomainXMLConfNew(NULL, NULL);
+}
+
+
 static virCapsPtr vboxCapsInit(void)
 {
     virCapsPtr caps;
@@ -978,6 +986,7 @@ static void vboxUninitialize(vboxGlobalData *data) {
         data->pFuncs->pfnComUninitialize();
 
     virObjectUnref(data->caps);
+    virObjectUnref(data->xmlconf);
 #if VBOX_API_VERSION == 2002
     /* No domainEventCallbacks in 2.2.* version */
 #else  /* !(VBOX_API_VERSION == 2002) */
@@ -1036,7 +1045,8 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
 
     if (!(data->caps = vboxCapsInit()) ||
         vboxInitialize(data) < 0 ||
-        vboxExtractVersion(data) < 0) {
+        vboxExtractVersion(data) < 0 ||
+        !(data->xmlconf = vboxXMLConfInit())) {
         vboxUninitialize(data);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -5042,8 +5052,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 #endif
     nsresult rc;
 
-    if (!(def = virDomainDefParseString(data->caps, xml,
-                                        1 << VIR_DOMAIN_VIRT_VBOX,
+    if (!(def = virDomainDefParseString(data->caps, data->xmlconf,
+                                        xml, 1 << VIR_DOMAIN_VIRT_VBOX,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         goto cleanup;
     }
@@ -5921,7 +5931,8 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     /* VBox has no snapshot metadata, so this flag is trivial.  */
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, NULL, 0, 0)))
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
+                                                data->xmlconf, 0, 0)))
         goto cleanup;
 
     if (def->ndisks) {

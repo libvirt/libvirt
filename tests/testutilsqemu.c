@@ -120,6 +120,7 @@ error:
     return -1;
 }
 
+
 virCapsPtr testQemuCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -173,8 +174,6 @@ virCapsPtr testQemuCapsInit(void) {
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
         (machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
-
-    qemuDomainSetNamespaceHooks(caps);
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
                                          "/usr/bin/qemu", NULL,

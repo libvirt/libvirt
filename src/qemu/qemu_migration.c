@@ -919,7 +919,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                            n);
             goto error;
         }
-        mig->persistent = virDomainDefParseNode(caps, doc, nodes[0],
+        mig->persistent = virDomainDefParseNode(caps, driver->xmlconf,
+                                                doc, nodes[0],
                                                 -1, VIR_DOMAIN_XML_INACTIVE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
@@ -1923,7 +1924,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     }
 
     if (xmlin) {
-        if (!(def = virDomainDefParseString(caps, xmlin,
+        if (!(def = virDomainDefParseString(caps, driver->xmlconf, xmlin,
                                             QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
@@ -2025,7 +2026,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(def = virDomainDefParseString(caps, dom_xml,
+    if (!(def = virDomainDefParseString(caps, driver->xmlconf, dom_xml,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -2066,7 +2067,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 virDomainDefPtr newdef;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(caps, xmlout,
+                newdef = virDomainDefParseString(caps, driver->xmlconf, xmlout,
                                                  QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_XML_INACTIVE);
                 if (!newdef)
@@ -2084,7 +2085,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   caps,
+                                   driver->xmlconf,
                                    def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
@@ -3883,7 +3884,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             if (mig->persistent)
                 vm->newDef = vmdef = mig->persistent;
             else
-                vmdef = virDomainObjGetPersistentDef(caps, vm);
+                vmdef = virDomainObjGetPersistentDef(caps, driver->xmlconf, vm);
             if (!vmdef || virDomainSaveConfig(cfg->configDir, vmdef) < 0) {
                 /* Hmpf.  Migration was successful, but making it persistent
                  * was not.  If we report successful, then when this domain
@@ -3978,7 +3979,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         if (virDomainObjIsActive(vm) &&
-            virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+            virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto endjob;
         }
@@ -4035,7 +4036,6 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
     virDomainEventPtr event = NULL;
     int rv = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
 
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "flags=%x, retcode=%d",
@@ -4043,9 +4043,6 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
               flags, retcode);
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     qemuMigrationJobSetPhase(driver, vm,
                              retcode == 0
@@ -4090,7 +4087,7 @@ int qemuMigrationConfirm(virQEMUDriverPtr driver,
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto cleanup;
         }
@@ -4103,7 +4100,6 @@ done:
 cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return rv;
 }

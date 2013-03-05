@@ -71,6 +71,7 @@ esxFreePrivate(esxPrivate **priv)
     esxVI_Context_Free(&(*priv)->vCenter);
     esxUtil_FreeParsedUri(&(*priv)->parsedUri);
     virObjectUnref((*priv)->caps);
+    virObjectUnref((*priv)->xmlconf);
     VIR_FREE(*priv);
 }
 
@@ -1098,6 +1099,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (priv->caps == NULL) {
         goto cleanup;
     }
+
+    if (!(priv->xmlconf = virDomainXMLConfNew(NULL, NULL)))
+        goto cleanup;
 
     conn->privateData = priv;
     priv = NULL;
@@ -2883,8 +2887,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    def = virDomainDefParseString(priv->caps, domainXml,
-                                  1 << VIR_DOMAIN_VIRT_VMWARE, 0);
+    def = virDomainDefParseString(priv->caps, priv->xmlconf,
+                                  domainXml, 1 << VIR_DOMAIN_VIRT_VMWARE, 0);
 
     if (def == NULL) {
         return NULL;
@@ -3099,7 +3103,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     /* Parse domain XML */
-    def = virDomainDefParseString(priv->caps, xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
+    def = virDomainDefParseString(priv->caps, priv->xmlconf,
+                                  xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (def == NULL) {
@@ -4270,7 +4275,8 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
         return NULL;
     }
 
-    def = virDomainSnapshotDefParseString(xmlDesc, NULL, 0, 0);
+    def = virDomainSnapshotDefParseString(xmlDesc, priv->caps,
+                                          priv->xmlconf, 0, 0);
 
     if (def == NULL) {
         return NULL;

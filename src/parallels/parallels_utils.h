@@ -43,6 +43,7 @@ struct _parallelsConn {
     virStoragePoolObjList pools;
     virNetworkObjList networks;
     virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
     virDomainEventStatePtr domainEventState;
 };
 

@@ -20,7 +20,7 @@
 #ifndef __VIR_QEMU_MONITOR_TEST_UTILS_H__
 # define __VIR_QEMU_MONITOR_TEST_UTILS_H__
 
-# include "capabilities.h"
+# include "domain_conf.h"
 # include "qemu/qemu_monitor.h"
 
 typedef struct _qemuMonitorTest qemuMonitorTest;
@@ -32,7 +32,8 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                        const char *response);
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
-                                      virCapsPtr caps);
+                                      virDomainXMLConfPtr xmlconf);
+
 
 void qemuMonitorTestFree(qemuMonitorTestPtr test);
 

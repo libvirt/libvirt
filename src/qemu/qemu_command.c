@@ -8562,6 +8562,7 @@ qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str) {
  * as is practical. This is not an exact science....
  */
 virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
+                                     virDomainXMLConfPtr xmlconf,
                                      const char **progenv,
                                      const char **progargv,
                                      char **pidfile,
@@ -9423,7 +9424,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
         goto error;
 
     if (cmd->num_args || cmd->num_env) {
-        def->ns = qemuCaps->ns;
+        def->ns = *virDomainXMLConfGetNamespace(xmlconf);
         def->namespaceData = cmd;
     }
     else
@@ -9449,6 +9450,7 @@ error:
 
 
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
+                                           virDomainXMLConfPtr xmlconf,
                                            const char *args,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
@@ -9462,7 +9464,7 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
 
-    def = qemuParseCommandLine(qemuCaps, progenv, progargv,
+    def = qemuParseCommandLine(qemuCaps, xmlconf, progenv, progargv,
                                pidfile, monConfig, monJSON);
 
 cleanup:
@@ -9538,6 +9540,7 @@ cleanup:
 }
 
 virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
+                                        virDomainXMLConfPtr xmlconf,
                                         pid_t pid,
                                         char **pidfile,
                                         virDomainChrSourceDefPtr *monConfig,
@@ -9557,7 +9560,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
         qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
         goto cleanup;
 
-    if (!(def = qemuParseCommandLine(qemuCaps, progenv, progargv,
+    if (!(def = qemuParseCommandLine(qemuCaps, xmlconf, progenv, progargv,
                                      pidfile, monConfig, monJSON)))
         goto cleanup;
 

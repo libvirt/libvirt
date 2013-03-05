@@ -831,7 +831,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
 
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->caps,
+                                    privconn->xmlconf,
                                     def, 0, NULL)))
         goto cleanup;
     /* dom is locked here */
@@ -929,6 +929,9 @@ parallelsOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = parallelsBuildCapabilities()))
         goto error;
 
+    if (!(privconn->xmlconf = virDomainXMLConfNew(NULL, NULL)))
+        goto error;
+
     if (!(privconn->domains = virDomainObjListNew()))
         goto error;
 
@@ -987,6 +990,7 @@ parallelsClose(virConnectPtr conn)
 
     parallelsDriverLock(privconn);
     virObjectUnref(privconn->caps);
+    virObjectUnref(privconn->xmlconf);
     virObjectUnref(privconn->domains);
     conn->privateData = NULL;
 
@@ -2326,8 +2330,8 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainObjPtr dom = NULL, olddom = NULL;
 
     parallelsDriverLock(privconn);
-    if ((def = virDomainDefParseString(privconn->caps, xml,
-                                       1 << VIR_DOMAIN_VIRT_PARALLELS,
+    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+                                       xml, 1 << VIR_DOMAIN_VIRT_PARALLELS,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Can't parse XML desc"));
@@ -2366,7 +2370,7 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     virObjectUnlock(olddom);
 
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->caps,
+                                    privconn->xmlconf,
                                     def, 0, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Can't allocate domobj"));

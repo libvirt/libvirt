@@ -433,6 +433,11 @@ umlStartup(bool privileged,
     char *base = NULL;
     char *userdir = NULL;
 
+    virDomainXMLPrivateDataCallbacks privcb = {
+        .alloc = umlDomainObjPrivateAlloc,
+        .free = umlDomainObjPrivateFree,
+    };
+
     if (VIR_ALLOC(uml_driver) < 0)
         return -1;
 
@@ -500,8 +505,9 @@ umlStartup(bool privileged,
     if ((uml_driver->caps = umlCapsInit()) == NULL)
         goto out_of_memory;
 
-    uml_driver->caps->privateDataAllocFunc = umlDomainObjPrivateAlloc;
-    uml_driver->caps->privateDataFreeFunc = umlDomainObjPrivateFree;
+    if (!(uml_driver->xmlconf = virDomainXMLConfNew(&privcb,
+                                                    NULL)))
+        goto error;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
         VIR_ERROR(_("cannot initialize inotify"));
@@ -537,6 +543,7 @@ umlStartup(bool privileged,
 
     if (virDomainObjListLoadAllConfigs(uml_driver->domains,
                                        uml_driver->caps,
+                                       uml_driver->xmlconf,
                                        uml_driver->configDir,
                                        uml_driver->autostartDir,
                                        0, 1 << VIR_DOMAIN_VIRT_UML,
@@ -592,6 +599,7 @@ umlReload(void) {
     umlDriverLock(uml_driver);
     virDomainObjListLoadAllConfigs(uml_driver->domains,
                                    uml_driver->caps,
+                                   uml_driver->xmlconf,
                                    uml_driver->configDir,
                                    uml_driver->autostartDir,
                                    0, 1 << VIR_DOMAIN_VIRT_UML,
@@ -1055,7 +1063,8 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0) {
+    if (virDomainObjSetDefTransient(driver->caps, driver->xmlconf,
+                                    vm, true) < 0) {
         VIR_FORCE_CLOSE(logfd);
         return -1;
     }
@@ -1088,7 +1097,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         (ret = umlProcessAutoDestroyAdd(driver, vm, conn)) < 0)
         goto cleanup;
 
-    ret = virDomainObjSetDefTransient(driver->caps, vm, false);
+    ret = virDomainObjSetDefTransient(driver->caps, driver->xmlconf, vm, false);
 cleanup:
     VIR_FORCE_CLOSE(logfd);
     virCommandFree(cmd);
@@ -1495,13 +1504,13 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, xml,
-                                        1 << VIR_DOMAIN_VIRT_UML,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf,
+                                        xml, 1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->caps,
+                                   driver->xmlconf,
                                    def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -1916,13 +1925,13 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, xml,
-                                        1 << VIR_DOMAIN_VIRT_UML,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf,
+                                        xml, 1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->caps,
+                                   driver->xmlconf,
                                    def,
                                    0, NULL)))
         goto cleanup;

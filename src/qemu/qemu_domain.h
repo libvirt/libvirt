@@ -180,9 +180,6 @@ void qemuDomainEventFlush(int timer, void *opaque);
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virDomainEventPtr event);
 
-void qemuDomainSetPrivateDataHooks(virCapsPtr caps);
-void qemuDomainSetNamespaceHooks(virCapsPtr caps);
-
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
                           enum qemuDomainJob job)
@@ -339,5 +336,8 @@ void qemuDomainCleanupRemove(virDomainObjPtr vm,
                              qemuDomainCleanupCallback cb);
 void qemuDomainCleanupRun(virQEMUDriverPtr driver,
                           virDomainObjPtr vm);
+
+extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
+extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
 
 #endif /* __QEMU_DOMAIN_H__ */

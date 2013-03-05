@@ -160,6 +160,7 @@ struct _xenUnifiedPrivate {
      * holding the lock
      */
     virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
     int handle;			/* Xen hypervisor handle */
 
     int xendConfigVersion;      /* XenD config version */

@@ -169,6 +169,12 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto error;
     }
 
+    if (!(privP->xmlconf = virDomainXMLConfNew(NULL, NULL))) {
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Failed to create XML conf object"));
+        goto error;
+    }
+
     xmlInitParser();
     xmlKeepBlanksDefault(0);
     xen_init();
@@ -208,6 +214,7 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     if (privP != NULL) {
         virObjectUnref(privP->caps);
+        virObjectUnref(privP->xmlconf);
 
         if (privP->session != NULL)
             xenSessionFree(privP->session);
@@ -231,6 +238,7 @@ xenapiClose(virConnectPtr conn)
     struct _xenapiPrivate *priv = conn->privateData;
 
     virObjectUnref(priv->caps);
+    virObjectUnref(priv->xmlconf);
 
     if (priv->session != NULL) {
         xen_session_logout(priv->session);
@@ -425,6 +433,7 @@ xenapiNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 static char *
 xenapiGetCapabilities(virConnectPtr conn)
 {
+
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (caps) {
         char *xml = virCapabilitiesFormatXML(caps);
@@ -515,17 +524,17 @@ xenapiDomainCreateXML(virConnectPtr conn,
                       const char *xmlDesc,
                       unsigned int flags)
 {
+    struct _xenapiPrivate *priv = conn->privateData;
     xen_vm_record *record = NULL;
     xen_vm vm = NULL;
     virDomainPtr domP = NULL;
-    xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
-    virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
-    if (!caps)
+    if (!priv->caps)
         return NULL;
 
     virCheckFlags(0, NULL);
 
-    virDomainDefPtr defPtr = virDomainDefParseString(caps, xmlDesc,
+    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlconf,
+                                                     xmlDesc,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
                                                      flags);
     createVMRecordFromXml(conn, defPtr, &record, &vm);
@@ -534,7 +543,7 @@ xenapiDomainCreateXML(virConnectPtr conn,
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
         if (vm) {
-            if (xen_vm_start(session, vm, false, false)) {
+            if (xen_vm_start(priv->session, vm, false, false)) {
                 domP = virGetDomain(conn, record->name_label, raw_uuid);
                 if (!domP) {
                     xen_vm_record_free(record);
@@ -1672,20 +1681,21 @@ xenapiDomainCreate(virDomainPtr dom)
 static virDomainPtr
 xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
 {
+    struct _xenapiPrivate *priv = conn->privateData;
     xen_vm_record *record=NULL;
     xen_vm vm=NULL;
     virDomainPtr domP=NULL;
-    xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
-    virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
-    if (!caps)
+    if (!priv->caps)
         return NULL;
-    virDomainDefPtr defPtr = virDomainDefParseString(caps, xml,
-                                                     1 << VIR_DOMAIN_VIRT_XEN, 0);
+    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlconf,
+                                                     xml,
+                                                     1 << VIR_DOMAIN_VIRT_XEN,
+                                                     0);
     if (!defPtr)
         return NULL;
 
     if (createVMRecordFromXml(conn, defPtr, &record, &vm) != 0) {
-        if (!session->ok)
+        if (!priv->session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);
         else
             xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1697,7 +1707,7 @@ xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
         domP = virGetDomain(conn, record->name_label, raw_uuid);
-        if (!domP && !session->ok)
+        if (!domP && !priv->session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
         xen_vm_record_free(record);
     }

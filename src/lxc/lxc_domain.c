@@ -73,10 +73,9 @@ static int virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     return 0;
 }
 
-void virLXCDomainSetPrivateDataHooks(virCapsPtr caps)
-{
-    caps->privateDataAllocFunc = virLXCDomainObjPrivateAlloc;
-    caps->privateDataFreeFunc = virLXCDomainObjPrivateFree;
-    caps->privateDataXMLFormat = virLXCDomainObjPrivateXMLFormat;
-    caps->privateDataXMLParse = virLXCDomainObjPrivateXMLParse;
-}
+virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
+    .alloc = virLXCDomainObjPrivateAlloc,
+    .free = virLXCDomainObjPrivateFree,
+    .format = virLXCDomainObjPrivateXMLFormat,
+    .parse  = virLXCDomainObjPrivateXMLParse,
+};

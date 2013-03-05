@@ -15,6 +15,7 @@
 #include "testutilsxen.h"
 
 static virCapsPtr caps;
+static virDomainXMLConfPtr xmlconf;
 
 static int
 testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
@@ -31,7 +32,8 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (virtTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
 
-  if (!(def = virDomainDefParseString(caps, xmlData, 1 << VIR_DOMAIN_VIRT_XEN,
+  if (!(def = virDomainDefParseString(caps, xmlconf, xmlData,
+                                      1 << VIR_DOMAIN_VIRT_XEN,
                                       VIR_DOMAIN_XML_INACTIVE)))
       goto fail;
 
@@ -102,6 +104,9 @@ mymain(void)
     if (!(caps = testXenCapsInit()))
         return EXIT_FAILURE;
 
+    if (!(xmlconf = testXenXMLConfInit()))
+        return EXIT_FAILURE;
+
     DO_TEST("pv", "pv", "pvtest", 1);
     DO_TEST("fv", "fv", "fvtest", 1);
     DO_TEST("pv", "pv", "pvtest", 2);
@@ -169,6 +174,7 @@ mymain(void)
     DO_TEST("escape", "escape", "fvtest", 1);
 
     virObjectUnref(caps);
+    virObjectUnref(xmlconf);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -34,6 +34,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *uuid, int internal)
     if (internal)
         flags |= VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL;
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
+                                                driver.xmlconf,
                                                 QEMU_EXPECTED_VIRT_TYPES,
                                                 flags)))
         goto fail;
@@ -90,6 +91,9 @@ mymain(void)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
+    if (!(driver.xmlconf = virQEMUDriverCreateXMLConf()))
+        return EXIT_FAILURE;
+
 # define DO_TEST(name, uuid, internal)                                  \
     do {                                                                \
         const struct testInfo info = {name, uuid, internal};            \
@@ -113,6 +117,7 @@ mymain(void)
     DO_TEST("external_vm", "c7a5fdbd-edaf-9455-926a-d65c16db1809", 0);
 
     virObjectUnref(driver.caps);
+    virObjectUnref(driver.xmlconf);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

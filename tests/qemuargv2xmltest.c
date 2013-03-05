@@ -46,8 +46,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virtTestLoadFile(xml, &expectxml) < 0)
         goto fail;
 
-    if (!(vmdef = qemuParseCommandLineString(driver.caps, cmd,
-                                             NULL, NULL, NULL)))
+    if (!(vmdef = qemuParseCommandLineString(driver.caps, driver.xmlconf,
+                                             cmd, NULL, NULL, NULL)))
         goto fail;
 
     if ((log = virtTestLogContentAndReset()) == NULL)
@@ -118,6 +118,9 @@ mymain(void)
 
     driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
+        return EXIT_FAILURE;
+
+    if (!(driver.xmlconf = virQEMUDriverCreateXMLConf()))
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \
@@ -244,6 +247,7 @@ mymain(void)
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
+    virObjectUnref(driver.xmlconf);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

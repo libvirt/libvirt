@@ -22,6 +22,7 @@
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
+#include "qemu/qemu_conf.h"
 #include "virthread.h"
 #include "virerror.h"
 
@@ -31,8 +32,8 @@
 static int
 testQemuMonitorJSONGetStatus(const void *data)
 {
-    virCapsPtr caps = (virCapsPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    virDomainXMLConfPtr xmlconf = (virDomainXMLConfPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlconf);
     int ret = -1;
     bool running = false;
     virDomainPausedReason reason = 0;
@@ -125,8 +126,8 @@ cleanup:
 static int
 testQemuMonitorJSONGetVersion(const void *data)
 {
-    virCapsPtr caps = (virCapsPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    virDomainXMLConfPtr xmlconf = (virDomainXMLConfPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlconf);
     int ret = -1;
     int major;
     int minor;
@@ -228,8 +229,8 @@ cleanup:
 static int
 testQemuMonitorJSONGetMachines(const void *data)
 {
-    virCapsPtr caps = (virCapsPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    virDomainXMLConfPtr xmlconf = (virDomainXMLConfPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlconf);
     int ret = -1;
     qemuMonitorMachineInfoPtr *info;
     int ninfo = 0;
@@ -310,8 +311,8 @@ cleanup:
 static int
 testQemuMonitorJSONGetCPUDefinitions(const void *data)
 {
-    virCapsPtr caps = (virCapsPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    virDomainXMLConfPtr xmlconf = (virDomainXMLConfPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlconf);
     int ret = -1;
     char **cpus = NULL;
     int ncpus = 0;
@@ -376,8 +377,8 @@ cleanup:
 static int
 testQemuMonitorJSONGetCommands(const void *data)
 {
-    virCapsPtr caps = (virCapsPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNew(true, caps);
+    virDomainXMLConfPtr xmlconf = (virDomainXMLConfPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlconf);
     int ret = -1;
     char **commands = NULL;
     int ncommands = 0;
@@ -442,7 +443,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -450,13 +451,13 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        !(caps = testQemuCapsInit()))
+        !(xmlconf = virQEMUDriverCreateXMLConf()))
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
 
 #define DO_TEST(name) \
-    if (virtTestRun(# name, 1, testQemuMonitorJSON ## name, caps) < 0) \
+    if (virtTestRun(# name, 1, testQemuMonitorJSON ## name, xmlconf) < 0) \
         ret = -1
 
     DO_TEST(GetStatus);
@@ -465,7 +466,7 @@ mymain(void)
     DO_TEST(GetCPUDefinitions);
     DO_TEST(GetCommands);
 
-    virObjectUnref(caps);
+    virObjectUnref(xmlconf);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

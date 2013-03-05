@@ -641,12 +641,8 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuDomainObjPrivatePtr priv;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
 
     VIR_DEBUG("vm=%p", vm);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
 
@@ -671,7 +667,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_SHUTDOWN,
                                      VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED);
 
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
                  vm->def->name);
     }
@@ -683,10 +679,8 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 unlock:
     virObjectUnlock(vm);
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
 
     return 0;
@@ -700,10 +694,6 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = qemu_driver;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -727,7 +717,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after state change",
                      vm->def->name);
         }
@@ -735,11 +725,8 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 unlock:
     virObjectUnlock(vm);
-
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
 
     return 0;
@@ -753,10 +740,6 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = qemu_driver;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
@@ -787,7 +770,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
         VIR_FREE(priv->lockState);
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after state change",
                      vm->def->name);
         }
@@ -795,10 +778,8 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 unlock:
     virObjectUnlock(vm);
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -812,10 +793,6 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = qemu_driver;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     event = virDomainEventRTCChangeNewFromObj(vm, offset);
@@ -823,15 +800,13 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (vm->def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE)
         vm->def->clock.data.variable.adjustment = offset;
 
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
         VIR_WARN("unable to save domain status with RTC change");
 
     virObjectUnlock(vm);
 
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -846,10 +821,6 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr watchdogEvent = NULL;
     virDomainEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     watchdogEvent = virDomainEventWatchdogNewFromObj(vm, action);
@@ -869,7 +840,7 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after watchdog event",
                      vm->def->name);
         }
@@ -896,14 +867,11 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (vm)
         virObjectUnlock(vm);
-
-cleanup:
     if (watchdogEvent)
         qemuDomainEventQueue(driver, watchdogEvent);
     if (lifecycleEvent)
         qemuDomainEventQueue(driver, lifecycleEvent);
 
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -924,10 +892,6 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     const char *devAlias;
     virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
@@ -958,19 +922,17 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
             VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
     }
     virObjectUnlock(vm);
 
-cleanup:
     if (ioErrorEvent)
         qemuDomainEventQueue(driver, ioErrorEvent);
     if (ioErrorEvent2)
         qemuDomainEventQueue(driver, ioErrorEvent2);
     if (lifecycleEvent)
         qemuDomainEventQueue(driver, lifecycleEvent);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1121,10 +1083,6 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr event = NULL;
     virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     disk = qemuProcessFindDomainDiskByAlias(vm, devAlias);
@@ -1139,17 +1097,15 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         else if (reason == VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE)
             disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after tray moved event",
                      vm->def->name);
         }
     }
 
     virObjectUnlock(vm);
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1162,10 +1118,6 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr event = NULL;
     virDomainEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     event = virDomainEventPMWakeupNewFromObj(vm);
@@ -1183,20 +1135,17 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                                   VIR_DOMAIN_EVENT_STARTED,
                                                   VIR_DOMAIN_EVENT_STARTED_WAKEUP);
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after wakeup event",
                      vm->def->name);
         }
     }
 
     virObjectUnlock(vm);
-
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     if (lifecycleEvent)
         qemuDomainEventQueue(driver, lifecycleEvent);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1209,10 +1158,6 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr event = NULL;
     virDomainEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     event = virDomainEventPMSuspendNewFromObj(vm);
@@ -1229,7 +1174,7 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY);
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after suspend event",
                      vm->def->name);
         }
@@ -1240,12 +1185,10 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     if (lifecycleEvent)
         qemuDomainEventQueue(driver, lifecycleEvent);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1258,10 +1201,6 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = qemu_driver;
     virDomainEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     event = virDomainEventBalloonChangeNewFromObj(vm, actual);
@@ -1270,15 +1209,13 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
               vm->def->mem.cur_balloon, actual);
     vm->def->mem.cur_balloon = actual;
 
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
         VIR_WARN("unable to save domain status with balloon change");
 
     virObjectUnlock(vm);
 
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1291,10 +1228,6 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainEventPtr event = NULL;
     virDomainEventPtr lifecycleEvent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     virObjectLock(vm);
     event = virDomainEventPMSuspendDiskNewFromObj(vm);
@@ -1311,7 +1244,7 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED_DISK);
 
-        if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
             VIR_WARN("Unable to save status on vm %s after suspend event",
                      vm->def->name);
         }
@@ -1322,12 +1255,10 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     if (lifecycleEvent)
         qemuDomainEventQueue(driver, lifecycleEvent);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
 
     return 0;
@@ -3179,7 +3110,6 @@ qemuProcessReconnect(void *opaque)
     int state;
     int reason;
     virQEMUDriverConfigPtr cfg;
-    virCapsPtr caps = NULL;
     size_t i;
 
     memcpy(&oldjob, &data->oldjob, sizeof(oldjob));
@@ -3199,9 +3129,6 @@ qemuProcessReconnect(void *opaque)
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted if qemuConnectMonitor() failed */
     virObjectRef(obj);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto error;
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(driver, obj) < 0)
@@ -3282,7 +3209,7 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     /* update domain state XML with possibly updated state in virDomainObj */
-    if (virDomainSaveStatus(caps, cfg->stateDir, obj) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, obj) < 0)
         goto error;
 
     /* Run an hook to allow admins to do some magic */
@@ -3314,7 +3241,6 @@ endjob:
 
     virConnectClose(conn);
     virObjectUnref(cfg);
-    virObjectUnref(caps);
 
     return;
 
@@ -3352,7 +3278,6 @@ error:
         }
     }
     virConnectClose(conn);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
 }
 
@@ -3539,7 +3464,7 @@ int qemuProcessStart(virConnectPtr conn,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(caps, vm, true) < 0)
+    if (virDomainObjSetDefTransient(caps, driver->xmlconf, vm, true) < 0)
         goto cleanup;
 
     vm->def->id = qemuDriverAllocateID(driver);
@@ -3888,7 +3813,7 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Writing early domain status to disk");
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0) {
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0) {
         goto cleanup;
     }
 
@@ -4039,7 +3964,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Writing domain status to disk");
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
         goto cleanup;
 
     /* finally we can call the 'started' hook script if any */
@@ -4394,7 +4319,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(caps, vm, true) < 0)
+    if (virDomainObjSetDefTransient(caps, driver->xmlconf, vm, true) < 0)
         goto cleanup;
 
     vm->def->id = qemuDriverAllocateID(driver);
@@ -4538,7 +4463,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
 
     VIR_DEBUG("Writing domain status to disk");
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
         goto cleanup;
 
     /* Run an hook to allow admins to do some magic */

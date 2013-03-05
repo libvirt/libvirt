@@ -160,19 +160,15 @@ struct _virCaps {
     size_t nguests;
     size_t nguests_max;
     virCapsGuestPtr *guests;
+
+    /* Move to virDomainXMLConf later */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     unsigned int emulatorRequired : 1;
     const char *defaultDiskDriverName;
     int defaultDiskDriverType; /* enum virStorageFileFormat */
     int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
-    void *(*privateDataAllocFunc)(void);
-    void (*privateDataFreeFunc)(void *);
-    int (*privateDataXMLFormat)(virBufferPtr, void *);
-    int (*privateDataXMLParse)(xmlXPathContextPtr, void *);
     bool hasWideScsiBus;
     const char *defaultInitPath;
-
-    virDomainXMLNamespace ns;
 };
 
 

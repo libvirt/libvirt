@@ -26,6 +26,7 @@
 # include "internal.h"
 # include "virerror.h"
 # include "capabilities.h"
+# include "domain_conf.h"
 # include "esx_vi.h"
 
 typedef struct _esxPrivate {
@@ -34,6 +35,7 @@ typedef struct _esxPrivate {
     esxVI_Context *vCenter;
     esxUtil_ParsedUri *parsedUri;
     virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     esxVI_Boolean supportsLongMode; /* aka x86_64 */

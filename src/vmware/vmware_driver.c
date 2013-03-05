@@ -72,6 +72,15 @@ vmwareDataFreeFunc(void *data)
     VIR_FREE(dom);
 }
 
+static virDomainXMLConfPtr
+vmwareDomainXMLConfigInit(void)
+{
+    virDomainXMLPrivateDataCallbacks priv = { .alloc = vmwareDataAllocFunc,
+                                              .free = vmwareDataFreeFunc };
+
+    return virDomainXMLConfNew(&priv, NULL);
+}
+
 static virDrvOpenStatus
 vmwareOpen(virConnectPtr conn,
            virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -134,8 +143,8 @@ vmwareOpen(virConnectPtr conn,
     if (!(driver->caps = vmwareCapsInit()))
         goto cleanup;
 
-    driver->caps->privateDataAllocFunc = vmwareDataAllocFunc;
-    driver->caps->privateDataFreeFunc = vmwareDataFreeFunc;
+    if (!(driver->xmlconf = vmwareDomainXMLConfigInit()))
+        goto cleanup;
 
     if (vmwareLoadDomains(driver) < 0)
         goto cleanup;
@@ -315,8 +324,8 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
     ctx.formatFileName = vmwareCopyVMXFileName;
 
     vmwareDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, xml,
-                                         1 << VIR_DOMAIN_VIRT_VMWARE,
+    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlconf,
+                                         xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -337,7 +346,7 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->caps,
+                                   driver->xmlconf,
                                    vmdef,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -586,8 +595,8 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     vmwareDriverLock(driver);
 
-    if ((vmdef = virDomainDefParseString(driver->caps, xml,
-                                         1 << VIR_DOMAIN_VIRT_VMWARE,
+    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlconf,
+                                         xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -608,7 +617,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->caps,
+                                   driver->xmlconf,
                                    vmdef,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))

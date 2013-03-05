@@ -32,7 +32,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
-    if (!(def = virDomainDefParseString(driver.caps, inXmlData,
+    if (!(def = virDomainDefParseString(driver.caps, driver.xmlconf, inXmlData,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
@@ -104,6 +104,9 @@ mymain(void)
     int ret = 0;
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
+        return EXIT_FAILURE;
+
+    if (!(driver.xmlconf = virQEMUDriverCreateXMLConf()))
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, is_different, when)                         \
@@ -262,6 +265,7 @@ mymain(void)
     DO_TEST_DIFFERENT("metadata");
 
     virObjectUnref(driver.caps);
+    virObjectUnref(driver.xmlconf);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

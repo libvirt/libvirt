@@ -205,7 +205,8 @@ qemuDomainTrackJob(enum qemuDomainJob job)
 }
 
 
-static void *qemuDomainObjPrivateAlloc(void)
+static void
+*qemuDomainObjPrivateAlloc(void)
 {
     qemuDomainObjPrivatePtr priv;
 
@@ -227,7 +228,8 @@ error:
     return NULL;
 }
 
-static void qemuDomainObjPrivateFree(void *data)
+static void
+qemuDomainObjPrivateFree(void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
 
@@ -256,7 +258,8 @@ static void qemuDomainObjPrivateFree(void *data)
 }
 
 
-static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+static int
+qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
     const char *monitorpath;
@@ -329,7 +332,8 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     return 0;
 }
 
-static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+static int
+qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
     char *monitorpath;
@@ -480,6 +484,14 @@ error:
     virObjectUnref(qemuCaps);
     return -1;
 }
+
+
+virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
+    .alloc = qemuDomainObjPrivateAlloc,
+    .free = qemuDomainObjPrivateFree,
+    .parse = qemuDomainObjPrivateXMLParse,
+    .format = qemuDomainObjPrivateXMLFormat,
+};
 
 
 static void
@@ -641,42 +653,25 @@ qemuDomainDefNamespaceHref(void)
 }
 
 
-void qemuDomainSetPrivateDataHooks(virCapsPtr caps)
-{
-    /* Domain XML parser hooks */
-    caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
-    caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
-    caps->privateDataXMLFormat = qemuDomainObjPrivateXMLFormat;
-    caps->privateDataXMLParse = qemuDomainObjPrivateXMLParse;
+virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
+    .parse = qemuDomainDefNamespaceParse,
+    .free = qemuDomainDefNamespaceFree,
+    .format = qemuDomainDefNamespaceFormatXML,
+    .href = qemuDomainDefNamespaceHref,
+};
 
-}
-
-void qemuDomainSetNamespaceHooks(virCapsPtr caps)
-{
-    /* Domain Namespace XML parser hooks */
-    caps->ns.parse = qemuDomainDefNamespaceParse;
-    caps->ns.free = qemuDomainDefNamespaceFree;
-    caps->ns.format = qemuDomainDefNamespaceFormatXML;
-    caps->ns.href = qemuDomainDefNamespaceHref;
-}
 
 static void
 qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     if (virDomainObjIsActive(obj)) {
-        if (virDomainSaveStatus(caps, cfg->stateDir, obj) < 0)
+        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, obj) < 0)
             VIR_WARN("Failed to save status on vm %s", obj->def->name);
     }
 
-cleanup:
     virObjectUnref(cfg);
-    virObjectUnref(caps);
 }
 
 void
@@ -1782,22 +1777,17 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     if (priv->fakeReboot == value)
         goto cleanup;
 
     priv->fakeReboot = value;
 
-    if (virDomainSaveStatus(caps, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
 cleanup:
     virObjectUnref(cfg);
-    virObjectUnref(caps);
 }
 
 int

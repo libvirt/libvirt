@@ -13,6 +13,7 @@
 
 static virCapsPtr caps;
 static virVMXContext ctx;
+static virDomainXMLConfPtr xmlconf;
 
 static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
                                   virArch arch ATTRIBUTE_UNUSED)
@@ -72,6 +73,7 @@ testCapsInit(void)
 
   failure:
     virObjectUnref(caps);
+    virObjectUnref(xmlconf);
     caps = NULL;
 }
 
@@ -92,7 +94,8 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
         goto failure;
     }
 
-    def = virDomainDefParseString(caps, xmlData, 1 << VIR_DOMAIN_VIRT_VMWARE,
+    def = virDomainDefParseString(caps, xmlconf, xmlData,
+                                  1 << VIR_DOMAIN_VIRT_VMWARE,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (def == NULL) {
@@ -236,6 +239,9 @@ mymain(void)
     if (caps == NULL) {
         return EXIT_FAILURE;
     }
+
+    if (!(xmlconf = virDomainXMLConfNew(NULL, NULL)))
+        return EXIT_FAILURE;
 
     ctx.opaque = NULL;
     ctx.parseFileName = NULL;

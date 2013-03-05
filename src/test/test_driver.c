@@ -82,6 +82,7 @@ struct _testConn {
     char *path;
     int nextDomID;
     virCapsPtr caps;
+    virDomainXMLConfPtr xmlconf;
     virNodeInfo nodeInfo;
     virDomainObjListPtr domains;
     virNetworkObjList networks;
@@ -155,6 +156,16 @@ static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
     return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 }
 
+
+static virDomainXMLConfPtr
+testBuildXMLConfig(void)
+{
+    virDomainXMLPrivateDataCallbacks priv = { .alloc = testDomainObjPrivateAlloc,
+                                              .free = testDomainObjPrivateFree };
+    return virDomainXMLConfNew(&priv, NULL);
+}
+
+
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
@@ -211,9 +222,6 @@ testBuildCapabilities(virConnectPtr conn) {
         if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
             goto no_memory;
     }
-
-    caps->privateDataAllocFunc = testDomainObjPrivateAlloc;
-    caps->privateDataFreeFunc = testDomainObjPrivateFree;
 
     caps->host.nsecModels = 1;
     if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
@@ -507,7 +515,9 @@ testDomainStartState(virConnectPtr conn,
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
     dom->def->id = privconn->nextDomID++;
 
-    if (virDomainObjSetDefTransient(privconn->caps, dom, false) < 0) {
+    if (virDomainObjSetDefTransient(privconn->caps,
+                                    privconn->xmlconf,
+                                    dom, false) < 0) {
         goto cleanup;
     }
 
@@ -573,9 +583,14 @@ static int testOpenDefault(virConnectPtr conn) {
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
+    if (!(privconn->xmlconf = testBuildXMLConfig()))
+        goto error;
+
     privconn->nextDomID = 1;
 
-    if (!(domdef = virDomainDefParseString(privconn->caps, defaultDomainXML,
+    if (!(domdef = virDomainDefParseString(privconn->caps,
+                                           privconn->xmlconf,
+                                           defaultDomainXML,
                                            1 << VIR_DOMAIN_VIRT_TEST,
                                            VIR_DOMAIN_XML_INACTIVE)))
         goto error;
@@ -583,7 +598,7 @@ static int testOpenDefault(virConnectPtr conn) {
     if (testDomainGenerateIfnames(domdef) < 0)
         goto error;
     if (!(domobj = virDomainObjListAdd(privconn->domains,
-                                       privconn->caps,
+                                       privconn->xmlconf,
                                        domdef, 0, NULL)))
         goto error;
     domdef = NULL;
@@ -802,6 +817,9 @@ static int testOpenFromFile(virConnectPtr conn,
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
+    if (!(privconn->xmlconf = testBuildXMLConfig()))
+        goto error;
+
     if (!(xml = virXMLParseFileCtxt(file, &ctxt))) {
         goto error;
     }
@@ -913,14 +931,16 @@ static int testOpenFromFile(virConnectPtr conn,
                                _("resolving domain filename"));
                 goto error;
             }
-            def = virDomainDefParseFile(privconn->caps, absFile,
+            def = virDomainDefParseFile(privconn->caps,
+                                        privconn->xmlconf, absFile,
                                         1 << VIR_DOMAIN_VIRT_TEST,
                                         VIR_DOMAIN_XML_INACTIVE);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virDomainDefParseNode(privconn->caps, xml, domains[i],
+            if ((def = virDomainDefParseNode(privconn->caps, privconn->xmlconf,
+                                             xml, domains[i],
                                              1 << VIR_DOMAIN_VIRT_TEST,
                                              VIR_DOMAIN_XML_INACTIVE)) == NULL)
                 goto error;
@@ -928,7 +948,7 @@ static int testOpenFromFile(virConnectPtr conn,
 
         if (testDomainGenerateIfnames(def) < 0 ||
             !(dom = virDomainObjListAdd(privconn->domains,
-                                        privconn->caps,
+                                        privconn->xmlconf,
                                         def, 0, NULL))) {
             virDomainDefFree(def);
             goto error;
@@ -1184,6 +1204,7 @@ static int testClose(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     testDriverLock(privconn);
     virObjectUnref(privconn->caps);
+    virObjectUnref(privconn->xmlconf);
     virObjectUnref(privconn->domains);
     virNodeDeviceObjListFree(&privconn->devs);
     virNetworkObjListFree(&privconn->networks);
@@ -1321,15 +1342,15 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
-    if ((def = virDomainDefParseString(privconn->caps, xml,
-                                       1 << VIR_DOMAIN_VIRT_TEST,
+    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+                                       xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->caps,
+                                    privconn->xmlconf,
                                     def,
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                     NULL)))
@@ -1936,8 +1957,8 @@ testDomainRestoreFlags(virConnectPtr conn,
     }
     xml[len] = '\0';
 
-    def = virDomainDefParseString(privconn->caps, xml,
-                                  1 << VIR_DOMAIN_VIRT_TEST,
+    def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+                                  xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (!def)
         goto cleanup;
@@ -1945,7 +1966,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->caps,
+                                    privconn->xmlconf,
                                     def,
                                     VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
@@ -2155,7 +2176,8 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(privconn->caps, vm, &flags, &def) < 0)
+    if (virDomainLiveConfigHelperMethod(privconn->caps, privconn->xmlconf,
+                                        vm, &flags, &def) < 0)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE)
@@ -2233,6 +2255,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
     }
 
     if (!(persistentDef = virDomainObjGetPersistentDef(privconn->caps,
+                                                       privconn->xmlconf,
                                                        privdom)))
         goto cleanup;
 
@@ -2485,15 +2508,15 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainDefPtr oldDef = NULL;
 
     testDriverLock(privconn);
-    if ((def = virDomainDefParseString(privconn->caps, xml,
-                                       1 << VIR_DOMAIN_VIRT_TEST,
+    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+                                       xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->caps,
+                                    privconn->xmlconf,
                                     def,
                                     0,
                                     &oldDef)))

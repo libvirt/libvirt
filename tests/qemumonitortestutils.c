@@ -450,7 +450,7 @@ static qemuMonitorCallbacks qemuCallbacks = {
 
 #define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
 
-qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
+qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLConfPtr xmlconf)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -482,7 +482,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virCapsPtr caps)
         goto no_memory;
 
     test->json = json;
-    if (!(test->vm = virDomainObjNew(caps)))
+    if (!(test->vm = virDomainObjNew(xmlconf)))
         goto error;
 
     if (virNetSocketNewListenUNIX(path,

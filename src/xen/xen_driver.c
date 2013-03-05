@@ -401,6 +401,9 @@ xenUnifiedOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         goto fail;
     }
 
+    if (!(priv->xmlconf = virDomainXMLConfNew(NULL, NULL)))
+        goto fail;
+
 #if WITH_XEN_INOTIFY
     if (xenHavePrivilege()) {
         VIR_DEBUG("Trying Xen inotify sub-driver");
@@ -448,6 +451,7 @@ xenUnifiedClose(virConnectPtr conn)
     int i;
 
     virObjectUnref(priv->caps);
+    virObjectUnref(priv->xmlconf);
     virDomainEventStateFree(priv->domainEvents);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
@@ -1430,8 +1434,8 @@ xenUnifiedDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(priv->caps, xmlData,
-                                        1 << VIR_DOMAIN_VIRT_XEN, 0)))
+    if (!(def = virDomainDefParseString(priv->caps, priv->xmlconf,
+                                        xmlData, 1 << VIR_DOMAIN_VIRT_XEN, 0)))
         goto cleanup;
 
     if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {

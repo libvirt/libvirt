@@ -38,6 +38,6 @@ struct _virLXCDomainObjPrivate {
     pid_t initpid;
 };
 
-void virLXCDomainSetPrivateDataHooks(virCapsPtr caps);
+extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 
 #endif /* __LXC_DOMAIN_H__ */

@@ -27,6 +27,7 @@
 #include <config.h>
 
 #include "lxc_conf.h"
+#include "lxc_domain.h"
 #include "nodeinfo.h"
 #include "virerror.h"
 #include "virconf.h"
@@ -152,6 +153,13 @@ no_memory:
 error:
     virObjectUnref(caps);
     return NULL;
+}
+
+
+virDomainXMLConfPtr
+lxcDomainXMLConfInit(void)
+{
+    return virDomainXMLConfNew(&virLXCDriverPrivateDataCallbacks, NULL);
 }
 
 int lxcLoadDriverConfig(virLXCDriverPtr driver)

@@ -682,7 +682,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     }
     virDomainAuditInit(vm, initpid, inode);
 
-    if (virDomainSaveStatus(lxc_driver->caps, lxc_driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(lxc_driver->xmlconf, lxc_driver->stateDir, vm) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 }
 
@@ -1043,7 +1043,7 @@ int virLXCProcessStart(virConnectPtr conn,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, vm, true) < 0)
+    if (virDomainObjSetDefTransient(driver->caps, driver->xmlconf, vm, true) < 0)
         goto cleanup;
 
     /* Run an early hook to set-up missing devices */
@@ -1241,7 +1241,8 @@ int virLXCProcessStart(virConnectPtr conn,
         virLXCProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto error;
 
-    if (virDomainObjSetDefTransient(driver->caps, vm, false) < 0)
+    if (virDomainObjSetDefTransient(driver->caps, driver->xmlconf,
+                                    vm, false) < 0)
         goto error;
 
     /* Write domain status to disk.
@@ -1250,7 +1251,7 @@ int virLXCProcessStart(virConnectPtr conn,
      * location for the benefit of libvirt_lxc. We're now overwriting
      * it with the live status XML instead. This is a (currently
      * harmless) inconsistency we should fix one day */
-    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlconf, driver->stateDir, vm) < 0)
         goto error;
 
     /* finally we can call the 'started' hook script if any */

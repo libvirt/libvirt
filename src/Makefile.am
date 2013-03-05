@@ -493,6 +493,7 @@ LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
 		lxc/lxc_cgroup.c lxc/lxc_cgroup.h		\
+		lxc/lxc_domain.c lxc/lxc_domain.h		\
 		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
 		lxc/lxc_controller.c
 

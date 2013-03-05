@@ -342,6 +342,8 @@ virDomainWatchdogActionTypeFromString;
 virDomainWatchdogActionTypeToString;
 virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
+virDomainXMLConfGetNamespace;
+virDomainXMLConfNew;
 
 
 # conf/domain_event.h

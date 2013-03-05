@@ -169,6 +169,7 @@ cleanup:
 virDomainSnapshotDefPtr
 virDomainSnapshotDefParseString(const char *xmlStr,
                                 virCapsPtr caps,
+                                virDomainXMLConfPtr xmlconf,
                                 unsigned int expectedVirtTypes,
                                 unsigned int flags)
 {
@@ -263,7 +264,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
                                _("missing domain in snapshot"));
                 goto cleanup;
             }
-            def->dom = virDomainDefParseNode(caps, xml, domainNode,
+            def->dom = virDomainDefParseNode(caps, xmlconf, xml, domainNode,
                                              expectedVirtTypes,
                                              (VIR_DOMAIN_XML_INACTIVE |
                                               VIR_DOMAIN_XML_SECURE));

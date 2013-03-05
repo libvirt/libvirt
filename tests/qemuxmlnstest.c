@@ -51,7 +51,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (len && expectargv[len - 1] == '\n')
         expectargv[len - 1] = '\0';
 
-    if (!(vmdef = virDomainDefParseFile(driver.caps, xml,
+    if (!(vmdef = virDomainDefParseFile(driver.caps, driver.xmlconf, xml,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
@@ -204,6 +204,8 @@ mymain(void)
     driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
+    if (!(driver.xmlconf = virQEMUDriverCreateXMLConf()))
+        return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {
         VIR_FREE(map);
@@ -252,6 +254,7 @@ mymain(void)
 
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
+    virObjectUnref(driver.xmlconf);
     VIR_FREE(map);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
