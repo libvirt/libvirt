@@ -94,7 +94,8 @@ error:
 
 static int testQemuAddS390Guest(virCapsPtr caps)
 {
-    static const char *s390_machines[] = { "s390-virtio"};
+    static const char *s390_machines[] = { "s390-virtio",
+                                           "s390-ccw-virtio" };
     virCapsGuestMachinePtr *machines = NULL;
     virCapsGuestPtr guest;
 
