@@ -7303,11 +7303,13 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
     if (set_swap_hard_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
-            (rc = virCgroupSetMemSwapHardLimit(group, swap_hard_limit)) < 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("unable to set memory swap_hard_limit tunable"));
-            goto cleanup;
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if ((rc = virCgroupSetMemSwapHardLimit(group, swap_hard_limit)) < 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory swap_hard_limit tunable"));
+                goto cleanup;
+            }
+            vm->def->mem.swap_hard_limit = swap_hard_limit;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -7315,11 +7317,13 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
     if (set_memory_hard_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
-            (rc = virCgroupSetMemoryHardLimit(group, memory_hard_limit)) < 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("unable to set memory hard_limit tunable"));
-            goto cleanup;
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if ((rc = virCgroupSetMemoryHardLimit(group, memory_hard_limit)) < 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory hard_limit tunable"));
+                goto cleanup;
+            }
+            vm->def->mem.hard_limit = memory_hard_limit;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)
@@ -7327,11 +7331,13 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
     if (set_memory_soft_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE &&
-            (rc = virCgroupSetMemorySoftLimit(group, memory_soft_limit)) < 0) {
-            virReportSystemError(-rc, "%s",
-                                 _("unable to set memory soft_limit tunable"));
-            goto cleanup;
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if ((rc = virCgroupSetMemorySoftLimit(group, memory_soft_limit)) < 0) {
+                virReportSystemError(-rc, "%s",
+                                     _("unable to set memory soft_limit tunable"));
+                goto cleanup;
+            }
+            vm->def->mem.soft_limit = memory_soft_limit;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)
