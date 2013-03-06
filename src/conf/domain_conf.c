@@ -13760,6 +13760,7 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
         break;
     }
 
+    virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
 }
 
