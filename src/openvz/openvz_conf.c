@@ -206,7 +206,6 @@ virCapsPtr openvzCapsInit(void)
                                       NULL) == NULL)
         goto no_memory;
 
-    caps->defaultInitPath = "/sbin/init";
     caps->defaultConsoleTargetType = openvzDefaultConsoleType;
 
     return caps;

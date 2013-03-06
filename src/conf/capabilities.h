@@ -168,7 +168,6 @@ struct _virCaps {
     int defaultDiskDriverType; /* enum virStorageFileFormat */
     int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
     bool hasWideScsiBus;
-    const char *defaultInitPath;
 };
 
 

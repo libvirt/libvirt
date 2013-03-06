@@ -2480,6 +2480,21 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
 
 
 static int
+virDomainDefPostParseInternal(virDomainDefPtr def,
+                              virCapsPtr caps ATTRIBUTE_UNUSED)
+{
+    /* verify init path for container based domains */
+    if (STREQ(def->os.type, "exe") && !def->os.init) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("init binary must be specified"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                             virDomainDefPtr def,
                             virCapsPtr caps,
@@ -2540,6 +2555,10 @@ virDomainDefPostParse(virDomainDefPtr def,
     if ((ret = virDomainDeviceInfoIterate(def,
                                           virDomainDefPostParseDeviceIterator,
                                           &data)) < 0)
+        return ret;
+
+
+    if ((ret = virDomainDefPostParseInternal(def, caps)) < 0)
         return ret;
 
     return 0;
@@ -10333,18 +10352,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (STREQ(def->os.type, "exe")) {
         def->os.init = virXPathString("string(./os/init[1])", ctxt);
-        if (!def->os.init) {
-            if (caps->defaultInitPath) {
-                def->os.init = strdup(caps->defaultInitPath);
-                if (!def->os.init) {
-                    goto no_memory;
-                }
-            } else {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("init binary must be specified"));
-                goto error;
-            }
-        }
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
 
         if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0) {

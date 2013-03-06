@@ -97,6 +97,29 @@ static void cmdExecFree(const char *cmdExec[])
     }
 }
 
+
+static int
+openvzDomainDefPostParse(virDomainDefPtr def,
+                         virCapsPtr caps ATTRIBUTE_UNUSED,
+                         void *opaque ATTRIBUTE_UNUSED)
+{
+    /* fill the init path */
+    if (STREQ(def->os.type, "exe") && !def->os.init) {
+        if (!(def->os.init = strdup("/sbin/init"))) {
+            virReportOOMError();
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+virDomainDefParserConfig openvzDomainDefParserConfig = {
+        .domainPostParseCallback = openvzDomainDefPostParse,
+};
+
+
 /* generate arguments to create OpenVZ container
    return -1 - error
            0 - OK
@@ -1453,7 +1476,8 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     if (!(driver->caps = openvzCapsInit()))
         goto cleanup;
 
-    if (!(driver->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(driver->xmlopt = virDomainXMLOptionNew(&openvzDomainDefParserConfig,
+                                                 NULL, NULL)))
         goto cleanup;
 
     if (openvzLoadDomains(driver) < 0)
