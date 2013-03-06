@@ -700,7 +700,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                   virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol)
 {
-    int fdret, fd = -1;
+    int fd = -1;
     virCommandPtr cmd = NULL;
     virErrorPtr err;
 
@@ -741,11 +741,13 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         virCommandAddArg(cmd, pool->def->source.name);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        goto error;
 
-    if ((fdret = virStorageBackendVolOpen(vol->target.path)) < 0)
-        goto cleanup;
-    fd = fdret;
+    virCommandFree(cmd);
+    cmd = NULL;
+
+    if ((fd = virStorageBackendVolOpen(vol->target.path)) < 0)
+        goto error;
 
     /* We can only chown/grp if root */
     if (getuid() == 0) {
@@ -753,40 +755,40 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
             virReportSystemError(errno,
                                  _("cannot set file owner '%s'"),
                                  vol->target.path);
-            goto cleanup;
+            goto error;
         }
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set file mode '%s'"),
                              vol->target.path);
-        goto cleanup;
+        goto error;
     }
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              vol->target.path);
-        goto cleanup;
+        goto error;
     }
-    fd = -1;
 
     /* Fill in data about this new vol */
     if (virStorageBackendLogicalFindLVs(pool, vol) < 0) {
         virReportSystemError(errno,
                              _("cannot find newly created volume '%s'"),
                              vol->target.path);
-        goto cleanup;
+        goto error;
     }
 
     return 0;
 
- cleanup:
+ error:
     err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
     virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
     virCommandFree(cmd);
     virSetError(err);
+    virFreeError(err);
     return -1;
 }
 
