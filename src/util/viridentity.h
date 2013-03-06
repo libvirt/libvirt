@@ -41,6 +41,8 @@ typedef enum {
 virIdentityPtr virIdentityGetCurrent(void);
 int virIdentitySetCurrent(virIdentityPtr ident);
 
+virIdentityPtr virIdentityGetSystem(void);
+
 virIdentityPtr virIdentityNew(void);
 
 int virIdentitySetAttr(virIdentityPtr ident,

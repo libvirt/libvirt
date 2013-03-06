@@ -21,6 +21,11 @@
 
 #include <config.h>
 
+#include <unistd.h>
+#if HAVE_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #include "internal.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -28,6 +33,7 @@
 #include "virlog.h"
 #include "virobject.h"
 #include "virthread.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
@@ -112,6 +118,75 @@ int virIdentitySetCurrent(virIdentityPtr ident)
     }
 
     return 0;
+}
+
+
+/**
+ * virIdentityGetSystem:
+ *
+ * Returns an identity that represents the system itself.
+ * This is the identity that the process is running as
+ *
+ * Returns a reference to the system identity, or NULL
+ */
+virIdentityPtr virIdentityGetSystem(void)
+{
+    char *username = NULL;
+    char *groupname = NULL;
+    char *seccontext = NULL;
+    virIdentityPtr ret = NULL;
+#if HAVE_SELINUX
+    security_context_t con;
+#endif
+
+    if (!(username = virGetUserName(getuid())))
+        goto cleanup;
+    if (!(groupname = virGetGroupName(getgid())))
+        goto cleanup;
+
+#if HAVE_SELINUX
+    if (getcon(&con) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to lookup SELinux process context"));
+        goto cleanup;
+    }
+    seccontext = strdup(con);
+    freecon(con);
+    if (!seccontext) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    if (!(ret = virIdentityNew()))
+        goto cleanup;
+
+    if (username &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           username) < 0)
+        goto error;
+    if (groupname &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                           groupname) < 0)
+        goto error;
+    if (seccontext &&
+        virIdentitySetAttr(ret,
+                           VIR_IDENTITY_ATTR_SECURITY_CONTEXT,
+                           seccontext) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(username);
+    VIR_FREE(groupname);
+    VIR_FREE(seccontext);
+    return ret;
+
+error:
+    virObjectUnref(ret);
+    ret = NULL;
+    goto cleanup;
 }
 
 
