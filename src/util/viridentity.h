@@ -38,6 +38,9 @@ typedef enum {
       VIR_IDENTITY_ATTR_LAST,
 } virIdentityAttrType;
 
+virIdentityPtr virIdentityGetCurrent(void);
+int virIdentitySetCurrent(virIdentityPtr ident);
+
 virIdentityPtr virIdentityNew(void);
 
 int virIdentitySetAttr(virIdentityPtr ident,

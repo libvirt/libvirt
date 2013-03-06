@@ -39,6 +39,7 @@ struct _virIdentity {
 };
 
 static virClassPtr virIdentityClass;
+static virThreadLocal virIdentityCurrent;
 
 static void virIdentityDispose(void *obj);
 
@@ -50,10 +51,68 @@ static int virIdentityOnceInit(void)
                                          virIdentityDispose)))
         return -1;
 
+    if (virThreadLocalInit(&virIdentityCurrent,
+                           (virThreadLocalCleanup)virObjectUnref) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot initialize thread local for current identity"));
+        return -1;
+    }
+
     return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virIdentity)
+
+/**
+ * virIdentityGetCurrent:
+ *
+ * Get the current identity associated with this thread. The
+ * caller will own a reference to the returned identity, but
+ * must not modify the object in any way, other than to
+ * release the reference when done with virObjectUnref
+ *
+ * Returns: a reference to the current identity, or NULL
+ */
+virIdentityPtr virIdentityGetCurrent(void)
+{
+    virIdentityPtr ident;
+
+    if (virIdentityOnceInit() < 0)
+        return NULL;
+
+    ident = virThreadLocalGet(&virIdentityCurrent);
+    return virObjectRef(ident);
+}
+
+
+/**
+ * virIdentitySetCurrent:
+ *
+ * Set the new identity to be associated with this thread.
+ * The caller should not modify the passed identity after
+ * it has been set, other than to release its own reference.
+ *
+ * Returns 0 on success, or -1 on error
+ */
+int virIdentitySetCurrent(virIdentityPtr ident)
+{
+    virIdentityPtr old;
+
+    if (virIdentityOnceInit() < 0)
+        return -1;
+
+    old = virThreadLocalGet(&virIdentityCurrent);
+    virObjectUnref(old);
+
+    if (virThreadLocalSet(&virIdentityCurrent,
+                          virObjectRef(ident)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to set thread local identity"));
+        return -1;
+    }
+
+    return 0;
+}
 
 
 /**
