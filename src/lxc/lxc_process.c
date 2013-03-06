@@ -630,6 +630,36 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
               priv->stopReason, status);
 }
 
+static int
+virLXCProcessGetNsInode(pid_t pid,
+                        const char *nsname,
+                        ino_t *inode)
+{
+    char *path = NULL;
+    struct stat sb;
+    int ret = -1;
+
+    if (virAsprintf(&path, "/proc/%llu/ns/%s",
+                    (unsigned long long)pid, nsname) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (stat(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to stat %s"), path);
+        goto cleanup;
+    }
+
+    *inode = sb.st_ino;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
 /* XXX a little evil */
 extern virLXCDriverPtr lxc_driver;
 static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
@@ -637,8 +667,19 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
                                            virDomainObjPtr vm)
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
+    ino_t inode;
+
     priv->initpid = initpid;
-    virDomainAuditInit(vm, initpid);
+
+    if (virLXCProcessGetNsInode(initpid, "pid", &inode) < 0) {
+        virErrorPtr err = virGetLastError();
+        VIR_WARN("Cannot obtain pid NS inode for %llu: %s",
+                 (unsigned long long)initpid,
+                 err && err->message ? err->message : "<unknown>");
+        virResetLastError();
+        inode = 0;
+    }
+    virDomainAuditInit(vm, initpid, inode);
 
     if (virDomainSaveStatus(lxc_driver->caps, lxc_driver->stateDir, vm) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);

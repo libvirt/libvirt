@@ -649,7 +649,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 
 void
 virDomainAuditInit(virDomainObjPtr vm,
-                   pid_t initpid)
+                   pid_t initpid,
+                   ino_t pidns)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname;
@@ -668,8 +669,9 @@ virDomainAuditInit(virDomainObjPtr vm,
     }
 
     VIR_AUDIT(VIR_AUDIT_RECORD_MACHINE_CONTROL, true,
-              "virt=%s op=init %s uuid=%s vm-pid=%lld init-pid=%lld",
-              virt, vmname, uuidstr, (long long)vm->pid, (long long)initpid);
+              "virt=%s op=init %s uuid=%s vm-pid=%lld init-pid=%lld pid-ns=%lld",
+              virt, vmname, uuidstr, (long long)vm->pid, (long long)initpid,
+              (long long)pidns);
 
     VIR_FREE(vmname);
 }
