@@ -3688,7 +3688,7 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
      * step fails, but the define step will always fail on invalid
      * flags, so we reject it up front to avoid looping.  */
     if (define_flags == (VIR_DOMAIN_SAVE_RUNNING | VIR_DOMAIN_SAVE_PAUSED)) {
-        vshError(ctl, "%s", _("--running and --saved are mutually exclusive"));
+        vshError(ctl, "%s", _("--running and --paused are mutually exclusive"));
         return false;
     }
 
