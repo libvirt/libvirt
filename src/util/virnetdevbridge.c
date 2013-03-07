@@ -46,7 +46,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 
-#ifdef SIOCBRADDBR
+#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
 static int virNetDevSetupControlFull(const char *ifname,
                                      struct ifreq *ifr,
                                      int domain,
@@ -89,7 +89,7 @@ static int virNetDevSetupControl(const char *ifname,
 }
 #endif
 
-#ifdef __linux__
+#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
 # define SYSFS_NET_DIR "/sys/class/net"
 /*
  * Bridge parameters can be set via sysfs on newish kernels,
@@ -211,7 +211,7 @@ cleanup:
  *
  * Returns 0 in case of success or -1 on failure
  */
-#ifdef SIOCBRADDBR
+#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
 int virNetDevBridgeCreate(const char *brname)
 {
     int fd = -1;
@@ -249,7 +249,7 @@ int virNetDevBridgeCreate(const char *brname)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRDELBR
+#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
 int virNetDevBridgeDelete(const char *brname)
 {
     int fd = -1;
@@ -288,7 +288,7 @@ int virNetDevBridgeDelete(const char *brname ATTRIBUTE_UNUSED)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRADDIF
+#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDIF)
 int virNetDevBridgeAddPort(const char *brname,
                            const char *ifname)
 {
@@ -335,7 +335,7 @@ int virNetDevBridgeAddPort(const char *brname,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRDELIF
+#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELIF)
 int virNetDevBridgeRemovePort(const char *brname,
                               const char *ifname)
 {
@@ -375,7 +375,7 @@ int virNetDevBridgeRemovePort(const char *brname,
 #endif
 
 
-#ifdef __linux__
+#if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
 /**
  * virNetDevBridgeSetSTPDelay:
  * @brname: the bridge name
