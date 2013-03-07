@@ -156,35 +156,29 @@ static const vshCmdOptDef opts_freecell[] = {
 static bool
 cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 {
-    bool func_ret = false;
-    int ret;
-    int cell = -1, cell_given;
-    unsigned long long memory;
+    bool ret = false;
+    int cell = -1;
+    unsigned long long memory = 0;
     xmlNodePtr *nodes = NULL;
     unsigned long nodes_cnt;
     unsigned long *nodes_id = NULL;
     unsigned long long *nodes_free = NULL;
-    int all_given;
+    bool all = vshCommandOptBool(cmd, "all");
+    bool cellno = vshCommandOptBool(cmd, "cellno");
     int i;
     char *cap_xml = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
 
-    if ((cell_given = vshCommandOptInt(cmd, "cellno", &cell)) < 0) {
+    VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
+
+    if (cellno && vshCommandOptInt(cmd, "cellno", &cell) < 0) {
         vshError(ctl, "%s", _("cell number has to be a number"));
-        goto cleanup;
-    }
-    all_given = vshCommandOptBool(cmd, "all");
-
-    if (all_given && cell_given) {
-        vshError(ctl, "%s", _("--cellno and --all are mutually exclusive. "
-                              "Please choose only one."));
-        goto cleanup;
+        return false;
     }
 
-    if (all_given) {
-        cap_xml = virConnectGetCapabilities(ctl->conn);
-        if (!cap_xml) {
+    if (all) {
+        if (!(cap_xml = virConnectGetCapabilities(ctl->conn))) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
         }
@@ -194,6 +188,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "%s", _("unable to get node capabilities"));
             goto cleanup;
         }
+
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
                                     ctxt, &nodes);
 
@@ -216,15 +211,14 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             }
             VIR_FREE(val);
             nodes_id[i]=id;
-            ret = virNodeGetCellsFreeMemory(ctl->conn, &(nodes_free[i]), id, 1);
-            if (ret != 1) {
+            if (virNodeGetCellsFreeMemory(ctl->conn, &(nodes_free[i]),
+                                          id, 1) != 1) {
                 vshError(ctl, _("failed to get free memory for NUMA node "
                                 "number: %lu"), id);
                 goto cleanup;
             }
         }
 
-        memory = 0;
         for (cell = 0; cell < nodes_cnt; cell++) {
             vshPrint(ctl, "%5lu: %10llu KiB\n", nodes_id[cell],
                     (nodes_free[cell]/1024));
@@ -234,23 +228,20 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, "--------------------\n");
         vshPrintExtra(ctl, "%5s: %10llu KiB\n", _("Total"), memory/1024);
     } else {
-        if (!cell_given) {
-            memory = virNodeGetFreeMemory(ctl->conn);
-            if (memory == 0)
+        if (cellno) {
+            if (virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1) != 1)
                 goto cleanup;
-        } else {
-            ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
-            if (ret != 1)
-                goto cleanup;
-        }
 
-        if (cell == -1)
-            vshPrint(ctl, "%s: %llu KiB\n", _("Total"), (memory/1024));
-        else
             vshPrint(ctl, "%d: %llu KiB\n", cell, (memory/1024));
+        } else {
+            if ((memory = virNodeGetFreeMemory(ctl->conn)) == 0)
+                goto cleanup;
+
+            vshPrint(ctl, "%s: %llu KiB\n", _("Total"), (memory/1024));
+        }
     }
 
-    func_ret = true;
+    ret = true;
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -259,7 +250,7 @@ cleanup:
     VIR_FREE(nodes_free);
     VIR_FREE(nodes_id);
     VIR_FREE(cap_xml);
-    return func_ret;
+    return ret;
 }
 
 /*
