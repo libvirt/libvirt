@@ -3514,6 +3514,7 @@
           <choice>
             <value>/dev/random</value>
             <value>/dev/hwrng</value>
+            <empty/>
           </choice>
         </group>
         <group>
