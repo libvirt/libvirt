@@ -686,9 +686,10 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
-    dom = vshCommandOptDomain(ctl, cmd, &domname);
-    if (dom == NULL)
-        goto cleanup;
+    VSH_EXCLUSIVE_OPTIONS("name", "snapshotname");
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &domname)))
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "snapshotname", &snapshotname) < 0)
         goto cleanup;
@@ -698,52 +699,48 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         flags = (VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT);
 
-        if (vshCommandOptBool(cmd, "name")) {
-            vshError(ctl, "%s",
-                     _("--name and snapshotname are mutually exclusive"));
+        if (!(snapshot = virDomainSnapshotLookupByName(dom, snapshotname, 0)))
             goto cleanup;
-        }
-        snapshot = virDomainSnapshotLookupByName(dom, snapshotname, 0);
-        if (snapshot == NULL)
-            goto cleanup;
+
         xml = virDomainSnapshotGetXMLDesc(snapshot, VIR_DOMAIN_XML_SECURE);
         if (!xml)
             goto cleanup;
+
         /* strstr is safe here, since xml came from libvirt API and not user */
         if (strstr(xml, "<state>disk-snapshot</state>"))
             flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
-        snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags);
-        if (snapshot2 == NULL)
+
+        if (!(snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags)))
             goto cleanup;
+
         virDomainSnapshotFree(snapshot2);
         vshPrint(ctl, _("Snapshot %s set as current"), snapshotname);
         ret = true;
         goto cleanup;
     }
 
-    current = virDomainHasCurrentSnapshot(dom, 0);
-    if (current < 0) {
+    if ((current = virDomainHasCurrentSnapshot(dom, 0)) < 0)
         goto cleanup;
-    } else if (!current) {
+
+    if (!current) {
         vshError(ctl, _("domain '%s' has no current snapshot"), domname);
         goto cleanup;
     } else {
-        const char *name = NULL;
-
         if (!(snapshot = virDomainSnapshotCurrent(dom, 0)))
             goto cleanup;
 
         if (vshCommandOptBool(cmd, "name")) {
-            name = virDomainSnapshotGetName(snapshot);
-            if (!name)
+            const char *name;
+            if (!(name = virDomainSnapshotGetName(snapshot)))
                 goto cleanup;
-        } else {
-            xml = virDomainSnapshotGetXMLDesc(snapshot, flags);
-            if (!xml)
-                goto cleanup;
-        }
 
-        vshPrint(ctl, "%s", name ? name : xml);
+            vshPrint(ctl, "%s", name);
+        } else {
+            if (!(xml = virDomainSnapshotGetXMLDesc(snapshot, flags)))
+                goto cleanup;
+
+            vshPrint(ctl, "%s", xml);
+        }
     }
 
     ret = true;
@@ -754,8 +751,7 @@ cleanup:
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
 
     return ret;
 }
