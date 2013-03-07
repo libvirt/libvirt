@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#ifdef __linux__
+#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
 # include <linux/loop.h>
 # include <sys/ioctl.h>
 #endif
