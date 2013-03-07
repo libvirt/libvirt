@@ -245,7 +245,7 @@ static int lxcContainerSetStdio(int control, int ttyfd, int handshakefd)
     for (i = 0; i < open_max; i++)
         if (i != ttyfd && i != control && i != handshakefd) {
             int tmpfd = i;
-            VIR_FORCE_CLOSE(tmpfd);
+            VIR_MASS_CLOSE(tmpfd);
         }
 
     if (dup2(ttyfd, 0) < 0) {
