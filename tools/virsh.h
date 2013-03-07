@@ -375,4 +375,55 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
 # define realloc use_vshRealloc_instead_of_realloc
 # define strdup use_vshStrdup_instead_of_strdup
 
+/* Macros to help dealing with mutually exclusive options. */
+
+/* VSH_EXCLUSIVE_OPTIONS_EXPR:
+ *
+ * @NAME1: String containing the name of the option.
+ * @EXPR1: Expression to validate the variable (boolean variable)
+ * @NAME2: String containing the name of the option.
+ * @EXPR2: Expression to validate the variable (boolean variable)
+ *
+ * Reject mutually exclusive command options in virsh. Use the
+ * provided expression to check the variables.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, EXPR1, NAME2, EXPR2)             \
+    if ((EXPR1) && (EXPR2)) {                                               \
+        vshError(ctl, _("Options --%s and --%s are mutually exclusive"),    \
+                 NAME1, NAME2);                                             \
+        return false;                                                       \
+    }
+
+/* VSH_EXCLUSIVE_OPTIONS:
+ *
+ * @NAME1: String containing the name of the option.
+ * @NAME2: String containing the name of the option.
+ *
+ * Reject mutually exclusive command options in virsh. Use the
+ * vshCommandOptBool call to request them.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_EXCLUSIVE_OPTIONS(NAME1, NAME2)                                \
+    VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, vshCommandOptBool(cmd, NAME1),        \
+                               NAME2, vshCommandOptBool(cmd, NAME2))
+
+/* VSH_EXCLUSIVE_OPTIONS_VAR:
+ *
+ * @VARNAME1: Boolean variable containing the value of the option of same name
+ * @VARNAME2: Boolean variable containing the value of the option of same name
+ *
+ * Reject mutually exclusive command options in virsh. Check in variables that
+ * contain the value and have same name as the option.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_EXCLUSIVE_OPTIONS_VAR(VARNAME1, VARNAME2)                      \
+    VSH_EXCLUSIVE_OPTIONS_EXPR(#VARNAME1, VARNAME1, #VARNAME2, VARNAME2)
+
 #endif /* VIRSH_H */
