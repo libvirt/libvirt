@@ -222,6 +222,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "tpm-tis",
 
               "nvram",  /* 140 */
+              "pci-bridge", /* 141 */
     );
 
 struct _virQEMUCaps {
@@ -1350,6 +1351,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
     { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
     { "spapr-nvram", QEMU_CAPS_DEVICE_NVRAM },
+    { "pci-bridge", QEMU_CAPS_DEVICE_PCI_BRIDGE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

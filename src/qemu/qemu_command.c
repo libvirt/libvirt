@@ -3619,6 +3619,24 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 
         break;
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        switch (def->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+            if (def->idx == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("PCI bridge index should be > 0"));
+                goto error;
+            }
+            virBufferAsprintf(&buf, "pci-bridge,chassis_nr=%d,id=pci.%d",
+                              def->idx, def->idx);
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("wrong function called for pci-root"));
+            return NULL;
+        }
+        break;
+
     /* We always get an IDE controller, whether we want it or not. */
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     default:
@@ -5960,7 +5978,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     int contOrder[] = {
         /* We don't add an explicit IDE or FD controller because the
          * provided PIIX4 device already includes one. It isn't possible to
-         * remove the PIIX4. */
+         * remove the PIIX4.
+         *
+         * We don't add PCI root controller either, because it's implicit,
+         * but we do add PCI bridges. */
+        VIR_DOMAIN_CONTROLLER_TYPE_PCI,
         VIR_DOMAIN_CONTROLLER_TYPE_USB,
         VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
         VIR_DOMAIN_CONTROLLER_TYPE_SATA,
@@ -6515,6 +6537,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
                     usbcontroller = -1; /* mark we don't want a controller */
+                    continue;
+                }
+
+                /* Skip pci-root */
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
                     continue;
                 }
 

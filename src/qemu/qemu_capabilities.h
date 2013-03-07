@@ -180,6 +180,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_TPM_TIS     = 139, /* -device tpm_tis */
 
     QEMU_CAPS_DEVICE_NVRAM       = 140,  /* -global spapr-nvram.reg=xxxx */
+    QEMU_CAPS_DEVICE_PCI_BRIDGE  = 141, /* -device pci-bridge */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
