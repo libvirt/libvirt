@@ -4535,11 +4535,22 @@ networkCheckBandwidth(virNetworkObjPtr net,
     unsigned long long tmp_new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
 
-    if (!ifaceBand || !ifaceBand->in || !ifaceBand->in->floor ||
-        !netBand || !netBand->in)
-        return 1;
-
     virMacAddrFormat(&iface->mac, ifmac);
+
+    if (ifaceBand && ifaceBand->in && ifaceBand->in->floor &&
+        !(netBand && netBand->in)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Invalid use of 'floor' on interface with MAC "
+                         "address %s - network '%s' has no inbound QoS set"),
+                       ifmac, net->def->name);
+        return -1;
+    }
+
+    if (!ifaceBand || !ifaceBand->in || !ifaceBand->in->floor ||
+        !netBand || !netBand->in) {
+        /* no QoS required, claim success */
+        return 1;
+    }
 
     tmp_new_rate = netBand->in->average;
     tmp_floor_sum += ifaceBand->in->floor;
