@@ -1,7 +1,7 @@
 /*
  * viralloc.c: safer memory allocation
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -328,7 +328,7 @@ virInsertElementsN(void *ptrptr, size_t size, size_t at,
  * @size:     the size of one element in bytes
  * @at:       index within array where new elements should be deleted
  * @countptr: variable tracking number of elements currently allocated
- * @remove:   number of elements to remove
+ * @toremove: number of elements to remove
  * @inPlace:  false if we should shrink the allocated memory when done,
  *            true if we should assume someone else will do that.
  *
@@ -341,12 +341,12 @@ virInsertElementsN(void *ptrptr, size_t size, size_t at,
  */
 int
 virDeleteElementsN(void *ptrptr, size_t size, size_t at,
-                   size_t *countptr, size_t remove,
+                   size_t *countptr, size_t toremove,
                    bool inPlace)
 {
-    if (at + remove > *countptr) {
-        VIR_WARN("out of bounds index - count %zu at %zu remove %zu",
-                 *countptr, at, remove);
+    if (at + toremove > *countptr) {
+        VIR_WARN("out of bounds index - count %zu at %zu toremove %zu",
+                 *countptr, at, toremove);
         return -1;
     }
 
@@ -355,12 +355,12 @@ virDeleteElementsN(void *ptrptr, size_t size, size_t at,
      * already been cleared.
     */
     memmove(*(char**)ptrptr + (size * at),
-            *(char**)ptrptr + (size * (at + remove)),
-            size * (*countptr - remove - at));
+            *(char**)ptrptr + (size * (at + toremove)),
+            size * (*countptr - toremove - at));
     if (inPlace)
-        *countptr -= remove;
+        *countptr -= toremove;
     else
-        virShrinkN(ptrptr, size, countptr, remove);
+        virShrinkN(ptrptr, size, countptr, toremove);
     return 0;
 }
 
