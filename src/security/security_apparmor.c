@@ -884,9 +884,9 @@ AppArmorRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
-                        virDomainDefPtr def,
-                        int fd)
+AppArmorSetFDLabel(virSecurityManagerPtr mgr,
+                   virDomainDefPtr def,
+                   int fd)
 {
     int rc = -1;
     char *proc = NULL;
@@ -914,16 +914,6 @@ AppArmorSetImageFDLabel(virSecurityManagerPtr mgr,
 
     return reload_profile(mgr, def, fd_path, true);
 }
-
-/* TODO need code here */
-static int
-AppArmorSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                      virDomainDefPtr def ATTRIBUTE_UNUSED,
-                      int fd ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
 
 static char *
 AppArmorGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
@@ -975,8 +965,8 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainSetSavedStateLabel           = AppArmorSetSavedStateLabel,
     .domainRestoreSavedStateLabel       = AppArmorRestoreSavedStateLabel,
 
-    .domainSetSecurityImageFDLabel      = AppArmorSetImageFDLabel,
-    .domainSetSecurityTapFDLabel        = AppArmorSetTapFDLabel,
+    .domainSetSecurityImageFDLabel      = AppArmorSetFDLabel,
+    .domainSetSecurityTapFDLabel        = AppArmorSetFDLabel,
 
     .domainGetSecurityMountOptions      = AppArmorGetMountOptions,
 };
