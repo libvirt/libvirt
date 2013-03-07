@@ -320,7 +320,7 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
         goto cleanup1;
     }
 
-    if (virThreadCreate(&fuse->thread, true, lxcFuseRun,
+    if (virThreadCreate(&fuse->thread, false, lxcFuseRun,
                         (void *)fuse) < 0) {
         lxcFuseDestroy(fuse);
         goto cleanup1;
@@ -350,8 +350,6 @@ void lxcFreeFuse(virLXCFusePtr *f)
         if (fuse->fuse)
             fuse_exit(fuse->fuse);
         virMutexUnlock(&fuse->lock);
-
-        virThreadJoin(&fuse->thread);
 
         VIR_FREE(fuse->mountpoint);
         VIR_FREE(*f);
