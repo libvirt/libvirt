@@ -672,7 +672,7 @@ int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* ! SIOCGIFINDEX */
 
 
-#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ) && defined(GET_VLAN_VID_CMD)
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
     struct vlan_ioctl_args vlanargs = {
