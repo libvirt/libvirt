@@ -1021,25 +1021,21 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     int nparams = 0;
     int maxparams = 0;
     virTypedParameterPtr params = NULL;
-    unsigned int flags = 0, i = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    unsigned int i = 0;
     int rv = 0;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool ret = false;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         goto cleanup;
@@ -1206,23 +1202,18 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     unsigned int i = 0;
     virTypedParameterPtr params = NULL;
     bool ret = false;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -2475,7 +2466,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     const char *name = NULL, *device = NULL,
                *inboundStr = NULL, *outboundStr = NULL;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     int nparams = 0;
     int maxparams = 0;
     virTypedParameterPtr params = NULL;
@@ -2486,18 +2477,13 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     virNetDevBandwidthRate inbound, outbound;
     int i;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return false;
@@ -4027,23 +4013,18 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     int nupdates = 0;
     int i, ret;
     bool ret_val = false;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5567,23 +5548,18 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     bool query = false; /* Query mode if no cpulist */
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        /* neither option is specified */
-        if (!live && !config)
-            flags = -1;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    /* none of the options were specified */
+    if (!current && !live && !config)
+        flags = -1;
 
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0)
         return false;
@@ -5721,23 +5697,18 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     bool query = false; /* Query mode if no cpulist */
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        /* neither option is specified */
-        if (!live && !config)
-            flags = -1;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    /* none of the options were specified */
+    if (!current && !live && !config)
+        flags = -1;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5845,23 +5816,18 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        /* neither option is specified */
-        if (!live && !config && !maximum)
-            flags = -1;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    /* none of the options were specified */
+    if (!current && !live && !config && !maximum)
+        flags = -1;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6542,18 +6508,13 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool ret = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6959,23 +6920,18 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        /* neither option is specified */
-        if (!live && !config)
-            flags = -1;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    /* none of the options were specified */
+    if (!current && !live && !config)
+        flags = -1;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7061,22 +7017,18 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    unsigned int flags = VIR_DOMAIN_MEM_MAXIMUM;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT | VIR_DOMAIN_MEM_MAXIMUM;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        /* neither option is specified */
-        if (!live && !config)
-            flags = -1;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    /* none of the options were specified */
+    if (!current && !live && !config)
+        flags = -1;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7198,23 +7150,18 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
     unsigned int i = 0;
     virTypedParameterPtr params = NULL;
     bool ret = false;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -7369,24 +7316,19 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
     virTypedParameterPtr params = NULL;
     const char *nodeset = NULL;
     bool ret = false;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     const char *mode = NULL;
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9895,7 +9837,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     const char *doc = NULL;
     xmlNodePtr disk_node = NULL;
     const char *disk_xml = NULL;
-    int flags = 0;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool config, live, current, force = false;
     bool eject, insert, update = false;
     bool ret = false;
@@ -9931,19 +9873,13 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
         action = "update";
     }
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            return false;
-        }
-        flags = VIR_DOMAIN_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
 
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
     if (force)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
 
