@@ -7424,7 +7424,8 @@ virDomainRNGDefParseXML(const xmlNodePtr node,
     switch ((enum virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
         def->source.file = virXPathString("string(./backend)", ctxt);
-        if (STRNEQ(def->source.file, "/dev/random") &&
+        if (def->source.file &&
+            STRNEQ(def->source.file, "/dev/random") &&
             STRNEQ(def->source.file, "/dev/hwrng")) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("file '%s' is not a supported random source"),
