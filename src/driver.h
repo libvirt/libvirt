@@ -1443,7 +1443,7 @@ typedef char *
 typedef virStorageVolPtr
     (*virDrvStorageVolCreateXMLFrom)         (virStoragePoolPtr pool,
                                               const char *xmldesc,
-                                              virStorageVolPtr clone,
+                                              virStorageVolPtr clonevol,
                                               unsigned int flags);
 typedef int
     (*virDrvStorageVolDownload) (virStorageVolPtr vol,
