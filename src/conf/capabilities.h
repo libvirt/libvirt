@@ -99,6 +99,7 @@ typedef virCapsHostNUMACell *virCapsHostNUMACellPtr;
 struct _virCapsHostNUMACell {
     int num;
     int ncpus;
+    unsigned long long mem; /* in kibibytes */
     virCapsHostNUMACellCPUPtr cpus;
 };
 
@@ -210,6 +211,7 @@ extern int
 virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int num,
                                int ncpus,
+                               unsigned long long mem,
                                virCapsHostNUMACellCPUPtr cpus);
 
 

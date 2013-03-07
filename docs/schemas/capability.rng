@@ -177,6 +177,10 @@
       </attribute>
 
       <optional>
+        <ref name='memory'/>
+      </optional>
+
+      <optional>
         <element name='cpus'>
           <attribute name='num'>
             <ref name='unsignedInt'/>
@@ -186,6 +190,12 @@
           </oneOrMore>
         </element>
       </optional>
+    </element>
+  </define>
+
+  <define name='memory'>
+    <element name='memory'>
+      <ref name='scaledInteger'/>
     </element>
   </define>
 

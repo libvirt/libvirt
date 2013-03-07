@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006-2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -102,6 +102,7 @@ static int linuxNodeGetMemoryStats(FILE *meminfo,
                                    int cellNum,
                                    virNodeMemoryStatsPtr params,
                                    int *nparams);
+static unsigned long long nodeGetCellMemory(int cell);
 
 /* Return the positive decimal contents of the given
  * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
@@ -1531,6 +1532,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     int n;
     unsigned long *mask = NULL;
     unsigned long *allonesmask = NULL;
+    unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
     int ret = -1;
     int max_n_cpus = NUMA_MAX_N_CPUS;
@@ -1562,6 +1564,9 @@ nodeCapsInitNUMA(virCapsPtr caps)
             continue;
         }
 
+        /* Detect the amount of memory in the numa cell */
+        memory = nodeGetCellMemory(n);
+
         for (ncpus = 0, i = 0 ; i < max_n_cpus ; i++)
             if (MASK_CPU_ISSET(mask, i))
                 ncpus++;
@@ -1578,7 +1583,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
             }
         }
 
-        if (virCapabilitiesAddHostNUMACell(caps, n, ncpus, cpus) < 0)
+        if (virCapabilitiesAddHostNUMACell(caps, n, ncpus, memory, cpus) < 0)
             goto cleanup;
     }
 
@@ -1665,6 +1670,48 @@ cleanup:
     return freeMem;
 }
 
+/**
+ * nodeGetCellMemory
+ * @cell: The number of the numa cell to get memory info for.
+ *
+ * Will call the numa_node_size64() function from libnuma to get
+ * the amount of total memory in bytes. It is then converted to
+ * KiB and returned.
+ *
+ * Returns 0 if unavailable, amount of memory in KiB on success.
+ */
+static unsigned long long nodeGetCellMemory(int cell)
+{
+    long long mem;
+    unsigned long long memKiB = 0;
+    int maxCell;
+
+    /* Make sure the provided cell number is valid. */
+    maxCell = numa_max_node();
+    if (cell > maxCell) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cell %d out of range (0-%d)"),
+                       cell, maxCell);
+        goto cleanup;
+    }
+
+    /* Get the amount of memory(bytes) in the node */
+    mem = numa_node_size64(cell, NULL);
+    if (mem < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to query NUMA total memory for node: %d"),
+                       cell);
+        goto cleanup;
+    }
+
+    /* Convert the memory from bytes to KiB */
+    memKiB = mem >> 10;
+
+cleanup:
+    return memKiB;
+}
+
+
 #else
 int nodeCapsInitNUMA(virCapsPtr caps ATTRIBUTE_UNUSED) {
     return 0;
@@ -1681,6 +1728,13 @@ int nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 unsigned long long nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("NUMA memory information not available on this platform"));
+    return 0;
+}
+
+static unsigned long long nodeGetCellMemory(int cell)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("NUMA memory information not available on this platform"));

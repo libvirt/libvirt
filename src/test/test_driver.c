@@ -184,7 +184,7 @@ testBuildCapabilities(virConnectPtr conn) {
 
 
         if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].numCpus,
-                                           cpu_cells) < 0)
+                                           0, cpu_cells) < 0)
             goto no_memory;
     }
 

@@ -1,7 +1,7 @@
 /*
  * capabilities.c: hypervisor capabilities
  *
- * Copyright (C) 2006-2008, 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2011, 2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -273,6 +273,7 @@ int
 virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int num,
                                int ncpus,
+                               unsigned long long mem,
                                virCapsHostNUMACellCPUPtr cpus)
 {
     virCapsHostNUMACellPtr cell;
@@ -286,6 +287,7 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
 
     cell->ncpus = ncpus;
     cell->num = num;
+    cell->mem = mem;
     cell->cpus = cpus;
 
     caps->host.numaCell[caps->host.nnumaCell++] = cell;
@@ -712,6 +714,13 @@ virCapabilitiesFormatNUMATopology(virBufferPtr xml,
     virBufferAsprintf(xml, "      <cells num='%zu'>\n", ncells);
     for (i = 0; i < ncells; i++) {
         virBufferAsprintf(xml, "        <cell id='%d'>\n", cells[i]->num);
+
+        /* Print out the numacell memory total if it is available */
+        if (cells[i]->mem)
+            virBufferAsprintf(xml,
+                              "          <memory unit='KiB'>%llu</memory>\n",
+                              cells[i]->mem);
+
         virBufferAsprintf(xml, "          <cpus num='%d'>\n", cells[i]->ncpus);
         for (j = 0; j < cells[i]->ncpus; j++) {
             virBufferAsprintf(xml, "            <cpu id='%d'",

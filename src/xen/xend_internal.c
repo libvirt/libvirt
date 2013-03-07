@@ -1141,7 +1141,7 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
         }
         virBitmapFree(cpuset);
 
-        if (virCapabilitiesAddHostNUMACell(caps, cell, nb_cpus, cpuInfo) < 0)
+        if (virCapabilitiesAddHostNUMACell(caps, cell, nb_cpus, 0, cpuInfo) < 0)
             goto memory_error;
         cpuInfo = NULL;
     }

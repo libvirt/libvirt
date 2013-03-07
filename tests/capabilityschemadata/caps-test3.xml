@@ -1,0 +1,88 @@
+<capabilities>
+
+  <host>
+    <uuid>35383339-3134-5553-4531-30314e394a50</uuid>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>Westmere</model>
+      <vendor>Intel</vendor>
+      <topology sockets='1' cores='6' threads='2'/>
+      <feature name='rdtscp'/>
+      <feature name='pdpe1gb'/>
+      <feature name='dca'/>
+      <feature name='pdcm'/>
+      <feature name='xtpr'/>
+      <feature name='tm2'/>
+      <feature name='est'/>
+      <feature name='smx'/>
+      <feature name='vmx'/>
+      <feature name='ds_cpl'/>
+      <feature name='monitor'/>
+      <feature name='dtes64'/>
+      <feature name='pclmuldq'/>
+      <feature name='pbe'/>
+      <feature name='tm'/>
+      <feature name='ht'/>
+      <feature name='ss'/>
+      <feature name='acpi'/>
+      <feature name='ds'/>
+      <feature name='vme'/>
+    </cpu>
+    <power_management>
+      <suspend_disk/>
+    </power_management>
+    <migration_features>
+      <live/>
+      <uri_transports>
+        <uri_transport>tcp</uri_transport>
+      </uri_transports>
+    </migration_features>
+    <topology>
+      <cells num='2'>
+        <cell id='0'>
+          <memory unit='KiB'>12572412</memory>
+          <cpus num='12'>
+            <cpu id='0'/>
+            <cpu id='2'/>
+            <cpu id='4'/>
+            <cpu id='6'/>
+            <cpu id='8'/>
+            <cpu id='10'/>
+            <cpu id='12'/>
+            <cpu id='14'/>
+            <cpu id='16'/>
+            <cpu id='18'/>
+            <cpu id='20'/>
+            <cpu id='22'/>
+          </cpus>
+        </cell>
+        <cell id='1'>
+          <memory unit='KiB'>12582908</memory>
+          <cpus num='12'>
+            <cpu id='1'/>
+            <cpu id='3'/>
+            <cpu id='5'/>
+            <cpu id='7'/>
+            <cpu id='9'/>
+            <cpu id='11'/>
+            <cpu id='13'/>
+            <cpu id='15'/>
+            <cpu id='17'/>
+            <cpu id='19'/>
+            <cpu id='21'/>
+            <cpu id='23'/>
+          </cpus>
+        </cell>
+      </cells>
+    </topology>
+    <secmodel>
+      <model>none</model>
+      <doi>0</doi>
+    </secmodel>
+    <secmodel>
+      <model>dac</model>
+      <doi>0</doi>
+    </secmodel>
+  </host>
+
+</capabilities>
