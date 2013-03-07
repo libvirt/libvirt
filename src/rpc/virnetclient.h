@@ -37,7 +37,7 @@
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
                                     bool spawnDaemon,
-                                    const char *daemon);
+                                    const char *binary);
 
 virNetClientPtr virNetClientNewTCP(const char *nodename,
                                    const char *service);
