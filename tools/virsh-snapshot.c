@@ -561,11 +561,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
     bool rename_okay = vshCommandOptBool(cmd, "rename");
     bool clone_okay = vshCommandOptBool(cmd, "clone");
 
-    if (rename_okay && clone_okay) {
-        vshError(ctl, "%s",
-                 _("--rename and --clone are mutually exclusive"));
-        return false;
-    }
+    VSH_EXCLUSIVE_OPTIONS_EXPR("rename", rename_okay, "clone", clone_okay)
 
     if (vshCommandOptBool(cmd, "current") &&
         vshCommandOptBool(cmd, "snapshotname"))
