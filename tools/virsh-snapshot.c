@@ -567,9 +567,8 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptBool(cmd, "snapshotname"))
         define_flags |= VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT;
 
-    dom = vshCommandOptDomain(ctl, cmd, NULL);
-    if (dom == NULL)
-        goto cleanup;
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
 
     if (vshLookupSnapshot(ctl, cmd, "snapshotname", false, dom,
                           &snapshot, &name) < 0)
@@ -628,8 +627,7 @@ cleanup:
         virDomainSnapshotFree(edited);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
     return ret;
 }
 
