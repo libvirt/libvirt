@@ -56,17 +56,6 @@
 #include "virtypedparam.h"
 #include "virxml.h"
 
-/* libxml2 in RHEL4 has this symbol in the binary but it
- * is commented out in the header, despite apparently
- * working fine. This hacks around that header problem
- */
-#ifndef xmlSaveToBuffer
-XMLPUBFUN xmlSaveCtxtPtr XMLCALL
-xmlSaveToBuffer         (xmlBufferPtr buffer,
-                         const char *encoding,
-                         int options);
-#endif
-
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
 # define SA_SIGINFO 0
