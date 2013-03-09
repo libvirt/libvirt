@@ -1469,6 +1469,9 @@ static int lxcStartup(bool privileged,
     if (lxcSecurityInit(lxc_driver) < 0)
         goto cleanup;
 
+    if ((lxc_driver->activeUsbHostdevs = virUSBDeviceListNew()) == NULL)
+        goto cleanup;
+
     if ((lxc_driver->caps = lxcCapsInit(lxc_driver)) == NULL)
         goto cleanup;
 
@@ -1559,6 +1562,7 @@ static int lxcShutdown(void)
 
     virLXCProcessAutoDestroyShutdown(lxc_driver);
 
+    virObjectUnref(lxc_driver->activeUsbHostdevs);
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
     VIR_FREE(lxc_driver->configDir);
