@@ -1927,7 +1927,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     if (lxcContainerPivotRoot(root) < 0)
         goto cleanup;
 
-#if HAVE_SELINUX
+#if WITH_SELINUX
     /* Some versions of Linux kernel don't let you overmount
      * the selinux filesystem, so make sure we kill it first
      */
@@ -2039,7 +2039,7 @@ static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
         goto cleanup;
 
-#if HAVE_SELINUX
+#if WITH_SELINUX
     /* Some versions of Linux kernel don't let you overmount
      * the selinux filesystem, so make sure we kill it first
      */
