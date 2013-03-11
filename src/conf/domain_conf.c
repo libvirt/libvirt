@@ -4829,11 +4829,6 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         def->format = caps->defaultDiskDriverType;
     }
 
-    if (!def->driverName &&
-        caps->defaultDiskDriverName &&
-        !(def->driverName = strdup(caps->defaultDiskDriverName)))
-        goto no_memory;
-
     if (mirrorFormat) {
         def->mirrorFormat = virStorageFileFormatTypeFromString(mirrorFormat);
         if (def->mirrorFormat <= 0) {
@@ -4895,9 +4890,6 @@ cleanup:
 
     ctxt->node = save_ctxt;
     return def;
-
-no_memory:
-    virReportOOMError();
 
 error:
     virDomainDiskDefFree(def);

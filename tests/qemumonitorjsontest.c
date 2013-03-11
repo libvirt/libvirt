@@ -451,7 +451,7 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        !(xmlopt = virQEMUDriverCreateXMLConf()))
+        !(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();

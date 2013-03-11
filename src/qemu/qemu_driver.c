@@ -723,7 +723,7 @@ qemuStartup(bool privileged,
     if ((qemu_driver->caps = virQEMUDriverCreateCapabilities(qemu_driver)) == NULL)
         goto error;
 
-    if (!(qemu_driver->xmlopt = virQEMUDriverCreateXMLConf()))
+    if (!(qemu_driver->xmlopt = virQEMUDriverCreateXMLConf(qemu_driver)))
         goto error;
 
     /* If hugetlbfs is present, then we need to create a sub-directory within

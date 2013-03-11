@@ -204,7 +204,7 @@ mymain(void)
     driver.config = virQEMUDriverConfigNew(false);
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf()))
+    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
     if (virAsprintf(&map, "%s/src/cpu/cpu_map.xml", abs_top_srcdir) < 0 ||
         cpuMapOverride(map) < 0) {

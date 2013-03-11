@@ -301,6 +301,7 @@ void qemuSharedDiskEntryFree(void *payload, const void *name)
     ATTRIBUTE_NONNULL(1);
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
-virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(void);
+virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
+
 
 #endif /* __QEMUD_CONF_H */

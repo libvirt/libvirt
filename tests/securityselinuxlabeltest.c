@@ -328,7 +328,7 @@ mymain(void)
     if ((caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-    if (!(xmlopt = virQEMUDriverCreateXMLConf()))
+    if (!(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
         return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name) \

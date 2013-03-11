@@ -91,7 +91,7 @@ mymain(void)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf()))
+    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
 
 # define DO_TEST(name, uuid, internal)                                  \

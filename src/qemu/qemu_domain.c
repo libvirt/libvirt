@@ -666,19 +666,38 @@ static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              virDomainDefPtr def ATTRIBUTE_UNUSED,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED)
+                             void *opaque)
 {
+    int ret = -1;
+    virQEMUDriverPtr driver = opaque;
+    virQEMUDriverConfigPtr cfg = NULL;
+
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         if (!dev->data.net->model &&
             !(dev->data.net->model = strdup("rtl8139")))
                 goto no_memory;
     }
-    return 0;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        !dev->data.disk->driverName &&
+        driver &&
+        (cfg = virQEMUDriverGetConfig(driver))) {
+        if (!cfg->allowDiskFormatProbing &&
+            !(dev->data.disk->driverName = strdup("qemu"))) {
+            goto no_memory;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    virObjectUnref(cfg);
+    return ret;
 
 no_memory:
     virReportOOMError();
-    return -1;
+    goto cleanup;
 }
 
 

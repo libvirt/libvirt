@@ -294,7 +294,7 @@ mymain(void)
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf()))
+    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
     VIR_FREE(driver.config->stateDir);
     if ((driver.config->stateDir = strdup("/nowhere")) == NULL)

@@ -552,8 +552,9 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
 }
 
 virDomainXMLOptionPtr
-virQEMUDriverCreateXMLConf(void)
+virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
 {
+    virQEMUDriverDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
                                  &virQEMUDriverPrivateDataCallbacks,
                                  &virQEMUDriverDomainXMLNamespace);
@@ -574,10 +575,8 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
         goto no_memory;
 
     if (cfg->allowDiskFormatProbing) {
-        caps->defaultDiskDriverName = NULL;
         caps->defaultDiskDriverType = VIR_STORAGE_FILE_AUTO;
     } else {
-        caps->defaultDiskDriverName = "qemu";
         caps->defaultDiskDriverType = VIR_STORAGE_FILE_RAW;
     }
 
