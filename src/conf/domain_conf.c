@@ -9677,10 +9677,27 @@ virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
 
+    if (def->cputune.period > 0 &&
+        (def->cputune.period < 1000 || def->cputune.period > 1000000)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune period must be in range "
+                         "[1000, 1000000]"));
+        goto error;
+    }
+
     if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
                          &def->cputune.quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune quota value"));
+        goto error;
+    }
+
+    if (def->cputune.quota > 0 &&
+        (def->cputune.quota < 1000 ||
+         def->cputune.quota > 18446744073709551)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune quota must be in range "
+                         "[1000, 18446744073709551]"));
         goto error;
     }
 
@@ -9691,10 +9708,28 @@ virDomainDefParseXML(virCapsPtr caps,
         goto error;
     }
 
+    if (def->cputune.emulator_period > 0 &&
+        (def->cputune.emulator_period < 1000 ||
+         def->cputune.emulator_period > 1000000)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune emulator_period must be in range "
+                         "[1000, 1000000]"));
+        goto error;
+    }
+
     if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
                          &def->cputune.emulator_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune emulator quota value"));
+        goto error;
+    }
+
+    if (def->cputune.emulator_quota > 0 &&
+        (def->cputune.emulator_quota < 1000 ||
+         def->cputune.emulator_quota > 18446744073709551)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune emulator_quota must be in range "
+                         "[1000, 18446744073709551]"));
         goto error;
     }
 
