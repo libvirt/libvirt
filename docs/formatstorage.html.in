@@ -250,7 +250,11 @@
         allocated at time of creation. If set to a value smaller than the
         capacity, the pool has the <strong>option</strong> of deciding
         to sparsely allocate a volume. It does not have to honour requests
-        for sparse allocation though.<br/>
+        for sparse allocation though. Different types of pools may treat
+        sparse volumes differently. For example, the <code>logical</code>
+        pool will not automatically expand volume's allocation when it
+        gets full; the user is responsible for doing that or configuring
+        dmeventd to do so automatically.<br/>
         <br/>
         By default this is specified in bytes, but an optional attribute
         <code>unit</code> can be specified to adjust the passed value.
