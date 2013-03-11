@@ -1103,23 +1103,32 @@ static int qemuIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
-static int kvmGetMaxVCPUs(void) {
-    int maxvcpus = 1;
+static int
+kvmGetMaxVCPUs(void) {
+    int fd;
+    int ret;
 
-    int r, fd;
-
-    fd = open(KVM_DEVICE, O_RDONLY);
-    if (fd < 0) {
+    if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
         virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
         return -1;
     }
 
-    r = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_NR_VCPUS);
-    if (r > 0)
-        maxvcpus = r;
+    /* at first try KVM_CAP_MAX_VCPUS to determine the maximum count */
+    if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_MAX_VCPUS)) > 0)
+        goto cleanup;
 
+    /* as a fallback get KVM_CAP_NR_VCPUS (the recommended maximum number of
+     * vcpus). Note that on most machines this is set to 160. */
+    if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_NR_VCPUS)) > 0)
+        goto cleanup;
+
+    /* if KVM_CAP_NR_VCPUS doesn't exist either, kernel documentation states
+     * that 4 should be used as the maximum number of cpus */
+    ret = 4;
+
+cleanup:
     VIR_FORCE_CLOSE(fd);
-    return maxvcpus;
+    return ret;
 }
 
 
