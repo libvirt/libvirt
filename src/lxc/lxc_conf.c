@@ -119,9 +119,6 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
             goto error;
     }
 
-    /* LXC Requires an emulator in the XML */
-    virCapabilitiesSetEmulatorRequired(caps);
-
     if (driver) {
         /* Security driver data */
         const char *doi, *model;
@@ -159,10 +156,11 @@ error:
 virDomainXMLOptionPtr
 lxcDomainXMLConfInit(void)
 {
-    return virDomainXMLOptionNew(NULL,
+    return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
                                  &virLXCDriverPrivateDataCallbacks,
                                  NULL);
 }
+
 
 int lxcLoadDriverConfig(virLXCDriverPtr driver)
 {

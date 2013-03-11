@@ -909,9 +909,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
                                  i) < 0)
             goto error;
 
-    /* QEMU Requires an emulator in the XML */
-    virCapabilitiesSetEmulatorRequired(caps);
-
     caps->defaultConsoleTargetType = virQEMUCapsDefaultConsoleType;
 
     return caps;

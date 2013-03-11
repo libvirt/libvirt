@@ -663,6 +663,20 @@ virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
 
 
 static int
+qemuDomainDefPostParse(virDomainDefPtr def,
+                       virCapsPtr caps,
+                       void *opaque ATTRIBUTE_UNUSED)
+{
+    /* check for emulator and create a default one if needed */
+    if (!def->emulator &&
+        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              virDomainDefPtr def ATTRIBUTE_UNUSED,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -703,6 +717,7 @@ no_memory:
 
 virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
     .devicesPostParseCallback = qemuDomainDeviceDefPostParse,
+    .domainPostParseCallback = qemuDomainDefPostParse,
 };
 
 

@@ -79,3 +79,20 @@ virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
     .format = virLXCDomainObjPrivateXMLFormat,
     .parse  = virLXCDomainObjPrivateXMLParse,
 };
+
+static int
+virLXCDomainDefPostParse(virDomainDefPtr def,
+                         virCapsPtr caps,
+                         void *opaque ATTRIBUTE_UNUSED)
+{
+    /* check for emulator and create a default one if needed */
+    if (!def->emulator &&
+        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
+        return -1;
+
+    return 0;
+}
+
+virDomainDefParserConfig virLXCDriverDomainDefParserConfig = {
+    .domainPostParseCallback = virLXCDomainDefPostParse,
+};

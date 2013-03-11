@@ -2476,4 +2476,6 @@ int virDomainObjListExport(virDomainObjListPtr doms,
 virDomainVcpuPinDefPtr virDomainLookupVcpuPin(virDomainDefPtr def,
                                               int vcpuid);
 
+char *virDomainDefGetDefaultEmulator(virDomainDefPtr def, virCapsPtr caps);
+
 #endif /* __DOMAIN_CONF_H */

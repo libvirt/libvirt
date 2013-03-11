@@ -163,7 +163,6 @@ struct _virCaps {
 
     /* Move to virDomainXMLOption later */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
-    unsigned int emulatorRequired : 1;
     int defaultDiskDriverType; /* enum virStorageFileFormat */
     int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
     bool hasWideScsiBus;
@@ -185,12 +184,6 @@ virCapabilitiesSetMacPrefix(virCapsPtr caps,
 extern void
 virCapabilitiesGenerateMac(virCapsPtr caps,
                            virMacAddrPtr mac);
-
-extern void
-virCapabilitiesSetEmulatorRequired(virCapsPtr caps);
-
-extern unsigned int
-virCapabilitiesIsEmulatorRequired(virCapsPtr caps);
 
 extern int
 virCapabilitiesAddHostFeature(virCapsPtr caps,

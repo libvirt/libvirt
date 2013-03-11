@@ -21,9 +21,7 @@ virCapabilitiesFormatXML;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
 virCapabilitiesGenerateMac;
-virCapabilitiesIsEmulatorRequired;
 virCapabilitiesNew;
-virCapabilitiesSetEmulatorRequired;
 virCapabilitiesSetHostCPU;
 virCapabilitiesSetMacPrefix;
 
@@ -118,6 +116,7 @@ virDomainDefFormat;
 virDomainDefFormatInternal;
 virDomainDefFree;
 virDomainDefGenSecurityLabelDef;
+virDomainDefGetDefaultEmulator;
 virDomainDefGetSecurityLabelDef;
 virDomainDefParseFile;
 virDomainDefParseNode;

@@ -39,5 +39,6 @@ struct _virLXCDomainObjPrivate {
 };
 
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
+extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 
 #endif /* __LXC_DOMAIN_H__ */

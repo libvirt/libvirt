@@ -9165,8 +9165,10 @@ virDomainLeaseRemove(virDomainDefPtr def,
 }
 
 
-static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
-                                         virCapsPtr caps) {
+char *
+virDomainDefGetDefaultEmulator(virDomainDefPtr def,
+                               virCapsPtr caps)
+{
     const char *type;
     const char *emulator;
     char *retemu;
@@ -9185,13 +9187,13 @@ static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
 
     if (!emulator) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no emulator for domain %s os type %s on architecture %s"),
+                       _("no emulator for domain %s os type %s "
+                         "on architecture %s"),
                        type, def->os.type, virArchToString(def->os.arch));
         return NULL;
     }
 
-    retemu = strdup(emulator);
-    if (!retemu)
+    if (!(retemu = strdup(emulator)))
         virReportOOMError();
 
     return retemu;
@@ -10385,11 +10387,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
-    if (!def->emulator && virCapabilitiesIsEmulatorRequired(caps)) {
-        def->emulator = virDomainDefDefaultEmulator(def, caps);
-        if (!def->emulator)
-            goto error;
-    }
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
