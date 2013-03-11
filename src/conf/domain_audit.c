@@ -57,6 +57,37 @@ virDomainAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
 }
 #endif
 
+
+static const char *
+virDomainAuditChardevPath(virDomainChrSourceDefPtr chr)
+{
+    if (!chr)
+        return NULL;
+
+    switch ((enum virDomainChrType) chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        return chr->data.file.path;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        return chr->data.nix.path;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        return NULL;
+    }
+
+    return NULL;
+}
+
+
 void
 virDomainAuditDisk(virDomainObjPtr vm,
                    const char *oldDef, const char *newDef,
@@ -97,6 +128,92 @@ cleanup:
     VIR_FREE(vmname);
     VIR_FREE(oldsrc);
     VIR_FREE(newsrc);
+}
+
+
+static void
+virDomainAuditRNG(virDomainObjPtr vm,
+                  virDomainRNGDefPtr newDef, virDomainRNGDefPtr oldDef,
+                  const char *reason, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    const char *newsrcpath = NULL;
+    const char *oldsrcpath = NULL;
+    char *oldsrc = NULL;
+    char *newsrc = NULL;
+    const char *virt;
+
+    if (newDef) {
+        switch ((enum virDomainRNGBackend) newDef->backend) {
+        case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+            if (newDef->source.file)
+                newsrcpath = newDef->source.file;
+            else
+                newsrcpath = "/dev/random";
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_EGD:
+            newsrcpath = virDomainAuditChardevPath(newDef->source.chardev);
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_LAST:
+            break;
+        }
+    }
+
+    if (oldDef) {
+        switch ((enum virDomainRNGBackend) oldDef->backend) {
+        case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+            if (oldDef->source.file)
+                oldsrcpath = oldDef->source.file;
+            else
+                oldsrcpath = "/dev/random";
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_EGD:
+            oldsrcpath = virDomainAuditChardevPath(oldDef->source.chardev);
+            break;
+
+        case VIR_DOMAIN_RNG_BACKEND_LAST:
+            break;
+        }
+    }
+
+    /* don't audit the RNG device if it doesn't use local resources */
+    if (!oldsrcpath && !newsrcpath)
+        return;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name)))
+        goto no_memory;
+
+    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message",
+                 vm->def->virtType);
+        virt = "?";
+    }
+
+    if (!(newsrc = virAuditEncode("new-rng", VIR_AUDIT_STR(newsrcpath))))
+        goto no_memory;
+
+    if (!(oldsrc = virAuditEncode("old-rng", VIR_AUDIT_STR(oldsrcpath))))
+        goto no_memory;
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "virt=%s resrc=rng reason=%s %s uuid=%s %s %s",
+              virt, reason, vmname, uuidstr,
+              oldsrc, newsrc);
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(oldsrc);
+    VIR_FREE(newsrc);
+    return;
+
+no_memory:
+    VIR_WARN("OOM while encoding audit message");
+    goto cleanup;
 }
 
 
@@ -640,6 +757,9 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
         virDomainRedirdevDefPtr redirdev = vm->def->redirdevs[i];
         virDomainAuditRedirdev(vm, redirdev, "start", true);
     }
+
+    if (vm->def->rng)
+        virDomainAuditRNG(vm, vm->def->rng, NULL, "start", true);
 
     virDomainAuditMemory(vm, 0, vm->def->mem.cur_balloon, "start", true);
     virDomainAuditVcpu(vm, 0, vm->def->vcpus, "start", true);
