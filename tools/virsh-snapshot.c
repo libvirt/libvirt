@@ -211,7 +211,9 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
-    if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0) {
+    if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
+        goto cleanup;
+    if (!from) {
         buffer = vshStrdup(ctl, "<domainsnapshot/>");
     } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
