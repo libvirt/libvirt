@@ -102,7 +102,6 @@ static int linuxNodeGetMemoryStats(FILE *meminfo,
                                    int cellNum,
                                    virNodeMemoryStatsPtr params,
                                    int *nparams);
-static unsigned long long nodeGetCellMemory(int cell);
 
 /* Return the positive decimal contents of the given
  * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
@@ -1473,6 +1472,8 @@ cleanup:
 # define MASK_CPU_ISSET(mask, cpu) \
   (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
 
+static unsigned long long nodeGetCellMemory(int cell);
+
 static virBitmapPtr
 virNodeGetSiblingsList(const char *dir, int cpu_id)
 {
@@ -1728,13 +1729,6 @@ int nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 unsigned long long nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("NUMA memory information not available on this platform"));
-    return 0;
-}
-
-static unsigned long long nodeGetCellMemory(int cell)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("NUMA memory information not available on this platform"));
