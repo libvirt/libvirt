@@ -1045,6 +1045,9 @@ qemuSharedDiskEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
     qemuSharedDiskEntryPtr entry = payload;
     size_t i;
 
+    if (!entry)
+        return;
+
     for (i = 0; i < entry->ref; i++) {
         VIR_FREE(entry->domains[i]);
     }
