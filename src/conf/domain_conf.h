@@ -2391,6 +2391,21 @@ virDomainLeaseDefPtr
 virDomainLeaseRemove(virDomainDefPtr def,
                      virDomainLeaseDefPtr lease);
 
+void
+virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
+                          virDomainChrDefPtr chr,
+                          virDomainChrDefPtr ***arrPtr,
+                          size_t **cntPtr);
+virDomainChrDefPtr
+virDomainChrFind(virDomainDefPtr def,
+                 virDomainChrDefPtr target);
+int
+virDomainChrInsert(virDomainDefPtr vmdef,
+                   virDomainChrDefPtr chr);
+virDomainChrDefPtr
+virDomainChrRemove(virDomainDefPtr vmdef,
+                   virDomainChrDefPtr chr);
+
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
                      const char *xml);

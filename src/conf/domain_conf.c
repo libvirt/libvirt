@@ -10055,6 +10055,136 @@ virDomainLeaseRemove(virDomainDefPtr def,
     return virDomainLeaseRemoveAt(def, idx);
 }
 
+static bool
+virDomainChrEquals(virDomainChrDefPtr src,
+                   virDomainChrDefPtr tgt)
+{
+    if (!src || !tgt)
+        return src == tgt;
+
+    if (src->deviceType != tgt->deviceType ||
+        !virDomainChrSourceDefIsEqual(&src->source, &tgt->source))
+        return false;
+
+    switch ((enum virDomainChrDeviceType) src->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        if (src->targetType != tgt->targetType)
+            return false;
+        switch ((enum virDomainChrChannelTargetType) src->targetType) {
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
+            return STREQ_NULLABLE(src->target.name, tgt->target.name);
+            break;
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
+            if (!src->target.addr || !tgt->target.addr)
+                return src->target.addr == tgt->target.addr;
+            return memcmp(src->target.addr, tgt->target.addr,
+                          sizeof(*src->target.addr)) == 0;
+            break;
+
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
+            /* shouldn't happen */
+            break;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        if (src->targetTypeAttr != tgt->targetTypeAttr)
+            return false;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+        return src->target.port == tgt->target.port;
+        break;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        /* shouldn't happen */
+        break;
+    }
+    return false;
+}
+
+virDomainChrDefPtr
+virDomainChrFind(virDomainDefPtr def,
+                 virDomainChrDefPtr target)
+{
+    virDomainChrDefPtr chr, **arrPtr;
+    size_t i, *cntPtr;
+
+    virDomainChrGetDomainPtrs(def, target, &arrPtr, &cntPtr);
+
+    for (i = 0; i < *cntPtr; i++) {
+        chr = (*arrPtr)[i];
+        if (virDomainChrEquals(chr, target))
+            return chr;
+    }
+    return NULL;
+}
+
+void
+virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
+                          virDomainChrDefPtr chr,
+                          virDomainChrDefPtr ***arrPtr,
+                          size_t **cntPtr)
+{
+    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+        *arrPtr = &vmdef->parallels;
+        *cntPtr = &vmdef->nparallels;
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        *arrPtr = &vmdef->serials;
+        *cntPtr = &vmdef->nserials;
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        *arrPtr = &vmdef->consoles;
+        *cntPtr = &vmdef->nconsoles;
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        *arrPtr = &vmdef->channels;
+        *cntPtr = &vmdef->nchannels;
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        break;
+    }
+}
+
+int
+virDomainChrInsert(virDomainDefPtr vmdef,
+                   virDomainChrDefPtr chr)
+{
+    virDomainChrDefPtr **arrPtr;
+    size_t *cntPtr;
+
+    virDomainChrGetDomainPtrs(vmdef, chr, &arrPtr, &cntPtr);
+
+    return VIR_APPEND_ELEMENT(*arrPtr, *cntPtr, chr);
+}
+
+virDomainChrDefPtr
+virDomainChrRemove(virDomainDefPtr vmdef,
+                   virDomainChrDefPtr chr)
+{
+    virDomainChrDefPtr ret, **arrPtr;
+    size_t i, *cntPtr;
+
+    virDomainChrGetDomainPtrs(vmdef, chr, &arrPtr, &cntPtr);
+
+    for (i = 0; i < *cntPtr; i++) {
+        ret = (*arrPtr)[i];
+
+        if (virDomainChrEquals(ret, chr))
+            break;
+    }
+
+    if (i == *cntPtr)
+        return NULL;
+
+    VIR_DELETE_ELEMENT(*arrPtr, i, *cntPtr);
+    return ret;
+}
 
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
