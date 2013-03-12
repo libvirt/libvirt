@@ -397,7 +397,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
      .help = N_("take a live snapshot")
     },
     {.name = "memspec",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("memory attributes: [file=]name[,snapshot=type]")
     },
