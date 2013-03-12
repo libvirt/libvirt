@@ -115,6 +115,7 @@ virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;
 virDomainChrDefFree;
 virDomainChrDefNew;
+virDomainChrEquals;
 virDomainChrFind;
 virDomainChrGetDomainPtrs;
 virDomainChrInsert;

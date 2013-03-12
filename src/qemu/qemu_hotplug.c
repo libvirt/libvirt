@@ -1172,6 +1172,78 @@ error:
 
 }
 
+int
+qemuDomainChrInsert(virDomainDefPtr vmdef,
+                    virDomainChrDefPtr chr)
+{
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("attaching serial console is not supported"));
+        return -1;
+    }
+
+    if (virDomainChrFind(vmdef, chr)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("chardev already exists"));
+        return -1;
+    }
+
+    if (virDomainChrInsert(vmdef, chr) < 0)
+        return -1;
+
+    /* Due to some crazy backcompat stuff, the first serial device is an alias
+     * to the first console too. If this is the case, the definition must be
+     * duplicated as first console device. */
+    if (vmdef->nserials == 1 && vmdef->nconsoles == 0) {
+        if ((!vmdef->consoles && VIR_ALLOC(vmdef->consoles) < 0) ||
+            VIR_ALLOC(vmdef->consoles[0]) < 0) {
+            virDomainChrRemove(vmdef, chr);
+            return -1;
+        }
+        vmdef->nconsoles = 1;
+
+        /* Create an console alias for the serial port */
+        vmdef->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        vmdef->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    }
+
+    return 0;
+}
+
+virDomainChrDefPtr
+qemuDomainChrRemove(virDomainDefPtr vmdef,
+                    virDomainChrDefPtr chr)
+{
+    virDomainChrDefPtr ret;
+    bool removeCompat;
+
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("detaching serial console is not supported"));
+        return NULL;
+    }
+
+    /* Due to some crazy backcompat stuff, the first serial device is an alias
+     * to the first console too. If this is the case, the definition must be
+     * duplicated as first console device. */
+    removeCompat = vmdef->nserials && vmdef->nconsoles &&
+        vmdef->consoles[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        vmdef->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
+        virDomainChrEquals(vmdef->serials[0], chr);
+
+    if (!(ret = virDomainChrRemove(vmdef, chr))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("device not present in domain configuration"));
+            return NULL;
+    }
+
+    if (removeCompat)
+        VIR_DELETE_ELEMENT(vmdef->consoles, 0, vmdef->nconsoles);
+
+    return ret;
+}
 int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)

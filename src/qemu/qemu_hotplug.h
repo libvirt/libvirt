@@ -106,4 +106,11 @@ int qemuDomainDetachLease(virQEMUDriverPtr driver,
                           virDomainLeaseDefPtr lease);
 
 
+int
+qemuDomainChrInsert(virDomainDefPtr vmdef,
+                    virDomainChrDefPtr chr);
+virDomainChrDefPtr
+qemuDomainChrRemove(virDomainDefPtr vmdef,
+                    virDomainChrDefPtr chr);
+
 #endif /* __QEMU_HOTPLUG_H__ */

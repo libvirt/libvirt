@@ -10099,7 +10099,7 @@ virDomainLeaseRemove(virDomainDefPtr def,
     return virDomainLeaseRemoveAt(def, idx);
 }
 
-static bool
+bool
 virDomainChrEquals(virDomainChrDefPtr src,
                    virDomainChrDefPtr tgt)
 {
@@ -18036,9 +18036,11 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     case VIR_DOMAIN_DEVICE_RNG:
         rc = virDomainRNGDefFormat(&buf, src->data.rng, flags);
         break;
+    case VIR_DOMAIN_DEVICE_CHR:
+        rc = virDomainChrDefFormat(&buf, src->data.chr, flags);
+        break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_LAST:

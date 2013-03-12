@@ -2399,6 +2399,9 @@ virDomainChrGetDomainPtrs(virDomainDefPtr vmdef,
 virDomainChrDefPtr
 virDomainChrFind(virDomainDefPtr def,
                  virDomainChrDefPtr target);
+bool
+virDomainChrEquals(virDomainChrDefPtr src,
+                   virDomainChrDefPtr tgt);
 int
 virDomainChrInsert(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr);

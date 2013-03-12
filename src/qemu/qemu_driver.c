@@ -6686,6 +6686,12 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         break;
 
+    case VIR_DOMAIN_DEVICE_CHR:
+        if (qemuDomainChrInsert(vmdef, dev->data.chr) < 0)
+            return -1;
+        dev->data.chr = NULL;
+        break;
+
     default:
          virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                         _("persistent attach of device '%s' is not supported"),
@@ -6705,6 +6711,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainHostdevDefPtr hostdev, det_hostdev;
     virDomainLeaseDefPtr lease, det_lease;
     virDomainControllerDefPtr cont, det_cont;
+    virDomainChrDefPtr chr;
     int idx;
     char mac[VIR_MAC_STRING_BUFLEN];
 
@@ -6770,6 +6777,15 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         det_cont = virDomainControllerRemove(vmdef, idx);
         virDomainControllerDefFree(det_cont);
 
+        break;
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        if (!(chr = qemuDomainChrRemove(vmdef, dev->data.chr)))
+            return -1;
+
+        virDomainChrDefFree(chr);
+        virDomainChrDefFree(dev->data.chr);
+        dev->data.chr = NULL;
         break;
 
     default:
