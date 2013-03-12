@@ -1162,8 +1162,16 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
      *   LXC monitor hasn't seen SIGHUP/ERR on poll().
      */
     if (virDomainObjIsActive(vm)) {
+        virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+        if (!priv->initpid) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Init pid is not yet available"));
+            goto cleanup;
+        }
+
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
-                                              vm->def, vm->pid, seclabel) < 0) {
+                                              vm->def, priv->initpid, seclabel) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to get security label"));
             goto cleanup;
