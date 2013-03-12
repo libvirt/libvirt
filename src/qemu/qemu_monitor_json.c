@@ -5123,3 +5123,26 @@ cleanup:
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuMonitorJSONDetachCharDev(qemuMonitorPtr mon,
+                             const char *chrID)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("chardev-remove",
+                                           "s:id", chrID,
+                                           NULL)))
+        return ret;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

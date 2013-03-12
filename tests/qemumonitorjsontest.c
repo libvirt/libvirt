@@ -676,6 +676,30 @@ cleanup:
 }
 
 static int
+testQemuMonitorJSONDetachChardev(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    int ret = -1;
+
+    if (!test)
+        return ret;
+
+    if (qemuMonitorTestAddItem(test, "chardev-remove", "{\"return\": {}}") < 0)
+        goto cleanup;
+
+    if (qemuMonitorDetachCharDev(qemuMonitorTestGetMonitor(test),
+                                 "dummy_chrID") < 0)
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -704,6 +728,7 @@ mymain(void)
     DO_TEST(GetTPMModels);
     DO_TEST(GetCommandLineOptionParameters);
     DO_TEST(AttachChardev);
+    DO_TEST(DetachChardev);
 
     virObjectUnref(xmlopt);
 

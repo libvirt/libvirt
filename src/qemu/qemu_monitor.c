@@ -3643,3 +3643,23 @@ int qemuMonitorAttachCharDev(qemuMonitorPtr mon,
 
     return qemuMonitorJSONAttachCharDev(mon, chrID, chr);
 }
+
+int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
+                             const char *chrID)
+{
+    VIR_DEBUG("mon=%p chrID=%s", mon, chrID);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONDetachCharDev(mon, chrID);
+}

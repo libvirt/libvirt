@@ -704,6 +704,8 @@ int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
 int qemuMonitorAttachCharDev(qemuMonitorPtr mon,
                              const char *chrID,
                              virDomainChrSourceDefPtr chr);
+int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
+                             const char *chrID);
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that
