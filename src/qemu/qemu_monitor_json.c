@@ -4741,6 +4741,31 @@ cleanup:
     return ret;
 }
 
+static virJSONValuePtr
+qemuMonitorJSONBuildInetSocketAddress(const char *host,
+                                      const char *port)
+{
+    virJSONValuePtr addr = NULL;
+    virJSONValuePtr data = NULL;
+
+    if (!(data = virJSONValueNewObject()) ||
+        !(addr = virJSONValueNewObject()))
+        goto error;
+
+    /* port is really expected as a string here by qemu */
+    if (virJSONValueObjectAppendString(data, "host", host) < 0 ||
+        virJSONValueObjectAppendString(data, "port", port) < 0 ||
+        virJSONValueObjectAppendString(addr, "type", "inet") < 0 ||
+        virJSONValueObjectAppend(addr, "data", data) < 0)
+        goto error;
+
+    return addr;
+error:
+    virJSONValueFree(data);
+    virJSONValueFree(addr);
+    return NULL;
+}
+
 int
 qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
                               const char *host,
@@ -4749,24 +4774,14 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    virJSONValuePtr data = NULL;
     virJSONValuePtr addr = NULL;
     char *port_str = NULL;
 
-    if (!(data = virJSONValueNewObject()) ||
-        !(addr = virJSONValueNewObject()) ||
-        (virAsprintf(&port_str, "%u", port) < 0))
-        goto cleanup;
+    if (virAsprintf(&port_str, "%u", port) < 0)
+        return ret;
 
-    /* port is really expected as a string here by qemu */
-    if (virJSONValueObjectAppendString(data, "host", host) < 0 ||
-        virJSONValueObjectAppendString(data, "port", port_str) < 0 ||
-        virJSONValueObjectAppendString(addr, "type", "inet") < 0 ||
-        virJSONValueObjectAppend(addr, "data", data) < 0)
-        goto cleanup;
-
-    /* From now on, @data is part of @addr */
-    data = NULL;
+    if (!(addr = qemuMonitorJSONBuildInetSocketAddress(host, port_str)))
+        return ret;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",
                                            "a:addr", addr,
@@ -4789,7 +4804,6 @@ cleanup:
     virJSONValueFree(reply);
     virJSONValueFree(cmd);
     virJSONValueFree(addr);
-    virJSONValueFree(data);
     return ret;
 }
 
