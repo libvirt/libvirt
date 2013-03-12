@@ -42,6 +42,10 @@ int virDomainLxcEnterNamespace(virDomainPtr domain,
                                unsigned int *noldfdlist,
                                int **oldfdlist,
                                unsigned int flags);
+int virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
+                                   virSecurityLabelPtr label,
+                                   virSecurityLabelPtr oldlabel,
+                                   unsigned int flags);
 
 # ifdef __cplusplus
 }

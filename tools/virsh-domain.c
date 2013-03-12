@@ -7992,6 +7992,7 @@ static const vshCmdInfo info_lxc_enter_namespace[] = {
 
 static const vshCmdOptDef opts_lxc_enter_namespace[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"noseclabel", VSH_OT_BOOL, 0, N_("Do not change process security label")},
     {"cmd", VSH_OT_ARGV, VSH_OFLAG_REQ, N_("namespace")},
     {NULL, 0, 0, NULL}
 };
@@ -8008,10 +8009,16 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     int nfdlist;
     int *fdlist;
     size_t i;
+    bool setlabel = true;
+    virSecurityModelPtr secmodel = NULL;
+    virSecurityLabelPtr seclabel = NULL;
 
     dom = vshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
+
+    if (vshCommandOptBool(cmd, "noseclabel"))
+        setlabel = false;
 
     while ((opt = vshCommandOptArgv(cmd, opt))) {
         if (VIR_EXPAND_N(cmdargv, ncmdargv, 1) < 0) {
@@ -8029,12 +8036,34 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
         goto cleanup;
 
+    if (setlabel) {
+        if (VIR_ALLOC(secmodel) < 0) {
+            vshError(ctl, "%s", _("Failed to allocate security model"));
+            goto cleanup;
+        }
+        if (VIR_ALLOC(seclabel) < 0) {
+            vshError(ctl, "%s", _("Failed to allocate security label"));
+            goto cleanup;
+        }
+        if (virNodeGetSecurityModel(ctl->conn, secmodel) < 0)
+            goto cleanup;
+        if (virDomainGetSecurityLabel(dom, seclabel) < 0)
+            goto cleanup;
+    }
+
     /* Fork once because we don't want to affect
      * virsh's namespace itself
      */
     if (virFork(&pid) < 0)
         goto cleanup;
     if (pid == 0) {
+        if (setlabel &&
+            virDomainLxcEnterSecurityLabel(secmodel,
+                                           seclabel,
+                                           NULL,
+                                           0) < 0)
+            _exit(255);
+
         if (virDomainLxcEnterNamespace(dom,
                                        nfdlist,
                                        fdlist,
@@ -8067,6 +8096,8 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    VIR_FREE(seclabel);
+    VIR_FREE(secmodel);
     if (dom)
         virDomainFree(dom);
     VIR_FREE(cmdargv);

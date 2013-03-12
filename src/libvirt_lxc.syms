@@ -15,3 +15,8 @@ LIBVIRT_LXC_1.0.2 {
         virDomainLxcEnterNamespace;
         virDomainLxcOpenNamespace;
 };
+
+LIBVIRT_LXC_1.0.4 {
+    global:
+        virDomainLxcEnterSecurityLabel;
+} LIBVIRT_LXC_1.0.2;

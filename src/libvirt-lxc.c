@@ -29,6 +29,9 @@
 #include "virlog.h"
 #include "virprocess.h"
 #include "datatypes.h"
+#ifdef WITH_SELINUX
+# include <selinux/selinux.h>
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -161,5 +164,98 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
 
 error:
     virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainLxcEnterSecurityLabel:
+ * @model: the security model to set
+ * @label: the security label to apply
+ * @oldlabel: filled with old security label
+ * @flags: currently unused, pass 0
+ *
+ * This API is LXC specific, so it will only work with hypervisor
+ * connections to the LXC driver.
+ *
+ * Attaches the process to the security label specified
+ * by @label. @label is interpreted relative to @model
+ * Depending on the security driver, this may
+ * not take effect until the next call to exec().
+ *
+ * If @oldlabel is not NULL, it will be filled with info
+ * about the current security label. This may let the
+ * process be moved back to the previous label if no
+ * exec() has yet been performed.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int
+virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
+                               virSecurityLabelPtr label,
+                               virSecurityLabelPtr oldlabel,
+                               unsigned int flags)
+{
+    virCheckFlagsGoto(0, error);
+
+    virCheckNonNullArgGoto(model, error);
+    virCheckNonNullArgGoto(label, error);
+
+    if (oldlabel)
+        memset(oldlabel, 0, sizeof(*oldlabel));
+
+    if (STREQ(model->model, "selinux")) {
+#ifdef WITH_SELINUX
+        if (oldlabel) {
+            security_context_t ctx;
+
+            if (getcon(&ctx) < 0) {
+                virReportSystemError(errno,
+                                     _("unable to get PID %d security context"),
+                                     getpid());
+                goto error;
+            }
+
+            if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("security label exceeds "
+                                 "maximum length: %d"),
+                               VIR_SECURITY_LABEL_BUFLEN - 1);
+                freecon(ctx);
+                goto error;
+            }
+
+            strcpy(oldlabel->label, (char *) ctx);
+            freecon(ctx);
+
+            if ((oldlabel->enforcing = security_getenforce()) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("error calling security_getenforce()"));
+                goto error;
+            }
+        }
+
+        if (setexeccon(label->label) < 0) {
+            virReportSystemError(errno,
+                            _("Cannot set context %s"),
+                            label->label);
+            goto error;
+        }
+#else
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Support for SELinux is not enabled"));
+        goto error;
+#endif
+    } else {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Security model %s cannot be entered"),
+                       model->model);
+        goto error;
+    }
+
+    return 0;
+
+error:
+    virDispatchError(NULL);
     return -1;
 }
