@@ -4766,6 +4766,29 @@ error:
     return NULL;
 }
 
+static virJSONValuePtr
+qemuMonitorJSONBuildUnixSocketAddress(const char *path)
+{
+    virJSONValuePtr addr = NULL;
+    virJSONValuePtr data = NULL;
+
+    if (!(data = virJSONValueNewObject()) ||
+        !(addr = virJSONValueNewObject()))
+        goto error;
+
+    if (virJSONValueObjectAppendString(data, "path", path) < 0 ||
+        virJSONValueObjectAppendString(addr, "type", "unix") < 0 ||
+        virJSONValueObjectAppend(addr, "data", data) < 0)
+        goto error;
+
+    return addr;
+error:
+    virReportOOMError();
+    virJSONValueFree(data);
+    virJSONValueFree(addr);
+    return NULL;
+}
+
 int
 qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
                               const char *host,
@@ -4940,4 +4963,163 @@ int qemuMonitorJSONGetTPMTypes(qemuMonitorPtr mon,
                                char ***tpmtypes)
 {
     return qemuMonitorJSONGetStringArray(mon, "query-tpm-types", tpmtypes);
+}
+
+static virJSONValuePtr
+qemuMonitorJSONAttachCharDevCommand(const char *chrID,
+                                    const virDomainChrSourceDefPtr chr)
+{
+    virJSONValuePtr ret;
+    virJSONValuePtr backend;
+    virJSONValuePtr data = NULL;
+    virJSONValuePtr addr = NULL;
+    const char *backend_type = NULL;
+    bool telnet;
+
+    if (!(backend = virJSONValueNewObject()) ||
+        !(data = virJSONValueNewObject())) {
+        goto no_memory;
+    }
+
+    switch ((enum virDomainChrType) chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+        backend_type = "null";
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        backend_type = "pty";
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        backend_type = "file";
+        if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+        backend_type = STRPREFIX(chrID, "parallel") ? "parallel" : "serial";
+        if (virJSONValueObjectAppendString(data, "device",
+                                           chr->data.file.path) < 0)
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        backend_type = "socket";
+        addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.tcp.host,
+                                                     chr->data.tcp.service);
+        if (!addr ||
+            virJSONValueObjectAppend(data, "addr", addr) < 0)
+            goto no_memory;
+        addr = NULL;
+
+        telnet = chr->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+
+        if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
+            virJSONValueObjectAppendBoolean(data, "telnet", telnet) < 0 ||
+            virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        backend_type = "socket";
+        addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.udp.connectHost,
+                                                     chr->data.udp.connectService);
+        if (!addr ||
+            virJSONValueObjectAppend(data, "addr", addr) < 0)
+            goto no_memory;
+        addr = NULL;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        backend_type = "socket";
+        addr = qemuMonitorJSONBuildUnixSocketAddress(chr->data.nix.path);
+
+        if (!addr ||
+            virJSONValueObjectAppend(data, "addr", addr) < 0)
+            goto no_memory;
+        addr = NULL;
+
+        if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
+            virJSONValueObjectAppendBoolean(data, "server", chr->data.nix.listen) < 0)
+            goto no_memory;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unsupported char device type '%d'"),
+                       chr->type);
+        goto error;
+    }
+
+    if (virJSONValueObjectAppendString(backend, "type", backend_type) < 0 ||
+        virJSONValueObjectAppend(backend, "data", data) < 0)
+        goto no_memory;
+    data = NULL;
+
+    if (!(ret = qemuMonitorJSONMakeCommand("chardev-add",
+                                           "s:id", chrID,
+                                           "a:backend", backend,
+                                           NULL)))
+        goto error;
+
+    return ret;
+
+no_memory:
+    virReportOOMError();
+error:
+    virJSONValueFree(addr);
+    virJSONValueFree(data);
+    virJSONValueFree(backend);
+    return NULL;
+}
+
+
+int
+qemuMonitorJSONAttachCharDev(qemuMonitorPtr mon,
+                             const char *chrID,
+                             virDomainChrSourceDefPtr chr)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONAttachCharDevCommand(chrID, chr)))
+        return ret;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        virJSONValuePtr data;
+        const char *path;
+
+        if (!(data = virJSONValueObjectGet(reply, "return"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev-add reply was missing return data"));
+            goto cleanup;
+        }
+
+        if (!(path = virJSONValueObjectGetString(data, "pty"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev-add reply was missing pty path"));
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(chr->data.file.path, path) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
 }

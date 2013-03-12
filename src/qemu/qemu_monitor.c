@@ -3622,3 +3622,24 @@ int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetTPMTypes(mon, tpmtypes);
 }
+
+int qemuMonitorAttachCharDev(qemuMonitorPtr mon,
+                             const char *chrID,
+                             virDomainChrSourceDefPtr chr)
+{
+    VIR_DEBUG("mon=%p chrID=%s chr=%p", mon, chrID, chr);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONAttachCharDev(mon, chrID, chr);
+}

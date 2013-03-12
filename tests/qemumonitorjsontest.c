@@ -594,6 +594,86 @@ cleanup:
     return ret;
 }
 
+static int
+testQemuMonitorJSONAttachChardev(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    virDomainChrSourceDef chr;
+    int ret = 0;
+
+    if (!test)
+        return -1;
+
+#define DO_CHECK(chrID, reply, fail)                                \
+    if (qemuMonitorTestAddItem(test, "chardev-add", reply) < 0)     \
+        goto cleanup;                                               \
+    if (qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test),   \
+                                     chrID, &chr) < 0)              \
+        ret = fail ? ret  : -1;                                     \
+    else                                                            \
+        ret = fail ? -1 : ret;                                      \
+
+#define CHECK(chrID, reply) \
+    DO_CHECK(chrID, reply, false)
+
+#define CHECK_FAIL(chrID, reply) \
+    DO_CHECK(chrID, reply, true)
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
+    CHECK("chr_null", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type =VIR_DOMAIN_CHR_TYPE_VC };
+    CHECK("chr_vc", "{\"return\": {}}");
+
+#define PTY_PATH "/dev/ttyS0"
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
+    CHECK("chr_pty", "{\"return\": {\"pty\" : \"" PTY_PATH "\"}}");
+    if (STRNEQ_NULLABLE(PTY_PATH, chr.data.file.path)) {
+        VIR_FREE(chr.data.file.path);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected PTY path: %s got: %s",
+                       PTY_PATH, NULLSTR(chr.data.file.path));
+        ret = -1;
+    }
+    VIR_FREE(chr.data.file.path);
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
+    CHECK_FAIL("chr_pty_fail", "{\"return\": {}}");
+#undef PTY_PATH
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_FILE };
+    CHECK("chr_file", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_DEV };
+    CHECK("chr_dev", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_TCP };
+    CHECK("chr_tcp", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UDP };
+    CHECK("chr_udp", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UNIX };
+    CHECK("chr_unix", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
+    CHECK_FAIL("chr_spicevmc", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
+    CHECK_FAIL("chr_pipe", "{\"return\": {}}");
+
+    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_STDIO };
+    CHECK_FAIL("chr_stdio", "{\"return\": {}}");
+
+#undef CHECK
+#undef CHECK_FAIL
+#undef DO_CHECK
+
+cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
 
 static int
 mymain(void)
@@ -623,6 +703,7 @@ mymain(void)
     DO_TEST(GetCommands);
     DO_TEST(GetTPMModels);
     DO_TEST(GetCommandLineOptionParameters);
+    DO_TEST(AttachChardev);
 
     virObjectUnref(xmlopt);
 
