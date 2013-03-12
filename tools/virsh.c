@@ -453,7 +453,6 @@ static const vshCmdInfo info_help[] = {
 static const vshCmdOptDef opts_help[] = {
     {.name = "command",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("Prints global help, command specific help, or help for a group of related commands")
     },
     {.name = NULL}
@@ -717,7 +716,6 @@ static const vshCmdInfo info_cd[] = {
 static const vshCmdOptDef opts_cd[] = {
     {.name = "dir",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("directory to switch to (default: home or else root)")
     },
     {.name = NULL}
@@ -801,22 +799,18 @@ static const vshCmdInfo info_echo[] = {
 static const vshCmdOptDef opts_echo[] = {
     {.name = "shell",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("escape for shell use")
     },
     {.name = "xml",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("escape for XML use")
     },
     {.name = "str",
      .type = VSH_OT_ALIAS,
-     .flags = 0,
      .help = "string"
     },
     {.name = "string",
      .type = VSH_OT_ARGV,
-     .flags = 0,
      .help = N_("arguments to echo")
     },
     {.name = NULL}
@@ -975,7 +969,6 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
 static vshCmdOptDef helpopt = {
     .name = "help",
     .type = VSH_OT_BOOL,
-    .flags = 0,
     .help = N_("print help for this function")
 };
 static const vshCmdOptDef *

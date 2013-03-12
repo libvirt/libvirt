@@ -325,12 +325,10 @@ static const vshCmdInfo info_interface_list[] = {
 static const vshCmdOptDef opts_interface_list[] = {
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive interfaces")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive & active interfaces")
     },
     {.name = NULL}
@@ -464,7 +462,6 @@ static const vshCmdOptDef opts_interface_dumpxml[] = {
     },
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("show inactive defined XML")
     },
     {.name = NULL}
@@ -791,17 +788,14 @@ static const vshCmdOptDef opts_interface_bridge[] = {
     },
     {.name = "no-stp",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("do not enable STP for this bridge")
     },
     {.name = "delay",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("number of seconds to squelch traffic on newly connected ports")
     },
     {.name = "no-start",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("don't start the bridge immediately")
     },
     {.name = NULL}
@@ -1025,7 +1019,6 @@ static const vshCmdOptDef opts_interface_unbridge[] = {
     },
     {.name = "no-start",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("don't start the un-slaved interface immediately (not recommended)")
     },
     {.name = NULL}

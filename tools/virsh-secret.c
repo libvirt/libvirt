@@ -487,22 +487,18 @@ static const vshCmdInfo info_secret_list[] = {
 static const vshCmdOptDef opts_secret_list[] = {
     {.name = "ephemeral",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list ephemeral secrets")
     },
     {.name = "no-ephemeral",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list non-ephemeral secrets")
     },
     {.name = "private",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list private secrets")
     },
     {.name = "no-private",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list non-private secrets")
     },
     {.name = NULL}

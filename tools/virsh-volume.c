@@ -132,27 +132,22 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     },
     {.name = "allocation",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("initial allocation size, as scaled integer (default bytes)")
     },
     {.name = "format",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("file format type raw,bochs,qcow,qcow2,qed,vmdk")
     },
     {.name = "backing-vol",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("the backing volume if taking a snapshot")
     },
     {.name = "backing-vol-format",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("format of backing volume if taking a snapshot")
     },
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
     {.name = NULL}
@@ -332,7 +327,6 @@ static const vshCmdOptDef opts_vol_create[] = {
     },
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
     {.name = NULL}
@@ -408,12 +402,10 @@ static const vshCmdOptDef opts_vol_create_from[] = {
     },
     {.name = "inputpool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid of the input volume's pool")
     },
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
     {.name = NULL}
@@ -523,12 +515,10 @@ static const vshCmdOptDef opts_vol_clone[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
     {.name = NULL}
@@ -621,17 +611,14 @@ static const vshCmdOptDef opts_vol_upload[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = "offset",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("volume offset to upload to")
     },
     {.name = "length",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("amount of data to upload")
     },
     {.name = NULL}
@@ -738,17 +725,14 @@ static const vshCmdOptDef opts_vol_download[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = "offset",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("volume offset to download from")
     },
     {.name = "length",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("amount of data to download")
     },
     {.name = NULL}
@@ -848,7 +832,6 @@ static const vshCmdOptDef opts_vol_delete[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = NULL}
@@ -897,12 +880,10 @@ static const vshCmdOptDef opts_vol_wipe[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = "algorithm",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("perform selected wiping algorithm")
     },
     {.name = NULL}
@@ -975,7 +956,6 @@ static const vshCmdOptDef opts_vol_info[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = NULL}
@@ -1056,22 +1036,18 @@ static const vshCmdOptDef opts_vol_resize[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = "allocate",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("allocate the new capacity, rather than leaving it sparse")
     },
     {.name = "delta",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("use capacity as a delta to current size, rather than the new size")
     },
     {.name = "shrink",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("allow the resize to shrink the volume")
     },
     {.name = NULL}
@@ -1158,7 +1134,6 @@ static const vshCmdOptDef opts_vol_dumpxml[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = NULL}
@@ -1332,7 +1307,6 @@ static const vshCmdOptDef opts_vol_list[] = {
     },
     {.name = "details",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("display extended details for volumes")
     },
     {.name = NULL}
@@ -1644,7 +1618,6 @@ static const vshCmdInfo info_vol_pool[] = {
 static const vshCmdOptDef opts_vol_pool[] = {
     {.name = "uuid",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("return the pool uuid rather than pool name")
     },
     {.name = "vol",
@@ -1713,7 +1686,6 @@ static const vshCmdOptDef opts_vol_key[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = NULL}
@@ -1753,7 +1725,6 @@ static const vshCmdOptDef opts_vol_path[] = {
     },
     {.name = "pool",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("pool name or uuid")
     },
     {.name = NULL}

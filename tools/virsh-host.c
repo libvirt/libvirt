@@ -89,7 +89,6 @@ static const vshCmdOptDef opts_connect[] = {
     },
     {.name = "readonly",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("read-only connection")
     },
     {.name = NULL}
@@ -145,12 +144,10 @@ static const vshCmdInfo info_freecell[] = {
 static const vshCmdOptDef opts_freecell[] = {
     {.name = "cellno",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("NUMA cell number")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("show free memory for all NUMA cells")
     },
     {.name = NULL}
@@ -358,12 +355,10 @@ static const vshCmdInfo info_nodecpustats[] = {
 static const vshCmdOptDef opts_node_cpustats[] = {
     {.name = "cpu",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("prints specified cpu statistics only.")
     },
     {.name = "percent",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("prints by percentage during 1 second.")
     },
     {.name = NULL}
@@ -495,7 +490,6 @@ static const vshCmdInfo info_nodememstats[] = {
 static const vshCmdOptDef opts_node_memstats[] = {
     {.name = "cell",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("prints specified cell statistics only.")
     },
     {.name = NULL}
@@ -718,7 +712,6 @@ static const vshCmdInfo info_version[] = {
 static const vshCmdOptDef opts_version[] = {
     {.name = "daemon",
      .type = VSH_OT_BOOL,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("report daemon version too")
     },
     {.name = NULL}
@@ -817,19 +810,16 @@ static const vshCmdInfo info_node_memory_tune[] = {
 static const vshCmdOptDef opts_node_memory_tune[] = {
     {.name = "shm-pages-to-scan",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_NONE,
      .help =  N_("number of pages to scan before the shared memory service "
                  "goes to sleep")
     },
     {.name = "shm-sleep-millisecs",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_NONE,
      .help =  N_("number of millisecs the shared memory service should "
                  "sleep before next scan")
     },
     {.name = "shm-merge-across-nodes",
      .type = VSH_OT_INT,
-     .flags = VSH_OFLAG_NONE,
      .help =  N_("Specifies if pages from different numa nodes can be merged")
     },
     {.name = NULL}

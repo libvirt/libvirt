@@ -95,7 +95,6 @@ static const vshCmdOptDef opts_pool_autostart[] = {
     },
     {.name = "disable",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("disable autostarting")
     },
     {.name = NULL}
@@ -192,7 +191,6 @@ static const vshCmdOptDef opts_pool_X_as[] = {
     },
     {.name = "print-xml",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("print XML document, but don't define/create")
     },
     {.name = "type",
@@ -202,32 +200,26 @@ static const vshCmdOptDef opts_pool_X_as[] = {
     },
     {.name = "source-host",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("source-host for underlying storage")
     },
     {.name = "source-path",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("source path for underlying storage")
     },
     {.name = "source-dev",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("source device for underlying storage")
     },
     {.name = "source-name",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("source name for underlying storage")
     },
     {.name = "target",
      .type = VSH_OT_DATA,
-     .flags = 0,
      .help = N_("target for underlying storage")
     },
     {.name = "source-format",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("format for underlying storage")
     },
     {.name = NULL}
@@ -451,12 +443,10 @@ static const vshCmdOptDef opts_pool_build[] = {
     },
     {.name = "no-overwrite",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("do not overwrite an existing pool of this type")
     },
     {.name = "overwrite",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("overwrite any existing data")
     },
     {.name = NULL}
@@ -643,7 +633,6 @@ static const vshCmdOptDef opts_pool_dumpxml[] = {
     },
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("show inactive defined XML")
     },
     {.name = NULL}
@@ -916,42 +905,34 @@ static const vshCmdInfo info_pool_list[] = {
 static const vshCmdOptDef opts_pool_list[] = {
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive pools")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive & active pools")
     },
     {.name = "transient",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list transient pools")
     },
     {.name = "persistent",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list persistent pools")
     },
     {.name = "autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list pools with autostart enabled")
     },
     {.name = "no-autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list pools with autostart disabled")
     },
     {.name = "type",
      .type = VSH_OT_STRING,
-     .flags = 0,
      .help = N_("only list pool of specified type(s) (if supported)")
     },
     {.name = "details",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("display extended details for pools")
     },
     {.name = NULL}
@@ -1375,17 +1356,14 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     },
     {.name = "host",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("optional host to query")
     },
     {.name = "port",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("optional port to query")
     },
     {.name = "initiator",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("optional initiator IQN to use for query")
     },
     {.name = NULL}
@@ -1464,7 +1442,6 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     },
     {.name = "srcSpec",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("optional file of source xml to query for pools")
     },
     {.name = NULL}

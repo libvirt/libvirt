@@ -110,7 +110,6 @@ static const vshCmdInfo info_node_device_destroy[] = {
 static const vshCmdOptDef opts_node_device_destroy[] = {
     {.name = "name",
      .type = VSH_OT_ALIAS,
-     .flags = 0,
      .help = "device"
     },
     {.name = "device",
@@ -381,12 +380,10 @@ static const vshCmdInfo info_node_list_devices[] = {
 static const vshCmdOptDef opts_node_list_devices[] = {
     {.name = "tree",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list devices in a tree")
     },
     {.name = "cap",
      .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("capability names, separated by comma")
     },
     {.name = NULL}

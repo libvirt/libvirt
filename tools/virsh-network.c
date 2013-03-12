@@ -99,7 +99,6 @@ static const vshCmdOptDef opts_network_autostart[] = {
     },
     {.name = "disable",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("disable autostarting")
     },
     {.name = NULL}
@@ -299,7 +298,6 @@ static const vshCmdOptDef opts_network_dumpxml[] = {
     },
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = VSH_OFLAG_NONE,
      .help = N_("network information of an inactive domain")
     },
     {.name = NULL}
@@ -631,32 +629,26 @@ static const vshCmdInfo info_network_list[] = {
 static const vshCmdOptDef opts_network_list[] = {
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive networks")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive & active networks")
     },
     {.name = "persistent",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list persistent networks")
     },
     {.name = "transient",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list transient networks")
     },
     {.name = "autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list networks with autostart enabled")
     },
     {.name = "no-autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list networks with autostart disabled")
     },
     {.name = NULL}
@@ -881,22 +873,18 @@ static const vshCmdOptDef opts_network_update[] = {
     },
     {.name = "parent-index",
      .type = VSH_OT_INT,
-     .flags = 0,
      .help = N_("which parent object to search through")
     },
     {.name = "config",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("affect next network startup")
     },
     {.name = "live",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("affect running network")
     },
     {.name = "current",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("affect current state of network")
     },
     {.name = NULL}

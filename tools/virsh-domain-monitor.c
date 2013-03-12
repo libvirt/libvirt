@@ -425,12 +425,10 @@ static const vshCmdOptDef opts_domblklist[] = {
     },
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("get inactive rather than running configuration")
     },
     {.name = "details",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("additionally display the type and device value")
     },
     {.name = NULL}
@@ -541,7 +539,6 @@ static const vshCmdOptDef opts_domiflist[] = {
     },
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("get inactive rather than running configuration")
     },
     {.name = NULL}
@@ -652,12 +649,10 @@ static const vshCmdOptDef opts_domif_getlink[] = {
     },
     {.name = "persistent",
      .type = VSH_OT_ALIAS,
-     .flags = 0,
      .help = "config"
     },
     {.name = "config",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("Get persistent interface state")
     },
     {.name = NULL}
@@ -848,7 +843,6 @@ static const vshCmdOptDef opts_domblkstat[] = {
     },
     {.name = "human",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("print a more human readable output")
     },
     {.name = NULL}
@@ -1311,7 +1305,6 @@ static const vshCmdOptDef opts_domstate[] = {
     },
     {.name = "reason",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("also print reason for the state")
     },
     {.name = NULL}
@@ -1638,97 +1631,78 @@ cleanup:
 static const vshCmdOptDef opts_list[] = {
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive domains")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list inactive & active domains")
     },
     {.name = "transient",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list transient domains")
     },
     {.name = "persistent",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list persistent domains")
     },
     {.name = "with-snapshot",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains with existing snapshot")
     },
     {.name = "without-snapshot",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains without a snapshot")
     },
     {.name = "state-running",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains in running state")
     },
     {.name = "state-paused",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains in paused state")
     },
     {.name = "state-shutoff",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains in shutoff state")
     },
     {.name = "state-other",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains in other states")
     },
     {.name = "autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains with autostart enabled")
     },
     {.name = "no-autostart",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains with autostart disabled")
     },
     {.name = "with-managed-save",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains with managed save state")
     },
     {.name = "without-managed-save",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domains without managed save")
     },
     {.name = "uuid",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list uuid's only")
     },
     {.name = "name",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list domain names only")
     },
     {.name = "table",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("list table (default)")
     },
     {.name = "managed-save",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("mark inactive domains with managed save state")
     },
     {.name = "title",
      .type = VSH_OT_BOOL,
-     .flags = 0,
      .help = N_("show short domain description")
     },
     {.name = NULL}
