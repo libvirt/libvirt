@@ -448,6 +448,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             fd = virLXCControllerSetupLoopDeviceDisk(disk);
             if (fd < 0)
                 goto cleanup;
+            break;
 
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
