@@ -138,7 +138,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
 {
     int i;
 
-    virCheckFlags(0, -1);
+    virCheckFlagsGoto(0, error);
 
     if (noldfdlist && oldfdlist) {
         size_t nfds;
