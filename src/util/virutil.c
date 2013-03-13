@@ -2998,18 +2998,21 @@ virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
  * errno).
  */
 int
-virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits)
+virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
+                     bool clearExistingCaps)
 {
     int ii, capng_ret, ret = -1;
     bool need_setgid = false, need_setuid = false;
     bool need_prctl = false, need_setpcap = false;
 
-    /* First drop all caps except those in capBits + the extra ones we
-     * need to change uid/gid and change the capabilities bounding
-     * set.
+    /* First drop all caps (unless the requested uid is "unchanged" or
+     * root and clearExistingCaps wasn't requested), then add back
+     * those in capBits + the extra ones we need to change uid/gid and
+     * change the capabilities bounding set.
      */
 
-    capng_clear(CAPNG_SELECT_BOTH);
+    if (clearExistingCaps || (uid != -1 && uid != 0))
+       capng_clear(CAPNG_SELECT_BOTH);
 
     for (ii = 0; ii <= CAP_LAST_CAP; ii++) {
         if (capBits & (1ULL << ii)) {
@@ -3095,7 +3098,8 @@ cleanup:
 
 int
 virSetUIDGIDWithCaps(uid_t uid, gid_t gid,
-                     unsigned long long capBits ATTRIBUTE_UNUSED)
+                     unsigned long long capBits ATTRIBUTE_UNUSED,
+                     bool clearExistingCaps ATTRIBUTE_UNUSED)
 {
     return virSetUIDGID(uid, gid);
 }

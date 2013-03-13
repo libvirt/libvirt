@@ -639,8 +639,10 @@ virExec(virCommandPtr cmd)
         cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
         VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
                   (int)cmd->uid, (int)cmd->gid, cmd->capabilities);
-        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, cmd->capabilities) < 0)
+        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, cmd->capabilities,
+                                 !!(cmd->flags & VIR_EXEC_CLEAR_CAPS)) < 0) {
             goto fork_error;
+        }
     }
 
     if (cmd->pwd) {
