@@ -863,8 +863,41 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
     return virAsprintf(&controller->info.alias, "%s%d", prefix, controller->idx);
 }
 
+static ssize_t
+qemuGetNextChrDevIndex(virDomainDefPtr def,
+                       virDomainChrDefPtr chr,
+                       const char *prefix)
+{
+    virDomainChrDefPtr **arrPtr;
+    size_t *cntPtr;
+    size_t i;
+    ssize_t idx = 0;
+    const char *prefix2 = NULL;
+
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)
+        prefix2 = "serial";
+
+    virDomainChrGetDomainPtrs(def, chr, &arrPtr, &cntPtr);
+
+    for (i = 0; i < *cntPtr; i++) {
+        ssize_t thisidx;
+        if (((thisidx = qemuDomainDeviceAliasIndex(&(*arrPtr)[i]->info, prefix)) < 0) &&
+            (prefix2 &&
+             (thisidx = qemuDomainDeviceAliasIndex(&(*arrPtr)[i]->info, prefix2)) < 0)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to determine device index for character device"));
+            return -1;
+        }
+        if (thisidx >= idx)
+            idx = thisidx + 1;
+    }
+
+    return idx;
+}
+
+
 int
-qemuAssignDeviceChrAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuAssignDeviceChrAlias(virDomainDefPtr def,
                          virDomainChrDefPtr chr,
                          ssize_t idx)
 {
@@ -890,6 +923,9 @@ qemuAssignDeviceChrAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
         return -1;
     }
+
+    if (idx == -1 && (idx = qemuGetNextChrDevIndex(def, chr, prefix)) < 0)
+        return -1;
 
     return virAsprintf(&chr->info.alias, "%s%zd", prefix, idx);
 }

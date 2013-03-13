@@ -6390,6 +6390,13 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
             dev->data.redirdev = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainAttachChrDevice(driver, vm,
+                                        dev->data.chr);
+        if (!ret)
+            dev->data.chr = NULL;
+        break;
+
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live attach of device '%s' is not supported"),
@@ -6476,6 +6483,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         ret = qemuDomainDetachHostDevice(driver, vm, dev);
+        break;
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainDetachChrDevice(driver, vm, dev->data.chr);
         break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -6886,7 +6896,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect;
+    unsigned int affect, parse_flags = 0;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -6934,9 +6944,13 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
          goto endjob;
     }
 
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+        !(flags & VIR_DOMAIN_AFFECT_LIVE))
+        parse_flags |= VIR_DOMAIN_XML_INACTIVE;
+
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             parse_flags);
     if (dev == NULL)
         goto endjob;
 
@@ -7164,7 +7178,7 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect;
+    unsigned int affect, parse_flags = 0;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -7212,9 +7226,13 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
          goto endjob;
     }
 
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+        !(flags & VIR_DOMAIN_AFFECT_LIVE))
+        parse_flags |= VIR_DOMAIN_XML_INACTIVE;
+
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_XML_INACTIVE);
+                                             parse_flags);
     if (dev == NULL)
         goto endjob;
 

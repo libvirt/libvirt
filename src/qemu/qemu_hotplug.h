@@ -104,6 +104,12 @@ int qemuDomainAttachLease(virQEMUDriverPtr driver,
 int qemuDomainDetachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease);
+int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainChrDefPtr chr);
+int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainChrDefPtr chr);
 
 
 int

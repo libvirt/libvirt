@@ -1244,6 +1244,62 @@ qemuDomainChrRemove(virDomainDefPtr vmdef,
 
     return ret;
 }
+
+int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainChrDefPtr chr)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr vmdef = vm->def;
+    char *devstr = NULL;
+    char *charAlias = NULL;
+    bool remove = false;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("qemu does not support -device"));
+        return ret;
+    }
+
+    if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
+        return ret;
+
+    if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
+        return ret;
+
+    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (qemuDomainChrInsert(vmdef, chr) < 0)
+        goto cleanup;
+    remove = true;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto cleanup;
+    }
+
+    if (devstr && qemuMonitorAddDevice(priv->mon, devstr) < 0) {
+        /* detach associated chardev on error */
+        qemuMonitorDetachCharDev(priv->mon, charAlias);
+        qemuDomainObjExitMonitor(driver, vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    ret = 0;
+cleanup:
+    if (ret < 0 && remove)
+        qemuDomainChrRemove(vmdef, chr);
+    VIR_FREE(charAlias);
+    VIR_FREE(devstr);
+    return ret;
+}
+
 int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainHostdevDefPtr hostdev)
@@ -3076,4 +3132,51 @@ int qemuDomainDetachLease(virQEMUDriverPtr driver,
     det_lease = virDomainLeaseRemoveAt(vm->def, idx);
     virDomainLeaseDefFree(det_lease);
     return 0;
+}
+
+int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainChrDefPtr chr)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr vmdef = vm->def;
+    virDomainChrDefPtr tmpChr;
+    char *charAlias = NULL;
+    char *devstr = NULL;
+
+    if (!(tmpChr = virDomainChrFind(vmdef, chr))) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("device not present in domain configuration"));
+        return ret;
+    }
+
+    if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
+        return ret;
+
+    if (virAsprintf(&charAlias, "char%s", tmpChr->info.alias) < 0) {
+        virReportOOMError();
+        return ret;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (devstr && qemuMonitorDelDevice(priv->mon, tmpChr->info.alias) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto cleanup;
+    }
+
+    if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    qemuDomainChrRemove(vmdef, tmpChr);
+    virDomainChrDefFree(tmpChr);
+    ret = 0;
+
+cleanup:
+    VIR_FREE(devstr);
+    VIR_FREE(charAlias);
+    return ret;
 }
