@@ -762,7 +762,6 @@ virNetClientAddStream;
 virNetClientClose;
 virNetClientDupFD;
 virNetClientGetFD;
-virNetClientGetTLSKeySize;
 virNetClientHasPassFD;
 virNetClientIsEncrypted;
 virNetClientIsOpen;
@@ -784,7 +783,6 @@ virNetClientSendNoReply;
 virNetClientSendWithReply;
 virNetClientSendWithReplyStream;
 virNetClientSetCloseCallback;
-virNetClientSetTLSSession;
 
 
 # rpc/virnetclientprogram.h
@@ -844,7 +842,6 @@ virNetServerPreExecRestart;
 virNetServerQuit;
 virNetServerRemoveShutdownInhibition;
 virNetServerRun;
-virNetServerSetTLSContext;
 virNetServerUpdateServices;
 
 
@@ -856,9 +853,7 @@ virNetServerClientGetAuth;
 virNetServerClientGetFD;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
-virNetServerClientGetTLSKeySize;
 virNetServerClientGetUNIXIdentity;
-virNetServerClientHasTLSSession;
 virNetServerClientImmediateClose;
 virNetServerClientInit;
 virNetServerClientInitKeepAlive;
@@ -910,7 +905,6 @@ virNetServerServiceClose;
 virNetServerServiceGetAuth;
 virNetServerServiceGetMaxRequests;
 virNetServerServiceGetPort;
-virNetServerServiceGetTLSContext;
 virNetServerServiceIsReadonly;
 virNetServerServiceNewFD;
 virNetServerServiceNewPostExecRestart;
@@ -952,25 +946,8 @@ virNetSocketRemoteAddrString;
 virNetSocketRemoveIOCallback;
 virNetSocketSendFD;
 virNetSocketSetBlocking;
-virNetSocketSetTLSSession;
 virNetSocketUpdateIOCallback;
 virNetSocketWrite;
-
-
-# rpc/virnettlscontext.h
-virNetTLSContextCheckCertificate;
-virNetTLSContextNewClient;
-virNetTLSContextNewClientPath;
-virNetTLSContextNewServer;
-virNetTLSContextNewServerPath;
-virNetTLSInit;
-virNetTLSSessionGetHandshakeStatus;
-virNetTLSSessionGetKeySize;
-virNetTLSSessionHandshake;
-virNetTLSSessionNew;
-virNetTLSSessionRead;
-virNetTLSSessionSetIOCallbacks;
-virNetTLSSessionWrite;
 
 
 # security/security_driver.h

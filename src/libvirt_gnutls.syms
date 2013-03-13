@@ -1,0 +1,46 @@
+#
+# GNUTLS-specific symbols
+#
+
+# rpc/virnetclient.h
+virNetClientGetTLSKeySize;
+virNetClientSetTLSSession;
+
+
+# rpc/virnetserver.h
+virNetServerSetTLSContext;
+
+
+# rpc/virnetserverclient.h
+virNetServerClientGetTLSKeySize;
+virNetServerClientHasTLSSession;
+
+
+# rpc/virnetserverservice.h
+virNetServerServiceGetTLSContext;
+
+
+# rpc/virnetsocket.h
+virNetSocketSetTLSSession;
+
+
+# rpc/virnettlscontext.h
+virNetTLSContextCheckCertificate;
+virNetTLSContextNewClient;
+virNetTLSContextNewClientPath;
+virNetTLSContextNewServer;
+virNetTLSContextNewServerPath;
+virNetTLSInit;
+virNetTLSSessionGetHandshakeStatus;
+virNetTLSSessionGetKeySize;
+virNetTLSSessionHandshake;
+virNetTLSSessionNew;
+virNetTLSSessionRead;
+virNetTLSSessionSetIOCallbacks;
+virNetTLSSessionWrite;
+
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:

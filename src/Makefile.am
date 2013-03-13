@@ -1458,6 +1458,12 @@ else
 SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif
 
+if WITH_GNUTLS
+USED_SYM_FILES += $(srcdir)/libvirt_gnutls.syms
+else
+SYM_FILES += $(srcdir)/libvirt_gnutls.syms
+endif
+
 if WITH_SSH2
 USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 else
@@ -1481,6 +1487,7 @@ EXTRA_DIST += \
   libvirt_openvz.syms		\
   libvirt_qemu.syms		\
   libvirt_sasl.syms		\
+  libvirt_gnutls.syms		\
   libvirt_vmx.syms		\
   libvirt_xenxs.syms	\
   libvirt_libssh2.syms
