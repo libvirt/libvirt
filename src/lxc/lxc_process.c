@@ -1077,6 +1077,8 @@ int virLXCProcessStart(virConnectPtr conn,
         virReportOOMError();
         goto cleanup;
     }
+    for (i = 0 ; i < vm->def->nconsoles ; i++)
+        ttyFDs[i] = -1;
 
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
@@ -1095,9 +1097,6 @@ int virLXCProcessStart(virConnectPtr conn,
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def, NULL) < 0)
         goto cleanup;
-
-    for (i = 0 ; i < vm->def->nconsoles ; i++)
-        ttyFDs[i] = -1;
 
     for (i = 0 ; i < vm->def->nconsoles ; i++) {
         char *ttyPath;
