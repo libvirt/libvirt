@@ -159,6 +159,20 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr,
     return mcs;
 }
 
+
+/*
+ * This needs to cope with several styles of range
+ *
+ * system_u:system_r:virtd_t:s0
+ * system_u:system_r:virtd_t:s0-s0
+ * system_u:system_r:virtd_t:s0-s0:c0.c1023
+ *
+ * In the first two cases, we'll assume c0.c1023 for
+ * the category part, since that's what we're really
+ * interested in. This won't work in Enforcing mode,
+ * but will prevent libvirtd breaking in Permissive
+ * mode when run with a wierd process label.
+ */
 static int
 virSecuritySELinuxMCSGetProcessRange(char **sens,
                                      int *catMin,
@@ -166,7 +180,8 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
 {
     security_context_t ourSecContext = NULL;
     context_t ourContext = NULL;
-    char *cat, *tmp;
+    char *cat = NULL;
+    char *tmp;
     int ret = -1;
 
     if (getcon_raw(&ourSecContext) < 0) {
@@ -186,19 +201,24 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
         goto cleanup;
     }
 
-    /* Find and blank out the category part */
-    if (!(tmp = strchr(*sens, ':'))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse sensitivity level in %s"),
-                       *sens);
-        goto cleanup;
+    /* Find and blank out the category part (if any) */
+    tmp = strchr(*sens, ':');
+    if (tmp) {
+        *tmp = '\0';
+        cat = tmp + 1;
     }
-    *tmp = '\0';
-    cat = tmp + 1;
     /* Find and blank out the sensitivity upper bound */
     if ((tmp = strchr(*sens, '-')))
         *tmp = '\0';
     /* sens now just contains the sensitivity lower bound */
+
+    /* If there was no category part, just assume c0.c1024 */
+    if (!cat) {
+        *catMin = 0;
+        *catMax = 1024;
+        ret = 0;
+        goto cleanup;
+    }
 
     /* Find & extract category min */
     tmp = cat;
