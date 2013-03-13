@@ -214,7 +214,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
         if (c1 == c2) {
             if (virAsprintf(&mcs, "%s:c%d", sens, catMin + c1) < 0) {
                 virReportOOMError();
-                return NULL;
+                goto cleanup;
             }
         } else {
             if (c1 > c2) {
@@ -224,7 +224,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
             }
             if (virAsprintf(&mcs, "%s:c%d,c%d", sens, catMin + c1, catMin + c2) < 0) {
                 virReportOOMError();
-                return NULL;
+                goto cleanup;
             }
         }
 
