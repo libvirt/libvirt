@@ -6596,6 +6596,21 @@ cleanup:
     return ret;
 }
 
+static int
+qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
+                              virDomainDefPtr def,
+                              virDomainChrDefPtr chr,
+                              virQEMUCapsPtr qemuCaps)
+{
+    char *devstr = NULL;
+
+    if (qemuBuildChrDeviceStr(&devstr, def, chr, qemuCaps) < 0)
+        return -1;
+
+    virCommandAddArgList(cmd, "-device", devstr, NULL);
+    return 0;
+}
+
 qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
     .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
 };
@@ -7675,13 +7690,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
 
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildChrDeviceStr(serial, qemuCaps,
-                                                     def->os.arch,
-                                                     def->os.machine)))
+                if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
             } else {
                 virCommandAddArg(cmd, "-serial");
                 if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
@@ -7712,10 +7722,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
 
-                virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "isa-parallel,chardev=char%s,id=%s",
-                                       parallel->info.alias,
-                                       parallel->info.alias);
+                if (qemuBuildChrDeviceCommandLine(cmd, def, parallel, qemuCaps) < 0)
+                    goto error;
             } else {
                 virCommandAddArg(cmd, "-parallel");
                 if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
@@ -7729,8 +7737,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
         char *devstr;
-        char *addr;
-        int port;
 
         switch (channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
@@ -7749,17 +7755,10 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
-            addr = virSocketAddrFormat(channel->target.addr);
-            if (!addr)
+            if (qemuBuildChrDeviceStr(&devstr, def, channel, qemuCaps) < 0)
                 goto error;
-            port = virSocketAddrGetPort(channel->target.addr);
-
-            virCommandAddArg(cmd, "-netdev");
-            virCommandAddArgFormat(cmd,
-                                   "user,guestfwd=tcp:%s:%i,chardev=char%s,id=user-%s",
-                                   addr, port, channel->info.alias,
-                                   channel->info.alias);
-            VIR_FREE(addr);
+            virCommandAddArgList(cmd, "-netdev", devstr, NULL);
+            VIR_FREE(devstr);
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
@@ -7785,12 +7784,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                 VIR_FREE(devstr);
             }
 
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildVirtioSerialPortDevStr(channel,
-                                                           qemuCaps)))
+            if (qemuBuildChrDeviceCommandLine(cmd, def, channel, qemuCaps) < 0)
                 goto error;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
             break;
         }
     }
@@ -7822,11 +7817,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildSclpDevStr(console)))
+            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
                 goto error;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
             break;
 
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
@@ -7844,12 +7836,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildVirtioSerialPortDevStr(console,
-                                                           qemuCaps)))
+            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
                 goto error;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
             break;
 
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
@@ -8538,11 +8526,12 @@ error:
 /* This function generates the correct '-device' string for character
  * devices of each architecture.
  */
-char *
-qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
-                      virQEMUCapsPtr qemuCaps,
-                      virArch arch,
-                      char *machine)
+static int
+qemuBuildSerialChrDeviceStr(char **deviceStr,
+                            virDomainChrDefPtr serial,
+                            virQEMUCapsPtr qemuCaps,
+                            virArch arch,
+                            char *machine)
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
@@ -8574,7 +8563,7 @@ qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
             }
 
             if (qemuBuildDeviceAddressStr(&cmd, &serial->info, qemuCaps) < 0)
-               goto error;
+                goto error;
         }
     }
 
@@ -8583,12 +8572,135 @@ qemuBuildChrDeviceStr(virDomainChrDefPtr serial,
         goto error;
     }
 
-    return virBufferContentAndReset(&cmd);
+    *deviceStr = virBufferContentAndReset(&cmd);
+    return 0;
 
- error:
+error:
     virBufferFreeAndReset(&cmd);
-    return NULL;
+    return -1;
 }
+
+static int
+qemuBuildParallelChrDeviceStr(char **deviceStr,
+                              virDomainChrDefPtr chr)
+{
+    if (virAsprintf(deviceStr, "isa-parallel,chardev=char%s,id=%s",
+                    chr->info.alias, chr->info.alias) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    return 0;
+}
+
+static int
+qemuBuildChannelChrDeviceStr(char **deviceStr,
+                             virDomainChrDefPtr chr,
+                             virQEMUCapsPtr qemuCaps)
+{
+    int ret = -1;
+    char *addr = NULL;
+    int port;
+
+    switch ((enum virDomainChrChannelTargetType) chr->targetType) {
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
+
+        addr = virSocketAddrFormat(chr->target.addr);
+        if (!addr)
+            return ret;
+        port = virSocketAddrGetPort(chr->target.addr);
+
+        if (virAsprintf(deviceStr,
+                        "user,guestfwd=tcp:%s:%i,chardev=char%s,id=user-%s",
+                        addr, port, chr->info.alias, chr->info.alias) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
+        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(chr, qemuCaps)))
+                goto cleanup;
+        break;
+
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
+        return ret;
+    }
+
+    ret = 0;
+cleanup:
+    VIR_FREE(addr);
+    return ret;
+}
+
+static int
+qemuBuildConsoleChrDeviceStr(char **deviceStr,
+                             virDomainChrDefPtr chr,
+                             virQEMUCapsPtr qemuCaps)
+{
+    int ret = -1;
+
+    switch ((enum virDomainChrConsoleTargetType) chr->targetType) {
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+        if (!(*deviceStr = qemuBuildSclpDevStr(chr)))
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
+        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(chr, qemuCaps)))
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ:
+    case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST:
+        break;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+int
+qemuBuildChrDeviceStr(char **deviceStr,
+                      virDomainDefPtr vmdef,
+                      virDomainChrDefPtr chr,
+                      virQEMUCapsPtr qemuCaps)
+{
+    int ret = -1;
+
+    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        ret = qemuBuildSerialChrDeviceStr(deviceStr, chr, qemuCaps,
+                                          vmdef->os.arch,
+                                          vmdef->os.machine);
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+        ret = qemuBuildParallelChrDeviceStr(deviceStr, chr);
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        ret = qemuBuildChannelChrDeviceStr(deviceStr, chr, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        ret = qemuBuildConsoleChrDeviceStr(deviceStr, chr, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        return ret;
+    }
+
+    return ret;
+}
+
 
 /*
  * This method takes a string representing a QEMU command line ARGV set

@@ -75,12 +75,12 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    qemuBuildCommandLineCallbacksPtr callbacks)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
 
-/* Generate string for arch-specific '-device' parameter */
-char *
-qemuBuildChrDeviceStr (virDomainChrDefPtr serial,
-                       virQEMUCapsPtr qemuCaps,
-                       virArch arch,
-                       char *machine);
+/* Generate '-device' string for chardev device */
+int
+qemuBuildChrDeviceStr(char **deviceStr,
+                      virDomainDefPtr vmdef,
+                      virDomainChrDefPtr chr,
+                      virQEMUCapsPtr qemuCaps);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
