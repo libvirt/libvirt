@@ -1122,9 +1122,11 @@ kvmGetMaxVCPUs(void) {
         return -1;
     }
 
+#ifdef KVM_CAP_MAX_VCPUS
     /* at first try KVM_CAP_MAX_VCPUS to determine the maximum count */
     if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_MAX_VCPUS)) > 0)
         goto cleanup;
+#endif /* KVM_CAP_MAX_VCPUS */
 
     /* as a fallback get KVM_CAP_NR_VCPUS (the recommended maximum number of
      * vcpus). Note that on most machines this is set to 160. */
