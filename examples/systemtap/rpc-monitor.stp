@@ -117,11 +117,9 @@ probe libvirt.rpc.socket_new {
    remoteAddrs[pid(), sock] = remoteAddr;
 }
 
-probe libvirt.rpc.socket_free {
-   if (refs == 1) {
-      delete localAddrs[pid(), sock];
-      delete remoteAddrs[pid(), sock];
-  }
+probe libvirt.rpc.socket_dispose {
+   delete localAddrs[pid(), sock];
+   delete remoteAddrs[pid(), sock];
 }
 
 
@@ -131,13 +129,11 @@ probe libvirt.rpc.client_new {
    print_ts(sprintf("C + %-16p local=%s remote=%s", client, localAddrs[pid(), sock], remoteAddrs[pid(), sock]));
 }
 
-probe libvirt.rpc.client_free {
-   if (refs == 1) {
-     print_ts(sprintf("C - %-16p local=%s remote=%s", client,
-              localAddrs[pid(), clientSocks[pid(), client]],
-	      remoteAddrs[pid(), clientSocks[pid(), client]]));
-     delete clientSocks[pid(), client];
-   }
+probe libvirt.rpc.client_dispose {
+   print_ts(sprintf("C - %-16p local=%s remote=%s", client,
+            localAddrs[pid(), clientSocks[pid(), client]],
+	    remoteAddrs[pid(), clientSocks[pid(), client]]));
+   delete clientSocks[pid(), client];
 }
 
 
@@ -147,13 +143,11 @@ probe libvirt.rpc.server_client_new {
    print_ts(sprintf("+ S %-16p local=%s remote=%s", client, localAddrs[pid(), sock], remoteAddrs[pid(), sock]));
 }
 
-probe libvirt.rpc.server_client_free {
-   if (refs == 1) {
-     print_ts(sprintf("- S %-16p local=%s remote=%s", client,
-              localAddrs[pid(), serverSocks[pid(), client]],
-              remoteAddrs[pid(), serverSocks[pid(), client]]));
-     delete serverSocks[pid(), client];
-   }
+probe libvirt.rpc.server_client_dispose {
+   print_ts(sprintf("- S %-16p local=%s remote=%s", client,
+            localAddrs[pid(), serverSocks[pid(), client]],
+            remoteAddrs[pid(), serverSocks[pid(), client]]));
+   delete serverSocks[pid(), client];
 }
 
 

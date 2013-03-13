@@ -596,6 +596,9 @@ void virNetClientDispose(void *obj)
     virNetClientPtr client = obj;
     int i;
 
+    PROBE(RPC_CLIENT_DISPOSE,
+          "client=%p", client);
+
     if (client->closeFf)
         client->closeFf(client->closeOpaque);
 

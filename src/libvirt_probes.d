@@ -26,6 +26,7 @@ provider libvirt {
 	# file: src/rpc/virnetsocket.c
 	# prefix: rpc
 	probe rpc_socket_new(void *sock, int fd, int errfd, pid_t pid, const char *localAddr, const char *remoteAddr);
+	probe rpc_socket_dispose(void *sock);
 	probe rpc_socket_send_fd(void *sock, int fd);
 	probe rpc_socket_recv_fd(void *sock, int fd);
 
@@ -33,7 +34,7 @@ provider libvirt {
 	# file: src/rpc/virnetserverclient.c
 	# prefix: rpc
 	probe rpc_server_client_new(void *client, void *sock);
-
+	probe rpc_server_client_dispose(void *client);
 	probe rpc_server_client_msg_tx_queue(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 	probe rpc_server_client_msg_rx(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 
@@ -41,7 +42,7 @@ provider libvirt {
 	# file: src/rpc/virnetclient.c
 	# prefix: rpc
 	probe rpc_client_new(void *client, void *sock);
-
+	probe rpc_client_dispose(void *client);
 	probe rpc_client_msg_tx_queue(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 	probe rpc_client_msg_rx(void *client, int len, int prog, int vers, int proc, int type, int status, int serial);
 
@@ -57,14 +58,14 @@ provider libvirt {
 	# prefix: rpc
 	probe rpc_tls_context_new(void *ctxt, const char *cacert, const char *cacrl,
 				  const char *cert, const char *key, int sanityCheckCert, int requireValidCert, int isServer);
-
+	probe rpc_tls_context_dispose(void *ctxt);
 	probe rpc_tls_context_session_allow(void *ctxt, void *sess, const char *dname);
 	probe rpc_tls_context_session_deny(void *ctxt, void *sess, const char *dname);
 	probe rpc_tls_context_session_fail(void *ctxt, void *sess);
 
 
 	probe rpc_tls_session_new(void *sess, void *ctxt, const char *hostname, int isServer);
-
+	probe rpc_tls_session_dispose(void *sess);
 	probe rpc_tls_session_handshake_pass(void *sess);
 	probe rpc_tls_session_handshake_fail(void *sess);
 
@@ -72,6 +73,7 @@ provider libvirt {
 	# file: src/rpc/virkeepalive.c
 	# prefix: rpc
 	probe rpc_keepalive_new(void *ka, void *client);
+	probe rpc_keepalive_dispose(void *ka);
 	probe rpc_keepalive_start(void *ka, void *client, int interval, int count);
 	probe rpc_keepalive_stop(void *ka, void *client);
 	probe rpc_keepalive_send(void *ka, void *client, int prog, int vers, int proc);

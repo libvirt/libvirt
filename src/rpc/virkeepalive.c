@@ -224,6 +224,9 @@ virKeepAliveDispose(void *obj)
 {
     virKeepAlivePtr ka = obj;
 
+    PROBE(RPC_KEEPALIVE_DISPOSE,
+          "ka=%p", ka);
+
     ka->freeCB(ka->client);
 }
 

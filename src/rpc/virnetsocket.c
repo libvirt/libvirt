@@ -996,7 +996,9 @@ void virNetSocketDispose(void *obj)
 {
     virNetSocketPtr sock = obj;
 
-    VIR_DEBUG("sock=%p fd=%d", sock, sock->fd);
+    PROBE(RPC_SOCKET_DISPOSE,
+          "sock=%p", sock);
+
     if (sock->watch > 0) {
         virEventRemoveHandle(sock->watch);
         sock->watch = -1;

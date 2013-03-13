@@ -704,6 +704,9 @@ void virNetServerClientDispose(void *obj)
 {
     virNetServerClientPtr client = obj;
 
+    PROBE(RPC_SERVER_CLIENT_DISPOSE,
+          "client=%p", client);
+
     if (client->privateData &&
         client->privateDataFreeFunc)
         client->privateDataFreeFunc(client->privateData);
