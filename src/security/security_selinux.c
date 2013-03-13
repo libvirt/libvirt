@@ -105,16 +105,69 @@ virSecuritySELinuxMCSRemove(virSecurityManagerPtr mgr,
 
 
 static char *
-virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
+virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr,
+                          const char *sens,
+                          int catMin,
+                          int catMax)
 {
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
-    int c1 = 0;
-    int c2 = 0;
+    int catRange;
     char *mcs = NULL;
+
+    /* +1 since virRandomInt range is exclusive of the upper bound */
+    catRange = (catMax - catMin) + 1;
+
+    if (catRange < 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Category range c%d-c%d too small"),
+                       catMin, catMax);
+        return NULL;
+    }
+
+    VIR_DEBUG("Using sensitivity level '%s' cat min %d max %d range %d",
+              sens, catMin, catMax, catRange);
+
+    for (;;) {
+        int c1 = virRandomInt(catRange);
+        int c2 = virRandomInt(catRange);
+
+        VIR_DEBUG("Try cat %s:c%d,c%d", sens, c1 + catMin, c2 + catMin);
+
+        if (c1 == c2) {
+            if (virAsprintf(&mcs, "%s:c%d", sens, catMin + c1) < 0) {
+                virReportOOMError();
+                return NULL;
+            }
+        } else {
+            if (c1 > c2) {
+                int t = c1;
+                c1 = c2;
+                c2 = t;
+            }
+            if (virAsprintf(&mcs, "%s:c%d,c%d", sens, catMin + c1, catMin + c2) < 0) {
+                virReportOOMError();
+                return NULL;
+            }
+        }
+
+        if (virHashLookup(data->mcs, mcs) == NULL)
+            break;
+
+        VIR_FREE(mcs);
+    }
+
+    return mcs;
+}
+
+static int
+virSecuritySELinuxMCSGetProcessRange(char **sens,
+                                     int *catMin,
+                                     int *catMax)
+{
     security_context_t ourSecContext = NULL;
     context_t ourContext = NULL;
-    char *sens, *cat, *tmp;
-    int catMin, catMax, catRange;
+    char *cat, *tmp;
+    int ret = -1;
 
     if (getcon_raw(&ourSecContext) < 0) {
         virReportSystemError(errno, "%s",
@@ -128,22 +181,22 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
         goto cleanup;
     }
 
-    if (!(sens = strdup(context_range_get(ourContext)))) {
+    if (!(*sens = strdup(context_range_get(ourContext)))) {
         virReportOOMError();
         goto cleanup;
     }
 
     /* Find and blank out the category part */
-    if (!(tmp = strchr(sens, ':'))) {
+    if (!(tmp = strchr(*sens, ':'))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse sensitivity level in %s"),
-                       sens);
+                       *sens);
         goto cleanup;
     }
     *tmp = '\0';
     cat = tmp + 1;
     /* Find and blank out the sensitivity upper bound */
-    if ((tmp = strchr(sens, '-')))
+    if ((tmp = strchr(*sens, '-')))
         *tmp = '\0';
     /* sens now just contains the sensitivity lower bound */
 
@@ -156,7 +209,7 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
         goto cleanup;
     }
     tmp++;
-    if (virStrToLong_i(tmp, &tmp, 10, &catMin) < 0) {
+    if (virStrToLong_i(tmp, &tmp, 10, catMin) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse category in %s"),
                        cat);
@@ -186,60 +239,21 @@ virSecuritySELinuxMCSFind(virSecurityManagerPtr mgr)
         goto cleanup;
     }
     tmp++;
-    if (virStrToLong_i(tmp, &tmp, 10, &catMax) < 0) {
+    if (virStrToLong_i(tmp, &tmp, 10, catMax) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot parse category in %s"),
                        cat);
         goto cleanup;
     }
 
-    /* +1 since virRandomInt range is exclusive of the upper bound */
-    catRange = (catMax - catMin) + 1;
-
-    if (catRange < 8) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Category range c%d-c%d too small"),
-                       catMin, catMax);
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Using sensitivity level '%s' cat min %d max %d range %d",
-              sens, catMin, catMax, catRange);
-
-    for (;;) {
-        c1 = virRandomInt(catRange);
-        c2 = virRandomInt(catRange);
-        VIR_DEBUG("Try cat %s:c%d,c%d", sens, c1+catMin, c2+catMin);
-
-        if (c1 == c2) {
-            if (virAsprintf(&mcs, "%s:c%d", sens, catMin + c1) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else {
-            if (c1 > c2) {
-                int t = c1;
-                c1 = c2;
-                c2 = t;
-            }
-            if (virAsprintf(&mcs, "%s:c%d,c%d", sens, catMin + c1, catMin + c2) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
-
-        if (virHashLookup(data->mcs, mcs) == NULL)
-            goto cleanup;
-
-        VIR_FREE(mcs);
-    }
+    ret = 0;
 
 cleanup:
-    VIR_DEBUG("Found context '%s'", NULLSTR(mcs));
-    VIR_FREE(sens);
+    if (ret < 0)
+        VIR_FREE(*sens);
     freecon(ourSecContext);
     context_free(ourContext);
-    return mcs;
+    return ret;
 }
 
 static char *
@@ -559,6 +573,8 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
     virSecurityLabelDefPtr seclabel;
     virSecuritySELinuxDataPtr data;
     const char *baselabel;
+    char *sens = NULL;
+    int catMin, catMax;
 
     if (mgr == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -615,7 +631,15 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
-        if (!(mcs = virSecuritySELinuxMCSFind(mgr)))
+        if (virSecuritySELinuxMCSGetProcessRange(&sens,
+                                                 &catMin,
+                                                 &catMax) < 0)
+            goto cleanup;
+
+        if (!(mcs = virSecuritySELinuxMCSFind(mgr,
+                                              sens,
+                                              catMin,
+                                              catMax)))
             goto cleanup;
 
         if (virSecuritySELinuxMCSAdd(mgr, mcs) < 0)
@@ -694,6 +718,7 @@ cleanup:
         context_free(ctx);
     VIR_FREE(scontext);
     VIR_FREE(mcs);
+    VIR_FREE(sens);
 
     VIR_DEBUG("model=%s label=%s imagelabel=%s baselabel=%s",
               NULLSTR(seclabel->model),
