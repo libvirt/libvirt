@@ -863,6 +863,36 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
     return virAsprintf(&controller->info.alias, "%s%d", prefix, controller->idx);
 }
 
+int
+qemuAssignDeviceChrAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                         virDomainChrDefPtr chr,
+                         ssize_t idx)
+{
+    const char *prefix = NULL;
+
+    switch ((enum virDomainChrDeviceType) chr->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+        prefix = "parallel";
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        prefix = "serial";
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        prefix = "console";
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        prefix = "channel";
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        return -1;
+    }
+
+    return virAsprintf(&chr->info.alias, "%s%zd", prefix, idx);
+}
 
 int
 qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
@@ -918,19 +948,19 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nparallels; i++) {
-        if (virAsprintf(&def->parallels[i]->info.alias, "parallel%zu", i) < 0)
+        if (qemuAssignDeviceChrAlias(def, def->parallels[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nserials; i++) {
-        if (virAsprintf(&def->serials[i]->info.alias, "serial%zu", i) < 0)
+        if (qemuAssignDeviceChrAlias(def, def->serials[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nchannels; i++) {
-        if (virAsprintf(&def->channels[i]->info.alias, "channel%zu", i) < 0)
+        if (qemuAssignDeviceChrAlias(def, def->channels[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nconsoles; i++) {
-        if (virAsprintf(&def->consoles[i]->info.alias, "console%zu", i) < 0)
+        if (qemuAssignDeviceChrAlias(def, def->consoles[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nhubs; i++) {

@@ -260,6 +260,9 @@ int qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx);
 int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
 int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx);
+int qemuAssignDeviceChrAlias(virDomainDefPtr def,
+                             virDomainChrDefPtr chr,
+                             ssize_t idx);
 
 int
 qemuParseKeywords(const char *str,
