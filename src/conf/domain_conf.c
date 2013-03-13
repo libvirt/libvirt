@@ -4824,9 +4824,6 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                            driverType);
             goto error;
         }
-    } else if (def->type == VIR_DOMAIN_DISK_TYPE_FILE ||
-               def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-        def->format = caps->defaultDiskDriverType;
     }
 
     if (mirrorFormat) {
@@ -4837,8 +4834,6 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                            driverType);
             goto error;
         }
-    } else if (def->mirror) {
-        def->mirrorFormat = caps->defaultDiskDriverType;
     }
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE

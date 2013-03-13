@@ -693,13 +693,41 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                 goto no_memory;
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        !dev->data.disk->driverName &&
-        driver &&
-        (cfg = virQEMUDriverGetConfig(driver))) {
-        if (!cfg->allowDiskFormatProbing &&
-            !(dev->data.disk->driverName = strdup("qemu"))) {
-            goto no_memory;
+    /* set default disk types and drivers */
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        virDomainDiskDefPtr disk = dev->data.disk;
+
+        /* both of these require data from the driver config */
+        if (driver && (cfg = virQEMUDriverGetConfig(driver))) {
+            /* assign default storage format and driver according to config */
+            if (cfg->allowDiskFormatProbing) {
+                /* default disk format for drives */
+                if (disk->format == VIR_STORAGE_FILE_NONE &&
+                    (disk->type == VIR_DOMAIN_DISK_TYPE_FILE ||
+                     disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    disk->format = VIR_STORAGE_FILE_AUTO;
+
+                 /* default disk format for mirrored drive */
+                if (disk->mirror &&
+                    disk->mirrorFormat == VIR_STORAGE_FILE_NONE)
+                    disk->mirrorFormat = VIR_STORAGE_FILE_AUTO;
+            } else {
+                /* default driver if probing is forbidden */
+                if (!disk->driverName &&
+                    !(disk->driverName = strdup("qemu")))
+                        goto no_memory;
+
+                /* default disk format for drives */
+                if (disk->format == VIR_STORAGE_FILE_NONE &&
+                    (disk->type == VIR_DOMAIN_DISK_TYPE_FILE ||
+                     disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK))
+                    disk->format = VIR_STORAGE_FILE_RAW;
+
+                 /* default disk format for mirrored drive */
+                if (disk->mirror &&
+                    disk->mirrorFormat == VIR_STORAGE_FILE_NONE)
+                    disk->mirrorFormat = VIR_STORAGE_FILE_RAW;
+            }
         }
     }
 

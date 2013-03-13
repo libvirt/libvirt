@@ -163,7 +163,6 @@ struct _virCaps {
 
     /* Move to virDomainXMLOption later */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
-    int defaultDiskDriverType; /* enum virStorageFileFormat */
     int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
     bool hasWideScsiBus;
 };

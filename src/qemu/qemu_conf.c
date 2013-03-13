@@ -574,12 +574,6 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     if (!(caps = virQEMUCapsInit(driver->qemuCapsCache)))
         goto no_memory;
 
-    if (cfg->allowDiskFormatProbing) {
-        caps->defaultDiskDriverType = VIR_STORAGE_FILE_AUTO;
-    } else {
-        caps->defaultDiskDriverType = VIR_STORAGE_FILE_RAW;
-    }
-
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
