@@ -37,7 +37,7 @@ typedef void (*virLXCMonitorCallbackEOFNotify)(virLXCMonitorPtr mon,
                                                virDomainObjPtr vm);
 
 typedef void (*virLXCMonitorCallbackExitNotify)(virLXCMonitorPtr mon,
-                                                virLXCProtocolExitStatus status,
+                                                virLXCMonitorExitStatus status,
                                                 virDomainObjPtr vm);
 
 typedef void (*virLXCMonitorCallbackInitNotify)(virLXCMonitorPtr mon,

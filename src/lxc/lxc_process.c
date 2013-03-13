@@ -607,19 +607,19 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
 }
 
 static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
-                                           virLXCProtocolExitStatus status,
+                                           virLXCMonitorExitStatus status,
                                            virDomainObjPtr vm)
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
 
     switch (status) {
-    case VIR_LXC_PROTOCOL_EXIT_STATUS_SHUTDOWN:
+    case VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN:
         priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
         break;
-    case VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR:
+    case VIR_LXC_MONITOR_EXIT_STATUS_ERROR:
         priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
         break;
-    case VIR_LXC_PROTOCOL_EXIT_STATUS_REBOOT:
+    case VIR_LXC_MONITOR_EXIT_STATUS_REBOOT:
         priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
         priv->wantReboot = true;
         break;

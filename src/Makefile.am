@@ -460,12 +460,12 @@ LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 $(srcdir)/lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_MONITOR_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
+	  -k virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
 
 $(srcdir)/lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -b virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
+	  -b virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
 
 EXTRA_DIST += \
 	$(LXC_MONITOR_PROTOCOL) \
@@ -1591,7 +1591,9 @@ RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/rpc/virkeepaliveprotocol.x \
 		  $(srcdir)/remote/remote_protocol.x \
 		  $(srcdir)/remote/lxc_protocol.x \
-		  $(srcdir)/remote/qemu_protocol.x
+		  $(srcdir)/remote/qemu_protocol.x \
+		  $(srcdir)/lxc/lxc_monitor_protocol.x \
+		  $(srcdir)/locking/lock_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@

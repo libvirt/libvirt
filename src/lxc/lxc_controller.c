@@ -713,10 +713,10 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     virObjectUnref(svc);
     svc = NULL;
 
-    if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
-                                              VIR_LXC_PROTOCOL_PROGRAM_VERSION,
-                                              virLXCProtocolProcs,
-                                              virLXCProtocolNProcs)))
+    if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_MONITOR_PROGRAM,
+                                              VIR_LXC_MONITOR_PROGRAM_VERSION,
+                                              virLXCMonitorProcs,
+                                              virLXCMonitorNProcs)))
         goto error;
 
     virNetServerUpdateServices(ctrl->server, true);
@@ -1415,25 +1415,25 @@ static int
 virLXCControllerEventSendExit(virLXCControllerPtr ctrl,
                               int exitstatus)
 {
-    virLXCProtocolExitEventMsg msg;
+    virLXCMonitorExitEventMsg msg;
 
     VIR_DEBUG("Exit status %d (client=%p)", exitstatus, ctrl->client);
     memset(&msg, 0, sizeof(msg));
     switch (exitstatus) {
     case 0:
-        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_SHUTDOWN;
+        msg.status = VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN;
         break;
     case 1:
-        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_REBOOT;
+        msg.status = VIR_LXC_MONITOR_EXIT_STATUS_REBOOT;
         break;
     default:
-        msg.status = VIR_LXC_PROTOCOL_EXIT_STATUS_ERROR;
+        msg.status = VIR_LXC_MONITOR_EXIT_STATUS_ERROR;
         break;
     }
 
     virLXCControllerEventSend(ctrl,
-                              VIR_LXC_PROTOCOL_PROC_EXIT_EVENT,
-                              (xdrproc_t)xdr_virLXCProtocolExitEventMsg,
+                              VIR_LXC_MONITOR_PROC_EXIT_EVENT,
+                              (xdrproc_t)xdr_virLXCMonitorExitEventMsg,
                               (void*)&msg);
 
     if (ctrl->client) {
@@ -1451,15 +1451,15 @@ static int
 virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
                               pid_t initpid)
 {
-    virLXCProtocolInitEventMsg msg;
+    virLXCMonitorInitEventMsg msg;
 
     VIR_DEBUG("Init pid %llu", (unsigned long long)initpid);
     memset(&msg, 0, sizeof(msg));
     msg.initpid = initpid;
 
     virLXCControllerEventSend(ctrl,
-                              VIR_LXC_PROTOCOL_PROC_INIT_EVENT,
-                              (xdrproc_t)xdr_virLXCProtocolInitEventMsg,
+                              VIR_LXC_MONITOR_PROC_INIT_EVENT,
+                              (xdrproc_t)xdr_virLXCMonitorInitEventMsg,
                               (void*)&msg);
     return 0;
 }

@@ -68,15 +68,15 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog,
                              virNetClientPtr client,
                              void *evdata, void *opaque);
 
-static virNetClientProgramEvent virLXCProtocolEvents[] = {
-    { VIR_LXC_PROTOCOL_PROC_EXIT_EVENT,
+static virNetClientProgramEvent virLXCMonitorEvents[] = {
+    { VIR_LXC_MONITOR_PROC_EXIT_EVENT,
       virLXCMonitorHandleEventExit,
-      sizeof(virLXCProtocolExitEventMsg),
-      (xdrproc_t)xdr_virLXCProtocolExitEventMsg },
-    { VIR_LXC_PROTOCOL_PROC_INIT_EVENT,
+      sizeof(virLXCMonitorExitEventMsg),
+      (xdrproc_t)xdr_virLXCMonitorExitEventMsg },
+    { VIR_LXC_MONITOR_PROC_INIT_EVENT,
       virLXCMonitorHandleEventInit,
-      sizeof(virLXCProtocolInitEventMsg),
-      (xdrproc_t)xdr_virLXCProtocolInitEventMsg },
+      sizeof(virLXCMonitorInitEventMsg),
+      (xdrproc_t)xdr_virLXCMonitorInitEventMsg },
 };
 
 
@@ -86,7 +86,7 @@ virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                              void *evdata, void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
-    virLXCProtocolExitEventMsg *msg = evdata;
+    virLXCMonitorExitEventMsg *msg = evdata;
 
     VIR_DEBUG("Event exit %d", msg->status);
     if (mon->cb.exitNotify)
@@ -100,7 +100,7 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                              void *evdata, void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
-    virLXCProtocolInitEventMsg *msg = evdata;
+    virLXCMonitorInitEventMsg *msg = evdata;
 
     VIR_DEBUG("Event init %llu",
               (unsigned long long)msg->initpid);
@@ -162,10 +162,10 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     if (virNetClientRegisterAsyncIO(mon->client) < 0)
         goto error;
 
-    if (!(mon->program = virNetClientProgramNew(VIR_LXC_PROTOCOL_PROGRAM,
-                                                VIR_LXC_PROTOCOL_PROGRAM_VERSION,
-                                                virLXCProtocolEvents,
-                                                ARRAY_CARDINALITY(virLXCProtocolEvents),
+    if (!(mon->program = virNetClientProgramNew(VIR_LXC_MONITOR_PROGRAM,
+                                                VIR_LXC_MONITOR_PROGRAM_VERSION,
+                                                virLXCMonitorEvents,
+                                                ARRAY_CARDINALITY(virLXCMonitorEvents),
                                                 mon)))
         goto error;
 

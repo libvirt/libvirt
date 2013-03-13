@@ -57,11 +57,11 @@ while (<>) {
             $auth{$2} = lc $1;
         }
     } else {
-        if (/(\w+)_PROGRAM\s*=\s*0x([a-fA-F0-9]+)\s*;/) {
+        if (/(?:VIR_)?(\w+?)(?:_PROTOCOL)?_PROGRAM\s*=\s*0x([a-fA-F0-9]+)\s*;/) {
             $funcs{lc $1} = { id => hex($2), version => undef, progs => [] };
-        } elsif (/(\w+)_PROTOCOL_VERSION\s*=\s*(\d+)\s*;/) {
+        } elsif (/(?:VIR_)?(\w+?)(?:_PROTOCOL)?_(?:PROGRAM|PROTOCOL)_VERSION\s*=\s*(\d+)\s*;/) {
             $funcs{lc $1}->{version} = $2;
-        } elsif (/(\w+)_PROC_(.*?)\s+=\s+(\d+)/) {
+        } elsif (/(?:VIR_)?(\w+?)(?:_PROTOCOL)?_PROC_(.*?)\s+=\s+(\d+)/) {
             $funcs{lc $1}->{progs}->[$3] = lc $2;
         }
     }
