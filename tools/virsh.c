@@ -3100,12 +3100,12 @@ main(int argc, char **argv)
         ctl->name = vshStrdup(ctl, defaultConn);
     }
 
-    if (!vshParseArgv(ctl, argc, argv)) {
+    if (!vshInit(ctl)) {
         vshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
 
-    if (!vshInit(ctl)) {
+    if (!vshParseArgv(ctl, argc, argv)) {
         vshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
