@@ -10,6 +10,7 @@
 
 #include "internal.h"
 #include "xen/xend_internal.h"
+#include "xen/xen_driver.h"
 #include "xenxs/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
@@ -104,7 +105,7 @@ mymain(void)
     if (!(caps = testXenCapsInit()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = testXenXMLConfInit()))
+    if (!(xmlopt = xenDomainXMLConfInit()))
         return EXIT_FAILURE;
 
     DO_TEST("pv", "pv", "pvtest", 1);

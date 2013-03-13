@@ -420,6 +420,27 @@ cleanup:
     umlDriverUnlock(driver);
 }
 
+
+static int
+umlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                             virDomainDefPtr def ATTRIBUTE_UNUSED,
+                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML;
+
+    return 0;
+}
+
+
+virDomainDefParserConfig umlDriverDomainDefParserConfig = {
+    .devicesPostParseCallback = umlDomainDeviceDefPostParse,
+};
+
+
 /**
  * umlStartup:
  *
@@ -505,7 +526,8 @@ umlStartup(bool privileged,
     if ((uml_driver->caps = umlCapsInit()) == NULL)
         goto out_of_memory;
 
-    if (!(uml_driver->xmlopt = virDomainXMLOptionNew(NULL, &privcb, NULL)))
+    if (!(uml_driver->xmlopt = virDomainXMLOptionNew(&umlDriverDomainDefParserConfig,
+                                                     &privcb, NULL)))
         goto error;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {

@@ -8,13 +8,6 @@
 # include "domain_conf.h"
 
 
-static int testLXCDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                     virArch arch ATTRIBUTE_UNUSED)
-{
-    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
-}
-
-
 virCapsPtr testLXCCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -22,8 +15,6 @@ virCapsPtr testLXCCapsInit(void) {
     if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
                                    0, 0)) == NULL)
         return NULL;
-
-    caps->defaultConsoleTargetType = testLXCDefaultConsoleType;
 
     if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_I686,
                                          "/usr/libexec/libvirt_lxc", NULL,

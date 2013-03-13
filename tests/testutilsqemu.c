@@ -55,15 +55,6 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
     return machines;
 }
 
-static int testQemuDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                      virArch arch)
-{
-    if (arch == VIR_ARCH_S390 ||
-        arch == VIR_ARCH_S390X)
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
-    else
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-}
 
 static int testQemuAddPPC64Guest(virCapsPtr caps)
 {
@@ -199,8 +190,6 @@ virCapsPtr testQemuCapsInit(void) {
     if ((caps = virCapabilitiesNew(host_cpu.arch,
                                    0, 0)) == NULL)
         return NULL;
-
-    caps->defaultConsoleTargetType = testQemuDefaultConsoleType;
 
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
         (machines = testQemuAllocMachines(&nmachines)) == NULL)

@@ -226,6 +226,8 @@ typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 
 char *xenDomainUsedCpus(virDomainPtr dom);
 
+virDomainXMLOptionPtr xenDomainXMLConfInit(void);
+
 void xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr info);
 int  xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr info,
                              int id, char *name,

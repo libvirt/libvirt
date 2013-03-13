@@ -856,17 +856,6 @@ error:
 }
 
 
-static int virQEMUCapsDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                         virArch arch)
-{
-    if (arch == VIR_ARCH_S390 ||
-        arch == VIR_ARCH_S390X)
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
-    else
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-}
-
-
 virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 {
     virCapsPtr caps;
@@ -905,8 +894,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
                                  virArchFromHost(),
                                  i) < 0)
             goto error;
-
-    caps->defaultConsoleTargetType = virQEMUCapsDefaultConsoleType;
 
     return caps;
 

@@ -168,13 +168,6 @@ error:
 }
 
 
-static int openvzDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                    virArch arch ATTRIBUTE_UNUSED)
-{
-    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
-}
-
-
 virCapsPtr openvzCapsInit(void)
 {
     virCapsPtr caps;
@@ -204,9 +197,8 @@ virCapsPtr openvzCapsInit(void)
                                       NULL) == NULL)
         goto no_memory;
 
-    caps->defaultConsoleTargetType = openvzDefaultConsoleType;
-
     return caps;
+
 no_memory:
     virObjectUnref(caps);
     return NULL;

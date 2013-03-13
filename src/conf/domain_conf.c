@@ -385,6 +385,7 @@ VIR_ENUM_IMPL(virDomainChrChannelTarget,
 
 VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
+              "none",
               "serial",
               "xen",
               "uml",
@@ -2347,9 +2348,11 @@ virDomainDeviceInfoClearCCWAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return 0;
 }
 
-int virDomainDeviceInfoIterate(virDomainDefPtr def,
-                               virDomainDeviceInfoCallback cb,
-                               void *opaque)
+static int
+virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
+                                   virDomainDeviceInfoCallback cb,
+                                   bool all,
+                                   void *opaque)
 {
     int i;
     virDomainDeviceDef device;
@@ -2413,9 +2416,11 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
             return -1;
     }
     for (i = 0; i < def->nconsoles ; i++) {
-        if (i == 0 &&
-            def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
-            STREQ_NULLABLE(def->os.type, "hvm"))
+        if (!all &&
+            i == 0 &&
+            (def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+             def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
+             STREQ_NULLABLE(def->os.type, "hvm"))
             continue;
         device.data.chr = def->consoles[i];
         if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
@@ -2491,16 +2496,112 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
 }
 
 
+int
+virDomainDeviceInfoIterate(virDomainDefPtr def,
+                           virDomainDeviceInfoCallback cb,
+                           void *opaque)
+{
+    return virDomainDeviceInfoIterateInternal(def, cb, false, opaque);
+}
+
+
 static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
                               virCapsPtr caps ATTRIBUTE_UNUSED)
 {
+    int i;
+
     /* verify init path for container based domains */
     if (STREQ(def->os.type, "exe") && !def->os.init) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("init binary must be specified"));
         return -1;
     }
+
+    /*
+     * Some really crazy backcompat stuff for consoles
+     *
+     * Historically the first (and only) '<console>' element in an HVM guest
+     * was treated as being an alias for a <serial> device.
+     *
+     * So if we see that this console device should be a serial device, then we
+     * move the config over to def->serials[0] (or discard it if that already
+     * exists). However, given console can already be filled with aliased data
+     * of def->serials[0]. Keep it then.
+     *
+     * We then fill def->consoles[0] with a stub just so we get sequencing
+     * correct for consoles > 0
+     */
+    if (def->nconsoles > 0 && STREQ(def->os.type, "hvm") &&
+        (def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+         def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)) {
+        /* First verify that only the first console is of type serial */
+        for (i = 1; i < def->nconsoles; i++) {
+            virDomainChrDefPtr cons = def->consoles[i];
+
+            if (cons->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only the first console can be a serial port"));
+                return -1;
+            }
+        }
+
+        /* If there isn't a corresponding serial port:
+         *  - create one and set, the console to be an alias for it
+         *
+         * If there is a corresponding serial port:
+         * - Check if the source definition is equal:
+         *    - if yes: leave it as-is
+         *    - if no: change the console to be alias of the serial port
+         */
+
+        /* create the serial port definition from the console definition */
+        if (def->nserials == 0) {
+            if (VIR_APPEND_ELEMENT(def->serials, def->nserials,
+                                   def->consoles[0]) < 0)
+                goto no_memory;
+
+            /* modify it to be a serial port */
+            def->serials[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+            def->serials[0]->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
+            def->serials[0]->target.port = 0;
+        } else {
+            /* if the console source doesn't match */
+            if (!virDomainChrSourceDefIsEqual(&def->serials[0]->source,
+                                              &def->consoles[0]->source)) {
+                virDomainChrDefFree(def->consoles[0]);
+                def->consoles[0] = NULL;
+            }
+        }
+
+        if (!def->consoles[0]) {
+            /* allocate a new console type for the stolen one */
+            if (VIR_ALLOC(def->consoles[0]) < 0)
+                goto no_memory;
+
+            /* Create an console alias for the serial port */
+            def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+            def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+        }
+    }
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+    return -1;
+}
+
+
+static int
+virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
+                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virCapsPtr caps ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
 
     return 0;
 }
@@ -2520,6 +2621,9 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         if (ret < 0)
             return ret;
     }
+
+    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps)) < 0)
+        return ret;
 
     return 0;
 }
@@ -2564,9 +2668,10 @@ virDomainDefPostParse(virDomainDefPtr def,
     }
 
     /* iterate the devices */
-    if ((ret = virDomainDeviceInfoIterate(def,
-                                          virDomainDefPostParseDeviceIterator,
-                                          &data)) < 0)
+    if ((ret = virDomainDeviceInfoIterateInternal(def,
+                                                  virDomainDefPostParseDeviceIterator,
+                                                  true,
+                                                  &data)) < 0)
         return ret;
 
 
@@ -5923,87 +6028,66 @@ error:
 }
 
 static int
-virDomainChrDefaultTargetType(virCapsPtr caps,
-                              virDomainDefPtr def,
-                              int devtype) {
-
-    int target = -1;
-
-    switch (devtype) {
+virDomainChrDefaultTargetType(int devtype) {
+    switch ((enum virDomainChrDeviceType) devtype) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         virReportError(VIR_ERR_XML_ERROR,
                        _("target type must be specified for %s device"),
                        virDomainChrDeviceTypeToString(devtype));
-        break;
+        return -1;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        if (!caps->defaultConsoleTargetType) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Driver does not have a default console type set"));
-            return -1;
-        }
-        target = caps->defaultConsoleTargetType(def->os.type, def->os.arch);
-        break;
+        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        target = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
-        break;
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
-    default:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
         /* No target type yet*/
-        target = 0;
         break;
     }
 
-    return target;
+    return 0;
 }
 
 static int
-virDomainChrTargetTypeFromString(virCapsPtr caps,
-                                 virDomainDefPtr vmdef,
-                                 virDomainChrDefPtr def,
+virDomainChrTargetTypeFromString(virDomainChrDefPtr def,
                                  int devtype,
                                  const char *targetType)
 {
     int ret = -1;
-    int target = 0;
 
-    if (!targetType) {
-        target = virDomainChrDefaultTargetType(caps, vmdef, devtype);
-        goto out;
-    }
+    if (!targetType)
+        return virDomainChrDefaultTargetType(devtype);
 
-    switch (devtype) {
+    switch ((enum virDomainChrDeviceType) devtype) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        target = virDomainChrChannelTargetTypeFromString(targetType);
+        ret = virDomainChrChannelTargetTypeFromString(targetType);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        target = virDomainChrConsoleTargetTypeFromString(targetType);
+        ret = virDomainChrConsoleTargetTypeFromString(targetType);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        target = virDomainChrSerialTargetTypeFromString(targetType);
+        ret = virDomainChrSerialTargetTypeFromString(targetType);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
-    default:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
         /* No target type yet*/
+        ret = 0;
         break;
     }
 
     def->targetTypeAttr = true;
 
-out:
-    ret = target;
     return ret;
 }
 
 static int
-virDomainChrDefParseTargetXML(virCapsPtr caps,
-                              virDomainDefPtr vmdef,
-                              virDomainChrDefPtr def,
+virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
                               xmlNodePtr cur)
 {
     int ret = -1;
@@ -6013,8 +6097,8 @@ virDomainChrDefParseTargetXML(virCapsPtr caps,
     const char *portStr = NULL;
 
     if ((def->targetType =
-         virDomainChrTargetTypeFromString(caps, vmdef, def,
-                                          def->deviceType, targetType)) < 0) {
+         virDomainChrTargetTypeFromString(def, def->deviceType,
+                                          targetType)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown target type '%s' specified for character device"),
                        targetType);
@@ -6373,9 +6457,7 @@ virDomainChrDefNew(void) {
  *
  */
 static virDomainChrDefPtr
-virDomainChrDefParseXML(virCapsPtr caps,
-                        virDomainDefPtr vmdef,
-                        xmlXPathContextPtr ctxt,
+virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
                         xmlNodePtr node,
                         virSecurityLabelDefPtr* vmSeclabels,
                         int nvmSeclabels,
@@ -6419,7 +6501,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
             if (cur->type == XML_ELEMENT_NODE) {
                 if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                     seenTarget = true;
-                    if (virDomainChrDefParseTargetXML(caps, vmdef, def, cur) < 0) {
+                    if (virDomainChrDefParseTargetXML(def, cur) < 0) {
                         goto error;
                     }
                 }
@@ -6429,7 +6511,7 @@ virDomainChrDefParseXML(virCapsPtr caps,
     }
 
     if (!seenTarget &&
-        ((def->targetType = virDomainChrDefaultTargetType(caps, vmdef, def->deviceType)) < 0))
+        ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
         goto cleanup;
 
     if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
@@ -10557,9 +10639,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
-                                                         def,
-                                                         ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -10587,9 +10667,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
-                                                         def,
-                                                         ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -10619,10 +10697,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        bool create_stub = true;
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
-                                                         def,
-                                                         ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -10630,64 +10705,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!chr)
             goto error;
 
-        /*
-         * Some really crazy backcompat stuff for consoles
-         *
-         * Historically the first (and only) '<console>'
-         * element in an HVM guest was treated as being
-         * an alias for a <serial> device.
-         *
-         * So if we see that this console device should
-         * be a serial device, then we move the config
-         * over to def->serials[0] (or discard it if
-         * that already exists). However, given console
-         * can already be filled with aliased data of
-         * def->serials[0]. Keep it then.
-         *
-         * We then fill def->consoles[0] with a stub
-         * just so we get sequencing correct for consoles
-         * > 0
-         */
-        if (STREQ(def->os.type, "hvm") &&
-            (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)) {
-            if (i != 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only the first console can be a serial port"));
-                virDomainChrDefFree(chr);
-                goto error;
-            }
-
-            /* Either discard or move this chr to the serial config */
-            if (def->nserials != 0) {
-                if (virDomainChrSourceDefIsEqual(&def->serials[0]->source,
-                                                 &chr->source)) {
-                    /* Alias to def->serial[0]. Skip it */
-                    create_stub = false;
-                } else {
-                    virDomainChrDefFree(chr);
-                }
-            } else {
-                if (VIR_ALLOC_N(def->serials, 1) < 0) {
-                    virDomainChrDefFree(chr);
-                    goto no_memory;
-                }
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-                def->nserials = 1;
-                def->serials[0] = chr;
-                chr->target.port = 0;
-            }
-
-            if (create_stub) {
-                /* And create a stub placeholder */
-                if (VIR_ALLOC(chr) < 0)
-                    goto no_memory;
-                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-                chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-            }
-        }
-
         chr->target.port = i;
-
         def->consoles[def->nconsoles++] = chr;
     }
     VIR_FREE(nodes);
@@ -10699,9 +10717,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
-                                                         def,
-                                                         ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -15200,7 +15216,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
             goto error;
 
-
     for (n = 0 ; n < def->nnets ; n++)
         if (virDomainNetDefFormat(buf, def->nets[n], flags) < 0)
             goto error;
@@ -15223,7 +15238,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
          * if it is type == serial
          */
         if (STREQ(def->os.type, "hvm") &&
-            (def->consoles[n]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) &&
+            (def->consoles[n]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+             def->consoles[n]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
             (n < def->nserials)) {
             memcpy(&console, def->serials[n], sizeof(console));
             console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
@@ -15240,6 +15256,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virDomainChrDef console;
         memcpy(&console, def->serials[n], sizeof(console));
         console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        console.targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
             goto error;
     }

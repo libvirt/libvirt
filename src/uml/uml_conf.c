@@ -52,13 +52,6 @@
 #define VIR_FROM_THIS VIR_FROM_UML
 
 
-static int umlDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
-                                 virArch arch ATTRIBUTE_UNUSED)
-{
-    return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML;
-}
-
-
 virCapsPtr umlCapsInit(void) {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -101,8 +94,6 @@ virCapsPtr umlCapsInit(void) {
                                       0,
                                       NULL) == NULL)
         goto error;
-
-    caps->defaultConsoleTargetType = umlDefaultConsoleType;
 
     return caps;
 

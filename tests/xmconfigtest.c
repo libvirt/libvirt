@@ -196,7 +196,7 @@ mymain(void)
     if (!(caps = testXenCapsInit()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = testXenXMLConfInit()))
+    if (!(xmlopt = xenDomainXMLConfInit()))
         return EXIT_FAILURE;
 
 #define DO_TEST(name, version)                                          \

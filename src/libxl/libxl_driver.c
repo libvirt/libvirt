@@ -431,9 +431,28 @@ virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks = {
     .free = libxlDomainObjPrivateFree,
 };
 
+
+static int
+libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                              virDomainDefPtr def,
+                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                              void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
+        STRNEQ(def->os.type, "hvm"))
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+
+    return 0;
+}
+
+
 virDomainDefParserConfig libxlDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
+    .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
 };
+
 
 /* driver must be locked before calling */
 static void

@@ -160,9 +160,6 @@ struct _virCaps {
     size_t nguests;
     size_t nguests_max;
     virCapsGuestPtr *guests;
-
-    /* Move to virDomainXMLOption later */
-    int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
 };
 
 

@@ -93,6 +93,23 @@ virLXCDomainDefPostParse(virDomainDefPtr def,
     return 0;
 }
 
+
+static int
+virLXCDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                               virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               virCapsPtr caps ATTRIBUTE_UNUSED,
+                               void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
+
+    return 0;
+}
+
+
 virDomainDefParserConfig virLXCDriverDomainDefParserConfig = {
     .domainPostParseCallback = virLXCDomainDefPostParse,
+    .devicesPostParseCallback = virLXCDomainDeviceDefPostParse,
 };

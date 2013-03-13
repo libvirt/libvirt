@@ -265,9 +265,34 @@ xenUnifiedXendProbe(void)
 #endif
 
 
+static int
+xenDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                            virDomainDefPtr def,
+                            virCapsPtr caps ATTRIBUTE_UNUSED,
+                            void *opaque ATTRIBUTE_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
+        STRNEQ(def->os.type, "hvm"))
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+
+    return 0;
+}
+
+
 virDomainDefParserConfig xenDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
+    .devicesPostParseCallback = xenDomainDeviceDefPostParse,
 };
+
+
+virDomainXMLOptionPtr
+xenDomainXMLConfInit(void)
+{
+    return virDomainXMLOptionNew(&xenDomainDefParserConfig,
+                                 NULL, NULL);
+}
 
 
 static virDrvOpenStatus
@@ -405,8 +430,7 @@ xenUnifiedOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         goto fail;
     }
 
-    if (!(priv->xmlopt = virDomainXMLOptionNew(&xenDomainDefParserConfig,
-                                               NULL, NULL)))
+    if (!(priv->xmlopt = xenDomainXMLConfInit()))
         goto fail;
 
 #if WITH_XEN_INOTIFY

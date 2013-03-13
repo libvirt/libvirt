@@ -43,14 +43,25 @@
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 
 
-static int xenapiDefaultConsoleType(const char *ostype,
-                                    virArch arch ATTRIBUTE_UNUSED)
+static int
+xenapiDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                               virDomainDefPtr def,
+                               virCapsPtr caps ATTRIBUTE_UNUSED,
+                               void *opaque ATTRIBUTE_UNUSED)
 {
-    if (STREQ(ostype, "hvm"))
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-    else
-        return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
+        STRNEQ(def->os.type, "hvm"))
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+
+    return 0;
 }
+
+
+virDomainDefParserConfig xenapiDomainDefParserConfig = {
+    .devicesPostParseCallback = xenapiDomainDeviceDefPostParse,
+};
 
 
 /*
@@ -82,8 +93,6 @@ getCapsObject(void)
     domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
     if (!domain2)
         goto error_cleanup;
-
-    caps->defaultConsoleTargetType = xenapiDefaultConsoleType;
 
     return caps;
 
@@ -169,7 +178,8 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto error;
     }
 
-    if (!(privP->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL))) {
+    if (!(privP->xmlopt = virDomainXMLOptionNew(&xenapiDomainDefParserConfig,
+                                                NULL, NULL))) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Failed to create XML conf object"));
         goto error;
