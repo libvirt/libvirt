@@ -297,6 +297,18 @@ mymain(void)
     } while (0)
 
     DO_TEST_GEN_LABEL("dynamic unconfined, s0, c0.c1023",
+                      "unconfined_u:unconfined_r:unconfined_t:s0",
+                      true, NULL, NULL,
+                      "unconfined_u", "unconfined_r", "object_r",
+                      "svirt_t", "svirt_image_t",
+                      0, 0, 0, 1023);
+    DO_TEST_GEN_LABEL("dynamic unconfined, s0, c0.c1023",
+                      "unconfined_u:unconfined_r:unconfined_t:s0-s0",
+                      true, NULL, NULL,
+                      "unconfined_u", "unconfined_r", "object_r",
+                      "svirt_t", "svirt_image_t",
+                      0, 0, 0, 1023);
+    DO_TEST_GEN_LABEL("dynamic unconfined, s0, c0.c1023",
                       "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
                       true, NULL, NULL,
                       "unconfined_u", "unconfined_r", "object_r",
