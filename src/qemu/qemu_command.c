@@ -505,7 +505,7 @@ qemuSetScsiControllerModel(virDomainDefPtr def,
             }
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI_PCI)) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support "
                                  "virtio scsi controller"));

@@ -1322,7 +1322,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-blk-ccw", QEMU_CAPS_VIRTIO_CCW },
     { "sclpconsole", QEMU_CAPS_SCLP_S390 },
     { "lsi53c895a", QEMU_CAPS_SCSI_LSI },
-    { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI_PCI },
+    { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
     { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
     { "qxl", QEMU_CAPS_DEVICE_QXL },
