@@ -760,6 +760,10 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
         virSecurityDACRestoreSecurityFileLabel(def->os.initrd) < 0)
         rc = -1;
 
+    if (def->os.dtb &&
+        virSecurityDACRestoreSecurityFileLabel(def->os.dtb) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -820,6 +824,10 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     if (def->os.initrd &&
         virSecurityDACSetOwnership(def->os.initrd, user, group) < 0)
+        return -1;
+
+    if (def->os.dtb &&
+        virSecurityDACSetOwnership(def->os.dtb, user, group) < 0)
         return -1;
 
     return 0;

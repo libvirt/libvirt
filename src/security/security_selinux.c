@@ -1765,6 +1765,10 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
         virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.initrd) < 0)
         rc = -1;
 
+    if (def->os.dtb &&
+        virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.dtb) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -2159,6 +2163,10 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
     if (def->os.initrd &&
         virSecuritySELinuxSetFilecon(def->os.initrd, data->content_context) < 0)
+        return -1;
+
+    if (def->os.dtb &&
+        virSecuritySELinuxSetFilecon(def->os.dtb, data->content_context) < 0)
         return -1;
 
     if (stdin_path) {

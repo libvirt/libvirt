@@ -993,6 +993,10 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.initrd, "r") != 0)
             goto clean;
 
+    if (ctl->def->os.dtb)
+        if (vah_add_file(&buf, ctl->def->os.dtb, "r") != 0)
+            goto clean;
+
     if (ctl->def->os.loader && ctl->def->os.loader)
         if (vah_add_file(&buf, ctl->def->os.loader, "r") != 0)
             goto clean;
