@@ -1383,6 +1383,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUsbHost[] = {
     { "bootindex", QEMU_CAPS_USB_HOST_BOOTINDEX },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
+    { "surfaces", QEMU_CAPS_DEVICE_VIDEO_PRIMARY },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1416,6 +1420,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbRedir) },
     { "usb-host", virQEMUCapsObjectPropsUsbHost,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUsbHost) },
+    { "qxl-vga", virQEMUCapsObjectPropsQxlVga,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxlVga) },
 };
 
 
@@ -1613,6 +1619,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
                          "-device", "usb-redir,?",
                          "-device", "ide-drive,?",
                          "-device", "usb-host,?",
+                         "-device", "qxl-vga,?",
                          NULL);
     /* qemu -help goes to stdout, but qemu -device ? goes to stderr.  */
     virCommandSetErrorBuffer(cmd, &output);
