@@ -92,6 +92,36 @@ error:
     return -1;
 }
 
+static int testQemuAddPPCGuest(virCapsPtr caps)
+{
+    static const char *machine[] = { "g3beige",
+                                     "mac99",
+                                     "prep",
+                                     "ppce500v2" };
+    virCapsGuestMachinePtr *machines = NULL;
+    virCapsGuestPtr guest;
+
+    machines = virCapabilitiesAllocMachines(machine, 1);
+    if (!machines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC,
+                                    "/usr/bin/qemu-system-ppc", NULL,
+                                     1, machines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+error:
+    /* No way to free a guest? */
+    virCapabilitiesFreeMachines(machines, 1);
+    return -1;
+}
+
 static int testQemuAddS390Guest(virCapsPtr caps)
 {
     static const char *s390_machines[] = { "s390-virtio",
@@ -240,6 +270,9 @@ virCapsPtr testQemuCapsInit(void) {
         goto cleanup;
 
     if (testQemuAddPPC64Guest(caps))
+        goto cleanup;
+
+    if (testQemuAddPPCGuest(caps))
         goto cleanup;
 
     if (testQemuAddS390Guest(caps))

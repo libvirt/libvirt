@@ -6152,6 +6152,15 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArgList(cmd, "-initrd", def->os.initrd, NULL);
         if (def->os.cmdline)
             virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
+        if (def->os.dtb) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DTB)) {
+                virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("dtb is not supported with this QEMU binary"));
+                goto error;
+            }
+        }
     } else {
         virCommandAddArgList(cmd, "-bootloader", def->os.bootloader, NULL);
     }
@@ -9238,6 +9247,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
         } else if (STREQ(arg, "-append")) {
             WANT_VALUE();
             if (!(def->os.cmdline = strdup(val)))
+                goto no_memory;
+        } else if (STREQ(arg, "-dtb")) {
+            WANT_VALUE();
+            if (!(def->os.dtb = strdup(val)))
                 goto no_memory;
         } else if (STREQ(arg, "-boot")) {
             const char *token = NULL;

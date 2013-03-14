@@ -1,0 +1,28 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>49545eb3-75e1-2d0a-acdd-f0294406c99e</uuid>
+  <memory unit='KiB'>262144</memory>
+  <currentMemory unit='KiB'>262144</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc' machine='ppce500v2'>hvm</type>
+    <kernel>/media/ram/uImage</kernel>
+    <initrd>/media/ram/ramdisk</initrd>
+    <cmdline>root=/dev/ram rw console=ttyS0,115200</cmdline>
+    <dtb>/media/ram/test.dtb</dtb>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc</emulator>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

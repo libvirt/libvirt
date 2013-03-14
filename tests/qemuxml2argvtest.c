@@ -916,6 +916,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
+    DO_TEST("ppc-dtb", QEMU_CAPS_KVM, QEMU_CAPS_DTB);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlconf);

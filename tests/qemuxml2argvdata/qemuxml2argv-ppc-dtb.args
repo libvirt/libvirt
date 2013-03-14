@@ -1,0 +1,6 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/bin/qemu-system-ppc -S -M ppce500v2 -m 256 -smp 1 -nographic \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-kernel /media/ram/uImage -initrd /media/ram/ramdisk \
+-append 'root=/dev/ram rw console=ttyS0,115200' -dtb /media/ram/test.dtb \
+-usb -net none -serial pty -parallel none

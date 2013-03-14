@@ -210,7 +210,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "rng-random", /* 130 */
               "rng-egd",
-              "virtio-ccw"
+              "virtio-ccw",
+              "dtb",
     );
 
 struct _virQEMUCaps {
@@ -1085,6 +1086,9 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (strstr(help, "dump-guest-core=on|off"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
+
+    if (strstr(help, "-dtb"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
 
     /*
      * Handling of -incoming arg with varying features
@@ -2310,6 +2314,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
 }
 
 

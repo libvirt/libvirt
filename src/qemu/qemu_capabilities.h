@@ -172,6 +172,7 @@ enum virQEMUCapsFlags {
                                            virtio rng */
     QEMU_CAPS_OBJECT_RNG_EGD     = 131, /* EGD protocol daemon for rng */
     QEMU_CAPS_VIRTIO_CCW         = 132, /* -device virtio-*-ccw */
+    QEMU_CAPS_DTB                = 133, /* -dtb file */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
