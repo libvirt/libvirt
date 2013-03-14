@@ -1550,6 +1550,7 @@ struct _virDomainOSDef {
     char *kernel;
     char *initrd;
     char *cmdline;
+    char *dtb;
     char *root;
     char *loader;
     char *bootloader;

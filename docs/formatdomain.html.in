@@ -232,6 +232,7 @@
     &lt;kernel&gt;/root/f8-i386-vmlinuz&lt;/kernel&gt;
     &lt;initrd&gt;/root/f8-i386-initrd&lt;/initrd&gt;
     &lt;cmdline&gt;console=ttyS0 ks=http://example.com/f8-i386/os/&lt;/cmdline&gt;
+    &lt;dtb&gt;/root/ppc.dtb&lt;/dtb&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -253,6 +254,10 @@
         the kernel (or installer) at boottime. This is often used to
         specify an alternate primary console (eg serial port), or the
         installation media source / kickstart file</dd>
+      <dt><code>dtb</code></dt>
+      <dd>The contents of this element specify the fully-qualified path
+        to the (optional) device tree binary (dtb) image in the host OS.
+        <span class="since">Since 1.0.4</span></dd>
     </dl>
 
     <h4><a name="eleemntsOSContainer">Container boot</a></h4>

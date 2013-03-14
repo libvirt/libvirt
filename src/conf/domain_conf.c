@@ -1849,6 +1849,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.kernel);
     VIR_FREE(def->os.initrd);
     VIR_FREE(def->os.cmdline);
+    VIR_FREE(def->os.dtb);
     VIR_FREE(def->os.root);
     VIR_FREE(def->os.loader);
     VIR_FREE(def->os.bootloader);
@@ -10247,6 +10248,7 @@ virDomainDefParseXML(virCapsPtr caps,
         def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
         def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+        def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
         def->os.root = virXPathString("string(./os/root[1])", ctxt);
         def->os.loader = virXPathString("string(./os/loader[1])", ctxt);
     }
@@ -14875,6 +14877,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           def->os.initrd);
     virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n",
                           def->os.cmdline);
+    virBufferEscapeString(buf, "    <dtb>%s</dtb>\n",
+                          def->os.dtb);
     virBufferEscapeString(buf, "    <root>%s</root>\n",
                           def->os.root);
 

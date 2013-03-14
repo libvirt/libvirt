@@ -367,6 +367,7 @@
             <value>g3beige</value>
             <value>mac99</value>
             <value>prep</value>
+            <value>ppce500v2</value>
           </choice>
         </attribute>
       </optional>
@@ -833,6 +834,11 @@
       <optional>
         <element name="cmdline">
           <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="dtb">
+          <ref name="absFilePath"/>
         </element>
       </optional>
     </interleave>
