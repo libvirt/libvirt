@@ -295,17 +295,17 @@ QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
 REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL) $(LXC_PROTOCOL)
 
 $(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
+		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k remote REMOTE $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL)
+		$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k lxc LXC $(LXC_PROTOCOL) > $@
 
 $(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
+		$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k qemu QEMU $(QEMU_PROTOCOL) > $@
 
@@ -458,12 +458,12 @@ LXC_GENERATED = \
 LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 
 $(srcdir)/lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_MONITOR_PROTOCOL)
+		$(LXC_MONITOR_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -k virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
 
 $(srcdir)/lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
+		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
 	  -b virLXCProtocol VIR_LXC_MONITOR_PROTOCOL $(LXC_MONITOR_PROTOCOL) > $@
 
@@ -473,6 +473,8 @@ EXTRA_DIST += \
 	$(NULL)
 
 BUILT_SOURCES += $(LXC_GENERATED)
+
+CLEANFILES += $(LXC_GENERATED)
 
 LXC_DRIVER_SOURCES =						\
 		$(LXC_MONITOR_PROTOCOL_GENERATED)		\
