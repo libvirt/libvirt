@@ -628,7 +628,8 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
  *
  * Returns 0 on success or -1 in case of error
  */
-static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
+static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
+                                               virCgroupPtr cgroup)
 {
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
@@ -637,7 +638,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupNUMAPolicy(ctrl) < 0)
         return -1;
 
-    return virLXCCgroupSetup(ctrl->def);
+    return virLXCCgroupSetup(ctrl->def, cgroup);
 }
 
 
@@ -1473,6 +1474,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     int containerhandshake[2] = { -1, -1 };
     char **containerTTYPaths = NULL;
     size_t i;
+    virCgroupPtr cgroup = NULL;
 
     if (VIR_ALLOC_N(containerTTYPaths, ctrl->nconsoles) < 0) {
         virReportOOMError();
@@ -1494,10 +1496,13 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupPrivateNS() < 0)
         goto cleanup;
 
+    if (!(cgroup = virLXCCgroupCreate(ctrl->def)))
+        goto cleanup;
+
     if (virLXCControllerSetupLoopDevices(ctrl) < 0)
         goto cleanup;
 
-    if (virLXCControllerSetupResourceLimits(ctrl) < 0)
+    if (virLXCControllerSetupResourceLimits(ctrl, cgroup) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupDevPTS(ctrl) < 0)
@@ -1570,6 +1575,7 @@ cleanup:
         VIR_FREE(containerTTYPaths[i]);
     VIR_FREE(containerTTYPaths);
 
+    virCgroupFree(&cgroup);
     virLXCControllerStopInit(ctrl);
 
     return rc;

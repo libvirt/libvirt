@@ -472,7 +472,7 @@ cleanup:
 }
 
 
-int virLXCCgroupSetup(virDomainDefPtr def)
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
 {
     virCgroupPtr driver = NULL;
     virCgroupPtr cgroup = NULL;
@@ -494,6 +494,32 @@ int virLXCCgroupSetup(virDomainDefPtr def)
         goto cleanup;
     }
 
+    rc = virCgroupAddTask(cgroup, getpid());
+    if (rc != 0) {
+        virReportSystemError(-rc,
+                             _("Unable to add task %d to cgroup for domain %s"),
+                             getpid(), def->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    virCgroupFree(&driver);
+    if (ret < 0) {
+        virCgroupFree(&cgroup);
+        return NULL;
+    }
+
+    return cgroup;
+}
+
+
+int virLXCCgroupSetup(virDomainDefPtr def,
+                      virCgroupPtr cgroup)
+{
+    int ret = -1;
+
     if (virLXCCgroupSetupCpuTune(def, cgroup) < 0)
         goto cleanup;
 
@@ -506,19 +532,8 @@ int virLXCCgroupSetup(virDomainDefPtr def)
     if (virLXCCgroupSetupDeviceACL(def, cgroup) < 0)
         goto cleanup;
 
-    rc = virCgroupAddTask(cgroup, getpid());
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to add task %d to cgroup for domain %s"),
-                             getpid(), def->name);
-        goto cleanup;
-    }
-
     ret = 0;
 
 cleanup:
-    virCgroupFree(&cgroup);
-    virCgroupFree(&driver);
-
     return ret;
 }

@@ -26,7 +26,9 @@
 # include "lxc_fuse.h"
 # include "virusb.h"
 
-int virLXCCgroupSetup(virDomainDefPtr def);
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def);
+int virLXCCgroupSetup(virDomainDefPtr def,
+                      virCgroupPtr cgroup);
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo);
 
 int
