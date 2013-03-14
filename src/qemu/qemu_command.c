@@ -899,7 +899,8 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
 {
     /*
        declare address-less virtio devices to be of address type 'type'
-       only disks, networks, consoles, controllers and memballoon for now
+       disks, networks, consoles, controllers, memballoon and rng in this
+       order
     */
     int i;
 
@@ -922,8 +923,10 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->ncontrollers ; i++) {
-        if (def->controllers[i]->type ==
-            VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
+        if ((def->controllers[i]->type ==
+             VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL ||
+             def->controllers[i]->type ==
+             VIR_DOMAIN_CONTROLLER_TYPE_SCSI) &&
             def->controllers[i]->info.type ==
             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->controllers[i]->info.type = type;
@@ -933,6 +936,11 @@ qemuDomainPrimeS390VirtioDevices(virDomainDefPtr def,
         def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
         def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         def->memballoon->info.type = type;
+
+    if (def->rng &&
+        def->rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO &&
+        def->rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        def->rng->info.type = type;
 }
 
 static int
@@ -3277,7 +3285,13 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 
         switch (model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            virBufferAddLit(&buf, "virtio-scsi-pci");
+            if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+                virBufferAddLit(&buf, "virtio-scsi-ccw");
+            else if (def->info.type ==
+                     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
+                virBufferAddLit(&buf, "virtio-scsi-s390");
+            else
+                virBufferAddLit(&buf, "virtio-scsi-pci");
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
             virBufferAddLit(&buf, "lsi");
@@ -4490,7 +4504,12 @@ qemuBuildRNGDeviceArgs(virCommandPtr cmd,
         goto cleanup;
     }
 
-    virBufferAsprintf(&buf, "virtio-rng-pci,rng=%s", dev->info.alias);
+    if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+        virBufferAsprintf(&buf, "virtio-rng-ccw,rng=%s", dev->info.alias);
+    else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
+        virBufferAsprintf(&buf, "virtio-rng-s390,rng=%s", dev->info.alias);
+    else
+        virBufferAsprintf(&buf, "virtio-rng-pci,rng=%s", dev->info.alias);
 
     if (dev->rate > 0) {
         virBufferAsprintf(&buf, ",max-bytes=%u", dev->rate);

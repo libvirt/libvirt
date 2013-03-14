@@ -1323,6 +1323,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "sclpconsole", QEMU_CAPS_SCLP_S390 },
     { "lsi53c895a", QEMU_CAPS_SCSI_LSI },
     { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI },
+    { "virtio-scsi-s390", QEMU_CAPS_VIRTIO_SCSI },
+    { "virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
     { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
     { "qxl", QEMU_CAPS_DEVICE_QXL },
@@ -1336,6 +1338,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "usb-serial", QEMU_CAPS_DEVICE_USB_SERIAL},
     { "usb-net", QEMU_CAPS_DEVICE_USB_NET},
     { "virtio-rng-pci", QEMU_CAPS_DEVICE_VIRTIO_RNG },
+    { "virtio-rng-s390", QEMU_CAPS_DEVICE_VIRTIO_RNG },
+    { "virtio-rng-ccw", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
     { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
 };
