@@ -3011,7 +3011,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
      * change the capabilities bounding set.
      */
 
-    if (clearExistingCaps || (uid != -1 && uid != 0))
+    if (clearExistingCaps || (uid != (uid_t)-1 && uid != 0))
        capng_clear(CAPNG_SELECT_BOTH);
 
     for (ii = 0; ii <= CAP_LAST_CAP; ii++) {
