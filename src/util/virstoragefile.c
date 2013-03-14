@@ -199,7 +199,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_VDI] = {
         64, "\x7f\x10\xda\xbe", ".vdi",
         LV_LITTLE_ENDIAN, 68, 0x00010001,
-        68 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL},
+        64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL},
 
     /* Not direct file formats, but used for various drivers */
     [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
