@@ -389,6 +389,12 @@ sc_prohibit_setuid:
 	halt='use virSetUIDGID, not raw set*id'				\
 	  $(_sc_search_regexp)
 
+# Don't compare *id_t against raw -1.
+sc_prohibit_risky_id_promotion:
+	@prohibit='\b(user|group|[ug]id) *[=!]= *-'			\
+	halt='cast -1 to ([ug]id_t) before comparing against id'	\
+	  $(_sc_search_regexp)
+
 # Use snprintf rather than s'printf, even if buffer is provably large enough,
 # since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
