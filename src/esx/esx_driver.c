@@ -598,7 +598,6 @@ esxCapsInit(esxPrivate *priv)
         return NULL;
     }
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
     caps->defaultConsoleTargetType = esxDefaultConsoleType;

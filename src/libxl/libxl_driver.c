@@ -431,6 +431,10 @@ virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks = {
     .free = libxlDomainObjPrivateFree,
 };
 
+virDomainDefParserConfig libxlDomainDefParserConfig = {
+    .macPrefix = { 0x00, 0x16, 0x3e },
+};
+
 /* driver must be locked before calling */
 static void
 libxlDomainEventQueue(libxlDriverPrivatePtr driver, virDomainEventPtr event)
@@ -1239,7 +1243,7 @@ libxlStartup(bool privileged,
         goto error;
     }
 
-    if (!(libxl_driver->xmlopt = virDomainXMLOptionNew(NULL,
+    if (!(libxl_driver->xmlopt = virDomainXMLOptionNew(&libxlDomainDefParserConfig,
                                                        &libxlDomainXMLPrivateDataCallbacks,
                                                        NULL)))
         goto error;

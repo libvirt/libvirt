@@ -851,10 +851,16 @@ static int vboxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 }
 
 
+static virDomainDefParserConfig vboxDomainDefParserConfig = {
+    .macPrefix = { 0x08, 0x00, 0x27 },
+};
+
+
 static virDomainXMLOptionPtr
 vboxXMLConfInit(void)
 {
-    return virDomainXMLOptionNew(NULL, NULL, NULL);
+    return virDomainXMLOptionNew(&vboxDomainDefParserConfig,
+                                 NULL, NULL);
 }
 
 
@@ -869,8 +875,6 @@ static virCapsPtr vboxCapsInit(void)
 
     if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
-
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x08, 0x00, 0x27 });
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "hvm",

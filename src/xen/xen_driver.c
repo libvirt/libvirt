@@ -265,6 +265,10 @@ xenUnifiedXendProbe(void)
 #endif
 
 
+virDomainDefParserConfig xenDomainDefParserConfig = {
+    .macPrefix = { 0x00, 0x16, 0x3e },
+};
+
 
 static virDrvOpenStatus
 xenUnifiedOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
@@ -401,7 +405,8 @@ xenUnifiedOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
         goto fail;
     }
 
-    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(priv->xmlopt = virDomainXMLOptionNew(&xenDomainDefParserConfig,
+                                               NULL, NULL)))
         goto fail;
 
 #if WITH_XEN_INOTIFY

@@ -85,8 +85,6 @@ libxlBuildCapabilities(virArch hostarch,
     if ((caps = virCapabilitiesNew(hostarch, 1, 1)) == NULL)
         goto no_memory;
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x16, 0x3e });
-
     if (host_pae &&
         virCapabilitiesAddHostFeature(caps, "pae") < 0)
         goto no_memory;

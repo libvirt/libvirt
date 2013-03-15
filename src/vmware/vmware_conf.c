@@ -72,8 +72,6 @@ vmwareCapsInit(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto error;
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]) {0x52, 0x54, 0x00});
-
     /* i686 guests are always supported */
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "hvm",

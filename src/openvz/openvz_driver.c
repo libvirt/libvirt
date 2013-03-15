@@ -832,7 +832,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     }
 
     virMacAddrFormat(&net->mac, macaddr);
-    virCapabilitiesGenerateMac(driver->caps, &host_mac);
+    virDomainNetGenerateMAC(driver->xmlopt, &host_mac);
     virMacAddrFormat(&host_mac, host_macaddr);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||

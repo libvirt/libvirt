@@ -1959,6 +1959,7 @@ struct _virDomainDefParserConfig {
 
     /* data */
     bool hasWideScsiBus;
+    unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
 
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
@@ -1973,6 +1974,8 @@ struct _virDomainXMLPrivateDataCallbacks {
 virDomainXMLOptionPtr virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                                             virDomainXMLPrivateDataCallbacksPtr priv,
                                             virDomainXMLNamespacePtr xmlns);
+
+void virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt, virMacAddrPtr mac);
 
 virDomainXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)

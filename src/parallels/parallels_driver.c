@@ -129,9 +129,6 @@ parallelsBuildCapabilities(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]) {
-                                0x42, 0x1C, 0x00});
-
     if ((guest = virCapabilitiesAddGuest(caps, "hvm",
                                          VIR_ARCH_X86_64,
                                          "parallels",
@@ -911,6 +908,12 @@ parallelsLoadDomains(parallelsConnPtr privconn, const char *domain_name)
     return ret;
 }
 
+
+virDomainDefParserConfig parallelsDomainDefParserConfig = {
+    .macPrefix = {0x42, 0x1C, 0x00},
+};
+
+
 static int
 parallelsOpenDefault(virConnectPtr conn)
 {
@@ -929,7 +932,8 @@ parallelsOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = parallelsBuildCapabilities()))
         goto error;
 
-    if (!(privconn->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(privconn->xmlopt = virDomainXMLOptionNew(&parallelsDomainDefParserConfig,
+                                                 NULL, NULL)))
         goto error;
 
     if (!(privconn->domains = virDomainObjListNew()))

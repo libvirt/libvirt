@@ -2303,8 +2303,6 @@ xenHypervisorBuildCapabilities(virConnectPtr conn, virArch hostarch,
     if ((caps = virCapabilitiesNew(hostarch, 1, 1)) == NULL)
         goto no_memory;
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x16, 0x3e });
-
     if (hvm_type && STRNEQ(hvm_type, "") &&
         virCapabilitiesAddHostFeature(caps, hvm_type) < 0)
         goto no_memory;

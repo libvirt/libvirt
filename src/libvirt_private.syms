@@ -20,10 +20,8 @@ virCapabilitiesDefaultGuestMachine;
 virCapabilitiesFormatXML;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
-virCapabilitiesGenerateMac;
 virCapabilitiesNew;
 virCapabilitiesSetHostCPU;
-virCapabilitiesSetMacPrefix;
 
 
 # conf/cpu_conf.h
@@ -240,6 +238,7 @@ virDomainMemDumpTypeToString;
 virDomainNetDefFree;
 virDomainNetFind;
 virDomainNetFindIdx;
+virDomainNetGenerateMAC;
 virDomainNetGetActualBandwidth;
 virDomainNetGetActualBridgeName;
 virDomainNetGetActualDirectDev;

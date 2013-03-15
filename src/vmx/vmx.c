@@ -522,6 +522,7 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
 
 virDomainDefParserConfig virVMXDomainDefParserConfig = {
     .hasWideScsiBus = true,
+    .macPrefix = {0x00, 0x0c, 0x29},
 };
 
 

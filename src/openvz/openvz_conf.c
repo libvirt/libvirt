@@ -187,8 +187,6 @@ virCapsPtr openvzCapsInit(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
-
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "exe",
                                          caps->host.arch,

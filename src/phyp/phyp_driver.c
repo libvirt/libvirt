@@ -327,10 +327,6 @@ phypCapsInit(void)
             ("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
-    /* XXX shouldn't 'borrow' KVM's prefix */
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]) {
-                                0x52, 0x54, 0x00});
-
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "linux",
                                          caps->host.arch,

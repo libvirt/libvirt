@@ -876,9 +876,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
                                    1, 1)) == NULL)
         goto error;
 
-    /* Using KVM's mac prefix for QEMU too */
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x52, 0x54, 0x00 });
-
     /* Some machines have problematic NUMA toplogy causing
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on

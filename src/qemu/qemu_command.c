@@ -8337,7 +8337,7 @@ qemuFindNICForVLAN(int nnics,
  * match up against. Horribly complicated stuff
  */
 static virDomainNetDefPtr
-qemuParseCommandLineNet(virCapsPtr qemuCaps,
+qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                         const char *val,
                         int nnics,
                         const char **nics)
@@ -8471,7 +8471,7 @@ qemuParseCommandLineNet(virCapsPtr qemuCaps,
     }
 
     if (genmac)
-        virCapabilitiesGenerateMac(qemuCaps, &def->mac);
+        virDomainNetGenerateMAC(xmlopt, &def->mac);
 
 cleanup:
     for (i = 0 ; i < nkeywords ; i++) {
@@ -9561,7 +9561,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
             if (!STRPREFIX(val, "nic") && STRNEQ(val, "none")) {
                 virDomainNetDefPtr net;
-                if (!(net = qemuParseCommandLineNet(qemuCaps, val, nnics, nics)))
+                if (!(net = qemuParseCommandLineNet(xmlopt, val, nnics, nics)))
                     goto error;
                 if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0) {
                     virDomainNetDefFree(net);

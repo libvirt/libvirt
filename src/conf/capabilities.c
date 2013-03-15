@@ -921,17 +921,3 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     return virBufferContentAndReset(&xml);
 }
-
-extern void
-virCapabilitiesSetMacPrefix(virCapsPtr caps,
-                            const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN])
-{
-    memcpy(caps->macPrefix, prefix, sizeof(caps->macPrefix));
-}
-
-extern void
-virCapabilitiesGenerateMac(virCapsPtr caps,
-                           virMacAddrPtr mac)
-{
-    virMacAddrGenerate(caps->macPrefix, mac);
-}

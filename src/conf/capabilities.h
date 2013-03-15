@@ -162,7 +162,6 @@ struct _virCaps {
     virCapsGuestPtr *guests;
 
     /* Move to virDomainXMLOption later */
-    unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     int (*defaultConsoleTargetType)(const char *ostype, virArch guestarch);
 };
 
@@ -174,14 +173,6 @@ virCapabilitiesNew(virArch hostarch,
 
 extern void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
-
-extern void
-virCapabilitiesSetMacPrefix(virCapsPtr caps,
-                            const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN]);
-
-extern void
-virCapabilitiesGenerateMac(virCapsPtr caps,
-                           virMacAddrPtr mac);
 
 extern int
 virCapabilitiesAddHostFeature(virCapsPtr caps,

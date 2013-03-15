@@ -791,6 +791,18 @@ virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
     if (xmlns)
         xmlopt->ns = *xmlns;
 
+    /* Technically this forbids to use one of Xerox's MAC address prefixes in
+     * our hypervisor drivers. This shouldn't ever be a problem.
+     *
+     * Use the KVM prefix as default as it's in the privately administered
+     * range */
+    if (xmlopt->config.macPrefix[0] == 0 &&
+        xmlopt->config.macPrefix[1] == 0 &&
+        xmlopt->config.macPrefix[2] == 0) {
+        xmlopt->config.macPrefix[0] = 0x52;
+        xmlopt->config.macPrefix[1] = 0x54;
+    }
+
     return xmlopt;
 }
 
@@ -5039,6 +5051,14 @@ cleanup:
 }
 
 
+void
+virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt,
+                        virMacAddrPtr mac)
+{
+    virMacAddrGenerate(xmlopt->config.macPrefix, mac);
+}
+
+
 /* Parse a value located at XPATH within CTXT, and store the
  * result into val.  If REQUIRED, then the value must exist;
  * otherwise, the value is optional.  The value is in bytes.
@@ -5407,7 +5427,7 @@ error:
  * @return 0 on success, -1 on failure
  */
 static virDomainNetDefPtr
-virDomainNetDefParseXML(virCapsPtr caps,
+virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                         xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         virBitmapPtr bootMap,
@@ -5592,7 +5612,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
             goto error;
         }
     } else {
-        virCapabilitiesGenerateMac(caps, &def->mac);
+        virDomainNetGenerateMAC(xmlopt, &def->mac);
     }
 
     if (devaddr) {
@@ -8515,7 +8535,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         dev->type = VIR_DOMAIN_DEVICE_NET;
-        if (!(dev->data.net = virDomainNetDefParseXML(caps, node, ctxt,
+        if (!(dev->data.net = virDomainNetDefParseXML(xmlopt, node, ctxt,
                                                       NULL, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
@@ -10492,7 +10512,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->nets, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainNetDefPtr net = virDomainNetDefParseXML(caps,
+        virDomainNetDefPtr net = virDomainNetDefParseXML(xmlopt,
                                                          nodes[i],
                                                          ctxt,
                                                          bootMap,
