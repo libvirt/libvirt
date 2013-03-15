@@ -1209,7 +1209,6 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
 
     for (i = 0 ; i < ncpus ; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
-        int cpu;
         int thread;
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1217,23 +1216,10 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
             goto cleanup;
         }
 
-        if (virJSONValueObjectGetNumberInt(entry, "CPU", &cpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cpu information was missing cpu number"));
-            goto cleanup;
-        }
-
         if (virJSONValueObjectGetNumberInt(entry, "thread_id", &thread) < 0) {
             /* Only qemu-kvm tree includs thread_id, so treat this as
                non-fatal, simply returning no data */
             ret = 0;
-            goto cleanup;
-        }
-
-        if (cpu != i) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected cpu index %d expecting %d"),
-                           i, cpu);
             goto cleanup;
         }
 

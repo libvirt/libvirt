@@ -510,7 +510,6 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
 {
     char *qemucpus = NULL;
     char *line;
-    int lastVcpu = -1;
     pid_t *cpupids = NULL;
     size_t ncpupids = 0;
 
@@ -530,15 +529,11 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
     do {
         char *offset = strchr(line, '#');
         char *end = NULL;
-        int vcpu = 0, tid = 0;
+        int tid = 0;
 
         /* See if we're all done */
         if (offset == NULL)
             break;
-
-        /* Extract VCPU number */
-        if (virStrToLong_i(offset + 1, &end, 10, &vcpu) < 0)
-            goto error;
 
         if (end == NULL || *end != ':')
             goto error;
@@ -552,15 +547,11 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
         if (end == NULL || !c_isspace(*end))
             goto error;
 
-        if (vcpu != (lastVcpu + 1))
-            goto error;
-
         if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
             goto error;
 
-        VIR_DEBUG("vcpu=%d pid=%d", vcpu, tid);
+        VIR_DEBUG("pid=%d", tid);
         cpupids[ncpupids++] = tid;
-        lastVcpu = vcpu;
 
         /* Skip to next data line */
         line = strchr(offset, '\r');
