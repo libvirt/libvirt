@@ -4,6 +4,7 @@
 
 # vmx/vmx.h
 virVMXConvertToUTF8;
+virVMXDomainXMLConfInit;
 virVMXEscapeHex;
 virVMXFormatCDROM;
 virVMXFormatConfig;

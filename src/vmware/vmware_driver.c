@@ -330,7 +330,7 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
 
     /* generate vmx file */
-    vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
+    vmx = virVMXFormatConfig(&ctx, driver->xmlopt, vmdef, 7);
     if (vmx == NULL)
         goto cleanup;
 
@@ -601,7 +601,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
 
     /* generate vmx file */
-    vmx = virVMXFormatConfig(&ctx, driver->caps, vmdef, 7);
+    vmx = virVMXFormatConfig(&ctx, driver->xmlopt, vmdef, 7);
     if (vmx == NULL)
         goto cleanup;
 
@@ -943,7 +943,7 @@ vmwareDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     ctx.parseFileName = vmwareCopyVMXFileName;
 
-    def = virVMXParseConfig(&ctx, driver->caps, nativeConfig);
+    def = virVMXParseConfig(&ctx, driver->xmlopt, nativeConfig);
 
     if (def != NULL)
         xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);

@@ -520,6 +520,18 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
  * Helpers
  */
 
+virDomainDefParserConfig virVMXDomainDefParserConfig = {
+    .hasWideScsiBus = true,
+};
+
+
+virDomainXMLOptionPtr
+virVMXDomainXMLConfInit(void)
+{
+    return virDomainXMLOptionNew(&virVMXDomainDefParserConfig,
+                               NULL, NULL);
+}
+
 char *
 virVMXEscapeHex(const char *string, char escape, const char *special)
 {
@@ -935,7 +947,7 @@ virVMXFloppyDiskNameToUnit(const char *name, int *unit)
 
 
 static int
-virVMXVerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk)
+virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt, virDomainDiskDefPtr disk)
 {
     virDomainDiskDef def;
     virDomainDeviceDriveAddressPtr drive;
@@ -954,7 +966,7 @@ virVMXVerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk)
     def.dst = disk->dst;
     def.bus = disk->bus;
 
-    if (virDomainDiskDefAssignAddress(caps, &def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, &def) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not verify disk address"));
         return -1;
@@ -1211,7 +1223,9 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
  */
 
 virDomainDefPtr
-virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
+virVMXParseConfig(virVMXContext *ctx,
+                  virDomainXMLOptionPtr xmlopt,
+                  const char *vmx)
 {
     bool success = false;
     virConfPtr conf = NULL;
@@ -1588,7 +1602,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
                 continue;
             }
 
-            if (virVMXParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
                                 &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
@@ -1599,7 +1613,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
                 continue;
             }
 
-            if (virVMXParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                  VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
@@ -1614,7 +1628,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
     /* def:disks (ide) */
     for (bus = 0; bus < 2; ++bus) {
         for (unit = 0; unit < 2; ++unit) {
-            if (virVMXParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
                                 &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
@@ -1625,7 +1639,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
                 continue;
             }
 
-            if (virVMXParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
                                 &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
@@ -1639,7 +1653,7 @@ virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps, const char *vmx)
 
     /* def:disks (floppy) */
     for (unit = 0; unit < 2; ++unit) {
-        if (virVMXParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
+        if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
                             VIR_DOMAIN_DISK_BUS_FDC, 0, unit,
                             &def->disks[def->ndisks]) < 0) {
             goto cleanup;
@@ -1950,7 +1964,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
 
 int
-virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
+virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr conf,
                 int device, int busType, int controllerOrBus, int unit,
                 virDomainDiskDefPtr *def)
 {
@@ -2284,7 +2298,7 @@ virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
         goto cleanup;
     }
 
-    if (virDomainDiskDefAssignAddress(caps, *def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, *def) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not assign address to disk '%s'"), (*def)->src);
         goto cleanup;
@@ -3022,7 +3036,7 @@ virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
  */
 
 char *
-virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
+virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDefPtr def,
                    int virtualHW_version)
 {
     char *vmx = NULL;
@@ -3231,7 +3245,7 @@ virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps, virDomainDefPtr def,
 
     /* def:disks */
     for (i = 0; i < def->ndisks; ++i) {
-        if (virVMXVerifyDiskAddress(caps, def->disks[i]) < 0 ||
+        if (virVMXVerifyDiskAddress(xmlopt, def->disks[i]) < 0 ||
             virVMXHandleLegacySCSIDiskDriverName(def, def->disks[i]) < 0) {
             goto cleanup;
         }

@@ -7971,7 +7971,7 @@ error:
  * Will fail if not using the 'index' keyword
  */
 static virDomainDiskDefPtr
-qemuParseCommandLineDisk(virCapsPtr qemuCaps,
+qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                          const char *val,
                          int nvirtiodisk,
                          bool old_style_ceph_args)
@@ -8271,7 +8271,7 @@ qemuParseCommandLineDisk(virCapsPtr qemuCaps,
     else
         def->dst[2] = 'a' + idx;
 
-    if (virDomainDiskDefAssignAddress(qemuCaps, def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, def) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid device name '%s'"), def->dst);
         virDomainDiskDefFree(def);
@@ -9345,7 +9345,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 !disk->dst)
                 goto no_memory;
 
-            if (virDomainDiskDefAssignAddress(qemuCaps, disk) < 0) {
+            if (virDomainDiskDefAssignAddress(xmlopt, disk) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Cannot assign address for device name '%s'"),
                                disk->dst);
@@ -9571,7 +9571,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             }
         } else if (STREQ(arg, "-drive")) {
             WANT_VALUE();
-            if (!(disk = qemuParseCommandLineDisk(qemuCaps, val, nvirtiodisk,
+            if (!(disk = qemuParseCommandLineDisk(xmlopt, val,
+                                                  nvirtiodisk,
                                                   ceph_args != NULL)))
                 goto error;
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)

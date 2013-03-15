@@ -601,7 +601,6 @@ esxCapsInit(esxPrivate *priv)
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
-    caps->hasWideScsiBus = true;
     caps->defaultConsoleTargetType = esxDefaultConsoleType;
 
     if (esxLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0) {
@@ -1100,7 +1099,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto cleanup;
     }
 
-    if (!(priv->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(priv->xmlopt = virVMXDomainXMLConfInit()))
         goto cleanup;
 
     conn->privateData = priv;
@@ -2786,7 +2785,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
 
-    def = virVMXParseConfig(&ctx, priv->caps, vmx);
+    def = virVMXParseConfig(&ctx, priv->xmlopt, vmx);
 
     if (def != NULL) {
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
@@ -2845,7 +2844,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
 
-    def = virVMXParseConfig(&ctx, priv->caps, nativeConfig);
+    def = virVMXParseConfig(&ctx, priv->xmlopt, nativeConfig);
 
     if (def != NULL) {
         xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
@@ -2902,7 +2901,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
 
-    vmx = virVMXFormatConfig(&ctx, priv->caps, def, virtualHW_version);
+    vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 
     virDomainDefFree(def);
 
@@ -3149,7 +3148,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
 
-    vmx = virVMXFormatConfig(&ctx, priv->caps, def, virtualHW_version);
+    vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 
     if (vmx == NULL) {
         goto cleanup;

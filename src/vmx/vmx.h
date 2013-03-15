@@ -29,6 +29,7 @@
 
 typedef struct _virVMXContext virVMXContext;
 
+virDomainXMLOptionPtr virVMXDomainXMLConfInit(void);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -78,7 +79,8 @@ char *virVMXConvertToUTF8(const char *encoding, const char *string);
  * VMX -> Domain XML
  */
 
-virDomainDefPtr virVMXParseConfig(virVMXContext *ctx, virCapsPtr caps,
+virDomainDefPtr virVMXParseConfig(virVMXContext *ctx,
+                                  virDomainXMLOptionPtr xmlopt,
                                   const char *vmx);
 
 int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
@@ -86,9 +88,9 @@ int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
 int virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
                               int *virtualDev);
 
-int virVMXParseDisk(virVMXContext *ctx, virCapsPtr caps, virConfPtr conf,
-                    int device, int busType, int controllerOrBus, int unit,
-                    virDomainDiskDefPtr *def);
+int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
+                    virConfPtr conf, int device, int busType,
+                    int controllerOrBus, int unit, virDomainDiskDefPtr *def);
 
 int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def);
 
@@ -108,7 +110,7 @@ int virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def);
  * Domain XML -> VMX
  */
 
-char *virVMXFormatConfig(virVMXContext *ctx, virCapsPtr caps,
+char *virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
                          virDomainDefPtr def, int virtualHW_version);
 
 int virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);

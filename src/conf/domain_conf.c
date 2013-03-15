@@ -3593,7 +3593,8 @@ virDomainDiskFindByBusAndDst(virDomainDefPtr def,
 }
 
 int
-virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
+virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
+                              virDomainDiskDefPtr def)
 {
     int idx = virDiskNameToIndex(def->dst);
     if (idx < 0) {
@@ -3607,7 +3608,7 @@ virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
     case VIR_DOMAIN_DISK_BUS_SCSI:
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
-        if (caps->hasWideScsiBus) {
+        if (xmlopt->config.hasWideScsiBus) {
             /* For a wide SCSI bus we define the default mapping to be
              * 16 units per bus, 1 bus per controller, many controllers.
              * Unit 7 is the SCSI controller itself. Therefore unit 7
@@ -4046,7 +4047,7 @@ cleanup:
  * @param node XML nodeset to parse for disk definition
  */
 static virDomainDiskDefPtr
-virDomainDiskDefParseXML(virCapsPtr caps,
+virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                          xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
                          virBitmapPtr bootMap,
@@ -4837,7 +4838,7 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     }
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
-        && virDomainDiskDefAssignAddress(caps, def) < 0)
+        && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
         goto error;
 
 cleanup:
@@ -8499,7 +8500,7 @@ virDomainDeviceDefParse(const char *xmlStr,
 
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
-        if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node, ctxt,
+        if (!(dev->data.disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
                                                         NULL, def->seclabels,
                                                         def->nseclabels,
                                                         flags)))
@@ -10391,7 +10392,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps,
+        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(xmlopt,
                                                             nodes[i],
                                                             ctxt,
                                                             bootMap,

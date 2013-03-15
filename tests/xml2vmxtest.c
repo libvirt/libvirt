@@ -37,7 +37,6 @@ testCapsInit(void)
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
 
-    caps->hasWideScsiBus = true;
 
     /* i686 guest */
     guest =
@@ -102,7 +101,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
         goto failure;
     }
 
-    formatted = virVMXFormatConfig(&ctx, caps, def, virtualHW_version);
+    formatted = virVMXFormatConfig(&ctx, xmlopt, def, virtualHW_version);
 
     if (formatted == NULL) {
         goto failure;
@@ -240,7 +239,7 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)))
+    if (!(xmlopt = virVMXDomainXMLConfInit()))
         return EXIT_FAILURE;
 
     ctx.opaque = NULL;
@@ -312,6 +311,7 @@ mymain(void)
     DO_TEST("svga", "svga", 4);
 
     virObjectUnref(caps);
+    virObjectUnref(xmlopt);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

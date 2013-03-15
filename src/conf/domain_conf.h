@@ -1949,11 +1949,16 @@ typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
 typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
 typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
 struct _virDomainDefParserConfig {
+    /* driver domain definition callbacks */
     virDomainDefPostParseCallback domainPostParseCallback;
     virDomainDeviceDefPostParseCallback devicesPostParseCallback;
 
+    /* private data for the callbacks */
     void *priv;
     virFreeCallback privFree;
+
+    /* data */
+    bool hasWideScsiBus;
 };
 
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
@@ -2151,7 +2156,8 @@ int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
-int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
+int virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
+                                  virDomainDiskDefPtr def);
 
 virDomainDiskDefPtr
 virDomainDiskRemove(virDomainDefPtr def, size_t i);

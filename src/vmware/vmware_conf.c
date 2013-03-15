@@ -174,7 +174,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
             goto cleanup;
 
         if ((vmdef =
-             virVMXParseConfig(&ctx, driver->caps, vmx)) == NULL) {
+             virVMXParseConfig(&ctx, driver->xmlopt, vmx)) == NULL) {
             goto cleanup;
         }
 
