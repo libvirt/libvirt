@@ -587,6 +587,12 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
               "usb",
               "pci")
 
+VIR_ENUM_IMPL(virDomainHostdevSubsysPciBackend,
+              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
+              "default",
+              "kvm",
+              "vfio")
+
 VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "storage",
               "misc",
@@ -3683,6 +3689,8 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 {
     xmlNodePtr sourcenode;
     char *managed = NULL;
+    char *backendStr = NULL;
+    int backend;
     int ret = -1;
 
     /* @managed can be read from the xml document - it is always an
@@ -3735,7 +3743,20 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (virDomainHostdevSubsysPciDefParseXML(sourcenode, def, flags) < 0)
             goto error;
+
+        backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT;
+        if ((backendStr = virXPathString("string(./driver/@name)", ctxt)) &&
+            (((backend = virDomainHostdevSubsysPciBackendTypeFromString(backendStr)) < 0) ||
+             backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown PCI device <driver name='%s'/> "
+                             "has been specified"), backendStr);
+            goto error;
+        }
+        def->source.subsys.u.pci.backend = backend;
+
         break;
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (virDomainHostdevSubsysUsbDefParseXML(sourcenode, def) < 0)
             goto error;
@@ -3746,9 +3767,11 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                        virDomainHostdevSubsysTypeToString(def->source.subsys.type));
         goto error;
     }
+
     ret = 0;
 error:
     VIR_FREE(managed);
+    VIR_FREE(backendStr);
     return ret;
 }
 
@@ -13822,6 +13845,19 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 unsigned int flags,
                                 bool includeTypeInAddr)
 {
+    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+        def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT) {
+        const char *backend = virDomainHostdevSubsysPciBackendTypeToString(def->source.subsys.u.pci.backend);
+
+        if (!backend) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected pci hostdev driver name type %d"),
+                           def->source.subsys.u.pci.backend);
+            return -1;
+        }
+        virBufferAsprintf(buf, "<driver name='%s'/>\n", backend);
+    }
+
     virBufferAddLit(buf, "<source");
     if (def->startupPolicy) {
         const char *policy;

@@ -1939,28 +1939,40 @@
       </optional>
       <optional>
         <element name="driver">
-          <optional>
-            <attribute name="name">
-              <choice>
-                <value>qemu</value>
-                <value>vhost</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="txmode">
-              <choice>
-                <value>iothread</value>
-                <value>timer</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <ref name="ioeventfd"/>
-          </optional>
-          <optional>
-            <ref name="event_idx"/>
-          </optional>
+          <choice>
+            <group>
+              <attribute name="name">
+                <choice>
+                  <value>kvm</value>
+                  <value>vfio</value>
+                </choice>
+              </attribute>
+            </group>
+            <group>
+              <optional>
+                <attribute name="name">
+                  <choice>
+                    <value>qemu</value>
+                    <value>vhost</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="txmode">
+                  <choice>
+                    <value>iothread</value>
+                    <value>timer</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
+                <ref name="ioeventfd"/>
+              </optional>
+              <optional>
+                <ref name="event_idx"/>
+              </optional>
+            </group>
+          </choice>
           <empty/>
         </element>
       </optional>
@@ -3107,14 +3119,27 @@
     <attribute name="type">
       <value>pci</value>
     </attribute>
-    <element name="source">
+    <interleave>
       <optional>
-        <ref name="startupPolicy"/>
+        <element name="driver">
+          <attribute name="name">
+            <choice>
+              <value>kvm</value>
+              <value>vfio</value>
+            </choice>
+          </attribute>
+          <empty/>
+        </element>
       </optional>
-      <element name="address">
-        <ref name="pciaddress"/>
+      <element name="source">
+        <optional>
+          <ref name="startupPolicy"/>
+        </optional>
+        <element name="address">
+          <ref name="pciaddress"/>
+        </element>
       </element>
-    </element>
+    </interleave>
   </define>
 
   <define name="hostdevsubsysusb">

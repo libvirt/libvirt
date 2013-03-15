@@ -279,6 +279,20 @@
             use the traditional <code>&lt; hostdev&gt;</code> device
             definition. <span class="since"> Since 0.10.0</span>
 
+            <p>
+              To use VFIO device assignment rather than
+              traditional/legacy KVM device assignment (VFIO is a new
+              method of device assignment that is compatible with UEFI
+              Secure Boot), a &lt;forward type='hostdev'&gt; interface
+              can have an optional <code>driver</code> sub-element
+              with a <code>name</code> attribute set to "vfio". To use
+              legacy KVM device assignment you can
+              set <code>name</code> to "kvm" (or simply omit the
+              &lt;driver&gt; element, since "kvm" is currently the
+              default).
+              <span class="since">Since 1.0.5 (QEMU and KVM only, requires kernel 3.6 or newer)</span>
+            </p>
+
             <p>Note that this "intelligent passthrough" of network
             devices is very similar to the functionality of a
             standard <code>&lt; hostdev&gt;</code> device, the
@@ -360,6 +374,7 @@
         <pre>
 ...
   &lt;forward mode='hostdev' managed='yes'&gt;
+    &lt;driver name='vfio'/&gt;
     &lt;address type='pci' domain='0' bus='4' slot='0' function='1'/&gt;
     &lt;address type='pci' domain='0' bus='4' slot='0' function='2'/&gt;
     &lt;address type='pci' domain='0' bus='4' slot='0' function='3'/&gt;

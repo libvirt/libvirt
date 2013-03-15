@@ -2369,7 +2369,22 @@
       the device as can be found with the <code>lspci</code> or
       with <code>virsh
       nodedev-list</code>. <a href="#elementsAddress">See above</a> for
-      more details on the address element.
+      more details on the address element.</dd>
+      <dt><code>driver</code></dt>
+      <dd>
+        PCI devices can have an optional <code>driver</code>
+        subelement that specifies which backend driver to use for PCI
+        device assignment. Use the <code>name</code> attribute to
+        select either "vfio" (for the new VFIO device assignment
+        backend, which is compatible with UEFI SecureBoot) or "kvm"
+        (for the legacy device assignment handled directly by the KVM
+        kernel module)<span class="since">Since 1.0.5 (QEMU and KVM
+        only, requires kernel 3.6 or newer)</span>. Currently, "kvm"
+        is the default used by libvirt when not explicitly provided,
+        but since the two are functionally equivalent, this default
+        could be changed in the future with no impact to domains that
+        don't specify anything.
+      </dd>
     </dl>
 
 
@@ -2976,6 +2991,18 @@
     </p>
 
     <p>
+      To use VFIO device assignment rather than traditional/legacy KVM
+      device assignment (VFIO is a new method of device assignment
+      that is compatible with UEFI Secure Boot), a type='hostdev'
+      interface can have an optional <code>driver</code> sub-element
+      with a <code>name</code> attribute set to "vfio". To use legacy
+      KVM device assignment you can set <code>name</code> to "kvm" (or
+      simply omit the <code>&lt;driver&gt;</code> element, since "kvm"
+      is currently the default).
+      <span class="since">Since 1.0.5 (QEMU and KVM only, requires kernel 3.6 or newer)</span>
+    </p>
+
+    <p>
       Note that this "intelligent passthrough" of network devices is
       very similar to the functionality of a standard &lt;hostdev&gt;
       device, the difference being that this method allows specifying
@@ -2993,6 +3020,7 @@
   ...
   &lt;devices&gt;
     &lt;interface type='hostdev'&gt;
+      &lt;driver name='vfio'/&gt;
       &lt;source&gt;
         &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/&gt;
       &lt;/source&gt;
@@ -3124,6 +3152,19 @@ qemu-kvm -net nic,model=? /dev/null
         to 'qemu' without error.
         <span class="since">Since 0.8.8 (QEMU and KVM only)</span>
       </dd>
+      <dd>
+        For interfaces of type='hostdev' (PCI passthrough devices)
+        the <code>name</code> attribute can optionally be set to
+        "vfio" or "kvm". "vfio" tells libvirt to use VFIO device
+        assignment rather than traditional KVM device assignment (VFIO
+        is a new method of device assignment that is compatible with
+        UEFI Secure Boot), and "kvm" tells libvirt to use the legacy
+        device assignment performed directly by the kvm kernel module
+        (the default is currently "kvm", but is subject to change).
+        <span class="since">Since 1.0.5 (QEMU and KVM only, requires
+        kernel 3.6 or newer)</span>
+      </dd>
+
       <dt><code>txmode</code></dt>
       <dd>
         The <code>txmode</code> attribute specifies how to handle
