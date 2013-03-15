@@ -3904,16 +3904,14 @@ static const vshCmdOptDef opts_schedinfo[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("domain name, id or uuid")
     },
-    {.name = "set",
-     .type = VSH_OT_STRING,
-     .help = N_("parameter=value")
-    },
     {.name = "weight",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("weight for XEN_CREDIT")
     },
     {.name = "cap",
      .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("cap for XEN_CREDIT")
     },
     {.name = "current",
@@ -3928,72 +3926,100 @@ static const vshCmdOptDef opts_schedinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("get/set value from running domain")
     },
+    {.name = "set",
+     .type = VSH_OT_ARGV,
+     .flags = VSH_OFLAG_NONE,
+     .help = N_("parameter=value")
+    },
     {.name = NULL}
 };
+
+static int
+cmdSchedInfoUpdateOne(vshControl *ctl,
+                      virTypedParameterPtr src_params, int nsrc_params,
+                      virTypedParameterPtr *params,
+                      int *nparams, int *maxparams,
+                      const char *field, const char *value)
+{
+    virTypedParameterPtr param;
+    int ret = -1;
+    int i;
+
+    for (i = 0; i < nsrc_params; i++) {
+        param = &(src_params[i]);
+
+        if (STRNEQ(field, param->field))
+            continue;
+
+        if (virTypedParamsAddFromString(params, nparams, maxparams,
+                                        field, param->type,
+                                        value) < 0) {
+            vshSaveLibvirtError();
+            goto cleanup;
+        }
+        ret = 0;
+        break;
+    }
+
+    if (ret < 0)
+        vshError(ctl, _("invalid scheduler option: %s"), field);
+
+ cleanup:
+    return ret;
+}
 
 static int
 cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
                    virTypedParameterPtr src_params, int nsrc_params,
                    virTypedParameterPtr *update_params)
 {
-    const char *set_arg;
     char *set_field = NULL;
     char *set_val = NULL;
-    virTypedParameterPtr param;
+    const char *val = NULL;
+    const vshCmdOpt *opt = NULL;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
     int ret = -1;
     int rv;
-    int val;
-    int i;
 
-    if (vshCommandOptString(cmd, "set", &set_arg) > 0) {
-        set_field = vshStrdup(ctl, set_arg);
+    while ((opt = vshCommandOptArgv(cmd, opt))) {
+        set_field = vshStrdup(ctl, opt->data);
         if (!(set_val = strchr(set_field, '='))) {
-            vshError(ctl, "%s", _("Invalid syntax for --set, expecting name=value"));
+            vshError(ctl, "%s", _("Invalid syntax for --set, "
+                                  "expecting name=value"));
             goto cleanup;
         }
 
         *set_val = '\0';
         set_val++;
+
+        if (cmdSchedInfoUpdateOne(ctl, src_params, nsrc_params,
+                                  &params, &nparams, &maxparams,
+                                  set_field, set_val) < 0)
+            goto cleanup;
+
+        VIR_FREE(set_field);
     }
 
-    for (i = 0; i < nsrc_params; i++) {
-        param = &(src_params[i]);
+    rv = vshCommandOptStringReq(ctl, cmd, "cap", &val);
+    if (rv < 0 ||
+        (val &&
+         cmdSchedInfoUpdateOne(ctl, src_params, nsrc_params,
+                               &params, &nparams, &maxparams,
+                               "cap", val) < 0))
+        goto cleanup;
 
-        /* Legacy 'weight' and 'cap'  parameter */
-        if (param->type == VIR_TYPED_PARAM_UINT &&
-            (STREQ(param->field, "weight") || STREQ(param->field, "cap")) &&
-            (rv = vshCommandOptInt(cmd, param->field, &val)) != 0) {
-            if (rv < 0) {
-                vshError(ctl, _("Invalid value of %s"), param->field);
-                goto cleanup;
-            }
+    rv = vshCommandOptStringReq(ctl, cmd, "weight", &val);
+    if (rv < 0 ||
+        (val &&
+         cmdSchedInfoUpdateOne(ctl, src_params, nsrc_params,
+                               &params, &nparams, &maxparams,
+                               "weight", val) < 0))
+        goto cleanup;
 
-            if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
-                                      param->field, val) < 0) {
-                vshSaveLibvirtError();
-                goto cleanup;
-            }
-
-            continue;
-        }
-
-        if (set_field && STREQ(set_field, param->field)) {
-            if (virTypedParamsAddFromString(&params, &nparams, &maxparams,
-                                            set_field, param->type,
-                                            set_val) < 0) {
-                vshSaveLibvirtError();
-                goto cleanup;
-            }
-
-            continue;
-        }
-    }
-
-    *update_params = params;
     ret = nparams;
+    *update_params = params;
     params = NULL;
 
 cleanup:
@@ -4083,15 +4109,6 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             if (ret == -1)
                 goto cleanup;
         } else {
-            /* See if we've tried to --set var=val.  If so, the fact that
-               we reach this point (with update == 0) means that "var" did
-               not match any of the settable parameters.  Report the error.  */
-            const char *var_value_pair = NULL;
-            if (vshCommandOptString(cmd, "set", &var_value_pair) > 0) {
-                vshError(ctl, _("invalid scheduler option: %s"),
-                         var_value_pair);
-                goto cleanup;
-            }
             /* When not doing --set, --live and --config do not mix.  */
             if (live && config) {
                 vshError(ctl, "%s",

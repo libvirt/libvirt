@@ -1307,8 +1307,8 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<schedinfo> [I<--set> B<parameter=value>] I<domain> [[I<--config>]
-[I<--live>] | [I<--current>]]
+=item B<schedinfo> I<domain> [[I<--config>] [I<--live>] | [I<--current>]]
+[[I<--set>] B<parameter=value>]...
 
 =item B<schedinfo> [I<--weight> B<number>] [I<--cap> B<number>]
 I<domain>
