@@ -4358,7 +4358,7 @@ static const vshCmdOptDef opts_dump[] = {
     {.name = "bypass-cache",
      .type = VSH_OT_BOOL,
      .flags = 0,
-     .help = N_("avoid file system cache when saving")
+     .help = N_("avoid file system cache when dumping")
     },
     {.name = "reset",
      .type = VSH_OT_BOOL,
