@@ -199,22 +199,12 @@ error:
 }
 
 
-static int virLXCControllerCloseLoopDevices(virLXCControllerPtr ctrl,
-                                            bool force)
+static int virLXCControllerCloseLoopDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
 
-    for (i = 0 ; i < ctrl->nloopDevs ; i++) {
-        if (force) {
-            VIR_FORCE_CLOSE(ctrl->loopDevFds[i]);
-        } else {
-            if (VIR_CLOSE(ctrl->loopDevFds[i]) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to close loop device"));
-                return -1;
-            }
-        }
-    }
+    for (i = 0 ; i < ctrl->nloopDevs ; i++)
+        VIR_FORCE_CLOSE(ctrl->loopDevFds[i]);
 
     return 0;
 }
@@ -225,7 +215,7 @@ static void virLXCControllerStopInit(virLXCControllerPtr ctrl)
     if (ctrl->initpid == 0)
         return;
 
-    virLXCControllerCloseLoopDevices(ctrl, true);
+    virLXCControllerCloseLoopDevices(ctrl);
     virProcessAbort(ctrl->initpid);
     ctrl->initpid = 0;
 }
@@ -1545,10 +1535,6 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     }
 
     /* Now the container is fully setup... */
-
-    /* ...we can close the loop devices... */
-    if (virLXCControllerCloseLoopDevices(ctrl, false) < 0)
-        goto cleanup;
 
     /* ...and reduce our privileges */
     if (lxcControllerClearCapabilities() < 0)
