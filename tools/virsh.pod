@@ -1888,17 +1888,27 @@ If I<--config> is specified, alter persistent configuration, effect observed
 on next boot, for compatibility purposes, I<--persistent> is alias of
 I<--config>.
 
-=item B<update-device> I<domain> I<file> [I<--config>] [I<--force>]
+=item B<update-device> I<domain> I<file> [I<--force>]
+[[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 
 Update the characteristics of a device associated with I<domain>,
-based on the device definition in an XML I<file>.  If the I<--config>
-option is used, the changes will take affect the next time libvirt
-starts the domain.  For compatibility purposes, I<--persistent> is
-alias of I<--config>.  The I<--force> option can be used to force
-device update, e.g., to eject a CD-ROM even if it is locked/mounted in
-the domain. See the documentation at
+based on the device definition in an XML I<file>.  The I<--force> option
+can be used to force device update, e.g., to eject a CD-ROM even if it is
+locked/mounted in the domain. See the documentation at
 L<http://libvirt.org/formatdomain.html#elementsDevices> to learn about
 libvirt XML format for a device.
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. Not specifying any flag is the same as specifying I<--current>.
+
+For compatibility purposes, I<--persistent> behaves like I<--config> for
+an offline domain, and like I<--live> I<--config> for a running domain.
+
+Note that older versions of virsh used I<--config> as an alias for
+I<--persistent>.
 
 =item B<change-media> I<domain> I<path> [I<--eject>] [I<--insert>]
 [I<--update>] [I<source>] [I<--force>] [[I<--live>] [I<--config>] | [I<--current>]]
