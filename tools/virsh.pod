@@ -2034,19 +2034,20 @@ The I<--disable> option disable autostarting.
 
 =item B<net-create> I<file>
 
-Create a virtual network from an XML I<file>, see the documentation at
-L<http://libvirt.org/formatnetwork.html> to get a description of the
-XML network format used by libvirt.
+Create a transient (temporary) virtual network from an
+XML I<file> and instantiate (start) the network.
+See the documentation at L<http://libvirt.org/formatnetwork.html>
+to get a description of the XML network format used by libvirt.
 
 =item B<net-define> I<file>
 
-Define a virtual network from an XML I<file>, the network is just defined but
-not instantiated.
+Define a persistent virtual network from an XML I<file>, the network is just
+defined but not instantiated (started).
 
 =item B<net-destroy> I<network>
 
-Destroy (stop) a given virtual network specified by its name or UUID. This
-takes effect immediately.
+Destroy (stop) a given transient or persistent virtual network
+specified by its name or UUID. This takes effect immediately.
 
 =item B<net-dumpxml> I<network> [I<--inactive>]
 
