@@ -1234,6 +1234,7 @@ libvirt_driver_nodedev_la_CFLAGS = \
 libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_nodedev_la_LIBADD =
 
+if WITH_LIBVIRTD
 if WITH_HAL
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
 libvirt_driver_nodedev_la_CFLAGS += $(HAL_CFLAGS)
@@ -1243,6 +1244,7 @@ if WITH_UDEV
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
 libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS) $(PCIACCESS_CFLAGS)
 libvirt_driver_nodedev_la_LIBADD += $(UDEV_LIBS) $(PCIACCESS_LIBS)
+endif
 endif
 
 if WITH_DRIVER_MODULES
