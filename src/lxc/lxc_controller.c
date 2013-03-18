@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_controller.c: linux container process controller
@@ -69,6 +69,7 @@
 #include "nodeinfo.h"
 #include "virrandom.h"
 #include "virprocess.h"
+#include "virnuma.h"
 #include "rpc/virnetserver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -469,7 +470,8 @@ cleanup:
 }
 
 #if WITH_NUMACTL
-static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
+static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl,
+                                           virBitmapPtr nodemask)
 {
     nodemask_t mask;
     int mode = -1;
@@ -478,9 +480,22 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
     int i = 0;
     int maxnode = 0;
     bool warned = false;
+    virDomainNumatuneDef numatune = ctrl->def->numatune;
+    virBitmapPtr tmp_nodemask = NULL;
 
-    if (!ctrl->def->numatune.memory.nodemask)
+    if (numatune.memory.placement_mode ==
+        VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
+        if (!numatune.memory.nodemask)
+            return 0;
+        VIR_DEBUG("Set NUMA memory policy with specified nodeset");
+        tmp_nodemask = numatune.memory.nodemask;
+    } else if (numatune.memory.placement_mode ==
+               VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO) {
+        VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
+        tmp_nodemask = nodemask;
+    } else {
         return 0;
+    }
 
     VIR_DEBUG("Setting NUMA memory policy");
 
@@ -495,7 +510,7 @@ static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     i = -1;
-    while ((i = virBitmapNextSetBit(ctrl->def->numatune.memory.nodemask, i)) >= 0) {
+    while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
         if (i > NUMA_NUM_NODES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Host cannot support NUMA node %d"), i);
@@ -548,7 +563,8 @@ cleanup:
     return ret;
 }
 #else
-static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl)
+static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl,
+                                           virBitmapPtr nodemask ATTRIBUTE_UNUSED)
 {
     if (ctrl->def->numatune.memory.nodemask) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -609,6 +625,40 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 }
 
 
+static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
+                                          virBitmapPtr *mask)
+{
+    virBitmapPtr nodemask = NULL;
+    char *nodeset;
+    int ret = -1;
+
+    /* Get the advisory nodeset from numad if 'placement' of
+     * either <vcpu> or <numatune> is 'auto'.
+     */
+    if ((ctrl->def->placement_mode ==
+         VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
+        (ctrl->def->numatune.memory.placement_mode ==
+         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
+        nodeset = virNumaGetAutoPlacementAdvice(ctrl->def->vcpus,
+                                                ctrl->def->mem.cur_balloon);
+        if (!nodeset)
+            goto cleanup;
+
+        VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
+
+        if (virBitmapParse(nodeset, 0, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+    *mask = nodemask;
+
+cleanup:
+    VIR_FREE(nodeset);
+    return ret;
+}
+
+
 /**
  * virLXCControllerSetupResourceLimits
  * @ctrl: the controller state
@@ -621,14 +671,23 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
                                                virCgroupPtr cgroup)
 {
+    virBitmapPtr nodemask = NULL;
+    int ret = -1;
+
+    if (virLXCControllerGetNumadAdvice(ctrl, &nodemask) < 0 ||
+        virLXCControllerSetupNUMAPolicy(ctrl, nodemask) < 0)
+        goto cleanup;
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
-        return -1;
+        goto cleanup;
 
-    if (virLXCControllerSetupNUMAPolicy(ctrl) < 0)
-        return -1;
+    if (virLXCCgroupSetup(ctrl->def, cgroup) < 0)
+        goto cleanup;
 
-    return virLXCCgroupSetup(ctrl->def, cgroup);
+    ret = 0;
+cleanup:
+    virBitmapFree(nodemask);
+    return ret;
 }
 
 
