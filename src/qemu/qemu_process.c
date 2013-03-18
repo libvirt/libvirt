@@ -70,6 +70,7 @@
 #include "virnetdevtap.h"
 #include "virbitmap.h"
 #include "viratomic.h"
+#include "virnuma.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1903,36 +1904,6 @@ qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
 }
 #endif
 
-#if HAVE_NUMAD
-static char *
-qemuGetNumadAdvice(virDomainDefPtr def)
-{
-    virCommandPtr cmd = NULL;
-    char *output = NULL;
-
-    cmd = virCommandNewArgList(NUMAD, "-w", NULL);
-    virCommandAddArgFormat(cmd, "%d:%llu", def->vcpus,
-                           VIR_DIV_UP(def->mem.cur_balloon, 1024));
-
-    virCommandSetOutputBuffer(cmd, &output);
-
-    if (virCommandRun(cmd, NULL) < 0)
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to query numad for the "
-                         "advisory nodeset"));
-
-    virCommandFree(cmd);
-    return output;
-}
-#else
-static char *
-qemuGetNumadAdvice(virDomainDefPtr def ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                   _("numad is not available on this host"));
-    return NULL;
-}
-#endif
 
 /* Helper to prepare cpumap for affinity setting, convert
  * NUMA nodeset into cpuset if @nodemask is not NULL, otherwise
@@ -3638,7 +3609,8 @@ int qemuProcessStart(virConnectPtr conn,
          VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
         (vm->def->numatune.memory.placement_mode ==
          VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
-        nodeset = qemuGetNumadAdvice(vm->def);
+        nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
+                                                vm->def->mem.cur_balloon);
         if (!nodeset)
             goto cleanup;
 

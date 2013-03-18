@@ -104,6 +104,7 @@ UTIL_SOURCES =							\
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
 		util/virnetlink.c util/virnetlink.h		\
 		util/virnodesuspend.c util/virnodesuspend.h	\
+		util/virnuma.c util/virnuma.h			\
 		util/virobject.c util/virobject.h		\
 		util/virpci.c util/virpci.h			\
 		util/virpidfile.c util/virpidfile.h		\

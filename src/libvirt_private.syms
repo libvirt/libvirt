@@ -1556,6 +1556,9 @@ nodeSuspendForDuration;
 virNodeSuspendGetTargetMask;
 
 
+# util/virnuma.h
+virNumaGetAutoPlacementAdvice;
+
 # util/virobject.h
 virClassForObject;
 virClassForObjectLockable;
