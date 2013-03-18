@@ -317,6 +317,7 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
             VIR_WARN("%s", _("A problem occurred while listing RBD images"));
             goto cleanup;
         }
+        VIR_FREE(names);
     }
 
     for (i = 0, name = names; name < names + max_size; i++) {
