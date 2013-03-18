@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_text.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -527,16 +527,9 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
      */
     line = qemucpus;
     do {
-        char *offset = strchr(line, '#');
+        char *offset = NULL;
         char *end = NULL;
         int tid = 0;
-
-        /* See if we're all done */
-        if (offset == NULL)
-            break;
-
-        if (end == NULL || *end != ':')
-            goto error;
 
         /* Extract host Thread ID */
         if ((offset = strstr(line, "thread_id=")) == NULL)
@@ -550,7 +543,7 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
         if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
             goto error;
 
-        VIR_DEBUG("pid=%d", tid);
+        VIR_DEBUG("tid=%d", tid);
         cpupids[ncpupids++] = tid;
 
         /* Skip to next data line */
