@@ -6067,6 +6067,10 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
         }
         dev->data.disk = tmp;
 
+        /* Add the new disk src into shared disk hash table */
+        if (qemuAddSharedDisk(driver, dev->data.disk, vm->def->name) < 0)
+            goto end;
+
         ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, force);
         if (ret == 0) {
             dev->data.disk = NULL;
