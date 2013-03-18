@@ -404,7 +404,9 @@ struct _virDomainHostdevSubsys {
             unsigned vendor;
             unsigned product;
         } usb;
-        virDevicePCIAddress pci; /* host address */
+        struct {
+            virDevicePCIAddress addr; /* host address */
+        } pci;
     } u;
 };
 

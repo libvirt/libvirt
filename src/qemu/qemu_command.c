@@ -4321,10 +4321,10 @@ qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
     int configfd = -1;
 
     if (virAsprintf(&path, "/sys/bus/pci/devices/%04x:%02x:%02x.%01x/config",
-                    dev->source.subsys.u.pci.domain,
-                    dev->source.subsys.u.pci.bus,
-                    dev->source.subsys.u.pci.slot,
-                    dev->source.subsys.u.pci.function) < 0) {
+                    dev->source.subsys.u.pci.addr.domain,
+                    dev->source.subsys.u.pci.addr.bus,
+                    dev->source.subsys.u.pci.addr.slot,
+                    dev->source.subsys.u.pci.addr.function) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -4347,9 +4347,9 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
 
     virBufferAddLit(&buf, "pci-assign");
     virBufferAsprintf(&buf, ",host=%.2x:%.2x.%.1x",
-                      dev->source.subsys.u.pci.bus,
-                      dev->source.subsys.u.pci.slot,
-                      dev->source.subsys.u.pci.function);
+                      dev->source.subsys.u.pci.addr.bus,
+                      dev->source.subsys.u.pci.addr.slot,
+                      dev->source.subsys.u.pci.addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (configfd && *configfd)
         virBufferAsprintf(&buf, ",configfd=%s", configfd);
@@ -4379,9 +4379,9 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
     char *ret = NULL;
 
     if (virAsprintf(&ret, "host=%.2x:%.2x.%.1x",
-                    dev->source.subsys.u.pci.bus,
-                    dev->source.subsys.u.pci.slot,
-                    dev->source.subsys.u.pci.function) < 0)
+                    dev->source.subsys.u.pci.addr.bus,
+                    dev->source.subsys.u.pci.addr.slot,
+                    dev->source.subsys.u.pci.addr.function) < 0)
         virReportOOMError();
 
     return ret;
@@ -7062,10 +7062,10 @@ qemuBuildCommandLine(virConnectPtr conn,
                                        _("PCI device %04x:%02x:%02x.%x "
                                          "allocated from network %s is already "
                                          "in use by domain %s"),
-                                       hostdev->source.subsys.u.pci.domain,
-                                       hostdev->source.subsys.u.pci.bus,
-                                       hostdev->source.subsys.u.pci.slot,
-                                       hostdev->source.subsys.u.pci.function,
+                                       hostdev->source.subsys.u.pci.addr.domain,
+                                       hostdev->source.subsys.u.pci.addr.bus,
+                                       hostdev->source.subsys.u.pci.addr.slot,
+                                       hostdev->source.subsys.u.pci.addr.function,
                                        net->data.network.name,
                                        def->name);
                         goto error;
@@ -8953,9 +8953,9 @@ qemuParseCommandLinePCI(const char *val)
     def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
     def->managed = true;
     def->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-    def->source.subsys.u.pci.bus = bus;
-    def->source.subsys.u.pci.slot = slot;
-    def->source.subsys.u.pci.function = func;
+    def->source.subsys.u.pci.addr.bus = bus;
+    def->source.subsys.u.pci.addr.slot = slot;
+    def->source.subsys.u.pci.addr.function = func;
     return def;
 
  error:

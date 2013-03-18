@@ -2,7 +2,7 @@
 /*
  * virt-aa-helper: wrapper program used by AppArmor security driver.
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2009-2011 Canonical Ltd.
  *
  * This library is free software; you can redistribute it and/or
@@ -1029,10 +1029,10 @@ get_files(vahControl * ctl)
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
                 virPCIDevicePtr pci = virPCIDeviceNew(
-                           dev->source.subsys.u.pci.domain,
-                           dev->source.subsys.u.pci.bus,
-                           dev->source.subsys.u.pci.slot,
-                           dev->source.subsys.u.pci.function);
+                           dev->source.subsys.u.pci.addr.domain,
+                           dev->source.subsys.u.pci.addr.bus,
+                           dev->source.subsys.u.pci.addr.slot,
+                           dev->source.subsys.u.pci.addr.function);
 
                 if (pci == NULL)
                     continue;

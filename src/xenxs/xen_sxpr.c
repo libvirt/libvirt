@@ -1089,10 +1089,10 @@ xenParseSxprPCI(virDomainDefPtr def,
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         dev->managed = false;
         dev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-        dev->source.subsys.u.pci.domain = domainID;
-        dev->source.subsys.u.pci.bus = busID;
-        dev->source.subsys.u.pci.slot = slotID;
-        dev->source.subsys.u.pci.function = funcID;
+        dev->source.subsys.u.pci.addr.domain = domainID;
+        dev->source.subsys.u.pci.addr.bus = busID;
+        dev->source.subsys.u.pci.addr.slot = slotID;
+        dev->source.subsys.u.pci.addr.function = funcID;
 
         if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
             virDomainHostdevDefFree(dev);
@@ -2044,10 +2044,10 @@ xenFormatSxprPCI(virDomainHostdevDefPtr def,
                  virBufferPtr buf)
 {
     virBufferAsprintf(buf, "(dev (domain 0x%04x)(bus 0x%02x)(slot 0x%02x)(func 0x%x))",
-                      def->source.subsys.u.pci.domain,
-                      def->source.subsys.u.pci.bus,
-                      def->source.subsys.u.pci.slot,
-                      def->source.subsys.u.pci.function);
+                      def->source.subsys.u.pci.addr.domain,
+                      def->source.subsys.u.pci.addr.bus,
+                      def->source.subsys.u.pci.addr.slot,
+                      def->source.subsys.u.pci.addr.function);
 }
 
 

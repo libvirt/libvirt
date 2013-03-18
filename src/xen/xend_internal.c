@@ -2565,7 +2565,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
 
             virDevicePCIAddress PCIAddr;
 
-            PCIAddr = dev->data.hostdev->source.subsys.u.pci;
+            PCIAddr = dev->data.hostdev->source.subsys.u.pci.addr;
             if (virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x",
                             PCIAddr.domain, PCIAddr.bus, PCIAddr.slot) < 0) {
                 virReportOOMError();
@@ -3753,10 +3753,10 @@ virDomainXMLDevID(virDomainPtr domain,
         virDomainHostdevDefPtr def = dev->data.hostdev;
 
         if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
-                        def->source.subsys.u.pci.domain,
-                        def->source.subsys.u.pci.bus,
-                        def->source.subsys.u.pci.slot,
-                        def->source.subsys.u.pci.function) < 0) {
+                        def->source.subsys.u.pci.addr.domain,
+                        def->source.subsys.u.pci.addr.bus,
+                        def->source.subsys.u.pci.addr.slot,
+                        def->source.subsys.u.pci.addr.function) < 0) {
             virReportOOMError();
             return -1;
         }

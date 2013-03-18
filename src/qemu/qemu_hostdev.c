@@ -1,7 +1,7 @@
 /*
  * qemu_hostdev.c: QEMU hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -51,10 +51,10 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.domain,
-                              hostdev->source.subsys.u.pci.bus,
-                              hostdev->source.subsys.u.pci.slot,
-                              hostdev->source.subsys.u.pci.function);
+        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
+                              hostdev->source.subsys.u.pci.addr.bus,
+                              hostdev->source.subsys.u.pci.addr.slot,
+                              hostdev->source.subsys.u.pci.addr.function);
         if (!dev) {
             virObjectUnref(list);
             return NULL;
@@ -96,10 +96,10 @@ qemuGetActivePciHostDeviceList(virQEMUDriverPtr driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.domain,
-                              hostdev->source.subsys.u.pci.bus,
-                              hostdev->source.subsys.u.pci.slot,
-                              hostdev->source.subsys.u.pci.function);
+        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
+                              hostdev->source.subsys.u.pci.addr.bus,
+                              hostdev->source.subsys.u.pci.addr.slot,
+                              hostdev->source.subsys.u.pci.addr.function);
         if (!dev) {
             virObjectUnref(list);
             return NULL;
@@ -141,10 +141,10 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.domain,
-                              hostdev->source.subsys.u.pci.bus,
-                              hostdev->source.subsys.u.pci.slot,
-                              hostdev->source.subsys.u.pci.function);
+        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
+                              hostdev->source.subsys.u.pci.addr.bus,
+                              hostdev->source.subsys.u.pci.addr.slot,
+                              hostdev->source.subsys.u.pci.addr.function);
 
         if (!dev)
             goto cleanup;
@@ -219,10 +219,10 @@ qemuDomainHostdevPciSysfsPath(virDomainHostdevDefPtr hostdev, char **sysfs_path)
 {
     virPCIDeviceAddress config_address;
 
-    config_address.domain = hostdev->source.subsys.u.pci.domain;
-    config_address.bus = hostdev->source.subsys.u.pci.bus;
-    config_address.slot = hostdev->source.subsys.u.pci.slot;
-    config_address.function = hostdev->source.subsys.u.pci.function;
+    config_address.domain = hostdev->source.subsys.u.pci.addr.domain;
+    config_address.bus = hostdev->source.subsys.u.pci.addr.bus;
+    config_address.slot = hostdev->source.subsys.u.pci.addr.slot;
+    config_address.function = hostdev->source.subsys.u.pci.addr.function;
 
     return virPCIDeviceAddressGetSysfsFile(&config_address, sysfs_path);
 }
@@ -544,10 +544,10 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.domain,
-                              hostdev->source.subsys.u.pci.bus,
-                              hostdev->source.subsys.u.pci.slot,
-                              hostdev->source.subsys.u.pci.function);
+        dev = virPCIDeviceNew(hostdev->source.subsys.u.pci.addr.domain,
+                              hostdev->source.subsys.u.pci.addr.bus,
+                              hostdev->source.subsys.u.pci.addr.slot,
+                              hostdev->source.subsys.u.pci.addr.function);
 
         /* original states "unbind_from_stub", "remove_slot",
          * "reprobe" were already set by pciDettachDevice in

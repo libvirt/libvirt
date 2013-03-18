@@ -877,10 +877,10 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             hostdev->managed = false;
             hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-            hostdev->source.subsys.u.pci.domain = domainID;
-            hostdev->source.subsys.u.pci.bus = busID;
-            hostdev->source.subsys.u.pci.slot = slotID;
-            hostdev->source.subsys.u.pci.function = funcID;
+            hostdev->source.subsys.u.pci.addr.domain = domainID;
+            hostdev->source.subsys.u.pci.addr.bus = busID;
+            hostdev->source.subsys.u.pci.addr.slot = slotID;
+            hostdev->source.subsys.u.pci.addr.function = funcID;
 
             if (VIR_REALLOC_N(def->hostdevs, def->nhostdevs+1) < 0) {
                 virDomainHostdevDefFree(hostdev);
@@ -1470,10 +1470,10 @@ xenFormatXMPCI(virConfPtr conf,
             char *buf;
 
             if (virAsprintf(&buf, "%04x:%02x:%02x.%x",
-                            def->hostdevs[i]->source.subsys.u.pci.domain,
-                            def->hostdevs[i]->source.subsys.u.pci.bus,
-                            def->hostdevs[i]->source.subsys.u.pci.slot,
-                            def->hostdevs[i]->source.subsys.u.pci.function) < 0) {
+                            def->hostdevs[i]->source.subsys.u.pci.addr.domain,
+                            def->hostdevs[i]->source.subsys.u.pci.addr.bus,
+                            def->hostdevs[i]->source.subsys.u.pci.addr.slot,
+                            def->hostdevs[i]->source.subsys.u.pci.addr.function) < 0) {
                 virReportOOMError();
                 goto error;
             }

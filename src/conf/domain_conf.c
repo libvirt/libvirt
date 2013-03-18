@@ -3636,7 +3636,7 @@ virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "address")) {
                 virDevicePCIAddressPtr addr =
-                    &def->source.subsys.u.pci;
+                    &def->source.subsys.u.pci.addr;
 
                 if (virDevicePCIAddressParseXML(cur, addr) < 0)
                     goto out;
@@ -9115,10 +9115,10 @@ static int
 virDomainHostdevMatchSubsysPCI(virDomainHostdevDefPtr a,
                                virDomainHostdevDefPtr b)
 {
-    if (a->source.subsys.u.pci.domain == b->source.subsys.u.pci.domain &&
-        a->source.subsys.u.pci.bus == b->source.subsys.u.pci.bus &&
-        a->source.subsys.u.pci.slot == b->source.subsys.u.pci.slot &&
-        a->source.subsys.u.pci.function == b->source.subsys.u.pci.function)
+    if (a->source.subsys.u.pci.addr.domain == b->source.subsys.u.pci.addr.domain &&
+        a->source.subsys.u.pci.addr.bus == b->source.subsys.u.pci.addr.bus &&
+        a->source.subsys.u.pci.addr.slot == b->source.subsys.u.pci.addr.slot &&
+        a->source.subsys.u.pci.addr.function == b->source.subsys.u.pci.addr.function)
         return 1;
     return 0;
 }
@@ -13858,7 +13858,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (virDevicePCIAddressFormat(buf,
-                                      def->source.subsys.u.pci,
+                                      def->source.subsys.u.pci.addr,
                                       includeTypeInAddr) != 0)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("PCI address Formatting failed"));

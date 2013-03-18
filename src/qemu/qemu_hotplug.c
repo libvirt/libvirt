@@ -1035,7 +1035,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
 
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorAddPCIHostDevice(priv->mon,
-                                          &hostdev->source.subsys.u.pci,
+                                          &hostdev->source.subsys.u.pci.addr,
                                           &guestAddr);
         qemuDomainObjExitMonitor(driver, vm);
 
@@ -2343,8 +2343,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
     if (qemuIsMultiFunctionDevice(vm->def, detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
-                       subsys->u.pci.domain, subsys->u.pci.bus,
-                       subsys->u.pci.slot,   subsys->u.pci.function);
+                       subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                       subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
         goto cleanup;
     }
 
@@ -2375,8 +2375,8 @@ qemuDomainDetachHostPciDevice(virQEMUDriverPtr driver,
 
     virObjectLock(driver->activePciHostdevs);
     virObjectLock(driver->inactivePciHostdevs);
-    pci = virPCIDeviceNew(subsys->u.pci.domain, subsys->u.pci.bus,
-                          subsys->u.pci.slot,   subsys->u.pci.function);
+    pci = virPCIDeviceNew(subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                          subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
     if (pci) {
         activePci = virPCIDeviceListSteal(driver->activePciHostdevs, pci);
         if (activePci &&
@@ -2518,8 +2518,8 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("host pci device %.4x:%.2x:%.2x.%.1x not found"),
-                           subsys->u.pci.domain, subsys->u.pci.bus,
-                           subsys->u.pci.slot, subsys->u.pci.function);
+                           subsys->u.pci.addr.domain, subsys->u.pci.addr.bus,
+                           subsys->u.pci.addr.slot, subsys->u.pci.addr.function);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (subsys->u.usb.bus && subsys->u.usb.device) {

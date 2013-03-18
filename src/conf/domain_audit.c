@@ -382,10 +382,10 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         switch (hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (virAsprintf(&address, "%.4x:%.2x:%.2x.%.1x",
-                            hostdev->source.subsys.u.pci.domain,
-                            hostdev->source.subsys.u.pci.bus,
-                            hostdev->source.subsys.u.pci.slot,
-                            hostdev->source.subsys.u.pci.function) < 0) {
+                            hostdev->source.subsys.u.pci.addr.domain,
+                            hostdev->source.subsys.u.pci.addr.bus,
+                            hostdev->source.subsys.u.pci.addr.slot,
+                            hostdev->source.subsys.u.pci.addr.function) < 0) {
                 VIR_WARN("OOM while encoding audit message");
                 goto cleanup;
             }

@@ -1334,10 +1334,10 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virDomainDefPtr def,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
         virPCIDevicePtr pci =
-            virPCIDeviceNew(dev->source.subsys.u.pci.domain,
-                            dev->source.subsys.u.pci.bus,
-                            dev->source.subsys.u.pci.slot,
-                            dev->source.subsys.u.pci.function);
+            virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
+                            dev->source.subsys.u.pci.addr.bus,
+                            dev->source.subsys.u.pci.addr.slot,
+                            dev->source.subsys.u.pci.addr.function);
 
         if (!pci)
             goto done;
@@ -1496,10 +1496,10 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
         virPCIDevicePtr pci =
-            virPCIDeviceNew(dev->source.subsys.u.pci.domain,
-                            dev->source.subsys.u.pci.bus,
-                            dev->source.subsys.u.pci.slot,
-                            dev->source.subsys.u.pci.function);
+            virPCIDeviceNew(dev->source.subsys.u.pci.addr.domain,
+                            dev->source.subsys.u.pci.addr.bus,
+                            dev->source.subsys.u.pci.addr.slot,
+                            dev->source.subsys.u.pci.addr.function);
 
         if (!pci)
             goto done;

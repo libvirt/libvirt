@@ -3891,7 +3891,7 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         iface->data.network.actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         iface->data.network.actual->data.hostdev.def.managed = netdef->forward.managed ? 1 : 0;
         iface->data.network.actual->data.hostdev.def.source.subsys.type = dev->type;
-        iface->data.network.actual->data.hostdev.def.source.subsys.u.pci = dev->device.pci;
+        iface->data.network.actual->data.hostdev.def.source.subsys.u.pci.addr = dev->device.pci;
 
         /* merge virtualports from interface, network, and portgroup to
          * arrive at actual virtualport to use
@@ -4222,7 +4222,7 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
         for (ii = 0; ii < netdef->forward.nifs; ii++) {
             if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
-                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
+                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci.addr,
                                          &netdef->forward.ifs[ii].device.pci)) {
                 dev = &netdef->forward.ifs[ii];
                 break;
@@ -4234,10 +4234,10 @@ networkNotifyActualDevice(virDomainNetDefPtr iface)
                            _("network '%s' doesn't have "
                              "PCI device %04x:%02x:%02x.%x in use by domain"),
                            netdef->name,
-                           hostdev->source.subsys.u.pci.domain,
-                           hostdev->source.subsys.u.pci.bus,
-                           hostdev->source.subsys.u.pci.slot,
-                           hostdev->source.subsys.u.pci.function);
+                           hostdev->source.subsys.u.pci.addr.domain,
+                           hostdev->source.subsys.u.pci.addr.bus,
+                           hostdev->source.subsys.u.pci.addr.slot,
+                           hostdev->source.subsys.u.pci.addr.function);
                 goto error;
         }
 
@@ -4380,8 +4380,8 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
         for (ii = 0; ii < netdef->forward.nifs; ii++) {
             if (netdef->forward.ifs[ii].type
                 == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI &&
-                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci,
-                                          &netdef->forward.ifs[ii].device.pci)) {
+                virDevicePCIAddressEqual(&hostdev->source.subsys.u.pci.addr,
+                                         &netdef->forward.ifs[ii].device.pci)) {
                 dev = &netdef->forward.ifs[ii];
                 break;
             }
@@ -4392,10 +4392,10 @@ networkReleaseActualDevice(virDomainNetDefPtr iface)
                            _("network '%s' doesn't have "
                              "PCI device %04x:%02x:%02x.%x in use by domain"),
                            netdef->name,
-                           hostdev->source.subsys.u.pci.domain,
-                           hostdev->source.subsys.u.pci.bus,
-                           hostdev->source.subsys.u.pci.slot,
-                           hostdev->source.subsys.u.pci.function);
+                           hostdev->source.subsys.u.pci.addr.domain,
+                           hostdev->source.subsys.u.pci.addr.bus,
+                           hostdev->source.subsys.u.pci.addr.slot,
+                           hostdev->source.subsys.u.pci.addr.function);
                 goto error;
         }
 
