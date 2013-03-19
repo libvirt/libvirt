@@ -84,7 +84,7 @@
       <dt><code>directory</code></dt>
       <dd>Provides the source for pools backed by directories. May
         only occur once. Contains a single attribute <code>path</code>
-        which is the fully qualified path to the block device node.
+        which is the fully qualified path to the backing directory.
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>adapter</code></dt>
       <dd>Provides the source for pools backed by SCSI adapters. May
