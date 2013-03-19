@@ -308,25 +308,25 @@
         <choice>
           <value>root</value>
           <data type="string">
-            <param name="pattern">mac[a-zA-Z0-9_\.:-]{0,9}</param>
+            <param name="pattern">mac[a-zA-Z0-9_\.:\-]{0,9}</param>
           </data>
           <data type="string">
-            <param name="pattern">stp[a-zA-Z0-9_\.:-]{0,9}</param>
+            <param name="pattern">stp[a-zA-Z0-9_\.:\-]{0,9}</param>
           </data>
           <data type="string">
-            <param name="pattern">vlan[a-zA-Z0-9_\.:-]{0,8}</param>
+            <param name="pattern">vlan[a-zA-Z0-9_\.:\-]{0,8}</param>
           </data>
           <data type="string">
-            <param name="pattern">arp[a-zA-Z0-9_\.:-]{0,9}</param>
+            <param name="pattern">arp[a-zA-Z0-9_\.:\-]{0,9}</param>
           </data>
           <data type="string">
-            <param name="pattern">rarp[a-zA-Z0-9_\.:-]{0,8}</param>
+            <param name="pattern">rarp[a-zA-Z0-9_\.:\-]{0,8}</param>
           </data>
           <data type="string">
-            <param name="pattern">ipv4[a-zA-Z0-9_\.:-]{0,8}</param>
+            <param name="pattern">ipv4[a-zA-Z0-9_\.:\-]{0,8}</param>
           </data>
           <data type="string">
-            <param name="pattern">ipv6[a-zA-Z0-9_\.:-]{0,8}</param>
+            <param name="pattern">ipv6[a-zA-Z0-9_\.:\-]{0,8}</param>
           </data>
         </choice>
       </attribute>
@@ -950,10 +950,7 @@
         <param name="pattern">0x[0-9a-fA-F]{1,8}</param>
       </data>
 
-      <data type="int">
-        <param name="minInclusive">0</param>
-        <param name="maxInclusive">4294967295</param>
-      </data>
+      <data type="unsignedInt"/>
     </choice>
   </define>
 
