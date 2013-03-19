@@ -88,7 +88,7 @@ EXTRA_DIST =		\
 	xml2vmxdata \
 	.valgrind.supp
 
-test_helpers = commandhelper ssh conftest
+test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
@@ -507,9 +507,9 @@ virshtest_SOURCES = \
 	testutils.c testutils.h
 virshtest_LDADD = $(LDADDS)
 
-conftest_SOURCES = \
-	conftest.c
-conftest_LDADD = $(LDADDS)
+test_conf_SOURCES = \
+	test_conf.c
+test_conf_LDADD = $(LDADDS)
 
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c

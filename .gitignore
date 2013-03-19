@@ -172,6 +172,7 @@
 /tests/statstest
 /tests/storagebackendsheepdogtest
 /tests/sysinfotest
+/tests/test_conf
 /tests/utiltest
 /tests/viratomictest
 /tests/virauthconfigtest

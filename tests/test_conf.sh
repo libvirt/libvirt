@@ -12,7 +12,7 @@ data_dir=$abs_srcdir/confdata
 for f in $(cd "$data_dir" && echo *.conf)
 do
     i=`expr $i + 1`
-    "$abs_builddir/conftest" "$data_dir/$f" > "$f-actual"
+    "$abs_builddir/test_conf" "$data_dir/$f" > "$f-actual"
     expected="$data_dir"/`echo "$f" | sed s+\.conf$+\.out+`
     if compare "$expected" "$f-actual"; then
         ret=0
