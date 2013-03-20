@@ -28,7 +28,9 @@
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def);
 int virLXCCgroupSetup(virDomainDefPtr def,
-                      virCgroupPtr cgroup);
+                      virCgroupPtr cgroup,
+                      virBitmapPtr nodemask);
+
 int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo);
 
 int

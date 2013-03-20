@@ -569,7 +569,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
         goto cleanup;
 
-    if (virLXCCgroupSetup(ctrl->def, cgroup) < 0)
+    if (virLXCCgroupSetup(ctrl->def, cgroup, nodemask) < 0)
         goto cleanup;
 
     ret = 0;
