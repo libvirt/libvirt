@@ -768,11 +768,11 @@ libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS) \
-		$(DBUS_CFLAGS) $(LDEXP_LIBM)
+		$(DBUS_CFLAGS) $(LDEXP_LIBM) $(NUMACTL_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
 		$(LIB_CLOCK_GETTIME) $(DBUS_LIBS) $(MSCOM_LIBS) $(LIBXML_LIBS) \
-		$(SECDRIVER_LIBS)
+		$(SECDRIVER_LIBS) $(NUMACTL_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -809,10 +809,10 @@ libvirt_la_BUILT_LIBADD += libvirt_driver.la
 libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
 libvirt_driver_la_CFLAGS = \
-		$(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) $(CURL_CFLAGS) \
+		$(GNUTLS_CFLAGS) $(CURL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_la_LIBADD = \
-		$(NUMACTL_LIBS) $(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
+		$(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
 
 SYM_FILES = $(USED_SYM_FILES)
 USED_SYM_FILES = $(srcdir)/libvirt_private.syms
@@ -958,13 +958,11 @@ noinst_LTLIBRARIES += libvirt_driver_qemu.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_qemu.la
 endif
 
-libvirt_driver_qemu_impl_la_CFLAGS = $(NUMACTL_CFLAGS) \
-                                $(GNUTLS_CFLAGS) \
+libvirt_driver_qemu_impl_la_CFLAGS = $(GNUTLS_CFLAGS) \
                                 $(LIBNL_CFLAGS) \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_qemu_impl_la_LIBADD = $(NUMACTL_LIBS) \
-				$(CAPNG_LIBS) \
+libvirt_driver_qemu_impl_la_LIBADD = $(CAPNG_LIBS) \
                                 $(GNUTLS_LIBS) \
 				$(LIBNL_LIBS)
 libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
@@ -1029,10 +1027,10 @@ noinst_LTLIBRARIES += libvirt_driver_uml.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_uml.la
 endif
 
-libvirt_driver_uml_impl_la_CFLAGS = $(NUMACTL_CFLAGS) \
+libvirt_driver_uml_impl_la_CFLAGS = \
 		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
 libvirt_driver_uml_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_uml_impl_la_LIBADD = $(NUMACTL_LIBS)
+# libvirt_driver_uml_impl_la_LIBADD =
 libvirt_driver_uml_impl_la_SOURCES = $(UML_DRIVER_SOURCES)
 endif
 
@@ -1969,7 +1967,6 @@ libvirt_lxc_SOURCES =						\
 		$(DATATYPES_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
 libvirt_lxc_LDADD =			\
-		$(NUMACTL_LIBS) \
 		$(FUSE_LIBS) \
 		libvirt-net-rpc-server.la \
 		libvirt-net-rpc.la \
