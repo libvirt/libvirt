@@ -231,6 +231,7 @@
         <choice>
           <ref name='absFilePath'/>
           <ref name='genericName'/>
+          <ref name='IscsiQualifiedName'/>
         </choice>
       </attribute>
       <choice>
@@ -492,7 +493,6 @@
       <optional>
         <ref name='sourceinfovendor'/>
       </optional>
-
     </element>
   </define>
 
@@ -517,6 +517,12 @@
       <ref name='sourceinfohost'/>
       <ref name='sourceinfoname'/>
     </element>
+  </define>
+
+  <define name='IscsiQualifiedName'>
+    <data type='string'>
+      <param name="pattern">iqn\.[0-9]{4}-(0[1-9]|1[0-2])\.[a-zA-Z0-9\.\-]+(:.+)?</param>
+    </data>
   </define>
 
   <define name="PortNumber">
