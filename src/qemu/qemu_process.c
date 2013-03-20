@@ -965,6 +965,9 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY &&
             status == VIR_DOMAIN_BLOCK_JOB_READY)
             disk->mirroring = true;
+        if (disk->mirror && type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY &&
+            status == VIR_DOMAIN_BLOCK_JOB_FAILED)
+            VIR_FREE(disk->mirror);
     }
 
     virObjectUnlock(vm);
