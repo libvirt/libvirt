@@ -687,6 +687,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
     }
 #endif
 
+#if WITH_GNUTLS
     if (client->tls) {
         const char *identity = virNetTLSSessionGetX509DName(client->tls);
         if (identity &&
@@ -695,6 +696,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
             goto cleanup;
         }
     }
+#endif
 
     if (client->sock &&
         virNetSocketGetSecurityContext(client->sock, &seccontext) < 0)
