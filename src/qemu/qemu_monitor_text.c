@@ -470,7 +470,7 @@ int qemuMonitorTextSetLink(qemuMonitorPtr mon, const char *name, enum virDomainN
 
     /* check if set_link command is supported */
     if (strstr(info, "\nunknown ")) {
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        "%s",
                        _("\'set_link\' not supported by this qemu"));
         goto error;

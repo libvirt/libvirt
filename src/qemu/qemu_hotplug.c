@@ -1468,7 +1468,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (!devslot || !(olddev = *devslot)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("cannot find existing network device to modify"));
         goto cleanup;
     }
@@ -1476,7 +1476,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     oldType = virDomainNetGetActualType(olddev);
     if (oldType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* no changes are possible to a type='hostdev' interface */
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot change config of '%s' network type"),
                        virDomainNetTypeToString(oldType));
         goto cleanup;
@@ -1499,7 +1499,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (virMacAddrCmp(&olddev->mac, &newdev->mac)) {
         char oldmac[VIR_MAC_STRING_BUFLEN], newmac[VIR_MAC_STRING_BUFLEN];
 
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot change network interface mac address "
                          "from %s to %s"),
                        virMacAddrFormat(&olddev->mac, oldmac),
@@ -1508,7 +1508,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
 
     if (STRNEQ_NULLABLE(olddev->model, newdev->model)) {
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify network device model from %s to %s"),
                        olddev->model ? olddev->model : "(default)",
                        newdev->model ? newdev->model : "(default)");
@@ -1520,7 +1520,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
          olddev->driver.virtio.txmode != newdev->driver.virtio.txmode ||
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
          olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify virtio network device driver attributes"));
         goto cleanup;
     }
@@ -1534,7 +1534,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
 
     if (STRNEQ_NULLABLE(olddev->script, newdev->script)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device script attribute"));
         goto cleanup;
     }
@@ -1546,7 +1546,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(olddev->ifname, newdev->ifname)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device tap name"));
         goto cleanup;
     }
@@ -1564,7 +1564,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
     if (!virDevicePCIAddressEqual(&olddev->info.addr.pci,
                                   &newdev->info.addr.pci)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device guest PCI address"));
         goto cleanup;
     }
@@ -1575,22 +1575,22 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(olddev->info.alias, newdev->info.alias)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device alias"));
         goto cleanup;
     }
     if (olddev->info.rombar != newdev->info.rombar) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device rom bar setting"));
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(olddev->info.romfile, newdev->info.romfile)) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network rom file"));
         goto cleanup;
     }
     if (olddev->info.bootIndex != newdev->info.bootIndex) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device boot index setting"));
         goto cleanup;
     }
@@ -1617,7 +1617,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
     if (newType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* can't turn it into a type='hostdev' interface */
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot change network interface type to '%s'"),
                        virDomainNetTypeToString(newType));
         goto cleanup;
@@ -1675,7 +1675,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
             break;
 
         default:
-            virReportError(VIR_ERR_NO_SUPPORT,
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("unable to change config on '%s' network type"),
                            virDomainNetTypeToString(newdev->type));
             break;
@@ -1746,7 +1746,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     /* FINALLY - actually perform the required actions */
 
     if (needReconnect) {
-        virReportError(VIR_ERR_NO_SUPPORT,
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("unable to change config on '%s' network type"),
                        virDomainNetTypeToString(newdev->type));
         goto cleanup;

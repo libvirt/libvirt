@@ -2121,7 +2121,7 @@ qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd)
         /* We don't have qemuMonitorTextDump(), so we should check mon->json
          * here.
          */
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("dump-guest-memory is not supported in text mode"));
         return -1;
     }
