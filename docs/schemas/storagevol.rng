@@ -195,6 +195,19 @@
     </choice>
   </define>
 
+  <define name='formatdisk'>
+    <choice>
+      <value>none</value>
+      <value>linux</value>
+      <value>fat16</value>
+      <value>fat32</value>
+      <value>linux-swap</value>
+      <value>linux-lvm</value>
+      <value>linux-raid</value>
+      <value>extended</value>
+    </choice>
+  </define>
+
   <define name='format'>
     <optional>
       <element name='format'>
@@ -202,6 +215,7 @@
           <choice>
             <ref name='formatfile'/>
             <ref name='formatdev'/>
+            <ref name='formatdisk'/>
           </choice>
         </attribute>
       </element>
