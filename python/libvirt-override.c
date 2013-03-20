@@ -1664,6 +1664,122 @@ cleanup:
     return VIR_PY_NONE;
 }
 
+
+static PyObject *
+libvirt_virDomainPinEmulator(PyObject *self ATTRIBUTE_UNUSED,
+                             PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *pycpumap;
+    unsigned char *cpumap = NULL;
+    int cpumaplen, i, tuple_size, cpunum;
+    int i_retval;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainPinVcpu",
+                          &pyobj_domain, &pycpumap, &flags))
+        return NULL;
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
+        return VIR_PY_INT_FAIL;
+
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
+
+    if (!PyTuple_Check(pycpumap)) {
+       PyErr_SetString(PyExc_TypeError, "Unexpected type, tuple is required");
+       return NULL;
+    }
+
+    if ((tuple_size = PyTuple_Size(pycpumap)) == -1)
+        return NULL;
+
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
+        return PyErr_NoMemory();
+
+    for (i = 0; i < tuple_size; i++) {
+        PyObject *flag = PyTuple_GetItem(pycpumap, i);
+        bool b;
+
+        if (!flag || libvirt_boolUnwrap(flag, &b) < 0) {
+            VIR_FREE(cpumap);
+            return VIR_PY_INT_FAIL;
+        }
+
+        if (b)
+            VIR_USE_CPU(cpumap, i);
+        else
+            VIR_UNUSE_CPU(cpumap, i);
+    }
+
+    for (; i < cpunum; i++)
+        VIR_UNUSE_CPU(cpumap, i);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    i_retval = virDomainPinEmulator(domain, cpumap, cpumaplen, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    VIR_FREE(cpumap);
+
+    if (i_retval < 0)
+        return VIR_PY_INT_FAIL;
+
+    return VIR_PY_INT_SUCCESS;
+}
+
+
+static PyObject *
+libvirt_virDomainGetEmulatorPinInfo(PyObject *self ATTRIBUTE_UNUSED,
+                                    PyObject *args)
+{
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    PyObject *pycpumap;
+    unsigned char *cpumap;
+    size_t cpumaplen;
+    size_t pcpu;
+    unsigned int flags;
+    int ret;
+    int cpunum;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virDomainEmulatorPinInfo",
+                          &pyobj_domain, &flags))
+        return NULL;
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if ((cpunum = getPyNodeCPUCount(virDomainGetConnect(domain))) < 0)
+        return VIR_PY_NONE;
+
+    cpumaplen = VIR_CPU_MAPLEN(cpunum);
+
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
+        return PyErr_NoMemory();
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    ret = virDomainGetEmulatorPinInfo(domain, cpumap, cpumaplen, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (ret < 0) {
+        VIR_FREE(cpumap);
+        return VIR_PY_NONE;
+    }
+
+    if (!(pycpumap = PyTuple_New(cpunum))) {
+        VIR_FREE(cpumap);
+        return NULL;
+    }
+
+    for (pcpu = 0; pcpu < cpunum; pcpu++)
+        PyTuple_SET_ITEM(pycpumap, pcpu,
+                         PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen,
+                                                        0, pcpu)));
+
+    VIR_FREE(cpumap);
+    return pycpumap;
+}
+
+
 /************************************************************************
  *									*
  *		Global error handler at the Python level		*
@@ -6705,6 +6821,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpuFlags", libvirt_virDomainPinVcpuFlags, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpuPinInfo", libvirt_virDomainGetVcpuPinInfo, METH_VARARGS, NULL},
+    {(char *) "virDomainGetEmulatorPinInfo", libvirt_virDomainGetEmulatorPinInfo, METH_VARARGS, NULL},
+    {(char *) "virDomainPinEmulator", libvirt_virDomainPinEmulator, METH_VARARGS, NULL},
     {(char *) "virConnectListStoragePools", libvirt_virConnectListStoragePools, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedStoragePools", libvirt_virConnectListDefinedStoragePools, METH_VARARGS, NULL},
     {(char *) "virConnectListAllStoragePools", libvirt_virConnectListAllStoragePools, METH_VARARGS, NULL},

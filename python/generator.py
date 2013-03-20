@@ -418,6 +418,8 @@ skip_impl = (
     'virDomainPinVcpu',
     'virDomainPinVcpuFlags',
     'virDomainGetVcpuPinInfo',
+    'virDomainGetEmulatorPinInfo',
+    'virDomainPinEmulator',
     'virSecretGetValue',
     'virSecretSetValue',
     'virSecretGetUUID',
