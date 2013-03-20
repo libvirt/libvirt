@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include <unistd.h>
-#if HAVE_SELINUX
+#if WITH_SELINUX
 # include <selinux/selinux.h>
 #endif
 
@@ -135,7 +135,7 @@ virIdentityPtr virIdentityGetSystem(void)
     char *groupname = NULL;
     char *seccontext = NULL;
     virIdentityPtr ret = NULL;
-#if HAVE_SELINUX
+#if WITH_SELINUX
     security_context_t con;
 #endif
 
@@ -144,7 +144,7 @@ virIdentityPtr virIdentityGetSystem(void)
     if (!(groupname = virGetGroupName(getgid())))
         goto cleanup;
 
-#if HAVE_SELINUX
+#if WITH_SELINUX
     if (getcon(&con) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to lookup SELinux process context"));

@@ -40,7 +40,7 @@
 #endif
 
 #include "c-ctype.h"
-#ifdef HAVE_SELINUX
+#ifdef WITH_SELINUX
 # include <selinux/selinux.h>
 #endif
 
@@ -1160,7 +1160,7 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
 }
 #endif
 
-#ifdef HAVE_SELINUX
+#ifdef WITH_SELINUX
 int virNetSocketGetSecurityContext(virNetSocketPtr sock,
                                    char **context)
 {
@@ -1169,7 +1169,7 @@ int virNetSocketGetSecurityContext(virNetSocketPtr sock,
 
     *context = NULL;
 
-    virMutexLock(&sock->lock);
+    virObjectLock(sock);
     if (getpeercon(sock->fd, &seccon) < 0) {
         if (errno == ENOSYS) {
             ret = 0;
@@ -1188,7 +1188,7 @@ int virNetSocketGetSecurityContext(virNetSocketPtr sock,
     ret = 0;
 cleanup:
     freecon(seccon);
-    virMutexUnlock(&sock->lock);
+    virObjectUnlock(sock);
     return ret;
 }
 #else
