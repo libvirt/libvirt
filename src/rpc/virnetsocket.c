@@ -1171,7 +1171,7 @@ int virNetSocketGetSecurityContext(virNetSocketPtr sock,
 
     virObjectLock(sock);
     if (getpeercon(sock->fd, &seccon) < 0) {
-        if (errno == ENOSYS) {
+        if (errno == ENOSYS || errno == ENOPROTOOPT) {
             ret = 0;
             goto cleanup;
         }
