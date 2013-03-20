@@ -157,6 +157,7 @@ int virCgroupGetCpusetMems(virCgroupPtr group, char **mems);
 int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus);
 int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
 
+int virCgroupRemoveRecursively(char *grppath);
 int virCgroupRemove(virCgroupPtr group);
 
 void virCgroupFree(virCgroupPtr *group);

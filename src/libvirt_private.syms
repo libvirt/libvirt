@@ -1115,6 +1115,7 @@ virCgroupMounted;
 virCgroupMoveTask;
 virCgroupPathOfController;
 virCgroupRemove;
+virCgroupRemoveRecursively;
 virCgroupSetBlkioDeviceWeight;
 virCgroupSetBlkioWeight;
 virCgroupSetCpuCfsPeriod;
