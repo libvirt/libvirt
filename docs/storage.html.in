@@ -332,7 +332,7 @@
     <h2><a name="StorageBackendDisk">Disk volume pools</a></h2>
     <p>
       This provides a pool based on a physical disk. Volumes are created
-      by adding partitions to the disk. Disk pools are have constraints
+      by adding partitions to the disk. Disk pools have constraints
       on the size and placement of volumes. The 'free extents'
       information will detail the regions which are available for creating
       new volumes. A volume cannot span across 2 different free extents.
