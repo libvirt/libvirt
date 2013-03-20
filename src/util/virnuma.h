@@ -22,7 +22,37 @@
 #ifndef __VIR_NUMA_H__
 # define __VIR_NUMA_H__
 
+# include "internal.h"
+# include "virbitmap.h"
+# include "virutil.h"
+
+enum virNumaTuneMemPlacementMode {
+    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
+    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC,
+    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO,
+
+    VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_LAST
+};
+
+VIR_ENUM_DECL(virNumaTuneMemPlacementMode)
+
+VIR_ENUM_DECL(virDomainNumatuneMemMode)
+
+typedef struct _virNumaTuneDef virNumaTuneDef;
+typedef virNumaTuneDef *virNumaTuneDefPtr;
+struct _virNumaTuneDef {
+    struct {
+        virBitmapPtr nodemask;
+        int mode;
+        int placement_mode; /* enum virNumaTuneMemPlacementMode */
+    } memory;
+
+    /* Future NUMA tuning related stuff should go here. */
+};
+
 char *virNumaGetAutoPlacementAdvice(unsigned short vcups,
                                     unsigned long long balloon);
 
+int virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
+                             virBitmapPtr nodemask);
 #endif /* __VIR_NUMA_H__ */

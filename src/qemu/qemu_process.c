@@ -45,11 +45,6 @@
 #include "qemu_bridge_filter.h"
 #include "qemu_migration.h"
 
-#if WITH_NUMACTL
-# define NUMA_VERSION1_COMPATIBILITY 1
-# include <numa.h>
-#endif
-
 #include "datatypes.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -1791,120 +1786,6 @@ qemuProcessDetectVcpuPIDs(virQEMUDriverPtr driver,
 }
 
 
-/*
- * Set NUMA memory policy for qemu process, to be run between
- * fork/exec of QEMU only.
- */
-#if WITH_NUMACTL
-static int
-qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
-                                virBitmapPtr nodemask)
-{
-    nodemask_t mask;
-    int mode = -1;
-    int node = -1;
-    int ret = -1;
-    int i = 0;
-    int maxnode = 0;
-    bool warned = false;
-    virDomainNumatuneDef numatune = vm->def->numatune;
-    virBitmapPtr tmp_nodemask = NULL;
-
-    if (numatune.memory.placement_mode ==
-        VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
-        if (!numatune.memory.nodemask)
-            return 0;
-        VIR_DEBUG("Set NUMA memory policy with specified nodeset");
-        tmp_nodemask = numatune.memory.nodemask;
-    } else if (numatune.memory.placement_mode ==
-               VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO) {
-        VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
-        tmp_nodemask = nodemask;
-    } else {
-        return 0;
-    }
-
-    if (numa_available() < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Host kernel is not aware of NUMA."));
-        return -1;
-    }
-
-    maxnode = numa_max_node() + 1;
-    /* Convert nodemask to NUMA bitmask. */
-    nodemask_zero(&mask);
-    i = -1;
-    while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
-        if (i > NUMA_NUM_NODES) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Host cannot support NUMA node %d"), i);
-            return -1;
-        }
-        if (i > maxnode && !warned) {
-            VIR_WARN("nodeset is out of range, there is only %d NUMA "
-                     "nodes on host", maxnode);
-            warned = true;
-        }
-        nodemask_set(&mask, i);
-    }
-
-    mode = numatune.memory.mode;
-
-    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
-        numa_set_bind_policy(1);
-        numa_set_membind(&mask);
-        numa_set_bind_policy(0);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
-        int nnodes = 0;
-        for (i = 0; i < NUMA_NUM_NODES; i++) {
-            if (nodemask_isset(&mask, i)) {
-                node = i;
-                nnodes++;
-            }
-        }
-
-        if (nnodes != 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("NUMA memory tuning in 'preferred' mode "
-                                   "only supports single node"));
-            goto cleanup;
-        }
-
-        numa_set_bind_policy(0);
-        numa_set_preferred(node);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
-        numa_set_interleave_mask(&mask);
-    } else {
-        /* XXX: Shouldn't go here, as we already do checking when
-         * parsing domain XML.
-         */
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("Invalid mode for memory NUMA tuning."));
-        goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    return ret;
-}
-#else
-static int
-qemuProcessInitNumaMemoryPolicy(virDomainObjPtr vm,
-                                virBitmapPtr nodemask ATTRIBUTE_UNUSED)
-{
-    if (vm->def->numatune.memory.nodemask) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libvirt is compiled without NUMA tuning support"));
-
-        return -1;
-    }
-
-    return 0;
-}
-#endif
-
-
 /* Helper to prepare cpumap for affinity setting, convert
  * NUMA nodeset into cpuset if @nodemask is not NULL, otherwise
  * just return a new allocated bitmap.
@@ -2654,7 +2535,7 @@ static int qemuProcessHook(void *data)
         qemuProcessInitCpuAffinity(h->driver, h->vm, h->nodemask) < 0)
         goto cleanup;
 
-    if (qemuProcessInitNumaMemoryPolicy(h->vm, h->nodemask) < 0)
+    if (virNumaSetupMemoryPolicy(h->vm->def->numatune, h->nodemask) < 0)
         goto cleanup;
 
     ret = 0;
@@ -3608,7 +3489,7 @@ int qemuProcessStart(virConnectPtr conn,
     if ((vm->def->placement_mode ==
          VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
         (vm->def->numatune.memory.placement_mode ==
-         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
+         VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) {
         nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
                                                 vm->def->mem.cur_balloon);
         if (!nodeset)

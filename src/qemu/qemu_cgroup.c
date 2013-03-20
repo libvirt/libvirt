@@ -423,12 +423,12 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
 
     if ((vm->def->numatune.memory.nodemask ||
          (vm->def->numatune.memory.placement_mode ==
-          VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) &&
+          VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) &&
         vm->def->numatune.memory.mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPUSET)) {
         char *mask = NULL;
         if (vm->def->numatune.memory.placement_mode ==
-            VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)
+            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
             mask = virBitmapFormat(nodemask);
         else
             mask = virBitmapFormat(vm->def->numatune.memory.nodemask);

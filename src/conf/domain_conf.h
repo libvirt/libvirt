@@ -47,6 +47,7 @@
 # include "device_conf.h"
 # include "virbitmap.h"
 # include "virstoragefile.h"
+# include "virnuma.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -1605,14 +1606,6 @@ enum virDomainCpuPlacementMode {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST
 };
 
-enum virDomainNumatuneMemPlacementMode {
-    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_DEFAULT = 0,
-    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC,
-    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO,
-
-    VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_LAST
-};
-
 typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
 typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
 struct _virDomainTimerCatchupDef {
@@ -1700,18 +1693,6 @@ int virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
 virDomainVcpuPinDefPtr virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
                                                   int nvcpupin,
                                                   int vcpu);
-
-typedef struct _virDomainNumatuneDef virDomainNumatuneDef;
-typedef virDomainNumatuneDef *virDomainNumatuneDefPtr;
-struct _virDomainNumatuneDef {
-    struct {
-        virBitmapPtr nodemask;
-        int mode;
-        int placement_mode; /* enum virDomainNumatuneMemPlacementMode */
-    } memory;
-
-    /* Future NUMA tuning related stuff should go here. */
-};
 
 typedef struct _virBlkioDeviceWeight virBlkioDeviceWeight;
 typedef virBlkioDeviceWeight *virBlkioDeviceWeightPtr;
@@ -1802,7 +1783,7 @@ struct _virDomainDef {
         virDomainVcpuPinDefPtr emulatorpin;
     } cputune;
 
-    virDomainNumatuneDef numatune;
+    virNumaTuneDef numatune;
 
     /* These 3 are based on virDomainLifeCycleAction enum flags */
     int onReboot;
@@ -2397,8 +2378,6 @@ VIR_ENUM_DECL(virDomainGraphicsSpicePlaybackCompression)
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode)
 VIR_ENUM_DECL(virDomainGraphicsSpiceClipboardCopypaste)
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
-VIR_ENUM_DECL(virDomainNumatuneMemMode)
-VIR_ENUM_DECL(virDomainNumatuneMemPlacementMode)
 VIR_ENUM_DECL(virDomainHyperv)
 VIR_ENUM_DECL(virDomainRNGModel)
 VIR_ENUM_DECL(virDomainRNGBackend)

@@ -690,11 +690,6 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
               "paravirt",
               "smpsafe");
 
-VIR_ENUM_IMPL(virDomainNumatuneMemMode, VIR_DOMAIN_NUMATUNE_MEM_LAST,
-              "strict",
-              "preferred",
-              "interleave");
-
 VIR_ENUM_IMPL(virDomainStartupPolicy, VIR_DOMAIN_STARTUP_POLICY_LAST,
               "default",
               "mandatory",
@@ -708,12 +703,6 @@ VIR_ENUM_IMPL(virDomainCpuPlacementMode, VIR_DOMAIN_CPU_PLACEMENT_MODE_LAST,
 VIR_ENUM_IMPL(virDomainDiskTray, VIR_DOMAIN_DISK_TRAY_LAST,
               "closed",
               "open");
-
-VIR_ENUM_IMPL(virDomainNumatuneMemPlacementMode,
-              VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_LAST,
-              "default",
-              "static",
-              "auto");
 
 VIR_ENUM_IMPL(virDomainRNGModel,
               VIR_DOMAIN_RNG_MODEL_LAST,
@@ -9852,7 +9841,7 @@ virDomainDefParseXML(virCapsPtr caps,
                     int placement_mode = 0;
                     if (placement) {
                         if ((placement_mode =
-                             virDomainNumatuneMemPlacementModeTypeFromString(placement)) < 0) {
+                             virNumaTuneMemPlacementModeTypeFromString(placement)) < 0) {
                             virReportError(VIR_ERR_XML_ERROR,
                                            _("Unsupported memory placement "
                                              "mode '%s'"), placement);
@@ -9862,18 +9851,18 @@ virDomainDefParseXML(virCapsPtr caps,
                         VIR_FREE(placement);
                     } else if (def->numatune.memory.nodemask) {
                         /* Defaults to "static" if nodeset is specified. */
-                        placement_mode = VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
+                        placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
                     } else {
                         /* Defaults to "placement" of <vcpu> if nodeset is
                          * not specified.
                          */
                         if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC)
-                            placement_mode = VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC;
+                            placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC;
                         else
-                            placement_mode = VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO;
+                            placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO;
                     }
 
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC &&
+                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC &&
                         !def->numatune.memory.nodemask) {
                         virReportError(VIR_ERR_XML_ERROR, "%s",
                                        _("nodeset for NUMA memory tuning must be set "
@@ -9882,13 +9871,13 @@ virDomainDefParseXML(virCapsPtr caps,
                     }
 
                     /* Ignore 'nodeset' if 'placement' is 'auto' finally */
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)
+                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)
                         virBitmapFree(def->numatune.memory.nodemask);
 
                     /* Copy 'placement' of <numatune> to <vcpu> if its 'placement'
                      * is not specified and 'placement' of <numatune> is specified.
                      */
-                    if (placement_mode == VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO &&
+                    if (placement_mode == VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO &&
                         !def->cpumask)
                         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
@@ -9907,7 +9896,7 @@ virDomainDefParseXML(virCapsPtr caps,
          * and 'placement' of <vcpu> is 'auto'.
          */
         if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            def->numatune.memory.placement_mode = VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO;
+            def->numatune.memory.placement_mode = VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO;
             def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         }
     }
@@ -14818,7 +14807,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, "    <memory mode='%s' ", mode);
 
         if (def->numatune.memory.placement_mode ==
-            VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
+            VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_STATIC) {
             nodemask = virBitmapFormat(def->numatune.memory.nodemask);
             if (nodemask == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -14829,7 +14818,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAsprintf(buf, "nodeset='%s'/>\n", nodemask);
             VIR_FREE(nodemask);
         } else if (def->numatune.memory.placement_mode) {
-            placement = virDomainNumatuneMemPlacementModeTypeToString(def->numatune.memory.placement_mode);
+            placement = virNumaTuneMemPlacementModeTypeToString(def->numatune.memory.placement_mode);
             virBufferAsprintf(buf, "placement='%s'/>\n", placement);
         }
         virBufferAddLit(buf, "  </numatune>\n");

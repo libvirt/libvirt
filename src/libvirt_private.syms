@@ -252,10 +252,6 @@ virDomainNetRemove;
 virDomainNetTypeToString;
 virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
-virDomainNumatuneMemModeTypeFromString;
-virDomainNumatuneMemModeTypeToString;
-virDomainNumatuneMemPlacementModeTypeFromString;
-virDomainNumatuneMemPlacementModeTypeToString;
 virDomainObjAssignDef;
 virDomainObjCopyPersistentDef;
 virDomainObjGetPersistentDef;
@@ -1557,7 +1553,12 @@ virNodeSuspendGetTargetMask;
 
 
 # util/virnuma.h
+virDomainNumatuneMemModeTypeFromString;
+virDomainNumatuneMemModeTypeToString;
 virNumaGetAutoPlacementAdvice;
+virNumaSetupMemoryPolicy;
+virNumaTuneMemPlacementModeTypeFromString;
+virNumaTuneMemPlacementModeTypeToString;
 
 # util/virobject.h
 virClassForObject;

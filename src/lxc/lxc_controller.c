@@ -46,11 +46,6 @@
 # include <cap-ng.h>
 #endif
 
-#if WITH_NUMACTL
-# define NUMA_VERSION1_COMPATIBILITY 1
-# include <numa.h>
-#endif
-
 #include "virerror.h"
 #include "virlog.h"
 #include "virutil.h"
@@ -469,113 +464,6 @@ cleanup:
     return ret;
 }
 
-#if WITH_NUMACTL
-static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl,
-                                           virBitmapPtr nodemask)
-{
-    nodemask_t mask;
-    int mode = -1;
-    int node = -1;
-    int ret = -1;
-    int i = 0;
-    int maxnode = 0;
-    bool warned = false;
-    virDomainNumatuneDef numatune = ctrl->def->numatune;
-    virBitmapPtr tmp_nodemask = NULL;
-
-    if (numatune.memory.placement_mode ==
-        VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_STATIC) {
-        if (!numatune.memory.nodemask)
-            return 0;
-        VIR_DEBUG("Set NUMA memory policy with specified nodeset");
-        tmp_nodemask = numatune.memory.nodemask;
-    } else if (numatune.memory.placement_mode ==
-               VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO) {
-        VIR_DEBUG("Set NUMA memory policy with advisory nodeset from numad");
-        tmp_nodemask = nodemask;
-    } else {
-        return 0;
-    }
-
-    VIR_DEBUG("Setting NUMA memory policy");
-
-    if (numa_available() < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("Host kernel is not aware of NUMA."));
-        return -1;
-    }
-
-    maxnode = numa_max_node() + 1;
-
-    /* Convert nodemask to NUMA bitmask. */
-    nodemask_zero(&mask);
-    i = -1;
-    while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
-        if (i > NUMA_NUM_NODES) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Host cannot support NUMA node %d"), i);
-            return -1;
-        }
-        if (i > maxnode && !warned) {
-            VIR_WARN("nodeset is out of range, there is only %d NUMA "
-                     "nodes on host", maxnode);
-            warned = true;
-        }
-        nodemask_set(&mask, i);
-    }
-
-    mode = ctrl->def->numatune.memory.mode;
-
-    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
-        numa_set_bind_policy(1);
-        numa_set_membind(&mask);
-        numa_set_bind_policy(0);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_PREFERRED) {
-        int nnodes = 0;
-        for (i = 0; i < NUMA_NUM_NODES; i++) {
-            if (nodemask_isset(&mask, i)) {
-                node = i;
-                nnodes++;
-            }
-        }
-
-        if (nnodes != 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("NUMA memory tuning in 'preferred' mode "
-                                   "only supports single node"));
-            goto cleanup;
-        }
-
-        numa_set_bind_policy(0);
-        numa_set_preferred(node);
-    } else if (mode == VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE) {
-        numa_set_interleave_mask(&mask);
-    } else {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unable to set NUMA policy %s"),
-                       virDomainNumatuneMemModeTypeToString(mode));
-        goto cleanup;
-    }
-
-    ret = 0;
-
-cleanup:
-    return ret;
-}
-#else
-static int virLXCControllerSetupNUMAPolicy(virLXCControllerPtr ctrl,
-                                           virBitmapPtr nodemask ATTRIBUTE_UNUSED)
-{
-    if (ctrl->def->numatune.memory.nodemask) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("NUMA policy is not available on this platform"));
-        return -1;
-    }
-
-    return 0;
-}
-#endif
-
 
 /*
  * To be run while still single threaded
@@ -638,7 +526,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
     if ((ctrl->def->placement_mode ==
          VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) ||
         (ctrl->def->numatune.memory.placement_mode ==
-         VIR_DOMAIN_NUMATUNE_MEM_PLACEMENT_MODE_AUTO)) {
+         VIR_NUMA_TUNE_MEM_PLACEMENT_MODE_AUTO)) {
         nodeset = virNumaGetAutoPlacementAdvice(ctrl->def->vcpus,
                                                 ctrl->def->mem.cur_balloon);
         if (!nodeset)
@@ -675,7 +563,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl,
     int ret = -1;
 
     if (virLXCControllerGetNumadAdvice(ctrl, &nodemask) < 0 ||
-        virLXCControllerSetupNUMAPolicy(ctrl, nodemask) < 0)
+        virNumaSetupMemoryPolicy(ctrl->def->numatune, nodemask) < 0)
         goto cleanup;
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
