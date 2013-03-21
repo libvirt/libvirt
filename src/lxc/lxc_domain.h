@@ -23,6 +23,7 @@
 #ifndef __LXC_DOMAIN_H__
 # define __LXC_DOMAIN_H__
 
+# include "vircgroup.h"
 # include "lxc_conf.h"
 # include "lxc_monitor.h"
 
@@ -36,6 +37,8 @@ struct _virLXCDomainObjPrivate {
     bool wantReboot;
 
     pid_t initpid;
+
+    virCgroupPtr cgroup;
 };
 
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;

@@ -527,7 +527,6 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
 {
     virCgroupPtr driver = NULL;
     virCgroupPtr cgroup = NULL;
-    int ret = -1;
     int rc;
 
     rc = virCgroupForDriver("lxc", &driver, 1, 0, -1);
@@ -545,6 +544,21 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
         goto cleanup;
     }
 
+cleanup:
+    virCgroupFree(&driver);
+    return cgroup;
+}
+
+
+virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    int rc;
+
+    if (!(cgroup = virLXCCgroupCreate(def)))
+        return NULL;
+
     rc = virCgroupAddTask(cgroup, getpid());
     if (rc != 0) {
         virReportSystemError(-rc,
@@ -556,7 +570,6 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
     ret = 0;
 
 cleanup:
-    virCgroupFree(&driver);
     if (ret < 0) {
         virCgroupFree(&cgroup);
         return NULL;

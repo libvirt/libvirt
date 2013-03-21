@@ -32,9 +32,9 @@
 # include "domain_event.h"
 # include "capabilities.h"
 # include "virthread.h"
-# include "vircgroup.h"
 # include "security/security_manager.h"
 # include "configmake.h"
+# include "vircgroup.h"
 # include "virsysinfo.h"
 # include "virusb.h"
 

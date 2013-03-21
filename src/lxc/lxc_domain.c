@@ -43,6 +43,8 @@ static void virLXCDomainObjPrivateFree(void *data)
 {
     virLXCDomainObjPrivatePtr priv = data;
 
+    virCgroupFree(&priv->cgroup);
+
     VIR_FREE(priv);
 }
 

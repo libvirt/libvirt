@@ -1434,7 +1434,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (virLXCControllerSetupPrivateNS() < 0)
         goto cleanup;
 
-    if (!(cgroup = virLXCCgroupCreate(ctrl->def)))
+    if (!(cgroup = virLXCCgroupJoin(ctrl->def)))
         goto cleanup;
 
     if (virLXCControllerSetupLoopDevices(ctrl) < 0)

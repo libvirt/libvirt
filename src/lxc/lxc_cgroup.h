@@ -22,11 +22,13 @@
 #ifndef __VIR_LXC_CGROUP_H__
 # define __VIR_LXC_CGROUP_H__
 
+# include "vircgroup.h"
 # include "domain_conf.h"
 # include "lxc_fuse.h"
 # include "virusb.h"
 
 virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def);
+virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def);
 int virLXCCgroupSetup(virDomainDefPtr def,
                       virCgroupPtr cgroup,
                       virBitmapPtr nodemask);
