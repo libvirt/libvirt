@@ -1459,7 +1459,7 @@ static int lxcStartup(bool privileged,
     lxc_driver->log_libvirtd = 0; /* by default log to container logfile */
     lxc_driver->have_netns = lxcCheckNetNsSupport();
 
-    rc = virCgroupForDriver("lxc", &lxc_driver->cgroup, privileged, 1);
+    rc = virCgroupForDriver("lxc", &lxc_driver->cgroup, privileged, 1, -1);
     if (rc < 0) {
         char buf[1024] ATTRIBUTE_UNUSED;
         VIR_DEBUG("Unable to create cgroup for LXC driver: %s",

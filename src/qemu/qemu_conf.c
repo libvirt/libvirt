@@ -134,14 +134,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     }
     cfg->dynamicOwnership = privileged;
 
-    cfg->cgroupControllers =
-        (1 << VIR_CGROUP_CONTROLLER_CPU) |
-        (1 << VIR_CGROUP_CONTROLLER_DEVICES) |
-        (1 << VIR_CGROUP_CONTROLLER_MEMORY) |
-        (1 << VIR_CGROUP_CONTROLLER_BLKIO) |
-        (1 << VIR_CGROUP_CONTROLLER_CPUSET) |
-        (1 << VIR_CGROUP_CONTROLLER_CPUACCT);
-
+    cfg->cgroupControllers = -1; /* -1 == auto-detect */
 
     if (privileged) {
         if (virAsprintf(&cfg->logDir,
@@ -454,6 +447,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     p = virConfGetValue(conf, "cgroup_controllers");
     CHECK_TYPE("cgroup_controllers", VIR_CONF_LIST);
     if (p) {
+        cfg->cgroupControllers = 0;
         virConfValuePtr pp;
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             int ctl;
@@ -470,12 +464,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                 goto cleanup;
             }
             cfg->cgroupControllers |= (1 << ctl);
-        }
-    }
-    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
-        if (cfg->cgroupControllers & (1 << i)) {
-            VIR_INFO("Configured cgroup controller '%s'",
-                     virCgroupControllerTypeToString(i));
         }
     }
 

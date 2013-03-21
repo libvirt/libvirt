@@ -57,8 +57,6 @@ bool qemuCgroupControllerActive(virQEMUDriverPtr driver,
         goto cleanup;
     if (!virCgroupMounted(driver->cgroup, controller))
         goto cleanup;
-    if (cfg->cgroupControllers & (1 << controller))
-        ret = true;
 
 cleanup:
     virObjectUnref(cfg);
@@ -668,7 +666,7 @@ int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     virDomainDefPtr def = vm->def;
     unsigned long long period = vm->def->cputune.emulator_period;
     long long quota = vm->def->cputune.emulator_quota;
-    int rc, i;
+    int rc;
 
     if ((period || quota) &&
         (!driver->cgroup ||
@@ -697,22 +695,13 @@ int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (i != VIR_CGROUP_CONTROLLER_CPU &&
-            i != VIR_CGROUP_CONTROLLER_CPUACCT &&
-            i != VIR_CGROUP_CONTROLLER_CPUSET)
-            continue;
-
-        if (!qemuCgroupControllerActive(driver, i))
-            continue;
-        rc = virCgroupMoveTask(cgroup, cgroup_emulator, i);
-        if (rc < 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to move tasks from domain cgroup to "
-                                   "emulator cgroup in controller %d for %s"),
-                                 i, vm->def->name);
-            goto cleanup;
-        }
+    rc = virCgroupMoveTask(cgroup, cgroup_emulator);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to move tasks from domain cgroup to "
+                               "emulator cgroup for %s"),
+                             vm->def->name);
+        goto cleanup;
     }
 
     if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {

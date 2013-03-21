@@ -628,7 +628,8 @@ qemuStartup(bool privileged,
         goto error;
     }
 
-    rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1);
+    rc = virCgroupForDriver("qemu", &qemu_driver->cgroup, privileged, 1,
+                            cfg->cgroupControllers);
     if (rc < 0) {
         VIR_INFO("Unable to create cgroup for driver: %s",
                  virStrerror(-rc, ebuf, sizeof(ebuf)));

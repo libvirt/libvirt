@@ -530,7 +530,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
     int ret = -1;
     int rc;
 
-    rc = virCgroupForDriver("lxc", &driver, 1, 0);
+    rc = virCgroupForDriver("lxc", &driver, 1, 0, -1);
     if (rc != 0) {
         virReportSystemError(-rc, "%s",
                              _("Unable to get cgroup for driver"));

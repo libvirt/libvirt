@@ -47,7 +47,8 @@ VIR_ENUM_DECL(virCgroupController);
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
                        bool privileged,
-                       bool create);
+                       bool create,
+                       int controllers);
 
 int virCgroupForSelf(virCgroupPtr *group);
 
@@ -77,8 +78,7 @@ int virCgroupAddTaskController(virCgroupPtr group,
                                int controller);
 
 int virCgroupMoveTask(virCgroupPtr src_group,
-                      virCgroupPtr dest_group,
-                      int controller);
+                      virCgroupPtr dest_group);
 
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
