@@ -572,81 +572,72 @@ error:
 static int
 virInterfaceDefParseBond(virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
-    int ret = -1;
-    unsigned long tmp;
+    int res;
 
     def->data.bond.mode = virInterfaceDefParseBondMode(ctxt);
     if (def->data.bond.mode < 0)
-        goto error;
+        return -1;
 
-    ret = virInterfaceDefParseBondItfs(def, ctxt);
-    if (ret != 0)
-       goto error;
+    if (virInterfaceDefParseBondItfs(def, ctxt) != 0)
+        return -1;
 
     if (virXPathNode("./miimon[1]", ctxt) != NULL) {
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_MII;
 
-        ret = virXPathULong("string(./miimon/@freq)", ctxt, &tmp);
-        if ((ret == -2) || (ret == -1)) {
+        res = virXPathInt("string(./miimon/@freq)", ctxt,
+                          &def->data.bond.frequency);
+        if ((res == -2) || (res == -1)) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("bond interface miimon freq missing or invalid"));
-            goto error;
+            return -1;
         }
-        def->data.bond.frequency = (int) tmp;
 
-        ret = virXPathULong("string(./miimon/@downdelay)", ctxt, &tmp);
-        if (ret == -2) {
+        res = virXPathInt("string(./miimon/@downdelay)", ctxt,
+                          &def->data.bond.downdelay);
+        if (res == -2) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("bond interface miimon downdelay invalid"));
-            goto error;
-        } else if (ret == 0) {
-            def->data.bond.downdelay = (int) tmp;
+            return -1;
         }
 
-        ret = virXPathULong("string(./miimon/@updelay)", ctxt, &tmp);
-        if (ret == -2) {
+        res = virXPathInt("string(./miimon/@updelay)", ctxt,
+                          &def->data.bond.updelay);
+        if (res == -2) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("bond interface miimon updelay invalid"));
-            goto error;
-        } else if (ret == 0) {
-            def->data.bond.updelay = (int) tmp;
+            return -1;
         }
 
         def->data.bond.carrier = virInterfaceDefParseBondMiiCarrier(ctxt);
-        if (def->data.bond.carrier < 0) {
-            ret = -1;
-            goto error;
-        }
+        if (def->data.bond.carrier < 0)
+            return -1;
 
     } else if (virXPathNode("./arpmon[1]", ctxt) != NULL) {
 
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_ARP;
 
-        ret = virXPathULong("string(./arpmon/@interval)", ctxt, &tmp);
-        if ((ret == -2) || (ret == -1)) {
+        res = virXPathInt("string(./arpmon/@interval)", ctxt,
+                          &def->data.bond.interval);
+        if ((res == -2) || (res == -1)) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("bond interface arpmon interval missing or invalid"));
-            goto error;
+            return -1;
         }
-        def->data.bond.interval = (int) tmp;
 
         def->data.bond.target =
             virXPathString("string(./arpmon/@target)", ctxt);
         if (def->data.bond.target == NULL) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("bond interface arpmon target missing"));
-            ret = -1;
-            goto error;
+            return -1;
         }
 
         def->data.bond.validate = virInterfaceDefParseBondArpValid(ctxt);
-        if (def->data.bond.validate < 0) {
-            ret = -1;
-            goto error;
-        }
+        if (def->data.bond.validate < 0)
+            return -1;
     }
-error:
-    return ret;
+
+    return 0;
 }
 
 static int
