@@ -455,11 +455,16 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
             }
         }
 
-        if ((seclabel->type == VIR_DOMAIN_SECLABEL_NONE) &&
-            sec_managers[i]->requireConfined) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Unconfined guests are not allowed on this host"));
-            goto cleanup;
+        if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE) {
+            if (sec_managers[i]->requireConfined) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Unconfined guests are not allowed on this host"));
+                goto cleanup;
+            } else if (vm->nseclabels && generated) {
+                VIR_DEBUG("Skipping auto generated seclabel of type none");
+                virSecurityLabelDefFree(seclabel);
+                continue;
+            }
         }
 
         if (!sec_managers[i]->drv->domainGenSecurityLabel) {
