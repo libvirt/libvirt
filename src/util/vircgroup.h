@@ -49,7 +49,7 @@ int virCgroupForDriver(const char *name,
                        bool privileged,
                        bool create);
 
-int virCgroupGetAppRoot(virCgroupPtr *group);
+int virCgroupForSelf(virCgroupPtr *group);
 
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,

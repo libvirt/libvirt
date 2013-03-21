@@ -293,7 +293,7 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
     int ret;
     virCgroupPtr cgroup;
 
-    ret = virCgroupGetAppRoot(&cgroup);
+    ret = virCgroupForSelf(&cgroup);
     if (ret < 0) {
         virReportSystemError(-ret, "%s",
                              _("Unable to get cgroup for container"));

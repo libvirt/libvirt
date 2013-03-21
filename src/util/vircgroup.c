@@ -967,19 +967,22 @@ int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
 #endif
 
 /**
-* virCgroupGetAppRoot:
+* virCgroupForSelf:
 *
 * @group: Pointer to returned virCgroupPtr
+*
+* Obtain a cgroup representing the config of the
+* current process
 *
 * Returns 0 on success
 */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupGetAppRoot(virCgroupPtr *group)
+int virCgroupForSelf(virCgroupPtr *group)
 {
     return virCgroupNew("/", group);
 }
 #else
-int virCgroupGetAppRoot(virCgroupPtr *group ATTRIBUTE_UNUSED)
+int virCgroupForSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
