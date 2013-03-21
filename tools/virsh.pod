@@ -1859,15 +1859,26 @@ B<Note>: the optional target value is the name of a device to be created
 as the back-end on the node. If not provided a device named "vnetN" or "vifN"
 will be created automatically.
 
-=item B<detach-device> I<domain> I<FILE> [I<--config>]
+=item B<detach-device> I<domain> I<FILE>
+[[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 
 Detach a device from the domain, takes the same kind of XML descriptions
 as command B<attach-device>.
-If I<--config> is specified, alter persistent configuration, effect observed
-on next boot, for compatibility purposes, I<--persistent> is alias of
-I<--config>.
 For passthrough host devices, see also B<nodedev-reattach>, needed if
 the device does not use managed mode.
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. When no flag is specified legacy API is used whose behavior depends
+on the hypervisor driver.
+
+For compatibility purposes, I<--persistent> behaves like I<--config> for
+an offline domain, and like I<--live> I<--config> for a running domain.
+
+Note that older versions of virsh used I<--config> as an alias for
+I<--persistent>.
 
 =item B<detach-disk> I<domain> I<target> [I<--config>]
 
