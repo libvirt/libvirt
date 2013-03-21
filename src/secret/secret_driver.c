@@ -149,6 +149,11 @@ secretFindByUsage(virSecretDriverStatePtr driver, int usageType, const char *usa
             if (STREQ(s->def->usage.ceph, usageID))
                 return s;
             break;
+
+        case VIR_SECRET_USAGE_TYPE_ISCSI:
+            if (STREQ(s->def->usage.target, usageID))
+                return s;
+            break;
         }
     }
     return NULL;
@@ -613,6 +618,9 @@ secretUsageIDForDef(virSecretDefPtr def)
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
         return def->usage.ceph;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        return def->usage.target;
 
     default:
         return NULL;

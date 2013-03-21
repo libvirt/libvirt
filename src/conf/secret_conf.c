@@ -36,7 +36,7 @@
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
 VIR_ENUM_IMPL(virSecretUsageType, VIR_SECRET_USAGE_TYPE_LAST,
-              "none", "volume", "ceph")
+              "none", "volume", "ceph", "iscsi")
 
 void
 virSecretDefFree(virSecretDefPtr def)
@@ -55,6 +55,10 @@ virSecretDefFree(virSecretDefPtr def)
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
         VIR_FREE(def->usage.ceph);
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        VIR_FREE(def->usage.target);
         break;
 
     default:
@@ -104,6 +108,15 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         if (!def->usage.ceph) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Ceph usage specified, but name is missing"));
+            return -1;
+        }
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        def->usage.target = virXPathString("string(./usage/target)", ctxt);
+        if (!def->usage.target) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("iSCSI usage specified, but target is missing"));
             return -1;
         }
         break;
@@ -259,6 +272,13 @@ virSecretDefFormatUsage(virBufferPtr buf,
         if (def->usage.ceph != NULL) {
             virBufferEscapeString(buf, "    <name>%s</name>\n",
                                   def->usage.ceph);
+        }
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        if (def->usage.target != NULL) {
+            virBufferEscapeString(buf, "    <target>%s</target>\n",
+                                  def->usage.target);
         }
         break;
 
