@@ -9837,26 +9837,21 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     const char *doc = NULL;
     xmlNodePtr disk_node = NULL;
     const char *disk_xml = NULL;
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
-    bool config, live, current, force = false;
-    bool eject, insert, update = false;
     bool ret = false;
     int prepare_type = 0;
     const char *action = NULL;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    bool force = vshCommandOptBool(cmd, "force");
+    bool eject = vshCommandOptBool(cmd, "eject");
+    bool insert = vshCommandOptBool(cmd, "insert");
+    bool update = vshCommandOptBool(cmd, "update");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-    config = vshCommandOptBool(cmd, "config");
-    live = vshCommandOptBool(cmd, "live");
-    current = vshCommandOptBool(cmd, "current");
-    force = vshCommandOptBool(cmd, "force");
-    eject = vshCommandOptBool(cmd, "eject");
-    insert = vshCommandOptBool(cmd, "insert");
-    update = vshCommandOptBool(cmd, "update");
-
-    if (eject + insert + update > 1) {
-        vshError(ctl, "%s", _("--eject, --insert, and --update must be specified "
-                            "exclusively."));
-        return false;
-    }
+    VSH_EXCLUSIVE_OPTIONS_VAR(eject, insert);
+    VSH_EXCLUSIVE_OPTIONS_VAR(eject, update);
+    VSH_EXCLUSIVE_OPTIONS_VAR(insert, update);
 
     if (eject) {
         prepare_type = VSH_PREPARE_DISK_XML_EJECT;
