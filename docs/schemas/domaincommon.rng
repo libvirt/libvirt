@@ -537,6 +537,10 @@
       <optional>
         <ref name="numatune"/>
       </optional>
+
+      <optional>
+        <ref name="respartition"/>
+      </optional>
     </interleave>
   </define>
 
@@ -677,6 +681,14 @@
               </choice>
         </element>
       </optional>
+    </element>
+  </define>
+
+  <define name="respartition">
+    <element name="resource">
+      <element name="partition">
+        <ref name="absFilePath"/>
+      </element>
     </element>
   </define>
 

@@ -1822,12 +1822,26 @@ virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
     VIR_FREE(def);
 }
 
+
+void
+virDomainResourceDefFree(virDomainResourceDefPtr resource)
+{
+    if (!resource)
+        return;
+
+    VIR_FREE(resource->partition);
+    VIR_FREE(resource);
+}
+
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
 
     if (!def)
         return;
+
+    virDomainResourceDefFree(def->resource);
 
     /* hostdevs must be freed before nets (or any future "intelligent
      * hostdevs") because the pointer to the hostdev is really
@@ -9805,6 +9819,37 @@ cleanup:
 }
 
 
+static virDomainResourceDefPtr
+virDomainResourceDefParse(xmlNodePtr node,
+                          xmlXPathContextPtr ctxt)
+{
+    virDomainResourceDefPtr def = NULL;
+    xmlNodePtr tmp = ctxt->node;
+
+    ctxt->node = node;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    /* Find out what type of virtualization to use */
+    if (!(def->partition = virXPathString("string(./partition)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing resource partition attribute"));
+        goto error;
+    }
+
+    ctxt->node = tmp;
+    return def;
+
+error:
+    ctxt->node = tmp;
+    virDomainResourceDefFree(def);
+    return NULL;
+}
+
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -10372,6 +10417,24 @@ virDomainDefParseXML(xmlDocPtr xml,
             def->numatune.memory.mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
         }
     }
+    VIR_FREE(nodes);
+
+    /* Extract numatune if exists. */
+    if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot extract resource nodes"));
+        goto error;
+    }
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one resource element is supported"));
+        goto error;
+    }
+
+    if (n &&
+        !(def->resource = virDomainResourceDefParse(nodes[0], ctxt)))
+        goto error;
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./features/*", ctxt, &nodes)) < 0)
@@ -15039,6 +15102,17 @@ virDomainIsAllVcpupinInherited(virDomainDefPtr def)
    }
 }
 
+
+static void
+virDomainResourceDefFormat(virBufferPtr buf,
+                           virDomainResourceDefPtr def)
+{
+    virBufferAddLit(buf, "  <resource>\n");
+    virBufferEscapeString(buf, "    <partition>%s</partition>\n", def->partition);
+    virBufferAddLit(buf, "  </resource>\n");
+}
+
+
 #define DUMPXML_FLAGS                           \
     (VIR_DOMAIN_XML_SECURE |                    \
      VIR_DOMAIN_XML_INACTIVE |                  \
@@ -15306,6 +15380,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
         virBufferAddLit(buf, "  </numatune>\n");
     }
+
+    if (def->resource)
+        virDomainResourceDefFormat(buf, def->resource);
 
     if (def->sysinfo)
         virDomainSysinfoDefFormat(buf, def->sysinfo);

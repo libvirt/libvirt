@@ -716,6 +716,35 @@
     </dl>
 
 
+    <h3><a name="resPartition">Resource partitioning</a></h3>
+
+    <p>
+      Hypervisors may allow for virtual machines to be placed into
+      resource partitions, potentially with nesting of said partitions.
+      The <code>resource</code> element groups together configuration
+      related to resource partitioning. It currently supports a child
+      element <code>partition</code> whose content defines the path
+      of the resource partition in which to place the domain. If no
+      partition is listed, then the domain will be placed in a default
+      partition. It is the responsibility of the app/admin to ensure
+      that the partition exists prior to starting the guest. Only the
+      (hypervisor specific) default partition can be assumed to exist
+      by default.
+    </p>
+<pre>
+  ...
+  &lt;resource&gt;
+    &lt;partition&gt;/virtualmachines/production&lt;/partition&gt;
+  &lt;/resource&gt;
+  ...
+</pre>
+
+    <p>
+      Resource partitions are currently supported by the QEMU and
+      LXC drivers, which map partition paths onto cgroups directories,
+      in all mounted controllers. <span class="since">Since 1.0.5</span>
+    </p>
+
     <h3><a name="elementsCPU">CPU model and topology</a></h3>
 
     <p>

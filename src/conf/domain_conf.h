@@ -1778,6 +1778,11 @@ struct _virDomainRNGDef {
 void virBlkioDeviceWeightArrayClear(virBlkioDeviceWeightPtr deviceWeights,
                                     int ndevices);
 
+typedef struct _virDomainResourceDef virDomainResourceDef;
+typedef virDomainResourceDef *virDomainResourceDefPtr;
+struct _virDomainResourceDef {
+    char *partition;
+};
 
 /*
  * Guest VM main configuration
@@ -1829,6 +1834,7 @@ struct _virDomainDef {
     } cputune;
 
     virNumaTuneDef numatune;
+    virDomainResourceDefPtr resource;
 
     /* These 3 are based on virDomainLifeCycleAction enum flags */
     int onReboot;
@@ -2046,6 +2052,7 @@ virDomainObjPtr virDomainObjListFindByName(const virDomainObjListPtr doms,
 bool virDomainObjTaint(virDomainObjPtr obj,
                        enum virDomainTaintFlags taint);
 
+void virDomainResourceDefFree(virDomainResourceDefPtr resource);
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
