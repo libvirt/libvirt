@@ -304,7 +304,8 @@ VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAS
               "lsisas1068",
               "vmpvscsi",
               "ibmvscsi",
-              "virtio-scsi");
+              "virtio-scsi",
+              "lsisas1078");
 
 VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "piix3-uhci",

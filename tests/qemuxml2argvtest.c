@@ -550,6 +550,9 @@ mymain(void)
     DO_TEST("disk-scsi-virtio-scsi",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-scsi-megasas",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-sata-device",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE,
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_ICH9_AHCI);

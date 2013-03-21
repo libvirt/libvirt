@@ -212,6 +212,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "rng-egd",
               "virtio-ccw",
               "dtb",
+              "megasas",
     );
 
 struct _virQEMUCaps {
@@ -1329,6 +1330,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-scsi-pci", QEMU_CAPS_VIRTIO_SCSI },
     { "virtio-scsi-s390", QEMU_CAPS_VIRTIO_SCSI },
     { "virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI },
+    { "megasas", QEMU_CAPS_SCSI_MEGASAS },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
     { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
     { "qxl", QEMU_CAPS_DEVICE_QXL },

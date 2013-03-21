@@ -179,6 +179,7 @@ mymain(void)
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
     DO_TEST("disk-scsi-virtio-scsi");
+    DO_TEST("disk-scsi-megasas");
     DO_TEST_FULL("disk-mirror", false, WHEN_ACTIVE);
     DO_TEST_FULL("disk-mirror", true, WHEN_INACTIVE);
     DO_TEST("graphics-listen-network");

@@ -500,7 +500,7 @@ qemuSetScsiControllerModel(virDomainDefPtr def,
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support "
-                                 "lsi scsi controller"));
+                                 "the LSI 53C895A SCSI controller"));
                 return -1;
             }
             break;
@@ -514,6 +514,14 @@ qemuSetScsiControllerModel(virDomainDefPtr def,
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
             /*TODO: need checking work here if necessary */
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MEGASAS)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support "
+                                 "the LSI SAS1078 controller"));
+                return -1;
+            }
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3543,6 +3551,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
             virBufferAddLit(&buf, "spapr-vscsi");
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+            virBufferAddLit(&buf, "megasas");
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

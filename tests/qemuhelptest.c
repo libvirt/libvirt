@@ -912,7 +912,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_USB_SERIAL,
             QEMU_CAPS_DEVICE_USB_NET,
-            QEMU_CAPS_DTB);
+            QEMU_CAPS_DTB,
+            QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("qemu-kvm-1.2.0", 1002000, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -1017,7 +1018,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_USB_SERIAL,
             QEMU_CAPS_DEVICE_USB_NET,
-            QEMU_CAPS_DTB);
+            QEMU_CAPS_DTB,
+            QEMU_CAPS_SCSI_MEGASAS);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
