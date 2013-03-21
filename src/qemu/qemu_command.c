@@ -2391,6 +2391,31 @@ qemuParseGlusterString(virDomainDiskDefPtr def)
 }
 
 static int
+qemuParseISCSIString(virDomainDiskDefPtr def)
+{
+    virURIPtr uri = NULL;
+    char *slash;
+    unsigned lun;
+
+    if (!(uri = virURIParse(def->src)))
+        return -1;
+
+    if (uri->path &&
+        (slash = strchr(uri->path + 1, '/')) != NULL) {
+
+        if (slash[1] == '\0')
+            *slash = '\0';
+        else if (virStrToLong_ui(slash + 1, NULL, 10, &lun) == -1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid name '%s' for iSCSI disk"), def->src);
+            return -1;
+        }
+    }
+
+    return qemuParseDriveURIString(def, uri, "iscsi");
+}
+
+static int
 qemuParseNBDString(virDomainDiskDefPtr disk)
 {
     virDomainDiskHostDefPtr h = NULL;
@@ -2484,8 +2509,14 @@ qemuBuildDriveURIString(virDomainDiskDefPtr disk, virBufferPtr opt,
     virBufferAddLit(opt, "file=");
     transp = virDomainDiskProtocolTransportTypeToString(disk->hosts->transport);
 
-    if (virAsprintf(&tmpscheme, "%s+%s", scheme, transp) < 0)
-        goto no_memory;
+    if (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_TCP) {
+        tmpscheme = strdup(scheme);
+        if (tmpscheme == NULL)
+            goto no_memory;
+    } else {
+        if (virAsprintf(&tmpscheme, "%s+%s", scheme, transp) < 0)
+            goto no_memory;
+    }
 
     if (disk->src && virAsprintf(&volimg, "/%s", disk->src) < 0)
         goto no_memory;
@@ -2529,6 +2560,12 @@ qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
 }
 
 #define QEMU_DEFAULT_NBD_PORT "10809"
+
+static int
+qemuBuildISCSIString(virDomainDiskDefPtr disk, virBufferPtr opt)
+{
+    return qemuBuildDriveURIString(disk, opt, "iscsi");
+}
 
 static int
 qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
@@ -2710,6 +2747,11 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
                 if (qemuBuildGlusterString(disk, &opt) < 0)
+                    goto error;
+                virBufferAddChar(&opt, ',');
+                break;
+            case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+                if (qemuBuildISCSIString(disk, &opt) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
@@ -7909,6 +7951,12 @@ qemuParseCommandLineDisk(virCapsPtr qemuCaps,
 
                     if (qemuParseGlusterString(def) < 0)
                         goto error;
+                } else if (STRPREFIX(def->src, "iscsi:")) {
+                    def->type = VIR_DOMAIN_DISK_TYPE_NETWORK;
+                    def->protocol = VIR_DOMAIN_DISK_PROTOCOL_ISCSI;
+
+                    if (qemuParseISCSIString(def) < 0)
+                        goto error;
                 } else if (STRPREFIX(def->src, "sheepdog:")) {
                     char *p = def->src;
                     char *port, *vdi;
@@ -9197,6 +9245,11 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                     break;
                 case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
                     if (qemuParseGlusterString(disk) < 0)
+                        goto error;
+
+                    break;
+                case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
+                    if (qemuParseISCSIString(disk) < 0)
                         goto error;
 
                     break;

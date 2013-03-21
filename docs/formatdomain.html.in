@@ -1446,10 +1446,13 @@
         are "nbd", "iscsi", "rbd", "sheepdog" or "gluster".  If the
         <code>protocol</code> attribute is "rbd", "sheepdog" or "gluster", an
         additional attribute <code>name</code> is mandatory to specify which
-        volume/image will be used; for "nbd" it is optional.  When the disk
-        <code>type</code> is "network", the <code>source</code> may have zero
-        or more <code>host</code> sub-elements used to specify the hosts
-        to connect.
+        volume/image will be used; for "nbd" it is optional.  For "iscsi",
+        the <code>name</code> attribute may include a logical unit number,
+        separated from the target's name by a slash (for example,
+        <code>iqn.1992-01.com.example/1</code>); the default LUN is zero.
+        When the disk <code>type</code> is "network", the <code>source</code>
+        may have zero or more <code>host</code> sub-elements used to
+        specify the hosts to connect.
         <span class="since">Since 0.0.3; <code>type='dir'</code> since
         0.7.5; <code>type='network'</code> since
         0.8.7; <code>protocol='iscsi'</code> since 1.0.4</span><br/>
