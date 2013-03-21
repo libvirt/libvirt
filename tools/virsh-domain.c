@@ -9286,12 +9286,20 @@ static const vshCmdOptDef opts_detach_interface[] = {
      .help = N_("MAC address")
     },
     {.name = "persistent",
-     .type = VSH_OT_ALIAS,
-     .help = "config"
+     .type = VSH_OT_BOOL,
+     .help = N_("make live change persistent")
     },
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
     },
     {.name = NULL}
 };
@@ -9306,12 +9314,26 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr cur = NULL, matchNode = NULL;
     xmlBufferPtr xml_buf = NULL;
     const char *mac =NULL, *type = NULL;
-    char *doc;
+    char *doc = NULL;
     char buf[64];
     int i = 0, diff_mac;
     int ret;
     int functionReturn = false;
-    unsigned int flags;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool persistent = vshCommandOptBool(cmd, "persistent");
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config || persistent)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9322,13 +9344,14 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         goto cleanup;
 
-    doc = virDomainGetXMLDesc(dom, 0);
-    if (!doc)
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(doc = virDomainGetXMLDesc(dom, 0)))
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(doc);
-    if (!xml) {
+    if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt))) {
         vshError(ctl, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
@@ -9393,10 +9416,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptBool(cmd, "config")) {
-        flags = VIR_DOMAIN_AFFECT_CONFIG;
-        if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (flags != 0) {
         ret = virDomainDetachDeviceFlags(dom,
                                          (char *)xmlBufferContent(xml_buf),
                                          flags);
@@ -9412,6 +9432,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
+    VIR_FREE(doc);
     virDomainFree(dom);
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
