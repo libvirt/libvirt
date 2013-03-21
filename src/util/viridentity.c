@@ -83,7 +83,7 @@ virIdentityPtr virIdentityGetCurrent(void)
 {
     virIdentityPtr ident;
 
-    if (virIdentityOnceInit() < 0)
+    if (virIdentityInitialize() < 0)
         return NULL;
 
     ident = virThreadLocalGet(&virIdentityCurrent);
@@ -104,7 +104,7 @@ int virIdentitySetCurrent(virIdentityPtr ident)
 {
     virIdentityPtr old;
 
-    if (virIdentityOnceInit() < 0)
+    if (virIdentityInitialize() < 0)
         return -1;
 
     old = virThreadLocalGet(&virIdentityCurrent);
