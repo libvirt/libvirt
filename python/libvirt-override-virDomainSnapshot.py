@@ -6,7 +6,7 @@
         """Get the domain that a snapshot was created for"""
         return self.domain()
 
-    def listAllChildren(self, flags):
+    def listAllChildren(self, flags=0):
         """List all child snapshots and returns a list of snapshot objects"""
         ret = libvirtmod.virDomainSnapshotListAllChildren(self._o, flags)
         if ret is None:

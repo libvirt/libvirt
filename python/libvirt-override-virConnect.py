@@ -204,7 +204,7 @@
         self.domainEventCallbackID[ret] = opaque
         return ret
 
-    def listAllDomains(self, flags):
+    def listAllDomains(self, flags=0):
         """List all domains and returns a list of domain objects"""
         ret = libvirtmod.virConnectListAllDomains(self._o, flags)
         if ret is None:
@@ -216,7 +216,7 @@
 
         return retlist
 
-    def listAllStoragePools(self, flags):
+    def listAllStoragePools(self, flags=0):
         """Returns a list of storage pool objects"""
         ret = libvirtmod.virConnectListAllStoragePools(self._o, flags)
         if ret is None:
@@ -228,7 +228,7 @@
 
         return retlist
 
-    def listAllNetworks(self, flags):
+    def listAllNetworks(self, flags=0):
         """Returns a list of network objects"""
         ret = libvirtmod.virConnectListAllNetworks(self._o, flags)
         if ret is None:
@@ -240,7 +240,7 @@
 
         return retlist
 
-    def listAllInterfaces(self, flags):
+    def listAllInterfaces(self, flags=0):
         """Returns a list of interface objects"""
         ret = libvirtmod.virConnectListAllInterfaces(self._o, flags)
         if ret is None:
@@ -252,7 +252,7 @@
 
         return retlist
 
-    def listAllDevices(self, flags):
+    def listAllDevices(self, flags=0):
         """Returns a list of host node device objects"""
         ret = libvirtmod.virConnectListAllNodeDevices(self._o, flags)
         if ret is None:
@@ -264,7 +264,7 @@
 
         return retlist
 
-    def listAllNWFilters(self, flags):
+    def listAllNWFilters(self, flags=0):
         """Returns a list of network filter objects"""
         ret = libvirtmod.virConnectListAllNWFilters(self._o, flags)
         if ret is None:
@@ -276,7 +276,7 @@
 
         return retlist
 
-    def listAllSecrets(self, flags):
+    def listAllSecrets(self, flags=0):
         """Returns a list of secret objects"""
         ret = libvirtmod.virConnectListAllSecrets(self._o, flags)
         if ret is None:

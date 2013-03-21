@@ -1,4 +1,4 @@
-    def listAllSnapshots(self, flags):
+    def listAllSnapshots(self, flags=0):
         """List all snapshots and returns a list of snapshot objects"""
         ret = libvirtmod.virDomainListAllSnapshots(self._o, flags)
         if ret is None:
