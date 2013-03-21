@@ -9704,12 +9704,20 @@ static const vshCmdOptDef opts_detach_disk[] = {
      .help = N_("target of disk device")
     },
     {.name = "persistent",
-     .type = VSH_OT_ALIAS,
-     .help = "config"
+     .type = VSH_OT_BOOL,
+     .help = N_("make live change persistent")
     },
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
     },
     {.name = NULL}
 };
@@ -9723,8 +9731,22 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     int ret;
     bool functionReturn = false;
-    unsigned int flags;
     xmlNodePtr disk_node = NULL;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool persistent = vshCommandOptBool(cmd, "persistent");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config || persistent)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9732,9 +9754,12 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         goto cleanup;
 
-    doc = virDomainGetXMLDesc(dom, 0);
-    if (!doc)
+    if (!(doc = virDomainGetXMLDesc(dom, 0)))
         goto cleanup;
+
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(disk_node = vshFindDisk(doc, target, VSH_FIND_DISK_NORMAL)))
         goto cleanup;
@@ -9743,23 +9768,18 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
                                        VSH_PREPARE_DISK_XML_NONE)))
         goto cleanup;
 
-    if (vshCommandOptBool(cmd, "config")) {
-        flags = VIR_DOMAIN_AFFECT_CONFIG;
-        if (virDomainIsActive(dom) == 1)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-        ret = virDomainDetachDeviceFlags(dom,
-                                         disk_xml,
-                                         flags);
-    } else {
+    if (flags != 0)
+        ret = virDomainDetachDeviceFlags(dom, disk_xml, flags);
+    else
         ret = virDomainDetachDevice(dom, disk_xml);
-    }
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to detach disk"));
-    } else {
-        vshPrint(ctl, "%s", _("Disk detached successfully\n"));
-        functionReturn = true;
+        goto cleanup;
     }
+
+    vshPrint(ctl, "%s", _("Disk detached successfully\n"));
+    functionReturn = true;
 
  cleanup:
     xmlFreeNode(disk_node);
