@@ -3992,6 +3992,8 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     char *wwn = NULL;
     char *vendor = NULL;
     char *product = NULL;
+    int expected_secret_usage = -1;
+    int auth_secret_usage = -1;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -4029,7 +4031,6 @@ virDomainDiskDefParseXML(virCapsPtr caps,
         if (cur->type == XML_ELEMENT_NODE) {
             if (!source && !hosts &&
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
-
                 sourceNode = cur;
 
                 switch (def->type) {
@@ -4056,6 +4057,11 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                                        _("unknown protocol type '%s'"),
                                        protocol);
                         goto error;
+                    }
+                    if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+                        expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
+                    } else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+                        expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
                     }
                     if (!(source = virXMLPropString(cur, "name")) &&
                         def->protocol != VIR_DOMAIN_DISK_PROTOCOL_NBD) {
@@ -4242,8 +4248,9 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                                            _("missing type for secret"));
                             goto error;
                         }
-                        if (virSecretUsageTypeTypeFromString(usageType) !=
-                            VIR_SECRET_USAGE_TYPE_CEPH) {
+                        auth_secret_usage =
+                            virSecretUsageTypeTypeFromString(usageType);
+                        if (auth_secret_usage < 0) {
                             virReportError(VIR_ERR_XML_ERROR,
                                            _("invalid secret type %s"),
                                            usageType);
@@ -4391,6 +4398,13 @@ virDomainDiskDefParseXML(virCapsPtr caps,
             }
         }
         cur = cur->next;
+    }
+
+    if (auth_secret_usage != -1 && auth_secret_usage != expected_secret_usage) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid secret type '%s'"),
+                       virSecretUsageTypeTypeToString(auth_secret_usage));
+        goto error;
     }
 
     device = virXMLPropString(node, "device");
@@ -12787,15 +12801,18 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->auth.username) {
         virBufferEscapeString(buf, "      <auth username='%s'>\n",
                               def->auth.username);
+        if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+            virBufferAsprintf(buf, "        <secret type='iscsi'");
+        } else if (def->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
+            virBufferAsprintf(buf, "        <secret type='ceph'");
+        }
+
         if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_UUID) {
             virUUIDFormat(def->auth.secret.uuid, uuidstr);
-            virBufferAsprintf(buf,
-                              "        <secret type='ceph' uuid='%s'/>\n",
-                              uuidstr);
+            virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
         }
         if (def->auth.secretType == VIR_DOMAIN_DISK_SECRET_TYPE_USAGE) {
-            virBufferEscapeString(buf,
-                                  "        <secret type='ceph' usage='%s'/>\n",
+            virBufferEscapeString(buf, " usage='%s'/>\n",
                                   def->auth.secret.usage);
         }
         virBufferAddLit(buf, "      </auth>\n");

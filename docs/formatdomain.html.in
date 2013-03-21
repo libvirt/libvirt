@@ -1768,12 +1768,12 @@
         holds the actual password or other credentials (the domain XML
         intentionally does not expose the password, only the reference
         to the object that does manage the password).  For now, the
-        only known secret <code>type</code> is "ceph", for Ceph RBD
-        network sources, and requires either an
-        attribute <code>uuid</code> with the UUID of the Ceph secret
-        object, or an attribute <code>usage</code> with the name
-        associated with the Ceph secret
-        object.  <span class="since">libvirt 0.9.7</span>
+        known secret <code>type</code>s are "ceph", for Ceph RBD
+        network sources, and "iscsi", for CHAP authentication of iSCSI
+        targets.  Both require either a <code>uuid</code> attribute
+        with the UUID of the secret object, or a <code>usage</code>
+        attribute matching the key that was specified in the
+        secret object.  <span class="since">libvirt 0.9.7</span>
       </dd>
       <dt><code>geometry</code></dt>
       <dd>The optional <code>geometry</code> element provides the

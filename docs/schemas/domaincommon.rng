@@ -3642,6 +3642,7 @@
       <attribute name='type'>
         <choice>
           <value>ceph</value>
+          <value>iscsi</value>
         </choice>
       </attribute>
       <choice>
