@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 -usb \
+-drive file=iscsi://example.org:3260/iqn.1992-01.com.example,if=none,\
+id=drive-scsi0-0-0-0,format=raw -device scsi-block,bus=scsi0.0,channel=0,\
+scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0

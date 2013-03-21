@@ -156,6 +156,7 @@ virDomainDiskIoTypeToString;
 virDomainDiskPathByName;
 virDomainDiskProtocolTransportTypeFromString;
 virDomainDiskProtocolTransportTypeToString;
+virDomainDiskProtocolTypeToString;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
 virDomainDiskTypeFromString;

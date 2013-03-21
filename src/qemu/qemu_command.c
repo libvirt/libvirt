@@ -3026,7 +3026,14 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                            bus);
             goto error;
         }
-        if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
+            if (disk->protocol != VIR_DOMAIN_DISK_PROTOCOL_ISCSI) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("disk device='lun' is not supported for protocol='%s'"),
+                               virDomainDiskProtocolTypeToString(disk->protocol));
+                goto error;
+            }
+        } else if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device='lun' is not supported for type='%s'"),
                            virDomainDiskTypeToString(disk->type));
