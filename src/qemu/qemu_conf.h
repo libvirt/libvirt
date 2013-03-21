@@ -34,7 +34,6 @@
 # include "domain_event.h"
 # include "virthread.h"
 # include "security/security_manager.h"
-# include "vircgroup.h"
 # include "virpci.h"
 # include "virusb.h"
 # include "cpu_conf.h"
@@ -163,9 +162,6 @@ struct _virQEMUDriver {
 
     /* Atomic increment only */
     int nextvmid;
-
-    /* Immutable pointer. Immutable object */
-    virCgroupPtr cgroup;
 
     /* Atomic inc/dec only */
     unsigned int nactive;

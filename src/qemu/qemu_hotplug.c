@@ -1136,27 +1136,16 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virCgroupPtr cgroup = NULL;
+    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
         virUSBDevicePtr usb;
-        qemuCgroupData data;
-
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find cgroup for %s"),
-                           vm->def->name);
-            goto error;
-        }
 
         if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
                                 hostdev->source.subsys.u.usb.device,
                                 NULL)) == NULL)
             goto error;
 
-        data.vm = vm;
-        data.cgroup = cgroup;
         if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
-                                    &data) < 0) {
+                                    vm) < 0) {
             virUSBDeviceFree(usb);
             goto error;
         }
@@ -2032,7 +2021,6 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup = NULL;
     char *drivestr = NULL;
 
     i = qemuFindDisk(vm->def, dev->data.disk->dst);
@@ -2050,15 +2038,6 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                        _("cannot hot unplug multifunction PCI device: %s"),
                        dev->data.disk->dst);
         goto cleanup;
-    }
-
-    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find cgroup for %s"),
-                           vm->def->name);
-            goto cleanup;
-        }
     }
 
     if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
@@ -2130,11 +2109,9 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                             vm->def, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
-    if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(vm, cgroup, dev->data.disk) < 0)
-            VIR_WARN("Failed to teardown cgroup for disk path %s",
-                     NULLSTR(dev->data.disk->src));
-    }
+    if (qemuTeardownDiskCgroup(vm, dev->data.disk) < 0)
+        VIR_WARN("Failed to teardown cgroup for disk path %s",
+                 NULLSTR(dev->data.disk->src));
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, dev->data.disk) < 0)
         VIR_WARN("Unable to release lock on %s", dev->data.disk->src);
@@ -2142,7 +2119,6 @@ int qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     ret = 0;
 
 cleanup:
-    virCgroupFree(&cgroup);
     VIR_FREE(drivestr);
     return ret;
 }
@@ -2154,7 +2130,6 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup = NULL;
     char *drivestr = NULL;
 
     i = qemuFindDisk(vm->def, dev->data.disk->dst);
@@ -2179,15 +2154,6 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                        _("disk '%s' is in an active block copy job"),
                        detach->dst);
         goto cleanup;
-    }
-
-    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find cgroup for %s"),
-                           vm->def->name);
-            goto cleanup;
-        }
     }
 
     /* build the actual drive id string as the disk->info.alias doesn't
@@ -2222,11 +2188,9 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                                             vm->def, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
-    if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(vm, cgroup, dev->data.disk) < 0)
-            VIR_WARN("Failed to teardown cgroup for disk path %s",
-                     NULLSTR(dev->data.disk->src));
-    }
+    if (qemuTeardownDiskCgroup(vm, dev->data.disk) < 0)
+        VIR_WARN("Failed to teardown cgroup for disk path %s",
+                 NULLSTR(dev->data.disk->src));
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, dev->data.disk) < 0)
         VIR_WARN("Unable to release lock on disk %s", dev->data.disk->src);
@@ -2235,7 +2199,6 @@ int qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
 
 cleanup:
     VIR_FREE(drivestr);
-    virCgroupFree(&cgroup);
     return ret;
 }
 

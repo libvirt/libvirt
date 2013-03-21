@@ -4186,7 +4186,6 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                     enum qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup = NULL;
     int ret = -1;
     int rc;
     bool restoreLabel = false;
@@ -4220,21 +4219,13 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
          * given cgroup ACL permission.  We might also stumble on
          * a race present in some qemu versions where it does a wait()
          * that botches pclose.  */
-        if (qemuCgroupControllerActive(driver,
-                                       VIR_CGROUP_CONTROLLER_DEVICES)) {
-            if (virCgroupForDomain(driver->cgroup, vm->def->name,
-                                   &cgroup, 0) != 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to find cgroup for %s"),
-                               vm->def->name);
-                goto cleanup;
-            }
-            rc = virCgroupAllowDevicePath(cgroup, path,
+        if (virCgroupHasController(priv->cgroup,
+                                   VIR_CGROUP_CONTROLLER_DEVICES)) {
+            rc = virCgroupAllowDevicePath(priv->cgroup, path,
                                           VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupPath(vm, cgroup, "allow", path, "rw", rc);
+            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rc);
             if (rc == 1) {
                 /* path was not a device, no further need for cgroup */
-                virCgroupFree(&cgroup);
             } else if (rc < 0) {
                 virReportSystemError(-rc,
                                      _("Unable to allow device %s for %s"),
@@ -4335,14 +4326,14 @@ cleanup:
                                                  vm->def, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
 
-    if (cgroup != NULL) {
-        rc = virCgroupDenyDevicePath(cgroup, path,
+    if (virCgroupHasController(priv->cgroup,
+                               VIR_CGROUP_CONTROLLER_DEVICES)) {
+        rc = virCgroupDenyDevicePath(priv->cgroup, path,
                                      VIR_CGROUP_DEVICE_RWM);
-        virDomainAuditCgroupPath(vm, cgroup, "deny", path, "rwm", rc);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rc);
         if (rc < 0)
             VIR_WARN("Unable to deny device %s for %s %d",
                      path, vm->def->name, rc);
-        virCgroupFree(&cgroup);
     }
     return ret;
 }

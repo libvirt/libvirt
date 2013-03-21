@@ -1395,6 +1395,7 @@ qemuProcessReadLogOutput(virDomainObjPtr vm,
         /* Filter out debug messages from intermediate libvirt process */
         while ((eol = strchr(filter_next, '\n'))) {
             *eol = '\0';
+            VIR_ERROR("<<<<<<<<<<<<%s>>>>>>>>>>", filter_next);
             if (virLogProbablyLogMessage(filter_next)) {
                 memmove(filter_next, eol + 1, got - (eol - buf));
                 got -= eol + 1 - filter_next;
@@ -2529,7 +2530,7 @@ static int qemuProcessHook(void *data)
      * memory allocation is on the correct NUMA node
      */
     VIR_DEBUG("Moving process to cgroup");
-    if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
+    if (qemuAddToCgroup(h->vm) < 0)
         goto cleanup;
 
     /* This must be done after cgroup placement to avoid resetting CPU
@@ -3004,6 +3005,9 @@ qemuProcessReconnect(void *opaque)
     if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
         goto error;
 
+    if (qemuInitCgroup(driver, obj) < 0)
+        goto error;
+
     /* XXX: Need to change as long as lock is introduced for
      * qemu_driver->sharedDisks.
      */
@@ -3384,7 +3388,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
-    qemuRemoveCgroup(driver, vm, 1);
+    qemuRemoveCgroup(vm);
 
     for (i = 0 ; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -3750,7 +3754,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for each VCPU (if required)");
-    if (qemuSetupCgroupForVcpu(driver, vm) < 0)
+    if (qemuSetupCgroupForVcpu(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for emulator (if required)");
@@ -4085,7 +4089,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     }
 
 retry:
-    if ((ret = qemuRemoveCgroup(driver, vm, 0)) < 0) {
+    if ((ret = qemuRemoveCgroup(vm)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
             usleep(200*1000);
             goto retry;
@@ -4093,6 +4097,7 @@ retry:
         VIR_WARN("Failed to remove cgroup for %s",
                  vm->def->name);
     }
+    virCgroupFree(&priv->cgroup);
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
