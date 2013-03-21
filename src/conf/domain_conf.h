@@ -2298,10 +2298,13 @@ virSecurityDeviceLabelDefPtr
 virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model);
 
 virSecurityLabelDefPtr
-virDomainDefAddSecurityLabelDef(virDomainDefPtr def, const char *model);
+virDomainDefGenSecurityLabelDef(const char *model);
 
 virSecurityDeviceLabelDefPtr
-virDomainDiskDefAddSecurityLabelDef(virDomainDiskDefPtr def, const char *model);
+virDomainDiskDefGenSecurityLabelDef(const char *model);
+
+void virSecurityLabelDefFree(virSecurityLabelDefPtr def);
+void virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def);
 
 typedef const char* (*virEventActionToStringFunc)(int type);
 typedef int (*virEventActionFromStringFunc)(const char *type);
