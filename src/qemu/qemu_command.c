@@ -2763,7 +2763,8 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 } else {
                     /* only one host is supported now */
                     virBufferAsprintf(&opt, "file=sheepdog:%s:%s:",
-                                      disk->hosts->name, disk->hosts->port);
+                                      disk->hosts->name,
+                                      disk->hosts->port ? disk->hosts->port : "7000");
                     virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 }
                 break;

@@ -4111,11 +4111,6 @@ virDomainDiskDefParseXML(virCapsPtr caps,
                                     goto error;
                                 }
                                 hosts[nhosts - 1].port = virXMLPropString(child, "port");
-                                if (!hosts[nhosts - 1].port) {
-                                    virReportError(VIR_ERR_XML_ERROR,
-                                                   "%s", _("missing port for host"));
-                                    goto error;
-                                }
                             }
                         }
                         child = child->next;

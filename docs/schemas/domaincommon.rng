@@ -1114,9 +1114,11 @@
                             <ref name="ipAddr"/>
                           </choice>
                         </attribute>
-                        <attribute name="port">
-                          <ref name="unsignedInt"/>
-                        </attribute>
+                        <optional>
+                          <attribute name="port">
+                            <ref name="unsignedInt"/>
+                          </attribute>
+                        </optional>
                       </group>
                       <group>
                         <attribute name="transport">

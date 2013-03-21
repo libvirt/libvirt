@@ -1700,31 +1700,37 @@
             <th> Protocol </th>
             <th> Meaning </th>
             <th> Number of hosts </th>
+            <th> Default port </th>
           </tr>
           <tr>
             <td> nbd </td>
             <td> a server running nbd-server </td>
             <td> only one </td>
+            <td> 10809 </td>
           </tr>
           <tr>
             <td> iscsi </td>
             <td> an iSCSI server </td>
             <td> only one </td>
+            <td> 3260 </td>
           </tr>
           <tr>
             <td> rbd </td>
             <td> monitor servers of RBD </td>
             <td> one or more </td>
+            <td> 6789 </td>
           </tr>
           <tr>
             <td> sheepdog </td>
             <td> one of the sheepdog servers (default is localhost:7000) </td>
             <td> zero or one </td>
+            <td> 7000 </td>
           </tr>
           <tr>
             <td> gluster </td>
             <td> a server running glusterd daemon </td>
             <td> only one </td>
+            <td> 24007 </td>
           </tr>
         </table>
         gluster supports "tcp", "rdma", "unix" as valid values for the
