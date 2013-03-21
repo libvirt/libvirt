@@ -2134,8 +2134,8 @@ qemuBuildRBDString(virConnectPtr conn,
             VIR_FREE(base64);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("rbd username '%s' specified but secret not found"),
-                           disk->auth.username);
+                           _("%s username '%s' specified but secret not found"),
+                           "rbd", disk->auth.username);
             goto error;
         }
     } else {
@@ -2303,6 +2303,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     char *transp = NULL;
     char *sock = NULL;
     char *volimg = NULL;
+    char *secret = NULL;
 
     if (VIR_ALLOC(def->hosts) < 0)
         goto no_memory;
@@ -2361,6 +2362,16 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     } else {
         VIR_FREE(def->src);
         def->src = NULL;
+    }
+
+    if (uri->user) {
+        secret = strchr(uri->user, ':');
+        if (secret)
+            *secret = '\0';
+
+        def->auth.username = strdup(uri->user);
+        if (!def->auth.username)
+            goto no_memory;
     }
 
     def->nhosts = 1;
@@ -2486,14 +2497,20 @@ error:
 }
 
 static int
-qemuBuildDriveURIString(virDomainDiskDefPtr disk, virBufferPtr opt,
-                        const char *scheme)
+qemuBuildDriveURIString(virConnectPtr conn,
+                        virDomainDiskDefPtr disk, virBufferPtr opt,
+                        const char *scheme, virSecretUsageType secretType)
 {
     int ret = -1;
     int port = 0;
+    virSecretPtr sec = NULL;
+    char *secret = NULL;
+    size_t secret_size;
+
     char *tmpscheme = NULL;
     char *volimg = NULL;
     char *sock = NULL;
+    char *user = NULL;
     char *builturi = NULL;
     const char *transp = NULL;
     virURI uri = {
@@ -2529,8 +2546,42 @@ qemuBuildDriveURIString(virDomainDiskDefPtr disk, virBufferPtr opt,
         virAsprintf(&sock, "socket=%s", disk->hosts->socket) < 0)
         goto no_memory;
 
+    if (disk->auth.username && secretType != VIR_SECRET_USAGE_TYPE_NONE) {
+        /* look up secret */
+        switch (disk->auth.secretType) {
+        case VIR_DOMAIN_DISK_SECRET_TYPE_UUID:
+            sec = virSecretLookupByUUID(conn,
+                                        disk->auth.secret.uuid);
+            break;
+        case VIR_DOMAIN_DISK_SECRET_TYPE_USAGE:
+            sec = virSecretLookupByUsage(conn, secretType,
+                                         disk->auth.secret.usage);
+            break;
+        }
+
+        if (sec) {
+            secret = (char *)conn->secretDriver->getValue(sec, &secret_size, 0,
+                                                          VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+            if (secret == NULL) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("could not get the value of the secret for username %s"),
+                               disk->auth.username);
+                ret = -1;
+                goto cleanup;
+            }
+            if (virAsprintf(&user, "%s:%s", disk->auth.username, secret) < 0)
+                goto no_memory;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s username '%s' specified but secret not found"),
+                           scheme, disk->auth.username);
+            ret = -1;
+            goto cleanup;
+        }
+    }
     uri.scheme = tmpscheme; /* gluster+<transport> */
     uri.server = disk->hosts->name;
+    uri.user = user;
     uri.port = port;
     uri.path = volimg;
     uri.query = sock;
@@ -2554,21 +2605,23 @@ no_memory:
 }
 
 static int
-qemuBuildGlusterString(virDomainDiskDefPtr disk, virBufferPtr opt)
+qemuBuildGlusterString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
 {
-    return qemuBuildDriveURIString(disk, opt, "gluster");
+    return qemuBuildDriveURIString(conn, disk, opt, "gluster",
+                                   VIR_SECRET_USAGE_TYPE_NONE);
 }
 
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
 static int
-qemuBuildISCSIString(virDomainDiskDefPtr disk, virBufferPtr opt)
+qemuBuildISCSIString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
 {
-    return qemuBuildDriveURIString(disk, opt, "iscsi");
+    return qemuBuildDriveURIString(conn, disk, opt, "iscsi",
+                                   VIR_SECRET_USAGE_TYPE_ISCSI);
 }
 
 static int
-qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
+qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr opt)
 {
     const char *transp;
 
@@ -2583,7 +2636,8 @@ qemuBuildNBDString(virDomainDiskDefPtr disk, virBufferPtr opt)
             && !disk->hosts->name)
         || (disk->hosts->transport == VIR_DOMAIN_DISK_PROTO_TRANS_UNIX
             && disk->hosts->socket && disk->hosts->socket[0] != '/'))
-        return qemuBuildDriveURIString(disk, opt, "nbd");
+        return qemuBuildDriveURIString(conn, disk, opt, "nbd",
+                                       VIR_SECRET_USAGE_TYPE_NONE);
 
     virBufferAddLit(opt, "file=nbd:");
 
@@ -2735,7 +2789,7 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK) {
             switch (disk->protocol) {
             case VIR_DOMAIN_DISK_PROTOCOL_NBD:
-                if (qemuBuildNBDString(disk, &opt) < 0)
+                if (qemuBuildNBDString(conn, disk, &opt) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
@@ -2746,12 +2800,12 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_GLUSTER:
-                if (qemuBuildGlusterString(disk, &opt) < 0)
+                if (qemuBuildGlusterString(conn, disk, &opt) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
             case VIR_DOMAIN_DISK_PROTOCOL_ISCSI:
-                if (qemuBuildISCSIString(disk, &opt) < 0)
+                if (qemuBuildISCSIString(conn, disk, &opt) < 0)
                     goto error;
                 virBufferAddChar(&opt, ',');
                 break;
