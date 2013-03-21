@@ -48,19 +48,7 @@ static const char *const defaultDeviceACL[] = {
 bool qemuCgroupControllerActive(virQEMUDriverPtr driver,
                                 int controller)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    bool ret = false;
-
-    if (driver->cgroup == NULL)
-        goto cleanup;
-    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
-        goto cleanup;
-    if (!virCgroupMounted(driver->cgroup, controller))
-        goto cleanup;
-
-cleanup:
-    virObjectUnref(cfg);
-    return ret;
+    return virCgroupHasController(driver->cgroup, controller);
 }
 
 static int

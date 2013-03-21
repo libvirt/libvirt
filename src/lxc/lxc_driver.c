@@ -1642,17 +1642,7 @@ cleanup:
 static bool lxcCgroupControllerActive(virLXCDriverPtr driver,
                                       int controller)
 {
-    if (driver->cgroup == NULL)
-        return false;
-    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
-        return false;
-    if (!virCgroupMounted(driver->cgroup, controller))
-        return false;
-#if 0
-    if (driver->cgroupControllers & (1 << controller))
-        return true;
-#endif
-    return true;
+    return virCgroupHasController(driver->cgroup, controller);
 }
 
 

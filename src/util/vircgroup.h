@@ -161,7 +161,7 @@ int virCgroupRemoveRecursively(char *grppath);
 int virCgroupRemove(virCgroupPtr group);
 
 void virCgroupFree(virCgroupPtr *group);
-bool virCgroupMounted(virCgroupPtr cgroup, int controller);
+bool virCgroupHasController(virCgroupPtr cgroup, int controller);
 
 int virCgroupKill(virCgroupPtr group, int signum);
 int virCgroupKillRecursive(virCgroupPtr group, int signum);

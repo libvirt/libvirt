@@ -94,15 +94,20 @@ void virCgroupFree(virCgroupPtr *group)
 }
 
 /**
- * virCgroupMounted: query whether a cgroup subsystem is mounted or not
+ * virCgroupHasController: query whether a cgroup controller is present
  *
- * @cgroup: The group structure to be queried
+ * @cgroup: The group structure to be queried, or NULL
  * @controller: cgroup subsystem id
  *
- * Returns true if a cgroup is subsystem is mounted.
+ * Returns true if a cgroup controller is mounted and is associated
+ * with this cgroup object.
  */
-bool virCgroupMounted(virCgroupPtr cgroup, int controller)
+bool virCgroupHasController(virCgroupPtr cgroup, int controller)
 {
+    if (!cgroup)
+        return false;
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST)
+        return false;
     return cgroup->controllers[controller].mountPoint != NULL;
 }
 
