@@ -610,7 +610,12 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
                                            virLXCMonitorExitStatus status,
                                            virDomainObjPtr vm)
 {
+    virLXCDriverPtr driver = lxc_driver;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
+
+    lxcDriverLock(driver);
+    virObjectLock(vm);
+    lxcDriverUnlock(driver);
 
     switch (status) {
     case VIR_LXC_MONITOR_EXIT_STATUS_SHUTDOWN:
@@ -629,6 +634,8 @@ static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     }
     VIR_DEBUG("Domain shutoff reason %d (from status %d)",
               priv->stopReason, status);
+
+    virObjectUnlock(vm);
 }
 
 static int
@@ -667,9 +674,15 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
                                            pid_t initpid,
                                            virDomainObjPtr vm)
 {
-    virLXCDomainObjPrivatePtr priv = vm->privateData;
+    virLXCDriverPtr driver = lxc_driver;
+    virLXCDomainObjPrivatePtr priv;
     ino_t inode;
 
+    lxcDriverLock(driver);
+    virObjectLock(vm);
+    lxcDriverUnlock(driver);
+
+    priv = vm->privateData;
     priv->initpid = initpid;
 
     if (virLXCProcessGetNsInode(initpid, "pid", &inode) < 0) {
@@ -684,6 +697,8 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
 
     if (virDomainSaveStatus(lxc_driver->xmlconf, lxc_driver->stateDir, vm) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
+
+    virObjectUnlock(vm);
 }
 
 static virLXCMonitorCallbacks monitorCallbacks = {
