@@ -26,6 +26,7 @@ CLASSES_EXTRA = \
 	libvirt-override-virConnect.py \
 	libvirt-override-virDomain.py \
 	libvirt-override-virDomainSnapshot.py \
+	libvirt-override-virStoragePool.py \
 	libvirt-override-virStream.py
 
 EXTRA_DIST =			\
@@ -109,7 +110,11 @@ LXC_GENERATED= libvirt-lxc-export.c \
 	   libvirt-lxc.h \
 	   libvirt_lxc.py
 
-$(GENERATE).stamp: $(srcdir)/$(GENERATE) $(API_DESC) $(QEMU_API_DESC) $(LXC_API_DESC)
+$(GENERATE).stamp: $(srcdir)/$(GENERATE) \
+                   $(API_DESC) \
+                   $(QEMU_API_DESC) \
+                   $(LXC_API_DESC) \
+                   $(CLASSES_EXTRA)
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/$(GENERATE) $(PYTHON) && \
 	touch $@
 
