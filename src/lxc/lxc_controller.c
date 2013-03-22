@@ -517,7 +517,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
                                           virBitmapPtr *mask)
 {
     virBitmapPtr nodemask = NULL;
-    char *nodeset;
+    char *nodeset = NULL;
     int ret = -1;
 
     /* Get the advisory nodeset from numad if 'placement' of
