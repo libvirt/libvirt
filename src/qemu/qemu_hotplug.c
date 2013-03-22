@@ -226,7 +226,6 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
-        else disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     }
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -253,7 +252,8 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             if (qemuDomainCCWAddressAssign(&disk->info, priv->ccwaddrs,
                                            !disk->info.addr.ccw.assigned) < 0)
                 goto error;
-        } else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        } else if (!disk->info.type ||
+                    disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
                 goto error;
         }
@@ -291,14 +291,17 @@ int qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
                 }
             }
         }
-    } else if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI){
+    } else if (!disk->info.type ||
+                disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDevicePCIAddress guestAddr = disk->info.addr.pci;
         ret = qemuMonitorAddPCIDisk(priv->mon,
                                     disk->src,
                                     type,
                                     &guestAddr);
-        if (ret == 0)
+        if (ret == 0) {
+            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             memcpy(&disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
+        }
     }
     qemuDomainObjExitMonitor(driver, vm);
 
