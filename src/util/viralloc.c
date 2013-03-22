@@ -389,7 +389,7 @@ virDeleteElementsN(void *ptrptr, size_t size, size_t at,
 }
 
 /**
- * Vir_Alloc_Var:
+ * virAllocVar:
  * @ptrptr: pointer to hold address of allocated memory
  * @struct_size: size of initial struct
  * @element_size: size of array elements
