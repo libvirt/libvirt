@@ -105,6 +105,9 @@ struct __lxc_child_argv {
     int handshakefd;
 };
 
+static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
+                                    const char *srcprefix);
+
 
 /*
  * reboot(LINUX_REBOOT_CMD_CAD_ON) will return -EINVAL
@@ -405,6 +408,51 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 #ifndef MS_SLAVE
 # define MS_SLAVE                (1<<19)
 #endif
+
+static int lxcContainerPrepareRoot(virDomainDefPtr def,
+                                   virDomainFSDefPtr root)
+{
+    char *dst;
+    char *tmp;
+
+    if (root->type == VIR_DOMAIN_FS_TYPE_MOUNT)
+        return 0;
+
+    if (root->type == VIR_DOMAIN_FS_TYPE_FILE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unexpected root filesystem without loop device"));
+        return -1;
+    }
+
+    if (root->type != VIR_DOMAIN_FS_TYPE_BLOCK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported root filesystem type %s"),
+                       virDomainFSTypeToString(root->type));
+        return -1;
+    }
+
+    if (virAsprintf(&dst, "%s/%s.root",
+                    LXC_STATE_DIR, def->name) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    tmp = root->dst;
+    root->dst = dst;
+
+    if (lxcContainerMountFSBlock(root, "") < 0) {
+        root->dst = tmp;
+        VIR_FREE(dst);
+        return -1;
+    }
+
+    root->dst = tmp;
+    root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+    VIR_FREE(root->src);
+    root->src = dst;
+
+    return 0;
+}
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 {
@@ -1924,6 +1972,10 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     /* Before pivoting we need to identify any
      * cgroups controllers that are mounted */
     if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
+        goto cleanup;
+
+    /* Ensure the root filesystem is mounted */
+    if (lxcContainerPrepareRoot(vmDef, root) < 0)
         goto cleanup;
 
     /* Gives us a private root, leaving all parent OS mounts on /.oldroot */
