@@ -174,6 +174,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_VIRTIO_CCW         = 132, /* -device virtio-*-ccw */
     QEMU_CAPS_DTB                = 133, /* -dtb file */
     QEMU_CAPS_SCSI_MEGASAS       = 134, /* -device megasas */
+    QEMU_CAPS_IPV6_MIGRATION     = 135, /* -incoming [::] */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

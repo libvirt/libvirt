@@ -213,6 +213,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-ccw",
               "dtb",
               "megasas",
+
+              "ipv6-migration", /* 135 */
     );
 
 struct _virQEMUCaps {
@@ -1180,6 +1182,9 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (version >= 11000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_HOST);
+
+    if (version >= 1001000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
 
     if (version >= 1002000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
@@ -2310,6 +2315,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
 }
 
 
