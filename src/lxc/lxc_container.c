@@ -627,15 +627,17 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 #endif
 
-static int lxcContainerMountFSDevPTS(virDomainFSDefPtr root)
+static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
+                                     const char *srcprefix)
 {
-    char *devpts = NULL;
-    int rc = -1;
+    int ret;
+    char *path = NULL;
 
-    if (virAsprintf(&devpts, "/.oldroot%s/dev/pts", root->src) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if ((ret = virAsprintf(&path,
+                           "%s/%s/%s.devpts",
+                           srcprefix ? srcprefix : "", LXC_STATE_DIR,
+                           def->name)) < 0)
+        return ret;
 
     if (virFileMakePath("/dev/pts") < 0) {
         virReportSystemError(errno, "%s",
@@ -643,19 +645,20 @@ static int lxcContainerMountFSDevPTS(virDomainFSDefPtr root)
         goto cleanup;
     }
 
-    VIR_DEBUG("Trying to move %s to %s", devpts, "/dev/pts");
-    if ((rc = mount(devpts, "/dev/pts", NULL, MS_MOVE, NULL)) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to mount /dev/pts in container"));
+    VIR_DEBUG("Trying to move %s to /dev/pts", path);
+
+    if ((ret = mount(path, "/dev/pts",
+                     NULL, MS_MOVE, NULL)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on /dev/pts"),
+                             path);
         goto cleanup;
     }
 
-    rc = 0;
+cleanup:
+    VIR_FREE(path);
 
- cleanup:
-    VIR_FREE(devpts);
-
-    return rc;
+    return ret;
 }
 
 static int lxcContainerPopulateDevices(char **ttyPaths, size_t nttyPaths)
@@ -1961,7 +1964,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
         goto cleanup;
 
     /* Mounts /dev/pts */
-    if (lxcContainerMountFSDevPTS(root) < 0)
+    if (lxcContainerMountFSDevPTS(vmDef, "/.oldroot") < 0)
         goto cleanup;
 
     /* Populates device nodes in /dev/ */
@@ -2204,7 +2207,11 @@ static int lxcContainerChild(void *data)
 
     if (argv->nttyPaths) {
         if (root) {
-            if (virAsprintf(&ttyPath, "%s%s", root->src, argv->ttyPaths[0]) < 0) {
+            const char *tty = argv->ttyPaths[0];
+            if (STRPREFIX(tty, "/dev/pts/"))
+                tty += strlen("/dev/pts/");
+            if (virAsprintf(&ttyPath, "%s/%s.devpts/%s",
+                            LXC_STATE_DIR, vmDef->name, tty) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }

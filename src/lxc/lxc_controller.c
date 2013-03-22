@@ -1219,15 +1219,10 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     mount_options = virSecurityManagerGetMountOptions(ctrl->securityManager,
                                                       ctrl->def);
 
-    if (!virFileExists(root->src)) {
-        virReportSystemError(errno,
-                             _("root source %s does not exist"),
-                             root->src);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&devpts, "%s/dev/pts", root->src) < 0 ||
-        virAsprintf(&ctrl->devptmx, "%s/dev/pts/ptmx", root->src) < 0) {
+    if (virAsprintf(&devpts, "%s/%s.devpts",
+                    LXC_STATE_DIR, ctrl->def->name) < 0 ||
+        virAsprintf(&ctrl->devptmx, "%s/%s.devpts/ptmx",
+                    LXC_STATE_DIR, ctrl->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
