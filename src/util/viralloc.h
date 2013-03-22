@@ -376,15 +376,8 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 #  define VIR_FREE(ptr) virFree((void *) &(ptr))
 # endif
 
-
-
-# if TEST_OOM
 void virAllocTestInit(void);
 int virAllocTestCount(void);
 void virAllocTestOOM(int n, int m);
 void virAllocTestHook(void (*func)(int, void*), void *data);
-# endif
-
-
-
 #endif /* __VIR_MEMORY_H_ */

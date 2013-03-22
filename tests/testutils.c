@@ -697,7 +697,7 @@ int virtTestMain(int argc,
             if (worker) {
                 _exit(ret);
             } else {
-                int i, status;
+                int i;
                 for (i = 0 ; i < mp ; i++) {
                     if (virProcessWait(workers[i], NULL) < 0)
                         ret = EXIT_FAILURE;

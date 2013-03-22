@@ -74,6 +74,30 @@ static int virAllocTestFail(void)
     testMallocNext++;
     return fail;
 }
+
+#else
+
+void virAllocTestOOM(int n ATTRIBUTE_UNUSED,
+                     int m ATTRIBUTE_UNUSED)
+{
+    /* nada */
+}
+
+int virAllocTestCount(void)
+{
+    return 0;
+}
+
+void virAllocTestInit(void)
+{
+    /* nada */
+}
+
+void virAllocTestHook(void (*func)(int, void*) ATTRIBUTE_UNUSED,
+                      void *data ATTRIBUTE_UNUSED)
+{
+    /* nada */
+}
 #endif
 
 
