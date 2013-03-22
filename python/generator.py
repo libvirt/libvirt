@@ -1490,7 +1490,7 @@ def buildWrappers(module):
                         classes.write(", %s" % arg[0])
                     n = n + 1
                 if arg[0] == "flags":
-                    classes.write("=0");
+                    classes.write("=0")
                 classes.write("):\n")
                 writeDoc(module, name, args, '        ', classes)
                 n = 0
