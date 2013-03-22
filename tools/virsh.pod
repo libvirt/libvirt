@@ -1477,7 +1477,8 @@ Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
-This command works for at least the Xen, QEMU/KVM and vSphere/ESX hypervisors.
+Some hypervisors such as QEMU/KVM don't support live changes (especially
+increasing) of the maximum memory limit.
 
 I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
 (blocks of 1024 bytes) unless you provide a suffix (and the older option
