@@ -88,7 +88,7 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!vol) {
-        if (pool)
+        if (pool || !pooloptname)
             vshError(ctl, _("failed to get vol '%s'"), n);
         else
             vshError(ctl, _("failed to get vol '%s', specifying --%s "
