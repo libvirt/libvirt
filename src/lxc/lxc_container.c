@@ -604,7 +604,7 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def,
     char *meminfo_path = NULL;
 
     if ((ret = virAsprintf(&meminfo_path,
-                           "%s/%s/%s/meminfo",
+                           "%s/%s/%s.fuse/meminfo",
                            srcprefix ? srcprefix : "", LXC_STATE_DIR,
                            def->name)) < 0)
         return ret;

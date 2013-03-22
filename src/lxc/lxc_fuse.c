@@ -291,7 +291,7 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
     if (virMutexInit(&fuse->lock) < 0)
         goto cleanup2;
 
-    if (virAsprintf(&fuse->mountpoint, "%s/%s/", LXC_STATE_DIR,
+    if (virAsprintf(&fuse->mountpoint, "%s/%s.fuse/", LXC_STATE_DIR,
                     def->name) < 0) {
         virReportOOMError();
         goto cleanup1;
