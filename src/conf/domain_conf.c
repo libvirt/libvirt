@@ -15635,9 +15635,6 @@ virDomainGetRootFilesystem(virDomainDefPtr def)
     int i;
 
     for (i = 0 ; i < def->nfss ; i++) {
-        if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_MOUNT)
-            continue;
-
         if (STREQ(def->fss[i]->dst, "/"))
             return def->fss[i];
     }
