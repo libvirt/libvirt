@@ -1852,6 +1852,7 @@ virFileStripSuffix;
 virFileUnlock;
 virFileWaitForDevices;
 virFileWriteStr;
+virFindFCHostCapableVport;
 virFindFileInPath;
 virFormatIntDecimal;
 virGetDeviceID;

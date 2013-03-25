@@ -3670,6 +3670,92 @@ cleanup:
     VIR_FREE(wwpn_buf);
     return ret;
 }
+
+# define PORT_STATE_ONLINE "Online"
+
+/* virFindFCHostCapableVport:
+ *
+ * Iterate over the sysfs and find out the first online HBA which
+ * supports vport, and not saturated,.
+ */
+char *
+virFindFCHostCapableVport(const char *sysfs_prefix)
+{
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
+    DIR *dir = NULL;
+    struct dirent *entry = NULL;
+    char *max_vports = NULL;
+    char *vports = NULL;
+    char *state = NULL;
+    char *ret = NULL;
+
+    if (!(dir = opendir(prefix))) {
+        virReportSystemError(errno,
+                             _("Failed to opendir path '%s'"),
+                             prefix);
+        return NULL;
+    }
+
+    while ((entry = readdir(dir))) {
+        unsigned int host;
+        char *p = NULL;
+
+        if (entry->d_name[0] == '.')
+            continue;
+
+        p = entry->d_name + strlen("host");
+        if (virStrToLong_ui(p, NULL, 10, &host) == -1) {
+            VIR_DEBUG("Failed to parse host number from '%s'",
+                      entry->d_name);
+            continue;
+        }
+
+        if (!virIsCapableVport(NULL, host))
+            continue;
+
+        if (virReadFCHost(NULL, host, "port_state", &state) < 0) {
+             VIR_DEBUG("Failed to read port_state for host%d", host);
+             continue;
+        }
+
+        /* Skip the not online FC host */
+        if (STRNEQ(state, PORT_STATE_ONLINE)) {
+            VIR_FREE(state);
+            continue;
+        }
+        VIR_FREE(state);
+
+        if (virReadFCHost(NULL, host, "max_npiv_vports", &max_vports) < 0) {
+             VIR_DEBUG("Failed to read max_npiv_vports for host%d", host);
+             continue;
+        }
+
+        if (virReadFCHost(NULL, host, "npiv_vports_inuse", &vports) < 0) {
+             VIR_DEBUG("Failed to read npiv_vports_inuse for host%d", host);
+             VIR_FREE(max_vports);
+             continue;
+        }
+
+        /* Compare from the strings directly, instead of converting
+         * the strings to integers first
+         */
+        if ((strlen(max_vports) >= strlen(vports)) ||
+            ((strlen(max_vports) == strlen(vports)) &&
+             strcmp(max_vports, vports) > 0)) {
+            ret = strdup(entry->d_name);
+            goto cleanup;
+        }
+
+        VIR_FREE(max_vports);
+        VIR_FREE(vports);
+    }
+
+cleanup:
+    closedir(dir);
+    VIR_FREE(max_vports);
+    VIR_FREE(vports);
+    return ret;
+}
 #else
 int
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
@@ -3711,6 +3797,13 @@ char *
 virGetFCHostNameByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                       const char *wwnn ATTRIBUTE_UNUSED,
                       const char *wwpn ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return NULL;
+}
+
+char *
+virFindFCHostCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;

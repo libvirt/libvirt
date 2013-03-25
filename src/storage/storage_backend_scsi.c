@@ -660,10 +660,12 @@ createVport(virStoragePoolSourceAdapter adapter)
         return 0;
     }
 
-    if (!adapter.data.fchost.parent) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'parent' for vHBA must be specified"));
-        return -1;
+    if (!adapter.data.fchost.parent &&
+        !(adapter.data.fchost.parent = virFindFCHostCapableVport(NULL))) {
+         virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'parent' for vHBA not specified, and "
+                         "cannot find one on this host"));
+         return -1;
     }
 
     if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)

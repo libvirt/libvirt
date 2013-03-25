@@ -322,4 +322,6 @@ char *virGetFCHostNameByWWN(const char *sysfs_prefix,
                             const char *wwpn)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+char *virFindFCHostCapableVport(const char *sysfs_prefix);
+
 #endif /* __VIR_UTIL_H__ */
