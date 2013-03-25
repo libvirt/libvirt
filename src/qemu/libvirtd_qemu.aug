@@ -60,6 +60,7 @@ module Libvirtd_qemu =
 
    let process_entry = str_entry "hugetlbfs_mount"
                  | bool_entry "clear_emulator_capabilities"
+                 | str_entry "bridge_helper"
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | int_entry "max_files"

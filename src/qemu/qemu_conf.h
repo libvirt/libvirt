@@ -116,6 +116,7 @@ struct _virQEMUDriverConfig {
 
     char *hugetlbfsMount;
     char *hugepagePath;
+    char *bridgeHelperName;
 
     bool macFilter;
 

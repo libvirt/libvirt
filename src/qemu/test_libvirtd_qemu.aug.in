@@ -49,6 +49,7 @@ module Test_libvirtd_qemu =
 { "auto_dump_bypass_cache" = "0" }
 { "auto_start_bypass_cache" = "0" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
+{ "bridge_helper" = "/usr/libexec/qemu-bridge-helper" }
 { "clear_emulator_capabilities" = "1" }
 { "set_process_name" = "1" }
 { "max_processes" = "0" }

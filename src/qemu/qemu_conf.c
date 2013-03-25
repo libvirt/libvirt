@@ -241,6 +241,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         }
     }
 #endif
+    cfg->bridgeHelperName = strdup("/usr/libexec/qemu-bridge-helper");
 
     cfg->clearEmulatorCapabilities = true;
 
@@ -290,6 +291,7 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     VIR_FREE(cfg->hugetlbfsMount);
     VIR_FREE(cfg->hugepagePath);
+    VIR_FREE(cfg->bridgeHelperName);
 
     VIR_FREE(cfg->saveImageFormat);
     VIR_FREE(cfg->dumpImageFormat);
@@ -497,6 +499,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_BOOL("auto_start_bypass_cache", cfg->autoStartBypassCache);
 
     GET_VALUE_STR("hugetlbfs_mount", cfg->hugetlbfsMount);
+    GET_VALUE_STR("bridge_helper", cfg->bridgeHelperName);
 
     GET_VALUE_BOOL("mac_filter", cfg->macFilter);
 
