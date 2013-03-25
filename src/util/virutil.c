@@ -3053,9 +3053,21 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
 
     /* Change to the temp capabilities */
     if ((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot apply process capabilities %d"), capng_ret);
-        goto cleanup;
+        /* Failed.  If we are running unprivileged, and the arguments make sense
+         * for this scenario, assume we're starting some kind of setuid helper:
+         * do not set any of capBits in the permitted or effective sets, and let
+         * the program get them on its own.
+         *
+         * (Too bad we cannot restrict the bounding set to the capabilities we
+         * would like the helper to have!).
+         */
+        if (getuid() > 0 && clearExistingCaps && !need_setuid && !need_setgid) {
+            capng_clear(CAPNG_SELECT_CAPS);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot apply process capabilities %d"), capng_ret);
+            goto cleanup;
+        }
     }
 
     if (virSetUIDGID(uid, gid) < 0)
