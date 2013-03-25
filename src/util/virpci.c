@@ -1985,6 +1985,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                           unsigned int *num_virtual_functions)
 {
     int ret = -1;
+    int i;
     DIR *dir = NULL;
     struct dirent *entry = NULL;
     char *device_link = NULL;
@@ -2006,45 +2007,53 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     *num_virtual_functions = 0;
     while ((entry = readdir(dir))) {
         if (STRPREFIX(entry->d_name, "virtfn")) {
+            virPCIDeviceAddress *config_addr = NULL;
 
             if (virBuildPath(&device_link, sysfs_path, entry->d_name) == -1) {
                 virReportOOMError();
-                goto out;
+                goto error;
             }
 
             VIR_DEBUG("Number of virtual functions: %d",
                       *num_virtual_functions);
-            if (VIR_REALLOC_N(*virtual_functions,
-                              (*num_virtual_functions) + 1) != 0) {
-                virReportOOMError();
-                VIR_FREE(device_link);
-                goto out;
-            }
 
             if (virPCIGetDeviceAddressFromSysfsLink(device_link,
-                                                    &((*virtual_functions)[*num_virtual_functions])) !=
+                                                    &config_addr) !=
                 SRIOV_FOUND) {
-                /* We should not get back SRIOV_NOT_FOUND in this
-                 * case, so if we do, it's an error. */
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to get SR IOV function from device "
-                                 "link '%s'"), device_link);
+                VIR_WARN("Failed to get SRIOV function from device "
+                         "link '%s'", device_link);
                 VIR_FREE(device_link);
-                goto out;
-            } else {
-                (*num_virtual_functions)++;
+                continue;
             }
+
+            if (VIR_ALLOC_N(*virtual_functions,
+                            *num_virtual_functions + 1) < 0) {
+                virReportOOMError();
+                VIR_FREE(config_addr);
+                goto error;
+            }
+
+            (*virtual_functions)[*num_virtual_functions] = config_addr;
+            (*num_virtual_functions)++;
             VIR_FREE(device_link);
         }
     }
 
     ret = 0;
 
-out:
+cleanup:
+    VIR_FREE(device_link);
     if (dir)
         closedir(dir);
-
     return ret;
+
+error:
+    if (*virtual_functions) {
+        for (i = 0; i < *num_virtual_functions; i++)
+            VIR_FREE((*virtual_functions)[i]);
+        VIR_FREE(*virtual_functions);
+    }
+    goto cleanup;
 }
 
 /*

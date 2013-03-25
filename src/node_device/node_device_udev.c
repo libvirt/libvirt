@@ -416,6 +416,7 @@ static int udevProcessPCI(struct udev_device *device,
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = -1;
     char *p;
+    int rc;
 
     syspath = udev_device_get_syspath(device);
 
@@ -484,9 +485,13 @@ static int udevProcessPCI(struct udev_device *device,
     if (!virPCIGetPhysicalFunction(syspath, &data->pci_dev.physical_function))
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
-    if (!virPCIGetVirtualFunctions(syspath, &data->pci_dev.virtual_functions,
-        &data->pci_dev.num_virtual_functions) ||
-        data->pci_dev.num_virtual_functions > 0)
+    rc = virPCIGetVirtualFunctions(syspath,
+                                   &data->pci_dev.virtual_functions,
+                                   &data->pci_dev.num_virtual_functions);
+    /* Out of memory */
+    if (rc < 0)
+        goto out;
+    else if (!rc && (data->pci_dev.num_virtual_functions > 0))
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
 
     ret = 0;
