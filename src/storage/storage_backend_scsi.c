@@ -632,14 +632,49 @@ out:
 }
 
 static int
+getHostNumber(const char *adapter_name,
+              unsigned int *result)
+{
+    char *host = (char *)adapter_name;
+
+    /* Specifying adapter like 'host5' is still supported for
+     * back-compat reason.
+     */
+    if (STRPREFIX(host, "scsi_host")) {
+        host += strlen("scsi_host");
+    } else if (STRPREFIX(host, "host")) {
+        host += strlen("host");
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid adapter name '%s' for SCSI pool"),
+                       adapter_name);
+        return -1;
+    }
+
+    if (result && virStrToLong_ui(host, NULL, 10, result) == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid adapter name '%s' for SCSI pool"),
+                       adapter_name);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                bool *isActive)
 {
     char *path;
+    unsigned int host;
 
     *isActive = false;
-    if (virAsprintf(&path, "/sys/class/scsi_host/%s", pool->def->source.adapter.data.name) < 0) {
+
+    if (getHostNumber(pool->def->source.adapter.data.name, &host) < 0)
+        return -1;
+
+    if (virAsprintf(&path, "/sys/class/scsi_host/host%d", host) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -656,29 +691,24 @@ static int
 virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
-    int retval = 0;
-    uint32_t host;
+    int ret = -1;
+    unsigned int host;
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    if (sscanf(pool->def->source.adapter.data.name, "host%u", &host) != 1) {
-        VIR_DEBUG("Failed to get host number from '%s'",
-                    pool->def->source.adapter.data.name);
-        retval = -1;
+    if (getHostNumber(pool->def->source.adapter.data.name, &host) < 0)
         goto out;
-    }
 
     VIR_DEBUG("Scanning host%u", host);
 
-    if (virStorageBackendSCSITriggerRescan(host) < 0) {
-        retval = -1;
+    if (virStorageBackendSCSITriggerRescan(host) < 0)
         goto out;
-    }
 
     virStorageBackendSCSIFindLUs(pool, host);
 
+    ret = 0;
 out:
-    return retval;
+    return ret;
 }
 
 

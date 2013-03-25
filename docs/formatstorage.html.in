@@ -97,11 +97,12 @@
       <dt><code>adapter</code></dt>
       <dd>Provides the source for pools backed by SCSI adapters. May
         only occur once. Attribute <code>name</code> is the SCSI adapter
-        name (ex. "host1"). Attribute <code>type</code>
-        (<span class="since">1.0.5</span>) specifies the adapter type.
-        Valid values are "fc_host" and "scsi_host".  If omitted and
-        the <code>name</code> attribute is specified, then it defaults to
-        "scsi_host". To keep backwards compatibility, the attribute
+        name (ex. "scsi_host1".  NB, although a name such as "host1" is
+        still supported for backwards compatibility, it is not recommended).
+        Attribute <code>type</code> (<span class="since">1.0.5</span>)
+        specifies the adapter type.  Valid values are "fc_host" and "scsi_host".
+        If omitted and the <code>name</code> attribute is specified, then it
+        defaults to "scsi_host". To keep backwards compatibility, the attribute
         <code>type</code> is optional for the "scsi_host" adapter, but
         mandatory for the "fc_host" adapter.  Attributes <code>wwnn</code>
         (Word Wide Node Name) and <code>wwpn</code> (Word Wide Port Name)
