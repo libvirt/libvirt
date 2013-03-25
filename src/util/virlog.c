@@ -850,6 +850,7 @@ virLogVMessage(virLogSource source,
      */
     virLogLock();
     virLogStr(timestamp);
+    virLogStr(": ");
     virLogStr(msg);
     virLogUnlock();
     if (emit == 0)
