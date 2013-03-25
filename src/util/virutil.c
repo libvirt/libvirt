@@ -3004,7 +3004,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
 {
     int ii, capng_ret, ret = -1;
     bool need_setgid = false, need_setuid = false;
-    bool need_prctl = false, need_setpcap = false;
+    bool need_setpcap = false;
 
     /* First drop all caps (unless the requested uid is "unchanged" or
      * root and clearExistingCaps wasn't requested), then add back
@@ -3044,17 +3044,15 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
         capng_update(CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED, CAP_SETPCAP);
 # endif
 
-    need_prctl = capBits || need_setgid || need_setuid || need_setpcap;
-
     /* Tell system we want to keep caps across uid change */
-    if (need_prctl && prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0)) {
+    if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0)) {
         virReportSystemError(errno, "%s",
                              _("prctl failed to set KEEPCAPS"));
         goto cleanup;
     }
 
     /* Change to the temp capabilities */
-    if ((capng_ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
+    if ((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot apply process capabilities %d"), capng_ret);
         goto cleanup;
@@ -3064,11 +3062,17 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
         goto cleanup;
 
     /* Tell it we are done keeping capabilities */
-    if (need_prctl && prctl(PR_SET_KEEPCAPS, 0, 0, 0, 0)) {
+    if (prctl(PR_SET_KEEPCAPS, 0, 0, 0, 0)) {
         virReportSystemError(errno, "%s",
                              _("prctl failed to reset KEEPCAPS"));
         goto cleanup;
     }
+
+    /* Set bounding set while we have CAP_SETPCAP.  Unfortunately we cannot
+     * do this if we failed to get the capability above, so ignore the
+     * return value.
+     */
+    capng_apply(CAPNG_SELECT_BOUNDS);
 
     /* Drop the caps that allow setuid/gid (unless they were requested) */
     if (need_setgid)
@@ -3079,7 +3083,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, unsigned long long capBits,
     if (need_setpcap)
         capng_update(CAPNG_DROP, CAPNG_EFFECTIVE|CAPNG_PERMITTED, CAP_SETPCAP);
 
-    if (need_prctl && ((capng_ret = capng_apply(CAPNG_SELECT_BOTH)) < 0)) {
+    if (((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot apply process capabilities %d"), capng_ret);
         ret = -1;
