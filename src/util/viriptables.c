@@ -480,8 +480,8 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
                                     "--destination", networkstr,
                                     "--in-interface", physdev,
                                     "--out-interface", iface,
-                                    "--match", "state",
-                                    "--state", "ESTABLISHED,RELATED",
+                                    "--match", "conntrack",
+                                    "--ctstate", "ESTABLISHED,RELATED",
                                     "--jump", "ACCEPT",
                                     NULL);
     } else {
@@ -490,8 +490,8 @@ iptablesForwardAllowRelatedIn(iptablesContext *ctx,
                                     action,
                                     "--destination", networkstr,
                                     "--out-interface", iface,
-                                    "--match", "state",
-                                    "--state", "ESTABLISHED,RELATED",
+                                    "--match", "conntrack",
+                                    "--ctstate", "ESTABLISHED,RELATED",
                                     "--jump", "ACCEPT",
                                     NULL);
     }
