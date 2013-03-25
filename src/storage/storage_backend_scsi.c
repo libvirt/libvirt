@@ -603,6 +603,8 @@ getHostNumber(const char *adapter_name,
      */
     if (STRPREFIX(host, "scsi_host")) {
         host += strlen("scsi_host");
+    } else if (STRPREFIX(host, "fc_host")) {
+        host += strlen("fc_host");
     } else if (STRPREFIX(host, "host")) {
         host += strlen("host");
     } else {
@@ -622,42 +624,73 @@ getHostNumber(const char *adapter_name,
     return 0;
 }
 
+static char *
+getAdapterName(virStoragePoolSourceAdapter adapter)
+{
+    char *name = NULL;
+
+    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+        return strdup(adapter.data.name);
+
+    if (!(name = virGetFCHostNameByWWN(NULL,
+                                       adapter.data.fchost.wwnn,
+                                       adapter.data.fchost.wwpn))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Failed to find SCSI host with wwnn='%s', "
+                         "wwpn='%s'"), adapter.data.fchost.wwnn,
+                       adapter.data.fchost.wwpn);
+    }
+
+    return name;
+}
+
 static int
 virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                bool *isActive)
 {
-    char *path;
+    char *path = NULL;
+    char *name = NULL;
     unsigned int host;
+    int ret = -1;
 
     *isActive = false;
 
-    if (getHostNumber(pool->def->source.adapter.data.name, &host) < 0)
+    if (!(name = getAdapterName(pool->def->source.adapter)))
         return -1;
+
+    if (getHostNumber(name, &host) < 0)
+        goto cleanup;
 
     if (virAsprintf(&path, "/sys/class/scsi_host/host%d", host) < 0) {
         virReportOOMError();
-        return -1;
+        goto cleanup;
     }
 
     if (access(path, F_OK) == 0)
         *isActive = true;
 
+    ret = 0;
+cleanup:
     VIR_FREE(path);
-
-    return 0;
+    VIR_FREE(name);
+    return ret;
 }
 
 static int
 virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
-    int ret = -1;
+    char *name = NULL;
     unsigned int host;
+    int ret = -1;
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    if (getHostNumber(pool->def->source.adapter.data.name, &host) < 0)
+    if (!(name = getAdapterName(pool->def->source.adapter)))
+        return -1;
+
+    if (getHostNumber(name, &host) < 0)
         goto out;
 
     VIR_DEBUG("Scanning host%u", host);
@@ -669,6 +702,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
 out:
+    VIR_FREE(name);
     return ret;
 }
 

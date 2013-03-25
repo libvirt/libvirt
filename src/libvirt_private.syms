@@ -1856,6 +1856,7 @@ virFindFileInPath;
 virFormatIntDecimal;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
+virGetFCHostNameByWWN;
 virGetGroupID;
 virGetGroupName;
 virGetHostname;

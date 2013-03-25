@@ -26,6 +26,7 @@
 
 #include <config.h>
 
+#include <dirent.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -3570,6 +3571,105 @@ cleanup:
     VIR_FREE(operation_path);
     return ret;
 }
+
+/* virGetHostNameByWWN:
+ *
+ * Iterate over the sysfs tree to get SCSI host name (e.g. scsi_host5)
+ * by wwnn,wwpn pair.
+ */
+char *
+virGetFCHostNameByWWN(const char *sysfs_prefix,
+                      const char *wwnn,
+                      const char *wwpn)
+{
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    char *wwnn_path = NULL;
+    char *wwpn_path = NULL;
+    char *wwnn_buf = NULL;
+    char *wwpn_buf = NULL;
+    char *p;
+    char *ret = NULL;
+
+    if (!(dir = opendir(prefix))) {
+        virReportSystemError(errno,
+                             _("Failed to opendir path '%s'"),
+                             prefix);
+        return NULL;
+    }
+
+# define READ_WWN(wwn_path, buf)                      \
+    do {                                              \
+        if (virFileReadAll(wwn_path, 1024, &buf) < 0) \
+            goto cleanup;                             \
+        if ((p = strchr(buf, '\n')))                  \
+            *p = '\0';                                \
+        if (STRPREFIX(buf, "0x"))                     \
+            p = buf + strlen("0x");                   \
+        else                                          \
+            p = buf;                                  \
+    } while (0)
+
+    while ((entry = readdir(dir))) {
+        if (entry->d_name[0] == '.')
+            continue;
+
+        if (virAsprintf(&wwnn_path, "%s%s/node_name", prefix,
+                        entry->d_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!virFileExists(wwnn_path)) {
+            VIR_FREE(wwnn_path);
+            continue;
+        }
+
+        READ_WWN(wwnn_path, wwnn_buf);
+
+        if (STRNEQ(wwnn, p)) {
+            VIR_FREE(wwnn_buf);
+            VIR_FREE(wwnn_path);
+            continue;
+        }
+
+        if (virAsprintf(&wwpn_path, "%s%s/port_name", prefix,
+                        entry->d_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!virFileExists(wwpn_path)) {
+            VIR_FREE(wwnn_buf);
+            VIR_FREE(wwnn_path);
+            VIR_FREE(wwpn_path);
+            continue;
+        }
+
+        READ_WWN(wwpn_path, wwpn_buf);
+
+        if (STRNEQ(wwpn, p)) {
+            VIR_FREE(wwnn_path);
+            VIR_FREE(wwpn_path);
+            VIR_FREE(wwnn_buf);
+            VIR_FREE(wwpn_buf);
+            continue;
+        }
+
+        ret = strdup(entry->d_name);
+        break;
+    }
+
+cleanup:
+# undef READ_WWN
+    closedir(dir);
+    VIR_FREE(wwnn_path);
+    VIR_FREE(wwpn_path);
+    VIR_FREE(wwnn_buf);
+    VIR_FREE(wwpn_buf);
+    return ret;
+}
 #else
 int
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
@@ -3605,6 +3705,15 @@ virManageVport(const int parent_host ATTRIBUTE_UNUSED,
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
+}
+
+char *
+virGetFCHostNameByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                      const char *wwnn ATTRIBUTE_UNUSED,
+                      const char *wwpn ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return NULL;
 }
 
 #endif /* __linux__ */
