@@ -645,6 +645,62 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 }
 
 static int
+createVport(virStoragePoolSourceAdapter adapter)
+{
+    unsigned int parent_host;
+    char *name = NULL;
+
+    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+        return 0;
+
+    /* This filters either HBA or already created vHBA */
+    if ((name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
+                                      adapter.data.fchost.wwpn))) {
+        VIR_FREE(name);
+        return 0;
+    }
+
+    if (!adapter.data.fchost.parent) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'parent' for vHBA must be specified"));
+        return -1;
+    }
+
+    if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+        return -1;
+
+    if (virManageVport(parent_host, adapter.data.fchost.wwnn,
+                       adapter.data.fchost.wwpn, VPORT_CREATE) < 0)
+        return -1;
+
+    virFileWaitForDevices();
+    return 0;
+}
+
+static int
+deleteVport(virStoragePoolSourceAdapter adapter)
+{
+    unsigned int parent_host;
+
+    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+        return 0;
+
+    if (!(virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
+                                adapter.data.fchost.wwpn)))
+        return -1;
+
+    if (getHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
+        return -1;
+
+    if (virManageVport(parent_host, adapter.data.fchost.wwnn,
+                       adapter.data.fchost.wwpn, VPORT_DELETE) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                bool *isActive)
@@ -706,10 +762,27 @@ out:
     return ret;
 }
 
+static int
+virStorageBackendSCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool)
+{
+    virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
+    return createVport(adapter);
+}
+
+static int
+virStorageBackendSCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool)
+{
+    virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
+    return deleteVport(adapter);
+}
 
 virStorageBackend virStorageBackendSCSI = {
     .type = VIR_STORAGE_POOL_SCSI,
 
     .checkPool = virStorageBackendSCSICheckPool,
     .refreshPool = virStorageBackendSCSIRefreshPool,
+    .startPool = virStorageBackendSCSIStartPool,
+    .stopPool = virStorageBackendSCSIStopPool,
 };
