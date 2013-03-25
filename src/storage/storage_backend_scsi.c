@@ -639,7 +639,7 @@ virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *path;
 
     *isActive = false;
-    if (virAsprintf(&path, "/sys/class/scsi_host/%s", pool->def->source.adapter) < 0) {
+    if (virAsprintf(&path, "/sys/class/scsi_host/%s", pool->def->source.adapter.data.name) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -661,9 +661,9 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    if (sscanf(pool->def->source.adapter, "host%u", &host) != 1) {
+    if (sscanf(pool->def->source.adapter.data.name, "host%u", &host) != 1) {
         VIR_DEBUG("Failed to get host number from '%s'",
-                    pool->def->source.adapter);
+                    pool->def->source.adapter.data.name);
         retval = -1;
         goto out;
     }

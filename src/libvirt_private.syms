@@ -615,6 +615,8 @@ virStoragePoolObjLock;
 virStoragePoolObjRemove;
 virStoragePoolObjSaveDef;
 virStoragePoolObjUnlock;
+virStoragePoolSourceAdapterTypeTypeFromString;
+virStoragePoolSourceAdapterTypeTypeToString;
 virStoragePoolSourceClear;
 virStoragePoolSourceFindDuplicate;
 virStoragePoolSourceFindDuplicateDevices;

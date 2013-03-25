@@ -5,7 +5,7 @@
   <allocation unit='bytes'>0</allocation>
   <available unit='bytes'>0</available>
   <source>
-    <adapter type='scsi_host' name='host0'/>
+    <adapter type='fc_host' parent='scsi_host5' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/>
   </source>
   <target>
     <path>/dev/disk/by-path</path>

@@ -233,7 +233,28 @@ struct _virStoragePoolSourceDevice {
     } geometry;
 };
 
+enum virStoragePoolSourceAdapterType {
+    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_DEFAULT = 0,
+    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST,
+    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST,
 
+    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_LAST,
+};
+VIR_ENUM_DECL(virStoragePoolSourceAdapterType)
+
+typedef struct _virStoragePoolSourceAdapter virStoragePoolSourceAdapter;
+struct _virStoragePoolSourceAdapter {
+    int type; /* enum virStoragePoolSourceAdapterType */
+
+    union {
+        char *name;
+        struct {
+            char *parent;
+            char *wwnn;
+            char *wwpn;
+        } fchost;
+    } data;
+};
 
 typedef struct _virStoragePoolSource virStoragePoolSource;
 typedef virStoragePoolSource *virStoragePoolSourcePtr;
@@ -250,7 +271,7 @@ struct _virStoragePoolSource {
     char *dir;
 
     /* Or an adapter */
-    char *adapter;
+    virStoragePoolSourceAdapter adapter;
 
     /* Or a name */
     char *name;

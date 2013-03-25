@@ -75,6 +75,14 @@
         &lt;/source&gt;
         ...</pre>
 
+    <pre>
+        ...
+        &lt;source&gt;
+        &lt;source&gt;
+          &lt;adapter type='fc_host' parent='scsi_host5' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/&gt;
+        &lt;/source&gt;
+        ...</pre>
+
     <dl>
       <dt><code>device</code></dt>
       <dd>Provides the source for pools backed by physical devices.
@@ -88,8 +96,22 @@
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>adapter</code></dt>
       <dd>Provides the source for pools backed by SCSI adapters. May
-        only occur once. Contains a single attribute <code>name</code>
-        which is the SCSI adapter name (ex. "host1").
+        only occur once. Attribute <code>name</code> is the SCSI adapter
+        name (ex. "host1"). Attribute <code>type</code>
+        (<span class="since">1.0.5</span>) specifies the adapter type.
+        Valid values are "fc_host" and "scsi_host".  If omitted and
+        the <code>name</code> attribute is specified, then it defaults to
+        "scsi_host". To keep backwards compatibility, the attribute
+        <code>type</code> is optional for the "scsi_host" adapter, but
+        mandatory for the "fc_host" adapter.  Attributes <code>wwnn</code>
+        (Word Wide Node Name) and <code>wwpn</code> (Word Wide Port Name)
+        (<span class="since">1.0.4</span>) are used by the "fc_host" adapter
+        to uniquely identify the device in the Fibre Channel storage fabric
+        (the device can be either a HBA or vHBA). Both wwnn and wwpn should
+        be specified (See command 'virsh nodedev-dumpxml' to known how to get
+        wwnn/wwpn of a (v)HBA). The optional attribute <code>parent</code>
+        (<span class="since">1.0.4</span>) specifies the parent device for
+        the "fc_host" adapter.
         <span class="since">Since 0.6.2</span></dd>
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a

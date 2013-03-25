@@ -2049,7 +2049,7 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     spdef->source.ndevice = 1;
 
     /*XXX source adapter not working properly, should show hdiskX */
-    if ((spdef->source.adapter =
+    if ((spdef->source.adapter.data.name =
          phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
         VIR_ERROR(_("Unable to determine storage pools's source adapter."));
         goto err;
@@ -2271,7 +2271,7 @@ phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
     pool.source.ndevice = 1;
 
-    if ((pool.source.adapter =
+    if ((pool.source.adapter.data.name =
          phypGetStoragePoolDevice(sp->conn, sp->name)) == NULL) {
         VIR_ERROR(_("Unable to determine storage sps's source adapter."));
         goto cleanup;
@@ -2511,7 +2511,7 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
                           managed_system, vios_id);
 
     virBufferAsprintf(&buf, "mksp -f %schild %s", def->name,
-                      source.adapter);
+                      source.adapter.data.name);
 
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
@@ -2752,7 +2752,7 @@ phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     def.source.ndevice = 1;
 
     /*XXX source adapter not working properly, should show hdiskX */
-    if ((def.source.adapter =
+    if ((def.source.adapter.data.name =
          phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
         VIR_ERROR(_("Unable to determine storage pools's source adapter."));
         goto err;
