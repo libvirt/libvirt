@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include <dirent.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -401,6 +402,42 @@ cleanup:
     return ret;
 }
 
+static int
+virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
+                                    uint32_t *host)
+{
+    int retval = 0;
+    DIR *sysdir = NULL;
+    struct dirent *dirent = NULL;
+
+    VIR_DEBUG("Finding host number from '%s'", sysfs_path);
+
+    virFileWaitForDevices();
+
+    sysdir = opendir(sysfs_path);
+
+    if (sysdir == NULL) {
+        virReportSystemError(errno,
+                             _("Failed to opendir path '%s'"), sysfs_path);
+        retval = -1;
+        goto out;
+    }
+
+    while ((dirent = readdir(sysdir))) {
+        if (STREQLEN(dirent->d_name, "target", strlen("target"))) {
+            if (sscanf(dirent->d_name,
+                       "target%u:", host) != 1) {
+                VIR_DEBUG("Failed to parse target '%s'", dirent->d_name);
+                retval = -1;
+                break;
+            }
+        }
+    }
+
+    closedir(sysdir);
+out:
+    return retval;
+}
 
 static int
 virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
@@ -416,7 +453,7 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    if (virStorageBackendSCSIGetHostNumber(sysfs_path, &host) < 0) {
+    if (virStorageBackendISCSIGetHostNumber(sysfs_path, &host) < 0) {
         virReportSystemError(errno,
                              _("Failed to get host number for iSCSI session "
                                "with path '%s'"),

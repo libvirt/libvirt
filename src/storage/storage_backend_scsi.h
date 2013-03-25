@@ -33,9 +33,6 @@
 extern virStorageBackend virStorageBackendSCSI;
 
 int
-virStorageBackendSCSIGetHostNumber(const char *sysfs_path,
-                                   uint32_t *host);
-int
 virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
                              uint32_t scanhost);
 
