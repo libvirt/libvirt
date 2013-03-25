@@ -38,7 +38,6 @@
 #include <locale.h>
 #include <time.h>
 #include <limits.h>
-#include <assert.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <strings.h>
@@ -1172,8 +1171,6 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                 case VSH_OT_ALIAS:
                     /* aliases are intentionally undocumented */
                     continue;
-                default:
-                    assert(0);
                 }
                 fputc(' ', stdout);
                 fprintf(stdout, fmt, opt->name);
@@ -1215,8 +1212,6 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                     break;
                 case VSH_OT_ALIAS:
                     continue;
-                default:
-                    assert(0);
                 }
 
                 fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
