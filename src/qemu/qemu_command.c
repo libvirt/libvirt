@@ -3638,12 +3638,12 @@ qemuBuildNicStr(virDomainNetDefPtr net,
                 int vlan)
 {
     char *str;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+
     if (virAsprintf(&str,
-                    "%smacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
+                    "%smacaddr=%s,vlan=%d%s%s%s%s",
                     prefix ? prefix : "",
-                    net->mac.addr[0], net->mac.addr[1],
-                    net->mac.addr[2], net->mac.addr[3],
-                    net->mac.addr[4], net->mac.addr[5],
+                    virMacAddrFormat(&net->mac, macaddr),
                     vlan,
                     (net->model ? ",model=" : ""),
                     (net->model ? net->model : ""),
@@ -3666,6 +3666,7 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
     bool usingVirtio = false;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (!net->model) {
         nic = "rtl8139";
@@ -3722,10 +3723,8 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
     else
         virBufferAsprintf(&buf, ",vlan=%d", vlan);
     virBufferAsprintf(&buf, ",id=%s", net->info.alias);
-    virBufferAsprintf(&buf, ",mac=%02x:%02x:%02x:%02x:%02x:%02x",
-                      net->mac.addr[0], net->mac.addr[1],
-                      net->mac.addr[2], net->mac.addr[3],
-                      net->mac.addr[4], net->mac.addr[5]);
+    virBufferAsprintf(&buf, ",mac=%s",
+                      virMacAddrFormat(&net->mac, macaddr));
     if (qemuBuildDeviceAddressStr(&buf, &net->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)

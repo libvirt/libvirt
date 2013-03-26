@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -286,6 +286,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    unsigned int flags)
 {
     virMacAddr tapmac;
+    char macaddrstr[VIR_MAC_STRING_BUFLEN];
 
     if (virNetDevTapCreate(ifname, tapfd, flags) < 0)
         return -1;
@@ -306,10 +307,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
              */
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unable to use MAC address starting with "
-                             "reserved value 0xFE - '%02X:%02X:%02X:%02X:%02X:%02X' - "),
-                           macaddr->addr[0], macaddr->addr[1],
-                           macaddr->addr[2], macaddr->addr[3],
-                           macaddr->addr[4], macaddr->addr[5]);
+                             "reserved value 0xFE - '%s' - "),
+                           virMacAddrFormat(macaddr, macaddrstr));
             goto error;
         }
         tapmac.addr[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */

@@ -11521,14 +11521,15 @@ static bool
 virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
                                  virDomainNetDefPtr dst)
 {
+    char srcmac[VIR_MAC_STRING_BUFLEN];
+    char dstmac[VIR_MAC_STRING_BUFLEN];
+
     if (virMacAddrCmp(&src->mac, &dst->mac) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target network card mac %02x:%02x:%02x:%02x:%02x:%02x"
-                         " does not match source %02x:%02x:%02x:%02x:%02x:%02x"),
-                       dst->mac.addr[0], dst->mac.addr[1], dst->mac.addr[2],
-                       dst->mac.addr[3], dst->mac.addr[4], dst->mac.addr[5],
-                       src->mac.addr[0], src->mac.addr[1], src->mac.addr[2],
-                       src->mac.addr[3], src->mac.addr[4], src->mac.addr[5]);
+                       _("Target network card mac %s"
+                         " does not match source %s"),
+                       virMacAddrFormat(&dst->mac, dstmac),
+                       virMacAddrFormat(&src->mac, srcmac));
         return false;
     }
 
@@ -13389,6 +13390,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                       unsigned int flags)
 {
     const char *type = virDomainNetTypeToString(def->type);
+    char macstr[VIR_MAC_STRING_BUFLEN];
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -13404,10 +13406,8 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 6);
-    virBufferAsprintf(buf,
-                      "<mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
-                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
-                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
+    virBufferAsprintf(buf, "<mac address='%s'/>\n",
+                      virMacAddrFormat(&def->mac, macstr));
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:

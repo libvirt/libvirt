@@ -3730,17 +3730,14 @@ virDomainXMLDevID(virDomainPtr domain,
         if (tmp == NULL)
             return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        char mac[30];
+        char mac[VIR_MAC_STRING_BUFLEN];
         virDomainNetDefPtr def = dev->data.net;
-        snprintf(mac, sizeof(mac), "%02x:%02x:%02x:%02x:%02x:%02x",
-                 def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
-                 def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
+        virMacAddrFormat(&def->mac, mac);
 
         strcpy(class, "vif");
 
         xenUnifiedLock(priv);
-        xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
-                                          mac);
+        xref = xenStoreDomainGetNetworkID(domain->conn, domain->id, mac);
         xenUnifiedUnlock(priv);
         if (xref == NULL)
             return -1;

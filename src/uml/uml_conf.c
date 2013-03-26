@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -164,6 +164,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
                        int idx)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
     /* General format:  ethNN=type,options */
 
@@ -264,9 +265,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
         goto error;
     }
 
-    virBufferAsprintf(&buf, ",%02x:%02x:%02x:%02x:%02x:%02x",
-                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
-                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
+    virBufferAsprintf(&buf, ",%s", virMacAddrFormat(&def->mac, macaddr));
 
     if (def->type == VIR_DOMAIN_NET_TYPE_MCAST) {
         virBufferAsprintf(&buf, ",%s,%d",

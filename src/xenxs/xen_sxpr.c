@@ -1,7 +1,7 @@
 /*
  * xen_sxpr.c: Xen SEXPR parsing functions
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
@@ -1914,6 +1914,7 @@ xenFormatSxprNet(virConnectPtr conn,
                  int isAttach)
 {
     const char *script = DEFAULT_VIF_SCRIPT;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (def->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
         def->type != VIR_DOMAIN_NET_TYPE_NETWORK &&
@@ -1936,10 +1937,7 @@ xenFormatSxprNet(virConnectPtr conn,
 
     virBufferAddLit(buf, "(vif ");
 
-    virBufferAsprintf(buf,
-                      "(mac '%02x:%02x:%02x:%02x:%02x:%02x')",
-                      def->mac.addr[0], def->mac.addr[1], def->mac.addr[2],
-                      def->mac.addr[3], def->mac.addr[4], def->mac.addr[5]);
+    virBufferAsprintf(buf, "(mac '%s')", virMacAddrFormat(&def->mac, macaddr));
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

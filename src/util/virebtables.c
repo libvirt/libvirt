@@ -1,7 +1,7 @@
 /*
  * virebtables.c: Helper APIs for managing ebtables
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  * Copyright (C) 2009 IBM Corp.
  *
  * This library is free software; you can redistribute it and/or
@@ -446,15 +446,9 @@ ebtablesAddForwardAllowIn(ebtablesContext *ctx,
                           const char *iface,
                           const virMacAddrPtr mac)
 {
-    char *macaddr;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    if (virAsprintf(&macaddr,
-                    "%02x:%02x:%02x:%02x:%02x:%02x",
-                    mac->addr[0], mac->addr[1],
-                    mac->addr[2], mac->addr[3],
-                    mac->addr[4], mac->addr[5]) < 0) {
-        return -1;
-    }
+    virMacAddrFormat(mac, macaddr);
     return ebtablesForwardAllowIn(ctx, iface, macaddr, ADD);
 }
 
@@ -475,14 +469,8 @@ ebtablesRemoveForwardAllowIn(ebtablesContext *ctx,
                              const char *iface,
                              const virMacAddrPtr mac)
 {
-    char *macaddr;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    if (virAsprintf(&macaddr,
-                    "%02x:%02x:%02x:%02x:%02x:%02x",
-                    mac->addr[0], mac->addr[1],
-                    mac->addr[2], mac->addr[3],
-                    mac->addr[4], mac->addr[5]) < 0) {
-       return -1;
-    }
+    virMacAddrFormat(mac, macaddr);
     return ebtablesForwardAllowIn(ctx, iface, macaddr, REMOVE);
 }

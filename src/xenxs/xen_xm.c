@@ -1,7 +1,7 @@
 /*
  * xen_xm.c: Xen XM parsing functions
  *
- * Copyright (C) 2006-2007, 2009-2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2010, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
  * Copyright (C) 2006 Daniel P. Berrange
  *
@@ -1335,11 +1335,9 @@ static int xenFormatXMNet(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    virBufferAsprintf(&buf, "mac=%02x:%02x:%02x:%02x:%02x:%02x",
-                      net->mac.addr[0], net->mac.addr[1],
-                      net->mac.addr[2], net->mac.addr[3],
-                      net->mac.addr[4], net->mac.addr[5]);
+    virBufferAsprintf(&buf, "mac=%s", virMacAddrFormat(&net->mac, macaddr));
 
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

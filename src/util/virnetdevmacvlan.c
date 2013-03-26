@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -518,6 +518,7 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
     virNetlinkCallbackDataPtr calld = opaque;
     pid_t lldpad_pid = 0;
     pid_t virip_pid = 0;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
 
     hdr = (struct nlmsghdr *) msg;
     data = nlmsg_data(hdr);
@@ -707,11 +708,7 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
     VIR_INFO("Re-send 802.1qbg associate request:");
     VIR_INFO("  if: %s", calld->cr_ifname);
     VIR_INFO("  lf: %s", calld->linkdev);
-    VIR_INFO(" mac: %02x:%02x:%02x:%02x:%02x:%02x",
-             calld->macaddress.addr[0], calld->macaddress.addr[1],
-             calld->macaddress.addr[2], calld->macaddress.addr[3],
-             calld->macaddress.addr[4], calld->macaddress.addr[5]);
-
+    VIR_INFO(" mac: %s", virMacAddrFormat(&calld->macaddress, macaddr));
     ignore_value(virNetDevVPortProfileAssociate(calld->cr_ifname,
                                                 calld->virtPortProfile,
                                                 &calld->macaddress,
