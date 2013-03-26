@@ -8286,7 +8286,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "change-protection",
      .type = VSH_OT_BOOL,
-     .help = N_("prevent any configuration changes to domain until migration ends)")
+     .help = N_("prevent any configuration changes to domain until migration ends")
     },
     {.name = "unsafe",
      .type = VSH_OT_BOOL,
