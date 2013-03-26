@@ -663,25 +663,23 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *iface = NULL;
-    int flags = 0;
     char *state = NULL;
-    char *value = NULL;
+    char *xpath = NULL;
     virMacAddr macaddr;
-    const char *element;
-    const char *attr;
-    bool ret = false;
-    int i;
-    char *desc;
+    char macstr[VIR_MAC_STRING_BUFLEN] = "";
+    char *desc = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr cur = NULL;
-    xmlXPathObjectPtr obj = NULL;
+    xmlNodePtr *interfaces = NULL;
+    int ninterfaces;
+    unsigned int flags = 0;
+    bool ret = false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
+        return false;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
-
-    if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
-        goto cleanup;
 
     if (vshCommandOptBool(cmd, "config"))
         flags = VIR_DOMAIN_XML_INACTIVE;
@@ -691,72 +689,50 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(desc);
-    if (!xml) {
+    if (!(xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), &ctxt))) {
         vshError(ctl, _("Failed to parse domain description xml"));
         goto cleanup;
     }
 
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
-    if (obj == NULL || obj->type != XPATH_NODESET ||
-        obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
-        vshError(ctl, _("Failed to extract interface information or no interfaces found"));
+    /* normalize the mac addr */
+    if (virMacAddrParse(iface, &macaddr) == 0)
+        virMacAddrFormat(&macaddr, macstr);
+
+    if (virAsprintf(&xpath, "/domain/devices/interface[(mac/@address = '%s') or "
+                            "                          (target/@dev = '%s')]",
+                           macstr, iface) < 0) {
+        virReportOOMError();
         goto cleanup;
     }
 
-    if (virMacAddrParse(iface, &macaddr) == 0) {
-        element = "mac";
-        attr = "address";
-    } else {
-        element = "target";
-        attr = "dev";
+    if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0) {
+        vshError(ctl, _("Failed to extract interface information"));
+        goto cleanup;
     }
 
-    /* find interface with matching mac addr */
-    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-        cur = obj->nodesetval->nodeTab[i]->children;
+    if (ninterfaces != 1) {
+        if (macstr[0])
+            vshError(ctl, _("Interface (mac: %s) not found."), macstr);
+        else
+            vshError(ctl, _("Interface (dev: %s) not found."), iface);
 
-        while (cur) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST element)) {
-
-                value = virXMLPropString(cur, attr);
-
-                if (STRCASEEQ(value, iface)) {
-                    VIR_FREE(value);
-                    goto hit;
-                }
-                VIR_FREE(value);
-            }
-            cur = cur->next;
-        }
+        goto cleanup;
     }
 
-    vshError(ctl, _("Interface (%s: %s) not found."), element, iface);
-    goto cleanup;
+    ctxt->node = interfaces[0];
 
-hit:
-    cur = obj->nodesetval->nodeTab[i]->children;
-    while (cur) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "link")) {
-
-            state = virXMLPropString(cur, "state");
-            vshPrint(ctl, "%s %s", iface, state);
-            VIR_FREE(state);
-
-            goto cleanup;
-        }
-        cur = cur->next;
-    }
-
-    /* attribute not found */
-    vshPrint(ctl, "%s default", iface);
+    if ((state = virXPathString("string(./link/@state)", ctxt)))
+        vshPrint(ctl, "%s %s", iface, state);
+    else
+        vshPrint(ctl, "%s default", iface);
 
     ret = true;
+
 cleanup:
-    xmlXPathFreeObject(obj);
+    VIR_FREE(desc);
+    VIR_FREE(state);
+    VIR_FREE(interfaces);
+    VIR_FREE(xpath);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     virDomainFree(dom);
