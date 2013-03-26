@@ -8541,7 +8541,7 @@ static int
 virDomainHostdevMatchSubsysUSB(virDomainHostdevDefPtr a,
                                virDomainHostdevDefPtr b)
 {
-    if (b->source.subsys.u.usb.bus && b->source.subsys.u.usb.device) {
+    if (a->source.subsys.u.usb.bus && a->source.subsys.u.usb.device) {
         /* specified by bus location on host */
         if (a->source.subsys.u.usb.bus == b->source.subsys.u.usb.bus &&
             a->source.subsys.u.usb.device == b->source.subsys.u.usb.device)
