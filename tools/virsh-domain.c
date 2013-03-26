@@ -1603,7 +1603,7 @@ static const vshCmdInfo info_block_copy[] = {
      .data = N_("Start a block copy operation.")
     },
     {.name = "desc",
-     .data = N_("Populate a disk from its backing image.")
+     .data = N_("Copy a disk backing image chain to dest.")
     },
     {.name = NULL}
 };
