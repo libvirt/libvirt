@@ -1825,7 +1825,6 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
     if (!client->sock)
         goto done;
 
-    /* This should be impossible, but it doesn't hurt to check */
     if (client->haveTheBuck || client->wantClose)
         goto done;
 
@@ -1858,8 +1857,12 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
     virNetClientIOUpdateCallback(client, true);
 
 done:
-    if (client->wantClose)
+    if (client->wantClose && !client->haveTheBuck) {
         virNetClientCloseLocked(client);
+        virNetClientCallRemovePredicate(&client->waitDispatch,
+                                        virNetClientIOEventLoopRemoveAll,
+                                        NULL);
+    }
     virObjectUnlock(client);
 }
 
