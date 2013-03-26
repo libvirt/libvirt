@@ -1811,6 +1811,13 @@ qemuMigrationConnect(struct qemud_driver *driver,
         spec->dest.fd.qemu == -1)
         goto cleanup;
 
+    /* Migration expects a blocking FD */
+    if (virSetBlocking(spec->dest.fd.qemu, true) < 0) {
+        virReportSystemError(errno, _("Unable to set FD %d blocking"),
+                             spec->dest.fd.qemu);
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
