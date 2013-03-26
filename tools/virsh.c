@@ -321,9 +321,18 @@ vshReconnect(vshControl *ctl)
 {
     bool connected = false;
 
-    if (ctl->conn != NULL) {
+    if (ctl->conn) {
+        int ret;
+
         connected = true;
-        virConnectClose(ctl->conn);
+
+        virConnectUnregisterCloseCallback(ctl->conn, vshCatchDisconnect);
+        ret = virConnectClose(ctl->conn);
+        if (ret < 0)
+            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
+        else if (ret > 0)
+            vshError(ctl, "%s", _("One or more references were leaked after "
+                                  "disconnect from the hypervisor"));
     }
 
     ctl->conn = virConnectOpenAuth(ctl->name,
@@ -2660,9 +2669,13 @@ vshDeinit(vshControl *ctl)
     VIR_FREE(ctl->name);
     if (ctl->conn) {
         int ret;
-        if ((ret = virConnectClose(ctl->conn)) != 0) {
-            vshError(ctl, _("Failed to disconnect from the hypervisor, %d leaked reference(s)"), ret);
-        }
+        virConnectUnregisterCloseCallback(ctl->conn, vshCatchDisconnect);
+        ret = virConnectClose(ctl->conn);
+        if (ret < 0)
+            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
+        else if (ret > 0)
+            vshError(ctl, "%s", _("One or more references were leaked after "
+                                  "disconnect from the hypervisor"));
     }
     virResetLastError();
 
