@@ -859,7 +859,7 @@ if test "$with_linux" = "yes"; then
   if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
     AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
       [AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt with QEMU or LXC support])],
-      [[#include <netinet/in.h>
+      [[#include <netinet/ip6.h>
       ]])
   fi
 fi
