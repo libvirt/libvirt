@@ -1005,6 +1005,8 @@ functions_int_default_test = "%s == -1"
 def is_integral_type (name):
     return not re.search ("^(unsigned)? ?(int|long)$", name) is None
 
+def is_optional_arg(info):
+    return re.search("^\(?\optional\)?", info) is not None
 # Functions returning lists which need special rules to check for errors
 # and raise exceptions.
 functions_list_exception_test = {
@@ -1332,6 +1334,11 @@ def buildWrappers(module):
                 if n != 0:
                     classes.write(", ")
                 classes.write("%s" % arg[0])
+                if arg[0] == "flags" or is_optional_arg(arg[2]):
+                    if is_integral_type(arg[1]):
+                        classes.write("=0")
+                    else:
+                        classes.write("=None")
                 n = n + 1
             classes.write("):\n")
             writeDoc(module, name, args, '    ', classes)
@@ -1488,9 +1495,12 @@ def buildWrappers(module):
                 for arg in args:
                     if n != index:
                         classes.write(", %s" % arg[0])
+                    if arg[0] == "flags" or is_optional_arg(arg[2]):
+                        if is_integral_type(arg[1]):
+                           classes.write("=0")
+                        else:
+                           classes.write("=None")
                     n = n + 1
-                if arg[0] == "flags":
-                    classes.write("=0")
                 classes.write("):\n")
                 writeDoc(module, name, args, '        ', classes)
                 n = 0
