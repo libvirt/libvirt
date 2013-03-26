@@ -3,7 +3,7 @@
   <uuid>986fed9e-a488-186d-ef2d-17ebfd1993f8</uuid>
   <forward mode='nat'/>
   <bridge name='virbr1' stp='on' delay='0' />
-  <mac address='52:54:00:E6:A2:C9'/>
+  <mac address='52:54:00:e6:a2:c9'/>
   <bandwidth>
     <inbound average='1000' peak='2000' burst='1024'/>
     <outbound average='2000'/>
