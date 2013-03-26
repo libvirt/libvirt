@@ -1495,14 +1495,14 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    int rv;
 
     if (blocking) {
-        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
-            if (timeout < 1) {
-                vshError(ctl, "%s", _("invalid timeout"));
-                return false;
-            }
-
+        if ((rv = vshCommandOptInt(cmd, "timeout", &timeout)) < 0 ||
+            (rv > 0 && timeout < 1)) {
+            vshError(ctl, "%s", _("invalid timeout"));
+            return false;
+        } else if (rv > 0) {
             /* Ensure that we can multiply by 1000 without overflowing. */
             if (timeout > INT_MAX / 1000) {
                 vshError(ctl, "%s", _("timeout is too big"));
@@ -1685,18 +1685,18 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    int rv;
 
     if (blocking) {
         if (pivot && finish) {
             vshError(ctl, "%s", _("cannot mix --pivot and --finish"));
             return false;
         }
-        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
-            if (timeout < 1) {
-                vshError(ctl, "%s", _("invalid timeout"));
-                return false;
-            }
-
+        if ((rv = vshCommandOptInt(cmd, "timeout", &timeout)) < 0 ||
+            (rv > 0 && timeout < 1)) {
+            vshError(ctl, "%s", _("invalid timeout"));
+            return false;
+        } else if (rv > 0) {
             /* Ensure that we can multiply by 1000 without overflowing. */
             if (timeout > INT_MAX / 1000) {
                 vshError(ctl, "%s", _("timeout is too big"));
@@ -1962,14 +1962,14 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     bool quit = false;
     int abort_flags = 0;
+    int rv;
 
     if (blocking) {
-        if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
-            if (timeout < 1) {
-                vshError(ctl, "%s", _("invalid timeout"));
-                return false;
-            }
-
+        if ((rv = vshCommandOptInt(cmd, "timeout", &timeout)) < 0 ||
+            (rv > 0 && timeout < 1)) {
+            vshError(ctl, "%s", _("invalid timeout"));
+            return false;
+        } else if (rv > 0) {
             /* Ensure that we can multiply by 1000 without overflowing. */
             if (timeout > INT_MAX / 1000) {
                 vshError(ctl, "%s", _("timeout is too big"));
@@ -8456,6 +8456,7 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     int timeout = 0;
     bool live_flag = false;
     vshCtrlData data;
+    int rv;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -8465,15 +8466,14 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "live"))
         live_flag = true;
-    if (vshCommandOptInt(cmd, "timeout", &timeout) > 0) {
+    if ((rv = vshCommandOptInt(cmd, "timeout", &timeout)) < 0 ||
+        (rv > 0 && timeout < 1)) {
+        vshError(ctl, "%s", _("migrate: Invalid timeout"));
+        goto cleanup;
+    } else if (rv > 0) {
         if (! live_flag) {
             vshError(ctl, "%s",
                      _("migrate: Unexpected timeout for offline migration"));
-            goto cleanup;
-        }
-
-        if (timeout < 1) {
-            vshError(ctl, "%s", _("migrate: Invalid timeout"));
             goto cleanup;
         }
 
