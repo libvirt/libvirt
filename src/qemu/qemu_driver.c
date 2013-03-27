@@ -950,6 +950,7 @@ qemuShutdown(void) {
         return -1;
 
     virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
+    virObjectUnref(qemu_driver->config);
     virObjectUnref(qemu_driver->activePciHostdevs);
     virObjectUnref(qemu_driver->inactivePciHostdevs);
     virObjectUnref(qemu_driver->activeUsbHostdevs);
