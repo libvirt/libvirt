@@ -391,10 +391,14 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 
     if (ctl->conn) {
         int ret;
-        if ((ret = virConnectClose(ctl->conn)) != 0) {
-            vshError(ctl, _("Failed to disconnect from the hypervisor, %d leaked reference(s)"), ret);
-            return false;
-        }
+
+        virConnectUnregisterCloseCallback(ctl->conn, vshCatchDisconnect);
+        ret = virConnectClose(ctl->conn);
+        if (ret < 0)
+            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
+        else if (ret > 0)
+            vshError(ctl, "%s", _("One or more references were leaked after "
+                                  "disconnect from the hypervisor"));
         ctl->conn = NULL;
     }
 
@@ -411,10 +415,16 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
 
-    if (!ctl->conn)
+    if (!ctl->conn) {
         vshError(ctl, "%s", _("Failed to connect to the hypervisor"));
+        return false;
+    }
 
-    return !!ctl->conn;
+    if (virConnectRegisterCloseCallback(ctl->conn, vshCatchDisconnect,
+                                        NULL, NULL) < 0)
+        vshError(ctl, "%s", _("Unable to register disconnect callback"));
+
+    return true;
 }
 
 
