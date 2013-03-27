@@ -355,6 +355,69 @@ vshReconnect(vshControl *ctl)
     ctl->useSnapshotOld = false;
 }
 
+
+/*
+ * "connect" command
+ */
+static const vshCmdInfo info_connect[] = {
+    {.name = "help",
+     .data = N_("(re)connect to hypervisor")
+    },
+    {.name = "desc",
+     .data = N_("Connect to local hypervisor. This is built-in "
+                "command after shell start up.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_connect[] = {
+    {.name = "name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_EMPTY_OK,
+     .help = N_("hypervisor connection URI")
+    },
+    {.name = "readonly",
+     .type = VSH_OT_BOOL,
+     .help = N_("read-only connection")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdConnect(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ro = vshCommandOptBool(cmd, "readonly");
+    const char *name = NULL;
+
+    if (ctl->conn) {
+        int ret;
+        if ((ret = virConnectClose(ctl->conn)) != 0) {
+            vshError(ctl, _("Failed to disconnect from the hypervisor, %d leaked reference(s)"), ret);
+            return false;
+        }
+        ctl->conn = NULL;
+    }
+
+    VIR_FREE(ctl->name);
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+        return false;
+
+    ctl->name = vshStrdup(ctl, name);
+
+    ctl->useGetInfo = false;
+    ctl->useSnapshotOld = false;
+    ctl->readonly = ro;
+
+    ctl->conn = virConnectOpenAuth(ctl->name, virConnectAuthPtrDefault,
+                                   ctl->readonly ? VIR_CONNECT_RO : 0);
+
+    if (!ctl->conn)
+        vshError(ctl, "%s", _("Failed to connect to the hypervisor"));
+
+    return !!ctl->conn;
+}
+
+
 #ifndef WIN32
 static void
 vshPrintRaw(vshControl *ctl, ...)
@@ -3004,6 +3067,12 @@ static const vshCmdDef virshCmds[] = {
      .handler = cmdCd,
      .opts = opts_cd,
      .info = info_cd,
+     .flags = VSH_CMD_FLAG_NOCONNECT
+    },
+    {.name = "connect",
+     .handler = cmdConnect,
+     .opts = opts_connect,
+     .info = info_connect,
      .flags = VSH_CMD_FLAG_NOCONNECT
     },
     {.name = "echo",
