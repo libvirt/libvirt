@@ -37,10 +37,11 @@
 #include <libgen.h>
 #include <dirent.h>
 
-#include "internal.h"
+#define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
+#include "vircgrouppriv.h"
+
 #include "virutil.h"
 #include "viralloc.h"
-#include "vircgroup.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virhash.h"
@@ -51,18 +52,6 @@
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
               "freezer", "blkio");
-
-struct virCgroupController {
-    int type;
-    char *mountPoint;
-    char *placement;
-};
-
-struct virCgroup {
-    char *path;
-
-    struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
-};
 
 typedef enum {
     VIR_CGROUP_NONE = 0, /* create subdir under each cgroup if possible. */

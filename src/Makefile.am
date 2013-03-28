@@ -69,7 +69,7 @@ UTIL_SOURCES =							\
 		util/virauthconfig.c util/virauthconfig.h	\
 		util/virbitmap.c util/virbitmap.h		\
 		util/virbuffer.c util/virbuffer.h		\
-		util/vircgroup.c util/vircgroup.h		\
+		util/vircgroup.c util/vircgroup.h util/vircgrouppriv.h	\
 		util/vircommand.c util/vircommand.h		\
 		util/virconf.c util/virconf.h			\
 		util/virdbus.c util/virdbus.h			\
