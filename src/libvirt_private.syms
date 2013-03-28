@@ -1264,6 +1264,7 @@ virEventPollUpdateTimeout;
 
 # util/virfile.h
 virFileClose;
+virFileDeleteTree;
 virFileDirectFdFlag;
 virFileFclose;
 virFileFdopen;

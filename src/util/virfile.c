@@ -644,3 +644,86 @@ int virFileLoopDeviceAssociate(const char *file,
 }
 
 #endif /* __linux__ */
+
+
+/**
+ * virFileDeleteTree:
+ *
+ * Recursively deletes all files / directories
+ * starting from the directory @dir. Does not
+ * follow symlinks
+ *
+ * NB the algorithm is not efficient, and is subject to
+ * race conditions which can be exploited by malicious
+ * code. It should not be used in any scenarios where
+ * performance is important, or security is critical.
+ */
+int virFileDeleteTree(const char *dir)
+{
+    DIR *dh = opendir(dir);
+    struct dirent *de;
+    char *filepath = NULL;
+    int ret = -1;
+
+    if (!dh) {
+        virReportSystemError(errno, _("Cannot open dir '%s'"),
+                             dir);
+        return -1;
+    }
+
+    errno = 0;
+    while ((de = readdir(dh)) != NULL) {
+        struct stat sb;
+
+        if (STREQ(de->d_name, ".") ||
+            STREQ(de->d_name, ".."))
+            continue;
+
+        if (virAsprintf(&filepath, "%s/%s",
+                        dir, de->d_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (lstat(filepath, &sb) < 0) {
+            virReportSystemError(errno, _("Cannot access '%s'"),
+                                 filepath);
+            goto cleanup;
+        }
+
+        if (S_ISDIR(sb.st_mode)) {
+            if (virFileDeleteTree(filepath) < 0)
+                goto cleanup;
+        } else {
+            if (unlink(filepath) < 0 && errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("Cannot delete file '%s'"),
+                                     filepath);
+                goto cleanup;
+            }
+        }
+
+        VIR_FREE(filepath);
+        errno = 0;
+    }
+
+    if (errno) {
+        virReportSystemError(errno, _("Cannot read dir '%s'"),
+                             dir);
+        goto cleanup;
+    }
+
+    if (rmdir(dir) < 0 && errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Cannot delete directory '%s'"),
+                             dir);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(filepath);
+    closedir(dh);
+    return ret;
+}

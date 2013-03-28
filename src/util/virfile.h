@@ -108,4 +108,6 @@ int virFileUpdatePerm(const char *path,
 int virFileLoopDeviceAssociate(const char *file,
                                char **dev);
 
+int virFileDeleteTree(const char *dir);
+
 #endif /* __VIR_FILES_H */
