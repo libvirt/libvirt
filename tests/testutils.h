@@ -75,6 +75,10 @@ int virtTestMain(int argc,
         const char *preload = getenv("LD_PRELOAD");                     \
         if (preload == NULL || strstr(preload, lib) == NULL) {          \
             char *newenv;                                               \
+            if (!virFileIsExecutable(lib)) {                            \
+                perror(lib);                                            \
+                return EXIT_FAILURE;                                    \
+            }                                                           \
             if (virAsprintf(&newenv, "%s%s%s", preload ? preload : "",  \
                             preload ? ":" : "", lib) < 0) {             \
                 perror("virAsprintf");                                  \
