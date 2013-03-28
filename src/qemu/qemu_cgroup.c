@@ -243,7 +243,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    rc = virCgroupNewDomain(driverGroup, vm->def->name, true, &priv->cgroup);
+    rc = virCgroupNewDomainDriver(driverGroup, vm->def->name, true, &priv->cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to create cgroup for %s"),

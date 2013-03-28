@@ -44,6 +44,12 @@ enum {
 
 VIR_ENUM_DECL(virCgroupController);
 
+int virCgroupNewPartition(const char *path,
+                          bool create,
+                          int controllers,
+                          virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+
 int virCgroupNewDriver(const char *name,
                        bool privileged,
                        bool create,
@@ -54,10 +60,16 @@ int virCgroupNewDriver(const char *name,
 int virCgroupNewSelf(virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1);
 
-int virCgroupNewDomain(virCgroupPtr driver,
-                       const char *name,
-                       bool create,
-                       virCgroupPtr *group)
+int virCgroupNewDomainDriver(virCgroupPtr driver,
+                             const char *name,
+                             bool create,
+                             virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+int virCgroupNewDomainPartition(virCgroupPtr partition,
+                                const char *driver,
+                                const char *name,
+                                bool create,
+                                virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int virCgroupNewVcpu(virCgroupPtr domain,

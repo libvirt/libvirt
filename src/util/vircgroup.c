@@ -1056,6 +1056,77 @@ cleanup:
     return rc;
 }
 
+
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+/**
+ * virCgroupNewPartition:
+ * @path: path for the partition
+ * @create: true to create the cgroup tree
+ * @controllers: mask of controllers to create
+ *
+ * Creates a new cgroup to represent the resource
+ * partition path identified by @name.
+ *
+ * Returns 0 on success, -errno on failure
+ */
+int virCgroupNewPartition(const char *path,
+                          bool create,
+                          int controllers,
+                          virCgroupPtr *group)
+{
+    int rc;
+    char *parentPath = NULL;
+    virCgroupPtr parent = NULL;
+    VIR_DEBUG("path=%s create=%d controllers=%x",
+              path, create, controllers);
+
+    if (path[0] != '/')
+        return -EINVAL;
+
+    rc = virCgroupNew(path, NULL, controllers, group);
+    if (rc != 0)
+        goto cleanup;
+
+    if (STRNEQ(path, "/")) {
+        char *tmp;
+        if (!(parentPath = strdup(path))) {
+            rc = -ENOMEM;
+            goto cleanup;
+        }
+
+        tmp = strrchr(parentPath, '/');
+        tmp++;
+        *tmp = '\0';
+
+        rc = virCgroupNew(parentPath, NULL, controllers, &parent);
+        if (rc != 0)
+            goto cleanup;
+
+        rc = virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE);
+        if (rc != 0) {
+            virCgroupRemove(*group);
+            goto cleanup;
+        }
+    }
+
+cleanup:
+    if (rc != 0)
+        virCgroupFree(group);
+    virCgroupFree(&parent);
+    VIR_FREE(parentPath);
+    return rc;
+}
+#else
+int virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
+                          bool create ATTRIBUTE_UNUSED,
+                          int controllers ATTRIBUTE_UNUSED,
+                          virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    /* Claim no support */
+    return -ENXIO;
+}
+#endif
+
 /**
  * virCgroupNewDriver:
  *
@@ -1127,7 +1198,7 @@ int virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
 #endif
 
 /**
- * virCgroupNewDomain:
+ * virCgroupNewDomainDriver:
  *
  * @driver: group for driver owning the domain
  * @name: name of the domain
@@ -1136,10 +1207,10 @@ int virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
  * Returns 0 on success
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupNewDomain(virCgroupPtr driver,
-                       const char *name,
-                       bool create,
-                       virCgroupPtr *group)
+int virCgroupNewDomainDriver(virCgroupPtr driver,
+                             const char *name,
+                             bool create,
+                             virCgroupPtr *group)
 {
     int rc;
 
@@ -1166,10 +1237,68 @@ int virCgroupNewDomain(virCgroupPtr driver,
     return rc;
 }
 #else
-int virCgroupNewDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
-                       const char *name ATTRIBUTE_UNUSED,
-                       bool create ATTRIBUTE_UNUSED,
-                       virCgroupPtr *group ATTRIBUTE_UNUSED)
+int virCgroupNewDomainDriver(virCgroupPtr driver ATTRIBUTE_UNUSED,
+                             const char *name ATTRIBUTE_UNUSED,
+                             bool create ATTRIBUTE_UNUSED,
+                             virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    return -ENXIO;
+}
+#endif
+
+/**
+ * virCgroupNewDomainPartition:
+ *
+ * @partition: partition holding the domain
+ * @driver: name of the driver
+ * @name: name of the domain
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns 0 on success
+ */
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+int virCgroupNewDomainPartition(virCgroupPtr partition,
+                                const char *driver,
+                                const char *name,
+                                bool create,
+                                virCgroupPtr *group)
+{
+    int rc;
+    char *dirname = NULL;
+
+    if (virAsprintf(&dirname, "%s.%s.libvirt",
+                    name, driver) < 0)
+        return -ENOMEM;
+
+    rc = virCgroupNew(dirname, partition, -1, group);
+
+    if (rc == 0) {
+        /*
+         * Create a cgroup with memory.use_hierarchy enabled to
+         * surely account memory usage of lxc with ns subsystem
+         * enabled. (To be exact, memory and ns subsystems are
+         * enabled at the same time.)
+         *
+         * The reason why doing it here, not a upper group, say
+         * a group for driver, is to avoid overhead to track
+         * cumulative usage that we don't need.
+         */
+        rc = virCgroupMakeGroup(partition, *group, create, VIR_CGROUP_MEM_HIERACHY);
+        if (rc != 0) {
+            virCgroupRemove(*group);
+            virCgroupFree(group);
+        }
+    }
+
+    VIR_FREE(dirname);
+    return rc;
+}
+#else
+int virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
+                                const char *driver ATTRIBUTE_UNUSED,
+                                const char *name ATTRIBUTE_UNUSED,
+                                bool create ATTRIBUTE_UNUSED,
+                                virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }

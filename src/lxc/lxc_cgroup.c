@@ -536,7 +536,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
         goto cleanup;
     }
 
-    rc = virCgroupNewDomain(driver, def->name, true, &cgroup);
+    rc = virCgroupNewDomainDriver(driver, def->name, true, &cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to create cgroup for domain %s"),
