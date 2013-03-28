@@ -224,9 +224,11 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
 
     virCgroupFree(&priv->cgroup);
 
-    rc = virCgroupForDriver("qemu", &driverGroup,
-                            cfg->privileged, true,
-                            cfg->cgroupControllers);
+    rc = virCgroupNewDriver("qemu",
+                            cfg->privileged,
+                            true,
+                            cfg->cgroupControllers,
+                            &driverGroup);
     if (rc != 0) {
         if (rc == -ENXIO ||
             rc == -EPERM ||
@@ -241,7 +243,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    rc = virCgroupForDomain(driverGroup, vm->def->name, &priv->cgroup, 1);
+    rc = virCgroupNewDomain(driverGroup, vm->def->name, true, &priv->cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to create cgroup for %s"),
@@ -643,7 +645,7 @@ int qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     }
 
     for (i = 0; i < priv->nvcpupids; i++) {
-        rc = virCgroupForVcpu(priv->cgroup, i, &cgroup_vcpu, 1);
+        rc = virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu);
         if (rc < 0) {
             virReportSystemError(-rc,
                                  _("Unable to create vcpu cgroup for %s(vcpu:"
@@ -721,7 +723,7 @@ int qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    rc = virCgroupForEmulator(priv->cgroup, &cgroup_emulator, 1);
+    rc = virCgroupNewEmulator(priv->cgroup, true, &cgroup_emulator);
     if (rc < 0) {
         virReportSystemError(-rc,
                              _("Unable to create emulator cgroup for %s"),

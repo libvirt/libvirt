@@ -44,27 +44,32 @@ enum {
 
 VIR_ENUM_DECL(virCgroupController);
 
-int virCgroupForDriver(const char *name,
-                       virCgroupPtr *group,
+int virCgroupNewDriver(const char *name,
                        bool privileged,
                        bool create,
-                       int controllers);
+                       int controllers,
+                       virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(5);
 
-int virCgroupForSelf(virCgroupPtr *group);
+int virCgroupNewSelf(virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1);
 
-int virCgroupForDomain(virCgroupPtr driver,
+int virCgroupNewDomain(virCgroupPtr driver,
                        const char *name,
-                       virCgroupPtr *group,
-                       bool create);
+                       bool create,
+                       virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
-int virCgroupForVcpu(virCgroupPtr driver,
+int virCgroupNewVcpu(virCgroupPtr domain,
                      int vcpuid,
-                     virCgroupPtr *group,
-                     bool create);
+                     bool create,
+                     virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
-int virCgroupForEmulator(virCgroupPtr driver,
-                         virCgroupPtr *group,
-                         bool create);
+int virCgroupNewEmulator(virCgroupPtr domain,
+                         bool create,
+                         virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 int virCgroupPathOfController(virCgroupPtr group,
                               int controller,

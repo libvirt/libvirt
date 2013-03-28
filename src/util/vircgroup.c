@@ -927,7 +927,7 @@ cleanup:
 }
 
 /**
- * virCgroupForDriver:
+ * virCgroupNewDriver:
  *
  * @name: name of this driver (e.g., xen, qemu, lxc)
  * @group: Pointer to returned virCgroupPtr
@@ -935,11 +935,11 @@ cleanup:
  * Returns 0 on success
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupForDriver(const char *name,
-                       virCgroupPtr *group,
+int virCgroupNewDriver(const char *name,
                        bool privileged,
                        bool create,
-                       int controllers)
+                       int controllers,
+                       virCgroupPtr *group)
 {
     int rc;
     char *path = NULL;
@@ -970,11 +970,11 @@ out:
     return rc;
 }
 #else
-int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
-                       virCgroupPtr *group ATTRIBUTE_UNUSED,
+int virCgroupNewDriver(const char *name ATTRIBUTE_UNUSED,
                        bool privileged ATTRIBUTE_UNUSED,
                        bool create ATTRIBUTE_UNUSED,
-                       int controllers ATTRIBUTE_UNUSED)
+                       int controllers ATTRIBUTE_UNUSED,
+                       virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     /* Claim no support */
     return -ENXIO;
@@ -982,7 +982,7 @@ int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
 #endif
 
 /**
-* virCgroupForSelf:
+* virCgroupNewSelf:
 *
 * @group: Pointer to returned virCgroupPtr
 *
@@ -992,19 +992,19 @@ int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
 * Returns 0 on success
 */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupForSelf(virCgroupPtr *group)
+int virCgroupNewSelf(virCgroupPtr *group)
 {
     return virCgroupNew("/", -1, group);
 }
 #else
-int virCgroupForSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
+int virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
 #endif
 
 /**
- * virCgroupForDomain:
+ * virCgroupNewDomain:
  *
  * @driver: group for driver owning the domain
  * @name: name of the domain
@@ -1013,16 +1013,13 @@ int virCgroupForSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
  * Returns 0 on success
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupForDomain(virCgroupPtr driver,
+int virCgroupNewDomain(virCgroupPtr driver,
                        const char *name,
-                       virCgroupPtr *group,
-                       bool create)
+                       bool create,
+                       virCgroupPtr *group)
 {
     int rc;
     char *path;
-
-    if (driver == NULL)
-        return -EINVAL;
 
     if (virAsprintf(&path, "%s/%s", driver->path, name) < 0)
         return -ENOMEM;
@@ -1049,38 +1046,36 @@ int virCgroupForDomain(virCgroupPtr driver,
     return rc;
 }
 #else
-int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
+int virCgroupNewDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
                        const char *name ATTRIBUTE_UNUSED,
-                       virCgroupPtr *group ATTRIBUTE_UNUSED,
-                       bool create ATTRIBUTE_UNUSED)
+                       bool create ATTRIBUTE_UNUSED,
+                       virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
 #endif
 
 /**
- * virCgroupForVcpu:
+ * virCgroupNewVcpu:
  *
- * @driver: group for the domain
+ * @domain: group for the domain
  * @vcpuid: id of the vcpu
+ * @create: true to create if not already existing
  * @group: Pointer to returned virCgroupPtr
  *
  * Returns 0 on success
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupForVcpu(virCgroupPtr driver,
+int virCgroupNewVcpu(virCgroupPtr domain,
                      int vcpuid,
-                     virCgroupPtr *group,
-                     bool create)
+                     bool create,
+                     virCgroupPtr *group)
 {
     int rc;
     char *path;
     int controllers;
 
-    if (driver == NULL)
-        return -EINVAL;
-
-    if (virAsprintf(&path, "%s/vcpu%d", driver->path, vcpuid) < 0)
+    if (virAsprintf(&path, "%s/vcpu%d", domain->path, vcpuid) < 0)
         return -ENOMEM;
 
     controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
@@ -1091,7 +1086,7 @@ int virCgroupForVcpu(virCgroupPtr driver,
     VIR_FREE(path);
 
     if (rc == 0) {
-        rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_NONE);
+        rc = virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -1099,36 +1094,34 @@ int virCgroupForVcpu(virCgroupPtr driver,
     return rc;
 }
 #else
-int virCgroupForVcpu(virCgroupPtr driver ATTRIBUTE_UNUSED,
+int virCgroupNewVcpu(virCgroupPtr domain ATTRIBUTE_UNUSED,
                      int vcpuid ATTRIBUTE_UNUSED,
-                     virCgroupPtr *group ATTRIBUTE_UNUSED,
-                     bool create ATTRIBUTE_UNUSED)
+                     bool create ATTRIBUTE_UNUSED,
+                     virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }
 #endif
 
 /**
- * virCgroupForEmulator:
+ * virCgroupNewEmulator:
  *
- * @driver: group for the domain
+ * @domain: group for the domain
+ * @create: true to create if not already existing
  * @group: Pointer to returned virCgroupPtr
  *
  * Returns: 0 on success or -errno on failure
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
-int virCgroupForEmulator(virCgroupPtr driver,
-                         virCgroupPtr *group,
-                         bool create)
+int virCgroupNewEmulator(virCgroupPtr domain,
+                         bool create,
+                         virCgroupPtr *group)
 {
     int rc;
     char *path;
     int controllers;
 
-    if (driver == NULL)
-        return -EINVAL;
-
-    if (virAsprintf(&path, "%s/emulator", driver->path) < 0)
+    if (virAsprintf(&path, "%s/emulator", domain->path) < 0)
         return -ENOMEM;
 
     controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
@@ -1139,7 +1132,7 @@ int virCgroupForEmulator(virCgroupPtr driver,
     VIR_FREE(path);
 
     if (rc == 0) {
-        rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_NONE);
+        rc = virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -1147,9 +1140,9 @@ int virCgroupForEmulator(virCgroupPtr driver,
     return rc;
 }
 #else
-int virCgroupForEmulator(virCgroupPtr driver ATTRIBUTE_UNUSED,
-                         virCgroupPtr *group ATTRIBUTE_UNUSED,
-                         bool create ATTRIBUTE_UNUSED)
+int virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
+                         bool create ATTRIBUTE_UNUSED,
+                         virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     return -ENXIO;
 }

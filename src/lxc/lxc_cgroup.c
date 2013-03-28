@@ -293,7 +293,7 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
     int ret;
     virCgroupPtr cgroup;
 
-    ret = virCgroupForSelf(&cgroup);
+    ret = virCgroupNewSelf(&cgroup);
     if (ret < 0) {
         virReportSystemError(-ret, "%s",
                              _("Unable to get cgroup for container"));
@@ -529,14 +529,14 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
     virCgroupPtr cgroup = NULL;
     int rc;
 
-    rc = virCgroupForDriver("lxc", &driver, 1, 0, -1);
+    rc = virCgroupNewDriver("lxc", true, false, -1, &driver);
     if (rc != 0) {
         virReportSystemError(-rc, "%s",
                              _("Unable to get cgroup for driver"));
         goto cleanup;
     }
 
-    rc = virCgroupForDomain(driver, def->name, &cgroup, 1);
+    rc = virCgroupNewDomain(driver, def->name, true, &cgroup);
     if (rc != 0) {
         virReportSystemError(-rc,
                              _("Unable to create cgroup for domain %s"),
