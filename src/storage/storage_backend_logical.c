@@ -1,7 +1,7 @@
 /*
  * storage_backend_logical.c: storage backend for logical volume handling
  *
- * Copyright (C) 2007-2009, 2011 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2011, 2013 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -667,6 +667,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
     virCommandFree(cmd);
+    cmd = NULL;
 
     /* now remove the pv devices and clear them out */
     ret = 0;
