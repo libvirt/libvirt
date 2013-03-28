@@ -5460,6 +5460,97 @@ vshPrintPinInfo(unsigned char *cpumaps, size_t cpumaplen,
     return true;
 }
 
+static unsigned char *
+vshParseCPUList(vshControl *ctl, const char *cpulist,
+                int maxcpu, size_t cpumaplen)
+{
+    unsigned char *cpumap = NULL;
+    const char *cur;
+    bool unuse = false;
+    int i, cpu, lastcpu;
+
+    cpumap = vshCalloc(ctl, cpumaplen, sizeof(*cpumap));
+
+    /* Parse cpulist */
+    cur = cpulist;
+    if (*cur == 'r') {
+        for (cpu = 0; cpu < maxcpu; cpu++)
+            VIR_USE_CPU(cpumap, cpu);
+        return cpumap;
+    } else if (*cur == 0) {
+        goto error;
+    }
+
+    while (*cur != 0) {
+        /* The char '^' denotes exclusive */
+        if (*cur == '^') {
+            cur++;
+            unuse = true;
+        }
+
+        /* Parse physical CPU number */
+        if (!c_isdigit(*cur))
+            goto error;
+
+        if ((cpu = virParseNumber(&cur)) < 0)
+            goto error;
+
+        if (cpu >= maxcpu) {
+            vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
+            goto cleanup;
+        }
+
+        virSkipSpaces(&cur);
+
+        if (*cur == ',' || *cur == 0) {
+            if (unuse)
+                VIR_UNUSE_CPU(cpumap, cpu);
+            else
+                VIR_USE_CPU(cpumap, cpu);
+        } else if (*cur == '-') {
+            /* The char '-' denotes range */
+            if (unuse)
+                goto error;
+            cur++;
+            virSkipSpaces(&cur);
+
+            /* Parse the end of range */
+            lastcpu = virParseNumber(&cur);
+
+            if (lastcpu < cpu)
+                goto error;
+
+            if (lastcpu >= maxcpu) {
+                vshError(ctl, _("Physical CPU %d doesn't exist."), lastcpu);
+                goto cleanup;
+            }
+
+            for (i = cpu; i <= lastcpu; i++)
+                VIR_USE_CPU(cpumap, i);
+
+            virSkipSpaces(&cur);
+        }
+
+        if (*cur == ',') {
+            cur++;
+            virSkipSpaces(&cur);
+            unuse = false;
+        } else if (*cur == 0) {
+            break;
+        } else {
+            goto error;
+        }
+    }
+
+    return cpumap;
+
+error:
+    vshError(ctl, "%s", _("cpulist: Invalid format."));
+cleanup:
+    VIR_FREE(cpumap);
+    return NULL;
+}
+
 static bool
 cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
@@ -5467,13 +5558,11 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     int vcpu = -1;
     const char *cpulist = NULL;
-    bool ret = true;
+    bool ret = false;
     unsigned char *cpumap = NULL;
     unsigned char *cpumaps = NULL;
     size_t cpumaplen;
-    int i, cpu, lastcpu, maxcpu, ncpus;
-    bool unuse = false;
-    const char *cur;
+    int i, maxcpu, ncpus;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -5545,7 +5634,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
             vshPrint(ctl, "----------------------------------\n");
             for (i = 0; i < ncpus; i++) {
-
                if (vcpu != -1 && i != vcpu)
                    continue;
 
@@ -5556,105 +5644,28 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                    break;
             }
 
-        } else {
-            ret = false;
         }
         VIR_FREE(cpumaps);
         goto cleanup;
     }
 
     /* Pin mode: pinning specified vcpu to specified physical cpus*/
-
-    cpumap = vshCalloc(ctl, cpumaplen, sizeof(*cpumap));
-    /* Parse cpulist */
-    cur = cpulist;
-    if (*cur == 0) {
-        goto parse_error;
-    } else if (*cur == 'r') {
-        for (cpu = 0; cpu < maxcpu; cpu++)
-            VIR_USE_CPU(cpumap, cpu);
-        cur = "";
-    }
-
-    while (*cur != 0) {
-
-        /* the char '^' denotes exclusive */
-        if (*cur == '^') {
-            cur++;
-            unuse = true;
-        }
-
-        /* parse physical CPU number */
-        if (!c_isdigit(*cur))
-            goto parse_error;
-        cpu  = virParseNumber(&cur);
-        if (cpu < 0) {
-            goto parse_error;
-        }
-        if (cpu >= maxcpu) {
-            vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
-            goto parse_error;
-        }
-        virSkipSpaces(&cur);
-
-        if (*cur == ',' || *cur == 0) {
-            if (unuse) {
-                VIR_UNUSE_CPU(cpumap, cpu);
-            } else {
-                VIR_USE_CPU(cpumap, cpu);
-            }
-        } else if (*cur == '-') {
-            /* the char '-' denotes range */
-            if (unuse) {
-                goto parse_error;
-            }
-            cur++;
-            virSkipSpaces(&cur);
-            /* parse the end of range */
-            lastcpu = virParseNumber(&cur);
-            if (lastcpu < cpu) {
-                goto parse_error;
-            }
-            if (lastcpu >= maxcpu) {
-                vshError(ctl, _("Physical CPU %d doesn't exist."), maxcpu);
-                goto parse_error;
-            }
-            for (i = cpu; i <= lastcpu; i++) {
-                VIR_USE_CPU(cpumap, i);
-            }
-            virSkipSpaces(&cur);
-        }
-
-        if (*cur == ',') {
-            cur++;
-            virSkipSpaces(&cur);
-            unuse = false;
-        } else if (*cur == 0) {
-            break;
-        } else {
-            goto parse_error;
-        }
-    }
+    if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
+        goto cleanup;
 
     if (flags == -1) {
-        if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0) {
-            ret = false;
-        }
+        if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
+            goto cleanup;
     } else {
-        if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0) {
-            ret = false;
-        }
+        if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0)
+            goto cleanup;
     }
 
+    ret = true;
 cleanup:
     VIR_FREE(cpumap);
     virDomainFree(dom);
     return ret;
-
-parse_error:
-    vshError(ctl, "%s", _("cpulist: Invalid format."));
-    ret = false;
-    goto cleanup;
 }
 
 /*
@@ -5701,13 +5712,11 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *cpulist = NULL;
-    bool ret = true;
+    bool ret = false;
     unsigned char *cpumap = NULL;
     unsigned char *cpumaps = NULL;
     size_t cpumaplen;
-    int i, cpu, lastcpu, maxcpu;
-    bool unuse = false;
-    const char *cur;
+    int maxcpu;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -5761,101 +5770,26 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "       *: ");
             ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, 0);
             vshPrint(ctl, "\n");
-        } else {
-            ret = false;
         }
         VIR_FREE(cpumaps);
         goto cleanup;
     }
 
     /* Pin mode: pinning emulator threads to specified physical cpus*/
-
-    cpumap = vshCalloc(ctl, cpumaplen, sizeof(*cpumap));
-    /* Parse cpulist */
-    cur = cpulist;
-    if (*cur == 0) {
-        goto parse_error;
-    } else if (*cur == 'r') {
-        for (cpu = 0; cpu < maxcpu; cpu++)
-            VIR_USE_CPU(cpumap, cpu);
-        cur = "";
-    }
-
-    while (*cur != 0) {
-
-        /* the char '^' denotes exclusive */
-        if (*cur == '^') {
-            cur++;
-            unuse = true;
-        }
-
-        /* parse physical CPU number */
-        if (!c_isdigit(*cur))
-            goto parse_error;
-        cpu  = virParseNumber(&cur);
-        if (cpu < 0) {
-            goto parse_error;
-        }
-        if (cpu >= maxcpu) {
-            vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
-            goto parse_error;
-        }
-        virSkipSpaces(&cur);
-
-        if (*cur == ',' || *cur == 0) {
-            if (unuse) {
-                VIR_UNUSE_CPU(cpumap, cpu);
-            } else {
-                VIR_USE_CPU(cpumap, cpu);
-            }
-        } else if (*cur == '-') {
-            /* the char '-' denotes range */
-            if (unuse) {
-                goto parse_error;
-            }
-            cur++;
-            virSkipSpaces(&cur);
-            /* parse the end of range */
-            lastcpu = virParseNumber(&cur);
-            if (lastcpu < cpu) {
-                goto parse_error;
-            }
-            if (lastcpu >= maxcpu) {
-                vshError(ctl, _("Physical CPU %d doesn't exist."), maxcpu);
-                goto parse_error;
-            }
-            for (i = cpu; i <= lastcpu; i++) {
-                VIR_USE_CPU(cpumap, i);
-            }
-            virSkipSpaces(&cur);
-        }
-
-        if (*cur == ',') {
-            cur++;
-            virSkipSpaces(&cur);
-            unuse = false;
-        } else if (*cur == 0) {
-            break;
-        } else {
-            goto parse_error;
-        }
-    }
+    if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
+        goto cleanup;
 
     if (flags == -1)
         flags = VIR_DOMAIN_AFFECT_LIVE;
 
     if (virDomainPinEmulator(dom, cpumap, cpumaplen, flags) != 0)
-        ret = false;
+        goto cleanup;
 
+    ret = true;
 cleanup:
     VIR_FREE(cpumap);
     virDomainFree(dom);
     return ret;
-
-parse_error:
-    vshError(ctl, "%s", _("cpulist: Invalid format."));
-    ret = false;
-    goto cleanup;
 }
 
 /*
