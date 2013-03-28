@@ -1252,8 +1252,9 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     }
 
     if (access(ctrl->devptmx, R_OK) < 0) {
-        VIR_WARN("Kernel does not support private devpts, using shared devpts");
-        VIR_FREE(ctrl->devptmx);
+        virReportSystemError(ENOSYS, "%s",
+                             _("Kernel does not support private devpts"));
+        goto cleanup;
     }
 
     ret = 0;
@@ -1278,24 +1279,13 @@ virLXCControllerSetupConsoles(virLXCControllerPtr ctrl,
     size_t i;
 
     for (i = 0 ; i < ctrl->nconsoles ; i++) {
-        if (ctrl->devptmx) {
-            VIR_DEBUG("Opening tty on private %s", ctrl->devptmx);
-            if (lxcCreateTty(ctrl->devptmx,
-                             &ctrl->consoles[i].contFd,
-                             &containerTTYPaths[i]) < 0) {
-                virReportSystemError(errno, "%s",
+        VIR_DEBUG("Opening tty on private %s", ctrl->devptmx);
+        if (lxcCreateTty(ctrl->devptmx,
+                         &ctrl->consoles[i].contFd,
+                         &containerTTYPaths[i]) < 0) {
+            virReportSystemError(errno, "%s",
                                      _("Failed to allocate tty"));
-                return -1;
-            }
-        } else {
-            VIR_DEBUG("Opening tty on shared /dev/ptmx");
-            if (virFileOpenTty(&ctrl->consoles[i].contFd,
-                               &containerTTYPaths[i],
-                               0) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Failed to allocate tty"));
-                return -1;
-            }
+            return -1;
         }
     }
     return 0;
