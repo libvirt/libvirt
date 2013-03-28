@@ -788,15 +788,16 @@ $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protoco
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.h$$
 
 _src1=libvirt|fdstream|qemu/qemu_monitor|util/(vircommand|virutil)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon
+_test1=shunloadtest|virnettlscontexttest|vircgroupmock
 exclude_file_name_regexp--sc_avoid_write = \
-  ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/(shunload|virnettlscontext)test)\.c$$
+  ^(src/($(_src1))|daemon/libvirtd|tools/console|tests/($(_test1)))\.c$$
 
 exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
 
 exclude_file_name_regexp--sc_copyright_address = \
   ^COPYING\.LIB$$
 
-exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$)
+exclude_file_name_regexp--sc_flags_usage = ^(docs/|src/util/virnetdevtap\.c$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)
@@ -812,10 +813,10 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   ^python/(libvirt-(lxc-|qemu-)?override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/virutil\.c$$|examples/domain-events/events-c/event-test\.c$$)
+  ^(bootstrap.conf$$|src/util/virutil\.c$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c)$$)
+  (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vircgroupmock\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(qemuhelp|nodeinfo)data/|\.(gif|ico|png|diff)$$)
@@ -836,7 +837,7 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*(py|html\.in)|run.in$$)
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/hacking\.html\.in)|(src/util/viralloc\.[ch]|examples/.*|tests/securityselinuxhelper.c)$$
+  ^(docs/hacking\.html\.in)|(src/util/viralloc\.[ch]|examples/.*|tests/securityselinuxhelper\.c|tests/vircgroupmock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$

@@ -97,7 +97,9 @@ test_programs = virshtest sockettest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
 	virauthconfigtest \
-	virbitmaptest virendiantest \
+	virbitmaptest \
+	vircgrouptest \
+	virendiantest \
 	viridentitytest \
 	virkeycodetest \
 	virlockspacetest \
@@ -249,6 +251,7 @@ EXTRA_DIST += $(test_scripts)
 
 test_libraries = libshunload.la \
 		libvirportallocatormock.la \
+		vircgroupmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la
@@ -596,6 +599,16 @@ libvirportallocatormock_la_SOURCES = \
 	virportallocatortest.c
 libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
 libvirportallocatormock_la_LDFLAGS = -module -avoid-version \
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+
+vircgrouptest_SOURCES = \
+	vircgrouptest.c testutils.h testutils.c
+vircgrouptest_LDADD = $(LDADDS)
+
+vircgroupmock_la_SOURCES = \
+	vircgroupmock.c
+vircgroupmock_la_CFLAGS = $(AM_CFLAGS)
+vircgroupmock_la_LDFLAGS = -module -avoid-version \
         -rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 
