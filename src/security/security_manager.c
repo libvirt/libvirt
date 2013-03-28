@@ -463,6 +463,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
             } else if (vm->nseclabels && generated) {
                 VIR_DEBUG("Skipping auto generated seclabel of type none");
                 virSecurityLabelDefFree(seclabel);
+                seclabel = NULL;
                 continue;
             }
         }
@@ -472,8 +473,8 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
         } else {
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
-
-            if (VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel) < 0) {
+            if (generated &&
+                VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
@@ -484,6 +485,8 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                     vm->nseclabels--;
                 goto cleanup;
             }
+
+            seclabel = NULL;
         }
     }
 
