@@ -117,6 +117,7 @@ virDomainDefCopy;
 virDomainDefFormat;
 virDomainDefFormatInternal;
 virDomainDefFree;
+virDomainDefGenSecurityLabelDef;
 virDomainDefGetSecurityLabelDef;
 virDomainDefParseFile;
 virDomainDefParseNode;
@@ -138,6 +139,7 @@ virDomainDiskCopyOnReadTypeToString;
 virDomainDiskDefAssignAddress;
 virDomainDiskDefForeachPath;
 virDomainDiskDefFree;
+virDomainDiskDefGenSecurityLabelDef;
 virDomainDiskDefGetSecurityLabelDef;
 virDomainDiskDeviceTypeToString;
 virDomainDiskErrorPolicyTypeFromString;
@@ -341,6 +343,8 @@ virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
 virDomainXMLConfGetNamespace;
 virDomainXMLConfNew;
+virSecurityDeviceLabelDefFree;
+virSecurityLabelDefFree;
 
 
 # conf/domain_event.h
