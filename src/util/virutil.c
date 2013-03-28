@@ -3590,8 +3590,8 @@ virIsCapableFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 }
 
 int
-virIsCapbleVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                 int host ATTRIBUTE_UNUSED)
+virIsCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                  int host ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
