@@ -314,7 +314,7 @@ enum {
 int virManageVport(const int parent_host,
                    const char *wwpn,
                    const char *wwnn,
-                  int operation)
+                   int operation)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 #endif /* __VIR_UTIL_H__ */
