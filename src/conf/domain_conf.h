@@ -2026,10 +2026,10 @@ void virDomainHubDefFree(virDomainHubDefPtr def);
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
-virDomainDeviceDefPtr virDomainDeviceDefCopy(virCapsPtr caps,
-                                             virDomainXMLOptionPtr xmlopt,
+virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDefPtr def,
-                                             virDomainDeviceDefPtr src);
+                                             virCapsPtr caps,
+                                             virDomainXMLOptionPtr xmlopt);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
@@ -2057,8 +2057,8 @@ enum {
     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
 virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
-                                    virDomainXMLOptionPtr xmlopt,
                                     const virDomainDefPtr def,
+                                    virDomainXMLOptionPtr xmlopt,
                                     unsigned int flags,
                                     virDomainDefPtr *oldDef);
 void virDomainObjAssignDef(virDomainObjPtr domain,
@@ -2081,34 +2081,36 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
                                 unsigned int *flags,
                                 virDomainDefPtr *persistentDef);
 
-virDomainDefPtr virDomainDefCopy(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
-                                 virDomainDefPtr src, bool migratable);
-virDomainDefPtr
-virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
-                              virDomainObjPtr dom);
+virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
+                                 virCapsPtr caps,
+                                 virDomainXMLOptionPtr xmlopt,
+                                 bool migratable);
+virDomainDefPtr virDomainObjCopyPersistentDef(virDomainObjPtr dom,
+                                              virCapsPtr caps,
+                                              virDomainXMLOptionPtr xmlopt);
 
 void virDomainObjListRemove(virDomainObjListPtr doms,
                             virDomainObjPtr dom);
 
-virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
-                                              virDomainXMLOptionPtr xmlopt,
+virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               virDomainDefPtr def,
-                                              const char *xmlStr,
+                                              virCapsPtr caps,
+                                              virDomainXMLOptionPtr xmlopt,
                                               unsigned int flags);
-virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
+virDomainDefPtr virDomainDefParseString(const char *xmlStr,
+                                        virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
-                                        const char *xmlStr,
                                         unsigned int expectedVirtTypes,
                                         unsigned int flags);
-virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
+virDomainDefPtr virDomainDefParseFile(const char *filename,
+                                      virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
-                                      const char *filename,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
-virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
-                                      virDomainXMLOptionPtr xmlopt,
-                                      xmlDocPtr doc,
+virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       xmlNodePtr root,
+                                      virCapsPtr caps,
+                                      virDomainXMLOptionPtr xmlopt,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
 
@@ -2232,11 +2234,11 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           void *opaque);
 
 int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
-                                   virCapsPtr caps,
-                                   virDomainXMLOptionPtr xmlopt,
                                    const char *configDir,
                                    const char *autostartDir,
                                    int liveStatus,
+                                   virCapsPtr caps,
+                                   virDomainXMLOptionPtr xmlopt,
                                    unsigned int expectedVirtTypes,
                                    virDomainLoadConfigNotify notify,
                                    void *opaque);

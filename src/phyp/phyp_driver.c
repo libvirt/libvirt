@@ -1754,8 +1754,8 @@ phypAttachDevice(virDomainPtr domain, const char *xml)
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(phyp_driver->caps, NULL,
-                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL,
+                                  VIR_DOMAIN_XML_INACTIVE);
     if (!dev) {
         goto cleanup;
     }
@@ -3637,8 +3637,9 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virDomainDefParseString(phyp_driver->caps, phyp_driver->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_PHYP,
+    if (!(def = virDomainDefParseString(xml, phyp_driver->caps,
+                                        phyp_driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_PHYP,
                                         VIR_DOMAIN_XML_SECURE)))
         goto err;
 

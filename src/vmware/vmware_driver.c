@@ -324,8 +324,8 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
     ctx.formatFileName = vmwareCopyVMXFileName;
 
     vmwareDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                         xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
+    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                         1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -346,8 +346,8 @@ vmwareDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlopt,
                                    vmdef,
+                                   driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
@@ -595,8 +595,8 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     vmwareDriverLock(driver);
 
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                         xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
+    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                         1 << VIR_DOMAIN_VIRT_VMWARE,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -617,8 +617,8 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlopt,
                                    vmdef,
+                                   driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;

@@ -563,8 +563,8 @@ libxlSaveImageOpen(libxlDriverPrivatePtr driver, const char *from,
         goto error;
     }
 
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_XEN,
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto error;
 
@@ -1246,11 +1246,12 @@ libxlStartup(bool privileged,
 
     /* Load running domains first. */
     if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
-                                       libxl_driver->caps,
-                                       libxl_driver->xmlopt,
                                        libxl_driver->stateDir,
                                        libxl_driver->autostartDir,
-                                       1, 1 << VIR_DOMAIN_VIRT_XEN,
+                                       1,
+                                       libxl_driver->caps,
+                                       libxl_driver->xmlopt,
+                                       1 << VIR_DOMAIN_VIRT_XEN,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -1258,11 +1259,12 @@ libxlStartup(bool privileged,
 
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(libxl_driver->domains,
-                                       libxl_driver->caps,
-                                       libxl_driver->xmlopt,
                                        libxl_driver->configDir,
                                        libxl_driver->autostartDir,
-                                       0, 1 << VIR_DOMAIN_VIRT_XEN,
+                                       0,
+                                       libxl_driver->caps,
+                                       libxl_driver->xmlopt,
+                                       1 << VIR_DOMAIN_VIRT_XEN,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -1296,11 +1298,12 @@ libxlReload(void)
 
     libxlDriverLock(libxl_driver);
     virDomainObjListLoadAllConfigs(libxl_driver->domains,
-                                   libxl_driver->caps,
-                                   libxl_driver->xmlopt,
                                    libxl_driver->configDir,
                                    libxl_driver->autostartDir,
-                                   1, 1 << VIR_DOMAIN_VIRT_XEN,
+                                   1,
+                                   libxl_driver->caps,
+                                   libxl_driver->xmlopt,
+                                   1 << VIR_DOMAIN_VIRT_XEN,
                                    NULL, libxl_driver);
 
     virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
@@ -1455,14 +1458,13 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(VIR_DOMAIN_START_PAUSED, NULL);
 
     libxlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_XEN,
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
@@ -2242,9 +2244,8 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
     if (fd < 0)
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -2932,7 +2933,8 @@ libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt, domainXml,
+    if (!(def = virDomainDefParseString(domainXml,
+                                        driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN, 0)))
         goto cleanup;
 
@@ -3034,14 +3036,13 @@ libxlDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainDefPtr oldDef = NULL;
 
     libxlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt, xml,
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    0,
                                    &oldDef)))
         goto cleanup;
@@ -3557,14 +3558,14 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     priv = vm->privateData;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        if (!(dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
-                                            vm->def, xml,
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
         /* Make a copy for updated domain. */
-        if (!(vmdef = virDomainObjCopyPersistentDef(driver->caps,
-                                                    driver->xmlopt, vm)))
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->caps,
+                                                    driver->xmlopt)))
             goto cleanup;
 
         switch (action) {
@@ -3588,8 +3589,8 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
-        if (!(dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
-                                            vm->def, xml,
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 

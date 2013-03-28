@@ -32,7 +32,7 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (virtTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
 
-  if (!(def = virDomainDefParseString(caps, xmlopt, xmlData,
+  if (!(def = virDomainDefParseString(xmlData, caps, xmlopt,
                                       1 << VIR_DOMAIN_VIRT_XEN,
                                       VIR_DOMAIN_XML_INACTIVE)))
       goto fail;

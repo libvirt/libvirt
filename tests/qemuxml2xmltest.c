@@ -32,7 +32,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
-    if (!(def = virDomainDefParseString(driver.caps, driver.xmlopt, inXmlData,
+    if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;

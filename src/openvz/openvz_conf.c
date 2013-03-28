@@ -650,8 +650,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             flags |= VIR_DOMAIN_OBJ_LIST_ADD_LIVE;
 
         if (!(dom = virDomainObjListAdd(driver->domains,
-                                        driver->xmlopt,
                                         def,
+                                        driver->xmlopt,
                                         flags,
                                         NULL)))
             goto cleanup;

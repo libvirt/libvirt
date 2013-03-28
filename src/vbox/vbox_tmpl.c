@@ -5052,8 +5052,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 #endif
     nsresult rc;
 
-    if (!(def = virDomainDefParseString(data->caps, data->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_VBOX,
+    if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_VBOX,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         goto cleanup;
     }
@@ -5396,8 +5396,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(data->caps, data->xmlopt,
-                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
+                                  VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -5631,8 +5631,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(data->caps, data->xmlopt,
-                                  def, xml, VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
+                                  VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 

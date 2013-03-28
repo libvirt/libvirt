@@ -166,7 +166,7 @@ testSELinuxLoadDef(const char *testname)
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(caps, xmlopt, xmlstr,
+    if (!(def = virDomainDefParseString(xmlstr, caps, xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         0)))
         goto cleanup;

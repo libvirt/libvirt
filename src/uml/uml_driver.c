@@ -541,11 +541,11 @@ umlStartup(bool privileged,
         goto error;
 
     if (virDomainObjListLoadAllConfigs(uml_driver->domains,
+                                       uml_driver->configDir,
+                                       uml_driver->autostartDir, 0,
                                        uml_driver->caps,
                                        uml_driver->xmlopt,
-                                       uml_driver->configDir,
-                                       uml_driver->autostartDir,
-                                       0, 1 << VIR_DOMAIN_VIRT_UML,
+                                       1 << VIR_DOMAIN_VIRT_UML,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -597,11 +597,11 @@ umlReload(void) {
 
     umlDriverLock(uml_driver);
     virDomainObjListLoadAllConfigs(uml_driver->domains,
+                                   uml_driver->configDir,
+                                   uml_driver->autostartDir, 0,
                                    uml_driver->caps,
                                    uml_driver->xmlopt,
-                                   uml_driver->configDir,
-                                   uml_driver->autostartDir,
-                                   0, 1 << VIR_DOMAIN_VIRT_UML,
+                                   1 << VIR_DOMAIN_VIRT_UML,
                                    umlNotifyLoadDomain, uml_driver);
     umlDriverUnlock(uml_driver);
 
@@ -1504,14 +1504,13 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_UML,
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
@@ -1925,14 +1924,13 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                        xml, 1 << VIR_DOMAIN_VIRT_UML,
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    0, NULL)))
         goto cleanup;
     def = NULL;
@@ -2080,7 +2078,7 @@ static int umlDomainAttachDevice(virDomainPtr dom, const char *xml)
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt, vm->def, xml,
+    dev = virDomainDeviceDefParse(xml, vm->def, driver->caps, driver->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (dev == NULL)
@@ -2198,7 +2196,7 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt, vm->def, xml,
+    dev = virDomainDeviceDefParse(xml, vm->def, driver->caps, driver->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;

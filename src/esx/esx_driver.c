@@ -2887,8 +2887,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    def = virDomainDefParseString(priv->caps, priv->xmlopt,
-                                  domainXml, 1 << VIR_DOMAIN_VIRT_VMWARE, 0);
+    def = virDomainDefParseString(domainXml, priv->caps, priv->xmlopt,
+                                  1 << VIR_DOMAIN_VIRT_VMWARE, 0);
 
     if (def == NULL) {
         return NULL;
@@ -3103,8 +3103,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml)
     }
 
     /* Parse domain XML */
-    def = virDomainDefParseString(priv->caps, priv->xmlopt,
-                                  xml, 1 << VIR_DOMAIN_VIRT_VMWARE,
+    def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
+                                  1 << VIR_DOMAIN_VIRT_VMWARE,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (def == NULL) {

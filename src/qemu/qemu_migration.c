@@ -921,8 +921,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                            n);
             goto error;
         }
-        mig->persistent = virDomainDefParseNode(caps, driver->xmlopt,
-                                                doc, nodes[0],
+        mig->persistent = virDomainDefParseNode(doc, nodes[0],
+                                                caps, driver->xmlopt,
                                                 -1, VIR_DOMAIN_XML_INACTIVE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
@@ -1926,7 +1926,7 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
     }
 
     if (xmlin) {
-        if (!(def = virDomainDefParseString(caps, driver->xmlopt, xmlin,
+        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
                                             QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
@@ -2030,7 +2030,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(def = virDomainDefParseString(caps, driver->xmlopt, dom_xml,
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -2071,7 +2071,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 virDomainDefPtr newdef;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(caps, driver->xmlopt, xmlout,
+                newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt,
                                                  QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_XML_INACTIVE);
                 if (!newdef)
@@ -2127,9 +2127,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
-                                   def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))

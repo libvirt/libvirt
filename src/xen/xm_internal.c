@@ -1013,7 +1013,7 @@ xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         return NULL;
     }
 
-    if (!(def = virDomainDefParseString(priv->caps, priv->xmlopt, xml,
+    if (!(def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         xenUnifiedUnlock(priv);
@@ -1310,10 +1310,10 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
         goto cleanup;
     def = entry->def;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps,
+    if (!(dev = virDomainDeviceDefParse(xml, entry->def,
+                                        priv->caps,
                                         priv->xmlopt,
-                                        entry->def,
-                                        xml, VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     switch (dev->type) {
@@ -1404,10 +1404,10 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
         goto cleanup;
     def = entry->def;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps,
+    if (!(dev = virDomainDeviceDefParse(xml, entry->def,
+                                        priv->caps,
                                         priv->xmlopt,
-                                        entry->def,
-                                        xml, VIR_DOMAIN_XML_INACTIVE)))
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     switch (dev->type) {

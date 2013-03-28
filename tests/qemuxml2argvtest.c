@@ -100,7 +100,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
     conn->secretDriver = &fakeSecretDriver;
 
-    if (!(vmdef = virDomainDefParseFile(driver.caps, driver.xmlopt, xml,
+    if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)

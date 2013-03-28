@@ -32,7 +32,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
-    if (!(def = virDomainDefParseString(caps, xmlopt, inXmlData,
+    if (!(def = virDomainDefParseString(inXmlData, caps, xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;

@@ -169,8 +169,8 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
                                           ctrl->name)) == NULL)
         goto error;
 
-    if ((ctrl->def = virDomainDefParseFile(caps, xmlopt,
-                                           configFile,
+    if ((ctrl->def = virDomainDefParseFile(configFile,
+                                           caps, xmlopt,
                                            1 << VIR_DOMAIN_VIRT_LXC,
                                            0)) == NULL)
         goto error;

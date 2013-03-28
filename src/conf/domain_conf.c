@@ -2000,8 +2000,8 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
  */
 static virDomainObjPtr
 virDomainObjListAddLocked(virDomainObjListPtr doms,
-                          virDomainXMLOptionPtr xmlopt,
                           const virDomainDefPtr def,
+                          virDomainXMLOptionPtr xmlopt,
                           unsigned int flags,
                           virDomainDefPtr *oldDef)
 {
@@ -2071,15 +2071,15 @@ error:
 
 
 virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
-                                    virDomainXMLOptionPtr xmlopt,
                                     const virDomainDefPtr def,
+                                    virDomainXMLOptionPtr xmlopt,
                                     unsigned int flags,
                                     virDomainDefPtr *oldDef)
 {
     virDomainObjPtr ret;
 
     virObjectLock(doms);
-    ret = virDomainObjListAddLocked(doms, xmlopt, def, flags, oldDef);
+    ret = virDomainObjListAddLocked(doms, def, xmlopt, flags, oldDef);
     virObjectUnlock(doms);
     return ret;
 }
@@ -2113,7 +2113,7 @@ virDomainObjSetDefTransient(virCapsPtr caps,
     if (domain->newDef)
         return 0;
 
-    if (!(domain->newDef = virDomainDefCopy(caps, xmlopt, domain->def, false)))
+    if (!(domain->newDef = virDomainDefCopy(domain->def, caps, xmlopt, false)))
         goto out;
 
     ret = 0;
@@ -8470,10 +8470,10 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
 }
 
 virDomainDeviceDefPtr
-virDomainDeviceDefParse(virCapsPtr caps,
-                        virDomainXMLOptionPtr xmlopt,
+virDomainDeviceDefParse(const char *xmlStr,
                         virDomainDefPtr def,
-                        const char *xmlStr,
+                        virCapsPtr caps,
+                        virDomainXMLOptionPtr xmlopt,
                         unsigned int flags)
 {
     xmlDocPtr xml;
@@ -9469,11 +9469,11 @@ cleanup:
 
 
 static virDomainDefPtr
-virDomainDefParseXML(virCapsPtr caps,
-                     virDomainXMLOptionPtr xmlopt,
-                     xmlDocPtr xml,
+virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
                      xmlXPathContextPtr ctxt,
+                     virCapsPtr caps,
+                     virDomainXMLOptionPtr xmlopt,
                      unsigned int expectedVirtTypes,
                      unsigned int flags)
 {
@@ -11139,10 +11139,10 @@ error:
 
 
 static virDomainObjPtr
-virDomainObjParseXML(virCapsPtr caps,
-                     virDomainXMLOptionPtr xmlopt,
-                     xmlDocPtr xml,
+virDomainObjParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
+                     virCapsPtr caps,
+                     virDomainXMLOptionPtr xmlopt,
                      unsigned int expectedVirtTypes,
                      unsigned int flags)
 {
@@ -11167,8 +11167,8 @@ virDomainObjParseXML(virCapsPtr caps,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(caps, xmlopt, xml, config, ctxt, expectedVirtTypes,
-                                    flags);
+    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt,
+                                    expectedVirtTypes, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -11250,8 +11250,8 @@ virDomainDefParse(const char *xmlStr,
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
-        def = virDomainDefParseNode(caps, xmlopt, xml, xmlDocGetRootElement(xml),
-                                    expectedVirtTypes, flags);
+        def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
+                                    xmlopt, expectedVirtTypes, flags);
         xmlFreeDoc(xml);
     }
 
@@ -11260,9 +11260,9 @@ virDomainDefParse(const char *xmlStr,
 }
 
 virDomainDefPtr
-virDomainDefParseString(virCapsPtr caps,
+virDomainDefParseString(const char *xmlStr,
+                        virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
-                        const char *xmlStr,
                         unsigned int expectedVirtTypes,
                         unsigned int flags)
 {
@@ -11271,9 +11271,9 @@ virDomainDefParseString(virCapsPtr caps,
 }
 
 virDomainDefPtr
-virDomainDefParseFile(virCapsPtr caps,
+virDomainDefParseFile(const char *filename,
+                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      const char *filename,
                       unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
@@ -11283,10 +11283,10 @@ virDomainDefParseFile(virCapsPtr caps,
 
 
 virDomainDefPtr
-virDomainDefParseNode(virCapsPtr caps,
-                      virDomainXMLOptionPtr xmlopt,
-                      xmlDocPtr xml,
+virDomainDefParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
+                      virCapsPtr caps,
+                      virDomainXMLOptionPtr xmlopt,
                       unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
@@ -11308,7 +11308,7 @@ virDomainDefParseNode(virCapsPtr caps,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(caps, xmlopt, xml, root, ctxt,
+    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt,
                                expectedVirtTypes, flags);
 
 cleanup:
@@ -11318,10 +11318,10 @@ cleanup:
 
 
 static virDomainObjPtr
-virDomainObjParseNode(virCapsPtr caps,
-                      virDomainXMLOptionPtr xmlopt,
-                      xmlDocPtr xml,
+virDomainObjParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
+                      virCapsPtr caps,
+                      virDomainXMLOptionPtr xmlopt,
                       unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
@@ -11342,7 +11342,7 @@ virDomainObjParseNode(virCapsPtr caps,
     }
 
     ctxt->node = root;
-    obj = virDomainObjParseXML(caps, xmlopt, xml, ctxt, expectedVirtTypes, flags);
+    obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, expectedVirtTypes, flags);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -11351,9 +11351,9 @@ cleanup:
 
 
 static virDomainObjPtr
-virDomainObjParseFile(virCapsPtr caps,
+virDomainObjParseFile(const char *filename,
+                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      const char *filename,
                       unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
@@ -11362,8 +11362,8 @@ virDomainObjParseFile(virCapsPtr caps,
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParseFile(filename))) {
-        obj = virDomainObjParseNode(caps, xmlopt, xml,
-                                    xmlDocGetRootElement(xml),
+        obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
+                                    caps, xmlopt,
                                     expectedVirtTypes, flags);
         xmlFreeDoc(xml);
     }
@@ -15526,7 +15526,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
-    if (!(def = virDomainDefParseFile(caps, xmlopt, configFile,
+    if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
                                       expectedVirtTypes,
                                       VIR_DOMAIN_XML_INACTIVE)))
         goto error;
@@ -15537,7 +15537,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(dom = virDomainObjListAddLocked(doms, xmlopt, def, 0, &oldDef)))
+    if (!(dom = virDomainObjListAddLocked(doms, def, xmlopt, 0, &oldDef)))
         goto error;
 
     dom->autostart = autostart;
@@ -15559,10 +15559,10 @@ error:
 
 static virDomainObjPtr
 virDomainObjListLoadStatus(virDomainObjListPtr doms,
-                           virCapsPtr caps,
-                           virDomainXMLOptionPtr xmlopt,
                            const char *statusDir,
                            const char *name,
+                           virCapsPtr caps,
+                           virDomainXMLOptionPtr xmlopt,
                            unsigned int expectedVirtTypes,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
@@ -15574,7 +15574,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
         goto error;
 
-    if (!(obj = virDomainObjParseFile(caps, xmlopt, statusFile, expectedVirtTypes,
+    if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt, expectedVirtTypes,
                                       VIR_DOMAIN_XML_INTERNAL_STATUS |
                                       VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
                                       VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES)))
@@ -15606,11 +15606,11 @@ error:
 
 int
 virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
-                               virCapsPtr caps,
-                               virDomainXMLOptionPtr xmlopt,
                                const char *configDir,
                                const char *autostartDir,
                                int liveStatus,
+                               virCapsPtr caps,
+                               virDomainXMLOptionPtr xmlopt,
                                unsigned int expectedVirtTypes,
                                virDomainLoadConfigNotify notify,
                                void *opaque)
@@ -15645,10 +15645,10 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
         VIR_INFO("Loading config file '%s.xml'", entry->d_name);
         if (liveStatus)
             dom = virDomainObjListLoadStatus(doms,
-                                             caps,
-                                             xmlopt,
                                              configDir,
                                              entry->d_name,
+                                             caps,
+                                             xmlopt,
                                              expectedVirtTypes,
                                              notify,
                                              opaque);
@@ -16048,9 +16048,9 @@ cleanup:
  * persistent and active, true for transitions across save files or
  * snapshots).  */
 virDomainDefPtr
-virDomainDefCopy(virCapsPtr caps,
+virDomainDefCopy(virDomainDefPtr src,
+                 virCapsPtr caps,
                  virDomainXMLOptionPtr xmlopt,
-                 virDomainDefPtr src,
                  bool migratable)
 {
     char *xml;
@@ -16065,21 +16065,21 @@ virDomainDefCopy(virCapsPtr caps,
     if (!(xml = virDomainDefFormat(src, write_flags)))
         return NULL;
 
-    ret = virDomainDefParseString(caps, xmlopt, xml, -1, read_flags);
+    ret = virDomainDefParseString(xml, caps, xmlopt, -1, read_flags);
 
     VIR_FREE(xml);
     return ret;
 }
 
 virDomainDefPtr
-virDomainObjCopyPersistentDef(virCapsPtr caps,
-                              virDomainXMLOptionPtr xmlopt,
-                              virDomainObjPtr dom)
+virDomainObjCopyPersistentDef(virDomainObjPtr dom,
+                              virCapsPtr caps,
+                              virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr cur;
 
     cur = virDomainObjGetPersistentDef(caps, xmlopt, dom);
-    return virDomainDefCopy(caps, xmlopt, cur, false);
+    return virDomainDefCopy(cur, caps, xmlopt, false);
 }
 
 
@@ -16519,10 +16519,10 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
  * Returns a pointer to copied @src or NULL in case of error.
  */
 virDomainDeviceDefPtr
-virDomainDeviceDefCopy(virCapsPtr caps,
-                       virDomainXMLOptionPtr xmlopt,
+virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                        const virDomainDefPtr def,
-                       virDomainDeviceDefPtr src)
+                       virCapsPtr caps,
+                       virDomainXMLOptionPtr xmlopt)
 {
     virDomainDeviceDefPtr ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -16589,7 +16589,7 @@ virDomainDeviceDefCopy(virCapsPtr caps,
         goto cleanup;
 
     xmlStr = virBufferContentAndReset(&buf);
-    ret = virDomainDeviceDefParse(caps, xmlopt, def, xmlStr, flags);
+    ret = virDomainDeviceDefParse(xmlStr, def, caps, xmlopt, flags);
 
 cleanup:
     VIR_FREE(xmlStr);

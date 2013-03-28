@@ -2409,8 +2409,8 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virDomainDefParseString(priv->caps, priv->xmlopt,
-                                        xmlDesc, 1 << VIR_DOMAIN_VIRT_XEN,
+    if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         return NULL;
 
@@ -2519,8 +2519,8 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
-                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
+    if (!(dev = virDomainDeviceDefParse(xml, def, priv->caps, priv->xmlopt,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
 
@@ -2679,8 +2679,8 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
-                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
+    if (!(dev = virDomainDeviceDefParse(xml, def, priv->caps, priv->xmlopt,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
 
@@ -2786,8 +2786,8 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(priv->caps, priv->xmlopt,
-                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
+    if (!(dev = virDomainDeviceDefParse(xml, def, priv->caps, priv->xmlopt,
+                                        VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref)))
@@ -3127,8 +3127,8 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return NULL;
 
-    if (!(def = virDomainDefParseString(priv->caps, priv->xmlopt,
-                                        xmlDesc, 1 << VIR_DOMAIN_VIRT_XEN,
+    if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("failed to parse domain description"));

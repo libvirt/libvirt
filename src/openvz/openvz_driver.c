@@ -955,8 +955,8 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr dom = NULL;
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                         xml, 1 << VIR_DOMAIN_VIRT_OPENVZ,
+    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -967,9 +967,9 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
                        vmdef->name);
         goto cleanup;
     }
-    if (!(vm = virDomainObjListAdd(driver->domains,
+    if (!(vm = virDomainObjListAdd(driver->domains, vmdef,
                                    driver->xmlopt,
-                                   vmdef, 0, NULL)))
+                                   0, NULL)))
         goto cleanup;
     vmdef = NULL;
     vm->persistent = 1;
@@ -1042,8 +1042,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(0, NULL);
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
-                                         xml, 1 << VIR_DOMAIN_VIRT_OPENVZ,
+    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -1055,8 +1055,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     }
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlopt,
                                    vmdef,
+                                   driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
@@ -2085,8 +2085,8 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                         &vmdef) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(driver->caps, driver->xmlopt,
-                                  vmdef, xml, VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(xml, vmdef, driver->caps, driver->xmlopt,
+                                  VIR_DOMAIN_XML_INACTIVE);
     if (!dev)
         goto cleanup;
 
