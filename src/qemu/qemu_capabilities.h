@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.h: QEMU capabilities generation
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -175,6 +175,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DTB                = 133, /* -dtb file */
     QEMU_CAPS_SCSI_MEGASAS       = 134, /* -device megasas */
     QEMU_CAPS_IPV6_MIGRATION     = 135, /* -incoming [::] */
+    QEMU_CAPS_MACHINE_OPT        = 136, /* -machine xxxx*/
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

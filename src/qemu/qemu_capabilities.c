@@ -215,6 +215,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "megasas",
 
               "ipv6-migration", /* 135 */
+              "machine-opt",
     );
 
 struct _virQEMUCaps {
@@ -1092,6 +1093,9 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (strstr(help, "-dtb"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
+
+    if (strstr(help, "-machine"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
 
     /*
      * Handling of -incoming arg with varying features
@@ -2316,6 +2320,8 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
 }
 
 

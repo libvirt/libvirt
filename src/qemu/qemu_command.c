@@ -5207,27 +5207,36 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
     if (!def->os.machine)
         return 0;
 
-    if (!def->mem.dump_core) {
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_OPT)) {
         /* if no parameter to the machine type is needed, we still use
          * '-M' to keep the most of the compatibility with older versions.
          */
         virCommandAddArgList(cmd, "-M", def->os.machine, NULL);
-    } else {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("dump-guest-core is not available "
-                                   " with this QEMU binary"));
+        if (def->mem.dump_core) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("dump-guest-core is not available "
+                             "with this QEMU binary"));
             return -1;
         }
+    } else {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-        /* However, in case there is a parameter to be added, we need to
-         * use the "-machine" parameter because qemu is not parsing the
-         * "-M" correctly */
         virCommandAddArg(cmd, "-machine");
-        virCommandAddArgFormat(cmd,
-                               "%s,dump-guest-core=%s",
-                               def->os.machine,
-                               virDomainMemDumpTypeToString(def->mem.dump_core));
+        virBufferAdd(&buf, def->os.machine, -1);
+
+        if (def->mem.dump_core) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("dump-guest-core is not available "
+                                 "with this QEMU binary"));
+                return -1;
+            }
+
+            virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                              virDomainMemDumpTypeToString(def->mem.dump_core));
+        }
+
+        virCommandAddArgBuffer(cmd, &buf);
     }
 
     return 0;
