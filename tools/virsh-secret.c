@@ -117,7 +117,8 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
 
 cleanup:
     VIR_FREE(buffer);
-    virSecretFree(res);
+    if (res)
+        virSecretFree(res);
     return ret;
 }
 
