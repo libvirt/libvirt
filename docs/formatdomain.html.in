@@ -3506,10 +3506,10 @@ qemu-kvm -net nic,model=? /dev/null
             the TCP port to use. The <code>replaceUser</code>
             attribute is a boolean deciding whether multiple
             simultaneous connections to the VM are permitted.
-            The <code>multiUser</code> whether the existing connection
-            must be dropped and a new connection must be established
-            by the VRDP server, when a new client connects in single
-            connection mode.
+            The <code>multiUser</code> attribute is a boolean deciding
+            whether the existing connection must be dropped and a new
+            connection must be established by the VRDP server, when a
+            new client connects in single connection mode.
           </dd>
           <dt><code>"desktop"</code></dt>
           <dd>
