@@ -221,6 +221,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %{mingw32_datadir}/libvirt/cpu_map.xml
+%{mingw32_datadir}/libvirt/libvirtLogo.png
 
 %{mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 
@@ -280,6 +281,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/api/libvirt-qemu-api.xml
 
 %{mingw64_datadir}/libvirt/cpu_map.xml
+%{mingw64_datadir}/libvirt/libvirtLogo.png
 
 %{mingw64_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 

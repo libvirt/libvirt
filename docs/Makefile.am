@@ -287,6 +287,7 @@ install-data-local:
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
 	done
+	$(INSTALL_DATA) $(srcdir)/libvirtLogo.png $(DESTDIR)$(pkgdatadir)
 
 uninstall-local:
 	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/$$h; done

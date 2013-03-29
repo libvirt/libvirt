@@ -39,11 +39,13 @@
 #include "virutil.h"
 #include "viruuid.h"
 #include "capabilities.h"
+#include "configmake.h"
 #include "viralloc.h"
 #include "network_conf.h"
 #include "interface_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
+#include "fdstream.h"
 #include "storage_conf.h"
 #include "node_device_conf.h"
 #include "virxml.h"
@@ -5773,6 +5775,27 @@ cleanup:
     return ret;
 }
 
+static char *
+testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
+                     virStreamPtr st,
+                     unsigned int screen ATTRIBUTE_UNUSED,
+                     unsigned int flags)
+{
+    char *ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(ret = strdup("image/png"))) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (virFDStreamOpenFile(st, PKGDATADIR "/libvirtLogo.png", 0, 0, O_RDONLY < 0))
+        VIR_FREE(ret);
+
+    return ret;
+}
+
 
 static virDriver testDriver = {
     .no = VIR_DRV_TEST,
@@ -5843,6 +5866,7 @@ static virDriver testDriver = {
     .domainEventDeregisterAny = testDomainEventDeregisterAny, /* 0.8.0 */
     .isAlive = testIsAlive, /* 0.9.8 */
     .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
+    .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
 };
 
 static virNetworkDriver testNetworkDriver = {
