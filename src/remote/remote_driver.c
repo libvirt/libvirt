@@ -338,31 +338,30 @@ enum virDrvOpenRemoteFlags {
 };
 
 
-static void remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
-                                  int reason,
-                                  void *opaque)
+static void
+remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
+                      int reason,
+                      void *opaque)
 {
-    virConnectPtr conn = opaque;
+    virConnectCloseCallbackDataPtr cbdata = opaque;
 
-    virMutexLock(&conn->lock);
-    if (conn->closeCallback) {
-        virConnectCloseFunc closeCallback = conn->closeCallback;
-        void *closeOpaque = conn->closeOpaque;
-        virFreeCallback closeFreeCallback = conn->closeFreeCallback;
-        unsigned closeUnregisterCount = conn->closeUnregisterCount;
+    virObjectLock(cbdata);
 
-        VIR_DEBUG("Triggering connection close callback %p reason=%d",
-                  conn->closeCallback, reason);
-        conn->closeDispatch = true;
-        virMutexUnlock(&conn->lock);
-        closeCallback(conn, reason, closeOpaque);
-        virMutexLock(&conn->lock);
-        conn->closeDispatch = false;
-        if (conn->closeUnregisterCount != closeUnregisterCount &&
-            closeFreeCallback)
-            closeFreeCallback(closeOpaque);
+    if (cbdata->callback) {
+        VIR_DEBUG("Triggering connection close callback %p reason=%d, opaque=%p",
+                  cbdata->callback, reason, cbdata->opaque);
+        cbdata->callback(cbdata->conn, reason, cbdata->opaque);
+
+        if (cbdata->freeCallback)
+            cbdata->freeCallback(cbdata->opaque);
+        cbdata->callback = NULL;
+        cbdata->freeCallback = NULL;
     }
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(cbdata);
+
+    /* free the connection reference that comes along with the callback
+     * registration */
+    virObjectUnref(cbdata->conn);
 }
 
 /* helper macro to ease extraction of arguments from the URI */
@@ -765,9 +764,11 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
     }
 
+    virObjectRef(conn->closeCallback);
+
     virNetClientSetCloseCallback(priv->client,
                                  remoteClientCloseFunc,
-                                 conn, NULL);
+                                 conn->closeCallback, virObjectFreeCallback);
 
     if (!(priv->remoteProgram = virNetClientProgramNew(REMOTE_PROGRAM,
                                                        REMOTE_PROTOCOL_VERSION,
@@ -1031,10 +1032,11 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
     virObjectUnref(priv->tls);
     priv->tls = NULL;
 #endif
+
     virNetClientSetCloseCallback(priv->client,
                                  NULL,
-                                 NULL,
-                                 NULL);
+                                 conn->closeCallback, virObjectFreeCallback);
+
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
     priv->client = NULL;

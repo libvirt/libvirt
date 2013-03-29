@@ -37,6 +37,7 @@
 
 
 virClassPtr virConnectClass;
+virClassPtr virConnectCloseCallbackDataClass;
 virClassPtr virDomainClass;
 virClassPtr virDomainSnapshotClass;
 virClassPtr virInterfaceClass;
@@ -49,6 +50,7 @@ virClassPtr virStorageVolClass;
 virClassPtr virStoragePoolClass;
 
 static void virConnectDispose(void *obj);
+static void virConnectCloseCallbackDataDispose(void *obj);
 static void virDomainDispose(void *obj);
 static void virDomainSnapshotDispose(void *obj);
 static void virInterfaceDispose(void *obj);
@@ -63,14 +65,19 @@ static void virStoragePoolDispose(void *obj);
 static int
 virDataTypesOnceInit(void)
 {
-#define DECLARE_CLASS(basename)                                  \
-    if (!(basename ## Class = virClassNew(virClassForObject(),   \
+#define DECLARE_CLASS_COMMON(basename, parent)                   \
+    if (!(basename ## Class = virClassNew(parent,                \
                                           #basename,             \
                                           sizeof(basename),      \
                                           basename ## Dispose))) \
         return -1;
+#define DECLARE_CLASS(basename)                                  \
+    DECLARE_CLASS_COMMON(basename, virClassForObject())
+#define DECLARE_CLASS_LOCKABLE(basename)                         \
+    DECLARE_CLASS_COMMON(basename, virClassForObjectLockable())
 
     DECLARE_CLASS(virConnect);
+    DECLARE_CLASS_LOCKABLE(virConnectCloseCallbackData);
     DECLARE_CLASS(virDomain);
     DECLARE_CLASS(virDomainSnapshot);
     DECLARE_CLASS(virInterface);
@@ -82,6 +89,8 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virStorageVol);
     DECLARE_CLASS(virStoragePool);
 
+#undef DECLARE_CLASS_COMMON
+#undef DECLARE_CLASS_LOCKABLE
 #undef DECLARE_CLASS
 
     return 0;
@@ -107,12 +116,17 @@ virGetConnect(void)
     if (!(ret = virObjectNew(virConnectClass)))
         return NULL;
 
-    if (virMutexInit(&ret->lock) < 0) {
-        VIR_FREE(ret);
-        return NULL;
-    }
+    if (!(ret->closeCallback = virObjectNew(virConnectCloseCallbackDataClass)))
+        goto error;
+
+    if (virMutexInit(&ret->lock) < 0)
+        goto error;
 
     return ret;
+
+error:
+    virObjectUnref(ret);
+    return NULL;
 }
 
 /**
@@ -146,15 +160,38 @@ virConnectDispose(void *obj)
 
     virMutexLock(&conn->lock);
 
-    if (conn->closeFreeCallback)
-        conn->closeFreeCallback(conn->closeOpaque);
-
     virResetError(&conn->err);
 
     virURIFree(conn->uri);
 
+    virObjectLock(conn->closeCallback);
+    conn->closeCallback->callback = NULL;
+    virObjectUnlock(conn->closeCallback);
+
+    virObjectUnref(conn->closeCallback);
+
     virMutexUnlock(&conn->lock);
     virMutexDestroy(&conn->lock);
+}
+
+
+/**
+ * virConnectCloseCallbackDataDispose:
+ * @obj: the close callback data to release
+ *
+ * Release resources bound to the connection close callback.
+ */
+static void
+virConnectCloseCallbackDataDispose(void *obj)
+{
+    virConnectCloseCallbackDataPtr cb = obj;
+
+    virObjectLock(cb);
+
+    if (cb->freeCallback)
+        cb->freeCallback(cb->opaque);
+
+    virObjectUnlock(cb);
 }
 
 
