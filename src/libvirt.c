@@ -20189,24 +20189,27 @@ int virConnectRegisterCloseCallback(virConnectPtr conn,
     virObjectRef(conn);
 
     virMutexLock(&conn->lock);
+    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (conn->closeCallback) {
+    if (conn->closeCallback->callback) {
         virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("A close callback is already registered"));
         goto error;
     }
 
-    conn->closeCallback = cb;
-    conn->closeOpaque = opaque;
-    conn->closeFreeCallback = freecb;
+    conn->closeCallback->callback = cb;
+    conn->closeCallback->opaque = opaque;
+    conn->closeCallback->freeCallback = freecb;
 
+    virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
 
     return 0;
 
 error:
+    virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
     virObjectUnref(conn);
     virDispatchError(NULL);
@@ -20240,29 +20243,29 @@ int virConnectUnregisterCloseCallback(virConnectPtr conn,
     }
 
     virMutexLock(&conn->lock);
+    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (conn->closeCallback != cb) {
+    if (conn->closeCallback->callback != cb) {
         virLibConnError(VIR_ERR_OPERATION_INVALID, "%s",
                         _("A different callback was requested"));
         goto error;
     }
 
-    conn->closeCallback = NULL;
-    conn->closeUnregisterCount++;
-    if (!conn->closeDispatch && conn->closeFreeCallback)
-        conn->closeFreeCallback(conn->closeOpaque);
-    conn->closeFreeCallback = NULL;
-    conn->closeOpaque = NULL;
-
-    virMutexUnlock(&conn->lock);
+    conn->closeCallback->callback = NULL;
+    if (conn->closeCallback->freeCallback)
+        conn->closeCallback->freeCallback(conn->closeCallback->opaque);
+    conn->closeCallback->freeCallback = NULL;
 
     virObjectUnref(conn);
+    virObjectUnlock(conn->closeCallback);
+    virMutexUnlock(&conn->lock);
 
     return 0;
 
 error:
+    virObjectUnlock(conn->closeCallback);
     virMutexUnlock(&conn->lock);
     virDispatchError(NULL);
     return -1;
