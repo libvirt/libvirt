@@ -37,7 +37,7 @@
 #include "viralloc.h"
 
 static virCapsPtr caps;
-static virDomainXMLConfPtr xmlconf;
+static virDomainXMLOptionPtr xmlopt;
 
 static int
 testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
@@ -69,7 +69,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     priv.caps = caps;
     conn->privateData = &priv;
 
-    if (!(def = virDomainDefParseString(caps, xmlconf, xmlData,
+    if (!(def = virDomainDefParseString(caps, xmlopt, xmlData,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
@@ -196,7 +196,7 @@ mymain(void)
     if (!(caps = testXenCapsInit()))
         return EXIT_FAILURE;
 
-    if (!(xmlconf = testXenXMLConfInit()))
+    if (!(xmlopt = testXenXMLConfInit()))
         return EXIT_FAILURE;
 
 #define DO_TEST(name, version)                                          \
@@ -251,7 +251,7 @@ mymain(void)
     DO_TEST("pci-devs", 2);
 
     virObjectUnref(caps);
-    virObjectUnref(xmlconf);
+    virObjectUnref(xmlopt);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

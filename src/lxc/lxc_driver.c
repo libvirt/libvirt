@@ -413,7 +413,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     virDomainDefPtr oldDef = NULL;
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf, xml,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt, xml,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -428,7 +428,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     }
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    def,
                                    0,
                                    &oldDef)))
@@ -1069,7 +1069,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf, xml,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt, xml,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -1085,7 +1085,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
 
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -1485,7 +1485,7 @@ static int lxcStartup(bool privileged,
     if ((lxc_driver->caps = lxcCapsInit(lxc_driver)) == NULL)
         goto cleanup;
 
-    if (!(lxc_driver->xmlconf = lxcDomainXMLConfInit()))
+    if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit()))
         goto cleanup;
 
     if (virLXCProcessAutoDestroyInit(lxc_driver) < 0)
@@ -1494,7 +1494,7 @@ static int lxcStartup(bool privileged,
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        lxc_driver->caps,
-                                       lxc_driver->xmlconf,
+                                       lxc_driver->xmlopt,
                                        lxc_driver->stateDir,
                                        NULL,
                                        1, 1 << VIR_DOMAIN_VIRT_LXC,
@@ -1506,7 +1506,7 @@ static int lxcStartup(bool privileged,
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        lxc_driver->caps,
-                                       lxc_driver->xmlconf,
+                                       lxc_driver->xmlopt,
                                        lxc_driver->configDir,
                                        lxc_driver->autostartDir,
                                        0, 1 << VIR_DOMAIN_VIRT_LXC,
@@ -1554,7 +1554,7 @@ lxcReload(void) {
     lxcDriverLock(lxc_driver);
     virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                    lxc_driver->caps,
-                                   lxc_driver->xmlconf,
+                                   lxc_driver->xmlopt,
                                    lxc_driver->configDir,
                                    lxc_driver->autostartDir,
                                    0, 1 << VIR_DOMAIN_VIRT_LXC,
@@ -1581,7 +1581,7 @@ static int lxcShutdown(void)
     virObjectUnref(lxc_driver->activeUsbHostdevs);
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
-    virObjectUnref(lxc_driver->xmlconf);
+    virObjectUnref(lxc_driver->xmlopt);
     VIR_FREE(lxc_driver->configDir);
     VIR_FREE(lxc_driver->autostartDir);
     VIR_FREE(lxc_driver->stateDir);
@@ -1803,13 +1803,13 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlconf,
+    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &vmdef) < 0)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(driver->caps, driver->xmlconf, vm);
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, driver->xmlopt, vm);
         if (!vmdef)
             goto cleanup;
     }
@@ -1875,7 +1875,7 @@ lxcSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
-    if (virDomainSaveStatus(driver->xmlconf, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
         goto cleanup;
 
 
@@ -1945,7 +1945,7 @@ lxcGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlconf,
+    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &persistentDef) < 0)
         goto cleanup;
 
@@ -2058,7 +2058,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlconf,
+    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &persistentDef) < 0)
         goto cleanup;
 
@@ -2163,7 +2163,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlconf,
+    if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &persistentDef) < 0)
         goto cleanup;
 
@@ -2529,7 +2529,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainSaveStatus(driver->xmlconf, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -2595,7 +2595,7 @@ static int lxcDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
-    if (virDomainSaveStatus(driver->xmlconf, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -4374,7 +4374,7 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
             goto cleanup;
 
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(driver->caps, driver->xmlconf, vm);
+        vmdef = virDomainObjCopyPersistentDef(driver->caps, driver->xmlopt, vm);
         if (!vmdef)
             goto cleanup;
         switch (action) {
@@ -4422,7 +4422,7 @@ lxcDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlconf, driver->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0) {
             ret = -1;
             goto cleanup;
         }

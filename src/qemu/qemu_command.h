@@ -167,20 +167,20 @@ int qemuOpenVhostNet(virDomainDefPtr def,
  * *must* decide how to fill in a name in this case
  */
 virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
-                                     virDomainXMLConfPtr xmlconf,
+                                     virDomainXMLOptionPtr xmlopt,
                                      const char **progenv,
                                      const char **progargv,
                                      char **pidfile,
                                      virDomainChrSourceDefPtr *monConfig,
                                      bool *monJSON);
 virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
-                                           virDomainXMLConfPtr xmlconf,
+                                           virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
 virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
-                                        virDomainXMLConfPtr xmlconf,
+                                        virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,
                                         virDomainChrSourceDefPtr *monConfig,

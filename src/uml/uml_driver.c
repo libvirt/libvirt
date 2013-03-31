@@ -505,7 +505,7 @@ umlStartup(bool privileged,
     if ((uml_driver->caps = umlCapsInit()) == NULL)
         goto out_of_memory;
 
-    if (!(uml_driver->xmlconf = virDomainXMLConfNew(&privcb,
+    if (!(uml_driver->xmlopt = virDomainXMLOptionNew(&privcb,
                                                     NULL)))
         goto error;
 
@@ -543,7 +543,7 @@ umlStartup(bool privileged,
 
     if (virDomainObjListLoadAllConfigs(uml_driver->domains,
                                        uml_driver->caps,
-                                       uml_driver->xmlconf,
+                                       uml_driver->xmlopt,
                                        uml_driver->configDir,
                                        uml_driver->autostartDir,
                                        0, 1 << VIR_DOMAIN_VIRT_UML,
@@ -599,7 +599,7 @@ umlReload(void) {
     umlDriverLock(uml_driver);
     virDomainObjListLoadAllConfigs(uml_driver->domains,
                                    uml_driver->caps,
-                                   uml_driver->xmlconf,
+                                   uml_driver->xmlopt,
                                    uml_driver->configDir,
                                    uml_driver->autostartDir,
                                    0, 1 << VIR_DOMAIN_VIRT_UML,
@@ -640,7 +640,7 @@ umlShutdown(void) {
         virEventRemoveHandle(uml_driver->inotifyWatch);
     VIR_FORCE_CLOSE(uml_driver->inotifyFD);
     virObjectUnref(uml_driver->caps);
-    virObjectUnref(uml_driver->xmlconf);
+    virObjectUnref(uml_driver->xmlopt);
 
     /* shutdown active VMs
      * XXX allow them to stay around & reconnect */
@@ -1064,7 +1064,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, driver->xmlconf,
+    if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt,
                                     vm, true) < 0) {
         VIR_FORCE_CLOSE(logfd);
         return -1;
@@ -1098,7 +1098,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         (ret = umlProcessAutoDestroyAdd(driver, vm, conn)) < 0)
         goto cleanup;
 
-    ret = virDomainObjSetDefTransient(driver->caps, driver->xmlconf, vm, false);
+    ret = virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm, false);
 cleanup:
     VIR_FORCE_CLOSE(logfd);
     virCommandFree(cmd);
@@ -1505,13 +1505,13 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, NULL);
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
                                         xml, 1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    def,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -1926,13 +1926,13 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(driver->caps, driver->xmlconf,
+    if (!(def = virDomainDefParseString(driver->caps, driver->xmlopt,
                                         xml, 1 << VIR_DOMAIN_VIRT_UML,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    def,
                                    0, NULL)))
         goto cleanup;

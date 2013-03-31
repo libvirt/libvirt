@@ -668,7 +668,7 @@ qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainObjIsActive(obj)) {
-        if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, obj) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, obj) < 0)
             VIR_WARN("Failed to save status on vm %s", obj->def->name);
     }
 
@@ -1784,7 +1784,7 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 
     priv->fakeReboot = value;
 
-    if (virDomainSaveStatus(driver->xmlconf, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
 cleanup:

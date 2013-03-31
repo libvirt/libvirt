@@ -156,10 +156,10 @@ error:
 }
 
 
-virDomainXMLConfPtr
+virDomainXMLOptionPtr
 lxcDomainXMLConfInit(void)
 {
-    return virDomainXMLConfNew(&virLXCDriverPrivateDataCallbacks, NULL);
+    return virDomainXMLOptionNew(&virLXCDriverPrivateDataCallbacks, NULL);
 }
 
 int lxcLoadDriverConfig(virLXCDriverPtr driver)

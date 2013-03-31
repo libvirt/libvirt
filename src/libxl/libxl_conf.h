@@ -54,7 +54,7 @@ typedef libxlDriverPrivate *libxlDriverPrivatePtr;
 struct _libxlDriverPrivate {
     virMutex lock;
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
     unsigned int version;
 
     FILE *logger_file;

@@ -161,7 +161,7 @@ struct _virCaps {
     size_t nguests_max;
     virCapsGuestPtr *guests;
 
-    /* Move to virDomainXMLConf later */
+    /* Move to virDomainXMLOption later */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     unsigned int emulatorRequired : 1;
     const char *defaultDiskDriverName;

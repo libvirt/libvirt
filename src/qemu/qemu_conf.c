@@ -551,10 +551,10 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
     return conf;
 }
 
-virDomainXMLConfPtr
+virDomainXMLOptionPtr
 virQEMUDriverCreateXMLConf(void)
 {
-    return virDomainXMLConfNew(&virQEMUDriverPrivateDataCallbacks,
+    return virDomainXMLOptionNew(&virQEMUDriverPrivateDataCallbacks,
                                &virQEMUDriverDomainXMLNamespace);
 }
 

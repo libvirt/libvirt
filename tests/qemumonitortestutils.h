@@ -32,7 +32,7 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                        const char *response);
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
-                                      virDomainXMLConfPtr xmlconf);
+                                      virDomainXMLOptionPtr xmlopt);
 
 
 void qemuMonitorTestFree(qemuMonitorTestPtr test);

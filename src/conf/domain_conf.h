@@ -1930,8 +1930,8 @@ typedef virDomainObjList *virDomainObjListPtr;
 
 /* This structure holds various callbacks and data needed
  * while parsing and creating domain XMLs */
-typedef struct _virDomainXMLConf virDomainXMLConf;
-typedef virDomainXMLConf *virDomainXMLConfPtr;
+typedef struct _virDomainXMLOption virDomainXMLOption;
+typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
 typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
 typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
@@ -1947,12 +1947,12 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataParseFunc  parse;
 };
 
-virDomainXMLConfPtr
-virDomainXMLConfNew(virDomainXMLPrivateDataCallbacksPtr priv,
+virDomainXMLOptionPtr
+virDomainXMLOptionNew(virDomainXMLPrivateDataCallbacksPtr priv,
                     virDomainXMLNamespacePtr xmlns);
 
 virDomainXMLNamespacePtr
-virDomainXMLConfGetNamespace(virDomainXMLConfPtr xmlconf)
+virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
     ATTRIBUTE_NONNULL(1);
 
 static inline bool
@@ -1961,7 +1961,7 @@ virDomainObjIsActive(virDomainObjPtr dom)
     return dom->def->id != -1;
 }
 
-virDomainObjPtr virDomainObjNew(virDomainXMLConfPtr caps)
+virDomainObjPtr virDomainObjNew(virDomainXMLOptionPtr caps)
     ATTRIBUTE_NONNULL(1);
 
 virDomainObjListPtr virDomainObjListNew(void);
@@ -2038,7 +2038,7 @@ enum {
     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
 virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
-                                    virDomainXMLConfPtr xmlconf,
+                                    virDomainXMLOptionPtr xmlopt,
                                     const virDomainDefPtr def,
                                     unsigned int flags,
                                     virDomainDefPtr *oldDef);
@@ -2047,25 +2047,25 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
                            bool live,
                            virDomainDefPtr *oldDef);
 int virDomainObjSetDefTransient(virCapsPtr caps,
-                                virDomainXMLConfPtr xmlconf,
+                                virDomainXMLOptionPtr xmlopt,
                                 virDomainObjPtr domain,
                                 bool live);
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
-                             virDomainXMLConfPtr xmlconf,
+                             virDomainXMLOptionPtr xmlopt,
                              virDomainObjPtr domain);
 
 int
 virDomainLiveConfigHelperMethod(virCapsPtr caps,
-                                virDomainXMLConfPtr xmlconf,
+                                virDomainXMLOptionPtr xmlopt,
                                 virDomainObjPtr dom,
                                 unsigned int *flags,
                                 virDomainDefPtr *persistentDef);
 
-virDomainDefPtr virDomainDefCopy(virCapsPtr caps, virDomainXMLConfPtr xmlconf,
+virDomainDefPtr virDomainDefCopy(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                                  virDomainDefPtr src, bool migratable);
 virDomainDefPtr
-virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainXMLConfPtr xmlconf,
+virDomainObjCopyPersistentDef(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                               virDomainObjPtr dom);
 
 void virDomainObjListRemove(virDomainObjListPtr doms,
@@ -2076,17 +2076,17 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const char *xmlStr,
                                               unsigned int flags);
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
-                                        virDomainXMLConfPtr xmlconf,
+                                        virDomainXMLOptionPtr xmlopt,
                                         const char *xmlStr,
                                         unsigned int expectedVirtTypes,
                                         unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
-                                      virDomainXMLConfPtr xmlconf,
+                                      virDomainXMLOptionPtr xmlopt,
                                       const char *filename,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
-                                      virDomainXMLConfPtr xmlconf,
+                                      virDomainXMLOptionPtr xmlopt,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
                                       unsigned int expectedVirtTypes,
@@ -2203,7 +2203,7 @@ int virDomainSaveXML(const char *configDir,
 
 int virDomainSaveConfig(const char *configDir,
                         virDomainDefPtr def);
-int virDomainSaveStatus(virDomainXMLConfPtr xmlconf,
+int virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
                         const char *statusDir,
                         virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
 
@@ -2213,7 +2213,7 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
 
 int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                    virCapsPtr caps,
-                                   virDomainXMLConfPtr xmlconf,
+                                   virDomainXMLOptionPtr xmlopt,
                                    const char *configDir,
                                    const char *autostartDir,
                                    int liveStatus,

@@ -35,7 +35,7 @@ typedef struct _esxPrivate {
     esxVI_Context *vCenter;
     esxUtil_ParsedUri *parsedUri;
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     esxVI_Boolean supportsLongMode; /* aka x86_64 */

@@ -16,7 +16,7 @@
 # include "testutilslxc.h"
 
 static virCapsPtr caps;
-static virDomainXMLConfPtr xmlconf;
+static virDomainXMLOptionPtr xmlopt;
 
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
@@ -32,7 +32,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (virtTestLoadFile(outxml, &outXmlData) < 0)
         goto fail;
 
-    if (!(def = virDomainDefParseString(caps, xmlconf, inXmlData,
+    if (!(def = virDomainDefParseString(caps, xmlopt, inXmlData,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         live ? 0 : VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
@@ -102,7 +102,7 @@ mymain(void)
     if ((caps = testLXCCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-    if (!(xmlconf = lxcDomainXMLConfInit()))
+    if (!(xmlopt = lxcDomainXMLConfInit()))
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, is_different, inactive)                     \
@@ -128,7 +128,7 @@ mymain(void)
     DO_TEST("hostdev");
 
     virObjectUnref(caps);
-    virObjectUnref(xmlconf);
+    virObjectUnref(xmlopt);
 
     return ret==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

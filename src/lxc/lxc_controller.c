@@ -147,7 +147,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 {
     virLXCControllerPtr ctrl = NULL;
     virCapsPtr caps = NULL;
-    virDomainXMLConfPtr xmlconf = NULL;
+    virDomainXMLOptionPtr xmlopt = NULL;
     char *configFile = NULL;
 
     if (VIR_ALLOC(ctrl) < 0)
@@ -162,14 +162,14 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
     if ((caps = lxcCapsInit(NULL)) == NULL)
         goto error;
 
-    if (!(xmlconf = lxcDomainXMLConfInit()))
+    if (!(xmlopt = lxcDomainXMLConfInit()))
         goto error;
 
     if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
                                           ctrl->name)) == NULL)
         goto error;
 
-    if ((ctrl->def = virDomainDefParseFile(caps, xmlconf,
+    if ((ctrl->def = virDomainDefParseFile(caps, xmlopt,
                                            configFile,
                                            1 << VIR_DOMAIN_VIRT_LXC,
                                            0)) == NULL)
@@ -183,7 +183,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 cleanup:
     VIR_FREE(configFile);
     virObjectUnref(caps);
-    virObjectUnref(xmlconf);
+    virObjectUnref(xmlopt);
     return ctrl;
 
 no_memory:

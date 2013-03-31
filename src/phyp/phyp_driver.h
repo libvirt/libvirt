@@ -68,7 +68,7 @@ typedef phyp_driver_t *phyp_driverPtr;
 struct _phyp_driver {
     uuid_tablePtr uuid_table;
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
     int vios_id;
 
     /* system_type:

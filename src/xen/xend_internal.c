@@ -2409,7 +2409,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virDomainDefParseString(priv->caps, priv->xmlconf,
+    if (!(def = virDomainDefParseString(priv->caps, priv->xmlopt,
                                         xmlDesc, 1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE)))
         return NULL;
@@ -3127,7 +3127,7 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
         return NULL;
 
-    if (!(def = virDomainDefParseString(priv->caps, priv->xmlconf,
+    if (!(def = virDomainDefParseString(priv->caps, priv->xmlopt,
                                         xmlDesc, 1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         virReportError(VIR_ERR_XML_ERROR,

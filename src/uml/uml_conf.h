@@ -63,7 +63,7 @@ struct uml_driver {
     int inotifyWatch;
 
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
 
     /* Event handling */
     virDomainEventStatePtr domainEventState;

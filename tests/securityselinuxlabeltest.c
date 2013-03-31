@@ -44,7 +44,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static virCapsPtr caps;
-static virDomainXMLConfPtr xmlconf;
+static virDomainXMLOptionPtr xmlopt;
 
 static virSecurityManagerPtr mgr;
 
@@ -166,7 +166,7 @@ testSELinuxLoadDef(const char *testname)
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(caps, xmlconf, xmlstr,
+    if (!(def = virDomainDefParseString(caps, xmlopt, xmlstr,
                                         QEMU_EXPECTED_VIRT_TYPES,
                                         0)))
         goto cleanup;
@@ -328,7 +328,7 @@ mymain(void)
     if ((caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-    if (!(xmlconf = virQEMUDriverCreateXMLConf()))
+    if (!(xmlopt = virQEMUDriverCreateXMLConf()))
         return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name) \

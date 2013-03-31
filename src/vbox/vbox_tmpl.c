@@ -193,7 +193,7 @@ typedef struct {
     unsigned long version;
 
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
 
     IVirtualBox *vboxObj;
     ISession *vboxSession;
@@ -851,10 +851,10 @@ static int vboxDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 }
 
 
-static virDomainXMLConfPtr
+static virDomainXMLOptionPtr
 vboxXMLConfInit(void)
 {
-    return virDomainXMLConfNew(NULL, NULL);
+    return virDomainXMLOptionNew(NULL, NULL);
 }
 
 
@@ -986,7 +986,7 @@ static void vboxUninitialize(vboxGlobalData *data) {
         data->pFuncs->pfnComUninitialize();
 
     virObjectUnref(data->caps);
-    virObjectUnref(data->xmlconf);
+    virObjectUnref(data->xmlopt);
 #if VBOX_API_VERSION == 2002
     /* No domainEventCallbacks in 2.2.* version */
 #else  /* !(VBOX_API_VERSION == 2002) */
@@ -1046,7 +1046,7 @@ static virDrvOpenStatus vboxOpen(virConnectPtr conn,
     if (!(data->caps = vboxCapsInit()) ||
         vboxInitialize(data) < 0 ||
         vboxExtractVersion(data) < 0 ||
-        !(data->xmlconf = vboxXMLConfInit())) {
+        !(data->xmlopt = vboxXMLConfInit())) {
         vboxUninitialize(data);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -5052,7 +5052,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 #endif
     nsresult rc;
 
-    if (!(def = virDomainDefParseString(data->caps, data->xmlconf,
+    if (!(def = virDomainDefParseString(data->caps, data->xmlopt,
                                         xml, 1 << VIR_DOMAIN_VIRT_VBOX,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         goto cleanup;
@@ -5932,7 +5932,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
-                                                data->xmlconf, 0, 0)))
+                                                data->xmlopt, 0, 0)))
         goto cleanup;
 
     if (def->ndisks) {

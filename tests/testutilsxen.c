@@ -15,10 +15,10 @@ static int testXenDefaultConsoleType(const char *ostype,
         return VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 }
 
-virDomainXMLConfPtr
+virDomainXMLOptionPtr
 testXenXMLConfInit(void)
 {
-    return virDomainXMLConfNew(NULL, NULL);
+    return virDomainXMLOptionNew(NULL, NULL);
 }
 
 virCapsPtr testXenCapsInit(void) {

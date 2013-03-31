@@ -189,7 +189,7 @@ struct _virQEMUDriver {
     virCapsPtr caps;
 
     /* Immutable pointer, Immutable object */
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
 
     /* Immutable pointer, self-locking APIs */
     virQEMUCapsCachePtr qemuCapsCache;
@@ -301,6 +301,6 @@ void qemuSharedDiskEntryFree(void *payload, const void *name)
     ATTRIBUTE_NONNULL(1);
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
-virDomainXMLConfPtr virQEMUDriverCreateXMLConf(void);
+virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(void);
 
 #endif /* __QEMUD_CONF_H */

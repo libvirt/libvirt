@@ -52,7 +52,7 @@ struct _virLXCDriver {
     virMutex lock;
 
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
 
     virCgroupPtr cgroup;
 
@@ -87,7 +87,7 @@ struct _virLXCDriver {
 
 int lxcLoadDriverConfig(virLXCDriverPtr driver);
 virCapsPtr lxcCapsInit(virLXCDriverPtr driver);
-virDomainXMLConfPtr lxcDomainXMLConfInit(void);
+virDomainXMLOptionPtr lxcDomainXMLConfInit(void);
 
 static inline void lxcDriverLock(virLXCDriverPtr driver)
 {

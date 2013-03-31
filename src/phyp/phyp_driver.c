@@ -1204,7 +1204,7 @@ phypOpen(virConnectPtr conn,
         goto failure;
     }
 
-    if (!(phyp_driver->xmlconf = virDomainXMLConfNew(NULL, NULL)))
+    if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
         goto failure;
 
     conn->privateData = phyp_driver;
@@ -1255,7 +1255,7 @@ phypClose(virConnectPtr conn)
     libssh2_session_free(session);
 
     virObjectUnref(phyp_driver->caps);
-    virObjectUnref(phyp_driver->xmlconf);
+    virObjectUnref(phyp_driver->xmlopt);
     phypUUIDTable_Free(phyp_driver->uuid_table);
     VIR_FREE(phyp_driver->managed_system);
     VIR_FREE(phyp_driver);
@@ -3637,7 +3637,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virDomainDefParseString(phyp_driver->caps, phyp_driver->xmlconf,
+    if (!(def = virDomainDefParseString(phyp_driver->caps, phyp_driver->xmlopt,
                                         xml, 1 << VIR_DOMAIN_VIRT_PHYP,
                                         VIR_DOMAIN_XML_SECURE)))
         goto err;

@@ -58,7 +58,7 @@ struct _xenapiPrivate {
     char *url;
     int noVerify;
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
 };
 
 #endif /* __VIR_XENAPI_H__ */

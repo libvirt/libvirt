@@ -45,7 +45,7 @@ vmwareFreeDriver(struct vmware_driver *driver)
     virMutexDestroy(&driver->lock);
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
-    virObjectUnref(driver->xmlconf);
+    virObjectUnref(driver->xmlopt);
     VIR_FREE(driver);
 }
 
@@ -179,7 +179,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
         }
 
         if (!(vm = virDomainObjListAdd(driver->domains,
-                                       driver->xmlconf,
+                                       driver->xmlopt,
                                        vmdef, 0, NULL)))
             goto cleanup;
 

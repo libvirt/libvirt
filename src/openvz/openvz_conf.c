@@ -558,7 +558,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     if (!driver)
         return;
 
-    virObjectUnref(driver->xmlconf);
+    virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
     VIR_FREE(driver);
@@ -649,7 +649,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             flags |= VIR_DOMAIN_OBJ_LIST_ADD_LIVE;
 
         if (!(dom = virDomainObjListAdd(driver->domains,
-                                        driver->xmlconf,
+                                        driver->xmlopt,
                                         def,
                                         flags,
                                         NULL)))

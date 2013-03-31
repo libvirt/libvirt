@@ -169,7 +169,7 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
         goto error;
     }
 
-    if (!(privP->xmlconf = virDomainXMLConfNew(NULL, NULL))) {
+    if (!(privP->xmlopt = virDomainXMLOptionNew(NULL, NULL))) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Failed to create XML conf object"));
         goto error;
@@ -214,7 +214,7 @@ xenapiOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     if (privP != NULL) {
         virObjectUnref(privP->caps);
-        virObjectUnref(privP->xmlconf);
+        virObjectUnref(privP->xmlopt);
 
         if (privP->session != NULL)
             xenSessionFree(privP->session);
@@ -238,7 +238,7 @@ xenapiClose(virConnectPtr conn)
     struct _xenapiPrivate *priv = conn->privateData;
 
     virObjectUnref(priv->caps);
-    virObjectUnref(priv->xmlconf);
+    virObjectUnref(priv->xmlopt);
 
     if (priv->session != NULL) {
         xen_session_logout(priv->session);
@@ -533,7 +533,7 @@ xenapiDomainCreateXML(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlconf,
+    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlopt,
                                                      xmlDesc,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
                                                      flags);
@@ -1687,7 +1687,7 @@ xenapiDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr domP=NULL;
     if (!priv->caps)
         return NULL;
-    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlconf,
+    virDomainDefPtr defPtr = virDomainDefParseString(priv->caps, priv->xmlopt,
                                                      xml,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
                                                      0);

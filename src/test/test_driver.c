@@ -84,7 +84,7 @@ struct _testConn {
     char *path;
     int nextDomID;
     virCapsPtr caps;
-    virDomainXMLConfPtr xmlconf;
+    virDomainXMLOptionPtr xmlopt;
     virNodeInfo nodeInfo;
     virDomainObjListPtr domains;
     virNetworkObjList networks;
@@ -159,12 +159,12 @@ static int testDefaultConsoleType(const char *ostype ATTRIBUTE_UNUSED,
 }
 
 
-static virDomainXMLConfPtr
+static virDomainXMLOptionPtr
 testBuildXMLConfig(void)
 {
     virDomainXMLPrivateDataCallbacks priv = { .alloc = testDomainObjPrivateAlloc,
                                               .free = testDomainObjPrivateFree };
-    return virDomainXMLConfNew(&priv, NULL);
+    return virDomainXMLOptionNew(&priv, NULL);
 }
 
 
@@ -518,7 +518,7 @@ testDomainStartState(virConnectPtr conn,
     dom->def->id = privconn->nextDomID++;
 
     if (virDomainObjSetDefTransient(privconn->caps,
-                                    privconn->xmlconf,
+                                    privconn->xmlopt,
                                     dom, false) < 0) {
         goto cleanup;
     }
@@ -585,13 +585,13 @@ static int testOpenDefault(virConnectPtr conn) {
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
-    if (!(privconn->xmlconf = testBuildXMLConfig()))
+    if (!(privconn->xmlopt = testBuildXMLConfig()))
         goto error;
 
     privconn->nextDomID = 1;
 
     if (!(domdef = virDomainDefParseString(privconn->caps,
-                                           privconn->xmlconf,
+                                           privconn->xmlopt,
                                            defaultDomainXML,
                                            1 << VIR_DOMAIN_VIRT_TEST,
                                            VIR_DOMAIN_XML_INACTIVE)))
@@ -600,7 +600,7 @@ static int testOpenDefault(virConnectPtr conn) {
     if (testDomainGenerateIfnames(domdef) < 0)
         goto error;
     if (!(domobj = virDomainObjListAdd(privconn->domains,
-                                       privconn->xmlconf,
+                                       privconn->xmlopt,
                                        domdef, 0, NULL)))
         goto error;
     domdef = NULL;
@@ -819,7 +819,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
 
-    if (!(privconn->xmlconf = testBuildXMLConfig()))
+    if (!(privconn->xmlopt = testBuildXMLConfig()))
         goto error;
 
     if (!(xml = virXMLParseFileCtxt(file, &ctxt))) {
@@ -934,14 +934,14 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
             def = virDomainDefParseFile(privconn->caps,
-                                        privconn->xmlconf, absFile,
+                                        privconn->xmlopt, absFile,
                                         1 << VIR_DOMAIN_VIRT_TEST,
                                         VIR_DOMAIN_XML_INACTIVE);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virDomainDefParseNode(privconn->caps, privconn->xmlconf,
+            if ((def = virDomainDefParseNode(privconn->caps, privconn->xmlopt,
                                              xml, domains[i],
                                              1 << VIR_DOMAIN_VIRT_TEST,
                                              VIR_DOMAIN_XML_INACTIVE)) == NULL)
@@ -950,7 +950,7 @@ static int testOpenFromFile(virConnectPtr conn,
 
         if (testDomainGenerateIfnames(def) < 0 ||
             !(dom = virDomainObjListAdd(privconn->domains,
-                                        privconn->xmlconf,
+                                        privconn->xmlopt,
                                         def, 0, NULL))) {
             virDomainDefFree(def);
             goto error;
@@ -1206,7 +1206,7 @@ static int testClose(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     testDriverLock(privconn);
     virObjectUnref(privconn->caps);
-    virObjectUnref(privconn->xmlconf);
+    virObjectUnref(privconn->xmlopt);
     virObjectUnref(privconn->domains);
     virNodeDeviceObjListFree(&privconn->devs);
     virNetworkObjListFree(&privconn->networks);
@@ -1344,7 +1344,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
-    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlopt,
                                        xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
@@ -1352,7 +1352,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->xmlconf,
+                                    privconn->xmlopt,
                                     def,
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                     NULL)))
@@ -1959,7 +1959,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     }
     xml[len] = '\0';
 
-    def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+    def = virDomainDefParseString(privconn->caps, privconn->xmlopt,
                                   xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (!def)
@@ -1968,7 +1968,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->xmlconf,
+                                    privconn->xmlopt,
                                     def,
                                     VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
@@ -2178,7 +2178,7 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(privconn->caps, privconn->xmlconf,
+    if (virDomainLiveConfigHelperMethod(privconn->caps, privconn->xmlopt,
                                         vm, &flags, &def) < 0)
         goto cleanup;
 
@@ -2257,7 +2257,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
     }
 
     if (!(persistentDef = virDomainObjGetPersistentDef(privconn->caps,
-                                                       privconn->xmlconf,
+                                                       privconn->xmlopt,
                                                        privdom)))
         goto cleanup;
 
@@ -2510,7 +2510,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     virDomainDefPtr oldDef = NULL;
 
     testDriverLock(privconn);
-    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlconf,
+    if ((def = virDomainDefParseString(privconn->caps, privconn->xmlopt,
                                        xml, 1 << VIR_DOMAIN_VIRT_TEST,
                                        VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
@@ -2518,7 +2518,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    privconn->xmlconf,
+                                    privconn->xmlopt,
                                     def,
                                     0,
                                     &oldDef)))

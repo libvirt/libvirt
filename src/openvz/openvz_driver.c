@@ -955,7 +955,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr dom = NULL;
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlconf,
+    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
                                          xml, 1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
@@ -968,7 +968,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    vmdef, 0, NULL)))
         goto cleanup;
     vmdef = NULL;
@@ -1042,7 +1042,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(0, NULL);
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlconf,
+    if ((vmdef = virDomainDefParseString(driver->caps, driver->xmlopt,
                                          xml, 1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
@@ -1055,7 +1055,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     }
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   driver->xmlconf,
+                                   driver->xmlopt,
                                    vmdef,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -1453,7 +1453,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
     if (!(driver->caps = openvzCapsInit()))
         goto cleanup;
 
-    if (!(driver->xmlconf = virDomainXMLConfNew(NULL, NULL)))
+    if (!(driver->xmlopt = virDomainXMLOptionNew(NULL, NULL)))
         goto cleanup;
 
     if (openvzLoadDomains(driver) < 0)
@@ -2079,7 +2079,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     }
 
     if (virDomainLiveConfigHelperMethod(driver->caps,
-                                        driver->xmlconf,
+                                        driver->xmlopt,
                                         vm,
                                         &flags,
                                         &vmdef) < 0)
