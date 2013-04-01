@@ -2604,6 +2604,9 @@ cleanup:
     VIR_FREE(tmpscheme);
     VIR_FREE(volimg);
     VIR_FREE(sock);
+    virObjectUnref(sec);
+    VIR_FREE(secret);
+    VIR_FREE(user);
 
     return ret;
 
