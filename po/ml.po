@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD.ml\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-04-01 15:34-0400\n"
 "PO-Revision-Date: 2009-12-11 11:27+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <ml@li.org>\n"
@@ -247,16 +247,16 @@ msgstr "rundir %s ഉണ്ടാക്കുവാന്‍ സാധ്യമ�
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3068
-#: daemon/remote.c:3121 daemon/remote.c:3162 daemon/remote.c:3240
-#: daemon/remote.c:3277 daemon/remote.c:3310 daemon/remote.c:3359
-#: daemon/remote.c:3405 daemon/remote.c:3446 daemon/remote.c:3497
-#: daemon/remote.c:3557 daemon/remote.c:3611 daemon/remote.c:3660
-#: daemon/remote.c:3708 daemon/remote.c:3748 daemon/remote.c:3793
-#: daemon/remote.c:3857 daemon/remote.c:3932 daemon/remote.c:3995
-#: daemon/remote.c:4056 daemon/remote.c:4120 daemon/remote.c:4175
-#: daemon/remote.c:4232 daemon/remote.c:4286 daemon/remote.c:4340
-#: daemon/remote.c:4394 daemon/remote.c:4448 daemon/remote.c:4503
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
+#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
+#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
+#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
+#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
+#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
+#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
+#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
+#: daemon/remote.c:4233 daemon/remote.c:4287 daemon/remote.c:4341
+#: daemon/remote.c:4395 daemon/remote.c:4449 daemon/remote.c:4504
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -392,8 +392,8 @@ msgstr "അപരിചിതമായ പരാമീറ്റര്‍ രീ�
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3800 daemon/remote.c:3862
-#: daemon/remote.c:4510
+#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
+#: daemon/remote.c:4511
 msgid "nparams too large"
 msgstr "nparams too large"
 
@@ -435,7 +435,7 @@ msgstr "client tried invalid SASL init request"
 
 #: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
 #: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2867 daemon/remote.c:3013 daemon/remote.c:3042
+#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
 #: src/util/virterror.c:959
 msgid "authentication failed"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു"
@@ -459,7 +459,7 @@ msgstr "sasl start reply data too long %d"
 msgid "sasl step reply data too long %d"
 msgstr "sasl step reply data too long %d"
 
-#: daemon/remote.c:2809 daemon/remote.c:2918
+#: daemon/remote.c:2809 daemon/remote.c:2919
 msgid "client tried invalid PolicyKit init request"
 msgstr "client tried invalid PolicyKit init request"
 
@@ -473,60 +473,65 @@ msgstr "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgid "authentication cancelled by user"
 msgstr "തിരിച്ചറിയല്‍ പരാജയപ്പെട്ടു: %s"
 
-#: daemon/remote.c:2924
+#: daemon/remote.c:2866
+#, fuzzy, c-format
+msgid "polkit: %s"
+msgstr "സോക്കറ്റ്: %s"
+
+#: daemon/remote.c:2925
 msgid "cannot get peer socket identity"
 msgstr "cannot get peer socket identity"
 
-#: daemon/remote.c:2942
+#: daemon/remote.c:2943
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "Failed to lookup policy kit caller: %s"
 
-#: daemon/remote.c:2949
+#: daemon/remote.c:2950
 #, fuzzy, c-format
 msgid "Failed to create polkit action %s"
 msgstr "പോള്‍കിറ്റ് പ്രവര്‍ത്തി %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
-#: daemon/remote.c:2959
+#: daemon/remote.c:2960
 #, fuzzy, c-format
 msgid "Failed to create polkit context %s"
 msgstr "പോള്‍കിറ്റ് കോണ്‍ടെക്സ്റ്റ് %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
-#: daemon/remote.c:2977
+#: daemon/remote.c:2978
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "Policy kit failed to check authorization %d %s"
 
-#: daemon/remote.c:2991
+#: daemon/remote.c:2992
 #, fuzzy, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 
-#: daemon/remote.c:3040
+#: daemon/remote.c:3041
 msgid "client tried unsupported PolicyKit init request"
 msgstr "client tried unsupported PolicyKit init request"
 
-#: daemon/remote.c:3128 daemon/remote.c:3323
+#: daemon/remote.c:3129 daemon/remote.c:3324
 #, fuzzy, c-format
 msgid "domain event %d already registered"
 msgstr "അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: daemon/remote.c:3169 daemon/remote.c:3373
+#: daemon/remote.c:3170 daemon/remote.c:3374
 #, fuzzy, c-format
 msgid "domain event %d not registered"
 msgstr "അനവധി ഡ്രൈവറുകള്‍ രജിസ്ടര്‍ ചെയ്തിരിക്കുന്നു"
 
-#: daemon/remote.c:3318 daemon/remote.c:3367
+#: daemon/remote.c:3319 daemon/remote.c:3368
 #, fuzzy, c-format
 msgid "unsupported event ID %d"
 msgstr "unsupported input bus %s"
 
-#: daemon/remote.c:3866
+#: daemon/remote.c:3867
 #, fuzzy
 msgid "ncpus too large"
 msgstr "nparams too large"
 
-#: daemon/remote.c:3941
+#: daemon/remote.c:3942
 #, fuzzy
 msgid "maxerrors too large"
 msgstr "nparams too large"
@@ -1033,8 +1038,8 @@ msgstr "mutex ആരംഭിക്കുവാന്‍ സാധിച്ച�
 #: src/qemu/qemu_driver.c:13159 src/qemu/qemu_driver.c:13647
 #: src/qemu/qemu_driver.c:13720 src/qemu/qemu_driver.c:13768
 #: src/qemu/qemu_driver.c:13814 src/qemu/qemu_driver.c:13888
-#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2622
-#: src/uml/uml_driver.c:2425 src/xen/xen_driver.c:2144
+#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2629
+#: src/uml/uml_driver.c:2430 src/xen/xen_driver.c:2144
 #: src/xen/xen_hypervisor.c:1181 src/xen/xen_hypervisor.c:1262
 #: src/xen/xen_hypervisor.c:1381 src/xen/xm_internal.c:711
 msgid "domain is not running"
@@ -5454,11 +5459,6 @@ msgstr "typefile '%s' കണ്ടുപിടിക്കുവാന്‍ സ
 msgid "Could not change memory parameters: %s"
 msgstr "ഷെഡ്യൂളറ്‍ പാരമീറ്ററുകള്‍ കാണിക്കുക/ക്റമികരിക്കുക."
 
-#: src/esx/esx_driver.c:5098
-#, fuzzy, c-format
-msgid "Couldn't retrieve snapshot list for domain '%s'"
-msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
-
 #: src/esx/esx_network_driver.c:203
 #, fuzzy, c-format
 msgid "Could not find HostVirtualSwitch with UUID '%s'"
@@ -6819,11 +6819,11 @@ msgstr "സെക്യുര്‍ ഫ്ലാഗിനൊപ്പം virDoma
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
 
-#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2244
+#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2251
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2 uri ക്രമീകരിക്കുന്നില്ല"
 
-#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2381
+#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2388
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "domainMigratePrepare യുആര്‍ഐ സജ്ജമാക്കിയില്ല"
@@ -7945,10 +7945,10 @@ msgstr "domain is already running"
 #: src/qemu/qemu_driver.c:13148 src/qemu/qemu_driver.c:13233
 #: src/qemu/qemu_driver.c:13333 src/qemu/qemu_driver.c:13712
 #: src/qemu/qemu_driver.c:13805 src/qemu/qemu_driver.c:13880
-#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1667
-#: src/uml/uml_driver.c:1692 src/uml/uml_driver.c:1725
-#: src/uml/uml_driver.c:2068 src/uml/uml_driver.c:2186
-#: src/uml/uml_driver.c:2419 src/vmware/vmware_driver.c:705
+#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1672
+#: src/uml/uml_driver.c:1697 src/uml/uml_driver.c:1730
+#: src/uml/uml_driver.c:2073 src/uml/uml_driver.c:2191
+#: src/uml/uml_driver.c:2424 src/vmware/vmware_driver.c:705
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "ചേരുന്ന uuid '%s' ഉള്ള ഡൊമെയിന്‍ ലഭ്യമല്ല"
@@ -8076,14 +8076,14 @@ msgid "Cannot create autostart directory %s"
 msgstr "Cannot create autostart directory %s"
 
 #: src/lxc/lxc_driver.c:2365 src/libxl/libxl_driver.c:3610
-#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2305
+#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2310
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s -> '%s' സിംലിങ്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
 #: src/lxc/lxc_driver.c:2372 src/libxl/libxl_driver.c:3617
 #: src/network/bridge_driver.c:3315 src/qemu/qemu_driver.c:6560
-#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2312
+#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2317
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "'%s' സിംലിങ്ക് വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
@@ -8096,17 +8096,17 @@ msgstr "Suspend operation failed"
 msgid "Resume operation failed"
 msgstr "Resume operation failed"
 
-#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2446
+#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2451
 #, fuzzy, c-format
 msgid "cannot find console device '%s'"
 msgstr "ഡിവൈസ് '%s' അടയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2447
+#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2452
 msgid "default"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2653 src/qemu/qemu_driver.c:12514
-#: src/uml/uml_driver.c:2453 src/xen/xen_driver.c:2172
+#: src/uml/uml_driver.c:2458 src/xen/xen_driver.c:2172
 #, fuzzy, c-format
 msgid "character device %s is not using a PTY"
 msgstr "character device target does not define a type"
@@ -8349,7 +8349,7 @@ msgid "Failed to create save dir '%s': %s"
 msgstr "അവസ്ഥയ്ക്കുള്ള ഡയറക്ടറി '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s\n"
 
 #: src/libxl/libxl_driver.c:1030 src/qemu/qemu_domain.c:1468
-#: src/uml/uml_driver.c:1044
+#: src/uml/uml_driver.c:1049
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "logfile %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
@@ -8408,11 +8408,11 @@ msgstr "ഡൊമെയിന്‍ %s നശിപ്പിക്കുന്�
 #: src/openvz/openvz_driver.c:696 src/openvz/openvz_driver.c:1187
 #: src/openvz/openvz_driver.c:1236 src/openvz/openvz_driver.c:1266
 #: src/openvz/openvz_driver.c:1361 src/openvz/openvz_driver.c:2061
-#: src/uml/uml_driver.c:1637 src/uml/uml_driver.c:1762
-#: src/uml/uml_driver.c:1808 src/uml/uml_driver.c:1837
-#: src/uml/uml_driver.c:1889 src/uml/uml_driver.c:1968
-#: src/uml/uml_driver.c:2251 src/uml/uml_driver.c:2277
-#: src/uml/uml_driver.c:2352 src/vbox/vbox_tmpl.c:2072
+#: src/uml/uml_driver.c:1642 src/uml/uml_driver.c:1767
+#: src/uml/uml_driver.c:1813 src/uml/uml_driver.c:1842
+#: src/uml/uml_driver.c:1894 src/uml/uml_driver.c:1973
+#: src/uml/uml_driver.c:2256 src/uml/uml_driver.c:2282
+#: src/uml/uml_driver.c:2357 src/vbox/vbox_tmpl.c:2072
 #: src/vbox/vbox_tmpl.c:2132 src/vbox/vbox_tmpl.c:5304
 #: src/vbox/vbox_tmpl.c:5401 src/vbox/vbox_tmpl.c:5638
 #: src/vbox/vbox_tmpl.c:8767 src/vbox/vbox_tmpl.c:9132
@@ -8434,7 +8434,7 @@ msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr "ഡൊമെയിന്‍ %s റീബൂട്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
 #: src/libxl/libxl_driver.c:1799 src/qemu/qemu_driver.c:2125
-#: src/uml/uml_driver.c:1737
+#: src/uml/uml_driver.c:1742
 msgid "cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -8574,7 +8574,7 @@ msgid "parsing xm config failed"
 msgstr "പൂളിനു് കോണ്‍റിഗ് ഫയല്‍ ലഭ്യമല്ല"
 
 #: src/libxl/libxl_driver.c:2916 src/qemu/qemu_driver.c:5644
-#: src/uml/uml_driver.c:1974 src/vmware/vmware_driver.c:711
+#: src/uml/uml_driver.c:1979 src/vmware/vmware_driver.c:711
 msgid "cannot undefine transient domain"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിന്‍ വേണ്ടെന്നു് വയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -8606,13 +8606,13 @@ msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉ�
 
 #: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:215
 #: src/qemu/qemu_hotplug.c:447 src/qemu/qemu_hotplug.c:570
-#: src/uml/uml_driver.c:2014
+#: src/uml/uml_driver.c:2019
 #, c-format
 msgid "target %s already exists"
 msgstr "ടാര്‍ഗറ്റ് %s നിലവിലുണ്ട്"
 
 #: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:588
-#: src/uml/uml_driver.c:2021
+#: src/uml/uml_driver.c:2026
 msgid "disk source path is missing"
 msgstr "disk source path is missing"
 
@@ -8622,7 +8622,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
 #: src/libxl/libxl_driver.c:3073 src/qemu/qemu_driver.c:5767
-#: src/uml/uml_driver.c:2091
+#: src/uml/uml_driver.c:2096
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
@@ -8633,7 +8633,7 @@ msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ഡിസ്ക് ഡിവൈസ് തരം '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
 #: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1668
-#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2145
+#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2150
 #, c-format
 msgid "disk %s not found"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
@@ -8654,7 +8654,7 @@ msgid "device type '%s' cannot hot unplugged"
 msgstr "ഡിസ്ക് ഡിവൈസ് തരം '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
 #: src/libxl/libxl_driver.c:3157 src/qemu/qemu_driver.c:5863
-#: src/uml/uml_driver.c:2096
+#: src/uml/uml_driver.c:2101
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "ഡിവൈസ് രീതി '%s' ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
@@ -8722,12 +8722,12 @@ msgid "unknown domain modify action %d"
 msgstr "അപരിചിതമായ ലൈഫ്‌സൈക്കിള്‍ പ്രവര്‍ത്തി %s"
 
 #: src/libxl/libxl_driver.c:3588 src/qemu/qemu_driver.c:6531
-#: src/uml/uml_driver.c:2283
+#: src/uml/uml_driver.c:2288
 msgid "cannot set autostart for transient domain"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനു് autostart സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/libxl/libxl_driver.c:3603 src/qemu/qemu_driver.c:6546
-#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2298
+#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2303
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
@@ -8767,27 +8767,27 @@ msgstr "മോഡ് '%s' പാഴ്സ് ചെയ്യുന്നതി�
 msgid "libxenlight does not support disk driver %s"
 msgstr "xen bus does not support %s input device"
 
-#: src/libxl/libxl_conf.c:561
+#: src/libxl/libxl_conf.c:565
 #, fuzzy
 msgid "libxenlight does not support transient disks"
 msgstr "xen bus does not support %s input device"
 
-#: src/libxl/libxl_conf.c:637 src/qemu/qemu_command.c:3114
+#: src/libxl/libxl_conf.c:641 src/qemu/qemu_command.c:3114
 #: src/xenxs/xen_sxpr.c:1917
 #, fuzzy, c-format
 msgid "scripts are not supported on interfaces of type %s"
 msgstr "ഇഥര്‍നെറ്റ് ഇന്റര്‍ഫെയിസിനു് സ്ക്രിപ്റ്റ് പ്രവര്‍ത്തനം പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/libxl/libxl_conf.c:709
+#: src/libxl/libxl_conf.c:713
 msgid "Unable to find an unused VNC port"
 msgstr "ഉപയോഗത്തിലില്ലാത്ത ഒരു VNC പോര്‍ട്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/libxl/libxl_conf.c:796
+#: src/libxl/libxl_conf.c:800
 #, fuzzy
 msgid "Failed to get node physical info from libxenlight"
 msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/libxl/libxl_conf.c:802
+#: src/libxl/libxl_conf.c:806
 #, fuzzy
 msgid "Failed to get version info from libxenlight"
 msgstr "ഡിസ്കിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
@@ -9337,7 +9337,7 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
 #: src/nodeinfo.c:107 src/nodeinfo.c:146 src/nodeinfo.c:815 src/nodeinfo.c:852
-#: src/nodeinfo.c:917 src/uml/uml_driver.c:2374 src/util/command.c:353
+#: src/nodeinfo.c:917 src/uml/uml_driver.c:2379 src/util/command.c:353
 #: src/util/pci.c:1628
 #, c-format
 msgid "cannot open %s"
@@ -10929,7 +10929,7 @@ msgstr "ഡിവൈസ് %s, %s-നുള്ളതു്, അനുവദി�
 msgid "Unable to deny access for disk path %s"
 msgstr "ഡിവൈസ് %s, %s-നുള്ളതു്, അനുവദിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "ഡിവൈസ് %s, %s-നുള്ളതു്, അനുവദിക്കുവാന്‍ സാധ്യമല്ല"
@@ -11014,7 +11014,7 @@ msgstr ""
 #: src/qemu/qemu_cgroup.c:742 src/qemu/qemu_driver.c:5739
 #: src/qemu/qemu_driver.c:5968 src/qemu/qemu_driver.c:10881
 #: src/qemu/qemu_hotplug.c:1096 src/qemu/qemu_hotplug.c:1684
-#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "%s-നുള്ള cgroup കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല\n"
@@ -12411,8 +12411,8 @@ msgstr "അപ്രതീക്ഷിതമായ QEMU URI പാഥ് '%s', q
 msgid "Unable to open %s"
 msgstr "%s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1554
-#: src/uml/uml_driver.c:1595 src/vbox/vbox_tmpl.c:1226
+#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1559
+#: src/uml/uml_driver.c:1600 src/vbox/vbox_tmpl.c:1226
 #: src/vbox/vbox_tmpl.c:1553 src/vbox/vbox_tmpl.c:1605
 #: src/vbox/vbox_tmpl.c:1659 src/vbox/vbox_tmpl.c:1717
 #: src/vbox/vbox_tmpl.c:1768 src/vbox/vbox_tmpl.c:1844
@@ -12426,8 +12426,8 @@ msgstr "ചേരുന്ന id %d ഉള്ള ഡൊമെയിന്‍ ല
 msgid "domain is pmsuspended"
 msgstr "%s ഡൊമെയിന്‍ താല്‍ക്കാലികമായി നിര്‍ത്തിയിരിക്കുന്നു\n"
 
-#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:577
+#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
 #: src/qemu/qemu_process.c:3808
 msgid "resume operation failed"
 msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
@@ -12474,7 +12474,7 @@ msgstr ""
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1773
+#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1778
 msgid "cannot read cputime for domain"
 msgstr "ഡൊമെയിനുള്ള cputime ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -12518,8 +12518,8 @@ msgstr "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്�
 #: src/qemu/qemu_driver.c:10504 src/qemu/qemu_driver.c:10916
 #: src/qemu/qemu_driver.c:11976 src/qemu/qemu_driver.c:12028
 #: src/qemu/qemu_hotplug.c:422 src/qemu/qemu_hotplug.c:802
-#: src/qemu/qemu_migration.c:1936 src/qemu/qemu_migration.c:2237
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1943 src/qemu/qemu_migration.c:2244
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:555 src/qemu/qemu_process.c:568
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12769,7 +12769,7 @@ msgstr "അപ്രതീക്ഷിതമായ ഡിസ്ക് തരം 
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
-#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2207
+#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2212
 #, fuzzy
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ഡിസ്ക് ഡിവൈസ് തരം '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
@@ -12784,7 +12784,7 @@ msgstr "ഡിവൈസ് രീതി '%s' ചേര്‍ക്കുവാ�
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
 
-#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2211
+#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2216
 #, fuzzy
 msgid "This type of device cannot be hot unplugged"
 msgstr "ഡിസ്ക് ഡിവൈസ് തരം '%s' ഹോട്ട്പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല."
@@ -12954,11 +12954,11 @@ msgid "cannot get RSS for domain"
 msgstr "ഡൊമെയിനുള്ള cputime ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
 #: src/qemu/qemu_driver.c:9018 src/qemu/qemu_driver.c:9183
-#: src/uml/uml_driver.c:2358
+#: src/uml/uml_driver.c:2363
 msgid "NULL or empty path"
 msgstr "NULL അല്ലെങ്കില്‍ ശൂന്യമായ പാഥ്"
 
-#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2365
+#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2370
 #, fuzzy, c-format
 msgid "invalid path '%s'"
 msgstr "തെറ്റായ പാഥ്: %s"
@@ -13864,7 +13864,7 @@ msgstr "migrate failed"
 msgid "canceled by client"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1948
+#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1955
 #, fuzzy
 msgid "migration job"
 msgstr "live migration"
@@ -13893,7 +13893,7 @@ msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഹോസ്റ�
 msgid "target domain name doesn't match source name"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കോണ്‍ഫിഗ് നാമം '%s' നെറ്റ്‌വര്‍ക്ക് നാമവുമായി '%s' ചേരുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2128
+#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2135
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "cannot open unix socket '%s' for tunnelled migration"
@@ -13944,70 +13944,75 @@ msgstr "unable to start migration to %s"
 msgid "failed to wakeup migration tunnel"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/qemu/qemu_migration.c:1854
+#: src/qemu/qemu_migration.c:1816
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "Unable to set monitor close-on-exec flag"
+
+#: src/qemu/qemu_migration.c:1861
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1956
+#: src/qemu/qemu_migration.c:1963
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "ഡ്രൈവറില്‍ നിന്നുള്ള കണക്ഷന്‍ പരാജയപ്പെട്ടു"
 
-#: src/qemu/qemu_migration.c:2106
+#: src/qemu/qemu_migration.c:2113
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr "Source qemu is too old to support tunnelled migration"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "Failed to connect to remote libvirt URI %s"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "Destination libvirt does not support peer-to-peer migration protocol"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "പരാജയപ്പെട്ടതിനു് ശേഷം ഗസ്റ്റ് %s വീണ്ടും ആരംഭിക്കുവാന്‍ സാധ്യമായില്ല\n"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 #, fuzzy
 msgid "received unexpected cookie with P2P migration"
 msgstr "stream had unexpected termination"
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 #, fuzzy
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "migrate: Unexpected migrateuri for peer2peer/direct migration"
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "ഇന്നത്തെ സമയം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "Unable to set monitor close-on-exec flag"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3398
+#: src/qemu/qemu_migration.c:3405
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr "ഡൊമെയിന്‍ '%s' പ്രവര്‍ത്തിക്കുന്നില്ല"
 
-#: src/qemu/qemu_migration.c:3400
+#: src/qemu/qemu_migration.c:3407
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "ഡൊമെയിന്‍ പ്രവര്‍ത്തിക്കുന്ന അവസ്ഥയിലല്ല"
@@ -14908,7 +14913,7 @@ msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
 #: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
-#: src/uml/uml_driver.c:1008
+#: src/uml/uml_driver.c:1013
 msgid "VM is already active"
 msgstr "വിഎം നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
@@ -14928,7 +14933,7 @@ msgid "Unable to find an unused port for SPICE TLS"
 msgstr "ഉപയോഗത്തിലില്ലാത്ത ഒരു VNC പോര്‍ട്ട് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
 #: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
-#: src/uml/uml_driver.c:1030
+#: src/uml/uml_driver.c:1035
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "ലോഗ് ഡയറക്ടറി %s ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
@@ -16502,7 +16507,7 @@ msgstr "ടെംപ്ലേറ്റ്'%s' നിലവിലില്ല"
 msgid "Cannot set a base label with AppArmour"
 msgstr ""
 
-#: src/security/security_apparmor.c:442 src/security/security_selinux.c:559
+#: src/security/security_apparmor.c:442 src/security/security_selinux.c:616
 msgid "security label already defined for VM"
 msgstr "VM-നുള്ള സുരക്ഷാ ലേബല്‍ നിലവില്‍ നല്‍കിയിട്ടുണ്ടു്"
 
@@ -16524,9 +16529,9 @@ msgstr "profile_status() ലഭ്യമാക്കുന്നതില്‍ 
 msgid "could not remove profile for '%s'"
 msgstr "'%s'-നുള്ള പ്രൊഫൈല്‍ നീക്കം ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1614
-#: src/security/security_selinux.c:1648 src/security/security_selinux.c:1686
-#: src/security/security_selinux.c:1736 src/security/security_selinux.c:1777
+#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1699
+#: src/security/security_selinux.c:1733 src/security/security_selinux.c:1771
+#: src/security/security_selinux.c:1821 src/security/security_selinux.c:1862
 #, c-format
 msgid ""
 "security label driver mismatch: '%s' model configured for domain, but "
@@ -16587,17 +16592,17 @@ msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s'
 msgid "cannot resolve symlink %s"
 msgstr "സിംലിങ്ക് %s റിസോള്‍വ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:544
+#: src/security/security_dac.c:872 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "തെറ്റായ സുരക്ഷാ രീതി"
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:565
+#: src/security/security_dac.c:883 src/security/security_selinux.c:622
 #, fuzzy
 msgid "security image label already defined for VM"
 msgstr "VM-നുള്ള സുരക്ഷാ ലേബല്‍ നിലവില്‍ നല്‍കിയിട്ടുണ്ടു്"
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:572
+#: src/security/security_dac.c:891 src/security/security_selinux.c:629
 #, fuzzy, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "വീഡിയോ രീതി %s QEMU-ല്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -16612,7 +16617,7 @@ msgstr ""
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "കണ്ടെയിനറിനുള്ള eth നാമം ലഭ്യമാക്കുവാന്‍ സാധിച്ചില്ല"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:620
+#: src/security/security_dac.c:923 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "അപ്രതീക്ഷിതമായ രഹസ്യ ഉപയോഗ രീതി %d"
@@ -16637,200 +16642,195 @@ msgstr "സെക്യൂരിറ്റി മാതൃക ലഭ്യമാ�
 msgid "Unconfined guests are not allowed on this host"
 msgstr "NUMA മെമ്മറി വിവരം ഈ പ്ലാറ്റ്ഫോമില്‍ ലഭ്യമല്ല"
 
-#: src/security/security_selinux.c:120 src/security/security_selinux.c:301
-#, fuzzy
-msgid "Unable to get current process SELinux context"
-msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-#: src/security/security_selinux.c:125 src/security/security_selinux.c:306
-#, fuzzy, c-format
-msgid "Unable to parse current SELinux context '%s'"
-msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-#: src/security/security_selinux.c:138
-#, fuzzy, c-format
-msgid "Cannot parse sensitivity level in %s"
-msgstr "മെമ്മറി ലെവല്‍ '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#: src/security/security_selinux.c:153 src/security/security_selinux.c:160
-#: src/security/security_selinux.c:176 src/security/security_selinux.c:183
-#: src/security/security_selinux.c:190
-#, fuzzy, c-format
-msgid "Cannot parse category in %s"
-msgstr "ഡ്രൈവ് സൂചിക '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല "
-
-#: src/security/security_selinux.c:169
-#, fuzzy
-msgid "No category range available"
-msgstr "സുരക്ഷാ ഡ്രൈവര്‍ ലഭ്യമല്ല"
-
-#: src/security/security_selinux.c:200
+#: src/security/security_selinux.c:122
 #, c-format
 msgid "Category range c%d-c%d too small"
 msgstr ""
 
-#: src/security/security_selinux.c:258
+#: src/security/security_selinux.c:189 src/security/security_selinux.c:336
+#, fuzzy
+msgid "Unable to get current process SELinux context"
+msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#: src/security/security_selinux.c:194 src/security/security_selinux.c:341
+#, fuzzy, c-format
+msgid "Unable to parse current SELinux context '%s'"
+msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#: src/security/security_selinux.c:227 src/security/security_selinux.c:234
+#: src/security/security_selinux.c:250 src/security/security_selinux.c:257
+#: src/security/security_selinux.c:264
+#, fuzzy, c-format
+msgid "Cannot parse category in %s"
+msgstr "ഡ്രൈവ് സൂചിക '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല "
+
+#: src/security/security_selinux.c:243
+#, fuzzy
+msgid "No category range available"
+msgstr "സുരക്ഷാ ഡ്രൈവര്‍ ലഭ്യമല്ല"
+
+#: src/security/security_selinux.c:293
 #, fuzzy
 msgid "unable to allocate security context"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:264
+#: src/security/security_selinux.c:299
 #, fuzzy, c-format
 msgid "unable to set security context range '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:270 src/security/security_selinux.c:344
+#: src/security/security_selinux.c:305 src/security/security_selinux.c:379
 #, fuzzy
 msgid "Unable to format SELinux context"
 msgstr "പൈപ്പ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/security/security_selinux.c:314
+#: src/security/security_selinux.c:349
 #, fuzzy, c-format
 msgid "Unable to parse base SELinux context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:322
+#: src/security/security_selinux.c:357
 #, fuzzy, c-format
 msgid "Unable to set SELinux context user '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:331
+#: src/security/security_selinux.c:366
 #, fuzzy, c-format
 msgid "Unable to set SELinux context role '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:338
+#: src/security/security_selinux.c:373
 #, fuzzy, c-format
 msgid "Unable to set SELinux context MCS '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:376 src/security/security_selinux.c:465
+#: src/security/security_selinux.c:411 src/security/security_selinux.c:500
 #, fuzzy
 msgid "cannot open SELinux label_handle"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഡൊമെയിന്‍ കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:384
+#: src/security/security_selinux.c:419
 #, fuzzy, c-format
 msgid "cannot open SELinux lxc contexts file '%s'"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഡൊമെയിന്‍ കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:392
+#: src/security/security_selinux.c:427
 #, fuzzy, c-format
 msgid "cannot read 'process' value from selinux lxc contexts file '%s'"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഡൊമെയിന്‍ കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ %s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:400 src/security/security_selinux.c:408
+#: src/security/security_selinux.c:435 src/security/security_selinux.c:443
 #, fuzzy, c-format
 msgid "cannot read 'file' value from selinux lxc contexts file '%s'"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഡൊമെയിന്‍ കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ %s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:420
+#: src/security/security_selinux.c:455
 #, fuzzy, c-format
 msgid "cannot allocate memory for LXC SELinux contexts '%s'"
 msgstr "%s കോണ്‍ഫിഗ് ലിസ്റ്റിനുള്ള മെമ്മറി ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/security/security_selinux.c:447
+#: src/security/security_selinux.c:482
 #, fuzzy
 msgid "libselinux does not support LXC contexts path"
 msgstr "xen bus does not support %s input device"
 
-#: src/security/security_selinux.c:472
+#: src/security/security_selinux.c:507
 #, fuzzy, c-format
 msgid "cannot read SELinux virtual domain context file '%s'"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഡൊമെയിന്‍ കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ %s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:483
+#: src/security/security_selinux.c:533
 #, c-format
 msgid "cannot read SELinux virtual image context file %s"
 msgstr "SELinux വിര്‍ച്ച്വല്‍ ഇമേജ് കോണ്‍ടെക്സ്റ്റ് ഫയല്‍ %s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:583
+#: src/security/security_selinux.c:640
 #, fuzzy, c-format
 msgid "unable to allocate socket security context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:609 src/security/security_selinux.c:631
+#: src/security/security_selinux.c:692 src/security/security_selinux.c:714
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "%s-നുള്ള selinux കോണ്‍ടെക്സ്റ്റ് ഉണ്ടാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:689 src/security/security_selinux.c:794
+#: src/security/security_selinux.c:773 src/security/security_selinux.c:879
 #, c-format
 msgid "unable to get PID %d security context"
 msgstr "PID %d സുരരക്ഷാ കോണ്‍ടെക്സ്റ്റ്ലഭ്യമാക്കുവാന്‍‍ സാധ്യമല്."
 
-#: src/security/security_selinux.c:707
+#: src/security/security_selinux.c:791
 #, c-format
 msgid "MCS level for existing domain label %s already reserved"
 msgstr ""
 
-#: src/security/security_selinux.c:801
+#: src/security/security_selinux.c:886
 #, c-format
 msgid "security label exceeds maximum length: %d"
 msgstr "സുരക്ഷാ ലേബല്‍ ഏറ്റവും കൂടിയ നീളത്തിനേക്കാള്‍ കൂടുതല്‍: %d"
 
-#: src/security/security_selinux.c:815
+#: src/security/security_selinux.c:900
 msgid "error calling security_getenforce()"
 msgstr "security_getenforce() ലഭ്യമാക്കുന്നതില്‍ പിശക്"
 
-#: src/security/security_selinux.c:852
+#: src/security/security_selinux.c:937
 #, c-format
 msgid "unable to set security context '%s' on '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s', '%s'-ല്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:861
+#: src/security/security_selinux.c:946
 #, fuzzy, c-format
 msgid ""
 "Setting security context '%s' on '%s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s', '%s'-ല്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:917
+#: src/security/security_selinux.c:1002
 #, fuzzy, c-format
 msgid "unable to set security context '%s' on fd %d"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s', '%s'-ല്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1473 src/security/security_selinux.c:1834
+#: src/security/security_selinux.c:1558 src/security/security_selinux.c:1919
 #, fuzzy, c-format
 msgid "unknown smartcard type %d"
 msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി %d"
 
-#: src/security/security_selinux.c:1624
+#: src/security/security_selinux.c:1709
 #, c-format
 msgid "Invalid security label %s"
 msgstr "തെറ്റായ സുരക്ഷാ ലേബല്‍ %s"
 
-#: src/security/security_selinux.c:1658
+#: src/security/security_selinux.c:1743
 #, c-format
 msgid "unable to set security context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1695
+#: src/security/security_selinux.c:1780
 #, fuzzy, c-format
 msgid "unable to get current process context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1706 src/security/security_selinux.c:1747
+#: src/security/security_selinux.c:1791 src/security/security_selinux.c:1832
 #, fuzzy, c-format
 msgid "unable to set socket security context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1787
+#: src/security/security_selinux.c:1872
 #, fuzzy, c-format
 msgid "unable to clear socket security context '%s'"
 msgstr "സുരക്ഷാ കോണ്‍ടെക്സ്റ്റ് '%s' സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1945
+#: src/security/security_selinux.c:2030
 #, fuzzy, c-format
 msgid "cannot stat tap fd %d"
 msgstr "stat സാധ്യമല്ല: %s"
 
-#: src/security/security_selinux.c:1951
+#: src/security/security_selinux.c:2036
 #, fuzzy, c-format
 msgid "tap fd %d is not character device"
 msgstr "ക്യാരക്ടര്‍ ഡിവൈസ് %s-ല്‍ പോര്‍ട്ട് നംബര്‍ കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/security/security_selinux.c:1957
+#: src/security/security_selinux.c:2042
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
 msgstr ""
@@ -18283,114 +18283,119 @@ msgstr "inotify ആരംഭിക്കുവാന്‍ സാധ്യമല
 msgid "Failed to create monitor directory %s: %s"
 msgstr "മോണിറ്റര്‍ ഡയറക്ടറി %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/uml/uml_driver.c:540
+#: src/uml/uml_driver.c:513
+#, fuzzy, c-format
+msgid "Failed to create inotify watch on %s: %s"
+msgstr "അവസ്ഥയ്ക്കുള്ള ഡയറക്ടറി '%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയം: %s\n"
+
+#: src/uml/uml_driver.c:545
 msgid "umlStartup: out of memory"
 msgstr "umlStartup: മെമ്മറി ലഭ്യമല്ല"
 
-#: src/uml/uml_driver.c:801
+#: src/uml/uml_driver.c:806
 #, c-format
 msgid "failed to read pid: %s"
 msgstr "pid ലഭ്യമാക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/uml/uml_driver.c:823
+#: src/uml/uml_driver.c:828
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr "യൂണിക്സ് പാഥ് %s വളരെ വലുതാണു്"
 
-#: src/uml/uml_driver.c:853
+#: src/uml/uml_driver.c:858
 msgid "cannot open socket"
 msgstr "സോക്കറ്റ് തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:863
+#: src/uml/uml_driver.c:868
 msgid "cannot bind socket"
 msgstr "സോക്കറ്റ് ബൈന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:917
+#: src/uml/uml_driver.c:922
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr "വളരെ വലിയ കമാന്‍ഡ് %s അയയ്ക്കുവാന്‍ സാധ്യമല്ല (%d ബൈറ്റുകള്‍)"
 
-#: src/uml/uml_driver.c:923
+#: src/uml/uml_driver.c:928
 #, c-format
 msgid "Command %s too long for destination"
 msgstr "കമാന്‍ഡ് %s വളരെ വലുതാണു്"
 
-#: src/uml/uml_driver.c:930
+#: src/uml/uml_driver.c:935
 #, c-format
 msgid "cannot send command %s"
 msgstr "%s കമാന്‍ഡ് അയയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:943
+#: src/uml/uml_driver.c:948
 #, c-format
 msgid "cannot read reply %s"
 msgstr "%s മറുപടി ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:949
+#: src/uml/uml_driver.c:954
 #, fuzzy, c-format
 msgid "incomplete reply %s"
 msgstr "'%s'-ല്‍ പൂര്‍ത്തിയാകാത്ത മെറ്റഡേറ്റാ"
 
-#: src/uml/uml_driver.c:1014
+#: src/uml/uml_driver.c:1019
 msgid "no kernel specified"
 msgstr "കേര്‍ണല്‍ വ്യക്തമാക്കിയിട്ടില്ല"
 
-#: src/uml/uml_driver.c:1023
+#: src/uml/uml_driver.c:1028
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML കേര്‍ണല്‍ %s കണ്ടുപിടിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1053
+#: src/uml/uml_driver.c:1058
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM logfile close-on-exec ഫ്ലാഗ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1189
+#: src/uml/uml_driver.c:1194
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "അപ്രതീക്ഷിതമായ UML URI പാഥ് '%s', uml:///system ശ്രമിക്കുക"
 
-#: src/uml/uml_driver.c:1196
+#: src/uml/uml_driver.c:1201
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr "അപ്രതീക്ഷിതമായ UML URI പാഥ് '%s', uml:///session ശ്രമിക്കുക"
 
-#: src/uml/uml_driver.c:1205
+#: src/uml/uml_driver.c:1210
 msgid "uml state driver is not active"
 msgstr "uml സ്റ്റേറ്റ് ഡ്രൈവര്‍ സജീവമല്ല"
 
-#: src/uml/uml_driver.c:1455
+#: src/uml/uml_driver.c:1460
 #, c-format
 msgid "cannot parse version %s"
 msgstr "%s പതിപ്പു് പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1561
+#: src/uml/uml_driver.c:1566
 msgid "shutdown operation failed"
 msgstr "അടച്ചുപൂട്ടുന്ന പ്രക്രിയ പരാജയപ്പെട്ടു"
 
-#: src/uml/uml_driver.c:1698
+#: src/uml/uml_driver.c:1703
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 "നിലവിലുള്ള മെമ്മറിയേക്കാള്‍ നല്‍കിയിരിക്കുന്ന ഏറ്റവും കുറഞ്ഞ മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:1731
+#: src/uml/uml_driver.c:1736
 msgid "cannot set memory of an active domain"
 msgstr "സജീവമായ ഒരു ഡൊമെയിനിനു് മെമ്മറി സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2074
+#: src/uml/uml_driver.c:2079
 msgid "cannot attach device on inactive domain"
 msgstr "നിര്‍ജ്ജീവമായ ഡൊമെയിനില്‍ ഡിവൈസ് കൂട്ടിച്ചേര്‍ക്കുന്നതിനു് സാധ്യമായില്ല"
 
-#: src/uml/uml_driver.c:2120 src/uml/uml_driver.c:2232
+#: src/uml/uml_driver.c:2125 src/uml/uml_driver.c:2237
 #: src/vbox/vbox_tmpl.c:5584 src/vbox/vbox_tmpl.c:5599
 #: src/vbox/vbox_tmpl.c:5755
 #, fuzzy
 msgid "cannot modify the persistent configuration of a domain"
 msgstr "ഒരു ഡൊമെയിനിനു് XML ക്രമികരണം ചിട്ടപ്പെടുത്തുക."
 
-#: src/uml/uml_driver.c:2192
+#: src/uml/uml_driver.c:2197
 msgid "cannot detach device on inactive domain"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനില്‍ ഡിവൈസ് വേര്‍പെടുത്തുവാന്‍ സാധ്യമല്ല"
 
-#: src/uml/uml_driver.c:2385 tools/virsh-volume.c:555
+#: src/uml/uml_driver.c:2390 tools/virsh-volume.c:555
 #, c-format
 msgid "cannot read %s"
 msgstr "%s ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -19611,18 +19616,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr "cd: %s: %s"
 
 #: src/util/virnetdev.c:59 src/util/virnetdev.c:483
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:152
+#: src/util/virnetdevbridge.c:62 src/util/virnetdevtap.c:152
 #: src/util/virnetdevtap.c:210
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "ക്രമികരണ ഫയല്‍ നാമം വളരെ വലുതാണു്"
 
-#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:70
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ സംയോജക ഘടകം ഏത് തരം"
 
-#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:76
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "Unable to set monitor close-on-exec flag"
@@ -19833,59 +19838,59 @@ msgstr "മോണിറ്റര്‍ രീതി കൈകാര്യം ച
 msgid "Unable to restore net config on this platform"
 msgstr "മോണിറ്റര്‍ രീതി കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:119 src/util/virnetdevbridge.c:130
+#: src/util/virnetdevbridge.c:137
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "PCI ഡിവൈസ് %s വീണ്ടും സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:171 src/util/virnetdevbridge.c:183
+#: src/util/virnetdevbridge.c:193
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:225 src/util/virnetdevbridge.c:239
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "പൈപ്പ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:263 src/util/virnetdevbridge.c:277
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "രഹസ്യം %s വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:304 src/util/virnetdevbridge.c:351
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "സംയോജക ഘടകത്തിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:310 src/util/virnetdevbridge.c:324
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "ഡിവൈസ് %s, %s-നുള്ളതു്, അനുവദിക്കുവാന്‍ സാധ്യമല്ല"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:358 src/util/virnetdevbridge.c:372
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%s തുറക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:503
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "ഈ പ്ളാറ്റ്ഫോമില്‍ നോഡ് വിവരം ലഭ്യമാക്കിയിട്ടില്ല"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:511
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമാകുന്നില്ല"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:521
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "ഈ പ്ളാറ്റ്ഫോമില്‍ നോഡ് വിവരം ലഭ്യമാക്കിയിട്ടില്ല"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:529
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമാകുന്നില്ല"
@@ -30760,6 +30765,14 @@ msgid "%s: unsupported hypervisor name %s\n"
 msgstr "അപ്രതീക്ഷിതമായ ഡിസ്ക് തരം '%s'"
 
 #, fuzzy
+#~ msgid "Couldn't retrieve snapshot list for domain '%s'"
+#~ msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
+
+#, fuzzy
+#~ msgid "Cannot parse sensitivity level in %s"
+#~ msgstr "മെമ്മറി ലെവല്‍ '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
 #~ msgid "input too large: 1 * %d"
 #~ msgstr "nparams too large"
 
@@ -31933,9 +31946,6 @@ msgstr "അപ്രതീക്ഷിതമായ ഡിസ്ക് തരം 
 #, fuzzy
 #~ msgid "getaddrinfo: %s"
 #~ msgstr "getaddrinfo: %s\n"
-
-#~ msgid "socket: %s"
-#~ msgstr "സോക്കറ്റ്: %s"
 
 #~ msgid "bind: %s"
 #~ msgstr "bind: %s"

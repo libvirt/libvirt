@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-04-01 15:34-0400\n"
 "PO-Revision-Date: 2012-08-27 02:34+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -276,16 +276,16 @@ msgstr "rundir %s নিৰ্মাণ কৰিবলৈ ব্যৰ্থ: %
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3068
-#: daemon/remote.c:3121 daemon/remote.c:3162 daemon/remote.c:3240
-#: daemon/remote.c:3277 daemon/remote.c:3310 daemon/remote.c:3359
-#: daemon/remote.c:3405 daemon/remote.c:3446 daemon/remote.c:3497
-#: daemon/remote.c:3557 daemon/remote.c:3611 daemon/remote.c:3660
-#: daemon/remote.c:3708 daemon/remote.c:3748 daemon/remote.c:3793
-#: daemon/remote.c:3857 daemon/remote.c:3932 daemon/remote.c:3995
-#: daemon/remote.c:4056 daemon/remote.c:4120 daemon/remote.c:4175
-#: daemon/remote.c:4232 daemon/remote.c:4286 daemon/remote.c:4340
-#: daemon/remote.c:4394 daemon/remote.c:4448 daemon/remote.c:4503
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
+#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
+#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
+#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
+#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
+#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
+#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
+#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
+#: daemon/remote.c:4233 daemon/remote.c:4287 daemon/remote.c:4341
+#: daemon/remote.c:4395 daemon/remote.c:4449 daemon/remote.c:4504
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -421,8 +421,8 @@ msgstr "অজ্ঞাত প্ৰাচল ধৰণ: %d"
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3800 daemon/remote.c:3862
-#: daemon/remote.c:4510
+#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
+#: daemon/remote.c:4511
 msgid "nparams too large"
 msgstr "nparams বৰ ডাঙৰ"
 
@@ -461,7 +461,7 @@ msgstr "গ্ৰাহক দ্বাৰা অবৈধ SASL init অনু�
 
 #: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
 #: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2867 daemon/remote.c:3013 daemon/remote.c:3042
+#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
 #: src/util/virterror.c:959
 msgid "authentication failed"
 msgstr "প্ৰমাণীকৰণ বিফল হ'ল"
@@ -485,7 +485,7 @@ msgstr "sasl আৰম্ভ কৰাৰ উত্তৰৰ তথ্য বৰ
 msgid "sasl step reply data too long %d"
 msgstr "sasl step উত্তৰৰ তথ্য বৰ দীঘল %d"
 
-#: daemon/remote.c:2809 daemon/remote.c:2918
+#: daemon/remote.c:2809 daemon/remote.c:2919
 msgid "client tried invalid PolicyKit init request"
 msgstr "গ্ৰাহক দ্বাৰা অবৈধ PolicyKit init অনুৰোধ কৰা হৈছে"
 
@@ -498,60 +498,65 @@ msgstr "নীতি কিটৰ বাবে কাৰ্য্য %s না�
 msgid "authentication cancelled by user"
 msgstr "প্ৰমাণীকৰণ ব্যৱহাৰকাৰী দ্বাৰা বাতিল কৰা হল"
 
-#: daemon/remote.c:2924
+#: daemon/remote.c:2866
+#, c-format
+msgid "polkit: %s"
+msgstr ""
+
+#: daemon/remote.c:2925
 msgid "cannot get peer socket identity"
 msgstr "সমতূল্য ছকেটৰ পৰিচয় প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: daemon/remote.c:2942
+#: daemon/remote.c:2943
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr "policy kit caller ৰ সন্ধানত বিফল: %s"
 
-#: daemon/remote.c:2949
+#: daemon/remote.c:2950
 #, c-format
 msgid "Failed to create polkit action %s"
 msgstr "polkit কাৰ্য্য %s সৃষ্টি কৰিবলে ব্যৰ্থ হল"
 
-#: daemon/remote.c:2959
+#: daemon/remote.c:2960
 #, c-format
 msgid "Failed to create polkit context %s"
 msgstr "polkit পৰিপ্ৰেক্ষতিত %s সৃষ্টি কৰিবলে ব্যৰ্থ হল"
 
-#: daemon/remote.c:2977
+#: daemon/remote.c:2978
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr "Policy kit দ্বাৰা %d %s অনুমোদন পৰীক্ষা কৰোঁতে ব্যৰ্থ"
 
-#: daemon/remote.c:2991
+#: daemon/remote.c:2992
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr ""
 "নীতি কিটৰ বাবে কাৰ্য্য %s নাকচ কৰা হৈছে pid %lld, uid %d ৰ পৰা , ফলাফল: %s"
 
-#: daemon/remote.c:3040
+#: daemon/remote.c:3041
 msgid "client tried unsupported PolicyKit init request"
 msgstr "গ্ৰাহক দ্বাৰা অসমৰ্থিত PolicyKit init  অসমৰ্থিত অনুৰোধ"
 
-#: daemon/remote.c:3128 daemon/remote.c:3323
+#: daemon/remote.c:3129 daemon/remote.c:3324
 #, c-format
 msgid "domain event %d already registered"
 msgstr "ডমেইন ঘটনা %d ইতিমধ্যে ৰেজিস্টাৰ কৰা আছে"
 
-#: daemon/remote.c:3169 daemon/remote.c:3373
+#: daemon/remote.c:3170 daemon/remote.c:3374
 #, c-format
 msgid "domain event %d not registered"
 msgstr "ডমেইন ঘটনা %d ৰেজিস্টাৰ কৰা হোৱা নাই"
 
-#: daemon/remote.c:3318 daemon/remote.c:3367
+#: daemon/remote.c:3319 daemon/remote.c:3368
 #, c-format
 msgid "unsupported event ID %d"
 msgstr "অসমৰ্থিত ঘটনা ID %d"
 
-#: daemon/remote.c:3866
+#: daemon/remote.c:3867
 msgid "ncpus too large"
 msgstr "ncpus অতি ডাঙৰ"
 
-#: daemon/remote.c:3941
+#: daemon/remote.c:3942
 msgid "maxerrors too large"
 msgstr "maxerrors অতি ডাঙৰ"
 
@@ -1025,8 +1030,8 @@ msgstr "mutex আৰম্ভ কৰোঁতে ব্যৰ্থ"
 #: src/qemu/qemu_driver.c:13159 src/qemu/qemu_driver.c:13647
 #: src/qemu/qemu_driver.c:13720 src/qemu/qemu_driver.c:13768
 #: src/qemu/qemu_driver.c:13814 src/qemu/qemu_driver.c:13888
-#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2622
-#: src/uml/uml_driver.c:2425 src/xen/xen_driver.c:2144
+#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2629
+#: src/uml/uml_driver.c:2430 src/xen/xen_driver.c:2144
 #: src/xen/xen_hypervisor.c:1181 src/xen/xen_hypervisor.c:1262
 #: src/xen/xen_hypervisor.c:1381 src/xen/xm_internal.c:711
 msgid "domain is not running"
@@ -5315,11 +5320,6 @@ msgstr ""
 msgid "Could not change memory parameters: %s"
 msgstr ""
 
-#: src/esx/esx_driver.c:5098
-#, fuzzy, c-format
-msgid "Couldn't retrieve snapshot list for domain '%s'"
-msgstr "ডোমেইন"
-
 #: src/esx/esx_network_driver.c:203
 #, c-format
 msgid "Could not find HostVirtualSwitch with UUID '%s'"
@@ -6615,11 +6615,11 @@ msgstr "virDomainGetXMLDesc secure flag ৰ লগত"
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare এ uri নিৰ্ধাৰণ নকৰিলে"
 
-#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2244
+#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2251
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare এ uri নিৰ্ধাৰণ নকৰিলে"
 
-#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2381
+#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2388
 msgid "domainMigratePrepare3 did not set uri"
 msgstr ""
 
@@ -7701,10 +7701,10 @@ msgstr ""
 #: src/qemu/qemu_driver.c:13148 src/qemu/qemu_driver.c:13233
 #: src/qemu/qemu_driver.c:13333 src/qemu/qemu_driver.c:13712
 #: src/qemu/qemu_driver.c:13805 src/qemu/qemu_driver.c:13880
-#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1667
-#: src/uml/uml_driver.c:1692 src/uml/uml_driver.c:1725
-#: src/uml/uml_driver.c:2068 src/uml/uml_driver.c:2186
-#: src/uml/uml_driver.c:2419 src/vmware/vmware_driver.c:705
+#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1672
+#: src/uml/uml_driver.c:1697 src/uml/uml_driver.c:1730
+#: src/uml/uml_driver.c:2073 src/uml/uml_driver.c:2191
+#: src/uml/uml_driver.c:2424 src/vmware/vmware_driver.c:705
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s' ৰ সৈতে সুসংগত ডোমেইন অনুপস্থিত"
@@ -7823,14 +7823,14 @@ msgid "Cannot create autostart directory %s"
 msgstr "autostart ডিৰেক্টৰি %s নিৰ্মাণ কৰিবলৈ ব্যৰ্থব্যৰ্থ"
 
 #: src/lxc/lxc_driver.c:2365 src/libxl/libxl_driver.c:3610
-#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2305
+#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2310
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "'%s' symlink ক '%s' লৈ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 #: src/lxc/lxc_driver.c:2372 src/libxl/libxl_driver.c:3617
 #: src/network/bridge_driver.c:3315 src/qemu/qemu_driver.c:6560
-#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2312
+#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2317
 #, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "symlink '%s' আঁতৰাওঁতে ব্যৰ্থ"
@@ -7843,17 +7843,17 @@ msgstr "স্থগিত কৰাৰ কৰ্ম বিফল"
 msgid "Resume operation failed"
 msgstr "পুনৰাৰম্ভেৰ কৰ্ম বিফল"
 
-#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2446
+#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2451
 #, c-format
 msgid "cannot find console device '%s'"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2447
+#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2452
 msgid "default"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2653 src/qemu/qemu_driver.c:12514
-#: src/uml/uml_driver.c:2453 src/xen/xen_driver.c:2172
+#: src/uml/uml_driver.c:2458 src/xen/xen_driver.c:2172
 #, c-format
 msgid "character device %s is not using a PTY"
 msgstr ""
@@ -8084,7 +8084,7 @@ msgid "Failed to create save dir '%s': %s"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:1030 src/qemu/qemu_domain.c:1468
-#: src/uml/uml_driver.c:1044
+#: src/uml/uml_driver.c:1049
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "%s লগ নথিপত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -8141,11 +8141,11 @@ msgstr ""
 #: src/openvz/openvz_driver.c:696 src/openvz/openvz_driver.c:1187
 #: src/openvz/openvz_driver.c:1236 src/openvz/openvz_driver.c:1266
 #: src/openvz/openvz_driver.c:1361 src/openvz/openvz_driver.c:2061
-#: src/uml/uml_driver.c:1637 src/uml/uml_driver.c:1762
-#: src/uml/uml_driver.c:1808 src/uml/uml_driver.c:1837
-#: src/uml/uml_driver.c:1889 src/uml/uml_driver.c:1968
-#: src/uml/uml_driver.c:2251 src/uml/uml_driver.c:2277
-#: src/uml/uml_driver.c:2352 src/vbox/vbox_tmpl.c:2072
+#: src/uml/uml_driver.c:1642 src/uml/uml_driver.c:1767
+#: src/uml/uml_driver.c:1813 src/uml/uml_driver.c:1842
+#: src/uml/uml_driver.c:1894 src/uml/uml_driver.c:1973
+#: src/uml/uml_driver.c:2256 src/uml/uml_driver.c:2282
+#: src/uml/uml_driver.c:2357 src/vbox/vbox_tmpl.c:2072
 #: src/vbox/vbox_tmpl.c:2132 src/vbox/vbox_tmpl.c:5304
 #: src/vbox/vbox_tmpl.c:5401 src/vbox/vbox_tmpl.c:5638
 #: src/vbox/vbox_tmpl.c:8767 src/vbox/vbox_tmpl.c:9132
@@ -8166,7 +8166,7 @@ msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:1799 src/qemu/qemu_driver.c:2125
-#: src/uml/uml_driver.c:1737
+#: src/uml/uml_driver.c:1742
 msgid "cannot set memory higher than max memory"
 msgstr "সৰ্বাধিক স্মৃতিশক্তিতকৈ অধিক পৰিমাণৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
@@ -8297,7 +8297,7 @@ msgid "parsing xm config failed"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2916 src/qemu/qemu_driver.c:5644
-#: src/uml/uml_driver.c:1974 src/vmware/vmware_driver.c:711
+#: src/uml/uml_driver.c:1979 src/vmware/vmware_driver.c:711
 msgid "cannot undefine transient domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
 
@@ -8327,13 +8327,13 @@ msgstr ""
 
 #: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:215
 #: src/qemu/qemu_hotplug.c:447 src/qemu/qemu_hotplug.c:570
-#: src/uml/uml_driver.c:2014
+#: src/uml/uml_driver.c:2019
 #, c-format
 msgid "target %s already exists"
 msgstr "লক্ষ্য %s ইতিমধ্যে আছে"
 
 #: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:588
-#: src/uml/uml_driver.c:2021
+#: src/uml/uml_driver.c:2026
 msgid "disk source path is missing"
 msgstr "ডিস্কেৰ উৎসৰ পাথ অনুপস্থিত"
 
@@ -8343,7 +8343,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3073 src/qemu/qemu_driver.c:5767
-#: src/uml/uml_driver.c:2091
+#: src/uml/uml_driver.c:2096
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি ।"
@@ -8354,7 +8354,7 @@ msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰিব নোৱাৰি ।"
 
 #: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1668
-#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2145
+#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2150
 #, c-format
 msgid "disk %s not found"
 msgstr "%s ডিষ্ক পোৱা ন'গ'ল"
@@ -8375,7 +8375,7 @@ msgid "device type '%s' cannot hot unplugged"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3157 src/qemu/qemu_driver.c:5863
-#: src/uml/uml_driver.c:2096
+#: src/uml/uml_driver.c:2101
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "যন্ত্ৰৰ ধৰণ '%s' সংযুক্ত কৰিব নোৱাৰি"
@@ -8438,12 +8438,12 @@ msgid "unknown domain modify action %d"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3588 src/qemu/qemu_driver.c:6531
-#: src/uml/uml_driver.c:2283
+#: src/uml/uml_driver.c:2288
 msgid "cannot set autostart for transient domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
 #: src/libxl/libxl_driver.c:3603 src/qemu/qemu_driver.c:6546
-#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2298
+#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2303
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "autostart পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -8482,25 +8482,25 @@ msgstr ""
 msgid "libxenlight does not support disk driver %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:561
+#: src/libxl/libxl_conf.c:565
 msgid "libxenlight does not support transient disks"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:637 src/qemu/qemu_command.c:3114
+#: src/libxl/libxl_conf.c:641 src/qemu/qemu_command.c:3114
 #: src/xenxs/xen_sxpr.c:1917
 #, c-format
 msgid "scripts are not supported on interfaces of type %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:709
+#: src/libxl/libxl_conf.c:713
 msgid "Unable to find an unused VNC port"
 msgstr "এটা অব্যৱহৃত VNC পোৰ্ট চিনাক্ত কৰোঁতে ব্যৰ্থ"
 
-#: src/libxl/libxl_conf.c:796
+#: src/libxl/libxl_conf.c:800
 msgid "Failed to get node physical info from libxenlight"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:802
+#: src/libxl/libxl_conf.c:806
 msgid "Failed to get version info from libxenlight"
 msgstr ""
 
@@ -9040,7 +9040,7 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
 #: src/nodeinfo.c:107 src/nodeinfo.c:146 src/nodeinfo.c:815 src/nodeinfo.c:852
-#: src/nodeinfo.c:917 src/uml/uml_driver.c:2374 src/util/command.c:353
+#: src/nodeinfo.c:917 src/uml/uml_driver.c:2379 src/util/command.c:353
 #: src/util/pci.c:1628
 #, c-format
 msgid "cannot open %s"
@@ -10556,7 +10556,7 @@ msgstr ""
 msgid "Unable to deny access for disk path %s"
 msgstr ""
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "%s যন্ত্ৰটি %s-ৰ বাবে অনুমোদন কৰিবলৈ ব্যৰ্থ"
@@ -10636,7 +10636,7 @@ msgstr ""
 #: src/qemu/qemu_cgroup.c:742 src/qemu/qemu_driver.c:5739
 #: src/qemu/qemu_driver.c:5968 src/qemu/qemu_driver.c:10881
 #: src/qemu/qemu_hotplug.c:1096 src/qemu/qemu_hotplug.c:1684
-#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3223
 #, c-format
 msgid "Unable to find cgroup for %s"
 msgstr ""
@@ -11966,8 +11966,8 @@ msgstr "অপ্ৰত্যাশিত QEMU URI পাথ '%s', qemu:///sessi
 msgid "Unable to open %s"
 msgstr "%s খোলোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1554
-#: src/uml/uml_driver.c:1595 src/vbox/vbox_tmpl.c:1226
+#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1559
+#: src/uml/uml_driver.c:1600 src/vbox/vbox_tmpl.c:1226
 #: src/vbox/vbox_tmpl.c:1553 src/vbox/vbox_tmpl.c:1605
 #: src/vbox/vbox_tmpl.c:1659 src/vbox/vbox_tmpl.c:1717
 #: src/vbox/vbox_tmpl.c:1768 src/vbox/vbox_tmpl.c:1844
@@ -11980,8 +11980,8 @@ msgstr "%d id ৰ সৈতে সুসংগত ডোমেইন অনু�
 msgid "domain is pmsuspended"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:577
+#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
 #: src/qemu/qemu_process.c:3808
 msgid "resume operation failed"
 msgstr "পুনৰাৰম্ভৰ কাৰ্য্য বিফল"
@@ -12025,7 +12025,7 @@ msgstr ""
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1773
+#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1778
 msgid "cannot read cputime for domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
 
@@ -12068,8 +12068,8 @@ msgstr ""
 #: src/qemu/qemu_driver.c:10504 src/qemu/qemu_driver.c:10916
 #: src/qemu/qemu_driver.c:11976 src/qemu/qemu_driver.c:12028
 #: src/qemu/qemu_hotplug.c:422 src/qemu/qemu_hotplug.c:802
-#: src/qemu/qemu_migration.c:1936 src/qemu/qemu_migration.c:2237
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1943 src/qemu/qemu_migration.c:2244
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:555 src/qemu/qemu_process.c:568
 msgid "guest unexpectedly quit"
 msgstr ""
@@ -12299,7 +12299,7 @@ msgstr ""
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2207
+#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2212
 msgid "This type of disk cannot be hot unplugged"
 msgstr ""
 
@@ -12313,7 +12313,7 @@ msgstr ""
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2211
+#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2216
 msgid "This type of device cannot be hot unplugged"
 msgstr ""
 
@@ -12467,11 +12467,11 @@ msgid "cannot get RSS for domain"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:9018 src/qemu/qemu_driver.c:9183
-#: src/uml/uml_driver.c:2358
+#: src/uml/uml_driver.c:2363
 msgid "NULL or empty path"
 msgstr "NULL বা পথ ৰিক্ত"
 
-#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2365
+#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2370
 #, c-format
 msgid "invalid path '%s'"
 msgstr ""
@@ -13309,7 +13309,7 @@ msgstr ""
 msgid "canceled by client"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1948
+#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1955
 msgid "migration job"
 msgstr ""
 
@@ -13333,7 +13333,7 @@ msgstr ""
 msgid "target domain name doesn't match source name"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2128
+#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2135
 msgid "cannot create pipe for tunnelled migration"
 msgstr ""
 
@@ -13378,68 +13378,73 @@ msgstr ""
 msgid "failed to wakeup migration tunnel"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1854
+#: src/qemu/qemu_migration.c:1816
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "ডোমেইনেৰ অবস্থা প্ৰাপ্ত কৰিবলৈ ব্যৰ্থব্যৰ্থ"
+
+#: src/qemu/qemu_migration.c:1861
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1956
+#: src/qemu/qemu_migration.c:1963
 msgid "failed to accept connection from qemu"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2106
+#: src/qemu/qemu_migration.c:2113
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 "উৎসস্থলৰ qemu-ৰ সংস্কৰণ অতিৰমাত্ৰায় পুৰোনো ও টানেল কৰা মাইগ্ৰেশন সমৰ্থন কৰিবলৈ "
 "সক্ষম নহয়"
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "দূৰবৰ্তী libvirtd URI '%s'-ৰ সৈতে সংযোগ কৰিবলৈ ব্যৰ্থ"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 "গন্তব্যস্থলৰ উপস্থিত libvirt দ্বাৰা পিয়াৰ-টু-পিয়াৰ মাইগ্ৰেশন প্ৰোটোকল সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 msgid "can't get vmdef"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 msgid "Unable to set cloexec flag"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3398
+#: src/qemu/qemu_migration.c:3405
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3400
+#: src/qemu/qemu_migration.c:3407
 #, c-format
 msgid "domain '%s' is not being migrated"
 msgstr ""
@@ -14301,7 +14306,7 @@ msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
 #: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
-#: src/uml/uml_driver.c:1008
+#: src/uml/uml_driver.c:1013
 msgid "VM is already active"
 msgstr "VM বৰ্তমানে সক্ৰিয়"
 
@@ -14318,7 +14323,7 @@ msgid "Unable to find an unused port for SPICE TLS"
 msgstr ""
 
 #: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
-#: src/uml/uml_driver.c:1030
+#: src/uml/uml_driver.c:1035
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "লগ পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
@@ -15800,7 +15805,7 @@ msgstr "'%s' টেমপ্লেট বৰ্তমানে উপস্থ�
 msgid "Cannot set a base label with AppArmour"
 msgstr ""
 
-#: src/security/security_apparmor.c:442 src/security/security_selinux.c:559
+#: src/security/security_apparmor.c:442 src/security/security_selinux.c:616
 msgid "security label already defined for VM"
 msgstr "VM ৰ কাৰণে সুৰক্ষাৰ লেবেল ইতিমধ্যে সংজ্ঞাবদ্ধ"
 
@@ -15822,9 +15827,9 @@ msgstr "profile_status() কল কৰিবলৈ ত্ৰুটি"
 msgid "could not remove profile for '%s'"
 msgstr "'%s'-ৰ প্ৰোফাইল মুছে ফেলতে ব্যৰ্থ"
 
-#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1614
-#: src/security/security_selinux.c:1648 src/security/security_selinux.c:1686
-#: src/security/security_selinux.c:1736 src/security/security_selinux.c:1777
+#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1699
+#: src/security/security_selinux.c:1733 src/security/security_selinux.c:1771
+#: src/security/security_selinux.c:1821 src/security/security_selinux.c:1862
 #, c-format
 msgid ""
 "security label driver mismatch: '%s' model configured for domain, but "
@@ -15885,15 +15890,15 @@ msgstr ""
 msgid "cannot resolve symlink %s"
 msgstr "symlink %s বুজা নাযায়"
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:544
+#: src/security/security_dac.c:872 src/security/security_selinux.c:601
 msgid "invalid security driver"
 msgstr ""
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:565
+#: src/security/security_dac.c:883 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr ""
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:572
+#: src/security/security_dac.c:891 src/security/security_selinux.c:629
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr ""
@@ -15908,7 +15913,7 @@ msgstr ""
 msgid "cannot generate dac user and group id for domain %s"
 msgstr ""
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:620
+#: src/security/security_dac.c:923 src/security/security_selinux.c:703
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr ""
@@ -15931,196 +15936,191 @@ msgstr ""
 msgid "Unconfined guests are not allowed on this host"
 msgstr ""
 
-#: src/security/security_selinux.c:120 src/security/security_selinux.c:301
-msgid "Unable to get current process SELinux context"
-msgstr ""
-
-#: src/security/security_selinux.c:125 src/security/security_selinux.c:306
-#, c-format
-msgid "Unable to parse current SELinux context '%s'"
-msgstr ""
-
-#: src/security/security_selinux.c:138
-#, c-format
-msgid "Cannot parse sensitivity level in %s"
-msgstr ""
-
-#: src/security/security_selinux.c:153 src/security/security_selinux.c:160
-#: src/security/security_selinux.c:176 src/security/security_selinux.c:183
-#: src/security/security_selinux.c:190
-#, c-format
-msgid "Cannot parse category in %s"
-msgstr ""
-
-#: src/security/security_selinux.c:169
-msgid "No category range available"
-msgstr ""
-
-#: src/security/security_selinux.c:200
+#: src/security/security_selinux.c:122
 #, c-format
 msgid "Category range c%d-c%d too small"
 msgstr ""
 
-#: src/security/security_selinux.c:258
+#: src/security/security_selinux.c:189 src/security/security_selinux.c:336
+msgid "Unable to get current process SELinux context"
+msgstr ""
+
+#: src/security/security_selinux.c:194 src/security/security_selinux.c:341
+#, c-format
+msgid "Unable to parse current SELinux context '%s'"
+msgstr ""
+
+#: src/security/security_selinux.c:227 src/security/security_selinux.c:234
+#: src/security/security_selinux.c:250 src/security/security_selinux.c:257
+#: src/security/security_selinux.c:264
+#, c-format
+msgid "Cannot parse category in %s"
+msgstr ""
+
+#: src/security/security_selinux.c:243
+msgid "No category range available"
+msgstr ""
+
+#: src/security/security_selinux.c:293
 #, fuzzy
 msgid "unable to allocate security context"
 msgstr "নিৰাপত্তাৰ কনটেক্সট '%s' নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থনোৱাৰি '"
 
-#: src/security/security_selinux.c:264
+#: src/security/security_selinux.c:299
 #, fuzzy, c-format
 msgid "unable to set security context range '%s'"
 msgstr "নিৰাপত্তাৰ কনটেক্সট '%s' নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থনোৱাৰি '"
 
-#: src/security/security_selinux.c:270 src/security/security_selinux.c:344
+#: src/security/security_selinux.c:305 src/security/security_selinux.c:379
 msgid "Unable to format SELinux context"
 msgstr ""
 
-#: src/security/security_selinux.c:314
+#: src/security/security_selinux.c:349
 #, c-format
 msgid "Unable to parse base SELinux context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:322
+#: src/security/security_selinux.c:357
 #, c-format
 msgid "Unable to set SELinux context user '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:331
+#: src/security/security_selinux.c:366
 #, c-format
 msgid "Unable to set SELinux context role '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:338
+#: src/security/security_selinux.c:373
 #, c-format
 msgid "Unable to set SELinux context MCS '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:376 src/security/security_selinux.c:465
+#: src/security/security_selinux.c:411 src/security/security_selinux.c:500
 #, fuzzy
 msgid "cannot open SELinux label_handle"
 msgstr "অধিবেশন বিচাৰি পোৱা ন'গ'ল"
 
-#: src/security/security_selinux.c:384
+#: src/security/security_selinux.c:419
 #, c-format
 msgid "cannot open SELinux lxc contexts file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:392
+#: src/security/security_selinux.c:427
 #, c-format
 msgid "cannot read 'process' value from selinux lxc contexts file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:400 src/security/security_selinux.c:408
+#: src/security/security_selinux.c:435 src/security/security_selinux.c:443
 #, c-format
 msgid "cannot read 'file' value from selinux lxc contexts file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:420
+#: src/security/security_selinux.c:455
 #, c-format
 msgid "cannot allocate memory for LXC SELinux contexts '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:447
+#: src/security/security_selinux.c:482
 msgid "libselinux does not support LXC contexts path"
 msgstr ""
 
-#: src/security/security_selinux.c:472
+#: src/security/security_selinux.c:507
 #, c-format
 msgid "cannot read SELinux virtual domain context file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:483
+#: src/security/security_selinux.c:533
 #, c-format
 msgid "cannot read SELinux virtual image context file %s"
 msgstr "SELinux ভাৰ্চুয়াল ইমেজ কন্টেক্সট ফাইল %s"
 
-#: src/security/security_selinux.c:583
+#: src/security/security_selinux.c:640
 #, c-format
 msgid "unable to allocate socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:609 src/security/security_selinux.c:631
+#: src/security/security_selinux.c:692 src/security/security_selinux.c:714
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr "%s ৰ কাৰণে selinux সন্দৰ্ভ সৃষ্টি কৰোঁতে ব্যৰ্থ"
 
-#: src/security/security_selinux.c:689 src/security/security_selinux.c:794
+#: src/security/security_selinux.c:773 src/security/security_selinux.c:879
 #, c-format
 msgid "unable to get PID %d security context"
 msgstr "PID %d-ৰ নিৰাপত্তা সূচক কনটেক্সট প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
 
-#: src/security/security_selinux.c:707
+#: src/security/security_selinux.c:791
 #, c-format
 msgid "MCS level for existing domain label %s already reserved"
 msgstr ""
 
-#: src/security/security_selinux.c:801
+#: src/security/security_selinux.c:886
 #, c-format
 msgid "security label exceeds maximum length: %d"
 msgstr "নিৰাপত্তাৰ লেবেলৰ মাপ সৰ্বাধিক মাপেৰৰ পৰা বেশি: %d"
 
-#: src/security/security_selinux.c:815
+#: src/security/security_selinux.c:900
 msgid "error calling security_getenforce()"
 msgstr "security_getenforce() কল কৰিবলৈ ব্যৰ্থce(): %s"
 
-#: src/security/security_selinux.c:852
+#: src/security/security_selinux.c:937
 #, c-format
 msgid "unable to set security context '%s' on '%s'"
 msgstr "নিৰাপত্তাৰ কনটেক্সট '%s', '%s'-ৰ মধ্যে নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থিবলৈ ব্যৰ্থ"
 
-#: src/security/security_selinux.c:861
+#: src/security/security_selinux.c:946
 #, c-format
 msgid ""
 "Setting security context '%s' on '%s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr ""
 
-#: src/security/security_selinux.c:917
+#: src/security/security_selinux.c:1002
 #, c-format
 msgid "unable to set security context '%s' on fd %d"
 msgstr ""
 
-#: src/security/security_selinux.c:1473 src/security/security_selinux.c:1834
+#: src/security/security_selinux.c:1558 src/security/security_selinux.c:1919
 #, c-format
 msgid "unknown smartcard type %d"
 msgstr ""
 
-#: src/security/security_selinux.c:1624
+#: src/security/security_selinux.c:1709
 #, c-format
 msgid "Invalid security label %s"
 msgstr "অবৈধ সুৰক্ষাৰ লেবেল %s"
 
-#: src/security/security_selinux.c:1658
+#: src/security/security_selinux.c:1743
 #, c-format
 msgid "unable to set security context '%s'"
 msgstr "নিৰাপত্তাৰ কনটেক্সট '%s' নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থনোৱাৰি '"
 
-#: src/security/security_selinux.c:1695
+#: src/security/security_selinux.c:1780
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1706 src/security/security_selinux.c:1747
+#: src/security/security_selinux.c:1791 src/security/security_selinux.c:1832
 #, c-format
 msgid "unable to set socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1787
+#: src/security/security_selinux.c:1872
 #, c-format
 msgid "unable to clear socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1945
+#: src/security/security_selinux.c:2030
 #, fuzzy, c-format
 msgid "cannot stat tap fd %d"
 msgstr "affinity নিৰ্ধাৰণ কৰিব নোৱাৰি: %s"
 
-#: src/security/security_selinux.c:1951
+#: src/security/security_selinux.c:2036
 #, fuzzy, c-format
 msgid "tap fd %d is not character device"
 msgstr "কেৰেক্টাৰ যন্ত্ৰ '%s' ত প'ৰ্ট সংখ্যা বিচাৰিবলৈ ব্যৰ্থ"
 
-#: src/security/security_selinux.c:1957
+#: src/security/security_selinux.c:2042
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
 msgstr ""
@@ -17499,112 +17499,117 @@ msgstr "ব্ৰিজ সমৰ্থন আৰম্ভ কৰোঁতে �
 msgid "Failed to create monitor directory %s: %s"
 msgstr "%s পঞ্জিকা নিৰ্মাণ কৰোঁতে ব্যৰ্থ : %s"
 
-#: src/uml/uml_driver.c:540
+#: src/uml/uml_driver.c:513
+#, fuzzy, c-format
+msgid "Failed to create inotify watch on %s: %s"
+msgstr "polkit কাৰ্য্য %s সৃষ্টি কৰিবলে ব্যৰ্থ হল"
+
+#: src/uml/uml_driver.c:545
 msgid "umlStartup: out of memory"
 msgstr "umlStartup: মেমৰি অবশিষ্ট নেই"
 
-#: src/uml/uml_driver.c:801
+#: src/uml/uml_driver.c:806
 #, c-format
 msgid "failed to read pid: %s"
 msgstr "পাইপ নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %s"
 
-#: src/uml/uml_driver.c:823
+#: src/uml/uml_driver.c:828
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত Unix পাথ %s অত্যাধিক দীঘল"
 
-#: src/uml/uml_driver.c:853
+#: src/uml/uml_driver.c:858
 msgid "cannot open socket"
 msgstr "ছকেট খুলিব নোৱাৰি"
 
-#: src/uml/uml_driver.c:863
+#: src/uml/uml_driver.c:868
 msgid "cannot bind socket"
 msgstr "অধিবেশন বিচাৰি পোৱা ন'গ'ল"
 
-#: src/uml/uml_driver.c:917
+#: src/uml/uml_driver.c:922
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr "বৰ দীঘল আদেশ পঠিয়াব নোৱাৰি %s (%d bytes)"
 
-#: src/uml/uml_driver.c:923
+#: src/uml/uml_driver.c:928
 #, c-format
 msgid "Command %s too long for destination"
 msgstr "গন্তব্যেৰ ক্ষেত্ৰত কমান্ড %s অত্যাধিক দীঘল"
 
-#: src/uml/uml_driver.c:930
+#: src/uml/uml_driver.c:935
 #, c-format
 msgid "cannot send command %s"
 msgstr "%s আদেশ পঠিয়াব নোৱাৰি"
 
-#: src/uml/uml_driver.c:943
+#: src/uml/uml_driver.c:948
 #, c-format
 msgid "cannot read reply %s"
 msgstr "%s উত্তৰ পঢ়িবলৈ ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:949
+#: src/uml/uml_driver.c:954
 #, c-format
 msgid "incomplete reply %s"
 msgstr ""
 
-#: src/uml/uml_driver.c:1014
+#: src/uml/uml_driver.c:1019
 msgid "no kernel specified"
 msgstr "কোনো কাৰ্ণেল নিৰ্ধাৰণ কৰা হোৱা নাই"
 
-#: src/uml/uml_driver.c:1023
+#: src/uml/uml_driver.c:1028
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML কাৰ্ণেল %s বিচাৰিবলৈ ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:1053
+#: src/uml/uml_driver.c:1058
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM লগ নথিপত্ৰৰ close on exec ফ্লেগ %s নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:1189
+#: src/uml/uml_driver.c:1194
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "অপ্ৰত্যাশিত UML URI পাথ '%s', uml:///system প্ৰচেষ্টা কৰুন"
 
-#: src/uml/uml_driver.c:1196
+#: src/uml/uml_driver.c:1201
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr "অপ্ৰত্যাশিত UML URI পাথ '%s', uml:///session প্ৰচেষ্টা কৰুন"
 
-#: src/uml/uml_driver.c:1205
+#: src/uml/uml_driver.c:1210
 msgid "uml state driver is not active"
 msgstr "uml state ড্ৰাইভাৰ সক্ৰিয় নহয়"
 
-#: src/uml/uml_driver.c:1455
+#: src/uml/uml_driver.c:1460
 #, c-format
 msgid "cannot parse version %s"
 msgstr "%s পঢ়োঁতে ব্যৰ্থ"
 
-#: src/uml/uml_driver.c:1561
+#: src/uml/uml_driver.c:1566
 msgid "shutdown operation failed"
 msgstr "বন্ধ কৰাৰ কাৰ্য্য বিফল"
 
-#: src/uml/uml_driver.c:1698
+#: src/uml/uml_driver.c:1703
 msgid "cannot set max memory lower than current memory"
 msgstr "বৰ্তমান স্মৃতিশক্তিৰ তূলনাত সৰ্বাধিক স্মৃতিশক্তিৰ পৰিমাণ কম হ'ব নোৱাৰে"
 
-#: src/uml/uml_driver.c:1731
+#: src/uml/uml_driver.c:1736
 msgid "cannot set memory of an active domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
-#: src/uml/uml_driver.c:2074
+#: src/uml/uml_driver.c:2079
 msgid "cannot attach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/uml/uml_driver.c:2120 src/uml/uml_driver.c:2232
+#: src/uml/uml_driver.c:2125 src/uml/uml_driver.c:2237
 #: src/vbox/vbox_tmpl.c:5584 src/vbox/vbox_tmpl.c:5599
 #: src/vbox/vbox_tmpl.c:5755
 msgid "cannot modify the persistent configuration of a domain"
 msgstr ""
 
-#: src/uml/uml_driver.c:2192
+#: src/uml/uml_driver.c:2197
 msgid "cannot detach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/uml/uml_driver.c:2385 tools/virsh-volume.c:555
+#: src/uml/uml_driver.c:2390 tools/virsh-volume.c:555
 #, c-format
 msgid "cannot read %s"
 msgstr "%s পঢ়োঁতে ব্যৰ্থ"
@@ -18766,17 +18771,17 @@ msgid "%s:%zu: %s '%s'"
 msgstr ""
 
 #: src/util/virnetdev.c:59 src/util/virnetdev.c:483
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:152
+#: src/util/virnetdevbridge.c:62 src/util/virnetdevtap.c:152
 #: src/util/virnetdevtap.c:210
 #, c-format
 msgid "Network interface name '%s' is too long"
 msgstr ""
 
-#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:70
 msgid "Cannot open network interface control socket"
 msgstr ""
 
-#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:76
 msgid "Cannot set close-on-exec flag for socket"
 msgstr ""
 
@@ -18970,59 +18975,59 @@ msgstr ""
 msgid "Unable to restore net config on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:119 src/util/virnetdevbridge.c:130
+#: src/util/virnetdevbridge.c:137
 #, c-format
 msgid "Unable to set bridge %s %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:171 src/util/virnetdevbridge.c:183
+#: src/util/virnetdevbridge.c:193
 #, c-format
 msgid "Unable to get bridge %s %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:225 src/util/virnetdevbridge.c:239
 #, c-format
 msgid "Unable to create bridge %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:263 src/util/virnetdevbridge.c:277
 #, c-format
 msgid "Unable to delete bridge %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:304 src/util/virnetdevbridge.c:351
 #, c-format
 msgid "Unable to get interface index for %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:310 src/util/virnetdevbridge.c:324
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:358 src/util/virnetdevbridge.c:372
 #, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:503
 #, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:511
 #, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:521
 #, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr ""
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:529
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr ""
@@ -29343,6 +29348,10 @@ msgstr ""
 #, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Couldn't retrieve snapshot list for domain '%s'"
+#~ msgstr "ডোমেইন"
 
 #~ msgid "no pool with matching uuid"
 #~ msgstr "এই uuid ৰ সৈতে মিল থকা কোনো পুল নাই"

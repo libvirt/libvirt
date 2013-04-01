@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2013-01-28 14:16-0500\n"
+"POT-Creation-Date: 2013-04-01 15:34-0400\n"
 "PO-Revision-Date: 2007-05-03 21:23+0200\n"
 "Last-Translator: Arpad Biro <biro_arpad@yahoo.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
@@ -245,16 +245,16 @@ msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 #: daemon/remote.c:1651 daemon/remote.c:1706 daemon/remote.c:1792
 #: daemon/remote.c:1849 daemon/remote.c:1900 daemon/remote.c:1965
 #: daemon/remote.c:2030 daemon/remote.c:2096 daemon/remote.c:2174
-#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3068
-#: daemon/remote.c:3121 daemon/remote.c:3162 daemon/remote.c:3240
-#: daemon/remote.c:3277 daemon/remote.c:3310 daemon/remote.c:3359
-#: daemon/remote.c:3405 daemon/remote.c:3446 daemon/remote.c:3497
-#: daemon/remote.c:3557 daemon/remote.c:3611 daemon/remote.c:3660
-#: daemon/remote.c:3708 daemon/remote.c:3748 daemon/remote.c:3793
-#: daemon/remote.c:3857 daemon/remote.c:3932 daemon/remote.c:3995
-#: daemon/remote.c:4056 daemon/remote.c:4120 daemon/remote.c:4175
-#: daemon/remote.c:4232 daemon/remote.c:4286 daemon/remote.c:4340
-#: daemon/remote.c:4394 daemon/remote.c:4448 daemon/remote.c:4503
+#: daemon/remote.c:2249 daemon/remote.c:2291 daemon/remote.c:3069
+#: daemon/remote.c:3122 daemon/remote.c:3163 daemon/remote.c:3241
+#: daemon/remote.c:3278 daemon/remote.c:3311 daemon/remote.c:3360
+#: daemon/remote.c:3406 daemon/remote.c:3447 daemon/remote.c:3498
+#: daemon/remote.c:3558 daemon/remote.c:3612 daemon/remote.c:3661
+#: daemon/remote.c:3709 daemon/remote.c:3749 daemon/remote.c:3794
+#: daemon/remote.c:3858 daemon/remote.c:3933 daemon/remote.c:3996
+#: daemon/remote.c:4057 daemon/remote.c:4121 daemon/remote.c:4176
+#: daemon/remote.c:4233 daemon/remote.c:4287 daemon/remote.c:4341
+#: daemon/remote.c:4395 daemon/remote.c:4449 daemon/remote.c:4504
 #: daemon/remote_dispatch.h:317 daemon/remote_dispatch.h:367
 #: daemon/remote_dispatch.h:415 daemon/remote_dispatch.h:467
 #: daemon/remote_dispatch.h:519 daemon/remote_dispatch.h:574
@@ -391,8 +391,8 @@ msgstr "ismeretlen OS-típus"
 #: daemon/remote.c:898 daemon/remote.c:989 daemon/remote.c:1098
 #: daemon/remote.c:1279 daemon/remote.c:1907 daemon/remote.c:1972
 #: daemon/remote.c:2037 daemon/remote.c:2103 daemon/remote.c:2181
-#: daemon/remote.c:2296 daemon/remote.c:3800 daemon/remote.c:3862
-#: daemon/remote.c:4510
+#: daemon/remote.c:2296 daemon/remote.c:3801 daemon/remote.c:3863
+#: daemon/remote.c:4511
 msgid "nparams too large"
 msgstr ""
 
@@ -432,7 +432,7 @@ msgstr ""
 
 #: daemon/remote.c:2477 daemon/remote.c:2628 daemon/remote.c:2726
 #: daemon/remote.c:2742 daemon/remote.c:2756 daemon/remote.c:2770
-#: daemon/remote.c:2867 daemon/remote.c:3013 daemon/remote.c:3042
+#: daemon/remote.c:2868 daemon/remote.c:3014 daemon/remote.c:3043
 #: src/util/virterror.c:959
 #, fuzzy
 msgid "authentication failed"
@@ -457,7 +457,7 @@ msgstr ""
 msgid "sasl step reply data too long %d"
 msgstr ""
 
-#: daemon/remote.c:2809 daemon/remote.c:2918
+#: daemon/remote.c:2809 daemon/remote.c:2919
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
 
@@ -471,59 +471,64 @@ msgstr ""
 msgid "authentication cancelled by user"
 msgstr "művelet nem sikerült: %s"
 
-#: daemon/remote.c:2924
+#: daemon/remote.c:2866
+#, c-format
+msgid "polkit: %s"
+msgstr ""
+
+#: daemon/remote.c:2925
 msgid "cannot get peer socket identity"
 msgstr ""
 
-#: daemon/remote.c:2942
+#: daemon/remote.c:2943
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr ""
 
-#: daemon/remote.c:2949
+#: daemon/remote.c:2950
 #, fuzzy, c-format
 msgid "Failed to create polkit action %s"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
-#: daemon/remote.c:2959
+#: daemon/remote.c:2960
 #, fuzzy, c-format
 msgid "Failed to create polkit context %s"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: daemon/remote.c:2977
+#: daemon/remote.c:2978
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr ""
 
-#: daemon/remote.c:2991
+#: daemon/remote.c:2992
 #, c-format
 msgid "Policy kit denied action %s from pid %lld, uid %d, result: %s"
 msgstr ""
 
-#: daemon/remote.c:3040
+#: daemon/remote.c:3041
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
-#: daemon/remote.c:3128 daemon/remote.c:3323
+#: daemon/remote.c:3129 daemon/remote.c:3324
 #, fuzzy, c-format
 msgid "domain event %d already registered"
 msgstr "túl sok meghajtóprogram van regisztrálva"
 
-#: daemon/remote.c:3169 daemon/remote.c:3373
+#: daemon/remote.c:3170 daemon/remote.c:3374
 #, fuzzy, c-format
 msgid "domain event %d not registered"
 msgstr "túl sok meghajtóprogram van regisztrálva"
 
-#: daemon/remote.c:3318 daemon/remote.c:3367
+#: daemon/remote.c:3319 daemon/remote.c:3368
 #, c-format
 msgid "unsupported event ID %d"
 msgstr ""
 
-#: daemon/remote.c:3866
+#: daemon/remote.c:3867
 msgid "ncpus too large"
 msgstr ""
 
-#: daemon/remote.c:3941
+#: daemon/remote.c:3942
 msgid "maxerrors too large"
 msgstr ""
 
@@ -1016,8 +1021,8 @@ msgstr ""
 #: src/qemu/qemu_driver.c:13159 src/qemu/qemu_driver.c:13647
 #: src/qemu/qemu_driver.c:13720 src/qemu/qemu_driver.c:13768
 #: src/qemu/qemu_driver.c:13814 src/qemu/qemu_driver.c:13888
-#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2622
-#: src/uml/uml_driver.c:2425 src/xen/xen_driver.c:2144
+#: src/qemu/qemu_driver.c:13910 src/qemu/qemu_migration.c:2629
+#: src/uml/uml_driver.c:2430 src/xen/xen_driver.c:2144
 #: src/xen/xen_hypervisor.c:1181 src/xen/xen_hypervisor.c:1262
 #: src/xen/xen_hypervisor.c:1381 src/xen/xm_internal.c:711
 #, fuzzy
@@ -5419,11 +5424,6 @@ msgstr "nem lehet csatlakozni ehhez: %s"
 msgid "Could not change memory parameters: %s"
 msgstr "nem lehet csatlakozni ehhez: %s"
 
-#: src/esx/esx_driver.c:5098
-#, fuzzy, c-format
-msgid "Couldn't retrieve snapshot list for domain '%s'"
-msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
-
 #: src/esx/esx_network_driver.c:203
 #, fuzzy, c-format
 msgid "Could not find HostVirtualSwitch with UUID '%s'"
@@ -6766,12 +6766,12 @@ msgstr ""
 msgid "domainMigratePrepare did not set uri"
 msgstr "a tartományinformáció helytelen - a domid nem numerikus"
 
-#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2244
+#: src/libvirt.c:4667 src/qemu/qemu_migration.c:2251
 #, fuzzy
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "a tartományinformáció helytelen - a domid nem numerikus"
 
-#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2381
+#: src/libvirt.c:4813 src/qemu/qemu_migration.c:2388
 #, fuzzy
 msgid "domainMigratePrepare3 did not set uri"
 msgstr "a tartományinformáció helytelen - a domid nem numerikus"
@@ -7897,10 +7897,10 @@ msgstr "A tartomány már fut"
 #: src/qemu/qemu_driver.c:13148 src/qemu/qemu_driver.c:13233
 #: src/qemu/qemu_driver.c:13333 src/qemu/qemu_driver.c:13712
 #: src/qemu/qemu_driver.c:13805 src/qemu/qemu_driver.c:13880
-#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1667
-#: src/uml/uml_driver.c:1692 src/uml/uml_driver.c:1725
-#: src/uml/uml_driver.c:2068 src/uml/uml_driver.c:2186
-#: src/uml/uml_driver.c:2419 src/vmware/vmware_driver.c:705
+#: src/test/test_driver.c:2133 src/uml/uml_driver.c:1672
+#: src/uml/uml_driver.c:1697 src/uml/uml_driver.c:1730
+#: src/uml/uml_driver.c:2073 src/uml/uml_driver.c:2191
+#: src/uml/uml_driver.c:2424 src/vmware/vmware_driver.c:705
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr ""
@@ -8031,14 +8031,14 @@ msgid "Cannot create autostart directory %s"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2365 src/libxl/libxl_driver.c:3610
-#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2305
+#: src/qemu/qemu_driver.c:6553 src/uml/uml_driver.c:2310
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "Nem sikerült menteni a(z) %s tartományt ide: %s"
 
 #: src/lxc/lxc_driver.c:2372 src/libxl/libxl_driver.c:3617
 #: src/network/bridge_driver.c:3315 src/qemu/qemu_driver.c:6560
-#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2312
+#: src/storage/storage_driver.c:1068 src/uml/uml_driver.c:2317
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%s'"
 msgstr "\"%s\" tartomány lekérdezése nem sikerült"
@@ -8053,17 +8053,17 @@ msgstr "POST művelet nem sikerült"
 msgid "Resume operation failed"
 msgstr "művelet nem sikerült"
 
-#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2446
+#: src/lxc/lxc_driver.c:2646 src/uml/uml_driver.c:2451
 #, fuzzy, c-format
 msgid "cannot find console device '%s'"
 msgstr "kapcsolódás a vendégrendszer konzoljához"
 
-#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2447
+#: src/lxc/lxc_driver.c:2647 src/uml/uml_driver.c:2452
 msgid "default"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2653 src/qemu/qemu_driver.c:12514
-#: src/uml/uml_driver.c:2453 src/xen/xen_driver.c:2172
+#: src/uml/uml_driver.c:2458 src/xen/xen_driver.c:2172
 #, fuzzy, c-format
 msgid "character device %s is not using a PTY"
 msgstr "a tartományinformáció nem teljes - hiányzik a név"
@@ -8308,7 +8308,7 @@ msgid "Failed to create save dir '%s': %s"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
 #: src/libxl/libxl_driver.c:1030 src/qemu/qemu_domain.c:1468
-#: src/uml/uml_driver.c:1044
+#: src/uml/uml_driver.c:1049
 #, fuzzy, c-format
 msgid "failed to create logfile %s"
 msgstr "a beállítási fájl írása nem sikerült"
@@ -8366,11 +8366,11 @@ msgstr "%s tartomány megsemmisítése nem sikerült"
 #: src/openvz/openvz_driver.c:696 src/openvz/openvz_driver.c:1187
 #: src/openvz/openvz_driver.c:1236 src/openvz/openvz_driver.c:1266
 #: src/openvz/openvz_driver.c:1361 src/openvz/openvz_driver.c:2061
-#: src/uml/uml_driver.c:1637 src/uml/uml_driver.c:1762
-#: src/uml/uml_driver.c:1808 src/uml/uml_driver.c:1837
-#: src/uml/uml_driver.c:1889 src/uml/uml_driver.c:1968
-#: src/uml/uml_driver.c:2251 src/uml/uml_driver.c:2277
-#: src/uml/uml_driver.c:2352 src/vbox/vbox_tmpl.c:2072
+#: src/uml/uml_driver.c:1642 src/uml/uml_driver.c:1767
+#: src/uml/uml_driver.c:1813 src/uml/uml_driver.c:1842
+#: src/uml/uml_driver.c:1894 src/uml/uml_driver.c:1973
+#: src/uml/uml_driver.c:2256 src/uml/uml_driver.c:2282
+#: src/uml/uml_driver.c:2357 src/vbox/vbox_tmpl.c:2072
 #: src/vbox/vbox_tmpl.c:2132 src/vbox/vbox_tmpl.c:5304
 #: src/vbox/vbox_tmpl.c:5401 src/vbox/vbox_tmpl.c:5638
 #: src/vbox/vbox_tmpl.c:8767 src/vbox/vbox_tmpl.c:9132
@@ -8393,7 +8393,7 @@ msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr "%s tartomány újraindítása nem sikerült"
 
 #: src/libxl/libxl_driver.c:1799 src/qemu/qemu_driver.c:2125
-#: src/uml/uml_driver.c:1737
+#: src/uml/uml_driver.c:1742
 msgid "cannot set memory higher than max memory"
 msgstr ""
 
@@ -8533,7 +8533,7 @@ msgid "parsing xm config failed"
 msgstr "a kiszolgáló válasza nem értelmezhető"
 
 #: src/libxl/libxl_driver.c:2916 src/qemu/qemu_driver.c:5644
-#: src/uml/uml_driver.c:1974 src/vmware/vmware_driver.c:711
+#: src/uml/uml_driver.c:1979 src/vmware/vmware_driver.c:711
 #, fuzzy
 msgid "cannot undefine transient domain"
 msgstr "egy inaktív tartomány definíciójának eltávolítása"
@@ -8566,13 +8566,13 @@ msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
 #: src/libxl/libxl_driver.c:3043 src/qemu/qemu_hotplug.c:215
 #: src/qemu/qemu_hotplug.c:447 src/qemu/qemu_hotplug.c:570
-#: src/uml/uml_driver.c:2014
+#: src/uml/uml_driver.c:2019
 #, c-format
 msgid "target %s already exists"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3049 src/qemu/qemu_hotplug.c:588
-#: src/uml/uml_driver.c:2021
+#: src/uml/uml_driver.c:2026
 msgid "disk source path is missing"
 msgstr ""
 
@@ -8582,7 +8582,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
 #: src/libxl/libxl_driver.c:3073 src/qemu/qemu_driver.c:5767
-#: src/uml/uml_driver.c:2091
+#: src/uml/uml_driver.c:2096
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr ""
@@ -8593,7 +8593,7 @@ msgid "disk device type '%s' cannot be hotplugged"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3105 src/qemu/qemu_hotplug.c:1668
-#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2145
+#: src/qemu/qemu_hotplug.c:1772 src/uml/uml_driver.c:2150
 #, fuzzy, c-format
 msgid "disk %s not found"
 msgstr "tartományinformáció"
@@ -8614,7 +8614,7 @@ msgid "device type '%s' cannot hot unplugged"
 msgstr "%s tartomány megsemmisítve\n"
 
 #: src/libxl/libxl_driver.c:3157 src/qemu/qemu_driver.c:5863
-#: src/uml/uml_driver.c:2096
+#: src/uml/uml_driver.c:2101
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr ""
@@ -8682,13 +8682,13 @@ msgid "unknown domain modify action %d"
 msgstr "ismeretlen parancs: '%s'"
 
 #: src/libxl/libxl_driver.c:3588 src/qemu/qemu_driver.c:6531
-#: src/uml/uml_driver.c:2283
+#: src/uml/uml_driver.c:2288
 #, fuzzy
 msgid "cannot set autostart for transient domain"
 msgstr "egy tartomány automatikus indítása"
 
 #: src/libxl/libxl_driver.c:3603 src/qemu/qemu_driver.c:6546
-#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2298
+#: src/storage/storage_driver.c:1053 src/uml/uml_driver.c:2303
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr ""
@@ -8727,27 +8727,27 @@ msgstr "%s tartomány felfüggesztése nem sikerült"
 msgid "libxenlight does not support disk driver %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:561
+#: src/libxl/libxl_conf.c:565
 #, fuzzy
 msgid "libxenlight does not support transient disks"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
-#: src/libxl/libxl_conf.c:637 src/qemu/qemu_command.c:3114
+#: src/libxl/libxl_conf.c:641 src/qemu/qemu_command.c:3114
 #: src/xenxs/xen_sxpr.c:1917
 #, fuzzy, c-format
 msgid "scripts are not supported on interfaces of type %s"
 msgstr "nincs támogatás a(z) %s felügyelőhöz"
 
-#: src/libxl/libxl_conf.c:709
+#: src/libxl/libxl_conf.c:713
 msgid "Unable to find an unused VNC port"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:796
+#: src/libxl/libxl_conf.c:800
 #, fuzzy
 msgid "Failed to get node physical info from libxenlight"
 msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/libxl/libxl_conf.c:802
+#: src/libxl/libxl_conf.c:806
 #, fuzzy
 msgid "Failed to get version info from libxenlight"
 msgstr "csomópont-információ lekérdezése nem sikerült"
@@ -9296,7 +9296,7 @@ msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr ""
 
 #: src/nodeinfo.c:107 src/nodeinfo.c:146 src/nodeinfo.c:815 src/nodeinfo.c:852
-#: src/nodeinfo.c:917 src/uml/uml_driver.c:2374 src/util/command.c:353
+#: src/nodeinfo.c:917 src/uml/uml_driver.c:2379 src/util/command.c:353
 #: src/util/pci.c:1628
 #, fuzzy, c-format
 msgid "cannot open %s"
@@ -10887,7 +10887,7 @@ msgstr ""
 msgid "Unable to deny access for disk path %s"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3228
+#: src/qemu/qemu_cgroup.c:166 src/qemu/qemu_migration.c:3235
 #, fuzzy, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
@@ -10970,7 +10970,7 @@ msgstr ""
 #: src/qemu/qemu_cgroup.c:742 src/qemu/qemu_driver.c:5739
 #: src/qemu/qemu_driver.c:5968 src/qemu/qemu_driver.c:10881
 #: src/qemu/qemu_hotplug.c:1096 src/qemu/qemu_hotplug.c:1684
-#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3216
+#: src/qemu/qemu_hotplug.c:1788 src/qemu/qemu_migration.c:3223
 #, fuzzy, c-format
 msgid "Unable to find cgroup for %s"
 msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
@@ -12344,8 +12344,8 @@ msgstr ""
 msgid "Unable to open %s"
 msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1554
-#: src/uml/uml_driver.c:1595 src/vbox/vbox_tmpl.c:1226
+#: src/qemu/qemu_driver.c:1277 src/uml/uml_driver.c:1559
+#: src/uml/uml_driver.c:1600 src/vbox/vbox_tmpl.c:1226
 #: src/vbox/vbox_tmpl.c:1553 src/vbox/vbox_tmpl.c:1605
 #: src/vbox/vbox_tmpl.c:1659 src/vbox/vbox_tmpl.c:1717
 #: src/vbox/vbox_tmpl.c:1768 src/vbox/vbox_tmpl.c:1844
@@ -12359,8 +12359,8 @@ msgstr ""
 msgid "domain is pmsuspended"
 msgstr "%s tartomány felfüggesztve\n"
 
-#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3016
-#: src/qemu/qemu_migration.c:3146 src/qemu/qemu_process.c:577
+#: src/qemu/qemu_driver.c:1660 src/qemu/qemu_migration.c:3023
+#: src/qemu/qemu_migration.c:3153 src/qemu/qemu_process.c:577
 #: src/qemu/qemu_process.c:3808
 #, fuzzy
 msgid "resume operation failed"
@@ -12408,7 +12408,7 @@ msgstr ""
 msgid "cannot translate keycode %u of %s codeset to rfb keycode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1773
+#: src/qemu/qemu_driver.c:2326 src/uml/uml_driver.c:1778
 msgid "cannot read cputime for domain"
 msgstr ""
 
@@ -12452,8 +12452,8 @@ msgstr "%s tartomány megjelölve automatikus indításra\n"
 #: src/qemu/qemu_driver.c:10504 src/qemu/qemu_driver.c:10916
 #: src/qemu/qemu_driver.c:11976 src/qemu/qemu_driver.c:12028
 #: src/qemu/qemu_hotplug.c:422 src/qemu/qemu_hotplug.c:802
-#: src/qemu/qemu_migration.c:1936 src/qemu/qemu_migration.c:2237
-#: src/qemu/qemu_migration.c:2559 src/qemu/qemu_migration.c:2945
+#: src/qemu/qemu_migration.c:1943 src/qemu/qemu_migration.c:2244
+#: src/qemu/qemu_migration.c:2566 src/qemu/qemu_migration.c:2952
 #: src/qemu/qemu_process.c:555 src/qemu/qemu_process.c:568
 #, fuzzy
 msgid "guest unexpectedly quit"
@@ -12707,7 +12707,7 @@ msgstr "váratlan adat: '%s'"
 msgid "disk controller bus '%s' cannot be hotplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2207
+#: src/qemu/qemu_driver.c:5890 src/uml/uml_driver.c:2212
 msgid "This type of disk cannot be hot unplugged"
 msgstr ""
 
@@ -12721,7 +12721,7 @@ msgstr "%s tartomány megsemmisítve\n"
 msgid "disk controller bus '%s' cannot be hotunplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2211
+#: src/qemu/qemu_driver.c:5947 src/uml/uml_driver.c:2216
 msgid "This type of device cannot be hot unplugged"
 msgstr ""
 
@@ -12888,11 +12888,11 @@ msgid "cannot get RSS for domain"
 msgstr "Egy tartomány magjának (core) kimentése."
 
 #: src/qemu/qemu_driver.c:9018 src/qemu/qemu_driver.c:9183
-#: src/uml/uml_driver.c:2358
+#: src/uml/uml_driver.c:2363
 msgid "NULL or empty path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2365
+#: src/qemu/qemu_driver.c:9025 src/uml/uml_driver.c:2370
 #, fuzzy, c-format
 msgid "invalid path '%s'"
 msgstr "érvénytelen argumentum ebben: %s"
@@ -13781,7 +13781,7 @@ msgstr "váratlan érték-csomópont"
 msgid "canceled by client"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1948
+#: src/qemu/qemu_migration.c:973 src/qemu/qemu_migration.c:1955
 #, fuzzy
 msgid "migration job"
 msgstr "csomópont-információ"
@@ -13810,7 +13810,7 @@ msgstr "kapcsolódás a vendégrendszer konzoljához"
 msgid "target domain name doesn't match source name"
 msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
 
-#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2128
+#: src/qemu/qemu_migration.c:1313 src/qemu/qemu_migration.c:2135
 #, fuzzy
 msgid "cannot create pipe for tunnelled migration"
 msgstr "Egy tartomány magjának (core) kimentése."
@@ -13861,68 +13861,73 @@ msgstr "%s tartomány indítása nem sikerült"
 msgid "failed to wakeup migration tunnel"
 msgstr "a beállítási fájl írása nem sikerült"
 
-#: src/qemu/qemu_migration.c:1854
+#: src/qemu/qemu_migration.c:1816
+#, fuzzy, c-format
+msgid "Unable to set FD %d blocking"
+msgstr "%s hálózat megsemmisítése nem sikerült"
+
+#: src/qemu/qemu_migration.c:1861
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:1956
+#: src/qemu/qemu_migration.c:1963
 #, fuzzy
 msgid "failed to accept connection from qemu"
 msgstr "Nem sikerült létrehozni hálózatot ebből: %s"
 
-#: src/qemu/qemu_migration.c:2106
+#: src/qemu/qemu_migration.c:2113
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2531
+#: src/qemu/qemu_migration.c:2538
 #, fuzzy, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "Csatlakozás a felügyelőhöz nem sikerült"
 
-#: src/qemu/qemu_migration.c:2552
+#: src/qemu/qemu_migration.c:2559
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2674 src/qemu/qemu_migration.c:2753
+#: src/qemu/qemu_migration.c:2681 src/qemu/qemu_migration.c:2760
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "%s tartomány felélesztése nem sikerült"
 
-#: src/qemu/qemu_migration.c:2818
+#: src/qemu/qemu_migration.c:2825
 msgid "received unexpected cookie with P2P migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2829
+#: src/qemu/qemu_migration.c:2836
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2865
+#: src/qemu/qemu_migration.c:2872
 #, c-format
 msgid "Port profile Associate failed for %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:2992
+#: src/qemu/qemu_migration.c:2999
 #, fuzzy
 msgid "can't get vmdef"
 msgstr "aktuális idő beolvasása"
 
-#: src/qemu/qemu_migration.c:3269
+#: src/qemu/qemu_migration.c:3276
 #, fuzzy
 msgid "Unable to set cloexec flag"
 msgstr "%s hálózat megsemmisítése nem sikerült"
 
-#: src/qemu/qemu_migration.c:3363
+#: src/qemu/qemu_migration.c:3370
 #, c-format
 msgid "migration protocol going backwards %s => %s"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3398
+#: src/qemu/qemu_migration.c:3405
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
 msgstr ""
 
-#: src/qemu/qemu_migration.c:3400
+#: src/qemu/qemu_migration.c:3407
 #, fuzzy, c-format
 msgid "domain '%s' is not being migrated"
 msgstr "%s tartomány újra lesz indítva\n"
@@ -14813,7 +14818,7 @@ msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
 #: src/qemu/qemu_process.c:3349 src/qemu/qemu_process.c:4203
-#: src/uml/uml_driver.c:1008
+#: src/uml/uml_driver.c:1013
 #, fuzzy
 msgid "VM is already active"
 msgstr "A tartomány már aktív"
@@ -14834,7 +14839,7 @@ msgid "Unable to find an unused port for SPICE TLS"
 msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
 
 #: src/qemu/qemu_process.c:3473 src/qemu/qemu_process.c:4219
-#: src/uml/uml_driver.c:1030
+#: src/uml/uml_driver.c:1035
 #, c-format
 msgid "cannot create log directory %s"
 msgstr ""
@@ -16382,7 +16387,7 @@ msgstr "'%s' parancs nem létezik"
 msgid "Cannot set a base label with AppArmour"
 msgstr ""
 
-#: src/security/security_apparmor.c:442 src/security/security_selinux.c:559
+#: src/security/security_apparmor.c:442 src/security/security_selinux.c:616
 msgid "security label already defined for VM"
 msgstr ""
 
@@ -16404,9 +16409,9 @@ msgstr ""
 msgid "could not remove profile for '%s'"
 msgstr "nem lehet csatlakozni a(z) %s Xen-tárolóhoz"
 
-#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1614
-#: src/security/security_selinux.c:1648 src/security/security_selinux.c:1686
-#: src/security/security_selinux.c:1736 src/security/security_selinux.c:1777
+#: src/security/security_apparmor.c:607 src/security/security_selinux.c:1699
+#: src/security/security_selinux.c:1733 src/security/security_selinux.c:1771
+#: src/security/security_selinux.c:1821 src/security/security_selinux.c:1862
 #, c-format
 msgid ""
 "security label driver mismatch: '%s' model configured for domain, but "
@@ -16465,16 +16470,16 @@ msgstr "Nem sikerült menteni a(z) %s tartományt ide: %s"
 msgid "cannot resolve symlink %s"
 msgstr ""
 
-#: src/security/security_dac.c:872 src/security/security_selinux.c:544
+#: src/security/security_dac.c:872 src/security/security_selinux.c:601
 #, fuzzy
 msgid "invalid security driver"
 msgstr "csomópont - CPU-szálak"
 
-#: src/security/security_dac.c:883 src/security/security_selinux.c:565
+#: src/security/security_dac.c:883 src/security/security_selinux.c:622
 msgid "security image label already defined for VM"
 msgstr ""
 
-#: src/security/security_dac.c:891 src/security/security_selinux.c:572
+#: src/security/security_dac.c:891 src/security/security_selinux.c:629
 #, fuzzy, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "nincs támogatás a felügyelőhöz"
@@ -16489,7 +16494,7 @@ msgstr ""
 msgid "cannot generate dac user and group id for domain %s"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
-#: src/security/security_dac.c:923 src/security/security_selinux.c:620
+#: src/security/security_dac.c:923 src/security/security_selinux.c:703
 #, fuzzy, c-format
 msgid "unexpected security label type '%s'"
 msgstr "váratlan MIME-típus"
@@ -16514,200 +16519,195 @@ msgstr "hálózatnév vagy -uuid"
 msgid "Unconfined guests are not allowed on this host"
 msgstr "nincs támogatás a felügyelőhöz"
 
-#: src/security/security_selinux.c:120 src/security/security_selinux.c:301
-#, fuzzy
-msgid "Unable to get current process SELinux context"
-msgstr "tartomány - jelenlegi memória"
-
-#: src/security/security_selinux.c:125 src/security/security_selinux.c:306
-#, fuzzy, c-format
-msgid "Unable to parse current SELinux context '%s'"
-msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
-
-#: src/security/security_selinux.c:138
-#, fuzzy, c-format
-msgid "Cannot parse sensitivity level in %s"
-msgstr "\"%s\" tartomány lekérdezése nem sikerült"
-
-#: src/security/security_selinux.c:153 src/security/security_selinux.c:160
-#: src/security/security_selinux.c:176 src/security/security_selinux.c:183
-#: src/security/security_selinux.c:190
-#, fuzzy, c-format
-msgid "Cannot parse category in %s"
-msgstr "nem lehet csatlakozni ehhez: %s"
-
-#: src/security/security_selinux.c:169
-#, fuzzy
-msgid "No category range available"
-msgstr "művelet nem sikerült"
-
-#: src/security/security_selinux.c:200
+#: src/security/security_selinux.c:122
 #, c-format
 msgid "Category range c%d-c%d too small"
 msgstr ""
 
-#: src/security/security_selinux.c:258
+#: src/security/security_selinux.c:189 src/security/security_selinux.c:336
+#, fuzzy
+msgid "Unable to get current process SELinux context"
+msgstr "tartomány - jelenlegi memória"
+
+#: src/security/security_selinux.c:194 src/security/security_selinux.c:341
+#, fuzzy, c-format
+msgid "Unable to parse current SELinux context '%s'"
+msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
+
+#: src/security/security_selinux.c:227 src/security/security_selinux.c:234
+#: src/security/security_selinux.c:250 src/security/security_selinux.c:257
+#: src/security/security_selinux.c:264
+#, fuzzy, c-format
+msgid "Cannot parse category in %s"
+msgstr "nem lehet csatlakozni ehhez: %s"
+
+#: src/security/security_selinux.c:243
+#, fuzzy
+msgid "No category range available"
+msgstr "művelet nem sikerült"
+
+#: src/security/security_selinux.c:293
 #, fuzzy
 msgid "unable to allocate security context"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
 
-#: src/security/security_selinux.c:264
+#: src/security/security_selinux.c:299
 #, fuzzy, c-format
 msgid "unable to set security context range '%s'"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
 
-#: src/security/security_selinux.c:270 src/security/security_selinux.c:344
+#: src/security/security_selinux.c:305 src/security/security_selinux.c:379
 #, fuzzy
 msgid "Unable to format SELinux context"
 msgstr "%d aljazat olvasása nem sikerült\n"
 
-#: src/security/security_selinux.c:314
+#: src/security/security_selinux.c:349
 #, fuzzy, c-format
 msgid "Unable to parse base SELinux context '%s'"
 msgstr "nem sikerült olvasásra megnyitni ezt: %s"
 
-#: src/security/security_selinux.c:322
+#: src/security/security_selinux.c:357
 #, fuzzy, c-format
 msgid "Unable to set SELinux context user '%s'"
 msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/security/security_selinux.c:331
+#: src/security/security_selinux.c:366
 #, fuzzy, c-format
 msgid "Unable to set SELinux context role '%s'"
 msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/security/security_selinux.c:338
+#: src/security/security_selinux.c:373
 #, fuzzy, c-format
 msgid "Unable to set SELinux context MCS '%s'"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
 
-#: src/security/security_selinux.c:376 src/security/security_selinux.c:465
+#: src/security/security_selinux.c:411 src/security/security_selinux.c:500
 #, fuzzy
 msgid "cannot open SELinux label_handle"
 msgstr "a fájl megnyitása nem sikerült"
 
-#: src/security/security_selinux.c:384
+#: src/security/security_selinux.c:419
 #, fuzzy, c-format
 msgid "cannot open SELinux lxc contexts file '%s'"
 msgstr "a fájl megnyitása nem sikerült"
 
-#: src/security/security_selinux.c:392
+#: src/security/security_selinux.c:427
 #, c-format
 msgid "cannot read 'process' value from selinux lxc contexts file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:400 src/security/security_selinux.c:408
+#: src/security/security_selinux.c:435 src/security/security_selinux.c:443
 #, c-format
 msgid "cannot read 'file' value from selinux lxc contexts file '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:420
+#: src/security/security_selinux.c:455
 #, fuzzy, c-format
 msgid "cannot allocate memory for LXC SELinux contexts '%s'"
 msgstr "csomópont lefoglalása nem sikerült"
 
-#: src/security/security_selinux.c:447
+#: src/security/security_selinux.c:482
 #, fuzzy
 msgid "libselinux does not support LXC contexts path"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
-#: src/security/security_selinux.c:472
+#: src/security/security_selinux.c:507
 #, fuzzy, c-format
 msgid "cannot read SELinux virtual domain context file '%s'"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: src/security/security_selinux.c:483
+#: src/security/security_selinux.c:533
 #, c-format
 msgid "cannot read SELinux virtual image context file %s"
 msgstr ""
 
-#: src/security/security_selinux.c:583
+#: src/security/security_selinux.c:640
 #, c-format
 msgid "unable to allocate socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:609 src/security/security_selinux.c:631
+#: src/security/security_selinux.c:692 src/security/security_selinux.c:714
 #, c-format
 msgid "cannot generate selinux context for %s"
 msgstr ""
 
-#: src/security/security_selinux.c:689 src/security/security_selinux.c:794
+#: src/security/security_selinux.c:773 src/security/security_selinux.c:879
 #, c-format
 msgid "unable to get PID %d security context"
 msgstr ""
 
-#: src/security/security_selinux.c:707
+#: src/security/security_selinux.c:791
 #, c-format
 msgid "MCS level for existing domain label %s already reserved"
 msgstr ""
 
-#: src/security/security_selinux.c:801
+#: src/security/security_selinux.c:886
 #, c-format
 msgid "security label exceeds maximum length: %d"
 msgstr ""
 
-#: src/security/security_selinux.c:815
+#: src/security/security_selinux.c:900
 msgid "error calling security_getenforce()"
 msgstr ""
 
-#: src/security/security_selinux.c:852
+#: src/security/security_selinux.c:937
 #, c-format
 msgid "unable to set security context '%s' on '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:861
+#: src/security/security_selinux.c:946
 #, fuzzy, c-format
 msgid ""
 "Setting security context '%s' on '%s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
 
-#: src/security/security_selinux.c:917
+#: src/security/security_selinux.c:1002
 #, fuzzy, c-format
 msgid "unable to set security context '%s' on fd %d"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
 
-#: src/security/security_selinux.c:1473 src/security/security_selinux.c:1834
+#: src/security/security_selinux.c:1558 src/security/security_selinux.c:1919
 #, fuzzy, c-format
 msgid "unknown smartcard type %d"
 msgstr "ismeretlen OS-típus: %s"
 
-#: src/security/security_selinux.c:1624
+#: src/security/security_selinux.c:1709
 #, c-format
 msgid "Invalid security label %s"
 msgstr ""
 
-#: src/security/security_selinux.c:1658
+#: src/security/security_selinux.c:1743
 #, c-format
 msgid "unable to set security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1695
+#: src/security/security_selinux.c:1780
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1706 src/security/security_selinux.c:1747
+#: src/security/security_selinux.c:1791 src/security/security_selinux.c:1832
 #, c-format
 msgid "unable to set socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1787
+#: src/security/security_selinux.c:1872
 #, c-format
 msgid "unable to clear socket security context '%s'"
 msgstr ""
 
-#: src/security/security_selinux.c:1945
+#: src/security/security_selinux.c:2030
 #, fuzzy, c-format
 msgid "cannot stat tap fd %d"
 msgstr "nincs állapot"
 
-#: src/security/security_selinux.c:1951
+#: src/security/security_selinux.c:2036
 #, fuzzy, c-format
 msgid "tap fd %d is not character device"
 msgstr "ismeretlen OS-típus: %s"
 
-#: src/security/security_selinux.c:1957
+#: src/security/security_selinux.c:2042
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
 msgstr ""
@@ -18156,119 +18156,124 @@ msgstr ""
 msgid "Failed to create monitor directory %s: %s"
 msgstr "Nem sikerült létrehozni hálózatot ebből: %s"
 
-#: src/uml/uml_driver.c:540
+#: src/uml/uml_driver.c:513
+#, fuzzy, c-format
+msgid "Failed to create inotify watch on %s: %s"
+msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
+
+#: src/uml/uml_driver.c:545
 #, fuzzy
 msgid "umlStartup: out of memory"
 msgstr "nincs több memória"
 
-#: src/uml/uml_driver.c:801
+#: src/uml/uml_driver.c:806
 #, fuzzy, c-format
 msgid "failed to read pid: %s"
 msgstr "%s végrehajtása nem sikerült\n"
 
-#: src/uml/uml_driver.c:823
+#: src/uml/uml_driver.c:828
 #, c-format
 msgid "Unix path %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:853
+#: src/uml/uml_driver.c:858
 #, fuzzy
 msgid "cannot open socket"
 msgstr "csomópont - CPU-foglalatok"
 
-#: src/uml/uml_driver.c:863
+#: src/uml/uml_driver.c:868
 msgid "cannot bind socket"
 msgstr ""
 
-#: src/uml/uml_driver.c:917
+#: src/uml/uml_driver.c:922
 #, c-format
 msgid "cannot send too long command %s (%d bytes)"
 msgstr ""
 
-#: src/uml/uml_driver.c:923
+#: src/uml/uml_driver.c:928
 #, c-format
 msgid "Command %s too long for destination"
 msgstr ""
 
-#: src/uml/uml_driver.c:930
+#: src/uml/uml_driver.c:935
 #, fuzzy, c-format
 msgid "cannot send command %s"
 msgstr "ismeretlen parancs: '%s'"
 
-#: src/uml/uml_driver.c:943
+#: src/uml/uml_driver.c:948
 #, c-format
 msgid "cannot read reply %s"
 msgstr ""
 
-#: src/uml/uml_driver.c:949
+#: src/uml/uml_driver.c:954
 #, c-format
 msgid "incomplete reply %s"
 msgstr ""
 
-#: src/uml/uml_driver.c:1014
+#: src/uml/uml_driver.c:1019
 msgid "no kernel specified"
 msgstr ""
 
-#: src/uml/uml_driver.c:1023
+#: src/uml/uml_driver.c:1028
 #, c-format
 msgid "Cannot find UML kernel %s"
 msgstr ""
 
-#: src/uml/uml_driver.c:1053
+#: src/uml/uml_driver.c:1058
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr ""
 
-#: src/uml/uml_driver.c:1189
+#: src/uml/uml_driver.c:1194
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr ""
 
-#: src/uml/uml_driver.c:1196
+#: src/uml/uml_driver.c:1201
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///session"
 msgstr ""
 
-#: src/uml/uml_driver.c:1205
+#: src/uml/uml_driver.c:1210
 msgid "uml state driver is not active"
 msgstr ""
 
-#: src/uml/uml_driver.c:1455
+#: src/uml/uml_driver.c:1460
 #, fuzzy, c-format
 msgid "cannot parse version %s"
 msgstr "nem lehet csatlakozni ehhez: %s"
 
-#: src/uml/uml_driver.c:1561
+#: src/uml/uml_driver.c:1566
 #, fuzzy
 msgid "shutdown operation failed"
 msgstr "művelet nem sikerült"
 
-#: src/uml/uml_driver.c:1698
+#: src/uml/uml_driver.c:1703
 msgid "cannot set max memory lower than current memory"
 msgstr ""
 
-#: src/uml/uml_driver.c:1731
+#: src/uml/uml_driver.c:1736
 #, fuzzy
 msgid "cannot set memory of an active domain"
 msgstr "az inaktív tartomány neve"
 
-#: src/uml/uml_driver.c:2074
+#: src/uml/uml_driver.c:2079
 #, fuzzy
 msgid "cannot attach device on inactive domain"
 msgstr "egy inaktív tartomány definíciójának eltávolítása"
 
-#: src/uml/uml_driver.c:2120 src/uml/uml_driver.c:2232
+#: src/uml/uml_driver.c:2125 src/uml/uml_driver.c:2237
 #: src/vbox/vbox_tmpl.c:5584 src/vbox/vbox_tmpl.c:5599
 #: src/vbox/vbox_tmpl.c:5755
 #, fuzzy
 msgid "cannot modify the persistent configuration of a domain"
 msgstr "A konfiguráció definíciójának eltávolítása egy inaktív tartománynál."
 
-#: src/uml/uml_driver.c:2192
+#: src/uml/uml_driver.c:2197
 #, fuzzy
 msgid "cannot detach device on inactive domain"
 msgstr "egy inaktív tartomány definíciójának eltávolítása"
 
-#: src/uml/uml_driver.c:2385 tools/virsh-volume.c:555
+#: src/uml/uml_driver.c:2390 tools/virsh-volume.c:555
 #, c-format
 msgid "cannot read %s"
 msgstr ""
@@ -19477,18 +19482,18 @@ msgid "%s:%zu: %s '%s'"
 msgstr ""
 
 #: src/util/virnetdev.c:59 src/util/virnetdev.c:483
-#: src/util/virnetdevbridge.c:61 src/util/virnetdevtap.c:152
+#: src/util/virnetdevbridge.c:62 src/util/virnetdevtap.c:152
 #: src/util/virnetdevtap.c:210
 #, fuzzy, c-format
 msgid "Network interface name '%s' is too long"
 msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:69
+#: src/util/virnetdev.c:66 src/util/virnetdevbridge.c:70
 #, fuzzy
 msgid "Cannot open network interface control socket"
 msgstr "hálózatnév"
 
-#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:75
+#: src/util/virnetdev.c:72 src/util/virnetdevbridge.c:76
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
 msgstr "%s hálózat megsemmisítése nem sikerült"
@@ -19699,59 +19704,59 @@ msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
 msgid "Unable to restore net config on this platform"
 msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
 
-#: src/util/virnetdevbridge.c:118 src/util/virnetdevbridge.c:129
-#: src/util/virnetdevbridge.c:136
+#: src/util/virnetdevbridge.c:119 src/util/virnetdevbridge.c:130
+#: src/util/virnetdevbridge.c:137
 #, fuzzy, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: src/util/virnetdevbridge.c:170 src/util/virnetdevbridge.c:182
-#: src/util/virnetdevbridge.c:192
+#: src/util/virnetdevbridge.c:171 src/util/virnetdevbridge.c:183
+#: src/util/virnetdevbridge.c:193
 #, fuzzy, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/util/virnetdevbridge.c:224 src/util/virnetdevbridge.c:238
+#: src/util/virnetdevbridge.c:225 src/util/virnetdevbridge.c:239
 #, fuzzy, c-format
 msgid "Unable to create bridge %s"
 msgstr "%d aljazat olvasása nem sikerült\n"
 
-#: src/util/virnetdevbridge.c:262 src/util/virnetdevbridge.c:276
+#: src/util/virnetdevbridge.c:263 src/util/virnetdevbridge.c:277
 #, fuzzy, c-format
 msgid "Unable to delete bridge %s"
 msgstr "%d aljazat bezárása nem sikerült\n"
 
-#: src/util/virnetdevbridge.c:303 src/util/virnetdevbridge.c:350
+#: src/util/virnetdevbridge.c:304 src/util/virnetdevbridge.c:351
 #, fuzzy, c-format
 msgid "Unable to get interface index for %s"
 msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/util/virnetdevbridge.c:309 src/util/virnetdevbridge.c:323
+#: src/util/virnetdevbridge.c:310 src/util/virnetdevbridge.c:324
 #, fuzzy, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: src/util/virnetdevbridge.c:357 src/util/virnetdevbridge.c:371
+#: src/util/virnetdevbridge.c:358 src/util/virnetdevbridge.c:372
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/util/virnetdevbridge.c:502
+#: src/util/virnetdevbridge.c:503
 #, fuzzy, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "nincs támogatás a felügyelőhöz"
 
-#: src/util/virnetdevbridge.c:510
+#: src/util/virnetdevbridge.c:511
 #, fuzzy, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "\"%s\" tartomány lekérdezése nem sikerült"
 
-#: src/util/virnetdevbridge.c:520
+#: src/util/virnetdevbridge.c:521
 #, fuzzy, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "nincs támogatás a felügyelőhöz"
 
-#: src/util/virnetdevbridge.c:528
+#: src/util/virnetdevbridge.c:529
 #, fuzzy, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "\"%s\" tartomány lekérdezése nem sikerült"
@@ -30726,6 +30731,14 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: unsupported hypervisor name %s\n"
 msgstr "váratlan adat: '%s'"
+
+#, fuzzy
+#~ msgid "Couldn't retrieve snapshot list for domain '%s'"
+#~ msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
+
+#, fuzzy
+#~ msgid "Cannot parse sensitivity level in %s"
+#~ msgstr "\"%s\" tartomány lekérdezése nem sikerült"
 
 #, fuzzy
 #~ msgid "input too large: 1 * %d"
