@@ -5648,7 +5648,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             } else {
                 database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
             }
-            virBufferAsprintf(&opt, ",database=%s", database);
+            virBufferAsprintf(&opt, ",db=%s", database);
             break;
 
         case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
