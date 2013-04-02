@@ -6073,14 +6073,17 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
             goto end;
 
         ret = qemuDomainChangeEjectableMedia(driver, vm, disk, orig_disk, force);
+        /* 'disk' must not be accessed now - it has been freed.
+         * 'orig_disk' now points to the new disk, while 'dev_copy'
+         * now points to the old disk */
+
+        /* Need to remove the shared disk entry for the original
+         * disk src if the operation is either ejecting or updating.
+         */
         if (ret == 0) {
             dev->data.disk = NULL;
-            /* Need to remove the shared disk entry for the original
-             * disk src if the operation is either ejecting or updating.
-             */
-            if (orig_disk->src && STRNEQ_NULLABLE(orig_disk->src, disk->src))
-                ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
-                                                  vm->def->name));
+            ignore_value(qemuRemoveSharedDisk(driver, dev_copy->data.disk,
+                                              vm->def->name));
         }
         break;
     default:
