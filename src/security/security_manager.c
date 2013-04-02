@@ -425,7 +425,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
                                virDomainDefPtr vm)
 {
     int ret = -1;
-    size_t i;
+    size_t i, j;
     virSecurityManagerPtr* sec_managers = NULL;
     virSecurityLabelDefPtr seclabel;
     bool generated = false;
@@ -437,6 +437,19 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
         return ret;
 
     virObjectLock(mgr);
+    for (i = 0; vm->nseclabels; i++) {
+        for (j = 0; sec_managers[j]; j++)
+            if (STREQ(vm->seclabels[i]->model, sec_managers[j]->drv->name))
+                break;
+
+        if (!sec_managers[j]) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unable to find security driver for label %s"),
+                           vm->seclabels[i]->model);
+            goto cleanup;
+        }
+    }
+
     for (i = 0; sec_managers[i]; i++) {
         generated = false;
         seclabel = virDomainDefGetSecurityLabelDef(vm, sec_managers[i]->drv->name);
