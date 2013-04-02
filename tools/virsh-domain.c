@@ -10040,7 +10040,7 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return ret;
 
     if (vshCommandOptULongLong(cmd, "minimum", &minimum) < 0) {
         vshError(ctl, _("Unable to parse integer parameter minimum"));
@@ -10058,6 +10058,7 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
 cleanup:
+    virDomainFree(dom);
     return ret;
 }
 
