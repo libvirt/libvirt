@@ -20,7 +20,8 @@ cd build
 ../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
   --disable-nls \
-  --enable-werror
+  --enable-werror \
+  --enable-static
 
 # If the MAKEFLAGS envvar does not yet include a -j option,
 # add -jN where N depends on the number of processors.
