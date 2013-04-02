@@ -3873,6 +3873,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (!pcpumap)
         goto cleanup;
 
+    if (virBitmapIsAllClear(pcpumap)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Empty cpu list for pinning"));
+        goto cleanup;
+    }
+
     /* pinning to all physical cpus means resetting,
      * so check if we can reset setting.
      */
@@ -4141,6 +4147,12 @@ qemuDomainPinEmulator(virDomainPtr dom,
     pcpumap = virBitmapNewData(cpumap, maplen);
     if (!pcpumap)
         goto cleanup;
+
+    if (virBitmapIsAllClear(pcpumap)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Empty cpu list for pinning"));
+        goto cleanup;
+    }
 
     /* pinning to all physical cpus means resetting,
      * so check if we can reset setting.
