@@ -1670,9 +1670,11 @@ virtlockd_SOURCES = \
 		$(NULL)
 virtlockd_CFLAGS = \
 		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
 		$(NULL)
 virtlockd_LDFLAGS = \
 		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -1917,7 +1919,11 @@ libexec_PROGRAMS =
 if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_iohelper
 libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
-libvirt_iohelper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+libvirt_iohelper_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 libvirt_iohelper_LDADD =		\
 		libvirt_util.la		\
 		../gnulib/lib/libgnu.la
@@ -1925,7 +1931,10 @@ if WITH_DTRACE_PROBES
 libvirt_iohelper_LDADD += libvirt_probes.lo
 endif
 
-libvirt_iohelper_CFLAGS = $(AM_CFLAGS)
+libvirt_iohelper_CFLAGS = \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(NULL)
 endif
 
 if WITH_STORAGE_DISK
@@ -1933,7 +1942,11 @@ if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
-libvirt_parthelper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+libvirt_parthelper_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 libvirt_parthelper_LDADD =		\
 		$(LIBPARTED_LIBS)	\
 		libvirt_util.la		\
@@ -1942,7 +1955,11 @@ if WITH_DTRACE_PROBES
 libvirt_parthelper_LDADD += libvirt_probes.lo
 endif
 
-libvirt_parthelper_CFLAGS = $(LIBPARTED_CFLAGS) $(AM_CFLAGS)
+libvirt_parthelper_CFLAGS = \
+		$(LIBPARTED_CFLAGS) \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(NULL)
 endif
 endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
@@ -1952,8 +1969,16 @@ if WITH_SANLOCK
 libexec_PROGRAMS += libvirt_sanlock_helper
 
 libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
-libvirt_sanlock_helper_CFLAGS = -I$(top_srcdir)/src/conf $(AM_CFLAGS)
-libvirt_sanlock_helper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+libvirt_sanlock_helper_CFLAGS = \
+		-I$(top_srcdir)/src/conf \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(NULL)
+libvirt_sanlock_helper_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 libvirt_sanlock_helper_LDADD = libvirt.la
 endif
 
@@ -1965,7 +1990,11 @@ libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
 		$(NODE_INFO_SOURCES)				\
 		$(DATATYPES_SOURCES)
-libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(AM_LDFLAGS)
+libvirt_lxc_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 libvirt_lxc_LDADD =			\
 		$(FUSE_LIBS) \
 		libvirt-net-rpc-server.la \
@@ -1981,8 +2010,10 @@ libvirt_lxc_LDADD += $(SECDRIVER_LIBS)
 libvirt_lxc_CFLAGS =				\
 		-I$(top_srcdir)/src/conf	\
 		$(AM_CFLAGS)                    \
+		$(PIE_CFLAGS)			\
 		$(LIBNL_CFLAGS)			\
-		$(FUSE_CFLAGS)
+		$(FUSE_CFLAGS)			\
+		$(NULL)
 if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
 libvirt_lxc_LDADD += $(BLKID_LIBS)
@@ -2003,7 +2034,11 @@ libexec_PROGRAMS += virt-aa-helper
 
 virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
-virt_aa_helper_LDFLAGS = $(WARN_LDFLAGS) $(AM_LDFLAGS)
+virt_aa_helper_LDFLAGS = \
+		$(WARN_LDFLAGS) \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 virt_aa_helper_LDADD =						\
 		libvirt_conf.la					\
 		libvirt_util.la					\
@@ -2014,7 +2049,9 @@ endif
 virt_aa_helper_CFLAGS =						\
 		-I$(top_srcdir)/src/conf			\
 		-I$(top_srcdir)/src/security			\
-		$(AM_CFLAGS)
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(NULL)
 endif
 endif
 EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
