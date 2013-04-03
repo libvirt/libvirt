@@ -110,11 +110,10 @@ virNetDevMacVLanCreate(const char *ifname,
                        int *retry)
 {
     int rc = -1;
-    struct nlmsghdr *resp;
+    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     int ifindex;
-    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
     struct nlattr *linkinfo, *info_data;
@@ -163,15 +162,13 @@ virNetDevMacVLanCreate(const char *ifname,
 
     nla_nest_end(nl_msg, linkinfo);
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0) {
         goto cleanup;
     }
 
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
 
     switch (resp->nlmsg_type) {
     case NLMSG_ERROR:
@@ -206,7 +203,7 @@ virNetDevMacVLanCreate(const char *ifname,
     rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(recvbuf);
+    VIR_FREE(resp);
     return rc;
 
 malformed_resp:
@@ -232,10 +229,9 @@ buffer_too_small:
 int virNetDevMacVLanDelete(const char *ifname)
 {
     int rc = -1;
-    struct nlmsghdr *resp;
+    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
 
@@ -252,15 +248,13 @@ int virNetDevMacVLanDelete(const char *ifname)
     if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, 0,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0) {
         goto cleanup;
     }
 
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
 
     switch (resp->nlmsg_type) {
     case NLMSG_ERROR:
@@ -286,7 +280,7 @@ int virNetDevMacVLanDelete(const char *ifname)
     rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(recvbuf);
+    VIR_FREE(resp);
     return rc;
 
 malformed_resp:
@@ -477,7 +471,7 @@ static int instance2str(const unsigned char *p, char *dst, size_t size)
 /**
  * virNetDevMacVLanVPortProfileCallback:
  *
- * @msg: The buffer containing the received netlink message
+ * @hdr: The buffer containing the received netlink header + payload
  * @length: The length of the received netlink message.
  * @peer: The netling sockaddr containing the peer information
  * @handled: Contains information if the message has been replied to yet
@@ -489,8 +483,8 @@ static int instance2str(const unsigned char *p, char *dst, size_t size)
  */
 
 static void
-virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
-                                     int length,
+virNetDevMacVLanVPortProfileCallback(struct nlmsghdr *hdr,
+                                     unsigned int length,
                                      struct sockaddr_nl *peer,
                                      bool *handled,
                                      void *opaque)
@@ -510,7 +504,6 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
         *tb_vfinfo[IFLA_VF_MAX + 1], *tb_vfinfo_list;
 
     struct ifinfomsg ifinfo;
-    struct nlmsghdr *hdr;
     void *data;
     int rem;
     char *ifname;
@@ -520,7 +513,6 @@ virNetDevMacVLanVPortProfileCallback(unsigned char *msg,
     pid_t virip_pid = 0;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    hdr = (struct nlmsghdr *) msg;
     data = nlmsg_data(hdr);
 
     /* Quickly decide if we want this or not */

@@ -111,7 +111,6 @@ int virNetDevGetVirtualFunctions(const char *pfname,
 
 int virNetDevLinkDump(const char *ifname, int ifindex,
                       struct nlattr **tb,
-                      unsigned char **recvbuf,
                       uint32_t src_pid, uint32_t dst_pid)
     ATTRIBUTE_RETURN_CHECK;
 

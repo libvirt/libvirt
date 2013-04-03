@@ -1226,8 +1226,6 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
  * @ifindex: The interface index; may be < 0 if ifname is given
  * @nlattr: pointer to a pointer of netlink attributes that will contain
  *          the results
- * @recvbuf: Pointer to the buffer holding the returned netlink response
- *           message; free it, once not needed anymore
  * @src_pid: pid used for nl_pid of the local end of the netlink message
  *           (0 == "use getpid()")
  * @dst_pid: pid of destination nl_pid if the kernel
@@ -1241,11 +1239,10 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
 int
 virNetDevLinkDump(const char *ifname, int ifindex,
                   struct nlattr **tb,
-                  unsigned char **recvbuf,
                   uint32_t src_pid, uint32_t dst_pid)
 {
     int rc = -1;
-    struct nlmsghdr *resp;
+    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = {
         .ifi_family = AF_UNSPEC,
@@ -1253,8 +1250,6 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     };
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
-
-    *recvbuf = NULL;
 
     if (ifname && ifindex <= 0 && virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
@@ -1290,14 +1285,12 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     }
 # endif
 
-    if (virNetlinkCommand(nl_msg, recvbuf, &recvbuflen,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen,
                           src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
-    if (recvbuflen < NLMSG_LENGTH(0) || *recvbuf == NULL)
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
-
-    resp = (struct nlmsghdr *)*recvbuf;
 
     switch (resp->nlmsg_type) {
     case NLMSG_ERROR:
@@ -1326,9 +1319,8 @@ virNetDevLinkDump(const char *ifname, int ifindex,
     }
     rc = 0;
 cleanup:
-    if (rc < 0)
-        VIR_FREE(*recvbuf);
     nlmsg_free(nl_msg);
+    VIR_FREE(resp);
     return rc;
 
 malformed_resp:
@@ -1348,9 +1340,8 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
                      int vlanid, uint32_t (*getPidFunc)(void))
 {
     int rc = -1;
-    struct nlmsghdr *resp;
+    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
-    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen = 0;
     uint32_t pid = 0;
     struct nl_msg *nl_msg;
@@ -1419,14 +1410,12 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
         }
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen, 0, pid,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, pid,
                           NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
 
     switch (resp->nlmsg_type) {
     case NLMSG_ERROR:
@@ -1453,7 +1442,7 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
     rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(recvbuf);
+    VIR_FREE(resp);
     return rc;
 
 malformed_resp:
@@ -1528,17 +1517,14 @@ virNetDevGetVfConfig(const char *ifname, int vf, virMacAddrPtr mac,
                      int *vlanid)
 {
     int rc = -1;
-    unsigned char *recvbuf = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = {NULL, };
     int ifindex = -1;
 
-    rc = virNetDevLinkDump(ifname, ifindex, tb, &recvbuf, 0, 0);
+    rc = virNetDevLinkDump(ifname, ifindex, tb, 0, 0);
     if (rc < 0)
         return rc;
 
     rc = virNetDevParseVfConfig(tb, vf, mac, vlanid);
-
-    VIR_FREE(recvbuf);
 
     return rc;
 }
@@ -1689,7 +1675,6 @@ int
 virNetDevLinkDump(const char *ifname ATTRIBUTE_UNUSED,
                   int ifindex ATTRIBUTE_UNUSED,
                   struct nlattr **tb ATTRIBUTE_UNUSED,
-                  unsigned char **recvbuf ATTRIBUTE_UNUSED,
                   uint32_t src_pid ATTRIBUTE_UNUSED,
                   uint32_t dst_pid ATTRIBUTE_UNUSED)
 {

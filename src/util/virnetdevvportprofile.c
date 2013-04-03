@@ -588,13 +588,12 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
                                uint8_t op)
 {
     int rc = -1;
-    struct nlmsghdr *resp;
+    struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = {
         .ifi_family = AF_UNSPEC,
         .ifi_index  = ifindex,
     };
-    unsigned char *recvbuf = NULL;
     unsigned int recvbuflen = 0;
     int src_pid = 0;
     uint32_t dst_pid = 0;
@@ -711,14 +710,12 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
             goto cleanup;
     }
 
-    if (virNetlinkCommand(nl_msg, &recvbuf, &recvbuflen,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen,
                           src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
-    if (recvbuflen < NLMSG_LENGTH(0) || recvbuf == NULL)
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
         goto malformed_resp;
-
-    resp = (struct nlmsghdr *)recvbuf;
 
     switch (resp->nlmsg_type) {
     case NLMSG_ERROR:
@@ -744,7 +741,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     rc = 0;
 cleanup:
     nlmsg_free(nl_msg);
-    VIR_FREE(recvbuf);
+    VIR_FREE(resp);
     return rc;
 
 malformed_resp:
@@ -784,7 +781,6 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
 {
     int rc;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL, };
-    unsigned char *recvbuf = NULL;
     bool end = false;
     unsigned int i = 0;
 
@@ -794,7 +790,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
         return -1;
 
     while (!end && i <= nthParent) {
-        rc = virNetDevLinkDump(ifname, ifindex, tb, &recvbuf, 0, 0);
+        rc = virNetDevLinkDump(ifname, ifindex, tb, 0, 0);
         if (rc < 0)
             break;
 
@@ -803,7 +799,6 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
                            IFNAMSIZ)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("buffer for root interface name is too small"));
-                VIR_FREE(recvbuf);
                 return -1;
             }
             *parent_ifindex = ifindex;
@@ -814,8 +809,6 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
             ifname = NULL;
         } else
             end = true;
-
-        VIR_FREE(recvbuf);
 
         i++;
     }
@@ -843,7 +836,6 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     int rc;
     int src_pid = 0;
     uint32_t dst_pid = 0;
-    unsigned char *recvbuf = NULL;
     struct nlattr *tb[IFLA_MAX + 1] = { NULL , };
     int repeats = STATUS_POLL_TIMEOUT_USEC / STATUS_POLL_INTERVL_USEC;
     uint16_t status = 0;
@@ -876,7 +868,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     }
 
     while (--repeats >= 0) {
-        rc = virNetDevLinkDump(NULL, ifindex, tb, &recvbuf, src_pid, dst_pid);
+        rc = virNetDevLinkDump(NULL, ifindex, tb, src_pid, dst_pid);
         if (rc < 0)
             goto cleanup;
 
@@ -899,8 +891,6 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         }
 
         usleep(STATUS_POLL_INTERVL_USEC);
-
-        VIR_FREE(recvbuf);
     }
 
     if (status == PORT_PROFILE_RESPONSE_INPROGRESS) {
@@ -910,7 +900,6 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
     }
 
 cleanup:
-    VIR_FREE(recvbuf);
 
     return rc;
 }

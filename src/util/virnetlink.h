@@ -41,6 +41,7 @@
 struct nl_msg;
 struct sockaddr_nl;
 struct nlattr;
+struct nlmsghdr;
 
 # endif /* __linux__ */
 
@@ -48,11 +49,15 @@ int virNetlinkStartup(void);
 void virNetlinkShutdown(void);
 
 int virNetlinkCommand(struct nl_msg *nl_msg,
-                      unsigned char **respbuf, unsigned int *respbuflen,
+                      struct nlmsghdr **resp, unsigned int *respbuflen,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups);
 
-typedef void (*virNetlinkEventHandleCallback)(unsigned char *msg, int length, struct sockaddr_nl *peer, bool *handled, void *opaque);
+typedef void (*virNetlinkEventHandleCallback)(struct nlmsghdr *,
+                                              unsigned int length,
+                                              struct sockaddr_nl *peer,
+                                              bool *handled,
+                                              void *opaque);
 
 typedef void (*virNetlinkEventRemoveCallback)(int watch, const virMacAddrPtr macaddr, void *opaque);
 

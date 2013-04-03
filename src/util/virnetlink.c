@@ -174,7 +174,7 @@ virNetlinkShutdown(void)
  * buffer will be returned.
  */
 int virNetlinkCommand(struct nl_msg *nl_msg,
-                      unsigned char **respbuf, unsigned int *respbuflen,
+                      struct nlmsghdr **resp, unsigned int *respbuflen,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups)
 {
@@ -257,7 +257,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         goto error;
     }
 
-    *respbuflen = nl_recv(nlhandle, &nladdr, respbuf, NULL);
+    *respbuflen = nl_recv(nlhandle, &nladdr,
+                          (unsigned char **)resp, NULL);
     if (*respbuflen <= 0) {
         virReportSystemError(errno,
                              "%s", _("nl_recv failed"));
@@ -265,8 +266,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     }
 error:
     if (rc == -1) {
-        VIR_FREE(*respbuf);
-        *respbuf = NULL;
+        VIR_FREE(*resp);
+        *resp = NULL;
         *respbuflen = 0;
     }
 
@@ -324,13 +325,14 @@ virNetlinkEventCallback(int watch,
                         void *opaque)
 {
     virNetlinkEventSrvPrivatePtr srv = opaque;
-    unsigned char *msg;
+    struct nlmsghdr *msg;
     struct sockaddr_nl peer;
     struct ucred *creds = NULL;
     int i, length;
     bool handled = false;
 
-    length = nl_recv(srv->netlinknh, &peer, &msg, &creds);
+    length = nl_recv(srv->netlinknh, &peer,
+                     (unsigned char **)&msg, &creds);
 
     if (length == 0)
         return;
