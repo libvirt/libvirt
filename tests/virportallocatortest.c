@@ -31,12 +31,14 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
          const struct sockaddr *addr,
          socklen_t addrlen ATTRIBUTE_UNUSED)
 {
-    struct sockaddr_in *saddr = (struct sockaddr_in *)addr;
+    struct sockaddr_in saddr;
 
-    if (saddr->sin_port == htons(5900) ||
-        saddr->sin_port == htons(5904) ||
-        saddr->sin_port == htons(5905) ||
-        saddr->sin_port == htons(5906)) {
+    memcpy(&saddr, addr, sizeof(saddr));
+
+    if (saddr.sin_port == htons(5900) ||
+        saddr.sin_port == htons(5904) ||
+        saddr.sin_port == htons(5905) ||
+        saddr.sin_port == htons(5906)) {
         errno = EADDRINUSE;
         return -1;
     }
