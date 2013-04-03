@@ -215,46 +215,108 @@ int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 int qemuInitCgroup(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm)
+                   virDomainObjPtr vm,
+                   bool startup)
 {
-    int rc;
+    int rc = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr driverGroup = NULL;
+    virCgroupPtr parent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virCgroupFree(&priv->cgroup);
 
-    rc = virCgroupNewDriver("qemu",
-                            cfg->privileged,
-                            true,
-                            cfg->cgroupControllers,
-                            &driverGroup);
-    if (rc != 0) {
-        if (rc == -ENXIO ||
-            rc == -EPERM ||
-            rc == -EACCES) { /* No cgroups mounts == success */
-            VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
-            goto done;
+    if (!vm->def->resource && startup) {
+        virDomainResourceDefPtr res;
+
+        if (VIR_ALLOC(res) < 0) {
+            virReportOOMError();
+            goto cleanup;
         }
 
-        virReportSystemError(-rc,
-                             _("Unable to create cgroup for %s"),
-                             vm->def->name);
-        goto cleanup;
+        if (!(res->partition = strdup("/system"))) {
+            virReportOOMError();
+            VIR_FREE(res);
+            goto cleanup;
+        }
+
+        vm->def->resource = res;
     }
 
-    rc = virCgroupNewDomainDriver(driverGroup, vm->def->name, true, &priv->cgroup);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to create cgroup for %s"),
-                             vm->def->name);
-        goto cleanup;
+    if (vm->def->resource &&
+        vm->def->resource->partition) {
+        if (vm->def->resource->partition[0] != '/') {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Resource partition '%s' must start with '/'"),
+                           vm->def->resource->partition);
+            goto cleanup;
+        }
+        /* We only auto-create the default partition. In other
+         * cases we expec the sysadmin/app to have done so */
+        rc = virCgroupNewPartition(vm->def->resource->partition,
+                                   STREQ(vm->def->resource->partition, "/system"),
+                                   cfg->cgroupControllers,
+                                   &parent);
+        if (rc != 0) {
+            if (rc == -ENXIO ||
+                rc == -EPERM ||
+                rc == -EACCES) { /* No cgroups mounts == success */
+                VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
+                goto done;
+            }
+
+            virReportSystemError(-rc,
+                                 _("Unable to initialize %s cgroup"),
+                                 vm->def->resource->partition);
+            goto cleanup;
+        }
+
+        rc = virCgroupNewDomainPartition(parent,
+                                         "qemu",
+                                         vm->def->name,
+                                         true,
+                                         &priv->cgroup);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
+    } else {
+        rc = virCgroupNewDriver("qemu",
+                                cfg->privileged,
+                                true,
+                                cfg->cgroupControllers,
+                                &parent);
+        if (rc != 0) {
+            if (rc == -ENXIO ||
+                rc == -EPERM ||
+                rc == -EACCES) { /* No cgroups mounts == success */
+                VIR_DEBUG("No cgroups present/configured/accessible, ignoring error");
+                goto done;
+            }
+
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
+
+        rc = virCgroupNewDomainDriver(parent,
+                                      vm->def->name,
+                                      true,
+                                      &priv->cgroup);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 vm->def->name);
+            goto cleanup;
+        }
     }
 
 done:
     rc = 0;
 cleanup:
-    virCgroupFree(&driverGroup);
+    virCgroupFree(&parent);
     virObjectUnref(cfg);
     return rc;
 }
@@ -273,7 +335,7 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
         (const char *const *)cfg->cgroupDeviceACL :
         defaultDeviceACL;
 
-    if (qemuInitCgroup(driver, vm) < 0)
+    if (qemuInitCgroup(driver, vm, true) < 0)
         return -1;
 
     if (!priv->cgroup)

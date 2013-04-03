@@ -1049,7 +1049,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     virCgroupFree(&priv->cgroup);
 
-    if (!(priv->cgroup = virLXCCgroupCreate(vm->def)))
+    if (!(priv->cgroup = virLXCCgroupCreate(vm->def, true)))
         return -1;
 
     if (!virCgroupHasController(priv->cgroup,
@@ -1464,7 +1464,7 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
 
-        if (!(priv->cgroup = virLXCCgroupCreate(vm->def)))
+        if (!(priv->cgroup = virLXCCgroupCreate(vm->def, false)))
             goto error;
 
         if (virLXCUpdateActiveUsbHostdevs(driver, vm->def) < 0)

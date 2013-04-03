@@ -3005,7 +3005,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuUpdateActiveUsbHostdevs(driver, obj->def) < 0)
         goto error;
 
-    if (qemuInitCgroup(driver, obj) < 0)
+    if (qemuInitCgroup(driver, obj, false) < 0)
         goto error;
 
     /* XXX: Need to change as long as lock is introduced for

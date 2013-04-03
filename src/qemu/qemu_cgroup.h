@@ -37,7 +37,8 @@ int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev,
                                  const char *path,
                                  void *opaque);
 int qemuInitCgroup(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm);
+                   virDomainObjPtr vm,
+                   bool startup);
 int qemuSetupCgroup(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virBitmapPtr nodemask);

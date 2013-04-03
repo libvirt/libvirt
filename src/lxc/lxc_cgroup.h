@@ -27,7 +27,7 @@
 # include "lxc_fuse.h"
 # include "virusb.h"
 
-virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def);
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup);
 virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def);
 int virLXCCgroupSetup(virDomainDefPtr def,
                       virCgroupPtr cgroup,

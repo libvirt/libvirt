@@ -523,29 +523,88 @@ cleanup:
 }
 
 
-virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def)
+virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
 {
-    virCgroupPtr driver = NULL;
-    virCgroupPtr cgroup = NULL;
     int rc;
+    virCgroupPtr parent = NULL;
+    virCgroupPtr cgroup = NULL;
 
-    rc = virCgroupNewDriver("lxc", true, false, -1, &driver);
-    if (rc != 0) {
-        virReportSystemError(-rc, "%s",
-                             _("Unable to get cgroup for driver"));
-        goto cleanup;
+    if (!def->resource && startup) {
+        virDomainResourceDefPtr res;
+
+        if (VIR_ALLOC(res) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (!(res->partition = strdup("/system"))) {
+            virReportOOMError();
+            VIR_FREE(res);
+            goto cleanup;
+        }
+
+        def->resource = res;
     }
 
-    rc = virCgroupNewDomainDriver(driver, def->name, true, &cgroup);
-    if (rc != 0) {
-        virReportSystemError(-rc,
-                             _("Unable to create cgroup for domain %s"),
-                             def->name);
-        goto cleanup;
+    if (def->resource &&
+        def->resource->partition) {
+        if (def->resource->partition[0] != '/') {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Resource partition '%s' must start with '/'"),
+                           def->resource->partition);
+            goto cleanup;
+        }
+        /* We only auto-create the default partition. In other
+         * cases we expec the sysadmin/app to have done so */
+        rc = virCgroupNewPartition(def->resource->partition,
+                                   STREQ(def->resource->partition, "/system"),
+                                   -1,
+                                   &parent);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to initialize %s cgroup"),
+                                 def->resource->partition);
+            goto cleanup;
+        }
+
+        rc = virCgroupNewDomainPartition(parent,
+                                         "lxc",
+                                         def->name,
+                                         true,
+                                         &cgroup);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 def->name);
+            goto cleanup;
+        }
+    } else {
+        rc = virCgroupNewDriver("lxc",
+                                true,
+                                true,
+                                -1,
+                                &parent);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 def->name);
+            goto cleanup;
+        }
+
+        rc = virCgroupNewDomainDriver(parent,
+                                      def->name,
+                                      true,
+                                      &cgroup);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to create cgroup for %s"),
+                                 def->name);
+            goto cleanup;
+        }
     }
 
 cleanup:
-    virCgroupFree(&driver);
+    virCgroupFree(&parent);
     return cgroup;
 }
 
@@ -556,7 +615,7 @@ virCgroupPtr virLXCCgroupJoin(virDomainDefPtr def)
     int ret = -1;
     int rc;
 
-    if (!(cgroup = virLXCCgroupCreate(def)))
+    if (!(cgroup = virLXCCgroupCreate(def, true)))
         return NULL;
 
     rc = virCgroupAddTask(cgroup, getpid());
