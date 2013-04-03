@@ -1537,10 +1537,15 @@ libvirt_lxc.def: $(srcdir)/libvirt_lxc.syms
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
-libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
-		     -version-info $(LIBVIRT_VERSION_INFO) \
-		    $(LIBVIRT_NODELETE) $(AM_LDFLAGS) \
-		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
+libvirt_la_LDFLAGS = \
+		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
+		-version-info $(LIBVIRT_VERSION_INFO) \
+		$(LIBVIRT_NODELETE) \
+		$(AM_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
+		$(CYGWIN_EXTRA_LDFLAGS) \
+		$(MINGW_EXTRA_LDFLAGS) \
+		$(NULL)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += \
 		    $(DRIVER_MODULE_LIBS) \
@@ -1616,18 +1621,26 @@ endif
 EXTRA_DIST += libvirt_probes.d libvirt_qemu_probes.d
 
 libvirt_qemu_la_SOURCES = libvirt-qemu.c
-libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
-			  -version-info $(LIBVIRT_VERSION_INFO) \
-			  $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS) \
-			  $(AM_LDFLAGS)
+libvirt_qemu_la_LDFLAGS = \
+		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
+		-version-info $(LIBVIRT_VERSION_INFO) \
+		$(AM_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
+		$(CYGWIN_EXTRA_LDFLAGS) \
+		$(MINGW_EXTRA_LDFLAGS) \
+		$(NULL)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 
 libvirt_lxc_la_SOURCES = libvirt-lxc.c
-libvirt_lxc_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
-			  -version-info $(LIBVIRT_VERSION_INFO) \
-			  $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS) \
-			  $(AM_LDFLAGS)
+libvirt_lxc_la_LDFLAGS = \
+		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
+		-version-info $(LIBVIRT_VERSION_INFO) \
+		$(AM_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
+		$(CYGWIN_EXTRA_LDFLAGS) \
+		$(MINGW_EXTRA_LDFLAGS) \
+		$(NULL)
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
 libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 EXTRA_DIST += $(LIBVIRT_LXC_SYMBOL_FILE)
@@ -1675,6 +1688,7 @@ virtlockd_CFLAGS = \
 virtlockd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
@@ -1923,6 +1937,7 @@ libvirt_iohelper_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_iohelper_LDADD =		\
 		libvirt_util.la		\
@@ -1946,6 +1961,7 @@ libvirt_parthelper_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_parthelper_LDADD =		\
 		$(LIBPARTED_LIBS)	\
@@ -1978,6 +1994,7 @@ libvirt_sanlock_helper_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_sanlock_helper_LDADD = libvirt.la
 endif
@@ -1994,6 +2011,7 @@ libvirt_lxc_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(NULL)
 libvirt_lxc_LDADD =			\
 		$(FUSE_LIBS) \
@@ -2038,6 +2056,7 @@ virt_aa_helper_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(NULL)
 virt_aa_helper_LDADD =						\
 		libvirt_conf.la					\

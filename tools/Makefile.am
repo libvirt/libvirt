@@ -100,6 +100,7 @@ virt_host_validate_SOURCES = \
 virt_host_validate_LDFLAGS = \
 		$(WARN_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
 		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 
@@ -135,6 +136,7 @@ virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(WARN_LDFLAGS)					\
 		$(PIE_LDFLAGS)					\
+		$(RELRO_LDFLAGS) \
 		../src/libvirt.la				\
 		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\
