@@ -186,13 +186,13 @@ bool virClassIsDerivedFrom(virClassPtr klass,
 void *virObjectNew(virClassPtr klass)
 {
     virObjectPtr obj = NULL;
-    char *somebytes;
 
-    if (VIR_ALLOC_N(somebytes, klass->objectSize) < 0) {
+    if (VIR_ALLOC_VAR(obj,
+                      char,
+                      klass->objectSize - sizeof(virObject)) < 0) {
         virReportOOMError();
         return NULL;
     }
-    obj = (virObjectPtr)somebytes;
 
     obj->magic = klass->magic;
     obj->klass = klass;
