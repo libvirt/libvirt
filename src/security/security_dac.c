@@ -25,12 +25,12 @@
 
 #include "security_dac.h"
 #include "virerror.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virpci.h"
 #include "virusb.h"
 #include "virstoragefile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_DAC_NAME "dac"

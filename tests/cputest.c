@@ -38,6 +38,7 @@
 #include "cpu_conf.h"
 #include "cpu/cpu.h"
 #include "cpu/cpu_map.h"
+#include "virstring.h"
 
 static const char *abs_top_srcdir;
 

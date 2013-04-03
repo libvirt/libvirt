@@ -46,7 +46,6 @@
 #include "uml_driver.h"
 #include "uml_conf.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "nodeinfo.h"
 #include "virstatslinux.h"
 #include "capabilities.h"
@@ -65,6 +64,7 @@
 #include "virnodesuspend.h"
 #include "virprocess.h"
 #include "viruri.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 

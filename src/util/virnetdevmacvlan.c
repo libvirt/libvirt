@@ -29,7 +29,6 @@
 
 #include "virnetdevmacvlan.h"
 #include "virmacaddr.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "virthread.h"
 

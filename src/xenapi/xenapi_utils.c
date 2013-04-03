@@ -29,7 +29,6 @@
 #include "domain_conf.h"
 #include "virerror.h"
 #include "datatypes.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "viralloc.h"
 #include "virbuffer.h"
@@ -37,6 +36,7 @@
 #include "viruri.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
+#include "virstring.h"
 
 void
 xenSessionFree(xen_session *session)

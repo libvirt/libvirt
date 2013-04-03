@@ -40,6 +40,7 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 

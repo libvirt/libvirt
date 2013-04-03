@@ -52,7 +52,7 @@
 #include "virfile.h"
 #include "virthread.h"
 #include "virprocess.h"
-
+#include "virstring.h"
 #include "passfd.h"
 
 #if WITH_SSH2

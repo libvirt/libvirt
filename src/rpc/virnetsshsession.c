@@ -34,6 +34,7 @@
 #include "virutil.h"
 #include "virerror.h"
 #include "virobject.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SSH
 

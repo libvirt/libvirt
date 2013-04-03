@@ -47,7 +47,7 @@
 #include "domain_conf.h"
 #include "c-ctype.h"
 #include "virfile.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

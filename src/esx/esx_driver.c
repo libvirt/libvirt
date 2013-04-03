@@ -28,7 +28,6 @@
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "virauth.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"
@@ -46,6 +45,7 @@
 #include "esx_vi_methods.h"
 #include "esx_util.h"
 #include "viruri.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

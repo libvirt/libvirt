@@ -1745,10 +1745,26 @@ virStorageFileResize;
 
 
 # util/virstring.h
+virArgvToString;
+virAsprintf;
+virSkipSpaces;
+virSkipSpacesAndBackslash;
+virSkipSpacesBackwards;
+virStrcpy;
 virStringArrayHasString;
 virStringFreeList;
 virStringJoin;
 virStringSplit;
+virStrncpy;
+virStrToDouble;
+virStrToLong_i;
+virStrToLong_l;
+virStrToLong_ll;
+virStrToLong_ui;
+virStrToLong_ul;
+virStrToLong_ull;
+virTrimSpaces;
+virVasprintf;
 
 
 # util/virsysinfo.h
@@ -1845,8 +1861,6 @@ virUSBDeviceSetUsedBy;
 saferead;
 safewrite;
 safezero;
-virArgvToString;
-virAsprintf;
 virBuildPathInternal;
 virCompareLimitUlong;
 virDirCreate;
@@ -1914,22 +1928,8 @@ virSetInherit;
 virSetNonBlock;
 virSetUIDGID;
 virSetUIDGIDWithCaps;
-virSkipSpaces;
-virSkipSpacesAndBackslash;
-virSkipSpacesBackwards;
-virStrcpy;
 virStrIsPrint;
-virStrncpy;
-virStrToDouble;
-virStrToLong_i;
-virStrToLong_l;
-virStrToLong_ll;
-virStrToLong_ui;
-virStrToLong_ul;
-virStrToLong_ull;
-virTrimSpaces;
 virValidateWWN;
-virVasprintf;
 
 
 # util/viruuid.h

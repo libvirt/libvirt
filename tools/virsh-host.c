@@ -34,10 +34,10 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virsh-domain.h"
 #include "virxml.h"
 #include "virtypedparam.h"
+#include "virstring.h"
 
 /*
  * "capabilities" command

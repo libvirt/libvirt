@@ -30,6 +30,8 @@
 #include "virlog.h"
 #include "rpc/virnetserver.h"
 #include "configmake.h"
+#include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 

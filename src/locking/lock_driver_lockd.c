@@ -26,13 +26,13 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"
-#include "virutil.h"
 #include "virfile.h"
 #include "virerror.h"
 #include "rpc/virnetclient.h"
 #include "lock_protocol.h"
 #include "configmake.h"
 #include "sha256.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 

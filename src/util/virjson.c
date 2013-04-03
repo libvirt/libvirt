@@ -27,6 +27,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
+#include "virstring.h"
 #include "virutil.h"
 
 #if WITH_YAJL

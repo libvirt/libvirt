@@ -31,7 +31,6 @@
 
 #include "internal.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "vbox_MSCOMGlue.h"

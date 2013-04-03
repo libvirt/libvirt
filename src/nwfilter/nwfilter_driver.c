@@ -41,6 +41,7 @@
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_dhcpsnoop.h"

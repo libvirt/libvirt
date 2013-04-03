@@ -45,7 +45,6 @@
 
 #include "datatypes.h"
 #include "virerror.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "internal.h"
 #include "secret_conf.h"
@@ -55,6 +54,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "stat-time.h"
+#include "virstring.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"

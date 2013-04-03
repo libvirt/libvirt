@@ -31,7 +31,6 @@
 #include "viralloc.h"
 #include "storage_conf.h"
 #include "storage_encryption_conf.h"
-#include "virutil.h"
 #include "virxml.h"
 #include "virerror.h"
 #include "viruuid.h"

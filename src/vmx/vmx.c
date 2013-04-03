@@ -32,6 +32,7 @@
 #include "viruuid.h"
 #include "vmx.h"
 #include "viruri.h"
+#include "virstring.h"
 
 /*
 

@@ -10,9 +10,8 @@
 #include "virhashdata.h"
 #include "testutils.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virlog.h"
-
+#include "virstring.h"
 
 #define testError(...)                                          \
     do {                                                        \

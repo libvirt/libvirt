@@ -41,6 +41,7 @@
 #include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 

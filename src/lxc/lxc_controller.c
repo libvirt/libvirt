@@ -48,7 +48,6 @@
 
 #include "virerror.h"
 #include "virlog.h"
-#include "virutil.h"
 
 #include "lxc_conf.h"
 #include "lxc_container.h"
@@ -66,6 +65,7 @@
 #include "virprocess.h"
 #include "virnuma.h"
 #include "rpc/virnetserver.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

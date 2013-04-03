@@ -37,11 +37,11 @@
 #include "secret_conf.h"
 #include "secret_driver.h"
 #include "virthread.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 

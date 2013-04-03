@@ -9,6 +9,7 @@
 
 # include "qemu/qemu_capabilities.h"
 # include "viralloc.h"
+# include "virstring.h"
 
 struct testInfo {
     const char *name;

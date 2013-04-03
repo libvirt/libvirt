@@ -68,6 +68,7 @@
 #include "virthreadpool.h"
 #include "configmake.h"
 #include "virtime.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

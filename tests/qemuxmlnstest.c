@@ -18,8 +18,8 @@
 # include "qemu/qemu_domain.h"
 # include "datatypes.h"
 # include "cpu/cpu_map.h"
-
 # include "testutilsqemu.h"
+# include "virstring.h"
 
 static const char *abs_top_srcdir;
 static virQEMUDriver driver;

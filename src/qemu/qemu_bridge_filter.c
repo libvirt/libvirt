@@ -25,7 +25,6 @@
 #include "virebtables.h"
 #include "qemu_conf.h"
 #include "qemu_driver.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "virlog.h"
 

@@ -37,6 +37,7 @@
 #include "domain_event.h"
 #include "virtime.h"
 #include "virstoragefile.h"
+#include "virstring.h"
 
 #include <sys/time.h>
 #include <fcntl.h>

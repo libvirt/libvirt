@@ -55,7 +55,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "lxc_container.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virnetdevveth.h"
 #include "viruuid.h"
@@ -64,6 +63,7 @@
 #include "vircommand.h"
 #include "virnetdev.h"
 #include "virprocess.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

@@ -38,7 +38,6 @@
 #include "internal.h"
 
 #include "security_apparmor.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "datatypes.h"
@@ -49,6 +48,7 @@
 #include "configmake.h"
 #include "vircommand.h"
 #include "virlog.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 #define SECURITY_APPARMOR_VOID_DOI      "0"

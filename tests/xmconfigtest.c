@@ -35,6 +35,7 @@
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;

@@ -12,6 +12,7 @@
 #include "testutils.h"
 #include "storage_conf.h"
 #include "testutilsqemu.h"
+#include "virstring.h"
 
 static int
 testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,

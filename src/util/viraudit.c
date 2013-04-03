@@ -30,9 +30,9 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "viraudit.h"
-#include "virutil.h"
 #include "virfile.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 /* Provide the macros in case the header file is old.
    FIXME: should be removed. */

@@ -11,7 +11,6 @@
 
 # include "internal.h"
 # include "viralloc.h"
-# include "virutil.h"
 # include "qemu/qemu_monitor.h"
 
 struct testEscapeString

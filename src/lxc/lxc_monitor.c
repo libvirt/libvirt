@@ -30,6 +30,7 @@
 #include "virlog.h"
 #include "virthread.h"
 #include "rpc/virnetclient.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

@@ -25,7 +25,6 @@
 # define __VIR_NETDEV_OPENVSWITCH_H__
 
 # include "internal.h"
-# include "virutil.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
 

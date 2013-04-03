@@ -38,7 +38,6 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "virlog.h"
@@ -47,7 +46,7 @@
 #include "vircommand.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 

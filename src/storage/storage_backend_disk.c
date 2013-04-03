@@ -30,10 +30,10 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "storage_backend_disk.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

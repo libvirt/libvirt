@@ -19,6 +19,7 @@
 # include "qemu/qemu_domain.h"
 # include "datatypes.h"
 # include "cpu/cpu_map.h"
+# include "virstring.h"
 
 # include "testutilsqemu.h"
 

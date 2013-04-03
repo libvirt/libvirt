@@ -45,10 +45,10 @@
 #include "virhash.h"
 #include "virbuffer.h"
 #include "viruuid.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "count-one-bits.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXM
 

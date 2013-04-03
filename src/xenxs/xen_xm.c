@@ -38,6 +38,7 @@
 #include "xen_sxpr.h"
 #include "domain_conf.h"
 #include "virstoragefile.h"
+#include "virstring.h"
 
 /* Convenience method to grab a long int from the config file object */
 static int xenXMConfigGetBool(virConfPtr conf,

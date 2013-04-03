@@ -31,6 +31,7 @@
 #include "viruuid.h"
 #include "virlog.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 /* Return nn:mm in hex for block and character devices, and NULL
  * for other file types, stat failure, or allocation failure.  */

@@ -44,7 +44,6 @@
 #include "console.h"
 #include "viralloc.h"
 #include "vircommand.h"
-#include "virutil.h"
 #include "virfile.h"
 #include "virjson.h"
 #include "virkeycode.h"

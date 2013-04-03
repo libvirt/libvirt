@@ -57,6 +57,7 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "viruri.h"
+#include "virstring.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 2002

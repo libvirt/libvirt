@@ -29,6 +29,7 @@
 #include "gnutls_1_0_compat.h"
 
 #include "virnettlscontext.h"
+#include "virstring.h"
 
 #include "viralloc.h"
 #include "virerror.h"

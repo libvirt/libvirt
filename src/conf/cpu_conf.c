@@ -25,10 +25,10 @@
 
 #include "virerror.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "cpu_conf.h"
 #include "domain_conf.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 

@@ -28,6 +28,7 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "intprops.h"
+#include "virstring.h"
 
 #include <sys/ioctl.h>
 #include <sys/socket.h>

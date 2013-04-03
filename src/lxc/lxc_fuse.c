@@ -35,6 +35,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virbuffer.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

@@ -30,7 +30,6 @@
 #include "storage_backend_sheepdog.h"
 #include "storage_conf.h"
 #include "vircommand.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 

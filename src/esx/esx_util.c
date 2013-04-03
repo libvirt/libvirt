@@ -28,13 +28,13 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "vmx.h"
 #include "esx_private.h"
 #include "esx_util.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

@@ -31,11 +31,10 @@
 #include "internal.h"
 #include "testutils.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "security/security_manager.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

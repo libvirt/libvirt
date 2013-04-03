@@ -30,6 +30,7 @@
 #include "interface_driver.h"
 #include "interface_conf.h"
 #include "viralloc.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 

@@ -30,6 +30,8 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "virerror.h"
+#include "virstring.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

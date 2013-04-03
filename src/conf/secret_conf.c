@@ -29,7 +29,6 @@
 #include "viralloc.h"
 #include "secret_conf.h"
 #include "virerror.h"
-#include "virutil.h"
 #include "virxml.h"
 #include "viruuid.h"
 

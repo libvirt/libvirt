@@ -54,8 +54,8 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
 # include "virerror.h"
 # include "viralloc.h"
 # include "virlog.h"
-
 # include "virportallocator.h"
+# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 

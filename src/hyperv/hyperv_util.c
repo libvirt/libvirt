@@ -24,7 +24,6 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "viruuid.h"

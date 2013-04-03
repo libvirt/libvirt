@@ -15,6 +15,7 @@
 # include "internal.h"
 # include "lxc/lxc_conf.h"
 # include "testutilslxc.h"
+# include "virstring.h"
 
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;

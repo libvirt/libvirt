@@ -31,7 +31,6 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "virauth.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "viralloc.h"
 #include "virbuffer.h"
@@ -39,6 +38,7 @@
 #include "xenapi_driver.h"
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 

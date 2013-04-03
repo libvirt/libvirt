@@ -30,7 +30,6 @@
 # include <unistd.h>
 # include <sys/select.h>
 # include <sys/types.h>
-# include <stdarg.h>
 
 # ifndef MIN
 #  define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -155,63 +154,15 @@ int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode);
 
-char *virArgvToString(const char *const *argv);
-
-int virStrToLong_i(char const *s,
-                     char **end_ptr,
-                     int base,
-                     int *result);
-
-int virStrToLong_ui(char const *s,
-                    char **end_ptr,
-                    int base,
-                    unsigned int *result);
-int virStrToLong_l(char const *s,
-                   char **end_ptr,
-                   int base,
-                   long *result);
-int virStrToLong_ul(char const *s,
-                    char **end_ptr,
-                    int base,
-                    unsigned long *result);
-int virStrToLong_ll(char const *s,
-                    char **end_ptr,
-                    int base,
-                    long long *result);
-int virStrToLong_ull(char const *s,
-                     char **end_ptr,
-                     int base,
-                     unsigned long long *result);
-int virStrToDouble(char const *s,
-                   char **end_ptr,
-                   double *result);
-
 int virScaleInteger(unsigned long long *value, const char *suffix,
                     unsigned long long scale, unsigned long long limit)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virHexToBin(unsigned char c);
 
-void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
-void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
-void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
-void virSkipSpacesBackwards(const char *str, char **endp)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
-int virAsprintf(char **strp, const char *fmt, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3)
-    ATTRIBUTE_RETURN_CHECK;
-int virVasprintf(char **strp, const char *fmt, va_list list)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 0)
-    ATTRIBUTE_RETURN_CHECK;
-char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
-    ATTRIBUTE_RETURN_CHECK;
-char *virStrcpy(char *dest, const char *src, size_t destbytes)
-    ATTRIBUTE_RETURN_CHECK;
-# define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
 int virDoubleToStr(char **strp, double number)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

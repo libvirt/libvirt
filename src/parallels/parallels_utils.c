@@ -28,8 +28,8 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virjson.h"
-
 #include "parallels_utils.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 

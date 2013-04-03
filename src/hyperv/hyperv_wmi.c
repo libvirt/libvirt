@@ -29,11 +29,11 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "hyperv_private.h"
 #include "hyperv_wmi.h"
+#include "virstring.h"
 
 #define WS_SERIALIZER_FREE_MEM_WORKS 0
 

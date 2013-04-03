@@ -50,6 +50,7 @@
 #include "virfile.h"
 #include "virtime.h"
 #include "intprops.h"
+#include "virstring.h"
 
 /* Journald output is only supported on Linux new enough to expose
  * htole64.  */

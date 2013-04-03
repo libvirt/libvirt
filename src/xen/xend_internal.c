@@ -34,7 +34,6 @@
 #include "datatypes.h"
 #include "xend_internal.h"
 #include "driver.h"
-#include "virutil.h"
 #include "virsexpr.h"
 #include "xen_sxpr.h"
 #include "virbuffer.h"
@@ -47,6 +46,7 @@
 #include "virfile.h"
 #include "viruri.h"
 #include "device_conf.h"
+#include "virstring.h"
 
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>

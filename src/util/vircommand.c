@@ -50,6 +50,7 @@
 #include "virprocess.h"
 #include "virbuffer.h"
 #include "virthread.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -40,6 +40,7 @@
 #include "datatypes.h"
 #include "virerror.h"
 #include "virbuffer.h"
+#include "virstring.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

@@ -47,10 +47,10 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "nodeinfo.h"
 #include "virfile.h"
 #include "vircommand.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

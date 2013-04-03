@@ -45,6 +45,7 @@
 #include "virrandom.h"
 #include "dirname.h"
 #include "virprocess.h"
+#include "virstring.h"
 
 #if TEST_OOM_TRACE
 # include <execinfo.h>

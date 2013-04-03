@@ -10,6 +10,7 @@
 #include "testutils.h"
 #include "xen/xen_hypervisor.h"
 #include "virfile.h"
+#include "virstring.h"
 
 static int
 testCompareFiles(virArch hostmachine, const char *xml_rel,

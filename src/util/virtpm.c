@@ -24,7 +24,7 @@
 
 #include <sys/stat.h>
 
-#include "virutil.h"
+#include "virstring.h"
 #include "virerror.h"
 #include "virtpm.h"
 

@@ -34,7 +34,6 @@
 
 # include "virerror.h"
 # include "datatypes.h"
-# include "virutil.h"
 # include "virstatslinux.h"
 # include "viralloc.h"
 # include "virfile.h"

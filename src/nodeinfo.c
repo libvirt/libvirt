@@ -47,7 +47,6 @@
 #include "viralloc.h"
 #include "nodeinfo.h"
 #include "physmem.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "count-one-bits.h"
@@ -55,7 +54,7 @@
 #include "virarch.h"
 #include "virfile.h"
 #include "virtypedparam.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

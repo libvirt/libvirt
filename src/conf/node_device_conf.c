@@ -32,7 +32,6 @@
 
 #include "node_device_conf.h"
 #include "virxml.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "viruuid.h"
 #include "virrandom.h"

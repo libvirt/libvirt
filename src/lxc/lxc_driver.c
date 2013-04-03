@@ -46,7 +46,6 @@
 #include "lxc_driver.h"
 #include "lxc_process.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"
 #include "nodeinfo.h"
@@ -68,6 +67,7 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "viruri.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

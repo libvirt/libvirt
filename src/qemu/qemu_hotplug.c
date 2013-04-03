@@ -47,6 +47,7 @@
 #include "virnetdevtap.h"
 #include "device_conf.h"
 #include "virstoragefile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 #define CHANGE_MEDIA_RETRIES 10

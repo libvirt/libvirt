@@ -54,6 +54,7 @@
 #include "nwfilter_ebiptables_driver.h"
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

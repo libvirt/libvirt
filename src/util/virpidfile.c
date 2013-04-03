@@ -36,6 +36,7 @@
 #include "virerror.h"
 #include "c-ctype.h"
 #include "areadlink.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

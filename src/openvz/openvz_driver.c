@@ -48,7 +48,6 @@
 #include "openvz_driver.h"
 #include "openvz_util.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "openvz_conf.h"
 #include "nodeinfo.h"
 #include "viralloc.h"
@@ -58,6 +57,7 @@
 #include "vircommand.h"
 #include "viruri.h"
 #include "virstatslinux.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 

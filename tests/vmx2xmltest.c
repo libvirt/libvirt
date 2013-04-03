@@ -11,6 +11,7 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "vmx/vmx.h"
+# include "virstring.h"
 
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;

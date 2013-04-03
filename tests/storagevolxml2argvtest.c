@@ -5,6 +5,7 @@
 #include "datatypes.h"
 #include "storage/storage_backend.h"
 #include "testutilsqemu.h"
+#include "virstring.h"
 
 const char create_tool[] = "qemu-img";
 

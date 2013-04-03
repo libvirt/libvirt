@@ -15,6 +15,7 @@
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
 #include "testutilsqemu.h"
+#include "virstring.h"
 
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml,

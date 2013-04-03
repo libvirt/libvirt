@@ -32,8 +32,8 @@
 #include "viruuid.h"
 #include "virerror.h"
 #include "vmx.h"
-
 #include "vmware_conf.h"
+#include "virstring.h"
 
 /* Free all memory associated with a vmware_driver structure */
 void

@@ -50,7 +50,6 @@
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "virutil.h"
 #include "c-ctype.h"
 #include "nodeinfo.h"
 #include "domain_audit.h"
@@ -64,6 +63,7 @@
 #include "virbitmap.h"
 #include "viratomic.h"
 #include "virnuma.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

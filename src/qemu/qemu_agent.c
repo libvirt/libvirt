@@ -41,6 +41,7 @@
 #include "virprocess.h"
 #include "virtime.h"
 #include "virobject.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

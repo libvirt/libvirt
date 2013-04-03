@@ -30,6 +30,8 @@
 #include "viralloc.h"
 #include "virpci.h"
 #include "virlog.h"
+#include "virstring.h"
+#include "virutil.h"
 
 #include <sys/ioctl.h>
 #include <net/if.h>

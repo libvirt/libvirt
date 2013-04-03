@@ -23,7 +23,6 @@
 # define __VIR_COMMAND_H__
 
 # include "internal.h"
-# include "virutil.h"
 # include "virbuffer.h"
 
 typedef struct _virCommand virCommand;

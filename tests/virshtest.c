@@ -6,8 +6,8 @@
 
 #include "internal.h"
 #include "virxml.h"
-#include "virutil.h"
 #include "testutils.h"
+#include "virstring.h"
 
 #ifdef WIN32
 

@@ -8,8 +8,8 @@
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
-#include "virutil.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #if ! (defined __linux__  &&  (defined(__x86_64__) || \
                                defined(__amd64__)  || \

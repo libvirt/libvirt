@@ -28,7 +28,7 @@
 
 # define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 # include "vircgrouppriv.h"
-# include "virutil.h"
+# include "virstring.h"
 # include "virerror.h"
 # include "virlog.h"
 # include "virfile.h"

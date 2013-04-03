@@ -31,6 +31,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virt-host-validate-common.h"
+#include "virstring.h"
 
 static bool quiet;
 

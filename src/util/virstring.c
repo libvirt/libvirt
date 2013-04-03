@@ -21,6 +21,10 @@
 
 #include <config.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "c-ctype.h"
 #include "virstring.h"
 #include "viralloc.h"
 #include "virbuffer.h"
@@ -179,4 +183,335 @@ virStringArrayHasString(char **strings, const char *needle)
     }
 
     return false;
+}
+
+/* Like strtol, but produce an "int" result, and check more carefully.
+   Return 0 upon success;  return -1 to indicate failure.
+   When END_PTR is NULL, the byte after the final valid digit must be NUL.
+   Otherwise, it's like strtol and lets the caller check any suffix for
+   validity.  This function is careful to return -1 when the string S
+   represents a number that is not representable as an "int". */
+int
+virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
+{
+    long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtol(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s || (int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned int" value.  */
+int
+virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s || (unsigned int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce a "long" value.  */
+int
+virStrToLong_l(char const *s, char **end_ptr, int base, long *result)
+{
+    long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtol(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long" value.  */
+int
+virStrToLong_ul(char const *s, char **end_ptr, int base, unsigned long *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce a "long long" value.  */
+int
+virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
+{
+    long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoll(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long long" value.  */
+int
+virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+{
+    unsigned long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoull(s, &p, base); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+int
+virStrToDouble(char const *s,
+               char **end_ptr,
+               double *result)
+{
+    double val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtod(s, &p); /* exempt from syntax-check */
+    err = (errno || (!end_ptr && *p) || p == s);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/**
+ * virVasprintf
+ *
+ * like glibc's vasprintf but makes sure *strp == NULL on failure
+ */
+int
+virVasprintf(char **strp, const char *fmt, va_list list)
+{
+    int ret;
+
+    if ((ret = vasprintf(strp, fmt, list)) == -1)
+        *strp = NULL;
+
+    return ret;
+}
+
+/**
+ * virAsprintf
+ *
+ * like glibc's_asprintf but makes sure *strp == NULL on failure
+ */
+int
+virAsprintf(char **strp, const char *fmt, ...)
+{
+    va_list ap;
+    int ret;
+
+    va_start(ap, fmt);
+    ret = virVasprintf(strp, fmt, ap);
+    va_end(ap);
+    return ret;
+}
+
+/**
+ * virStrncpy
+ *
+ * A safe version of strncpy.  The last parameter is the number of bytes
+ * available in the destination string, *not* the number of bytes you want
+ * to copy.  If the destination is not large enough to hold all n of the
+ * src string bytes plus a \0, NULL is returned and no data is copied.
+ * If the destination is large enough to hold the n bytes plus \0, then the
+ * string is copied and a pointer to the destination string is returned.
+ */
+char *
+virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
+{
+    char *ret;
+
+    if (n > (destbytes - 1))
+        return NULL;
+
+    ret = strncpy(dest, src, n);
+    /* strncpy NULL terminates iff the last character is \0.  Therefore
+     * force the last byte to be \0
+     */
+    dest[n] = '\0';
+
+    return ret;
+}
+
+/**
+ * virStrcpy
+ *
+ * A safe version of strcpy.  The last parameter is the number of bytes
+ * available in the destination string, *not* the number of bytes you want
+ * to copy.  If the destination is not large enough to hold all n of the
+ * src string bytes plus a \0, NULL is returned and no data is copied.
+ * If the destination is large enough to hold the source plus \0, then the
+ * string is copied and a pointer to the destination string is returned.
+ */
+char *
+virStrcpy(char *dest, const char *src, size_t destbytes)
+{
+    return virStrncpy(dest, src, strlen(src), destbytes);
+}
+
+/**
+ * virSkipSpaces:
+ * @str: pointer to the char pointer used
+ *
+ * Skip potential blanks, this includes space tabs, line feed,
+ * carriage returns.
+ */
+void
+virSkipSpaces(const char **str)
+{
+    const char *cur = *str;
+
+    while (c_isspace(*cur))
+        cur++;
+    *str = cur;
+}
+
+/**
+ * virSkipSpacesAndBackslash:
+ * @str: pointer to the char pointer used
+ *
+ * Like virSkipSpaces, but also skip backslashes erroneously emitted
+ * by xend
+ */
+void
+virSkipSpacesAndBackslash(const char **str)
+{
+    const char *cur = *str;
+
+    while (c_isspace(*cur) || *cur == '\\')
+        cur++;
+    *str = cur;
+}
+
+/**
+ * virTrimSpaces:
+ * @str: string to modify to remove all trailing spaces
+ * @endp: track the end of the string
+ *
+ * If @endp is NULL on entry, then all spaces prior to the trailing
+ * NUL in @str are removed, by writing NUL into the appropriate
+ * location.  If @endp is non-NULL but points to a NULL pointer,
+ * then all spaces prior to the trailing NUL in @str are removed,
+ * NUL is written to the new string end, and endp is set to the
+ * location of the (new) string end.  If @endp is non-NULL and
+ * points to a non-NULL pointer, then that pointer is used as
+ * the end of the string, endp is set to the (new) location, but
+ * no NUL pointer is written into the string.
+ */
+void
+virTrimSpaces(char *str, char **endp)
+{
+    char *end;
+
+    if (!endp || !*endp)
+        end = str + strlen(str);
+    else
+        end = *endp;
+    while (end > str && c_isspace(end[-1]))
+        end--;
+    if (endp) {
+        if (!*endp)
+            *end = '\0';
+        *endp = end;
+    } else {
+        *end = '\0';
+    }
+}
+
+/**
+ * virSkipSpacesBackwards:
+ * @str: start of string
+ * @endp: on entry, *endp must be NULL or a location within @str, on exit,
+ * will be adjusted to skip trailing spaces, or to NULL if @str had nothing
+ * but spaces.
+ */
+void
+virSkipSpacesBackwards(const char *str, char **endp)
+{
+    /* Casting away const is safe, since virTrimSpaces does not
+     * modify string with this particular usage.  */
+    char *s = (char*) str;
+
+    if (!*endp)
+        *endp = s + strlen(s);
+    virTrimSpaces(s, endp);
+    if (s == *endp)
+        *endp = NULL;
+}
+
+char *
+virArgvToString(const char *const *argv)
+{
+    int len, i;
+    char *ret, *p;
+
+    for (len = 1, i = 0; argv[i]; i++)
+        len += strlen(argv[i]) + 1;
+
+    if (VIR_ALLOC_N(ret, len) < 0)
+        return NULL;
+    p = ret;
+
+    for (i = 0; argv[i]; i++) {
+        if (i != 0)
+            *(p++) = ' ';
+
+        strcpy(p, argv[i]);
+        p += strlen(argv[i]);
+    }
+
+    *p = '\0';
+
+    return ret;
 }

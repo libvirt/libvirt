@@ -28,6 +28,7 @@
 #include "virtypedparam.h"
 #include "ignore-value.h"
 #include "virutil.h"
+#include "virstring.h"
 
 #ifndef __CYGWIN__
 extern void initlibvirtmod(void);

@@ -65,7 +65,6 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "virutil.h"
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h"
@@ -80,6 +79,7 @@
 #include "virnodesuspend.h"
 #include "virtypedparam.h"
 #include "virendian.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 

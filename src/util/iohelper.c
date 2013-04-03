@@ -40,6 +40,7 @@
 #include "virerror.h"
 #include "configmake.h"
 #include "virrandom.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

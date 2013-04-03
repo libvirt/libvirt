@@ -28,6 +28,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virmacaddr.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

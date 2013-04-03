@@ -36,7 +36,6 @@
 #include "datatypes.h"
 #include "test_driver.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "capabilities.h"
 #include "configmake.h"
@@ -54,6 +53,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virrandom.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 

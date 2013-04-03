@@ -32,10 +32,10 @@
 
 #include "virerror.h"
 #include "virsysinfo.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "vircommand.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSINFO
 

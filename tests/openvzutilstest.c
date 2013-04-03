@@ -10,8 +10,8 @@
 
 # include "internal.h"
 # include "viralloc.h"
-# include "virutil.h"
 # include "openvz/openvz_conf.h"
+# include "virstring.h"
 
 static int
 testLocateConfFile(int vpsid ATTRIBUTE_UNUSED, char **conffile,

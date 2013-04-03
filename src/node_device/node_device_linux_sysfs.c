@@ -32,6 +32,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

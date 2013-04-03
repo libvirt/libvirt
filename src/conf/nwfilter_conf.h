@@ -28,7 +28,6 @@
 
 # include "internal.h"
 
-# include "virutil.h"
 # include "virhash.h"
 # include "virxml.h"
 # include "virbuffer.h"

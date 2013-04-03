@@ -61,7 +61,6 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "nodeinfo.h"
 #include "virstatslinux.h"
 #include "capabilities.h"
@@ -92,6 +91,7 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "virbitmap.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

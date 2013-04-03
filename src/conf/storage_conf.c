@@ -41,9 +41,9 @@
 #include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

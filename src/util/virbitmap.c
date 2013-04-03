@@ -33,10 +33,9 @@
 #include "virbitmap.h"
 #include "viralloc.h"
 #include "virbuffer.h"
-#include "virutil.h"
 #include "c-ctype.h"
 #include "count-one-bits.h"
-
+#include "virstring.h"
 
 struct _virBitmap {
     size_t max_bit;

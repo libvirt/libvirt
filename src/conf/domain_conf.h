@@ -32,7 +32,6 @@
 # include "capabilities.h"
 # include "storage_encryption_conf.h"
 # include "cpu_conf.h"
-# include "virutil.h"
 # include "virthread.h"
 # include "virhash.h"
 # include "virsocketaddr.h"

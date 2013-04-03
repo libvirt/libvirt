@@ -42,6 +42,8 @@
 #include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virstring.h"
+#include "virutil.h"
 
 #define PCI_SYSFS "/sys/bus/pci/"
 #define PCI_ID_LEN 10   /* "XXXX XXXX" */

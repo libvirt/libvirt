@@ -48,6 +48,8 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virthread.h"
+#include "virstring.h"
+#include "virutil.h"
 
 #if HAVE_FIREWALLD
 static char *firewall_cmd_path = NULL;

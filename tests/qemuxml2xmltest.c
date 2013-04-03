@@ -16,6 +16,7 @@
 # include "qemu/qemu_conf.h"
 # include "qemu/qemu_domain.h"
 # include "testutilsqemu.h"
+# include "virstring.h"
 
 static virQEMUDriver driver;
 

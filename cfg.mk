@@ -858,7 +858,7 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
   ^python/(libvirt-(lxc-|qemu-)?override|typewrappers)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/virutil\.c$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
+  ^(bootstrap.conf$$|src/util/virstring\.c$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vircgroupmock\.c)$$)
@@ -892,7 +892,7 @@ exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c$$
 exclude_file_name_regexp--sc_prohibit_sprintf = \
   ^(docs/hacking\.html\.in)|(examples/systemtap/.*stp)|(src/dtrace2systemtap\.pl)|(src/rpc/gensystemtap\.pl)$$
 
-exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virutil\.c$$
+exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = \
   ^src/(util/virsexpr|(vbox|xen|xenxs)/.*)\.c$$

@@ -32,6 +32,7 @@
 #include "virerror.h"
 #include "configmake.h"
 #include "virauthconfig.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_AUTH
 

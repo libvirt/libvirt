@@ -35,7 +35,6 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virutil.h"
 #include "stream.h"
 #include "viruuid.h"
 #include "vircommand.h"
@@ -49,7 +48,7 @@
 #include "remote_protocol.h"
 #include "qemu_protocol.h"
 #include "lxc_protocol.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

@@ -36,8 +36,8 @@
 #include "configmake.h"
 #include "virstoragefile.h"
 #include "virerror.h"
-
 #include "parallels_utils.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 

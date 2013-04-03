@@ -14,6 +14,7 @@
 #include "xenxs/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
+#include "virstring.h"
 
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;

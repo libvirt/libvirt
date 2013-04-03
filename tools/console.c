@@ -39,7 +39,6 @@
 # include "internal.h"
 # include "console.h"
 # include "virlog.h"
-# include "virutil.h"
 # include "virfile.h"
 # include "viralloc.h"
 # include "virthread.h"

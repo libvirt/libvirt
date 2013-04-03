@@ -39,7 +39,6 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "driver.h"
-#include "virutil.h"
 #include "storage_driver.h"
 #include "storage_conf.h"
 #include "viralloc.h"
@@ -48,6 +47,7 @@
 #include "virfile.h"
 #include "fdstream.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

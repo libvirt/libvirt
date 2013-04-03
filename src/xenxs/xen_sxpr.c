@@ -37,6 +37,7 @@
 #include "xenxs_private.h"
 #include "xen_sxpr.h"
 #include "virstoragefile.h"
+#include "virstring.h"
 
 /* Get a domain id from a S-expression string */
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion)

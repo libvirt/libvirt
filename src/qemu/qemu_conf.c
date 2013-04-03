@@ -42,7 +42,6 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "datatypes.h"
 #include "virxml.h"

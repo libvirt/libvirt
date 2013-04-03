@@ -25,9 +25,9 @@
 #include "lock_driver_nop.h"
 #include "virerror.h"
 #include "virlog.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "viruuid.h"
+#include "virstring.h"
 
 #if HAVE_DLFCN_H
 # include <dlfcn.h>

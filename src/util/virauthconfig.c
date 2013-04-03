@@ -26,10 +26,9 @@
 
 #include "virkeyfile.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
-
+#include "virstring.h"
 
 struct _virAuthConfig {
     virKeyFilePtr keyfile;

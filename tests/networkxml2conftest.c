@@ -14,6 +14,7 @@
 #include "vircommand.h"
 #include "viralloc.h"
 #include "network/bridge_driver.h"
+#include "virstring.h"
 
 static int
 testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr caps)

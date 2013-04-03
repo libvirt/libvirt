@@ -45,6 +45,7 @@
 #include "virrandom.h"
 #include "virhash.h"
 #include "viruuid.h"
+#include "virstring.h"
 
 #include "locking/lock_daemon_dispatch.h"
 #include "locking/lock_protocol.h"

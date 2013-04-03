@@ -40,7 +40,6 @@
 #include "lxc_protocol.h"
 #include "qemu_protocol.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virfile.h"
 #include "vircommand.h"
 #include "intprops.h"
@@ -48,6 +47,7 @@
 #include "viruri.h"
 #include "virauth.h"
 #include "virauthconfig.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 

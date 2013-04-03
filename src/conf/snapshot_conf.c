@@ -42,11 +42,11 @@
 #include "secret_conf.h"
 #include "snapshot_conf.h"
 #include "virstoragefile.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "virfile.h"
 #include "virerror.h"
 #include "virxml.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT
 

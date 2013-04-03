@@ -25,7 +25,6 @@
 #include "testutils.h"
 
 #include "viridentity.h"
-#include "virutil.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"

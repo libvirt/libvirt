@@ -27,13 +27,12 @@
 
 #include "virlog.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
 #include "virbuffer.h"
 #include "virendian.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 

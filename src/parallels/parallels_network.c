@@ -28,8 +28,8 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "md5.h"
-
 #include "parallels_utils.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PARALLELS_ROUTED_NETWORK_UUID   "eb593dd1-6846-45b0-84a0-de0729286982"

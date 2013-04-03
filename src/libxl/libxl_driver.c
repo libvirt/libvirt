@@ -44,6 +44,7 @@
 #include "xen_xm.h"
 #include "virtypedparam.h"
 #include "viruri.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 

@@ -47,6 +47,7 @@
 #include "vircommand.h"
 #include "lxc_hostdev.h"
 #include "virhook.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

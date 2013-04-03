@@ -33,6 +33,7 @@
 #include "viralloc.h"
 #include "virthread.h"
 #include "virutil.h"
+#include "virstring.h"
 
 virThreadLocal virLastErr;
 

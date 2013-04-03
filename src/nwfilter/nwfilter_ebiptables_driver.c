@@ -43,7 +43,7 @@
 #include "vircommand.h"
 #include "configmake.h"
 #include "intprops.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

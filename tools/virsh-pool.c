@@ -34,9 +34,9 @@
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virutil.h"
 #include "virxml.h"
 #include "conf/storage_conf.h"
+#include "virstring.h"
 
 virStoragePoolPtr
 vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,

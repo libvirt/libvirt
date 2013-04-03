@@ -62,6 +62,7 @@
 #include "virrandom.h"
 #include "viruri.h"
 #include "virthread.h"
+#include "virstring.h"
 
 #ifdef WITH_TEST
 # include "test/test_driver.h"

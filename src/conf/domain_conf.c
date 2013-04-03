@@ -38,7 +38,6 @@
 #include "verify.h"
 #include "virxml.h"
 #include "viruuid.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "virlog.h"
 #include "nwfilter_conf.h"
@@ -52,6 +51,7 @@
 #include "netdev_vlan_conf.h"
 #include "device_conf.h"
 #include "virtpm.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

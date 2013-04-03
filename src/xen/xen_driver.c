@@ -54,7 +54,6 @@
 # include "xen_inotify.h"
 #endif
 #include "virxml.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "node_device_conf.h"
 #include "virpci.h"
@@ -66,6 +65,7 @@
 #include "virnodesuspend.h"
 #include "nodeinfo.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 #define XEN_SAVE_DIR LOCALSTATEDIR "/lib/libvirt/xen/save"

@@ -40,10 +40,10 @@
 #include "viralloc.h"
 #include "virxml.h"
 #include "viruuid.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "c-ctype.h"
 #include "virfile.h"
+#include "virstring.h"
 
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK

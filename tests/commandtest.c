@@ -31,13 +31,13 @@
 #include "testutils.h"
 #include "internal.h"
 #include "nodeinfo.h"
-#include "virutil.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virerror.h"
 #include "virthread.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

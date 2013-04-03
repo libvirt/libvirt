@@ -31,7 +31,7 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virutil.h"
+#include "virstring.h"
 
 #include <sys/ioctl.h>
 #include <net/if.h>

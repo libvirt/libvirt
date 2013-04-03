@@ -37,6 +37,7 @@
 #include "virfile.h"
 #include "virprocess.h"
 #include "virobject.h"
+#include "virstring.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

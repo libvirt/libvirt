@@ -39,6 +39,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virutil.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
