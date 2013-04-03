@@ -1467,6 +1467,97 @@ cleanup:
     return ret;
 }
 
+static int
+nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
+{
+    virNodeInfo nodeinfo;
+    virCapsHostNUMACellCPUPtr cpus;
+    int ncpus;
+    int s, c, t;
+    int id;
+
+    if (nodeGetInfo(NULL, &nodeinfo) < 0)
+        return -1;
+
+    ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+
+    if (VIR_ALLOC_N(cpus, ncpus) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    id = 0;
+    for (s = 0 ; s < nodeinfo.sockets ; s++) {
+        for (c = 0 ; c < nodeinfo.cores ; c++) {
+            for (t = 0 ; t < nodeinfo.threads ; t++) {
+                cpus[id].id = id;
+                cpus[id].socket_id = s;
+                cpus[id].core_id = c;
+                if (!(cpus[id].siblings = virBitmapNew(ncpus)))
+                    goto error;
+                if (virBitmapSetBit(cpus[id].siblings, id) < 0)
+                    goto error;
+                id++;
+            }
+        }
+    }
+
+    if (virCapabilitiesAddHostNUMACell(caps, 0,
+                                       ncpus,
+                                       nodeinfo.memory,
+                                       cpus) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    for (; id >= 0 ; id--)
+        virBitmapFree(cpus[id].siblings);
+    VIR_FREE(cpus);
+    return -1;
+}
+
+static int
+nodeGetCellsFreeMemoryFake(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells ATTRIBUTE_UNUSED)
+{
+    double avail = physmem_available();
+
+    if (startCell != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("start cell %d out of range (0-%d)"),
+                       startCell, 0);
+        return -1;
+    }
+
+    freeMems[0] = (unsigned long long)avail;
+
+    if (!freeMems[0]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot determine free memory"));
+        return -1;
+    }
+
+    return 1;
+}
+
+static unsigned long long
+nodeGetFreeMemoryFake(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    double avail = physmem_available();
+    unsigned long long ret;
+
+    if (!(ret = (unsigned long long)avail)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot determine free memory"));
+        return 0;
+    }
+
+    return ret;
+}
+
 #if WITH_NUMACTL
 # if LIBNUMA_API_VERSION <= 1
 #  define NUMA_MAX_N_CPUS 4096
@@ -1547,7 +1638,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     bool topology_failed = false;
 
     if (numa_available() < 0)
-        return 0;
+        return nodeCapsInitNUMAFake(caps);
 
     int mask_n_bytes = max_n_cpus / 8;
     if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof(*mask)) < 0)
@@ -1610,7 +1701,7 @@ cleanup:
 
 
 int
-nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+nodeGetCellsFreeMemory(virConnectPtr conn,
                        unsigned long long *freeMems,
                        int startCell,
                        int maxCells)
@@ -1619,11 +1710,10 @@ nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
     int ret = -1;
     int maxCell;
 
-    if (numa_available() < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
+    if (numa_available() < 0)
+        return nodeGetCellsFreeMemoryFake(conn, freeMems,
+                                          startCell, maxCells);
+
     maxCell = numa_max_node();
     if (startCell > maxCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1652,16 +1742,14 @@ cleanup:
 }
 
 unsigned long long
-nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+nodeGetFreeMemory(virConnectPtr conn)
 {
     unsigned long long freeMem = 0;
     int n;
 
-    if (numa_available() < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("NUMA not supported on this host"));
-        goto cleanup;
-    }
+    if (numa_available() < 0)
+        return nodeGetFreeMemoryFake(conn);
+
 
     for (n = 0 ; n <= numa_max_node() ; n++) {
         long long mem;
@@ -1720,24 +1808,21 @@ cleanup:
 
 
 #else
-int nodeCapsInitNUMA(virCapsPtr caps ATTRIBUTE_UNUSED) {
-    return 0;
+int nodeCapsInitNUMA(virCapsPtr caps) {
+    return nodeCapsInitNUMAFake(caps);
 }
 
-int nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              unsigned long long *freeMems ATTRIBUTE_UNUSED,
-                              int startCell ATTRIBUTE_UNUSED,
-                              int maxCells ATTRIBUTE_UNUSED)
+int nodeGetCellsFreeMemory(virConnectPtr conn,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells)
 {
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("NUMA memory information not available on this platform"));
-    return -1;
+    return nodeGetCellsFreeMemoryFake(conn, freeMems,
+                                      startCell, maxCells);
 }
 
-unsigned long long nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+unsigned long long nodeGetFreeMemory(virConnectPtr conn)
 {
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("NUMA memory information not available on this platform"));
-    return 0;
+    return nodeGetFreeMemoryFake(conn);
 }
 #endif
