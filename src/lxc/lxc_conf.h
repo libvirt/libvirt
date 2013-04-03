@@ -35,6 +35,7 @@
 # include "vircgroup.h"
 # include "security/security_manager.h"
 # include "configmake.h"
+# include "virsysinfo.h"
 # include "virusb.h"
 
 # define LXC_DRIVER_NAME "LXC"
@@ -54,6 +55,8 @@ struct _virLXCDriver {
     virDomainXMLConfPtr xmlconf;
 
     virCgroupPtr cgroup;
+
+    virSysinfoDefPtr hostsysinfo;
 
     size_t nactive;
     virStateInhibitCallback inhibitCallback;

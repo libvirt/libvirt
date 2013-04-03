@@ -1457,6 +1457,8 @@ static int lxcStartup(bool privileged,
     if (!lxc_driver->domainEventState)
         goto cleanup;
 
+    lxc_driver->hostsysinfo = virSysinfoRead();
+
     lxc_driver->log_libvirtd = 0; /* by default log to container logfile */
     lxc_driver->have_netns = lxcCheckNetNsSupport();
 
@@ -1573,6 +1575,8 @@ static int lxcShutdown(void)
     virDomainEventStateFree(lxc_driver->domainEventState);
 
     virLXCProcessAutoDestroyShutdown(lxc_driver);
+
+    virSysinfoDefFree(lxc_driver->hostsysinfo);
 
     virObjectUnref(lxc_driver->activeUsbHostdevs);
     virObjectUnref(lxc_driver->caps);
@@ -4536,6 +4540,30 @@ cleanup:
 }
 
 
+static char *
+lxcGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    virLXCDriverPtr driver = conn->privateData;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, NULL);
+
+    if (!driver->hostsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
+        return NULL;
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        return NULL;
+    }
+    return virBufferContentAndReset(&buf);
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -4544,6 +4572,7 @@ static virDriver lxcDriver = {
     .close = lxcClose, /* 0.4.2 */
     .version = lxcVersion, /* 0.4.6 */
     .getHostname = virGetHostname, /* 0.6.3 */
+    .getSysinfo = lxcGetSysinfo, /* 1.0.5 */
     .nodeGetInfo = nodeGetInfo, /* 0.6.5 */
     .getCapabilities = lxcGetCapabilities, /* 0.6.5 */
     .listDomains = lxcListDomains, /* 0.4.2 */
