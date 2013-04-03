@@ -1084,54 +1084,7 @@
           <interleave>
             <optional>
               <element name="source">
-                <attribute name="protocol">
-                  <choice>
-                    <value>nbd</value>
-                    <value>rbd</value>
-                    <value>sheepdog</value>
-                    <value>gluster</value>
-                    <value>iscsi</value>
-                  </choice>
-                </attribute>
-                <optional>
-                  <attribute name="name"/>
-                </optional>
-                <zeroOrMore>
-                  <element name="host">
-                    <choice>
-                      <group>
-                        <optional>
-                          <attribute name="transport">
-                            <choice>
-                              <value>tcp</value>
-                              <value>rdma</value>
-                            </choice>
-                          </attribute>
-                        </optional>
-                        <attribute name="name">
-                          <choice>
-                            <ref name="dnsName"/>
-                            <ref name="ipAddr"/>
-                          </choice>
-                        </attribute>
-                        <optional>
-                          <attribute name="port">
-                            <ref name="unsignedInt"/>
-                          </attribute>
-                        </optional>
-                      </group>
-                      <group>
-                        <attribute name="transport">
-                          <value>unix</value>
-                        </attribute>
-                        <attribute name="socket">
-                          <ref name="absFilePath"/>
-                        </attribute>
-                      </group>
-                    </choice>
-                  </element>
-                </zeroOrMore>
-                <empty/>
+                <ref name='diskSourceNetwork'/>
               </element>
             </optional>
             <ref name="diskspec"/>
@@ -1140,6 +1093,56 @@
         <ref name="diskspec"/>
       </choice>
     </element>
+  </define>
+  <define name="diskSourceNetwork">
+    <attribute name="protocol">
+      <choice>
+        <value>nbd</value>
+        <value>rbd</value>
+        <value>sheepdog</value>
+        <value>gluster</value>
+        <value>iscsi</value>
+      </choice>
+    </attribute>
+    <optional>
+      <attribute name="name"/>
+    </optional>
+    <zeroOrMore>
+      <element name="host">
+        <choice>
+          <group>
+            <optional>
+              <attribute name="transport">
+                <choice>
+                  <value>tcp</value>
+                  <value>rdma</value>
+                </choice>
+              </attribute>
+            </optional>
+            <attribute name="name">
+              <choice>
+                <ref name="dnsName"/>
+                <ref name="ipAddr"/>
+              </choice>
+            </attribute>
+            <optional>
+              <attribute name="port">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </group>
+          <group>
+            <attribute name="transport">
+              <value>unix</value>
+            </attribute>
+            <attribute name="socket">
+              <ref name="absFilePath"/>
+            </attribute>
+          </group>
+        </choice>
+      </element>
+    </zeroOrMore>
+    <empty/>
   </define>
   <define name="diskTarget">
     <data type="string">
