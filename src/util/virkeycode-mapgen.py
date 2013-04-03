@@ -13,7 +13,26 @@ instead of keymaps.csv which is a mirror.
 import sys
 import re
 
-namecolums = (0,2,10)
+cols = (
+    ["linux", True],
+    ["linux", False],
+    ["os_x", True],
+    ["os_x", False],
+    ["atset1", False],
+
+    ["atset2", False],
+    ["atset3", False],
+    ["xt", False],
+    ["xt_kbd", False],
+    ["usb", False],
+
+    ["win32", True],
+    ["win32", False],
+    [None, False],
+    [None, False],
+    ["rfb", False],
+)
+
 xtkbdkey_index = 8
 
 def quotestring(str):
@@ -28,29 +47,51 @@ print '''
 # error do not use this; it is not a public header
 #endif
 
-struct keycode virKeycodes[] = {
 '''
 
 sys.stdin.readline() # eat the fist line.
 
+keycodes = []
+
+max = 0
+
 for line in sys.stdin.xreadlines():
-    a = re.match("([^,]*)," * 13 + "([^,]*)$", line[0:-1]).groups()
-    b = ""
-    rfbkey = 0
-    for i in namecolums:
-        b = b + (a[i] and quotestring(a[i]) or 'NULL') + ','
-    for i in [ x for x in range(12) if not x in namecolums ]:
-        b = b + (a[i] or '0') + ','
-        if i == xtkbdkey_index:
-            # RFB keycodes are XT kbd keycodes with a slightly
-            # different encoding of 0xe0 scan codes. RFB uses
-            # the high bit of the first byte, instead of the low
-            # bit of the second byte.
-            rfbkey = int(a[i] or '0')
-            rfbkey = (rfbkey & 0x100) >> 1 | (rfbkey & 0x7f)
+    values = re.match("([^,]*)," * 13 + "([^,]*)$", line[0:-1]).groups()
 
-    # Append RFB keycode as the last column
-    b = b + str(rfbkey)
-    print "    { " + b + "},"
+    data = []
+    for v in values:
+        data.append(v)
 
-print '};'
+    # RFB keycodes are XT kbd keycodes with a slightly
+    # different encoding of 0xe0 scan codes. RFB uses
+    # the high bit of the first byte, instead of the low
+    # bit of the second byte.
+    rfbkey = int(data[xtkbdkey_index] or '0')
+    rfbkey = (rfbkey & 0x100) >> 1 | (rfbkey & 0x7f)
+    data.append("%d" % rfbkey)
+
+    keycodes.append(data)
+    max = max + 1
+
+print "#define VIR_KEYMAP_ENTRY_MAX " + str(max)
+
+for i in range(len(cols)):
+    col=cols[i]
+    name=col[0]
+    isname=col[1]
+
+    if name is None:
+        continue
+
+    if isname:
+        print "const char *virKeymapNames_" + name + "[] = {"
+    else:
+        print "unsigned short virKeymapValues_" + name + "[] = {"
+
+    for entry in keycodes:
+        if isname:
+            print "  " + quotestring(entry[i] or "NULL") + ","
+        else:
+            print "  " + (entry[i] or "0") + ","
+
+    print "};\n"
