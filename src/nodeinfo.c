@@ -168,6 +168,12 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
 
     pathfp = fopen(path, "r");
     if (pathfp == NULL) {
+        /* If file doesn't exist, then pretend our only
+         * sibling is ourself */
+        if (errno == ENOENT) {
+            VIR_FREE(path);
+            return 1;
+        }
         virReportSystemError(errno, _("cannot open %s"), path);
         VIR_FREE(path);
         return 0;
