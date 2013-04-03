@@ -952,6 +952,35 @@ static int udevProcessFloppy(struct udev_device *device,
     return udevProcessRemoveableMedia(device, def, has_media);
 }
 
+
+static int udevProcessSD(struct udev_device *device,
+                         virNodeDeviceDefPtr def)
+{
+    union _virNodeDevCapData *data = &def->caps->data;
+    int ret = 0;
+
+    if (udevGetUint64SysfsAttr(device,
+                               "size",
+                               &data->storage.num_blocks) == PROPERTY_ERROR) {
+        goto out;
+    }
+
+    if (udevGetUint64SysfsAttr(device,
+                               "queue/logical_block_size",
+                               &data->storage.logical_block_size)
+        == PROPERTY_ERROR) {
+        goto out;
+    }
+
+    data->storage.size = data->storage.num_blocks *
+        data->storage.logical_block_size;
+
+out:
+    return ret;
+}
+
+
+
 /* This function exists to deal with the case in which a driver does
  * not provide a device type in the usual place, but udev told us it's
  * a storage device, and we can make a good guess at what kind of
@@ -1056,6 +1085,13 @@ static int udevProcessStorage(struct udev_device *device,
             data->storage.drive_type = strdup("floppy");
             if (!data->storage.drive_type)
                 goto out;
+        } else if ((udevGetIntProperty(device, "ID_DRIVE_FLASH_SD",
+                                       &tmp_int, 0) == PROPERTY_FOUND) &&
+                   (tmp_int == 1)) {
+
+            data->storage.drive_type = strdup("sd");
+            if (!data->storage.drive_type)
+                goto out;
         } else {
 
             /* If udev doesn't have it, perhaps we can guess it. */
@@ -1071,6 +1107,8 @@ static int udevProcessStorage(struct udev_device *device,
         ret = udevProcessDisk(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "floppy")) {
         ret = udevProcessFloppy(device, def);
+    } else if (STREQ(def->caps->data.storage.drive_type, "sd")) {
+        ret = udevProcessSD(device, def);
     } else {
         VIR_DEBUG("Unsupported storage type '%s'",
                   def->caps->data.storage.drive_type);
@@ -1082,6 +1120,7 @@ static int udevProcessStorage(struct udev_device *device,
     }
 
 out:
+    VIR_DEBUG("Storage ret=%d", ret);
     return ret;
 }
 
@@ -1338,6 +1377,8 @@ static int udevAddOneDevice(struct udev_device *device)
 
 out:
     if (ret != 0) {
+        VIR_DEBUG("Discarding device %d %p %s", ret, def,
+                  def ? def->sysfs_path : "");
         virNodeDeviceDefFree(def);
     }
 
