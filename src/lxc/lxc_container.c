@@ -2049,92 +2049,6 @@ cleanup:
 }
 
 
-/* Nothing mapped to /, we're using the main root,
-   but with extra stuff mapped in */
-static int lxcContainerSetupExtraMounts(virDomainDefPtr vmDef,
-                                        virDomainFSDefPtr root,
-                                        virSecurityManagerPtr securityDriver)
-{
-    int ret = -1;
-    struct lxcContainerCGroup *mounts = NULL;
-    size_t nmounts = 0;
-    char *cgroupRoot = NULL;
-    char *sec_mount_options;
-
-    VIR_DEBUG("def=%p", vmDef);
-
-    if (!(sec_mount_options = virSecurityManagerGetMountOptions(securityDriver, vmDef)))
-        return -1;
-
-    /*
-     * This makes sure that any new filesystems in the
-     * host OS propagate to the container, but any
-     * changes in the container are private
-     */
-    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to make / slave"));
-        goto cleanup;
-    }
-
-    if (root && root->readonly) {
-        if (mount("", "/", NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to make root readonly"));
-            goto cleanup;
-        }
-    }
-
-    VIR_DEBUG("Mounting config FS");
-    if (lxcContainerMountAllFS(vmDef, "", false, sec_mount_options) < 0)
-        goto cleanup;
-
-    /* Before replacing /sys we need to identify any
-     * cgroups controllers that are mounted */
-    if (lxcContainerIdentifyCGroups(&mounts, &nmounts, &cgroupRoot) < 0)
-        goto cleanup;
-
-#if WITH_SELINUX
-    /* Some versions of Linux kernel don't let you overmount
-     * the selinux filesystem, so make sure we kill it first
-     */
-    if (lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
-        goto cleanup;
-#endif
-
-    /* Gets rid of any existing stuff under /proc, since we need new
-     * namespace aware versions of those. We must do /proc second
-     * otherwise we won't find /proc/mounts :-) */
-    if (lxcContainerUnmountSubtree("/sys", false) < 0 ||
-        lxcContainerUnmountSubtree("/proc", false) < 0)
-        goto cleanup;
-
-    /* Mounts the core /proc, /sys, etc filesystems */
-    if (lxcContainerMountBasicFS(false, sec_mount_options) < 0)
-        goto cleanup;
-
-    /* Mounts /proc/meminfo etc sysinfo */
-    if (lxcContainerMountProcFuse(vmDef, NULL) < 0)
-        goto cleanup;
-
-    /* Now we can re-mount the cgroups controllers in the
-     * same configuration as before */
-    if (lxcContainerMountCGroups(mounts, nmounts,
-                                 cgroupRoot, sec_mount_options) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Mounting completed");
-
-    ret = 0;
-
-cleanup:
-    lxcContainerCGroupFree(mounts, nmounts);
-    VIR_FREE(cgroupRoot);
-    VIR_FREE(sec_mount_options);
-    return ret;
-}
-
-
 static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 {
     char *newroot;
@@ -2155,24 +2069,6 @@ static int lxcContainerResolveSymlinks(virDomainDefPtr vmDef)
 
     return 0;
 }
-
-static int lxcContainerSetupMounts(virDomainDefPtr vmDef,
-                                   virDomainFSDefPtr root,
-                                   char **ttyPaths,
-                                   size_t nttyPaths,
-                                   virSecurityManagerPtr securityDriver)
-{
-    if (lxcContainerResolveSymlinks(vmDef) < 0)
-        return -1;
-
-    if (root && root->src)
-        return  lxcContainerSetupPivotRoot(vmDef, root, ttyPaths, nttyPaths,
-                                           securityDriver);
-    else
-        return lxcContainerSetupExtraMounts(vmDef, root,
-                                            securityDriver);
-}
-
 
 /*
  * This is running as the 'init' process insid the container.
@@ -2290,9 +2186,12 @@ static int lxcContainerChild(void *data)
         goto cleanup;
     }
 
-    if (lxcContainerSetupMounts(vmDef, root,
-                                argv->ttyPaths, argv->nttyPaths,
-                                argv->securityDriver) < 0)
+    if (lxcContainerResolveSymlinks(vmDef) < 0)
+        goto cleanup;
+
+    if (lxcContainerSetupPivotRoot(vmDef, root,
+                                   argv->ttyPaths, argv->nttyPaths,
+                                   argv->securityDriver) < 0)
         goto cleanup;
 
     if (!virFileExists(vmDef->os.init)) {

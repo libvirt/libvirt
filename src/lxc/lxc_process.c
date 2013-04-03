@@ -981,6 +981,38 @@ virLXCProcessReadLogOutput(virDomainObjPtr vm,
     return ret;
 }
 
+
+static int
+virLXCProcessEnsureRootFS(virDomainObjPtr vm)
+{
+    virDomainFSDefPtr root = virDomainGetRootFilesystem(vm->def);
+
+    if (root)
+        return 0;
+
+    if (VIR_ALLOC(root) < 0)
+        goto no_memory;
+
+    root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
+
+    if (!(root->src = strdup("/")) ||
+        !(root->dst = strdup("/")))
+        goto no_memory;
+
+    if (VIR_INSERT_ELEMENT(vm->def->fss,
+                           0,
+                           vm->def->nfss,
+                           root) < 0)
+        goto no_memory;
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+    virDomainFSDefFree(root);
+    return -1;
+}
+
 /**
  * virLXCProcessStart:
  * @conn: pointer to connection
@@ -1077,6 +1109,9 @@ int virLXCProcessStart(virConnectPtr conn,
         if (hookret < 0)
             goto cleanup;
     }
+
+    if (virLXCProcessEnsureRootFS(vm) < 0)
+        goto cleanup;
 
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
