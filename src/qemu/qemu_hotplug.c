@@ -1999,7 +1999,9 @@ static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
         info2->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         return 0;
 
-    if (info1->addr.pci.slot == info2->addr.pci.slot &&
+    if (info1->addr.pci.domain == info2->addr.pci.domain &&
+        info1->addr.pci.bus == info2->addr.pci.bus &&
+        info1->addr.pci.slot == info2->addr.pci.slot &&
         info1->addr.pci.function != info2->addr.pci.function)
         return -1;
     return 0;
