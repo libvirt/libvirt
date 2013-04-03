@@ -2889,12 +2889,13 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
               "flags=%x",
               mon, device, file, NULLSTR(format), bandwidth, flags);
 
-    /* Convert bandwidth MiB to bytes */
+    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
+     * limited to LLONG_MAX also for unsigned values */
     speed = bandwidth;
-    if (speed > ULLONG_MAX / 1024 / 1024) {
+    if (speed > LLONG_MAX >> 20) {
         virReportError(VIR_ERR_OVERFLOW,
                        _("bandwidth must be less than %llu"),
-                       ULLONG_MAX / 1024 / 1024);
+                       LLONG_MAX >> 20);
         return -1;
     }
     speed <<= 20;
@@ -2936,12 +2937,13 @@ qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
     VIR_DEBUG("mon=%p, device=%s, top=%s, base=%s, bandwidth=%ld",
               mon, device, NULLSTR(top), NULLSTR(base), bandwidth);
 
-    /* Convert bandwidth MiB to bytes */
+    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
+     * limited to LLONG_MAX also for unsigned values */
     speed = bandwidth;
-    if (speed > ULLONG_MAX / 1024 / 1024) {
+    if (speed > LLONG_MAX >> 20) {
         virReportError(VIR_ERR_OVERFLOW,
                        _("bandwidth must be less than %llu"),
-                       ULLONG_MAX / 1024 / 1024);
+                       LLONG_MAX >> 20);
         return -1;
     }
     speed <<= 20;
@@ -3056,12 +3058,13 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
               "modern=%d", mon, device, NULLSTR(base), bandwidth, info, mode,
               modern);
 
-    /* Convert bandwidth MiB to bytes */
+    /* Convert bandwidth MiB to bytes - unfortunately the JSON QMP protocol is
+     * limited to LLONG_MAX also for unsigned values */
     speed = bandwidth;
-    if (speed > ULLONG_MAX / 1024 / 1024) {
+    if (speed > LLONG_MAX >> 20) {
         virReportError(VIR_ERR_OVERFLOW,
                        _("bandwidth must be less than %llu"),
-                       ULLONG_MAX / 1024 / 1024);
+                       LLONG_MAX >> 20);
         return -1;
     }
     speed <<= 20;
