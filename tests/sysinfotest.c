@@ -38,6 +38,10 @@
 
 #if defined (__linux__)
 
+# if defined(__s390__) || defined(__s390x__) || \
+     defined(__powerpc__) || defined(__powerpc64__) || \
+     defined(__i386__) || defined(__x86_64__) || defined(__amd64__)
+
 /* from sysinfo.c */
 void virSysinfoSetup(const char *decoder,
                      const char *sysinfo,
@@ -122,6 +126,7 @@ error:
     VIR_FREE(testdata.expected);
     return ret;
 }
+# endif
 
 # if defined(__s390__) || defined(__s390x__)
 static int
