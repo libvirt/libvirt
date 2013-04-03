@@ -1,0 +1,10 @@
+<sysinfo type='smbios'>
+  <processor>
+    <entry name='socket_destination'>0</entry>
+    <entry name='type'>ARMv7 Processor rev 4 (v7l)</entry>
+  </processor>
+  <processor>
+    <entry name='socket_destination'>1</entry>
+    <entry name='type'>ARMv7 Processor rev 4 (v7l)</entry>
+  </processor>
+</sysinfo>

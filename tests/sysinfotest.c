@@ -40,7 +40,8 @@
 
 # if defined(__s390__) || defined(__s390x__) || \
      defined(__powerpc__) || defined(__powerpc64__) || \
-     defined(__i386__) || defined(__x86_64__) || defined(__amd64__)
+     defined(__i386__) || defined(__x86_64__) || defined(__amd64__) || \
+     defined(__arm__)
 
 /* from sysinfo.c */
 void virSysinfoSetup(const char *decoder,
@@ -164,6 +165,18 @@ test_x86(void)
 }
 
 VIRT_TEST_MAIN(test_x86)
+# elif defined(__arm__)
+static int
+test_arm(void)
+{
+    return sysinfotest_run("arm sysinfo",
+                           NULL,
+                           NULL,
+                           "/sysinfodata/armcpuinfo.data",
+                           "/sysinfodata/armsysinfo.expect");
+}
+
+VIRT_TEST_MAIN(test_arm)
 # else
 int
 main(void)

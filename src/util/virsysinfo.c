@@ -255,8 +255,134 @@ no_memory:
     return NULL;
 }
 
-#elif defined(__s390__) || defined(__s390x__)
+#elif defined(__arm__)
+static int
+virSysinfoParseSystem(const char *base, virSysinfoDefPtr ret)
+{
+    char *eol = NULL;
+    const char *cur;
 
+    if ((cur = strstr(base, "platform")) == NULL)
+        return 0;
+
+    base = cur;
+    /* Account for format 'platform    : XXXX'*/
+    cur = strchr(cur, ':') + 1;
+    eol = strchr(cur, '\n');
+    virSkipSpaces(&cur);
+    if (eol &&
+       ((ret->system_family = strndup(cur, eol - cur)) == NULL))
+         goto no_memory;
+
+    if ((cur = strstr(base, "model")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpaces(&cur);
+        if (eol && ((ret->system_serial = strndup(cur, eol - cur))
+                                                           == NULL))
+            goto no_memory;
+    }
+
+    if ((cur = strstr(base, "machine")) != NULL) {
+        cur = strchr(cur, ':') + 1;
+        eol = strchr(cur, '\n');
+        virSkipSpaces(&cur);
+        if (eol && ((ret->system_version = strndup(cur, eol - cur))
+                                                            == NULL))
+            goto no_memory;
+    }
+
+    return 0;
+
+no_memory:
+    return -1;
+}
+
+static int
+virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
+{
+    const char *cur;
+    char *eol, *tmp_base;
+    virSysinfoProcessorDefPtr processor;
+    char *processor_type = NULL;
+
+    if (!(tmp_base = strstr(base, "Processor")))
+        return 0;
+
+    base = tmp_base;
+    eol = strchr(base, '\n');
+    cur = strchr(base, ':') + 1;
+    virSkipSpaces(&cur);
+    if (eol &&
+        ((processor_type = strndup(cur, eol - cur))
+         == NULL))
+        goto no_memory;
+    base = cur;
+
+    while ((tmp_base = strstr(base, "processor")) != NULL) {
+        base = tmp_base;
+        eol = strchr(base, '\n');
+        cur = strchr(base, ':') + 1;
+
+        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0) {
+            goto no_memory;
+        }
+        processor = &ret->processor[ret->nprocessor - 1];
+
+        virSkipSpaces(&cur);
+        if (eol &&
+            ((processor->processor_socket_destination = strndup
+                                     (cur, eol - cur)) == NULL))
+            goto no_memory;
+
+        if (processor_type &&
+            !(processor->processor_type = strdup(processor_type)))
+            goto no_memory;
+
+        base = cur;
+    }
+
+    VIR_FREE(processor_type);
+    return 0;
+
+no_memory:
+    VIR_FREE(processor_type);
+    return -1;
+}
+
+/* virSysinfoRead for ARMv7
+ * Gathers sysinfo data from /proc/cpuinfo */
+virSysinfoDefPtr
+virSysinfoRead(void) {
+    virSysinfoDefPtr ret = NULL;
+    char *outbuf = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        goto no_memory;
+
+    if (virFileReadAll(CPUINFO, 2048, &outbuf) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open %s"), CPUINFO);
+        return NULL;
+    }
+
+    ret->nprocessor = 0;
+    ret->processor = NULL;
+    if (virSysinfoParseProcessor(outbuf, ret) < 0)
+        goto no_memory;
+
+    if (virSysinfoParseSystem(outbuf, ret) < 0)
+        goto no_memory;
+
+    return ret;
+
+no_memory:
+    VIR_FREE(outbuf);
+    return NULL;
+}
+
+
+#elif defined(__s390__) || defined(__s390x__)
 /*
   we need to ignore warnings about strchr caused by -Wlogical-op
   for some GCC versions.
@@ -403,6 +529,7 @@ no_memory:
     !(defined(__x86_64__) || \
       defined(__i386__) ||   \
       defined(__amd64__) || \
+      defined(__arm__) || \
       defined(__powerpc__))
 virSysinfoDefPtr
 virSysinfoRead(void) {
