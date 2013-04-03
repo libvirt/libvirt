@@ -243,8 +243,10 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
         /* Given the way libdevmapper returns its data, I don't see
          * any way to avoid this series of casts. */
+        VIR_WARNINGS_NO_CAST_ALIGN
         next = names->next;
         names = (struct dm_names *)(((char *)names) + next);
+        VIR_WARNINGS_RESET
 
     } while (next);
 

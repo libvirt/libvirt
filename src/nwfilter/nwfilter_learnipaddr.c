@@ -324,7 +324,9 @@ procDHCPOpts(struct dhcp *dhcp, int dhcp_opts_len,
 
         case DHCP_OPT_BCASTADDRESS: /* Broadcast address */
             if (dhcp_opts_len >= 6) {
+                VIR_WARNINGS_NO_CAST_ALIGN
                 uint32_t *tmp = (uint32_t *)&dhcpopt->value;
+                VIR_WARNINGS_RESET
                 (*bcastaddr) = ntohl(*tmp);
             }
         break;
@@ -498,8 +500,10 @@ learnIPAddressThread(void *arg)
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
                                    sizeof(struct iphdr))) {
+                    VIR_WARNINGS_NO_CAST_ALIGN
                     struct iphdr *iphdr = (struct iphdr*)(packet +
                                                           ethHdrSize);
+                    VIR_WARNINGS_RESET
                     vmaddr = iphdr->saddr;
                     /* skip mcast addresses (224.0.0.0 - 239.255.255.255),
                      * class E (240.0.0.0 - 255.255.255.255, includes eth.
@@ -514,8 +518,10 @@ learnIPAddressThread(void *arg)
                 } else if (etherType == ETHERTYPE_ARP &&
                            (header.len >= ethHdrSize +
                                           sizeof(struct f_arphdr))) {
+                    VIR_WARNINGS_NO_CAST_ALIGN
                     struct f_arphdr *arphdr = (struct f_arphdr*)(packet +
                                                          ethHdrSize);
+                    VIR_WARNINGS_RESET
                     switch (ntohs(arphdr->arphdr.ar_op)) {
                     case ARPOP_REPLY:
                         vmaddr = arphdr->ar_sip;
@@ -535,14 +541,18 @@ learnIPAddressThread(void *arg)
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
                                    sizeof(struct iphdr))) {
+                    VIR_WARNINGS_NO_CAST_ALIGN
                     struct iphdr *iphdr = (struct iphdr*)(packet +
                                                           ethHdrSize);
+                    VIR_WARNINGS_RESET
                     if ((iphdr->protocol == IPPROTO_UDP) &&
                         (header.len >= ethHdrSize +
                                        iphdr->ihl * 4 +
                                        sizeof(struct udphdr))) {
+                        VIR_WARNINGS_NO_CAST_ALIGN
                         struct udphdr *udphdr= (struct udphdr *)
                                           ((char *)iphdr + iphdr->ihl * 4);
+                        VIR_WARNINGS_RESET
                         if (ntohs(udphdr->source) == 67 &&
                             ntohs(udphdr->dest)   == 68 &&
                             header.len >= ethHdrSize +

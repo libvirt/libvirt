@@ -1803,7 +1803,9 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     while (att[idx].name != NULL) {
         prop = virXMLPropString(node, att[idx].name);
 
+        VIR_WARNINGS_NO_CAST_ALIGN
         item = (nwItemDesc *)((char *)nwf + att[idx].dataIdx);
+        VIR_WARNINGS_RESET
         flags = &item->flags;
         flags_set = match_flag;
 
@@ -3235,7 +3237,9 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
     nwItemDesc *item;
 
     while (att[i].name) {
+        VIR_WARNINGS_NO_CAST_ALIGN
         item = (nwItemDesc *)((char *)def + att[i].dataIdx);
+        VIR_WARNINGS_RESET
         enum virNWFilterEntryItemFlags flags = item->flags;
         if ((flags & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)) {
             if (!typeShown) {

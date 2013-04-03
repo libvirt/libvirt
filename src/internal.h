@@ -214,6 +214,19 @@
 #  endif
 # endif				/* __GNUC__ */
 
+
+# if __GNUC_PREREQ (4, 6)
+#  define VIR_WARNINGS_NO_CAST_ALIGN \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wcast-align\"")
+
+#  define VIR_WARNINGS_RESET \
+    _Pragma ("GCC diagnostic pop")
+# else
+#  define VIR_WARNINGS_NO_CAST_ALIGN
+#  define VIR_WARNINGS_RESET
+# endif
+
 /*
  * Use this when passing possibly-NULL strings to printf-a-likes.
  */

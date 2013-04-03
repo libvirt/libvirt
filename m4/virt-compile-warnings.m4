@@ -93,6 +93,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     if test $lv_cv_gcc_pragma_push_works = no; then
       dontwarn="$dontwarn -Wmissing-prototypes"
       dontwarn="$dontwarn -Wmissing-declarations"
+      dontwarn="$dontwarn -Wcast-align"
     fi
 
     dnl Check whether strchr(s, char variable) causes a bogus compile
