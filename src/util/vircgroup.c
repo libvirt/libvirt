@@ -663,12 +663,18 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
         char *path = NULL;
 
         /* Skip over controllers that aren't mounted */
-        if (!group->controllers[i].mountPoint)
+        if (!group->controllers[i].mountPoint) {
+            VIR_DEBUG("Skipping unmounted controller %s",
+                      virCgroupControllerTypeToString(i));
             continue;
+        }
 
         rc = virCgroupPathOfController(group, i, "", &path);
-        if (rc < 0)
+        if (rc < 0) {
+            VIR_DEBUG("Failed to find path of controller %s",
+                      virCgroupControllerTypeToString(i));
             return rc;
+        }
         /* As of Feb 2011, clang can't see that the above function
          * call did not modify group. */
         sa_assert(group->controllers[i].mountPoint);
@@ -682,11 +688,14 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
                  * other controllers even though they are available. So
                  * treat blkio as unmounted if mkdir fails. */
                 if (i == VIR_CGROUP_CONTROLLER_BLKIO) {
+                    VIR_DEBUG("Ignoring mkdir failure with blkio controller. Kernel probably too old");
                     rc = 0;
                     VIR_FREE(group->controllers[i].mountPoint);
                     VIR_FREE(path);
                     continue;
                 } else {
+                    VIR_DEBUG("Failed to create controller %s for group",
+                              virCgroupControllerTypeToString(i));
                     rc = -errno;
                     VIR_FREE(path);
                     break;
@@ -720,6 +729,7 @@ static int virCgroupMakeGroup(virCgroupPtr parent,
         VIR_FREE(path);
     }
 
+    VIR_DEBUG("Done making controllers for group");
     return rc;
 }
 
@@ -904,6 +914,7 @@ int virCgroupRemove(virCgroupPtr group)
     int i;
     char *grppath = NULL;
 
+    VIR_DEBUG("Removing cgroup %s", group->path);
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
         /* Skip over controllers not mounted */
         if (!group->controllers[i].mountPoint)
@@ -919,6 +930,7 @@ int virCgroupRemove(virCgroupPtr group)
         rc = virCgroupRemoveRecursively(grppath);
         VIR_FREE(grppath);
     }
+    VIR_DEBUG("Done removing cgroup %s", group->path);
 
     return rc;
 }
