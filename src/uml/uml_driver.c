@@ -300,7 +300,7 @@ umlInotifyEvent(int watch,
                 void *data)
 {
     char buf[1024];
-    struct inotify_event *e;
+    struct inotify_event e;
     int got;
     char *tmp, *name;
     struct uml_driver *driver = data;
@@ -321,20 +321,20 @@ reread:
 
     tmp = buf;
     while (got) {
-        if (got < sizeof(struct inotify_event))
+        if (got < sizeof(e))
             goto cleanup; /* bad */
 
-        e = (struct inotify_event *)tmp;
-        tmp += sizeof(struct inotify_event);
-        got -= sizeof(struct inotify_event);
+        memcpy(&e, tmp, sizeof(e));
+        tmp += sizeof(e);
+        got -= sizeof(e);
 
-        if (got < e->len)
+        if (got < e.len)
             goto cleanup;
 
-        tmp += e->len;
-        got -= e->len;
+        tmp += e.len;
+        got -= e.len;
 
-        name = (char *)&(e->name);
+        name = (char *)&(e.name);
 
         dom = virDomainObjListFindByName(driver->domains, name);
 
@@ -342,7 +342,7 @@ reread:
             continue;
         }
 
-        if (e->mask & IN_DELETE) {
+        if (e.mask & IN_DELETE) {
             VIR_DEBUG("Got inotify domain shutdown '%s'", name);
             if (!virDomainObjIsActive(dom)) {
                 virObjectUnlock(dom);
@@ -359,7 +359,7 @@ reread:
                                        dom);
                 dom = NULL;
             }
-        } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
+        } else if (e.mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
                 virObjectUnlock(dom);
