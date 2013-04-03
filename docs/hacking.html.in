@@ -641,6 +641,20 @@
       virStrncpy(dest, src, strlen(src), sizeof(dest)).
     </p>
 
+<pre>
+  VIR_STRDUP(char *dst, const char *src);
+  VIR_STRNDUP(char *dst, const char *src, size_t n);
+</pre>
+    <p>
+      You should avoid using strdup or strndup directly as they do not report
+      out-of-memory error. Use VIR_STRDUP or VIR_STRNDUP macros instead.  Note,
+      that these two behave similar to VIR_ALLOC: on success zero is returned,
+      otherwise the result is -1 and dst is guaranteed to be NULL. In very
+      specific cases, when you don't want to report the out-of-memory error, you
+      can use VIR_STRDUP_QUIET or VIR_STRNDUP_QUIET, but such usage is very rare
+      and usually considered a flaw.
+    </p>
+
     <h2><a name="strbuf">Variable length string buffer</a></h2>
 
     <p>

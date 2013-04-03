@@ -177,3 +177,77 @@ size_t virStringListLength(char **strings)
 
     return i;
 }
+
+/**
+ * virStrdup:
+ * @dest: where to store duplicated string
+ * @src: the source string to duplicate
+ * @report: whether to report OOM error, if there is one
+ * @domcode: error domain code
+ * @filename: caller's filename
+ * @funcname: caller's funcname
+ * @linenr: caller's line number
+ *
+ * Wrapper over strdup, which reports OOM error if told so,
+ * in which case callers wants to pass @domcode, @filename,
+ * @funcname and @linenr which should represent location in
+ * caller's body where virStrdup is called from. Consider
+ * using VIR_STRDUP which sets these automatically.
+ *
+ * Returns: 0 on success, -1 otherwise.
+ */
+int
+virStrdup(char **dest,
+          const char *src,
+          bool report,
+          int domcode,
+          const char *filename,
+          const char *funcname,
+          size_t linenr)
+{
+    if (!(*dest = strdup(src))) {
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * virStrndup:
+ * @dest: where to store duplicated string
+ * @src: the source string to duplicate
+ * @n: how many bytes to copy
+ * @report: whether to report OOM error, if there is one
+ * @domcode: error domain code
+ * @filename: caller's filename
+ * @funcname: caller's funcname
+ * @linenr: caller's line number
+ *
+ * Wrapper over strndup, which reports OOM error if told so,
+ * in which case callers wants to pass @domcode, @filename,
+ * @funcname and @linenr which should represent location in
+ * caller's body where virStrndup is called from. Consider
+ * using VIR_STRNDUP which sets these automatically.
+ *
+ * Returns: 0 on success, -1 otherwise.
+ */
+int
+virStrndup(char **dest,
+           const char *src,
+           size_t n,
+           bool report,
+           int domcode,
+           const char *filename,
+           const char *funcname,
+           size_t linenr)
+{
+    if (!(*dest = strndup(src, n))) {
+        if (report)
+            virReportOOMErrorFull(domcode, filename, funcname, linenr);
+        return -1;
+    }
+
+   return 0;
+}
