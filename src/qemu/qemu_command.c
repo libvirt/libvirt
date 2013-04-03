@@ -1204,7 +1204,7 @@ static char *qemuPCIAddressAsString(virDevicePCIAddressPtr addr)
         return NULL;
     }
 
-    if (virAsprintf(&str, "%d:%d:%d.%d",
+    if (virAsprintf(&str, "%.4x:%.2x:%.2x.%.1x",
                     addr->domain,
                     addr->bus,
                     addr->slot,
