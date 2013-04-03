@@ -5228,6 +5228,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("dump-guest-core is not available "
                                  "with this QEMU binary"));
+                virBufferFreeAndReset(&buf);
                 return -1;
             }
 
