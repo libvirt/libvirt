@@ -27,6 +27,7 @@
 typedef enum {
     VIR_ARCH_NONE,
     VIR_ARCH_ALPHA,        /* Alpha       64 BE http://en.wikipedia.org/wiki/DEC_Alpha */
+    VIR_ARCH_ARMV6L,       /* ARMv6       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
     VIR_ARCH_ARMV7L,       /* ARMv7       32 LE http://en.wikipedia.org/wiki/ARM_architecture */
     VIR_ARCH_CRIS,         /* ETRAX       32 LE http://en.wikipedia.org/wiki/ETRAX_CRIS */
     VIR_ARCH_I686,         /* x86         32 LE http://en.wikipedia.org/wiki/X86 */

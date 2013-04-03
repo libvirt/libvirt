@@ -35,6 +35,7 @@ static const struct virArchData {
 } virArchData[] = {
     { "none",          0, VIR_ARCH_LITTLE_ENDIAN },
     { "alpha",        64, VIR_ARCH_BIG_ENDIAN },
+    { "armv6l",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "armv7l",       32, VIR_ARCH_LITTLE_ENDIAN },
     { "cris",         32, VIR_ARCH_LITTLE_ENDIAN },
     { "i686",         32, VIR_ARCH_LITTLE_ENDIAN },
