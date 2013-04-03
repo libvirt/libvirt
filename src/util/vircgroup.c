@@ -1082,8 +1082,10 @@ int virCgroupNewDriver(const char *name,
     rc = virCgroupNew(name, rootgrp, -1, group);
     if (rc == 0) {
         rc = virCgroupMakeGroup(rootgrp, *group, create, VIR_CGROUP_NONE);
-        if (rc != 0)
+        if (rc != 0) {
+            virCgroupRemove(*group);
             virCgroupFree(group);
+        }
     }
 out:
     virCgroupFree(&rootgrp);
@@ -1155,8 +1157,10 @@ int virCgroupNewDomain(virCgroupPtr driver,
          * cumulative usage that we don't need.
          */
         rc = virCgroupMakeGroup(driver, *group, create, VIR_CGROUP_MEM_HIERACHY);
-        if (rc != 0)
+        if (rc != 0) {
+            virCgroupRemove(*group);
             virCgroupFree(group);
+        }
     }
 
     return rc;
@@ -1203,8 +1207,10 @@ int virCgroupNewVcpu(virCgroupPtr domain,
 
     if (rc == 0) {
         rc = virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE);
-        if (rc != 0)
+        if (rc != 0) {
+            virCgroupRemove(*group);
             virCgroupFree(group);
+        }
     }
 
     return rc;
@@ -1244,8 +1250,10 @@ int virCgroupNewEmulator(virCgroupPtr domain,
 
     if (rc == 0) {
         rc = virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE);
-        if (rc != 0)
+        if (rc != 0) {
+            virCgroupRemove(*group);
             virCgroupFree(group);
+        }
     }
 
     return rc;
