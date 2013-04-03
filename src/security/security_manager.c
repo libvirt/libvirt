@@ -437,7 +437,7 @@ int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
         return ret;
 
     virObjectLock(mgr);
-    for (i = 0; vm->nseclabels; i++) {
+    for (i = 0; i < vm->nseclabels; i++) {
         for (j = 0; sec_managers[j]; j++)
             if (STREQ(vm->seclabels[i]->model, sec_managers[j]->drv->name))
                 break;
