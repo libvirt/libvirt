@@ -2778,18 +2778,12 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     virLXCDriverPtr driver = dom->conn->privateData;
     virLXCDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    virDomainFSDefPtr root;
     char *vroot = NULL;
     int ret = -1;
-    int rc = 0;
-    bool methodSignal;
-    bool methodInitctl;
+    int rc;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_INITCTL |
                   VIR_DOMAIN_SHUTDOWN_SIGNAL, -1);
-
-    methodSignal = !!(flags & VIR_DOMAIN_SHUTDOWN_SIGNAL);
-    methodInitctl = !!(flags & VIR_DOMAIN_SHUTDOWN_INITCTL);
 
     lxcDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
@@ -2804,7 +2798,6 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     }
 
     priv = vm->privateData;
-    root = virDomainGetRootFilesystem(vm->def);
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2824,31 +2817,27 @@ lxcDomainShutdownFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (root && root->src) {
-        if (flags == 0)
-            methodSignal = methodInitctl = true;
-    } else if (methodInitctl) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Cannot shutdown container using initctl "
-                         "without separated namespace"));
-        goto cleanup;
-    } else {
-        methodSignal = true;
-    }
-
-    if (methodInitctl) {
-        rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF, vroot);
-        if (rc < 0)
+    if (flags == 0 ||
+        (flags & VIR_DOMAIN_SHUTDOWN_INITCTL)) {
+        if ((rc = virInitctlSetRunLevel(VIR_INITCTL_RUNLEVEL_POWEROFF,
+                                        vroot)) < 0) {
             goto cleanup;
-        if (rc == 0 && !methodSignal) {
+        }
+        if (rc == 0 && flags != 0 &&
+            ((flags & ~VIR_DOMAIN_SHUTDOWN_INITCTL) == 0)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("Container does not provide an initctl pipe"));
             goto cleanup;
         }
+    } else {
+        rc = 0;
     }
-    if (rc == 0 && methodSignal) {
-        ret = kill(priv->initpid, SIGTERM);
-        if (ret < 0 && errno != ESRCH) {
+
+    if (rc == 0 &&
+        (flags == 0 ||
+         (flags & VIR_DOMAIN_SHUTDOWN_SIGNAL))) {
+        if (kill(priv->initpid, SIGTERM) < 0 &&
+            errno != ESRCH) {
             virReportSystemError(errno,
                                  _("Unable to send SIGTERM to init pid %llu"),
                                  (unsigned long long)priv->initpid);
