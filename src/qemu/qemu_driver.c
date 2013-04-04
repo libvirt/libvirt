@@ -5738,6 +5738,9 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         goto end;
     }
 
+    if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+        goto end;
+
     if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
         goto end;
 
@@ -6007,7 +6010,8 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
+qemuDomainChangeDiskMediaLive(virConnectPtr conn,
+                              virDomainObjPtr vm,
                               virDomainDeviceDefPtr dev,
                               virQEMUDriverPtr driver,
                               bool force)
@@ -6019,6 +6023,9 @@ qemuDomainChangeDiskMediaLive(virDomainObjPtr vm,
     virDomainDeviceDefPtr dev_copy = NULL;
     virCapsPtr caps = NULL;
     int ret = -1;
+
+    if (qemuTranslateDiskSourcePool(conn, disk) < 0)
+        goto end;
 
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)
         goto end;
@@ -6099,7 +6106,8 @@ end:
 }
 
 static int
-qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
+qemuDomainUpdateDeviceLive(virConnectPtr conn,
+                           virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
                            virDomainPtr dom,
                            bool force)
@@ -6109,7 +6117,7 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainChangeDiskMediaLive(vm, dev, driver, force);
+        ret = qemuDomainChangeDiskMediaLive(conn, vm, dev, driver, force);
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
@@ -6522,7 +6530,7 @@ qemuDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
             ret = qemuDomainDetachDeviceLive(vm, dev_copy, dom);
             break;
         case QEMU_DEVICE_UPDATE:
-            ret = qemuDomainUpdateDeviceLive(vm, dev_copy, dom, force);
+            ret = qemuDomainUpdateDeviceLive(dom->conn, vm, dev_copy, dom, force);
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,

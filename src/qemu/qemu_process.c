@@ -3008,6 +3008,8 @@ qemuProcessReconnect(void *opaque)
      * qemu_driver->sharedDisks.
      */
     for (i = 0; i < obj->def->ndisks; i++) {
+        if (qemuTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
+            goto error;
         if (qemuAddSharedDisk(driver, obj->def->disks[i],
                               obj->def->name) < 0)
             goto error;
@@ -3553,6 +3555,11 @@ int qemuProcessStart(virConnectPtr conn,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         VIR_DEBUG("Assigning domain PCI addresses");
         if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (qemuTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
             goto cleanup;
     }
 

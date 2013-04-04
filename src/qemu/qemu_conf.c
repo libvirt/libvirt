@@ -1222,3 +1222,55 @@ int qemuDriverAllocateID(virQEMUDriverPtr driver)
 {
     return virAtomicIntInc(&driver->nextvmid);
 }
+
+int
+qemuTranslateDiskSourcePool(virConnectPtr conn,
+                            virDomainDiskDefPtr def)
+{
+    virStoragePoolPtr pool = NULL;
+    virStorageVolPtr vol = NULL;
+    virStorageVolInfo info;
+    int ret = -1;
+
+    if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+        return 0;
+
+    if (!def->srcpool)
+        return 0;
+
+    if (!(pool = virStoragePoolLookupByName(conn, def->srcpool->pool)))
+        return -1;
+
+    if (!(vol = virStorageVolLookupByName(pool, def->srcpool->volume)))
+        goto cleanup;
+
+    if (virStorageVolGetInfo(vol, &info) < 0)
+        goto cleanup;
+
+    if (def->startupPolicy &&
+        info.type != VIR_STORAGE_VOL_FILE) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'startupPolicy' is only valid for 'file' type volume"));
+        goto cleanup;
+    }
+
+    switch (info.type) {
+    case VIR_STORAGE_VOL_FILE:
+    case VIR_STORAGE_VOL_BLOCK:
+    case VIR_STORAGE_VOL_DIR:
+        if (!(def->src = virStorageVolGetPath(vol)))
+            goto cleanup;
+        break;
+    case VIR_STORAGE_VOL_NETWORK:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Using network volume as disk source is not supported"));
+        goto cleanup;
+    }
+
+    def->srcpool->voltype = info.type;
+    ret = 0;
+cleanup:
+    virStoragePoolFree(pool);
+    virStorageVolFree(vol);
+    return ret;
+}
