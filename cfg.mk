@@ -384,7 +384,12 @@ sc_prohibit_asprintf:
 	halt='use virAsprintf, not as'printf				\
 	  $(_sc_search_regexp)
 	@prohibit='virAsprintf.*, *"%s",'				\
-	halt='use strdup instead of virAsprintf with "%s"'		\
+	halt='use VIR_STRDUP instead of virAsprintf with "%s"'		\
+	  $(_sc_search_regexp)
+
+sc_prohibit_strdup:
+	@prohibit='\<strn?dup\> *\('					\
+	halt='use VIR_STRDUP, not strdup'				\
 	  $(_sc_search_regexp)
 
 # Prefer virSetUIDGID.
@@ -884,6 +889,9 @@ exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(bootstrap.conf$$|src/util/virstring\.c$$|examples/domain-events/events-c/event-test\.c$$|tests/vircgroupmock\.c$$)
+
+exclude_file_name_regexp--sc_prohibit_strdup = \
+  ^(docs/|examples/|python/|src/util/virstring\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|^docs/|^(src/util/virfile\.c|src/libvirt\.c|tests/vircgroupmock\.c)$$)
