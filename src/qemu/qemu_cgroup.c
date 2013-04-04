@@ -223,6 +223,9 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
     virCgroupPtr parent = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
+    if (!cfg->privileged)
+        goto done;
+
     virCgroupFree(&priv->cgroup);
 
     if (!vm->def->resource && startup) {
@@ -283,7 +286,6 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
         }
     } else {
         rc = virCgroupNewDriver("qemu",
-                                cfg->privileged,
                                 true,
                                 cfg->cgroupControllers,
                                 &parent);

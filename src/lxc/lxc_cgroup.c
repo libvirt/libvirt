@@ -581,7 +581,6 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
     } else {
         rc = virCgroupNewDriver("lxc",
                                 true,
-                                true,
                                 -1,
                                 &parent);
         if (rc != 0) {

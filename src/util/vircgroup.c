@@ -795,8 +795,7 @@ err:
     return rc;
 }
 
-static int virCgroupAppRoot(bool privileged,
-                            virCgroupPtr *group,
+static int virCgroupAppRoot(virCgroupPtr *group,
                             bool create,
                             int controllers)
 {
@@ -808,26 +807,7 @@ static int virCgroupAppRoot(bool privileged,
     if (rc != 0)
         return rc;
 
-    if (privileged) {
-        rc = virCgroupNew("libvirt", selfgrp, controllers, group);
-    } else {
-        char *rootname;
-        char *username;
-        username = virGetUserName(getuid());
-        if (!username) {
-            rc = -ENOMEM;
-            goto cleanup;
-        }
-        rc = virAsprintf(&rootname, "libvirt-%s", username);
-        VIR_FREE(username);
-        if (rc < 0) {
-            rc = -ENOMEM;
-            goto cleanup;
-        }
-
-        rc = virCgroupNew(rootname, selfgrp, controllers, group);
-        VIR_FREE(rootname);
-    }
+    rc = virCgroupNew("libvirt", selfgrp, controllers, group);
     if (rc != 0)
         goto cleanup;
 
@@ -1137,7 +1117,6 @@ int virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
  */
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupNewDriver(const char *name,
-                       bool privileged,
                        bool create,
                        int controllers,
                        virCgroupPtr *group)
@@ -1145,7 +1124,7 @@ int virCgroupNewDriver(const char *name,
     int rc;
     virCgroupPtr rootgrp = NULL;
 
-    rc = virCgroupAppRoot(privileged, &rootgrp,
+    rc = virCgroupAppRoot(&rootgrp,
                           create, controllers);
     if (rc != 0)
         goto out;
@@ -1165,7 +1144,6 @@ out:
 }
 #else
 int virCgroupNewDriver(const char *name ATTRIBUTE_UNUSED,
-                       bool privileged ATTRIBUTE_UNUSED,
                        bool create ATTRIBUTE_UNUSED,
                        int controllers ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED)

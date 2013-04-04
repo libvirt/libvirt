@@ -140,13 +140,13 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/libvirt/lxc",
     };
 
-    if ((rv = virCgroupNewDriver("lxc", true, false, -1, &cgroup)) != -ENOENT) {
+    if ((rv = virCgroupNewDriver("lxc", false, -1, &cgroup)) != -ENOENT) {
         fprintf(stderr, "Unexpected found LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     /* Asking for impossible combination since CPU is co-mounted */
-    if ((rv = virCgroupNewDriver("lxc", true, true,
+    if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_CPU),
                                  &cgroup)) != -EINVAL) {
         fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
@@ -154,7 +154,7 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
     }
 
     /* Asking for impossible combination since devices is not mounted */
-    if ((rv = virCgroupNewDriver("lxc", true, true,
+    if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_DEVICES),
                                  &cgroup)) != -ENOENT) {
         fprintf(stderr, "Should not have created LXC cgroup: %d\n", -rv);
@@ -162,7 +162,7 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
     }
 
     /* Asking for small combination since devices is not mounted */
-    if ((rv = virCgroupNewDriver("lxc", true, true,
+    if ((rv = virCgroupNewDriver("lxc", true,
                                  (1 << VIR_CGROUP_CONTROLLER_CPU) |
                                  (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                                  (1 << VIR_CGROUP_CONTROLLER_MEMORY),
@@ -173,7 +173,7 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
     ret = validateCgroup(cgroup, "libvirt/lxc", mountsSmall, placementSmall);
     virCgroupFree(&cgroup);
 
-    if ((rv = virCgroupNewDriver("lxc", true, true, -1, &cgroup)) != 0) {
+    if ((rv = virCgroupNewDriver("lxc", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
@@ -201,7 +201,7 @@ static int testCgroupNewForDriverDomain(const void *args ATTRIBUTE_UNUSED)
         [VIR_CGROUP_CONTROLLER_BLKIO] = "/libvirt/lxc/wibble",
     };
 
-    if ((rv = virCgroupNewDriver("lxc", true, false, -1, &drivercgroup)) != 0) {
+    if ((rv = virCgroupNewDriver("lxc", false, -1, &drivercgroup)) != 0) {
         fprintf(stderr, "Cannot find LXC cgroup: %d\n", -rv);
         goto cleanup;
     }

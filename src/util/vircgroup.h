@@ -51,7 +51,6 @@ int virCgroupNewPartition(const char *path,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 int virCgroupNewDriver(const char *name,
-                       bool privileged,
                        bool create,
                        int controllers,
                        virCgroupPtr *group)
