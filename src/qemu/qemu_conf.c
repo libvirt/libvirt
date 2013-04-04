@@ -1095,8 +1095,12 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
      * for the shared disk is "sgio" setting, which is only
      * valid for block disk.
      */
-    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
-        !disk->shared || !disk->src)
+    if (!disk->shared ||
+        !disk->src ||
+        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+           disk->srcpool &&
+           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
         return 0;
 
     qemuDriverLock(driver);
@@ -1171,8 +1175,12 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
     int ret = -1;
     int idx;
 
-    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
-        !disk->shared || !disk->src)
+    if (!disk->shared ||
+        !disk->src ||
+        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+           disk->srcpool &&
+           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
         return 0;
 
     qemuDriverLock(driver);
