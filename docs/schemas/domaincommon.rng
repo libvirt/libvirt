@@ -1123,6 +1123,9 @@
                 <optional>
                   <ref name="startupPolicy"/>
                 </optional>
+                <optional>
+                  <ref name='devSeclabel'/>
+                </optional>
               </element>
             </optional>
             <ref name="diskspec"/>

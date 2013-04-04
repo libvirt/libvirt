@@ -13020,16 +13020,24 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
             }
             break;
         case VIR_DOMAIN_DISK_TYPE_VOLUME:
-            /* Parsing guarantees the def->srcpool->volume cannot be NULL
-             * if def->srcpool->pool is not NULL.
-             */
+            virBufferAddLit(buf, "      <source");
+
             if (def->srcpool)
-                virBufferAsprintf(buf, "      <source pool='%s' volume='%s'",
+                virBufferAsprintf(buf, " pool='%s' volume='%s'",
                                   def->srcpool->pool, def->srcpool->volume);
             if (def->startupPolicy)
-                virBufferEscapeString(buf, " startupPolicy='%s'/>\n", startupPolicy);
-            else
+                virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+
+            if (def->nseclabels) {
+                virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 8);
+                for (n = 0; n < def->nseclabels; n++)
+                    virSecurityDeviceLabelDefFormat(buf, def->seclabels[n]);
+                virBufferAdjustIndent(buf, -8);
+                virBufferAddLit(buf, "      </source>\n");
+            } else {
                 virBufferAddLit(buf, "/>\n");
+            }
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
