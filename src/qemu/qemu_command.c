@@ -2681,6 +2681,49 @@ qemuBuildNBDString(virConnectPtr conn, virDomainDiskDefPtr disk, virBufferPtr op
     return 0;
 }
 
+static int
+qemuTranslateDiskSourcePool(virConnectPtr conn,
+                            virDomainDiskDefPtr def,
+                            int *voltype)
+{
+    virStoragePoolPtr pool = NULL;
+    virStorageVolPtr vol = NULL;
+    virStorageVolInfo info;
+    int ret = -1;
+
+    if (def->type != VIR_DOMAIN_DISK_TYPE_VOLUME)
+        return 0;
+
+    if (!(pool = virStoragePoolLookupByName(conn, def->srcpool->pool)))
+        return -1;
+
+    if (!(vol = virStorageVolLookupByName(pool, def->srcpool->volume)))
+        goto cleanup;
+
+    if (virStorageVolGetInfo(vol, &info) < 0)
+        goto cleanup;
+
+    switch (info.type) {
+    case VIR_STORAGE_VOL_FILE:
+    case VIR_STORAGE_VOL_BLOCK:
+    case VIR_STORAGE_VOL_DIR:
+        if (!(def->src = virStorageVolGetPath(vol)))
+            goto cleanup;
+        break;
+    case VIR_STORAGE_VOL_NETWORK:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Using network volume as disk source is not supported"));
+        goto cleanup;
+    }
+
+    *voltype = info.type;
+    ret = 0;
+cleanup:
+    virStoragePoolFree(pool);
+    virStorageVolFree(vol);
+    return ret;
+}
+
 char *
 qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                   virDomainDiskDefPtr disk,
@@ -2693,12 +2736,16 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     int idx = virDiskNameToIndex(disk->dst);
     int busid = -1, unitid = -1;
+    int voltype = -1;
 
     if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported disk type '%s'"), disk->dst);
         goto error;
     }
+
+    if (qemuTranslateDiskSourcePool(conn, disk, &voltype) < 0)
+        goto error;
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -2832,6 +2879,38 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
                                       disk->hosts->port ? disk->hosts->port : "7000");
                     virBufferEscape(&opt, ',', ",", "%s,", disk->src);
                 }
+                break;
+            }
+        } else if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
+            switch (voltype) {
+            case VIR_STORAGE_VOL_DIR:
+                if (!disk->readonly) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("cannot create virtual FAT disks in read-write mode"));
+                    goto error;
+                }
+                if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                    virBufferEscape(&opt, ',', ",", "file=fat:floppy:%s,",
+                                    disk->src);
+                else
+                    virBufferEscape(&opt, ',', ",", "file=fat:%s,", disk->src);
+                break;
+            case VIR_STORAGE_VOL_BLOCK:
+                if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("tray status 'open' is invalid for "
+                                     "block type volume"));
+                    goto error;
+                }
+                virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+                break;
+            case VIR_STORAGE_VOL_FILE:
+                virBufferEscape(&opt, ',', ",", "file=%s,", disk->src);
+                break;
+            case VIR_STORAGE_VOL_NETWORK:
+                /* Keep the compiler quite, qemuTranslateDiskSourcePool already
+                 * reported the unsupported error.
+                 */
                 break;
             }
         } else {

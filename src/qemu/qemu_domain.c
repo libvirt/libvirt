@@ -2037,7 +2037,9 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
 
-    if (!disk->src || disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK)
+    if (!disk->src ||
+        disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK ||
+        disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME)
         goto cleanup;
 
     if (disk->backingChain) {
