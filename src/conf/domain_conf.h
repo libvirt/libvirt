@@ -447,6 +447,7 @@ enum virDomainDiskType {
     VIR_DOMAIN_DISK_TYPE_FILE,
     VIR_DOMAIN_DISK_TYPE_DIR,
     VIR_DOMAIN_DISK_TYPE_NETWORK,
+    VIR_DOMAIN_DISK_TYPE_VOLUME,
 
     VIR_DOMAIN_DISK_TYPE_LAST
 };
@@ -606,6 +607,13 @@ struct _virDomainBlockIoTuneInfo {
 };
 typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 
+typedef struct _virDomainDiskSourcePoolDef virDomainDiskSourcePoolDef;
+struct _virDomainDiskSourcePoolDef {
+    char *pool; /* pool name */
+    char *volume; /* volume name */
+};
+typedef virDomainDiskSourcePoolDef *virDomainDiskSourcePoolDefPtr;
+
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
     int type;
@@ -617,6 +625,7 @@ struct _virDomainDiskDef {
     int protocol;
     size_t nhosts;
     virDomainDiskHostDefPtr hosts;
+    virDomainDiskSourcePoolDefPtr srcpool;
     struct {
         char *username;
         int secretType; /* enum virDomainDiskSecretType */

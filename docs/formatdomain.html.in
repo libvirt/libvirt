@@ -1372,6 +1372,11 @@
       &lt;blockio logical_block_size='512' physical_block_size='4096'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
     &lt;/disk&gt;
+    &lt;disk type='volume' device='disk'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source pool='blk-pool0' volume='blk-pool0-vol0'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+    &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1452,10 +1457,16 @@
         <code>iqn.1992-01.com.example/1</code>); the default LUN is zero.
         When the disk <code>type</code> is "network", the <code>source</code>
         may have zero or more <code>host</code> sub-elements used to
-        specify the hosts to connect.
+        specify the hosts to connect.  If the disk <code>type</code> is
+        "volume", the underlying disk source is represented by attributes
+        <code>pool</code> and <code>volume</code>. Attribute <code>pool</code>
+        specifies the name of storage pool (managed by libvirt) where the disk
+        source resides, and attribute <code>volume</code> specifies the name of
+        storage volume (managed by libvirt) used as the disk source.
         <span class="since">Since 0.0.3; <code>type='dir'</code> since
         0.7.5; <code>type='network'</code> since
-        0.8.7; <code>protocol='iscsi'</code> since 1.0.4</span><br/>
+        0.8.7; <code>protocol='iscsi'</code> since 1.0.4;
+        <code>type='volume'</code> since 1.0.5;</span><br/>
         For a "file" disk type which represents a cdrom or floppy
         (the <code>device</code> attribute), it is possible to define
         policy what to do with the disk if the source file is not accessible.

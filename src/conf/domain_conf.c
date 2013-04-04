@@ -210,7 +210,8 @@ VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
               "file",
               "dir",
-              "network")
+              "network",
+              "volume")
 
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
@@ -1116,6 +1117,18 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
     VIR_FREE(def);
 }
 
+static void
+virDomainDiskSourcePoolDefFree(virDomainDiskSourcePoolDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->pool);
+    VIR_FREE(def->volume);
+
+    VIR_FREE(def);
+}
+
 void virDomainDiskDefFree(virDomainDiskDefPtr def)
 {
     unsigned int i;
@@ -1125,6 +1138,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
 
     VIR_FREE(def->serial);
     VIR_FREE(def->src);
+    virDomainDiskSourcePoolDefFree(def->srcpool);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
     virStorageFileFreeMetadata(def->backingChain);
@@ -4157,6 +4171,46 @@ cleanup:
     goto cleanup;
 }
 
+static int
+virDomainDiskSourcePoolDefParse(xmlNodePtr node,
+                                virDomainDiskDefPtr def)
+{
+    char *pool = NULL;
+    char *volume = NULL;
+    int ret = -1;
+
+    pool = virXMLPropString(node, "pool");
+    volume = virXMLPropString(node, "volume");
+
+    /* CD-ROM and Floppy allows no source */
+    if (!pool && !volume)
+        return 0;
+
+    if (!pool || !volume) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'pool' and 'volume' must be specified together "
+                         "for 'pool' type source"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(def->srcpool) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    def->srcpool->pool = pool;
+    pool = NULL;
+    def->srcpool->volume = volume;
+    volume = NULL;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(pool);
+    VIR_FREE(volume);
+    return ret;
+}
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -4252,7 +4306,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!source && !hosts &&
+            if (!source && !hosts && !def->srcpool &&
                 xmlStrEqual(cur->name, BAD_CAST "source")) {
                 sourceNode = cur;
 
@@ -4344,6 +4398,10 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                         }
                         child = child->next;
                     }
+                    break;
+                case VIR_DOMAIN_DISK_TYPE_VOLUME:
+                    if (virDomainDiskSourcePoolDefParse(cur, def) < 0)
+                        goto error;
                     break;
                 default:
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4643,7 +4701,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present */
-    if (source == NULL && hosts == NULL &&
+    if (source == NULL && hosts == NULL && !def->srcpool &&
         def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
         def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         virReportError(VIR_ERR_NO_SOURCE,
@@ -4665,8 +4723,19 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (target == NULL) {
-        virReportError(VIR_ERR_NO_TARGET,
-                       source ? "%s" : NULL, source);
+        if (def->srcpool) {
+            char *tmp;
+            if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
+                def->srcpool->pool, def->srcpool->volume) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+
+            virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
+            VIR_FREE(tmp);
+        } else {
+            virReportError(VIR_ERR_NO_TARGET, source ? "%s" : NULL, source);
+        }
         goto error;
     }
 
@@ -12877,7 +12946,7 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
     int n;
     const char *startupPolicy = virDomainStartupPolicyTypeToString(def->startupPolicy);
 
-    if (def->src || def->nhosts > 0 ||
+    if (def->src || def->nhosts > 0 || def->srcpool ||
         def->startupPolicy) {
         switch (def->type) {
         case VIR_DOMAIN_DISK_TYPE_FILE:
@@ -12948,6 +13017,14 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
                 }
                 virBufferAddLit(buf, "      </source>\n");
             }
+            break;
+        case VIR_DOMAIN_DISK_TYPE_VOLUME:
+            /* Parsing guarantees the def->srcpool->volume cannot be NULL
+             * if def->srcpool->pool is not NULL.
+             */
+            if (def->srcpool->pool)
+                virBufferAsprintf(buf, "      <source pool='%s' volume='%s'/>\n",
+                                  def->srcpool->pool, def->srcpool->volume);
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,

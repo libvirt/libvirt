@@ -253,6 +253,7 @@ mymain(void)
     DO_TEST("disk-scsi-lun-passthrough-sgio");
 
     DO_TEST("disk-scsi-disk-vpd");
+    DO_TEST("disk-source-pool");
 
     DO_TEST("virtio-rng-random");
     DO_TEST("virtio-rng-egd");

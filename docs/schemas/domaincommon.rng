@@ -1107,6 +1107,24 @@
             <ref name="diskspec"/>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <value>volume</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="source">
+                <attribute name="pool">
+                  <ref name="genericName"/>
+                </attribute>
+                <attribute name="volume">
+                  <ref name="volName"/>
+                </attribute>
+              </element>
+            </optional>
+            <ref name="diskspec"/>
+          </interleave>
+        </group>
         <ref name="diskspec"/>
       </choice>
     </element>
