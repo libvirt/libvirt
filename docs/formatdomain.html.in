@@ -1467,11 +1467,12 @@
         0.7.5; <code>type='network'</code> since
         0.8.7; <code>protocol='iscsi'</code> since 1.0.4;
         <code>type='volume'</code> since 1.0.5;</span><br/>
-        For a "file" disk type which represents a cdrom or floppy
+        For a "file" or "volume" disk type which represents a cdrom or floppy
         (the <code>device</code> attribute), it is possible to define
         policy what to do with the disk if the source file is not accessible.
-        This is done by the <code>startupPolicy</code> attribute, accepting
-        these values:
+        (NB, <code>startupPolicy</code> is not valid for "volume" disk unless
+         the specified storage volume is of "file" type). This is done by the
+        <code>startupPolicy</code> attribute, accepting these values:
         <table class="top_table">
           <tr>
             <td> mandatory </td>

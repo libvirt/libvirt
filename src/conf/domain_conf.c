@@ -4402,6 +4402,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 case VIR_DOMAIN_DISK_TYPE_VOLUME:
                     if (virDomainDiskSourcePoolDefParse(cur, def) < 0)
                         goto error;
+                    startupPolicy = virXMLPropString(cur, "startupPolicy");
                     break;
                 default:
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -13022,9 +13023,13 @@ virDomainDiskSourceDefFormat(virBufferPtr buf,
             /* Parsing guarantees the def->srcpool->volume cannot be NULL
              * if def->srcpool->pool is not NULL.
              */
-            if (def->srcpool->pool)
-                virBufferAsprintf(buf, "      <source pool='%s' volume='%s'/>\n",
+            if (def->srcpool)
+                virBufferAsprintf(buf, "      <source pool='%s' volume='%s'",
                                   def->srcpool->pool, def->srcpool->volume);
+            if (def->startupPolicy)
+                virBufferEscapeString(buf, " startupPolicy='%s'/>\n", startupPolicy);
+            else
+                virBufferAddLit(buf, "/>\n");
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,

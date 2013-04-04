@@ -1120,6 +1120,9 @@
                 <attribute name="volume">
                   <ref name="volName"/>
                 </attribute>
+                <optional>
+                  <ref name="startupPolicy"/>
+                </optional>
               </element>
             </optional>
             <ref name="diskspec"/>

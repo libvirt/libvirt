@@ -2703,6 +2703,13 @@ qemuTranslateDiskSourcePool(virConnectPtr conn,
     if (virStorageVolGetInfo(vol, &info) < 0)
         goto cleanup;
 
+    if (def->startupPolicy &&
+        info.type != VIR_STORAGE_VOL_FILE) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("'startupPolicy' is only valid for 'file' type volume"));
+        goto cleanup;
+    }
+
     switch (info.type) {
     case VIR_STORAGE_VOL_FILE:
     case VIR_STORAGE_VOL_BLOCK:
