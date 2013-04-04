@@ -3235,9 +3235,12 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
     /* "sgio" is only valid for block disk; cdrom
      * and floopy disk can have empty source.
      */
-    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
+    if (!disk->src ||
         disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-        !disk->src)
+        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+           disk->srcpool &&
+           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
         return 0;
 
     sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL);

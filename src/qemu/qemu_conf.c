@@ -996,9 +996,18 @@ qemuCheckSharedDisk(virHashTablePtr sharedDisks,
          disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED))
         goto cleanup;
 
-    virReportError(VIR_ERR_OPERATION_INVALID,
-                   _("sgio of shared disk '%s' conflicts with other "
-                     "active domains"), disk->src);
+    if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
+                         "with other active domains"),
+                       disk->srcpool->pool,
+                       disk->srcpool->volume);
+    } else {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("sgio of shared disk '%s' conflicts with other "
+                         "active domains"), disk->src);
+    }
+
     ret = -1;
 
 cleanup:
