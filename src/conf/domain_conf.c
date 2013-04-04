@@ -3119,7 +3119,7 @@ cleanup:
 static int
 virDomainDeviceBootParseXML(xmlNodePtr node,
                             int *bootIndex,
-                            virBitmapPtr bootMap)
+                            virHashTablePtr bootHash)
 {
     char *order;
     int boot;
@@ -3138,18 +3138,16 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (bootMap) {
-        bool set;
-        if (virBitmapGetBit(bootMap, boot - 1, &set) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("boot orders have to be contiguous and starting from 1"));
-            goto cleanup;
-        } else if (set) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("boot order %d used for more than one device"), boot);
+    if (bootHash) {
+        if (virHashLookup(bootHash, order)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("boot order '%s' used for more than one device"),
+                           order);
             goto cleanup;
         }
-        ignore_value(virBitmapSetBit(bootMap, boot - 1));
+
+        if (virHashAddEntry(bootHash, order, (void *) 1) < 0)
+            goto cleanup;
     }
 
     *bootIndex = boot;
@@ -3165,7 +3163,7 @@ cleanup:
  */
 static int
 virDomainDeviceInfoParseXML(xmlNodePtr node,
-                            virBitmapPtr bootMap,
+                            virHashTablePtr bootHash,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
 {
@@ -3216,7 +3214,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     }
 
     if (boot) {
-        if (virDomainDeviceBootParseXML(boot, &info->bootIndex, bootMap))
+        if (virDomainDeviceBootParseXML(boot, &info->bootIndex, bootHash))
             goto cleanup;
     }
 
@@ -4237,7 +4235,7 @@ static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                          xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
-                         virBitmapPtr bootMap,
+                         virHashTablePtr bootHash,
                          virSecurityLabelDefPtr* vmSeclabels,
                          int nvmSeclabels,
                          unsigned int flags)
@@ -4968,7 +4966,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+        if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
                                         flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
             goto error;
     }
@@ -5631,7 +5629,7 @@ static virDomainNetDefPtr
 virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                         xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
-                        virBitmapPtr bootMap,
+                        virHashTablePtr bootHash,
                         unsigned int flags)
 {
     virDomainNetDefPtr def;
@@ -5826,7 +5824,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+        if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
                                         flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                         | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
             goto error;
@@ -8278,7 +8276,7 @@ error:
 static virDomainHostdevDefPtr
 virDomainHostdevDefParseXML(const xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
-                            virBitmapPtr bootMap,
+                            virHashTablePtr bootHash,
                             unsigned int flags)
 {
     virDomainHostdevDefPtr def;
@@ -8319,7 +8317,7 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
     }
 
     if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (virDomainDeviceInfoParseXML(node, bootMap, def->info,
+        if (virDomainDeviceInfoParseXML(node, bootHash, def->info,
                                         flags  | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT
                                         | VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM) < 0)
             goto error;
@@ -8353,7 +8351,7 @@ error:
 
 static virDomainRedirdevDefPtr
 virDomainRedirdevDefParseXML(const xmlNodePtr node,
-                             virBitmapPtr bootMap,
+                             virHashTablePtr bootHash,
                              unsigned int flags)
 {
     xmlNodePtr cur;
@@ -8403,7 +8401,7 @@ virDomainRedirdevDefParseXML(const xmlNodePtr node,
         def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
     }
 
-    if (virDomainDeviceInfoParseXML(node, bootMap, &def->info,
+    if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
                                     flags | VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT) < 0)
         goto error;
 
@@ -9405,8 +9403,7 @@ virDomainDefGetDefaultEmulator(virDomainDefPtr def,
 
 static int
 virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
-                         virDomainDefPtr def,
-                         unsigned long *bootCount)
+                         virDomainDefPtr def)
 {
     xmlNodePtr *nodes = NULL;
     int i, n;
@@ -9503,7 +9500,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         def->os.bios.rt_set = true;
     }
 
-    *bootCount = deviceBoot;
     ret = 0;
 
 cleanup:
@@ -9701,8 +9697,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     virDomainDefPtr def;
     unsigned long count;
     bool uuid_generated = false;
-    virBitmapPtr bootMap = NULL;
-    unsigned long bootMapSize = 0;
+    virHashTablePtr bootHash = NULL;
     xmlNodePtr cur;
     bool usb_none = false;
     bool usb_other = false;
@@ -10584,10 +10579,10 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     if (STREQ(def->os.type, "hvm")) {
-        if (virDomainDefParseBootXML(ctxt, def, &bootMapSize) < 0)
+        if (virDomainDefParseBootXML(ctxt, def) < 0)
             goto error;
-        if (bootMapSize && !(bootMap = virBitmapNew(bootMapSize)))
-            goto no_memory;
+        if (!(bootHash = virHashCreate(5, NULL)))
+            goto error;
     }
 
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
@@ -10603,7 +10598,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainDiskDefPtr disk = virDomainDiskDefParseXML(xmlopt,
                                                             nodes[i],
                                                             ctxt,
-                                                            bootMap,
+                                                            bootHash,
                                                             def->seclabels,
                                                             def->nseclabels,
                                                             flags);
@@ -10703,7 +10698,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainNetDefPtr net = virDomainNetDefParseXML(xmlopt,
                                                          nodes[i],
                                                          ctxt,
-                                                         bootMap,
+                                                         bootHash,
                                                          flags);
         if (!net)
             goto error;
@@ -11020,7 +11015,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0 ; i < n ; i++) {
         virDomainHostdevDefPtr hostdev;
 
-        hostdev = virDomainHostdevDefParseXML(nodes[i], ctxt, bootMap, flags);
+        hostdev = virDomainHostdevDefParseXML(nodes[i], ctxt, bootHash, flags);
         if (!hostdev)
             goto error;
 
@@ -11136,7 +11131,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
         virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
-                                                                        bootMap,
+                                                                        bootHash,
                                                                         flags);
         if (!redirdev)
             goto error;
@@ -11257,7 +11252,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainDefPostParse(def, caps, xmlopt) < 0)
         goto error;
 
-    virBitmapFree(bootMap);
+    virHashFree(bootHash);
 
     return def;
 
@@ -11266,7 +11261,7 @@ no_memory:
 error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
-    virBitmapFree(bootMap);
+    virHashFree(bootHash);
     virDomainDefFree(def);
     return NULL;
 }
