@@ -38,6 +38,7 @@
 static int validateCgroup(virCgroupPtr cgroup,
                           const char *expectPath,
                           const char **expectMountPoint,
+                          const char **expectLinkPoint,
                           const char **expectPlacement)
 {
     int i;
@@ -54,6 +55,14 @@ static int validateCgroup(virCgroupPtr cgroup,
             fprintf(stderr, "Wrong mount '%s', expected '%s' for '%s'\n",
                     cgroup->controllers[i].mountPoint,
                     expectMountPoint[i],
+                    virCgroupControllerTypeToString(i));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(expectLinkPoint[i],
+                            cgroup->controllers[i].linkPoint)) {
+            fprintf(stderr, "Wrong link '%s', expected '%s' for '%s'\n",
+                    cgroup->controllers[i].linkPoint,
+                    expectLinkPoint[i],
                     virCgroupControllerTypeToString(i));
             return -1;
         }
@@ -89,6 +98,17 @@ const char *mountsFull[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_BLKIO] = "/not/really/sys/fs/cgroup/blkio",
 };
 
+const char *links[VIR_CGROUP_CONTROLLER_LAST] = {
+    [VIR_CGROUP_CONTROLLER_CPU] = "/not/really/sys/fs/cgroup/cpu",
+    [VIR_CGROUP_CONTROLLER_CPUACCT] = "/not/really/sys/fs/cgroup/cpuacct",
+    [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
+    [VIR_CGROUP_CONTROLLER_MEMORY] = NULL,
+    [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+    [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
+    [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
+};
+
+
 static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -108,7 +128,7 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "", mountsFull, placement);
+    ret = validateCgroup(cgroup, "", mountsFull, links, placement);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -170,14 +190,14 @@ static int testCgroupNewForDriver(const void *args ATTRIBUTE_UNUSED)
         fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "libvirt/lxc", mountsSmall, placementSmall);
+    ret = validateCgroup(cgroup, "libvirt/lxc", mountsSmall, links, placementSmall);
     virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewDriver("lxc", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "libvirt/lxc", mountsFull, placementFull);
+    ret = validateCgroup(cgroup, "libvirt/lxc", mountsFull, links, placementFull);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -211,7 +231,7 @@ static int testCgroupNewForDriverDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "libvirt/lxc/wibble", mountsFull, placement);
+    ret = validateCgroup(domaincgroup, "libvirt/lxc/wibble", mountsFull, links, placement);
 
 cleanup:
     virCgroupFree(&drivercgroup);
@@ -274,14 +294,14 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines", mountsSmall, placementSmall);
+    ret = validateCgroup(cgroup, "/virtualmachines", mountsSmall, links, placementSmall);
     virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines", mountsFull, placementFull);
+    ret = validateCgroup(cgroup, "/virtualmachines", mountsFull, links, placementFull);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -326,7 +346,7 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "/users/berrange", mountsFull, placementFull);
+    ret = validateCgroup(cgroup, "/users/berrange", mountsFull, links, placementFull);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -361,7 +381,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "/production/foo.lxc.libvirt", mountsFull, placement);
+    ret = validateCgroup(domaincgroup, "/production/foo.lxc.libvirt", mountsFull, links, placement);
 
 cleanup:
     virCgroupFree(&partitioncgroup);

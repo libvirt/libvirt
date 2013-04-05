@@ -75,6 +75,7 @@ void virCgroupFree(virCgroupPtr *group)
 
     for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
         VIR_FREE((*group)->controllers[i].mountPoint);
+        VIR_FREE((*group)->controllers[i].linkPoint);
         VIR_FREE((*group)->controllers[i].placement);
     }
 
@@ -114,6 +115,14 @@ static int virCgroupCopyMounts(virCgroupPtr group,
 
         if (!group->controllers[i].mountPoint)
             return -ENOMEM;
+
+        if (parent->controllers[i].linkPoint) {
+            group->controllers[i].linkPoint =
+                strdup(parent->controllers[i].linkPoint);
+
+            if (!group->controllers[i].linkPoint)
+                return -ENOMEM;
+        }
     }
     return 0;
 }
@@ -157,9 +166,46 @@ static int virCgroupDetectMounts(virCgroupPtr group)
                  * first entry only
                  */
                 if (typelen == len && STREQLEN(typestr, tmp, len) &&
-                    !group->controllers[i].mountPoint &&
-                    !(group->controllers[i].mountPoint = strdup(entry.mnt_dir)))
-                    goto no_memory;
+                    !group->controllers[i].mountPoint) {
+                    char *linksrc;
+                    struct stat sb;
+                    char *tmp2;
+
+                    if (!(group->controllers[i].mountPoint = strdup(entry.mnt_dir)))
+                        goto no_memory;
+
+                    tmp2 = strrchr(entry.mnt_dir, '/');
+                    if (!tmp2) {
+                        errno = EINVAL;
+                        goto error;
+                    }
+                    *tmp2 = '\0';
+                    /* If it is a co-mount it has a filename like "cpu,cpuacct"
+                     * and we must identify the symlink path */
+                    if (strchr(tmp2 + 1, ',')) {
+                        if (virAsprintf(&linksrc, "%s/%s",
+                                        entry.mnt_dir, typestr) < 0)
+                            goto no_memory;
+                        *tmp2 = '/';
+
+                        if (lstat(linksrc, &sb) < 0) {
+                            if (errno == ENOENT) {
+                                VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
+                                         typestr, entry.mnt_dir, linksrc);
+                                VIR_FREE(linksrc);
+                            } else {
+                                goto error;
+                            }
+                        } else {
+                            if (!S_ISLNK(sb.st_mode)) {
+                                VIR_WARN("Expecting a symlink at %s for controller %s",
+                                         linksrc, typestr);
+                            } else {
+                                group->controllers[i].linkPoint = linksrc;
+                            }
+                        }
+                    }
+                }
                 tmp = next;
             }
         }
@@ -170,8 +216,10 @@ static int virCgroupDetectMounts(virCgroupPtr group)
     return 0;
 
 no_memory:
+    errno = ENOMEM;
+error:
     VIR_FORCE_FCLOSE(mounts);
-    return -ENOMEM;
+    return -errno;
 }
 
 

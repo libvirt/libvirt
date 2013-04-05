@@ -34,6 +34,8 @@
 static int (*realopen)(const char *path, int flags, ...);
 static FILE *(*realfopen)(const char *path, const char *mode);
 static int (*realaccess)(const char *path, int mode);
+static int (*reallstat)(const char *path, struct stat *sb);
+static int (*real__lxstat)(int ver, const char *path, struct stat *sb);
 static int (*realmkdir)(const char *path, mode_t mode);
 static char *fakesysfsdir;
 
@@ -310,8 +312,18 @@ static void init_syms(void)
         }                                                               \
     } while (0)
 
+# define LOAD_SYM_ALT(name1, name2)                                     \
+    do {                                                                \
+        if (!(real ## name1 = dlsym(RTLD_NEXT, #name1)) &&              \
+            !(real ## name2 = dlsym(RTLD_NEXT, #name2))) {              \
+            fprintf(stderr, "Cannot find real '%s' or '%s' symbol\n", #name1, #name2); \
+            abort();                                                    \
+        }                                                               \
+    } while (0)
+
     LOAD_SYM(fopen);
     LOAD_SYM(access);
+    LOAD_SYM_ALT(lstat, __lxstat);
     LOAD_SYM(mkdir);
     LOAD_SYM(open);
 }
@@ -391,6 +403,52 @@ int access(const char *path, int mode)
         free(newpath);
     } else {
         ret = realaccess(path, mode);
+    }
+    return ret;
+}
+
+int __lxstat(int ver, const char *path, struct stat *sb)
+{
+    int ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PREFIX)) {
+        init_sysfs();
+        char *newpath;
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     path + strlen(SYSFS_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+        ret = real__lxstat(ver, newpath, sb);
+        free(newpath);
+    } else {
+        ret = real__lxstat(ver, path, sb);
+    }
+    return ret;
+}
+
+int lstat(const char *path, struct stat *sb)
+{
+    int ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PREFIX)) {
+        init_sysfs();
+        char *newpath;
+        if (asprintf(&newpath, "%s/%s",
+                     fakesysfsdir,
+                     path + strlen(SYSFS_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+        ret = reallstat(newpath, sb);
+        free(newpath);
+    } else {
+        ret = reallstat(path, sb);
     }
     return ret;
 }
