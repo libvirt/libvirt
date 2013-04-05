@@ -307,6 +307,7 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE:
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
+            case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
                 break;
             default:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

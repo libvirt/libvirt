@@ -31,5 +31,10 @@
         <char>/dev/tty0</char>
       </source>
     </hostdev>
+    <hostdev mode='capabilities' type='net'>
+      <source>
+        <interface>eth0</interface>
+      </source>
+    </hostdev>
   </devices>
 </domain>

@@ -1551,7 +1551,6 @@ cleanup:
     return ret;
 }
 
-
 static int lxcContainerSetupHostdevSubsys(virDomainDefPtr vmDef,
                                           virDomainHostdevDefPtr def,
                                           const char *dstprefix,
@@ -1581,6 +1580,9 @@ static int lxcContainerSetupHostdevCaps(virDomainDefPtr vmDef,
 
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
         return lxcContainerSetupHostdevCapsMisc(vmDef, def, dstprefix, securityDriver);
+
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+        return 0; // case is handled in virLXCControllerMoveInterfaces
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2286,6 +2288,22 @@ virArch lxcContainerGetAlt32bitArch(virArch arch)
 }
 
 
+static bool
+lxcNeedNetworkNamespace(virDomainDefPtr def)
+{
+    size_t i;
+    if (def->nets != NULL)
+        return true;
+    if (def->features & (1 << VIR_DOMAIN_FEATURE_PRIVNET))
+        return true;
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES &&
+            def->hostdevs[i]->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
+            return true;
+    }
+    return false;
+}
+
 /**
  * lxcContainerStart:
  * @def: pointer to virtual machine structure
@@ -2329,8 +2347,7 @@ int lxcContainerStart(virDomainDefPtr def,
         cflags |= CLONE_NEWUSER;
     }
 
-    if (def->nets != NULL ||
-        (def->features & (1 << VIR_DOMAIN_FEATURE_PRIVNET))) {
+    if (lxcNeedNetworkNamespace(def)) {
         VIR_DEBUG("Enable network namespaces");
         cflags |= CLONE_NEWNET;
     }

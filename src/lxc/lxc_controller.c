@@ -1050,9 +1050,25 @@ cleanup2:
 static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl)
 {
     size_t i;
+    virDomainDefPtr def = ctrl->def;
 
     for (i = 0 ; i < ctrl->nveths ; i++) {
         if (virNetDevSetNamespace(ctrl->veths[i], ctrl->initpid) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < def->nhostdevs; i ++) {
+        virDomainHostdevDefPtr hdev = def->hostdevs[i];
+
+        if (hdev->mode != VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES)
+            continue;
+
+        virDomainHostdevCaps hdcaps = hdev->source.caps;
+
+        if (hdcaps.type != VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
+           continue;
+
+        if (virNetDevSetNamespace(hdcaps.u.net.iface, ctrl->initpid) < 0)
             return -1;
     }
 
