@@ -582,7 +582,8 @@ VIR_ENUM_IMPL(virDomainHostdevSubsys, VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST,
 
 VIR_ENUM_IMPL(virDomainHostdevCaps, VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST,
               "storage",
-              "misc")
+              "misc",
+              "net")
 
 VIR_ENUM_IMPL(virDomainPciRombarMode,
               VIR_DOMAIN_PCI_ROMBAR_LAST,
@@ -1610,6 +1611,9 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
             break;
         case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
             VIR_FREE(def->source.caps.u.misc.chardev);
+            break;
+        case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+            VIR_FREE(def->source.caps.u.net.iface);
             break;
         }
     }
@@ -3672,6 +3676,14 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
               virXPathString("string(./source/char[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing <char> element in hostdev character device"));
+            goto error;
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+        if (!(def->source.caps.u.net.iface =
+              virXPathString("string(./source/interface[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing <interface> element in hostdev net device"));
             goto error;
         }
         break;
@@ -8881,6 +8893,14 @@ virDomainHostdevMatchCapsMisc(virDomainHostdevDefPtr a,
                           b->source.caps.u.misc.chardev);
 }
 
+static int
+virDomainHostdevMatchCapsNet(virDomainHostdevDefPtr a,
+                              virDomainHostdevDefPtr b)
+{
+    return STREQ_NULLABLE(a->source.caps.u.net.iface,
+                          b->source.caps.u.net.iface);
+}
+
 
 static int
 virDomainHostdevMatchCaps(virDomainHostdevDefPtr a,
@@ -8894,6 +8914,8 @@ virDomainHostdevMatchCaps(virDomainHostdevDefPtr a,
         return virDomainHostdevMatchCapsStorage(a, b);
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
         return virDomainHostdevMatchCapsMisc(a, b);
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+        return virDomainHostdevMatchCapsNet(a, b);
     }
     return 0;
 }
@@ -13529,6 +13551,10 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
         virBufferEscapeString(buf, "<char>%s</char>\n",
                               def->source.caps.u.misc.chardev);
+        break;
+    case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
+        virBufferEscapeString(buf, "<interface>%s</interface>\n",
+                              def->source.caps.u.net.iface);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

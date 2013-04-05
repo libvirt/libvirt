@@ -3002,6 +3002,9 @@
       <group>
         <ref name="hostdevcapsmisc"/>
       </group>
+      <group>
+        <ref name="hostdevcapsnet"/>
+      </group>
     </choice>
   </define>
 
@@ -3058,6 +3061,17 @@
     <element name="source">
       <element name="char">
         <ref name="absFilePath"/>
+      </element>
+    </element>
+  </define>
+
+  <define name="hostdevcapsnet">
+    <attribute name="type">
+      <value>net</value>
+    </attribute>
+    <element name="source">
+      <element name="interface">
+        <ref name="deviceName"/>
       </element>
     </element>
   </define>

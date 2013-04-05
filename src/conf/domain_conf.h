@@ -407,6 +407,7 @@ struct _virDomainHostdevSubsys {
 enum virDomainHostdevCapsType {
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE,
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC,
+    VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET,
 
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
 };
@@ -422,6 +423,9 @@ struct _virDomainHostdevCaps {
         struct {
             char *chardev;
         } misc;
+        struct {
+            char *iface;
+        } net;
     } u;
 };
 

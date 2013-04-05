@@ -2344,18 +2344,29 @@
 ...
     </pre>
 
+...
+&lt;hostdev mode='capabilities' type='net'&gt;
+  &lt;source&gt;
+    &lt;interface&gt;eth0&lt;/interface&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+...
+    </pre>
+
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
         host devices. For block/character device passthrough <code>mode</code> is
         always "capabilities" and <code>type</code> is "block" for a block
-        device and "char" for a character device.
+        device, "char" for a character device and "net" for a host network
+        interface.
       </dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
         For block devices, the path to the block device in the host
         OS is provided in the nested "block" element, while for character
-        devices the "char" element is used
+        devices the "char" element is used. For network interfaces, the
+        name of the interface is provided in the "interface" element.
       </dd>
     </dl>
 
