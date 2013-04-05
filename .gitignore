@@ -182,6 +182,7 @@
 /tests/virendiantest
 /tests/virhashtest
 /tests/viridentitytest
+/tests/virkeycodetest
 /tests/virkeyfiletest
 /tests/virlockspacetest
 /tests/virnet*test

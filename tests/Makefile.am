@@ -99,6 +99,7 @@ test_programs = virshtest sockettest \
 	virauthconfigtest \
 	virbitmaptest virendiantest \
 	viridentitytest \
+	virkeycodetest \
 	virlockspacetest \
 	virstringtest \
         virportallocatortest \
@@ -572,6 +573,10 @@ virstoragetest_LDADD = $(LDADDS)
 viridentitytest_SOURCES = \
 	viridentitytest.c testutils.h testutils.c
 viridentitytest_LDADD = $(LDADDS)
+
+virkeycodetest_SOURCES = \
+	virkeycodetest.c testutils.h testutils.c
+virkeycodetest_LDADD = $(LDADDS)
 
 virlockspacetest_SOURCES = \
 	virlockspacetest.c testutils.h testutils.c
