@@ -341,9 +341,16 @@ r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
 struct_prefix = (remote_|qemu_|lxc_|virNet|keepalive_)
 
+# Depending on configure options, libtool creates one or both of
+# {,.libs/}libvirt_remote_driver_la-remote_protocol.o.  We want the
+# newest of the two, in case configure options changed and a stale
+# file is left around from an earlier build.
 PDWTAGS = \
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  pdwtags --verbose $(<:.lo=.$(OBJEXT))	> $(@F)-t1 2> $(@F)-t2;	\
+	  o=`ls -t $(<:.lo=.$(OBJEXT)) .libs/$(<:.lo=.$(OBJEXT))	\
+	    2>/dev/null | sed -n 1p`;					\
+	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; };	\
+	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2;			\
 	  if test -s $(@F)-t2; then					\
 	    rm -rf $(@F)-t?;						\
 	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
