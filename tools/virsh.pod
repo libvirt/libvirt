@@ -3098,6 +3098,8 @@ of C<virsh>
 
 Turn on verbose debugging of virsh commands. Valid levels are
 
+=over 4
+
 =item * VIRSH_DEBUG=0
 
 DEBUG - Messages at ALL levels get logged
@@ -3117,6 +3119,8 @@ WARNING - Logs messages at levels WARNING and ERROR
 =item * VIRSH_DEBUG=4
 
 ERROR - Messages at only ERROR level gets logged.
+
+=back
 
 =item VIRSH_LOG_FILE=C<LOGFILE>
 
