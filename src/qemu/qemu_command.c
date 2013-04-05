@@ -3708,27 +3708,22 @@ qemuBuildNicDevStr(virDomainNetDefPtr net,
                    virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *nic;
+    const char *nic = net->model;
     bool usingVirtio = false;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
-    if (!net->model) {
-        nic = "rtl8139";
-    } else if (STREQ(net->model, "virtio")) {
-        if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+    if (STREQ(net->model, "virtio")) {
+        if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
             nic = "virtio-net-ccw";
-        } else if (net->info.type ==
-                   VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+        else if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
             nic = "virtio-net-s390";
-        } else  {
+        else
             nic = "virtio-net-pci";
-        }
+
         usingVirtio = true;
-    } else {
-        nic = net->model;
     }
 
-    virBufferAdd(&buf, nic, strlen(nic));
+    virBufferAdd(&buf, nic, -1);
     if (usingVirtio && net->driver.virtio.txmode) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
             virBufferAddLit(&buf, ",tx=");
