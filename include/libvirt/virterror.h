@@ -116,6 +116,7 @@ typedef enum {
     VIR_FROM_LOCKSPACE = 51,    /* Error from lockspace */
     VIR_FROM_INITCTL = 52,      /* Error from initctl device communication */
     VIR_FROM_IDENTITY = 53,     /* Error from identity code */
+    VIR_FROM_CGROUP = 54,       /* Error from cgroups */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

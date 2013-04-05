@@ -119,6 +119,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Lock Space",
               "Init control",
               "Identity",
+              "Cgroup",
     )
 
 

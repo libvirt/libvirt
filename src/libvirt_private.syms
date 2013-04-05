@@ -1118,6 +1118,7 @@ virCgroupGetMemoryUsage;
 virCgroupGetMemSwapHardLimit;
 virCgroupGetMemSwapUsage;
 virCgroupHasController;
+virCgroupIsolateMount;
 virCgroupKill;
 virCgroupKillPainfully;
 virCgroupKillRecursive;

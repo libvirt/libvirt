@@ -27,6 +27,9 @@
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # include <mntent.h>
 #endif
+#if defined HAVE_SYS_MOUNT_H
+# include <sys/mount.h>
+#endif
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -42,12 +45,15 @@
 
 #include "virutil.h"
 #include "viralloc.h"
+#include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virhashcode.h"
 
 #define CGROUP_MAX_VAL 512
+
+#define VIR_FROM_THIS VIR_FROM_CGROUP
 
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
@@ -2385,3 +2391,133 @@ int virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
     return -ENOSYS;
 }
 #endif /* HAVE_KILL, HAVE_MNTENT_H, HAVE_GETMNTENT_R */
+
+#ifdef __linux__
+static char *virCgroupIdentifyRoot(virCgroupPtr group)
+{
+    char *ret = NULL;
+    size_t i;
+
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        char *tmp;
+        if (!group->controllers[i].mountPoint)
+            continue;
+        if (!(tmp = strrchr(group->controllers[i].mountPoint, '/'))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not find directory separator in %s"),
+                           group->controllers[i].mountPoint);
+            return NULL;
+        }
+
+        tmp[0] = '\0';
+        ret = strdup(group->controllers[i].mountPoint);
+        tmp[0] = '/';
+        if (!ret) {
+            virReportOOMError();
+            return NULL;
+        }
+        return ret;
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Could not find any mounted controllers"));
+    return NULL;
+}
+
+
+int virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
+                          const char *mountopts)
+{
+    int ret = -1;
+    size_t i;
+    char *opts = NULL;
+    char *root = NULL;
+
+    if (!(root = virCgroupIdentifyRoot(group)))
+        return -1;
+
+    VIR_DEBUG("Mounting cgroups at '%s'", root);
+
+    if (virFileMakePath(root) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create directory %s"),
+                             root);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&opts,
+                    "mode=755,size=65536%s", mountopts) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (mount("tmpfs", root, "tmpfs", MS_NOSUID|MS_NODEV|MS_NOEXEC, opts) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on %s type %s"),
+                             "tmpfs", root, "tmpfs");
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < VIR_CGROUP_CONTROLLER_LAST ; i++) {
+        if (!group->controllers[i].mountPoint)
+            continue;
+
+        if (!virFileExists(group->controllers[i].mountPoint)) {
+            char *src;
+            if (virAsprintf(&src, "%s%s%s",
+                            oldroot,
+                            group->controllers[i].mountPoint,
+                            group->controllers[i].placement) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            VIR_DEBUG("Create mount point '%s'", group->controllers[i].mountPoint);
+            if (virFileMakePath(group->controllers[i].mountPoint) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create directory %s"),
+                                     group->controllers[i].mountPoint);
+                VIR_FREE(src);
+                goto cleanup;
+            }
+
+            if (mount(src, group->controllers[i].mountPoint, NULL, MS_BIND, NULL) < 0) {
+                virReportSystemError(errno,
+                                     _("Failed to bind cgroup '%s' on '%s'"),
+                                     src, group->controllers[i].mountPoint);
+            VIR_FREE(src);
+                goto cleanup;
+            }
+
+            VIR_FREE(src);
+        }
+
+        if (group->controllers[i].linkPoint) {
+            VIR_DEBUG("Link mount point '%s' to '%s'",
+                      group->controllers[i].mountPoint,
+                      group->controllers[i].linkPoint);
+            if (symlink(group->controllers[i].mountPoint,
+                        group->controllers[i].linkPoint) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to symlink directory %s to %s"),
+                                     group->controllers[i].mountPoint,
+                                     group->controllers[i].linkPoint);
+                return -1;
+            }
+        }
+    }
+    ret = 0;
+
+cleanup:
+    VIR_FREE(root);
+    VIR_FREE(opts);
+    return ret;
+}
+#else /* __linux__ */
+int virCgroupIsolateMount(virCgroupPtr group ATTRIBUTE_UNUSED,
+                          const char *oldroot ATTRIBUTE_UNUSED,
+                          const char *mountopts ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif /* __linux__ */
