@@ -3131,10 +3131,11 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                                virDomainDiskProtocolTypeToString(disk->protocol));
                 goto error;
             }
-        } else if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk device='lun' is not supported for type='%s'"),
-                           virDomainDiskTypeToString(disk->type));
+        } else if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+                   !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+                     disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk device='lun' is only valid for block type disk source"));
             goto error;
         }
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO)) {
