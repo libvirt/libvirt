@@ -12758,10 +12758,6 @@ qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idx)
     if (idx)
         *idx = i;
 
-    if (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-        disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
-        goto cleanup;
-
     if (disk->src) {
         if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0) {
             virReportOOMError();
