@@ -1427,6 +1427,11 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="num_queues">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="usbmaster"/>
       </optional>
       <optional>

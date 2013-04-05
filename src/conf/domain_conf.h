@@ -728,6 +728,7 @@ struct _virDomainControllerDef {
     int type;
     int idx;
     int model; /* -1 == undef */
+    unsigned int num_queues;
     union {
         virDomainVirtioSerialOpts vioserial;
     } opts;

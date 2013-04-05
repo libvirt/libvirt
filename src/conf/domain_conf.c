@@ -5034,6 +5034,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *idx = NULL;
     char *model = NULL;
+    char *num_queues = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -5067,6 +5068,14 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         }
     } else {
         def->model = -1;
+    }
+
+    if ((num_queues = virXMLPropString(node, "num_queues"))) {
+        if (virStrToLong_ui(num_queues, NULL, 10, &def->num_queues) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Malformed 'num_queues' value '%s'"), num_queues);
+            goto error;
+        }
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
@@ -5146,6 +5155,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(idx);
     VIR_FREE(model);
+    VIR_FREE(num_queues);
 
     return def;
 
@@ -13194,6 +13204,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
     if (model) {
         virBufferEscapeString(buf, " model='%s'", model);
     }
+
+    if (def->num_queues)
+        virBufferAsprintf(buf, " num_queues='%u'", def->num_queues);
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
