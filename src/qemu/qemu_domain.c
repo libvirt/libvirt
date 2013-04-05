@@ -678,7 +678,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                             virDomainDefPtr def ATTRIBUTE_UNUSED,
+                             virDomainDefPtr def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
                              void *opaque)
 {
@@ -687,10 +687,16 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     virQEMUDriverConfigPtr cfg = NULL;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
-        dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        if (!dev->data.net->model &&
-            !(dev->data.net->model = strdup("rtl8139")))
-                goto no_memory;
+        dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        !dev->data.net->model) {
+        if (def->os.arch == VIR_ARCH_S390 ||
+            def->os.arch == VIR_ARCH_S390X)
+            dev->data.net->model = strdup("virtio");
+        else
+            dev->data.net->model = strdup("rtl8139");
+
+        if (!dev->data.net->model)
+            goto no_memory;
     }
 
     /* set default disk types and drivers */
