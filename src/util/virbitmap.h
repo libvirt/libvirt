@@ -100,6 +100,9 @@ void virBitmapClearAll(virBitmapPtr bitmap)
 bool virBitmapIsAllSet(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1);
 
+bool virBitmapIsAllClear(virBitmapPtr bitmap)
+    ATTRIBUTE_NONNULL(1);
+
 ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
     ATTRIBUTE_NONNULL(1);
 

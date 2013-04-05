@@ -591,6 +591,23 @@ bool virBitmapIsAllSet(virBitmapPtr bitmap)
 }
 
 /**
+ * virBitmapIsAllClear:
+ * @bitmap: the bitmap to check
+ *
+ * check if all bits in @bitmap are clear
+ */
+bool virBitmapIsAllClear(virBitmapPtr bitmap)
+{
+    int i;
+
+    for (i = 0; i < bitmap->map_len; i++)
+        if (bitmap->map[i] != 0)
+            return false;
+
+    return true;
+}
+
+/**
  * virBitmapNextSetBit:
  * @bitmap: the bitmap
  * @pos: the position after which to search for a set bit

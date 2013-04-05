@@ -125,6 +125,8 @@ static int test2(const void *data ATTRIBUTE_UNUSED)
         goto error;
 
     virBitmapClearAll(bitmap);
+    if (!virBitmapIsAllClear(bitmap))
+        goto error;
     if (testBit(bitmap, 0, size - 1, false) < 0)
         goto error;
     if (virBitmapCountBits(bitmap) != 0)
@@ -154,6 +156,9 @@ static int test3(const void *data ATTRIBUTE_UNUSED)
     if (!virBitmapIsAllSet(bitmap))
         goto error;
 
+    virBitmapClearAll(bitmap);
+    if (!virBitmapIsAllClear(bitmap))
+        goto error;
     ret = 0;
 
 error:
@@ -194,6 +199,9 @@ static int test4(const void *data ATTRIBUTE_UNUSED)
             goto error;
     }
     if (virBitmapNextClearBit(bitmap, i) != -1)
+        goto error;
+
+    if (!virBitmapIsAllClear(bitmap))
         goto error;
 
     virBitmapFree(bitmap);
@@ -406,11 +414,39 @@ static int test7(const void *v ATTRIBUTE_UNUSED)
         if (!virBitmapIsAllSet(bitmap))
             goto error;
 
+        virBitmapClearAll(bitmap);
+        if (!virBitmapIsAllClear(bitmap))
+            goto error;
+
         virBitmapFree(bitmap);
     }
 
     return 0;
 
+error:
+    virBitmapFree(bitmap);
+    return -1;
+}
+
+static int test8(const void *v ATTRIBUTE_UNUSED)
+{
+    virBitmapPtr bitmap = NULL;
+    char data[108] = {0x00,};
+
+    bitmap = virBitmapNewData(data, sizeof(data));
+    if (!bitmap)
+        goto error;
+
+    if (!virBitmapIsAllClear(bitmap))
+        goto error;
+
+    if (virBitmapSetBit(bitmap, 11) < 0)
+        goto error;
+
+    if (virBitmapIsAllClear(bitmap))
+        goto error;
+
+    return 0;
 error:
     virBitmapFree(bitmap);
     return -1;
@@ -435,7 +471,8 @@ mymain(void)
         ret = -1;
     if (virtTestRun("test7", 1, test7, NULL) < 0)
         ret = -1;
-
+    if (virtTestRun("test8", 1, test8, NULL) < 0)
+        ret = -1;
 
     return ret;
 }

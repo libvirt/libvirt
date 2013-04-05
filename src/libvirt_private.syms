@@ -1046,6 +1046,7 @@ virBitmapEqual;
 virBitmapFormat;
 virBitmapFree;
 virBitmapGetBit;
+virBitmapIsAllClear;
 virBitmapIsAllSet;
 virBitmapNew;
 virBitmapNewCopy;
