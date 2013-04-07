@@ -216,6 +216,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "ipv6-migration", /* 135 */
               "machine-opt",
+              "machine-usb-opt",
     );
 
 struct _virQEMUCaps {
@@ -1077,6 +1078,10 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (strstr(help, "-machine"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
+
+     /* USB option is supported v1.3.0 onwards */
+    if (qemuCaps->version >= 1003000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
 
     /*
      * Handling of -incoming arg with varying features
@@ -2434,6 +2439,10 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     qemuCaps->usedQMP = true;
 
     virQEMUCapsInitQMPBasic(qemuCaps);
+
+    /* USB option is supported v1.3.0 onwards */
+    if (qemuCaps->version >= 1003000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
 
     if (!(archstr = qemuMonitorGetTargetArch(mon)))
         goto cleanup;

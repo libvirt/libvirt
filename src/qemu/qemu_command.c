@@ -5257,6 +5257,12 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
         virCommandAddArg(cmd, "-machine");
         virBufferAdd(&buf, def->os.machine, -1);
 
+        /* To avoid the collision of creating USB controllers when calling
+         * machine->init in QEMU, it needs to set usb=off
+         */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
+            virBufferAsprintf(&buf, ",usb=off");
+
         if (def->mem.dump_core) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

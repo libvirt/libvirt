@@ -369,6 +369,8 @@ mymain(void)
             QEMU_CAPS_DUMP_GUEST_CORE);
     DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST_FAILURE("machine-core-on", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST("machine-usb-opt", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_USB_OPT);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);
