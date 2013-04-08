@@ -1361,6 +1361,10 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
             STREQ(vmDef->fss[i]->dst, "/"))
             continue;
 
+        if (lxcContainerUnmountSubtree(vmDef->fss[i]->dst,
+                                       false) < 0)
+            return -1;
+
         if (lxcContainerMountFS(vmDef->fss[i], dstprefix, sec_mount_options) < 0)
             return -1;
     }
