@@ -6111,7 +6111,7 @@ static const vshCmdInfo info_cpu_stats[] = {
     {.name = "desc",
      .data = N_("Display per-CPU and total statistics about the domain's CPUs")
     },
-    {.name = NULL},
+    {.name = NULL}
 };
 
 static const vshCmdOptDef opts_cpu_stats[] = {
@@ -6132,7 +6132,7 @@ static const vshCmdOptDef opts_cpu_stats[] = {
      .type = VSH_OT_INT,
      .help = N_("Number of shown CPUs at most")
     },
-    {.name = NULL},
+    {.name = NULL}
 };
 
 static bool
