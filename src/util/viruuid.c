@@ -114,6 +114,25 @@ virUUIDGenerate(unsigned char *uuid)
         err = virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
     }
 
+    /*
+     * Make UUID RFC 4122 compliant. Following form will be used:
+     *
+     * xxxxxxxx-xxxx-Axxx-Bxxx-xxxxxxxxxxxx
+     *
+     * where
+     * A is version defined in 4.1.3 of RFC
+     *  Msb0  Msb1  Msb2  Msb3   Version  Description
+     *   0     1     0     0        4     The randomly or pseudo-
+     *                                    randomly generated version
+     *                                    specified in this document.
+     *
+     * B is variant defined in 4.1.1 of RFC
+     *  Msb0  Msb1  Msb2  Description
+     *   1     0     x    The variant specified in this document.
+     */
+    uuid[6] = (uuid[6] & 0x0F) | (4 << 4);
+    uuid[8] = (uuid[8] & 0x3F) | (2 << 6);
+
     return err;
 }
 
