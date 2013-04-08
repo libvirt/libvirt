@@ -409,6 +409,113 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 # define MS_SLAVE                (1<<19)
 #endif
 
+static int lxcContainerGetSubtree(const char *prefix,
+                                  char ***mountsret,
+                                  size_t *nmountsret)
+{
+    FILE *procmnt;
+    struct mntent mntent;
+    char mntbuf[1024];
+    int ret = -1;
+    char **mounts = NULL;
+    size_t nmounts = 0;
+
+    VIR_DEBUG("prefix=%s", prefix);
+
+    *mountsret = NULL;
+    *nmountsret = 0;
+
+    if (!(procmnt = setmntent("/proc/mounts", "r"))) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to read /proc/mounts"));
+        return -1;
+    }
+
+    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
+        VIR_DEBUG("Got %s", mntent.mnt_dir);
+        if (!STRPREFIX(mntent.mnt_dir, prefix))
+            continue;
+
+        if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        if (!(mounts[nmounts] = strdup(mntent.mnt_dir))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        nmounts++;
+        VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
+    }
+
+    if (mounts)
+        qsort(mounts, nmounts, sizeof(mounts[0]),
+              lxcContainerChildMountSort);
+
+    ret = 0;
+cleanup:
+    *mountsret = mounts;
+    *nmountsret = nmounts;
+    endmntent(procmnt);
+    return ret;
+}
+
+static int lxcContainerUnmountSubtree(const char *prefix,
+                                      bool isOldRootFS)
+{
+    char **mounts = NULL;
+    size_t nmounts = 0;
+    size_t i;
+    int saveErrno;
+    const char *failedUmount = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Unmount subtreee from %s", prefix);
+
+    if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
+        goto cleanup;
+    for (i = 0 ; i < nmounts ; i++) {
+        VIR_DEBUG("Umount %s", mounts[i]);
+        if (umount(mounts[i]) < 0) {
+            char ebuf[1024];
+            failedUmount = mounts[i];
+            saveErrno = errno;
+            VIR_WARN("Failed to unmount '%s', trying to detach subtree '%s': %s",
+                     failedUmount, mounts[nmounts-1],
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+            break;
+        }
+    }
+
+    if (failedUmount) {
+        /* This detaches the subtree */
+        if (umount2(mounts[nmounts-1], MNT_DETACH) < 0) {
+            virReportSystemError(saveErrno,
+                                 _("Failed to unmount '%s' and could not detach subtree '%s'"),
+                                 failedUmount, mounts[nmounts-1]);
+            goto cleanup;
+        }
+        /* This unmounts the tmpfs on which the old root filesystem was hosted */
+        if (isOldRootFS &&
+            umount(mounts[nmounts-1]) < 0) {
+            virReportSystemError(saveErrno,
+                                 _("Failed to unmount '%s' and could not unmount old root '%s'"),
+                                 failedUmount, mounts[nmounts-1]);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    for (i = 0 ; i < nmounts ; i++)
+        VIR_FREE(mounts[i]);
+    VIR_FREE(mounts);
+
+    return ret;
+}
+
+
 static int lxcContainerPrepareRoot(virDomainDefPtr def,
                                    virDomainFSDefPtr root)
 {
@@ -1621,113 +1728,6 @@ static int lxcContainerSetupAllHostdevs(virDomainDefPtr vmDef,
 
     VIR_DEBUG("Setup all hostdevs");
     return 0;
-}
-
-
-static int lxcContainerGetSubtree(const char *prefix,
-                                  char ***mountsret,
-                                  size_t *nmountsret)
-{
-    FILE *procmnt;
-    struct mntent mntent;
-    char mntbuf[1024];
-    int ret = -1;
-    char **mounts = NULL;
-    size_t nmounts = 0;
-
-    VIR_DEBUG("prefix=%s", prefix);
-
-    *mountsret = NULL;
-    *nmountsret = 0;
-
-    if (!(procmnt = setmntent("/proc/mounts", "r"))) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to read /proc/mounts"));
-        return -1;
-    }
-
-    while (getmntent_r(procmnt, &mntent, mntbuf, sizeof(mntbuf)) != NULL) {
-        VIR_DEBUG("Got %s", mntent.mnt_dir);
-        if (!STRPREFIX(mntent.mnt_dir, prefix))
-            continue;
-
-        if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        if (!(mounts[nmounts] = strdup(mntent.mnt_dir))) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        nmounts++;
-        VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
-    }
-
-    if (mounts)
-        qsort(mounts, nmounts, sizeof(mounts[0]),
-              lxcContainerChildMountSort);
-
-    ret = 0;
-cleanup:
-    *mountsret = mounts;
-    *nmountsret = nmounts;
-    endmntent(procmnt);
-    return ret;
-}
-
-static int lxcContainerUnmountSubtree(const char *prefix,
-                                      bool isOldRootFS)
-{
-    char **mounts = NULL;
-    size_t nmounts = 0;
-    size_t i;
-    int saveErrno;
-    const char *failedUmount = NULL;
-    int ret = -1;
-
-    VIR_DEBUG("Unmount subtreee from %s", prefix);
-
-    if (lxcContainerGetSubtree(prefix, &mounts, &nmounts) < 0)
-        goto cleanup;
-    for (i = 0 ; i < nmounts ; i++) {
-        VIR_DEBUG("Umount %s", mounts[i]);
-        if (umount(mounts[i]) < 0) {
-            char ebuf[1024];
-            failedUmount = mounts[i];
-            saveErrno = errno;
-            VIR_WARN("Failed to unmount '%s', trying to detach subtree '%s': %s",
-                     failedUmount, mounts[nmounts-1],
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
-            break;
-        }
-    }
-
-    if (failedUmount) {
-        /* This detaches the subtree */
-        if (umount2(mounts[nmounts-1], MNT_DETACH) < 0) {
-            virReportSystemError(saveErrno,
-                                 _("Failed to unmount '%s' and could not detach subtree '%s'"),
-                                 failedUmount, mounts[nmounts-1]);
-            goto cleanup;
-        }
-        /* This unmounts the tmpfs on which the old root filesystem was hosted */
-        if (isOldRootFS &&
-            umount(mounts[nmounts-1]) < 0) {
-            virReportSystemError(saveErrno,
-                                 _("Failed to unmount '%s' and could not unmount old root '%s'"),
-                                 failedUmount, mounts[nmounts-1]);
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-
-cleanup:
-    for (i = 0 ; i < nmounts ; i++)
-        VIR_FREE(mounts[i]);
-    VIR_FREE(mounts);
-
-    return ret;
 }
 
 
