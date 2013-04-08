@@ -394,6 +394,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: gettext-devel
 BuildRequires: libtool
+BuildRequires: /usr/bin/pod2man
 %endif
 BuildRequires: python-devel
 %if %{with_systemd}
