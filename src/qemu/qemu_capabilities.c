@@ -864,8 +864,9 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 {
     virCapsPtr caps;
     int i;
+    virArch hostarch = virArchFromHost();
 
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
+    if ((caps = virCapabilitiesNew(hostarch,
                                    1, 1)) == NULL)
         goto error;
 
@@ -878,7 +879,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
-    if (virQEMUCapsInitCPU(caps, virArchFromHost()) < 0)
+    if (virQEMUCapsInitCPU(caps, hostarch) < 0)
         VIR_WARN("Failed to get host CPU");
 
     /* Add the power management features of the host */
@@ -895,7 +896,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
      */
     for (i = 0 ; i < VIR_ARCH_LAST ; i++)
         if (virQEMUCapsInitGuest(caps, cache,
-                                 virArchFromHost(),
+                                 hostarch,
                                  i) < 0)
             goto error;
 
@@ -1643,17 +1644,19 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
 {
     const char *binary;
     virQEMUCapsPtr qemucaps;
+    virArch hostarch;
 
     if (*version > 0)
         return 0;
 
+    hostarch = virArchFromHost();
     if ((binary = virCapabilitiesDefaultGuestEmulator(caps,
                                                       "hvm",
-                                                      virArchFromHost(),
+                                                      hostarch,
                                                       "qemu")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot find suitable emulator for %s"),
-                       virArchToString(virArchFromHost()));
+                       virArchToString(hostarch));
         return -1;
     }
 
