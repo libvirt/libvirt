@@ -6140,19 +6140,39 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virTypedParameterPtr params = NULL;
-    int i, j, pos, max_id, cpu = -1, show_count = -1, nparams = 0;
+    int i, j, pos, max_id, cpu = 0, show_count = -1, nparams = 0;
     bool show_total = false, show_per_cpu = false;
     unsigned int flags = 0;
     bool ret = false;
+    int rv = 0;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     show_total = vshCommandOptBool(cmd, "total");
-    if (vshCommandOptInt(cmd, "start", &cpu) > 0)
+
+    if ((rv = vshCommandOptInt(cmd, "start", &cpu)) < 0) {
+        vshError(ctl, "%s", _("Unable to parse integer parameter for start"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (cpu < 0) {
+            vshError(ctl, "%s", _("Invalid value for start CPU"));
+            goto cleanup;
+        }
         show_per_cpu = true;
-    if (vshCommandOptInt(cmd, "count", &show_count) > 0)
+    }
+
+    if ((rv = vshCommandOptInt(cmd, "count", &show_count)) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to parse integer parameter for CPUs to show"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (show_count < 0) {
+            vshError(ctl, "%s", _("Invalid value for number of CPUs to show"));
+            goto cleanup;
+        }
         show_per_cpu = true;
+    }
 
     /* default show per_cpu and total */
     if (!show_total && !show_per_cpu) {
@@ -6163,15 +6183,14 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     if (!show_per_cpu) /* show total stats only */
         goto do_show_total;
 
-    /* check cpu, show_count, and ignore wrong argument */
-    if (cpu < 0)
-        cpu = 0;
-
     /* get number of cpus on the node */
     if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, flags)) < 0)
         goto failed_stats;
-    if (show_count < 0 || show_count > max_id)
+    if (show_count < 0 || show_count > max_id) {
+        if (show_count > max_id)
+            vshPrint(ctl, _("Only %d CPUs available to show\n"), max_id);
         show_count = max_id;
+    }
 
     /* get percpu information */
     if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, flags)) < 0)
