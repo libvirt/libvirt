@@ -11,7 +11,7 @@ fi
 LOCKSPACE="__LIBVIRT__DISKS__"
 
 LOCKDIR=`augtool print '/files@sysconfdir@/libvirt/qemu-sanlock.conf/disk_lease_dir'`
-if test $? != 0 || "x$LOCKDIR" = "x" ; then
+if test $? != 0 || test "x$LOCKDIR" = "x" ; then
   LOCKDIR="@localstatedir@/lib/libvirt/sanlock"
 fi
 
