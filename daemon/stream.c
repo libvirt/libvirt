@@ -148,6 +148,14 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
             virNetServerClientClose(client);
             goto cleanup;
         }
+        /* If we detected EOF during read processing,
+         * then clear hangup/error conditions, since
+         * we want the client to see the EOF message
+         * we just sent them
+         */
+        if (stream->recvEOF)
+            events = events & ~(VIR_STREAM_EVENT_HANGUP |
+                                VIR_STREAM_EVENT_ERROR);
     }
 
     /* If we have a completion/abort message, always process it */
