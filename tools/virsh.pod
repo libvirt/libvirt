@@ -1154,12 +1154,12 @@ obtained from domjobinfo.
 
 =item B<migrate-setspeed> I<domain> I<bandwidth>
 
-Set the maximum migration bandwidth (in Mbps) for a domain which is being
+Set the maximum migration bandwidth (in MiB/s) for a domain which is being
 migrated to another host.
 
 =item B<migrate-getspeed> I<domain>
 
-Get the maximum migration bandwidth (in Mbps) for a domain.
+Get the maximum migration bandwidth (in MiB/s) for a domain.
 
 =item B<numatune> I<domain> [I<--mode> B<mode>] [I<--nodeset> B<nodeset>]
 [[I<--config>] [I<--live>] | [I<--current>]]

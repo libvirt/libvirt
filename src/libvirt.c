@@ -5116,7 +5116,7 @@ virDomainMigrateDirect(virDomainPtr domain,
  * @flags: bitwise-OR of virDomainMigrateFlags
  * @dname: (optional) rename domain to this at destination
  * @uri: (optional) dest hostname/URI as seen from the source host
- * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ * @bandwidth: (optional) specify migration bandwidth limit in MiB/s
  *
  * Migrate the domain object from its current host to the destination
  * host given by dconn (a connection to the destination host).
@@ -5169,7 +5169,7 @@ virDomainMigrateDirect(virDomainPtr domain,
  * URI if the destination host has multiple interfaces and a
  * specific interface is required to transmit migration data.
  *
- * The maximum bandwidth (in Mbps) that will be used to do migration
+ * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
@@ -5343,7 +5343,7 @@ error:
  * @dxml: (optional) XML config for launching guest on target
  * @dname: (optional) rename domain to this at destination
  * @uri: (optional) dest hostname/URI as seen from the source host
- * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ * @bandwidth: (optional) specify migration bandwidth limit in MiB/s
  *
  * Migrate the domain object from its current host to the destination
  * host given by dconn (a connection to the destination host).
@@ -5396,7 +5396,7 @@ error:
  * URI if the destination host has multiple interfaces and a
  * specific interface is required to transmit migration data.
  *
- * The maximum bandwidth (in Mbps) that will be used to do migration
+ * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
@@ -5588,7 +5588,7 @@ error:
  * @duri: mandatory URI for the destination host
  * @flags: bitwise-OR of virDomainMigrateFlags
  * @dname: (optional) rename domain to this at destination
- * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ * @bandwidth: (optional) specify migration bandwidth limit in MiB/s
  *
  * Migrate the domain object from its current host to the destination
  * host given by duri.
@@ -5637,7 +5637,7 @@ error:
  * renaming is not supported by the hypervisor, dname must be NULL or
  * else an error will be returned.
  *
- * The maximum bandwidth (in Mbps) that will be used to do migration
+ * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
@@ -5740,7 +5740,7 @@ error:
  * @dxml: (optional) XML config for launching guest on target
  * @flags: bitwise-OR of virDomainMigrateFlags
  * @dname: (optional) rename domain to this at destination
- * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ * @bandwidth: (optional) specify migration bandwidth limit in MiB/s
  *
  * Migrate the domain object from its current host to the destination
  * host given by duri.
@@ -5799,7 +5799,7 @@ error:
  * renaming is not supported by the hypervisor, dname must be NULL or
  * else an error will be returned.
  *
- * The maximum bandwidth (in Mbps) that will be used to do migration
+ * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
  * libvirt will choose a suitable default.  Some hypervisors do
  * not support this feature and will return an error if bandwidth
@@ -17702,10 +17702,10 @@ error:
 /**
  * virDomainMigrateSetMaxSpeed:
  * @domain: a domain object
- * @bandwidth: migration bandwidth limit in Mbps
+ * @bandwidth: migration bandwidth limit in MiB/s
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * The maximum bandwidth (in Mbps) that will be used to do migration
+ * The maximum bandwidth (in MiB/s) that will be used to do migration
  * can be specified with the bandwidth parameter. Not all hypervisors
  * will support a bandwidth cap
  *
@@ -17749,10 +17749,10 @@ error:
 /**
  * virDomainMigrateGetMaxSpeed:
  * @domain: a domain object
- * @bandwidth: return value of current migration bandwidth limit in Mbps
+ * @bandwidth: return value of current migration bandwidth limit in MiB/s
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Get the current maximum bandwidth (in Mbps) that will be used if the
+ * Get the current maximum bandwidth (in MiB/s) that will be used if the
  * domain is migrated.  Not all hypervisors will support a bandwidth limit.
  *
  * Returns 0 in case of success, -1 otherwise.
