@@ -557,8 +557,8 @@ qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             controllerModel =
-                virDomainDiskFindControllerModel(def, disk,
-                                                 VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+                virDomainDeviceFindControllerModel(def, &disk->info,
+                                                   VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
 
             if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
                 return -1;
@@ -3210,8 +3210,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         }
 
         controllerModel =
-            virDomainDiskFindControllerModel(def, disk,
-                                             VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+            virDomainDeviceFindControllerModel(def, &disk->info,
+                                               VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
         if ((qemuSetScsiControllerModel(def, qemuCaps, &controllerModel)) < 0)
             goto error;
 

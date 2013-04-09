@@ -3699,16 +3699,16 @@ error:
 }
 
 int
-virDomainDiskFindControllerModel(virDomainDefPtr def,
-                                 virDomainDiskDefPtr disk,
-                                 int controllerType)
+virDomainDeviceFindControllerModel(virDomainDefPtr def,
+                                   virDomainDeviceInfoPtr info,
+                                   int controllerType)
 {
     int model = -1;
     int i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == controllerType &&
-            def->controllers[i]->idx == disk->info.addr.drive.controller)
+            def->controllers[i]->idx == info->addr.drive.controller)
             model = def->controllers[i]->model;
     }
 

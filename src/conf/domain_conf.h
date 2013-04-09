@@ -2023,9 +2023,9 @@ void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 void virDomainDiskHostDefFree(virDomainDiskHostDefPtr def);
-int virDomainDiskFindControllerModel(virDomainDefPtr def,
-                                     virDomainDiskDefPtr disk,
-                                     int controllerType);
+int virDomainDeviceFindControllerModel(virDomainDefPtr def,
+                                       virDomainDeviceInfoPtr info,
+                                       int controllerType);
 virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
