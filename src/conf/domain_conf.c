@@ -6634,7 +6634,9 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (path == NULL) {
+        /* path can be auto generated */
+        if (!path &&
+            chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
             goto error;
@@ -6729,7 +6731,6 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
     char *type = NULL;
     const char *nodeName;
     virDomainChrDefPtr def;
-    int remaining;
     bool seenTarget = false;
 
     if (!(def = virDomainChrDefNew()))
@@ -6753,28 +6754,25 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     cur = node->children;
-    remaining = virDomainChrSourceDefParseXML(&def->source, cur, flags,
-                                              def, ctxt,
-                                              vmSeclabels, nvmSeclabels);
-    if (remaining < 0)
-        goto error;
-    if (remaining) {
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE) {
-                if (xmlStrEqual(cur->name, BAD_CAST "target")) {
-                    seenTarget = true;
-                    if (virDomainChrDefParseTargetXML(def, cur) < 0) {
-                        goto error;
-                    }
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                seenTarget = true;
+                if (virDomainChrDefParseTargetXML(def, cur) < 0) {
+                    goto error;
                 }
             }
-            cur = cur->next;
         }
+        cur = cur->next;
     }
 
     if (!seenTarget &&
         ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
         goto cleanup;
+
+    if (virDomainChrSourceDefParseXML(&def->source, node->children, flags, def,
+                                      ctxt, vmSeclabels, nvmSeclabels) < 0)
+        goto error;
 
     if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
         if (def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
@@ -14288,8 +14286,8 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(buf, "      <source mode='%s'",
                           def->data.nix.listen ? "bind" : "connect");
-        virBufferEscapeString(buf, " path='%s'/>\n",
-                              def->data.nix.path);
+        virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
+        virBufferAddLit(buf, "/>\n");
         break;
     }
 

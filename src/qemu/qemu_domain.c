@@ -792,6 +792,22 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         (def->os.arch == VIR_ARCH_S390 || def->os.arch == VIR_ARCH_S390X))
         dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
 
+    /* auto generate unix socket path */
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+        dev->data.chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        !dev->data.chr->source.data.nix.path &&
+        (driver && (cfg = virQEMUDriverGetConfig(driver)))) {
+
+        if (virAsprintf(&dev->data.chr->source.data.nix.path,
+                        "%s/channel/target/%s.%s",
+                        cfg->libDir, def->name,
+                        dev->data.chr->target.name) < 0)
+            goto no_memory;
+        dev->data.chr->source.data.nix.listen = true;
+    }
+
     ret = 0;
 
 cleanup:
