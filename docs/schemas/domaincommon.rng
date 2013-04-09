@@ -3873,11 +3873,6 @@
       <param name="minInclusive">-1</param>
     </data>
   </define>
-  <define name="PortNumber">
-    <data type="short">
-      <param name="minInclusive">-1</param>
-    </data>
-  </define>
   <!-- weight currently is in range [100, 1000] -->
   <define name="weight">
     <data type="unsignedInt">

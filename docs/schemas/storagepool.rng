@@ -274,42 +274,6 @@
     </element>
   </define>
 
-  <define name='sourceinfoadapter'>
-    <element name='adapter'>
-      <choice>
-        <group>
-          <!-- To keep back-compat, 'type' is not mandatory for
-           scsi_host adapter -->
-          <optional>
-            <attribute name='type'>
-              <value>scsi_host</value>
-            </attribute>
-          </optional>
-          <attribute name='name'>
-            <text/>
-          </attribute>
-        </group>
-        <group>
-          <attribute name='type'>
-            <value>fc_host</value>
-          </attribute>
-          <optional>
-            <attribute name='parent'>
-              <text/>
-            </attribute>
-          </optional>
-          <attribute name='wwnn'>
-            <ref name='wwn'/>
-          </attribute>
-          <attribute name='wwpn'>
-            <ref name='wwn'/>
-          </attribute>
-        </group>
-      </choice>
-      <empty/>
-    </element>
-  </define>
-
   <define name='sourceinfoname'>
     <element name='name'>
       <text/>
@@ -549,12 +513,6 @@
   <define name='IscsiQualifiedName'>
     <data type='string'>
       <param name="pattern">iqn\.[0-9]{4}-(0[1-9]|1[0-2])\.[a-zA-Z0-9\.\-]+(:.+)?</param>
-    </data>
-  </define>
-
-  <define name="PortNumber">
-    <data type="short">
-      <param name="minInclusive">-1</param>
     </data>
   </define>
 
