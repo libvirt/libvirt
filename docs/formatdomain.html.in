@@ -2344,6 +2344,7 @@
 ...
     </pre>
 
+    <pre>
 ...
 &lt;hostdev mode='capabilities' type='net'&gt;
   &lt;source&gt;
