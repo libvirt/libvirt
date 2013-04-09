@@ -2026,8 +2026,8 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                 continue;
             }
 
-            if (VIR_ALLOC_N(*virtual_functions,
-                            *num_virtual_functions + 1) < 0) {
+            if (VIR_REALLOC_N(*virtual_functions,
+                              *num_virtual_functions + 1) < 0) {
                 virReportOOMError();
                 VIR_FREE(config_addr);
                 goto error;
