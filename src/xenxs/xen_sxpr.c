@@ -506,7 +506,7 @@ xenParseSxprDisks(virDomainDefPtr def,
 
             if (mode &&
                 strchr(mode, 'r'))
-                disk->readonly = 1;
+                disk->readonly = true;
             if (mode &&
                 strchr(mode, '!'))
                 disk->shared = true;
@@ -1371,7 +1371,7 @@ xenParseSxpr(const struct sexpr *root,
                 goto no_memory;
             }
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->readonly = 1;
+            disk->readonly = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);

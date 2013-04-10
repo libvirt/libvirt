@@ -4637,7 +4637,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
-                def->readonly = 1;
+                def->readonly = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
                 def->shared = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
@@ -4765,7 +4765,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     /* Force CDROM to be listed as read only */
     if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        def->readonly = 1;
+        def->readonly = true;
 
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&

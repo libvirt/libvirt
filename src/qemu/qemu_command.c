@@ -8137,7 +8137,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "media")) {
             if (STREQ(values[i], "cdrom")) {
                 def->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                def->readonly = 1;
+                def->readonly = true;
             } else if (STREQ(values[i], "floppy"))
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
         } else if (STREQ(keywords[i], "format")) {
@@ -8196,7 +8196,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
             }
         } else if (STREQ(keywords[i], "readonly")) {
             if ((values[i] == NULL) || STREQ(values[i], "on"))
-                def->readonly = 1;
+                def->readonly = true;
         } else if (STREQ(keywords[i], "aio")) {
             if ((def->iomode = virDomainDiskIoTypeFromString(values[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9303,7 +9303,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 disk->dst = strdup("hdc");
                 if (!disk->dst)
                     goto no_memory;
-                disk->readonly = 1;
+                disk->readonly = true;
             } else {
                 if (STRPREFIX(arg, "-fd")) {
                     disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;

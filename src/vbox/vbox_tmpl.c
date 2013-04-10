@@ -2647,7 +2647,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskPM->vtbl->GetType(hardDiskPM, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = 1;
+                    def->disks[hddNum]->readonly = true;
                 def->disks[hddNum]->src = strdup(hddlocation);
                 def->disks[hddNum]->dst = strdup("hda");
                 hddNum++;
@@ -2668,7 +2668,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskPS->vtbl->GetType(hardDiskPS, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = 1;
+                    def->disks[hddNum]->readonly = true;
                 def->disks[hddNum]->src = strdup(hddlocation);
                 def->disks[hddNum]->dst = strdup("hdb");
                 hddNum++;
@@ -2689,7 +2689,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 hardDiskSS->vtbl->GetType(hardDiskSS, &hddType);
 
                 if (hddType == HardDiskType_Immutable)
-                    def->disks[hddNum]->readonly = 1;
+                    def->disks[hddNum]->readonly = true;
                 def->disks[hddNum]->src = strdup(hddlocation);
                 def->disks[hddNum]->dst = strdup("hdd");
                 hddNum++;
@@ -2830,7 +2830,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 medium->vtbl->GetReadOnly(medium, &readOnly);
                 if (readOnly == PR_TRUE)
-                    def->disks[diskCount]->readonly = 1;
+                    def->disks[diskCount]->readonly = true;
 
                 def->disks[diskCount]->type = VIR_DOMAIN_DISK_TYPE_FILE;
 
@@ -3118,7 +3118,7 @@ sharedFoldersCleanup:
                                 def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
                                 def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                                 def->disks[def->ndisks - 1]->type = VIR_DOMAIN_DISK_TYPE_FILE;
-                                def->disks[def->ndisks - 1]->readonly = 1;
+                                def->disks[def->ndisks - 1]->readonly = true;
                                 def->disks[def->ndisks - 1]->src = strdup(location);
                                 def->disks[def->ndisks - 1]->dst = strdup("hdc");
                             } else {
@@ -3165,7 +3165,7 @@ sharedFoldersCleanup:
                                     def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
                                     def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
                                     def->disks[def->ndisks - 1]->type = VIR_DOMAIN_DISK_TYPE_FILE;
-                                    def->disks[def->ndisks - 1]->readonly = 0;
+                                    def->disks[def->ndisks - 1]->readonly = false;
                                     def->disks[def->ndisks - 1]->src = strdup(location);
                                     def->disks[def->ndisks - 1]->dst = strdup("fda");
                                 } else {

@@ -610,7 +610,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             if (STREQ(head, "r") ||
                 STREQ(head, "ro"))
-                disk->readonly = 1;
+                disk->readonly = true;
             else if ((STREQ(head, "w!")) ||
                      (STREQ(head, "!")))
                 disk->shared = true;
@@ -643,7 +643,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (!(disk->dst = strdup("hdc")))
                 goto no_memory;
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->readonly = 1;
+            disk->readonly = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto no_memory;
