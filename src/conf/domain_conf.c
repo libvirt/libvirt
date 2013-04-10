@@ -16557,8 +16557,10 @@ virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t ii)
     virDomainGraphicsListenDefPtr listenInfo
         = virDomainGraphicsGetListen(def, ii, false);
 
+    /* even a network can have a listen address */
     if (!listenInfo ||
-        (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS))
+        !(listenInfo->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
+          listenInfo->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
         return NULL;
     return listenInfo->address;
 }

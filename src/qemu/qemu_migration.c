@@ -1720,6 +1720,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
+    char *listenAddress = cookie->graphics->listen;
 
     if (!cookie)
         return 0;
@@ -1733,12 +1734,17 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
     if (cookie->graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
         return 0;
 
+    if (!listenAddress ||
+        STREQ(listenAddress, "0.0.0.0") ||
+        STREQ(listenAddress, "::"))
+        listenAddress = cookie->remoteHostname;
+
     ret = qemuDomainObjEnterMonitorAsync(driver, vm,
                                          QEMU_ASYNC_JOB_MIGRATION_OUT);
     if (ret == 0) {
         ret = qemuMonitorGraphicsRelocate(priv->mon,
                                           cookie->graphics->type,
-                                          cookie->remoteHostname,
+                                          listenAddress,
                                           cookie->graphics->port,
                                           cookie->graphics->tlsPort,
                                           cookie->graphics->tlsSubject);
