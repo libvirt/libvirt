@@ -5396,7 +5396,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 target = virXMLPropString(cur, "dir");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
-                def->readonly = 1;
+                def->readonly = true;
             } else if (!fsdriver && xmlStrEqual(cur->name, BAD_CAST "driver")) {
                 fsdriver = virXMLPropString(cur, "type");
                 wrpolicy = virXMLPropString(cur, "wrpolicy");
