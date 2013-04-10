@@ -435,7 +435,7 @@ struct _virDomainHostdevDef {
     virDomainDeviceDef parent; /* higher level Def containing this */
     int mode; /* enum virDomainHostdevMode */
     int startupPolicy; /* enum virDomainStartupPolicy */
-    unsigned int managed : 1;
+    bool managed;
     unsigned int missing : 1;
     union {
         virDomainHostdevSubsys subsys;

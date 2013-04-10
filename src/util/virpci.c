@@ -65,7 +65,7 @@ struct _virPCIDevice {
     unsigned      pci_pm_cap_pos;
     unsigned      has_flr : 1;
     unsigned      has_pm_reset : 1;
-    unsigned      managed : 1;
+    bool          managed;
 
     /* used by reattach function */
     unsigned      unbind_from_stub : 1;
@@ -1453,9 +1453,9 @@ virPCIDeviceGetName(virPCIDevicePtr dev)
     return dev->name;
 }
 
-void virPCIDeviceSetManaged(virPCIDevicePtr dev, unsigned managed)
+void virPCIDeviceSetManaged(virPCIDevicePtr dev, bool managed)
 {
-    dev->managed = !!managed;
+    dev->managed = managed;
 }
 
 unsigned virPCIDeviceGetManaged(virPCIDevicePtr dev)

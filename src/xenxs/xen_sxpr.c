@@ -1087,7 +1087,7 @@ xenParseSxprPCI(virDomainDefPtr def,
            goto error;
 
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        dev->managed = 0;
+        dev->managed = false;
         dev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
         dev->source.subsys.u.pci.domain = domainID;
         dev->source.subsys.u.pci.bus = busID;

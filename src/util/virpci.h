@@ -61,7 +61,7 @@ int virPCIDeviceReset(virPCIDevicePtr dev,
                       virPCIDeviceListPtr inactiveDevs);
 
 void virPCIDeviceSetManaged(virPCIDevice *dev,
-                            unsigned managed);
+                            bool managed);
 unsigned virPCIDeviceGetManaged(virPCIDevice *dev);
 void virPCIDeviceSetUsedBy(virPCIDevice *dev,
                            const char *used_by);

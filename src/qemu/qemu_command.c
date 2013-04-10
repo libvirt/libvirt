@@ -8558,7 +8558,7 @@ qemuParseCommandLinePCI(const char *val)
     }
 
     def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-    def->managed = 1;
+    def->managed = true;
     def->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
     def->source.subsys.u.pci.bus = bus;
     def->source.subsys.u.pci.slot = slot;
@@ -8619,7 +8619,7 @@ qemuParseCommandLineUSB(const char *val)
     }
 
     def->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-    def->managed = 0;
+    def->managed = false;
     def->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
     if (*end == '.') {
         def->source.subsys.u.usb.bus = first;

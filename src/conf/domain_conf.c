@@ -3569,7 +3569,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
      */
     if ((managed = virXMLPropString(node, "managed"))!= NULL) {
         if (STREQ(managed, "yes"))
-            def->managed = 1;
+            def->managed = true;
     }
 
     /* @type is passed in from the caller rather than read from the

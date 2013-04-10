@@ -875,7 +875,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             if (!(hostdev = virDomainHostdevDefAlloc()))
                goto cleanup;
 
-            hostdev->managed = 0;
+            hostdev->managed = false;
             hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
             hostdev->source.subsys.u.pci.domain = domainID;
             hostdev->source.subsys.u.pci.bus = busID;
