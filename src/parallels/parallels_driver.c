@@ -629,7 +629,7 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
     gr->data.vnc.keymap = NULL;
     gr->data.vnc.socket = NULL;
     gr->data.vnc.auth.passwd = NULL;
-    gr->data.vnc.auth.expires = 0;
+    gr->data.vnc.auth.expires = false;
     gr->data.vnc.auth.connected = 0;
 
     if (!(tmp = virJSONValueObjectGetString(jobj, "address"))) {

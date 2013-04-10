@@ -7091,7 +7091,7 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
         tm.tm_mon--; /* Humans start months at 1, computers at 0 */
 
         def->validTo = timegm(&tm);
-        def->expires = 1;
+        def->expires = true;
     }
 
     if (connected) {

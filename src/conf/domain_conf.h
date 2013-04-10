@@ -1227,7 +1227,7 @@ typedef struct _virDomainGraphicsAuthDef virDomainGraphicsAuthDef;
 typedef virDomainGraphicsAuthDef *virDomainGraphicsAuthDefPtr;
 struct _virDomainGraphicsAuthDef {
     char *passwd;
-    unsigned int expires: 1; /* Whether there is an expiry time set */
+    bool expires; /* Whether there is an expiry time set */
     time_t validTo;  /* seconds since epoch */
     int connected; /* action if connected */
 };
