@@ -199,7 +199,8 @@ qemuDomObjFromDomain(virDomainPtr domain)
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, domain->name);
         return NULL;
     }
 
