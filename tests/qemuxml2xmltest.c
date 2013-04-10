@@ -246,6 +246,7 @@ mymain(void)
     DO_TEST("smp");
     DO_TEST("lease");
     DO_TEST("event_idx");
+    DO_TEST("vhost_queues");
     DO_TEST("virtio-lun");
 
     DO_TEST("usb-redir");

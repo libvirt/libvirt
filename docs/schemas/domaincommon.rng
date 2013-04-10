@@ -2013,6 +2013,11 @@
                 </attribute>
               </optional>
               <optional>
+                <attribute name='queues'>
+                  <ref name="positiveInteger"/>
+                </attribute>
+              </optional>
+              <optional>
                 <attribute name="txmode">
                   <choice>
                     <value>iothread</value>

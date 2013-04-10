@@ -6001,6 +6001,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *txmode = NULL;
     char *ioeventfd = NULL;
     char *event_idx = NULL;
+    char *queues = NULL;
     char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
@@ -6112,6 +6113,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 txmode = virXMLPropString(cur, "txmode");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
+                queues = virXMLPropString(cur, "queues");
             } else if (xmlStrEqual(cur->name, BAD_CAST "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -6402,6 +6404,16 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             def->driver.virtio.event_idx = idx;
         }
+        if (queues) {
+            unsigned int q;
+            if (virStrToLong_ui(queues, NULL, 10, &q) < 0) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("'queues' attribute must be positive number: %s"),
+                               queues);
+                goto error;
+            }
+            def->driver.virtio.queues = q;
+        }
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
@@ -6455,6 +6467,7 @@ cleanup:
     VIR_FREE(txmode);
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
+    VIR_FREE(queues);
     VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
@@ -14497,6 +14510,8 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " event_idx='%s'",
                                   virDomainVirtioEventIdxTypeToString(def->driver.virtio.event_idx));
             }
+            if (def->driver.virtio.queues)
+                virBufferAsprintf(buf, " queues='%u'", def->driver.virtio.queues);
             virBufferAddLit(buf, "/>\n");
         }
     }

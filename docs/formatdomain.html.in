@@ -3265,7 +3265,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
-      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off'/&gt;</b>
+      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off' queues='5'/&gt;</b>
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -3358,6 +3358,16 @@ qemu-kvm -net nic,model=? /dev/null
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
+      </dd>
+      <dt><code>queues</code></dt>
+      <dd>
+        The optional <code>queues</code> attribute controls the number of
+        queues to be used for the<a href="http://www.linux-kvm.org/page/Multiqueue">
+        Multiqueue virtio-net</a> feature. If the interface has <code>&lt;model
+        type='virtio'/&gt;</code>, multiple packet processing queues can be
+        created; each queue will potentially be handled by a different
+        processor, resulting in much higher throughput.
+        <span class="since">Since 1.0.6 (QEMU and KVM only)</span>
       </dd>
     </dl>
 

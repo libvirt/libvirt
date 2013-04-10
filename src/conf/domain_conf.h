@@ -934,6 +934,7 @@ struct _virDomainNetDef {
             enum virDomainNetVirtioTxModeType txmode;
             enum virDomainIoEventFd ioeventfd;
             enum virDomainVirtioEventIdx event_idx;
+            unsigned int queues; /* Multiqueue virtio-net */
         } virtio;
     } driver;
     union {
