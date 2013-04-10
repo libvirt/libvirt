@@ -63,14 +63,14 @@ struct _virPCIDevice {
 
     unsigned      pcie_cap_pos;
     unsigned      pci_pm_cap_pos;
-    unsigned      has_flr : 1;
-    unsigned      has_pm_reset : 1;
+    bool          has_flr;
+    bool          has_pm_reset;
     bool          managed;
 
     /* used by reattach function */
-    unsigned      unbind_from_stub : 1;
-    unsigned      remove_slot : 1;
-    unsigned      reprobe : 1;
+    bool          unbind_from_stub;
+    bool          remove_slot;
+    bool          reprobe;
 };
 
 struct _virPCIDeviceList {
@@ -776,8 +776,8 @@ virPCIDeviceInit(virPCIDevicePtr dev, int cfgfd)
     flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
     if (flr < 0)
         return flr;
-    dev->has_flr        = flr;
-    dev->has_pm_reset   = virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
+    dev->has_flr        = !!flr;
+    dev->has_pm_reset   = !!virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
 
     return 0;
 }
@@ -935,7 +935,7 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev, const char *driver)
             goto cleanup;
         }
     }
-    dev->unbind_from_stub = 0;
+    dev->unbind_from_stub = false;
 
 remove_slot:
     if (!dev->remove_slot)
@@ -952,7 +952,7 @@ remove_slot:
                              dev->name, driver);
         goto cleanup;
     }
-    dev->remove_slot = 0;
+    dev->remove_slot = false;
 
 reprobe:
     if (!dev->reprobe) {
@@ -982,9 +982,9 @@ reprobe:
 
 cleanup:
     /* do not do it again */
-    dev->unbind_from_stub = 0;
-    dev->remove_slot = 0;
-    dev->reprobe = 0;
+    dev->unbind_from_stub = false;
+    dev->remove_slot = false;
+    dev->reprobe = false;
 
     VIR_FREE(drvdir);
     VIR_FREE(path);
@@ -999,7 +999,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
     int result = -1;
     char *drvdir = NULL;
     char *path = NULL;
-    int reprobe = 0;
+    int reprobe = false;
 
     /* check whether the device is already bound to a driver */
     if (virPCIDriverDir(&drvdir, driver) < 0 ||
@@ -1013,7 +1013,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
             result = 0;
             goto cleanup;
         }
-        reprobe = 1;
+        reprobe = true;
     }
 
     /* Add the PCI device ID to the stub's dynamic ID table;
@@ -1044,8 +1044,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
     }
 
     if (virFileLinkPointsTo(path, drvdir)) {
-        dev->unbind_from_stub = 1;
-        dev->remove_slot = 1;
+        dev->unbind_from_stub = true;
+        dev->remove_slot = true;
         goto remove_id;
     }
 
@@ -1087,7 +1087,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
                                  dev->name, driver);
             goto remove_id;
         }
-        dev->remove_slot = 1;
+        dev->remove_slot = true;
 
         if (virPCIDriverFile(&path, driver, "bind") < 0) {
             goto remove_id;
@@ -1099,7 +1099,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev, const char *driver)
                                  dev->name, driver);
             goto remove_id;
         }
-        dev->unbind_from_stub = 1;
+        dev->unbind_from_stub = true;
     }
 
 remove_id:
@@ -1112,7 +1112,7 @@ remove_id:
             VIR_WARN("Could not remove PCI ID '%s' from %s, and the device "
                      "cannot be probed again.", dev->id, driver);
         }
-        dev->reprobe = 0;
+        dev->reprobe = false;
         goto cleanup;
     }
 
@@ -1126,7 +1126,7 @@ remove_id:
             VIR_WARN("Failed to remove PCI ID '%s' from %s, and the device "
                      "cannot be probed again.", dev->id, driver);
         }
-        dev->reprobe = 0;
+        dev->reprobe = false;
         goto cleanup;
     }
 
@@ -1470,9 +1470,9 @@ virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev)
 }
 
 void
-virPCIDeviceSetUnbindFromStub(virPCIDevicePtr dev, unsigned unbind)
+virPCIDeviceSetUnbindFromStub(virPCIDevicePtr dev, bool unbind)
 {
-    dev->unbind_from_stub = !!unbind;
+    dev->unbind_from_stub = unbind;
 }
 
 unsigned
@@ -1482,9 +1482,9 @@ virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev)
 }
 
 void
-virPCIDeviceSetRemoveSlot(virPCIDevicePtr dev, unsigned remove_slot)
+virPCIDeviceSetRemoveSlot(virPCIDevicePtr dev, bool remove_slot)
 {
-    dev->remove_slot = !!remove_slot;
+    dev->remove_slot = remove_slot;
 }
 
 unsigned
@@ -1494,9 +1494,9 @@ virPCIDeviceGetReprobe(virPCIDevicePtr dev)
 }
 
 void
-virPCIDeviceSetReprobe(virPCIDevicePtr dev, unsigned reprobe)
+virPCIDeviceSetReprobe(virPCIDevicePtr dev, bool reprobe)
 {
-    dev->reprobe = !!reprobe;
+    dev->reprobe = reprobe;
 }
 
 void
@@ -1513,9 +1513,9 @@ virPCIDeviceGetUsedBy(virPCIDevicePtr dev)
 
 void virPCIDeviceReattachInit(virPCIDevicePtr pci)
 {
-    pci->unbind_from_stub = 1;
-    pci->remove_slot = 1;
-    pci->reprobe = 1;
+    pci->unbind_from_stub = true;
+    pci->remove_slot = true;
+    pci->reprobe = true;
 }
 
 

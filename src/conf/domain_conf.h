@@ -345,17 +345,17 @@ struct _virDomainHostdevOrigStates {
             /* Does the device need to unbind from stub when
              * reattaching to host?
              */
-            unsigned int unbind_from_stub : 1;
+            bool unbind_from_stub;
 
             /* Does it need to use remove_slot when reattaching
              * the device to host?
              */
-            unsigned int remove_slot : 1;
+            bool remove_slot;
 
             /* Does it need to reprobe driver for the device when
              * reattaching to host?
              */
-            unsigned int reprobe :1;
+            bool reprobe;
         } pci;
 
         /* Perhaps 'usb' in future */

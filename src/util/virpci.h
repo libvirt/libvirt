@@ -68,13 +68,13 @@ void virPCIDeviceSetUsedBy(virPCIDevice *dev,
 const char *virPCIDeviceGetUsedBy(virPCIDevice *dev);
 unsigned virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev);
 void  virPCIDeviceSetUnbindFromStub(virPCIDevice *dev,
-                                     unsigned unbind);
+                                    bool unbind);
 unsigned virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev);
 void virPCIDeviceSetRemoveSlot(virPCIDevice *dev,
-                               unsigned remove_slot);
+                               bool remove_slot);
 unsigned virPCIDeviceGetReprobe(virPCIDevicePtr dev);
 void virPCIDeviceSetReprobe(virPCIDevice *dev,
-                            unsigned reprobe);
+                            bool reprobe);
 void virPCIDeviceReattachInit(virPCIDevice *dev);
 
 

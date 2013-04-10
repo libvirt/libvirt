@@ -3482,11 +3482,11 @@ virDomainHostdevSubsysPciOrigStatesDefParseXML(const xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "unbind")) {
-                def->states.pci.unbind_from_stub = 1;
+                def->states.pci.unbind_from_stub = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "removeslot")) {
-                def->states.pci.remove_slot = 1;
+                def->states.pci.remove_slot = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "reprobe")) {
-                def->states.pci.reprobe = 1;
+                def->states.pci.reprobe = true;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported element '%s' of 'origstates'"),
