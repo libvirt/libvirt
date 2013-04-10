@@ -509,7 +509,7 @@ xenParseSxprDisks(virDomainDefPtr def,
                 disk->readonly = 1;
             if (mode &&
                 strchr(mode, '!'))
-                disk->shared = 1;
+                disk->shared = true;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
                 goto no_memory;

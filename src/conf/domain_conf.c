@@ -4639,7 +4639,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
-                def->shared = 1;
+                def->shared = true;
             } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
                 def->transient = 1;
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&

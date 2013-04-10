@@ -675,7 +675,7 @@ struct _virDomainDiskDef {
     int snapshot; /* enum virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
-    unsigned int shared : 1;
+    bool shared;
     unsigned int transient : 1;
     virDomainDeviceInfo info;
     virStorageEncryptionPtr encryption;

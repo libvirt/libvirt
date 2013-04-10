@@ -613,7 +613,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 disk->readonly = 1;
             else if ((STREQ(head, "w!")) ||
                      (STREQ(head, "!")))
-                disk->shared = 1;
+                disk->shared = true;
 
             /* Maintain list in sorted order according to target device name */
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
