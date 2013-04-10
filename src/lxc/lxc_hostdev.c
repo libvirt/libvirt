@@ -207,7 +207,7 @@ virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
 
 out:
     if (!*usb)
-        hostdev->missing = 1;
+        hostdev->missing = true;
     return 0;
 }
 

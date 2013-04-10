@@ -436,7 +436,7 @@ struct _virDomainHostdevDef {
     int mode; /* enum virDomainHostdevMode */
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool managed;
-    unsigned int missing : 1;
+    bool missing;
     union {
         virDomainHostdevSubsys subsys;
         virDomainHostdevCaps caps;
