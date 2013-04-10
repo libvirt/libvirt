@@ -1440,6 +1440,7 @@ cleanup:
     VIR_FREE(addrStart);
     VIR_FREE(addrEnd);
     VIR_FREE(natAddrNodes);
+    VIR_FREE(natPortNodes);
     ctxt->node = save;
     return ret;
 }
