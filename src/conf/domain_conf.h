@@ -676,7 +676,7 @@ struct _virDomainDiskDef {
     int startupPolicy; /* enum virDomainStartupPolicy */
     unsigned int readonly : 1;
     bool shared;
-    unsigned int transient : 1;
+    bool transient;
     virDomainDeviceInfo info;
     virStorageEncryptionPtr encryption;
     bool rawio_specified;
