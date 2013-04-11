@@ -4568,7 +4568,7 @@ static const vshCmdOptDef opts_shutdown[] = {
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
-     .help = N_("shutdown mode: acpi|agent")
+     .help = N_("shutdown mode: acpi|agent|initctl|signal")
     },
     {.name = NULL}
 };
@@ -4654,7 +4654,7 @@ static const vshCmdOptDef opts_reboot[] = {
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
-     .help = N_("shutdown mode: acpi|agent")
+     .help = N_("shutdown mode: acpi|agent|initctl|signal")
     },
     {.name = NULL}
 };
