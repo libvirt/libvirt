@@ -32,7 +32,7 @@ typedef struct _virSecretDef virSecretDef;
 typedef virSecretDef *virSecretDefPtr;
 struct _virSecretDef {
     bool ephemeral;
-    unsigned private : 1;
+    bool private;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *description;          /* May be NULL */
     int usage_type;
