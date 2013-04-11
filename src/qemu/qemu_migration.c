@@ -1477,13 +1477,17 @@ qemuMigrationIsSafe(virDomainDefPtr def)
             !disk->shared &&
             !disk->readonly &&
             disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
-            int cfs;
+            int rc;
 
             if (disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
-                if ((cfs = virStorageFileIsClusterFS(disk->src)) == 1)
-                    continue;
-                else if (cfs < 0)
+                if ((rc = virStorageFileIsSharedFS(disk->src)) < 0)
                     return false;
+                else if (rc == 0)
+                    continue;
+                if ((rc = virStorageFileIsClusterFS(disk->src)) < 0)
+                    return false;
+                else if (rc == 1)
+                    continue;
             } else if (disk->type == VIR_DOMAIN_DISK_TYPE_NETWORK &&
                        disk->protocol == VIR_DOMAIN_DISK_PROTOCOL_RBD) {
                 continue;
