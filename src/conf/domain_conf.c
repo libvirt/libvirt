@@ -8272,17 +8272,17 @@ virDomainVideoAccelDefParseXML(const xmlNodePtr node) {
 
     if (support3d) {
         if (STREQ(support3d, "yes"))
-            def->support3d = 1;
+            def->support3d = true;
         else
-            def->support3d = 0;
+            def->support3d = false;
         VIR_FREE(support3d);
     }
 
     if (support2d) {
         if (STREQ(support2d, "yes"))
-            def->support2d = 1;
+            def->support2d = true;
         else
-            def->support2d = 0;
+            def->support2d = false;
         VIR_FREE(support2d);
     }
 

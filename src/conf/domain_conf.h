@@ -1215,8 +1215,8 @@ enum virDomainVideoType {
 typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
 typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 struct _virDomainVideoAccelDef {
-    unsigned int support3d :1;
-    unsigned int support2d :1;
+    bool support3d;
+    bool support2d;
 };
 
 
