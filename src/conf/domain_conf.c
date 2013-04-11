@@ -11940,7 +11940,7 @@ virDomainParallelDefCheckABIStability(virDomainChrDefPtr src,
 {
     if (src->target.port != dst->target.port) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target serial port %d does not match source %d"),
+                       _("Target parallel port %d does not match source %d"),
                        dst->target.port, src->target.port);
         return false;
     }
