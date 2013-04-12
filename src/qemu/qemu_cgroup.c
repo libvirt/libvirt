@@ -130,6 +130,31 @@ int qemuTeardownDiskCgroup(virDomainObjPtr vm,
                                        &data);
 }
 
+static int
+qemuSetupChrSourceCgroup(virDomainDefPtr def,
+                         virDomainChrSourceDefPtr dev,
+                         qemuCgroupData *data)
+{
+    int rc;
+
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_DEV)
+        return 0;
+
+    VIR_DEBUG("Process path '%s' for device", dev->data.file.path);
+
+    rc = virCgroupAllowDevicePath(data->cgroup, dev->data.file.path,
+                                  VIR_CGROUP_DEVICE_RW);
+    virDomainAuditCgroupPath(data->vm, data->cgroup, "allow",
+                             dev->data.file.path, "rw", rc);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to allow device %s for %s"),
+                             dev->data.file.path, def->name);
+        return -1;
+    }
+
+    return 0;
+}
 
 static int
 qemuSetupChardevCgroup(virDomainDefPtr def,
@@ -137,25 +162,28 @@ qemuSetupChardevCgroup(virDomainDefPtr def,
                        void *opaque)
 {
     qemuCgroupData *data = opaque;
-    int rc;
 
-    if (dev->source.type != VIR_DOMAIN_CHR_TYPE_DEV)
-        return 0;
+    return qemuSetupChrSourceCgroup(def, &dev->source, data);
+}
 
 
-    VIR_DEBUG("Process path '%s' for disk", dev->source.data.file.path);
-    rc = virCgroupAllowDevicePath(data->cgroup, dev->source.data.file.path,
-                                  VIR_CGROUP_DEVICE_RW);
-    virDomainAuditCgroupPath(data->vm, data->cgroup, "allow",
-                             dev->source.data.file.path, "rw", rc);
-    if (rc < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to allow device %s for %s"),
-                             dev->source.data.file.path, def->name);
-        return -1;
+static int
+qemuSetupTPMCgroup(virDomainDefPtr def,
+                   virDomainTPMDefPtr dev,
+                   qemuCgroupData *data)
+{
+    int rc = 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        rc = qemuSetupChrSourceCgroup(def, &dev->data.passthrough.source,
+                                      data);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
     }
 
-    return 0;
+    return rc;
 }
 
 
@@ -274,6 +302,11 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
                                    qemuSetupChardevCgroup,
                                    &data) < 0)
             goto cleanup;
+
+        if (vm->def->tpm)
+            qemuSetupTPMCgroup(vm->def,
+                               vm->def->tpm,
+                               &data);
 
         for (i = 0; i < vm->def->nhostdevs; i++) {
             virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
