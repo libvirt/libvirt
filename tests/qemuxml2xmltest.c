@@ -274,6 +274,8 @@ mymain(void)
 
     DO_TEST_DIFFERENT("metadata");
 
+    DO_TEST("tpm-passthrough");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

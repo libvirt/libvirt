@@ -937,6 +937,9 @@ mymain(void)
 
     DO_TEST("ppc-dtb", QEMU_CAPS_KVM, QEMU_CAPS_DTB);
 
+    DO_TEST("tpm-passthrough", QEMU_CAPS_DEVICE,
+            QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
