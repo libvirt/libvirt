@@ -38,6 +38,7 @@
 #include "virbitmap.h"
 #include "virnodesuspend.h"
 #include "qemu_monitor.h"
+#include "virstring.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -2118,6 +2119,61 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
+struct tpmTypeToCaps {
+    int type;
+    enum virQEMUCapsFlags caps;
+};
+
+static const struct tpmTypeToCaps virQEMUCapsTPMTypesToCaps[] = {
+    {
+        .type = VIR_DOMAIN_TPM_TYPE_PASSTHROUGH,
+        .caps = QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
+    },
+};
+
+const struct tpmTypeToCaps virQEMUCapsTPMModelsToCaps[] = {
+    {
+        .type = VIR_DOMAIN_TPM_MODEL_TIS,
+        .caps = QEMU_CAPS_DEVICE_TPM_TIS,
+    },
+};
+
+static int
+virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
+                       qemuMonitorPtr mon)
+{
+    int nentries, i;
+    char **entries = NULL;
+    if ((nentries = qemuMonitorGetTPMModels(mon, &entries)) < 0)
+        return -1;
+
+    if (nentries > 0) {
+        for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMModelsToCaps); i++) {
+            const char *needle = virDomainTPMModelTypeToString(
+                virQEMUCapsTPMModelsToCaps[i].type);
+            if (virStringArrayHasString(entries, needle))
+                virQEMUCapsSet(qemuCaps,
+                               virQEMUCapsTPMModelsToCaps[i].caps);
+        }
+    }
+    virStringFreeList(entries);
+
+    if ((nentries = qemuMonitorGetTPMTypes(mon, &entries)) < 0)
+        return -1;
+
+    if (nentries > 0) {
+        for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMTypesToCaps); i++) {
+            const char *needle = virDomainTPMBackendTypeToString(
+                virQEMUCapsTPMTypesToCaps[i].type);
+            if (virStringArrayHasString(entries, needle))
+                virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
+        }
+    }
+    virStringFreeList(entries);
+
+    return 0;
+}
+
 
 static int
 virQEMUCapsProbeQMPKVMState(virQEMUCapsPtr qemuCaps,
@@ -2475,6 +2531,8 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
         goto cleanup;
 
     ret = 0;
