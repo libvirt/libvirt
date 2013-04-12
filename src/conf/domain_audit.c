@@ -524,6 +524,58 @@ cleanup:
 
 
 /**
+ * virDomainAuditTPM:
+ * @vm: domain making a change in pass-through host device
+ * @tpm: TPM device being attached or removed
+ * @reason: one of "start", "attach", or "detach"
+ * @success: true if the device passthrough operation succeeded
+ *
+ * Log an audit message about an attempted device passthrough change.
+ */
+static void
+virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
+                  const char *reason, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    char *path = NULL;
+    char *device = NULL;
+    const char *virt;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (!(vmname = virAuditEncode("vm", vm->def->name))) {
+        VIR_WARN("OOM while encoding audit message");
+        return;
+    }
+
+    if (!(virt = virDomainVirtTypeToString(vm->def->virtType))) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message", vm->def->virtType);
+        virt = "?";
+    }
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        path = tpm->data.passthrough.source.data.file.path;
+        if (!(device = virAuditEncode("device", VIR_AUDIT_STR(path)))) {
+            VIR_WARN("OOM while encoding audit message");
+            goto cleanup;
+        }
+
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=dev reason=%s %s uuid=%s %s",
+                  virt, reason, vmname, uuidstr, device);
+        break;
+    default:
+        break;
+    }
+
+cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(device);
+}
+
+
+/**
  * virDomainAuditCgroup:
  * @vm: domain making the cgroups ACL change
  * @cgroup: cgroup that manages the devices
@@ -760,6 +812,9 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 
     if (vm->def->rng)
         virDomainAuditRNG(vm, vm->def->rng, NULL, "start", true);
+
+    if (vm->def->tpm)
+        virDomainAuditTPM(vm, vm->def->tpm, "start", true);
 
     virDomainAuditMemory(vm, 0, vm->def->mem.cur_balloon, "start", true);
     virDomainAuditVcpu(vm, 0, vm->def->vcpus, "start", true);
