@@ -51,6 +51,7 @@
 #include "netdev_bandwidth_conf.h"
 #include "netdev_vlan_conf.h"
 #include "device_conf.h"
+#include "virtpm.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -720,6 +721,13 @@ VIR_ENUM_IMPL(virDomainRNGBackend,
               VIR_DOMAIN_RNG_BACKEND_LAST,
               "random",
               "egd");
+
+VIR_ENUM_IMPL(virDomainTPMModel, VIR_DOMAIN_TPM_MODEL_LAST,
+              "tpm-tis")
+
+VIR_ENUM_IMPL(virDomainTPMBackend, VIR_DOMAIN_TPM_TYPE_LAST,
+              "passthrough")
+
 
 #define VIR_DOMAIN_XML_WRITE_FLAGS  VIR_DOMAIN_XML_SECURE
 #define VIR_DOMAIN_XML_READ_FLAGS   VIR_DOMAIN_XML_INACTIVE
@@ -1619,6 +1627,23 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
     }
 }
 
+void virDomainTPMDefFree(virDomainTPMDefPtr def)
+{
+    if (!def)
+        return;
+
+    switch (def->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        VIR_FREE(def->data.passthrough.source.data.file.path);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def);
+}
+
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
 {
     if (!def)
@@ -1879,6 +1904,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->redirdevs);
 
     virDomainRNGDefFree(def->rng);
+
+    virDomainTPMDefFree(def->tpm);
 
     VIR_FREE(def->os.type);
     VIR_FREE(def->os.machine);
@@ -6771,6 +6798,103 @@ error:
     goto cleanup;
 }
 
+/* Parse the XML definition for a TPM device
+ *
+ * The XML looks like this:
+ *
+ * <tpm model='tpm-tis'>
+ *   <backend type='passthrough'>
+ *     <device path='/dev/tpm0'/>
+ *   </backend>
+ * </tpm>
+ *
+ */
+static virDomainTPMDefPtr
+virDomainTPMDefParseXML(const xmlNodePtr node,
+                        xmlXPathContextPtr ctxt,
+                        unsigned int flags)
+{
+    char *type = NULL;
+    char *path = NULL;
+    char *model = NULL;
+    char *backend = NULL;
+    virDomainTPMDefPtr def;
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr *backends = NULL;
+    int nbackends;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    model = virXMLPropString(node, "model");
+    if (model != NULL &&
+        (int)(def->model = virDomainTPMModelTypeFromString(model)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Unknown TPM frontend model '%s'"), model);
+        goto error;
+    } else {
+        def->model = VIR_DOMAIN_TPM_MODEL_TIS;
+    }
+
+    ctxt->node = node;
+
+    if ((nbackends = virXPathNodeSet("./backend", ctxt, &backends)) < 0)
+        goto error;
+
+    if (nbackends > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one TPM backend is supported"));
+        goto error;
+    }
+
+    if (!(backend = virXMLPropString(backends[0], "type"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing TPM device backend type"));
+        goto error;
+    }
+
+    if ((int)(def->type = virDomainTPMBackendTypeFromString(backend)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Unknown TPM backend type '%s'"),
+                       backend);
+        goto error;
+    }
+
+    switch (def->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        path = virXPathString("string(./backend/device/@path)", ctxt);
+        if (!path && !(path = strdup(VIR_DOMAIN_TPM_DEFAULT_DEVICE))) {
+            virReportOOMError();
+            goto error;
+        }
+        def->data.passthrough.source.data.file.path = path;
+        def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        path = NULL;
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        goto error;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(type);
+    VIR_FREE(path);
+    VIR_FREE(model);
+    VIR_FREE(backend);
+    VIR_FREE(backends);
+    ctxt->node = save;
+    return def;
+
+error:
+    virDomainTPMDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
 /* Parse the XML definition for an input device */
 static virDomainInputDefPtr
 virDomainInputDefParseXML(const char *ostype,
@@ -11099,6 +11223,23 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         VIR_FREE(nodes);
     }
+    VIR_FREE(nodes);
+
+    /* Parse the TPM devices */
+    if ((n = virXPathNodeSet("./devices/tpm", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single TPM device is supported"));
+        goto error;
+    }
+
+    if (n > 0) {
+        if (!(def->tpm = virDomainTPMDefParseXML(nodes[0], ctxt, flags)))
+            goto error;
+    }
+    VIR_FREE(nodes);
 
     /* analysis of the hub devices */
     if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0) {
@@ -14083,6 +14224,39 @@ virDomainSoundCodecDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainTPMDefFormat(virBufferPtr buf,
+                      virDomainTPMDefPtr def,
+                      unsigned int flags)
+{
+    virBufferAsprintf(buf, "    <tpm model='%s'>\n",
+                      virDomainTPMModelTypeToString(def->model));
+
+    virBufferAsprintf(buf, "      <backend type='%s'>\n",
+                      virDomainTPMBackendTypeToString(def->type));
+
+    switch (def->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        virBufferEscapeString(buf, "        <device path='%s'/>\n",
+                              def->data.passthrough.source.data.file.path);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    virBufferAddLit(buf, "      </backend>\n");
+
+    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+    }
+
+    virBufferAddLit(buf, "    </tpm>\n");
+
+    return 0;
+}
+
+
+static int
 virDomainSoundDefFormat(virBufferPtr buf,
                         virDomainSoundDefPtr def,
                         unsigned int flags)
@@ -15407,6 +15581,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
             virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
             goto error;
+
+    if (def->tpm) {
+        if (virDomainTPMDefFormat(buf, def->tpm, flags) < 0)
+            goto error;
+    }
 
     if (def->ngraphics > 0) {
         /* If graphics is enabled, add the implicit mouse */

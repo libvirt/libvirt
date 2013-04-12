@@ -1097,6 +1097,33 @@ struct _virDomainHubDef {
     virDomainDeviceInfo info;
 };
 
+enum virDomainTPMModel {
+    VIR_DOMAIN_TPM_MODEL_TIS,
+
+    VIR_DOMAIN_TPM_MODEL_LAST
+};
+
+enum virDomainTPMBackendType {
+    VIR_DOMAIN_TPM_TYPE_PASSTHROUGH,
+
+    VIR_DOMAIN_TPM_TYPE_LAST
+};
+
+# define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
+
+typedef struct _virDomainTPMDef virDomainTPMDef;
+typedef virDomainTPMDef *virDomainTPMDefPtr;
+struct _virDomainTPMDef {
+    enum virDomainTPMBackendType type;
+    virDomainDeviceInfo info;
+    enum virDomainTPMModel model;
+    union {
+        struct {
+            virDomainChrSourceDef source;
+        } passthrough;
+    } data;
+};
+
 enum virDomainInputType {
     VIR_DOMAIN_INPUT_TYPE_MOUSE,
     VIR_DOMAIN_INPUT_TYPE_TABLET,
@@ -1883,6 +1910,7 @@ struct _virDomainDef {
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
+    virDomainTPMDefPtr tpm;
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
@@ -2062,6 +2090,7 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
 void virDomainDefClearCCWAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
+void virDomainTPMDefFree(virDomainTPMDefPtr def);
 
 typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,
                                            virDomainDeviceDefPtr dev,
@@ -2433,6 +2462,8 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode)
 VIR_ENUM_DECL(virDomainHyperv)
 VIR_ENUM_DECL(virDomainRNGModel)
 VIR_ENUM_DECL(virDomainRNGBackend)
+VIR_ENUM_DECL(virDomainTPMModel)
+VIR_ENUM_DECL(virDomainTPMBackend)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)
