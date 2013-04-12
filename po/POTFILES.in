@@ -181,6 +181,7 @@ src/util/virsysinfo.c
 src/util/virerror.c
 src/util/virerror.h
 src/util/virtime.c
+src/util/virtpm.c
 src/util/virtypedparam.c
 src/util/viruri.c
 src/util/virusb.c

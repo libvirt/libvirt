@@ -122,6 +122,7 @@ UTIL_SOURCES =							\
 		util/virthreadwin32.h				\
 		util/virthreadpool.c util/virthreadpool.h	\
 		util/virtime.h util/virtime.c			\
+		util/virtpm.h util/virtpm.c			\
 		util/virtypedparam.c util/virtypedparam.h	\
 		util/virusb.c util/virusb.h			\
 		util/viruri.h util/viruri.c			\

@@ -1781,6 +1781,10 @@ virTimeStringThen;
 virTimeStringThenRaw;
 
 
+# util/virtpm.h
+virTPMCreateCancelPath;
+
+
 # util/virtypedparam.h
 virTypedParameterArrayValidate;
 virTypedParameterAssign;
