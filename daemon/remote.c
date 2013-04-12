@@ -4229,6 +4229,8 @@ cleanup:
             virStorageVolFree(vols[i]);
         VIR_FREE(vols);
     }
+    if (pool)
+        virStoragePoolFree(pool);
     return rv;
 }
 
