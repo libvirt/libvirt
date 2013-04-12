@@ -409,8 +409,19 @@ virGlobalInit(void)
         goto error;
 
 #ifdef WITH_GNUTLS
-    gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
-    gcry_check_version(NULL);
+    /*
+     * This sequence of API calls it copied exactly from
+     * gnutls 2.12.23 source lib/gcrypt/init.c, with
+     * exception that GCRYCTL_ENABLE_QUICK_RANDOM, is
+     * dropped
+     */
+    if (gcry_control(GCRYCTL_ANY_INITIALIZATION_P) == 0) {
+        gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
+        gcry_check_version(NULL);
+
+        gcry_control(GCRYCTL_DISABLE_SECMEM, NULL, 0);
+        gcry_control(GCRYCTL_INITIALIZATION_FINISHED, NULL, 0);
+    }
 #endif
 
     virLogSetFromEnv();
