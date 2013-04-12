@@ -716,6 +716,46 @@ virSecurityDACRestoreChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
+virSecurityDACSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr def,
+                                      virDomainTPMDefPtr tpm)
+{
+    int ret = 0;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        ret = virSecurityDACSetChardevLabel(mgr, def,
+                                            &tpm->data.passthrough.source);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
+virSecurityDACRestoreSecurityTPMFileLabel(
+                                   virSecurityManagerPtr mgr,
+                                   virDomainTPMDefPtr tpm)
+{
+    int ret = 0;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        ret = virSecurityDACRestoreChardevLabel(mgr,
+                                          &tpm->data.passthrough.source);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
 virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       int migrated)
@@ -751,6 +791,12 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                virSecurityDACRestoreChardevCallback,
                                mgr) < 0)
         rc = -1;
+
+    if (def->tpm) {
+        if (virSecurityDACRestoreSecurityTPMFileLabel(mgr,
+                                                      def->tpm) < 0)
+            rc = -1;
+    }
 
     if (def->os.kernel &&
         virSecurityDACRestoreSecurityFileLabel(def->os.kernel) < 0)
@@ -814,6 +860,13 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                virSecurityDACSetChardevCallback,
                                mgr) < 0)
         return -1;
+
+    if (def->tpm) {
+        if (virSecurityDACSetSecurityTPMFileLabel(mgr,
+                                                  def,
+                                                  def->tpm) < 0)
+            return -1;
+    }
 
     if (virSecurityDACGetImageIds(def, priv, &user, &group))
         return -1;

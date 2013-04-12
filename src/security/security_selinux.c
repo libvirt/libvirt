@@ -45,6 +45,7 @@
 #include "virrandom.h"
 #include "virutil.h"
 #include "virconf.h"
+#include "virtpm.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -75,6 +76,12 @@ struct _virSecuritySELinuxCallbackData {
 
 #define SECURITY_SELINUX_VOID_DOI       "0"
 #define SECURITY_SELINUX_NAME "selinux"
+
+static int
+virSecuritySELinuxRestoreSecurityTPMFileLabelInt(virSecurityManagerPtr mgr,
+                                                 virDomainDefPtr def,
+                                                 virDomainTPMDefPtr tpm);
+
 
 /*
  * Returns 0 on success, 1 if already reserved, or -1 on fatal error
@@ -1062,6 +1069,83 @@ err:
     return rc;
 }
 
+
+static int
+virSecuritySELinuxSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr def,
+                                          virDomainTPMDefPtr tpm)
+{
+    int rc;
+    virSecurityLabelDefPtr seclabel;
+    char *cancel_path;
+    const char *tpmdev;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
+        return -1;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        tpmdev = tpm->data.passthrough.source.data.file.path;
+        rc = virSecuritySELinuxSetFilecon(tpmdev, seclabel->imagelabel);
+        if (rc < 0)
+            return -1;
+
+        if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
+            rc = virSecuritySELinuxSetFilecon(cancel_path,
+                                              seclabel->imagelabel);
+            VIR_FREE(cancel_path);
+            if (rc < 0) {
+                virSecuritySELinuxRestoreSecurityTPMFileLabelInt(mgr, def,
+                                                                 tpm);
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecuritySELinuxRestoreSecurityTPMFileLabelInt(virSecurityManagerPtr mgr,
+                                                 virDomainDefPtr def,
+                                                 virDomainTPMDefPtr tpm)
+{
+    int rc = 0;
+    virSecurityLabelDefPtr seclabel;
+    char *cancel_path;
+    const char *tpmdev;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
+        return -1;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        tpmdev = tpm->data.passthrough.source.data.file.path;
+        rc = virSecuritySELinuxRestoreSecurityFileLabel(mgr, tpmdev);
+
+        if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
+            if (virSecuritySELinuxRestoreSecurityFileLabel(mgr,
+                                  cancel_path) < 0)
+                rc = -1;
+            VIR_FREE(cancel_path);
+        }
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return rc;
+}
+
+
 static int
 virSecuritySELinuxRestoreSecurityImageLabelInt(virSecurityManagerPtr mgr,
                                                virDomainDefPtr def,
@@ -1734,6 +1818,12 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     if (secdef->norelabel || data->skipAllLabel)
         return 0;
 
+    if (def->tpm) {
+        if (virSecuritySELinuxRestoreSecurityTPMFileLabelInt(mgr, def,
+                                                             def->tpm) < 0)
+            rc = -1;
+    }
+
     for (i = 0 ; i < def->nhostdevs ; i++) {
         if (virSecuritySELinuxRestoreSecurityHostdevLabel(mgr,
                                                           def,
@@ -2146,6 +2236,11 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                                       def,
                                                       def->hostdevs[i],
                                                       NULL) < 0)
+            return -1;
+    }
+    if (def->tpm) {
+        if (virSecuritySELinuxSetSecurityTPMFileLabel(mgr, def,
+                                                      def->tpm) < 0)
             return -1;
     }
 
