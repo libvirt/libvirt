@@ -1463,3 +1463,151 @@ qemuAgentFSTrim(qemuAgentPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuAgentGetVCPUs(qemuAgentPtr mon,
+                  qemuAgentCPUInfoPtr *info)
+{
+    int ret = -1;
+    int i;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+    int ndata;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-vcpus", NULL)))
+        return -1;
+
+    if (qemuAgentCommand(mon, cmd, &reply,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
+        qemuAgentCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest-get-vcpus reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (data->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest-get-vcpus return information was not an array"));
+        goto cleanup;
+    }
+
+    ndata = virJSONValueArraySize(data);
+
+    if (VIR_ALLOC_N(*info, ndata) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0; i < ndata; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        qemuAgentCPUInfoPtr in = *info + i;
+
+        if (!entry) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("array element missing in guest-get-vcpus return "
+                             "value"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetNumberUint(entry, "logical-id", &in->id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'logical-id' missing in reply of guest-get-vcpus"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetBoolean(entry, "online", &in->online) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'online' missing in reply of guest-get-vcpus"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetBoolean(entry, "can-offline",
+                                         &in->offlinable) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'can-offline' missing in reply of guest-get-vcpus"));
+            goto cleanup;
+        }
+    }
+
+    ret = ndata;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    virJSONValueFree(data);
+    return ret;
+}
+
+/**
+ * Set the VCPU state using guest agent.
+ *
+ * Returns -1 on error, ninfo in case everything was successful and less than
+ * ninfo on a partial failure.
+ */
+int
+qemuAgentSetVCPUs(qemuAgentPtr mon,
+                  qemuAgentCPUInfoPtr info,
+                  size_t ninfo)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr cpus = NULL;
+    virJSONValuePtr cpu = NULL;
+    size_t i;
+
+    /* create the key data array */
+    if (!(cpus = virJSONValueNewArray()))
+        goto no_memory;
+
+    for (i = 0; i < ninfo; i++) {
+        qemuAgentCPUInfoPtr in = &info[i];
+
+        /* create single cpu object */
+        if (!(cpu = virJSONValueNewObject()))
+            goto no_memory;
+
+        if (virJSONValueObjectAppendNumberInt(cpu, "logical-id", in->id) < 0)
+            goto no_memory;
+
+        if (virJSONValueObjectAppendBoolean(cpu, "online", in->online) < 0)
+            goto no_memory;
+
+        if (virJSONValueArrayAppend(cpus, cpu) < 0)
+            goto no_memory;
+
+        cpu = NULL;
+    }
+
+    if (!(cmd = qemuAgentMakeCommand("guest-set-vcpus",
+                                     "a:vcpus", cpus,
+                                     NULL)))
+        goto cleanup;
+
+    cpus = NULL;
+
+    if (qemuAgentCommand(mon, cmd, &reply,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0 ||
+        qemuAgentCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed return value"));
+    }
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    virJSONValueFree(cpu);
+    virJSONValueFree(cpus);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
