@@ -41,6 +41,7 @@
 #include "datatypes.h"
 #include "virerror.h"
 #include "virjson.h"
+#include "virstring.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"
@@ -4751,4 +4752,93 @@ qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon)
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
+}
+
+
+static int
+qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
+                              char ***array)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    char **list = NULL;
+    int n = 0;
+    size_t i;
+
+    *array = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand(qmpCmd, NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s reply was missing return data"),
+                       qmpCmd);
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s reply data was not an array"),
+                       qmpCmd);
+        goto cleanup;
+    }
+
+    /* null-terminated list */
+    if (VIR_ALLOC_N(list, n + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueGetString(child))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s array element does not contain data"),
+                           qmpCmd);
+            goto cleanup;
+        }
+
+        if (!(list[i] = strdup(tmp))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    ret = n;
+    *array = list;
+
+cleanup:
+    if (ret < 0)
+        virStringFreeList(list);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int qemuMonitorJSONGetTPMModels(qemuMonitorPtr mon,
+                                char ***tpmmodels)
+{
+    return qemuMonitorJSONGetStringArray(mon, "query-tpm-models", tpmmodels);
+}
+
+
+int qemuMonitorJSONGetTPMTypes(qemuMonitorPtr mon,
+                               char ***tpmtypes)
+{
+    return qemuMonitorJSONGetStringArray(mon, "query-tpm-types", tpmtypes);
 }

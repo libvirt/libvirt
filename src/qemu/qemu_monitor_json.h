@@ -341,4 +341,12 @@ int qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
                                 const char *deviceID,
                                 bool writable);
 int qemuMonitorJSONNBDServerStop(qemuMonitorPtr mon);
+int qemuMonitorJSONGetTPMModels(qemuMonitorPtr mon,
+                                char ***tpmmodels)
+    ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONGetTPMTypes(qemuMonitorPtr mon,
+                               char ***tpmtypes)
+    ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */

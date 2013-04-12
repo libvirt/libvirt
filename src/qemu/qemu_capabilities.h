@@ -177,6 +177,8 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_IPV6_MIGRATION     = 135, /* -incoming [::] */
     QEMU_CAPS_MACHINE_OPT        = 136, /* -machine xxxx*/
     QEMU_CAPS_MACHINE_USB_OPT    = 137, /* -machine xxx,usb=on/off */
+    QEMU_CAPS_DEVICE_TPM_PASSTHROUGH = 138, /* -tpmdev passthrough */
+    QEMU_CAPS_DEVICE_TPM_TIS     = 139, /* -device tpm_tis */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

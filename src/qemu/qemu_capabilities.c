@@ -217,6 +217,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "ipv6-migration", /* 135 */
               "machine-opt",
               "machine-usb-opt",
+              "tpm-passthrough",
+              "tpm-tis",
     );
 
 struct _virQEMUCaps {

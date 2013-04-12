@@ -683,6 +683,12 @@ int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
                             const char *deviceID,
                             bool writable);
 int qemuMonitorNBDServerStop(qemuMonitorPtr);
+int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
+                            char ***tpmmodels);
+
+int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
+                           char ***tpmtypes);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

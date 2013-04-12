@@ -3525,3 +3525,47 @@ int qemuMonitorNBDServerStop(qemuMonitorPtr mon)
 
     return qemuMonitorJSONNBDServerStop(mon);
 }
+
+
+int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
+                            char ***tpmmodels)
+{
+    VIR_DEBUG("mon=%p tpmmodels=%p",
+              mon, tpmmodels);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetTPMModels(mon, tpmmodels);
+}
+
+
+int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
+                           char ***tpmtypes)
+{
+    VIR_DEBUG("mon=%p tpmtypes=%p",
+              mon, tpmtypes);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetTPMTypes(mon, tpmtypes);
+}
