@@ -2120,6 +2120,7 @@ typedef enum {
 
     /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
+    VIR_DOMAIN_VCPU_AGENT   = (1 << 3), /* Use guest-agent based cpu hotplug */
 } virDomainVcpuFlags;
 
 int                     virDomainSetVcpus       (virDomainPtr domain,

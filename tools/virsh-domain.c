@@ -5161,6 +5161,10 @@ static const vshCmdOptDef opts_vcpucount[] = {
      .type = VSH_OT_BOOL,
      .help = N_("get value according to current domain state")
     },
+    {.name = "agent",
+     .type = VSH_OT_BOOL,
+     .help = N_("use guest agent based hotplug")
+    },
     {.name = NULL}
 };
 
@@ -5202,6 +5206,11 @@ vshCPUCountCollect(vshControl *ctl,
      if (!(last_error->code == VIR_ERR_NO_SUPPORT ||
            last_error->code == VIR_ERR_INVALID_ARG))
          goto cleanup;
+
+     if (flags & VIR_DOMAIN_VCPU_AGENT) {
+         vshError(ctl, "%s", _("Failed to retrieve vCPU count via guest agent"));
+         goto cleanup;
+     }
 
      if (!(flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) &&
          virDomainIsActive(dom) == 1)
@@ -5258,7 +5267,8 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    bool all = maximum + active + current + config + live == 0;
+    bool agent = vshCommandOptBool(cmd, "agent");
+    bool all = maximum + active + current + config + live + agent == 0;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     /* Backwards compatibility: prior to 0.9.4,
@@ -5273,6 +5283,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
     VSH_EXCLUSIVE_OPTIONS_VAR(active, maximum);
+    VSH_EXCLUSIVE_OPTIONS_VAR(agent, config);
 
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -5280,6 +5291,8 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (maximum)
         flags |= VIR_DOMAIN_VCPU_MAXIMUM;
+    if (agent)
+        flags |= VIR_DOMAIN_VCPU_AGENT;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5749,6 +5762,10 @@ static const vshCmdOptDef opts_emulatorpin[] = {
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
     },
+    {.name = "agent",
+     .type = VSH_OT_BOOL,
+     .help = N_("use guest agent based hotplug")
+    },
     {.name = NULL}
 };
 
@@ -5885,17 +5902,21 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
+    bool agent = vshCommandOptBool(cmd, "agent");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+    VSH_EXCLUSIVE_OPTIONS_VAR(agent, config);
 
     if (config)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (agent)
+        flags |= VIR_DOMAIN_VCPU_AGENT;
     /* none of the options were specified */
-    if (!current && !live && !config && !maximum)
+    if (!current && flags == 0)
         flags = -1;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))

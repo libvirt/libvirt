@@ -8906,6 +8906,12 @@ error:
  * equal to virConnectGetMaxVcpus().  Otherwise, this call affects the
  * current virtual CPU limit, which must be less than or equal to the
  * maximum limit.
+ *
+ * If @flags includes VIR_DOMAIN_VCPU_AGENT, then a guest agent is used to
+ * modify the number of processors used by a domain. This flag can only be used
+ * with live guests and is incompatible with VIR_DOMAIN_VCPU_MAXIMUM as the
+ * maximum limit can't be changed using the guest agent.
+ *
  * Not all hypervisors can support all flag combinations.
  *
  * Returns 0 in case of success, -1 in case of failure.
@@ -8928,6 +8934,15 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_DOMAIN_VCPU_AGENT &&
+        flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+        virReportInvalidArg(flags,
+                            _("flags 'VIR_DOMAIN_VCPU_MAXIMUM' and "
+                              "'VIR_DOMAIN_VCPU_AGENT' in '%s' are mutually "
+                              "exclusive"), __FUNCTION__);
         goto error;
     }
 
@@ -8974,7 +8989,11 @@ error:
  *
  * If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then the maximum
  * virtual CPU limit is queried.  Otherwise, this call queries the
- * current virtual CPU limit.
+ * current virtual CPU count.
+ *
+ * If @flags includes VIR_DOMAIN_VCPU_AGENT, then a guest agent is used to
+ * modify the number of processors used by a domain. This flag is only usable on
+ * live domains.
  *
  * Returns the number of vCPUs in case of success, -1 in case of failure.
  */
@@ -8998,7 +9017,8 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
         virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s are mutually exclusive"),
+                            _("flags 'affect live' and 'affect config' in %s "
+                              "are mutually exclusive"),
                             __FUNCTION__);
         goto error;
     }
