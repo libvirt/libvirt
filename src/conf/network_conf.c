@@ -1748,7 +1748,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     /* Parse bridge information */
     def->bridge = virXPathString("string(./bridge[1]/@name)", ctxt);
     stp = virXPathString("string(./bridge[1]/@stp)", ctxt);
-    def->stp = (stp && STREQ(stp, "off")) ? 0 : 1;
+    def->stp = (stp && STREQ(stp, "off")) ? false : true;
 
     if (virXPathULong("string(./bridge[1]/@delay)", ctxt, &def->delay) < 0)
         def->delay = 0;

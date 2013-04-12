@@ -195,7 +195,7 @@ struct _virNetworkDef {
     char *bridge;       /* Name of bridge device */
     char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
-    unsigned int stp :1; /* Spanning tree protocol */
+    bool stp; /* Spanning tree protocol */
     virMacAddr mac; /* mac address of bridge device */
     bool mac_specified;
 
