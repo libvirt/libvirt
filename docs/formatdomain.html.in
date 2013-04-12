@@ -4415,6 +4415,64 @@ qemu-kvm -net nic,model=? /dev/null
 
     </dl>
 
+    <h4><a name="elementsTpm">TPM device</a></h4>
+
+    <p>
+      The TPM device enables a QEMU guest to have access to TPM
+      functionality.
+    </p>
+    <p>
+      The TPM passthrough device type provides access to the host's TPM
+      for one QEMU guest. No other software may be is using the TPM device,
+      typically /dev/tpm0, at the time the QEMU guest is started.
+      <span class="since">'passthrough' since 1.0.5</span>
+    </p>
+
+    <p>
+     Example: usage of the TPM passthrough device
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;tpm model='tpm-tis'&gt;
+      &lt;backend type='passthrough'&gt;
+        &lt;backend path='/dev/tpm0'/&gt;
+      &lt;/backend&gt;
+    &lt;/tpm&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>
+        <p>
+          The <code>model</code> attribute specifies what device
+          model QEMU provides to the guest. If no model name is provided,
+          <code>tpm-tis</code> will automatically be chosen.
+        </p>
+      </dd>
+      <dt><code>backend</code></dt>
+      <dd>
+        <p>
+          The <code>backend</code> element specifies the type of
+          TPM device. The following types are supported:
+        </p>
+        <ul>
+          <li>'passthrough' &mdash; use the host's TPM device.
+        </ul>
+      </dd>
+      <dt><code>backend type='passthrough'</code></dt>
+      <dd>
+        <p>
+          This backend type requires exclusive access to a TPM device on
+          the host.
+          An example for such a device is /dev/tpm0. The filename is
+          specified as path attribute of the <code>source</code> element.
+          If no file name is specified then /dev/tpm0 is automatically used.
+        </p>
+      </dd>
+    </dl>
+
     <h3><a name="seclabel">Security label</a></h3>
 
     <p>

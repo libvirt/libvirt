@@ -2876,6 +2876,48 @@
       <text/>
     </element>
   </define>
+
+  <define name="tpm">
+    <element name="tpm">
+      <optional>
+        <attribute name="model">
+          <choice>
+            <value>tpm-tis</value>
+          </choice>
+        </attribute>
+      </optional>
+      <ref name="tpm-backend"/>
+      <optional>
+        <ref name="alias"/>
+      </optional>
+    </element>
+  </define>
+
+  <define name="tpm-backend">
+    <element name="backend">
+       <choice>
+         <group>
+           <attribute name="type">
+              <value>passthrough</value>
+           </attribute>
+           <ref name="tpm-passthrough-device"/>
+         </group>
+       </choice>
+    </element>
+  </define>
+
+  <define name="tpm-passthrough-device">
+    <optional>
+      <element name="device">
+        <optional>
+          <attribute name="path">
+            <ref name="filePath"/>
+          </attribute>
+        </optional>
+      </element>
+   </optional>
+  </define>
+
   <define name="input">
     <element name="input">
       <attribute name="type">
@@ -3200,6 +3242,7 @@
             <ref name="redirdev"/>
             <ref name="redirfilter"/>
             <ref name="rng"/>
+            <ref name="tpm"/>
           </choice>
         </zeroOrMore>
         <optional>
