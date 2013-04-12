@@ -46,6 +46,7 @@
 #include "base64.h"
 #include "device_conf.h"
 #include "virstoragefile.h"
+#include "virtpm.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -797,6 +798,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     }
     if (def->rng) {
         if (virAsprintf(&def->rng->info.alias, "rng%d", 0) < 0)
+            goto no_memory;
+    }
+    if (def->tpm) {
+        if (virAsprintf(&def->tpm->info.alias, "tpm%d", 0) < 0)
             goto no_memory;
     }
 
@@ -4825,6 +4830,89 @@ cleanup:
 }
 
 
+static char *qemuBuildTPMBackendStr(const virDomainDefPtr def,
+                                    virQEMUCapsPtr qemuCaps,
+                                    const char *emulator)
+{
+    const virDomainTPMDefPtr tpm = def->tpm;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *type = virDomainTPMBackendTypeToString(tpm->type);
+    const char *cancel_path, *tpmdev;
+
+    virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
+            goto no_support;
+
+        tpmdev = tpm->data.passthrough.source.data.file.path;
+        if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
+            goto error;
+
+        virBufferAddLit(&buf, ",path=");
+        virBufferEscape(&buf, ',', ",", "%s", tpmdev);
+
+        virBufferAddLit(&buf, ",cancel-path=");
+        virBufferEscape(&buf, ',', ",", "%s", cancel_path);
+        VIR_FREE(cancel_path);
+
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        goto error;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+ no_support:
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("The QEMU executable %s does not support TPM "
+                     "backend type %s"),
+                   emulator, type);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+static char *qemuBuildTPMDevStr(const virDomainDefPtr def,
+                                virQEMUCapsPtr qemuCaps,
+                                const char *emulator)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const virDomainTPMDefPtr tpm = def->tpm;
+    const char *model = virDomainTPMModelTypeToString(tpm->model);
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_TIS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("The QEMU executable %s does not support TPM "
+                       "model %s"),
+                       emulator, model);
+        goto error;
+    }
+
+    virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
+                      model, tpm->info.alias, tpm->info.alias);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
 static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -7139,6 +7227,22 @@ qemuBuildCommandLine(virConnectPtr conn,
                            NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
             goto error;
         }
+    }
+
+    if (def->tpm) {
+        char *optstr;
+
+        if (!(optstr = qemuBuildTPMBackendStr(def, qemuCaps, emulator)))
+            goto error;
+
+        virCommandAddArgList(cmd, "-tpmdev", optstr, NULL);
+        VIR_FREE(optstr);
+
+        if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps, emulator)))
+            goto error;
+
+        virCommandAddArgList(cmd, "-device", optstr, NULL);
+        VIR_FREE(optstr);
     }
 
     for (i = 0 ; i < def->ninputs ; i++) {
