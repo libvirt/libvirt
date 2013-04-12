@@ -825,7 +825,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
             port = 5900 + def->id;
 
         if ((unused && STREQ(unused, "1")) || port == -1)
-            graphics->data.vnc.autoport = 1;
+            graphics->data.vnc.autoport = true;
         graphics->data.vnc.port = port;
 
         if (listenAddr &&
@@ -949,7 +949,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
                 }
 
                 if ((unused && STREQ(unused, "1")) || port == -1)
-                    graphics->data.vnc.autoport = 1;
+                    graphics->data.vnc.autoport = true;
 
                 if (port >= 0 && port < 5900)
                     port += 5900;

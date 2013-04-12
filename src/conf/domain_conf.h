@@ -1375,7 +1375,7 @@ struct _virDomainGraphicsDef {
     union {
         struct {
             int port;
-            unsigned int autoport :1;
+            bool autoport;
             char *keymap;
             char *socket;
             virDomainGraphicsAuthDef auth;
@@ -1383,17 +1383,17 @@ struct _virDomainGraphicsDef {
         struct {
             char *display;
             char *xauth;
-            int fullscreen;
+            bool fullscreen;
         } sdl;
         struct {
             int port;
-            unsigned int autoport :1;
-            unsigned int replaceUser :1;
-            unsigned int multiUser :1;
+            bool autoport;
+            bool replaceUser;
+            bool multiUser;
         } rdp;
         struct {
             char *display;
-            unsigned int fullscreen :1;
+            bool fullscreen;
         } desktop;
         struct {
             int port;
@@ -1401,7 +1401,7 @@ struct _virDomainGraphicsDef {
             int mousemode;
             char *keymap;
             virDomainGraphicsAuthDef auth;
-            unsigned int autoport :1;
+            bool autoport;
             int channels[VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST];
             int defaultMode; /* enum virDomainGraphicsSpiceChannelMode */
             int image;

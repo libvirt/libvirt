@@ -2566,7 +2566,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                                 VBOX_UTF16_FREE(VRDEPortsValue);
 #endif /* VBOX_API_VERSION >= 4000 */
                             } else {
-                                def->graphics[def->ngraphics]->data.rdp.autoport = 1;
+                                def->graphics[def->ngraphics]->data.rdp.autoport = true;
                             }
 
                             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
@@ -2590,12 +2590,12 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                             VRDxServer->vtbl->GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
                             if (allowMultiConnection) {
-                                def->graphics[def->ngraphics]->data.rdp.multiUser = 1;
+                                def->graphics[def->ngraphics]->data.rdp.multiUser = true;
                             }
 
                             VRDxServer->vtbl->GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
                             if (reuseSingleConnection) {
-                                def->graphics[def->ngraphics]->data.rdp.replaceUser = 1;
+                                def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
                             }
 
                             def->ngraphics++;

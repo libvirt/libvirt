@@ -1870,14 +1870,14 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
                   "is missing, the VNC port is unknown");
 
         (*def)->data.vnc.port = 0;
-        (*def)->data.vnc.autoport = 1;
+        (*def)->data.vnc.autoport = true;
     } else {
         if (port < 5900 || port > 5964) {
             VIR_WARN("VNC port %lld it out of [5900..5964] range", port);
         }
 
         (*def)->data.vnc.port = port;
-        (*def)->data.vnc.autoport = 0;
+        (*def)->data.vnc.autoport = false;
     }
 
     return 0;

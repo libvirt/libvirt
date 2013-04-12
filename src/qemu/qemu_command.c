@@ -9189,7 +9189,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
     virDomainDefPtr def;
     int i;
     int nographics = 0;
-    int fullscreen = 0;
+    bool fullscreen = false;
     char *path;
     int nnics = 0;
     const char **nics = NULL;
@@ -9354,7 +9354,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                     goto no_memory;
                 }
                 vnc->data.vnc.port += 5900;
-                vnc->data.vnc.autoport = 0;
+                vnc->data.vnc.autoport = false;
             }
 
             if (VIR_REALLOC_N(def->graphics, def->ngraphics+1) < 0) {
@@ -9511,7 +9511,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
         } else if (STREQ(arg, "-nographic")) {
             nographics = 1;
         } else if (STREQ(arg, "-full-screen")) {
-            fullscreen = 1;
+            fullscreen = true;
         } else if (STREQ(arg, "-localtime")) {
             def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
         } else if (STREQ(arg, "-kernel")) {

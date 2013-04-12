@@ -1012,7 +1012,7 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
                     if (STRPREFIX(key, "vncunused=")) {
                         if (STREQ(key + 10, "1"))
-                            graphics->data.vnc.autoport = 1;
+                            graphics->data.vnc.autoport = true;
                     } else if (STRPREFIX(key, "vnclisten=")) {
                         if (virDomainGraphicsListenSetAddress(graphics, 0, key+10,
                                                               -1, true) < 0)

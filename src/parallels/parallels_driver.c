@@ -615,13 +615,13 @@ parallelsAddVNCInfo(virDomainDefPtr def, virJSONValuePtr jobj_root)
     if (STREQ(tmp, "auto")) {
         if (virJSONValueObjectGetNumberUint(jobj, "port", &port) < 0)
             port = 0;
-        gr->data.vnc.autoport = 1;
+        gr->data.vnc.autoport = true;
     } else {
         if (virJSONValueObjectGetNumberUint(jobj, "port", &port) < 0) {
             parallelsParseError();
             goto cleanup;
         }
-        gr->data.vnc.autoport = 0;
+        gr->data.vnc.autoport = false;
     }
 
     gr->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;

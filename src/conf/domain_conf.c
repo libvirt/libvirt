@@ -7419,18 +7419,18 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             if (def->data.vnc.port == -1) {
                 if (flags & VIR_DOMAIN_XML_INACTIVE)
                     def->data.vnc.port = 0;
-                def->data.vnc.autoport = 1;
+                def->data.vnc.autoport = true;
             }
         } else {
             def->data.vnc.port = 0;
-            def->data.vnc.autoport = 1;
+            def->data.vnc.autoport = true;
         }
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
             if (STREQ(autoport, "yes")) {
                 if (flags & VIR_DOMAIN_XML_INACTIVE)
                     def->data.vnc.port = 0;
-                def->data.vnc.autoport = 1;
+                def->data.vnc.autoport = true;
             }
             VIR_FREE(autoport);
         }
@@ -7446,9 +7446,9 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if (fullscreen != NULL) {
             if (STREQ(fullscreen, "yes")) {
-                def->data.sdl.fullscreen = 1;
+                def->data.sdl.fullscreen = true;
             } else if (STREQ(fullscreen, "no")) {
-                def->data.sdl.fullscreen = 0;
+                def->data.sdl.fullscreen = false;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown fullscreen value '%s'"), fullscreen);
@@ -7457,7 +7457,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             }
             VIR_FREE(fullscreen);
         } else {
-            def->data.sdl.fullscreen = 0;
+            def->data.sdl.fullscreen = false;
         }
         def->data.sdl.xauth = virXMLPropString(node, "xauth");
         def->data.sdl.display = virXMLPropString(node, "display");
@@ -7476,17 +7476,17 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             }
             /* Legacy compat syntax, used -1 for auto-port */
             if (def->data.rdp.port == -1)
-                def->data.rdp.autoport = 1;
+                def->data.rdp.autoport = true;
 
             VIR_FREE(port);
         } else {
             def->data.rdp.port = 0;
-            def->data.rdp.autoport = 1;
+            def->data.rdp.autoport = true;
         }
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
             if (STREQ(autoport, "yes"))
-                def->data.rdp.autoport = 1;
+                def->data.rdp.autoport = true;
 
             VIR_FREE(autoport);
         }
@@ -7496,14 +7496,14 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
             if (STREQ(replaceUser, "yes")) {
-                def->data.rdp.replaceUser = 1;
+                def->data.rdp.replaceUser = true;
             }
             VIR_FREE(replaceUser);
         }
 
         if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
             if (STREQ(multiUser, "yes")) {
-                def->data.rdp.multiUser = 1;
+                def->data.rdp.multiUser = true;
             }
             VIR_FREE(multiUser);
         }
@@ -7513,9 +7513,9 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if (fullscreen != NULL) {
             if (STREQ(fullscreen, "yes")) {
-                def->data.desktop.fullscreen = 1;
+                def->data.desktop.fullscreen = true;
             } else if (STREQ(fullscreen, "no")) {
-                def->data.desktop.fullscreen = 0;
+                def->data.desktop.fullscreen = false;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown fullscreen value '%s'"), fullscreen);
@@ -7524,7 +7524,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             }
             VIR_FREE(fullscreen);
         } else {
-            def->data.desktop.fullscreen = 0;
+            def->data.desktop.fullscreen = false;
         }
 
         def->data.desktop.display = virXMLPropString(node, "display");
@@ -7563,7 +7563,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
             if (STREQ(autoport, "yes"))
-                def->data.spice.autoport = 1;
+                def->data.spice.autoport = true;
             VIR_FREE(autoport);
         }
 
@@ -7583,7 +7583,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
         if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
             /* Legacy compat syntax, used -1 for auto-port */
-            def->data.spice.autoport = 1;
+            def->data.spice.autoport = true;
         }
 
         if (def->data.spice.autoport && (flags & VIR_DOMAIN_XML_INACTIVE)) {
