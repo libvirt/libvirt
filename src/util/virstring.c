@@ -166,3 +166,17 @@ void virStringFreeList(char **strings)
     }
     VIR_FREE(strings);
 }
+
+
+bool
+virStringArrayHasString(char **strings, const char *needle)
+{
+    size_t i = 0;
+
+    while (strings[i]) {
+        if (STREQ(strings[i++], needle))
+            return true;
+    }
+
+    return false;
+}

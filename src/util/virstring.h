@@ -35,4 +35,6 @@ char *virStringJoin(const char **strings,
 
 void virStringFreeList(char **strings);
 
+bool virStringArrayHasString(char **strings, const char *needle);
+
 #endif /* __VIR_STRING_H__ */
