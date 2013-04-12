@@ -1440,7 +1440,7 @@ struct _virDomainRedirFilterUsbDevDef {
     int vendor;
     int product;
     int version;
-    unsigned int allow :1;
+    bool allow;
 };
 
 struct _virDomainRedirFilterDef {

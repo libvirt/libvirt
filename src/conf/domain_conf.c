@@ -8679,9 +8679,9 @@ virDomainRedirFilterUsbDevDefParseXML(const xmlNodePtr node)
     allow = virXMLPropString(node, "allow");
     if (allow) {
         if (STREQ(allow, "yes"))
-            def->allow = 1;
+            def->allow = true;
         else if (STREQ(allow, "no"))
-            def->allow = 0;
+            def->allow = false;
         else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Invalid allow value, either 'yes' or 'no'"));
