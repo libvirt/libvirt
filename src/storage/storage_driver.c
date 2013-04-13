@@ -1833,8 +1833,8 @@ storageVolumeResize(virStorageVolPtr obj,
     if (backend->resizeVol(obj->conn, pool, vol, abs_capacity, flags) < 0)
         goto out;
 
-   vol->capacity = abs_capacity;
-   ret = 0;
+    vol->capacity = abs_capacity;
+    ret = 0;
 
 out:
     if (pool)
