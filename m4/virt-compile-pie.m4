@@ -21,10 +21,15 @@ dnl
 AC_DEFUN([LIBVIRT_COMPILE_PIE],[
     PIE_CFLAGS=
     PIE_LDFLAGS=
-    gl_COMPILER_OPTION_IF([-fPIE -DPIE], [
+    case "$host" in
+      *-*-mingw* | *-*-msvc* | *-*-cygwin* )
+         ;; dnl All code is position independent on Win32 target
+      *)
+      gl_COMPILER_OPTION_IF([-fPIE -DPIE], [
         PIE_CFLAGS="-fPIE -DPIE"
         PIE_LDFLAGS="-pie"
-    ])
+      ])
+    esac
     AC_SUBST([PIE_CFLAGS])
     AC_SUBST([PIE_LDFLAGS])
 ])
