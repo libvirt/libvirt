@@ -357,6 +357,8 @@ void virThreadJoin(virThreadPtr thread)
     }
 }
 
+void virThreadCancel(virThreadPtr thread ATTRIBUTE_UNUSED)
+{}
 
 int virThreadLocalInit(virThreadLocalPtr l,
                        virThreadLocalCleanup c)
