@@ -752,7 +752,7 @@ virNetlinkShutdown(void)
 }
 
 int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
-                      unsigned char **respbuf ATTRIBUTE_UNUSED,
+                      struct nlmsghdr **resp ATTRIBUTE_UNUSED,
                       unsigned int *respbuflen ATTRIBUTE_UNUSED,
                       uint32_t src_pid ATTRIBUTE_UNUSED,
                       uint32_t dst_pid ATTRIBUTE_UNUSED,
