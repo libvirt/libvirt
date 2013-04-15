@@ -1388,14 +1388,13 @@ error:
     return NULL;
 }
 
-/* check whether the slot is used by the other device
- * Return 0 if the slot is not used by the other device, or -1 if the slot
- * is used by the other device.
+/*
+ * Check if the PCI slot is used by another device.
  */
-static int qemuDomainPCIAddressCheckSlot(qemuDomainPCIAddressSetPtr addrs,
-                                         virDevicePCIAddressPtr addr)
+static bool qemuDomainPCIAddressSlotInUse(qemuDomainPCIAddressSetPtr addrs,
+                                          virDevicePCIAddressPtr addr)
 {
-    return addrs->used[addr->bus][addr->slot] ? -1 : 0;
+    return !!addrs->used[addr->bus][addr->slot];
 }
 
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
@@ -1516,7 +1515,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
         if (!(addr = qemuPCIAddressAsString(&tmp_addr)))
             return -1;
 
-        if (qemuDomainPCIAddressCheckSlot(addrs, &tmp_addr) < 0) {
+        if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
             VIR_DEBUG("PCI addr %s already in use", addr);
             VIR_FREE(addr);
             continue;
@@ -1684,7 +1683,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             primaryVideo->info.addr.pci.function = 0;
             addrptr = &primaryVideo->info.addr.pci;
 
-            if (qemuDomainPCIAddressCheckSlot(addrs, addrptr) < 0) {
+            if (qemuDomainPCIAddressSlotInUse(addrs, addrptr)) {
                 if (qemuDeviceVideoUsable) {
                     virResetLastError();
                     if (qemuDomainPCIAddressSetNextAddr(addrs, &primaryVideo->info) < 0)
@@ -1714,7 +1713,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         memset(&tmp_addr, 0, sizeof(tmp_addr));
         tmp_addr.slot = 2;
 
-        if (qemuDomainPCIAddressCheckSlot(addrs, &tmp_addr) < 0) {
+        if (qemuDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
             VIR_DEBUG("PCI address 0:0:2.0 in use, future addition of a video"
                       " device will not be possible without manual"
                       " intervention");
