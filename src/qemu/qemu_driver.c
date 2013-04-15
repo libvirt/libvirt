@@ -4403,17 +4403,24 @@ static int
 qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
     virCapsPtr caps = NULL;
+    qemuAgentCPUInfoPtr cpuinfo = NULL;
+    int ncpuinfo;
+    int i;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
-                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+                  VIR_DOMAIN_VCPU_MAXIMUM |
+                  VIR_DOMAIN_VCPU_AGENT, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        goto cleanup;
+        return -1;
+
+    priv = vm->privateData;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -4422,16 +4429,61 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
                                         vm, &flags, &def) < 0)
         goto cleanup;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE)
         def = vm->def;
+
+    if (flags & VIR_DOMAIN_VCPU_AGENT) {
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("vCPU count provided by the guest agent can only be "
+                             " requested for live domains"));
+            goto cleanup;
+        }
+
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            goto cleanup;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+            goto endjob;
+        }
+
+        qemuDomainObjEnterAgent(vm);
+        ncpuinfo = qemuAgentGetVCPUs(priv->agent, &cpuinfo);
+        qemuDomainObjExitAgent(vm);
+
+endjob:
+        if (qemuDomainObjEndJob(driver, vm) == 0)
+            vm = NULL;
+
+        if (ncpuinfo < 0)
+            goto cleanup;
+
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+            ret = ncpuinfo;
+            goto cleanup;
+        }
+
+        /* count the online vcpus */
+        ret = 0;
+        for (i = 0; i < ncpuinfo; i++) {
+            if (cpuinfo[i].online)
+                ret++;
+        }
+    } else {
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+            ret = def->maxvcpus;
+        else
+            ret = def->vcpus;
     }
 
-    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
 
 cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    VIR_FREE(cpuinfo);
     return ret;
 }
 
