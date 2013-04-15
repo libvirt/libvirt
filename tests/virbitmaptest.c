@@ -432,24 +432,25 @@ static int test8(const void *v ATTRIBUTE_UNUSED)
 {
     virBitmapPtr bitmap = NULL;
     char data[108] = {0x00,};
+    int ret = -1;
 
     bitmap = virBitmapNewData(data, sizeof(data));
     if (!bitmap)
-        goto error;
+        goto cleanup;
 
     if (!virBitmapIsAllClear(bitmap))
-        goto error;
+        goto cleanup;
 
     if (virBitmapSetBit(bitmap, 11) < 0)
-        goto error;
+        goto cleanup;
 
     if (virBitmapIsAllClear(bitmap))
-        goto error;
+        goto cleanup;
 
-    return 0;
-error:
+    ret = 0;
+cleanup:
     virBitmapFree(bitmap);
-    return -1;
+    return ret;
 }
 
 static int
