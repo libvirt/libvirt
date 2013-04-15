@@ -3713,6 +3713,68 @@ unsupported:
 
 
 static int
+qemuDomainPrepareAgentVCPUs(unsigned int nvcpus,
+                            qemuAgentCPUInfoPtr cpuinfo,
+                            int ncpuinfo)
+{
+    int i;
+    int nonline = 0;
+    int nofflinable = 0;
+
+    /* count the active and offlinable cpus */
+    for (i = 0; i < ncpuinfo; i++) {
+        if (cpuinfo[i].online)
+            nonline++;
+
+        if (cpuinfo[i].offlinable && cpuinfo[i].online)
+            nofflinable++;
+
+        /* This shouldn't happen, but we can't trust the guest agent */
+        if (!cpuinfo[i].online && !cpuinfo[i].offlinable) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Invalid data provided by guest agent"));
+            return -1;
+        }
+    }
+
+    /* the guest agent reported less cpus than requested */
+    if (nvcpus > ncpuinfo) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest agent reports less cpu than requested"));
+        return -1;
+    }
+
+    /* not enough offlinable CPUs to support the request */
+    if (nvcpus < nonline - nofflinable) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Cannot offline enough CPUs"));
+        return -1;
+    }
+
+    for (i = 0; i < ncpuinfo; i++) {
+        if (nvcpus < nonline) {
+            /* unplug */
+            if (cpuinfo[i].offlinable && cpuinfo[i].online) {
+                cpuinfo[i].online = false;
+                nonline--;
+            }
+        } else if (nvcpus > nonline) {
+            /* plug */
+            if (!cpuinfo[i].online) {
+                cpuinfo[i].online = true;
+                nonline++;
+            }
+        } else {
+            /* done */
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                         unsigned int flags)
 {
@@ -3723,10 +3785,14 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     bool maximum;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    qemuAgentCPUInfoPtr cpuinfo = NULL;
+    int ncpuinfo;
+    qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
-                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+                  VIR_DOMAIN_VCPU_MAXIMUM |
+                  VIR_DOMAIN_VCPU_AGENT, -1);
 
     if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -3740,6 +3806,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
+
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -3766,22 +3834,56 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
+    if (flags & VIR_DOMAIN_VCPU_AGENT) {
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("chainging of maximum vCPU count isn't supported "
+                             "via guest agent"));
             goto endjob;
-    }
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (maximum) {
-            persistentDef->maxvcpus = nvcpus;
-            if (nvcpus < persistentDef->vcpus)
-                persistentDef->vcpus = nvcpus;
-        } else {
-            persistentDef->vcpus = nvcpus;
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        qemuDomainObjEnterAgent(vm);
+        ncpuinfo = qemuAgentGetVCPUs(priv->agent, &cpuinfo);
+        qemuDomainObjExitAgent(vm);
+
+        if (ncpuinfo < 0)
             goto endjob;
+
+        if (qemuDomainPrepareAgentVCPUs(nvcpus, cpuinfo, ncpuinfo) < 0)
+            goto endjob;
+
+        qemuDomainObjEnterAgent(vm);
+        ret = qemuAgentSetVCPUs(priv->agent, cpuinfo, ncpuinfo);
+        qemuDomainObjExitAgent(vm);
+
+        if (ret < 0)
+            goto endjob;
+
+        if (ret < ncpuinfo) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to set state of cpu %d via guest agent"),
+                           cpuinfo[ret-1].id);
+            ret = -1;
+            goto endjob;
+        }
+    } else {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
+                goto endjob;
+        }
+
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (maximum) {
+                persistentDef->maxvcpus = nvcpus;
+                if (nvcpus < persistentDef->vcpus)
+                    persistentDef->vcpus = nvcpus;
+            } else {
+                persistentDef->vcpus = nvcpus;
+            }
+
+            if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+                goto endjob;
+        }
     }
 
     ret = 0;
@@ -3794,6 +3896,7 @@ cleanup:
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(caps);
+    VIR_FREE(cpuinfo);
     virObjectUnref(cfg);
     return ret;
 }
