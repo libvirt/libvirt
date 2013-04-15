@@ -8968,7 +8968,7 @@ error:
  * virtual CPU limit is queried.  Otherwise, this call queries the
  * current virtual CPU limit.
  *
- * Returns 0 in case of success, -1 in case of failure.
+ * Returns the number of vCPUs in case of success, -1 in case of failure.
  */
 
 int
