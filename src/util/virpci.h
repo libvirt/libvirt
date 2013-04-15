@@ -41,10 +41,10 @@ struct _virPCIDeviceAddress {
     unsigned int function;
 };
 
-virPCIDevicePtr virPCIDeviceNew(unsigned domain,
-                                unsigned bus,
-                                unsigned slot,
-                                unsigned function);
+virPCIDevicePtr virPCIDeviceNew(unsigned int domain,
+                                unsigned int bus,
+                                unsigned int slot,
+                                unsigned int function);
 void virPCIDeviceFree(virPCIDevicePtr dev);
 const char *virPCIDeviceGetName(virPCIDevicePtr dev);
 
@@ -62,17 +62,17 @@ int virPCIDeviceReset(virPCIDevicePtr dev,
 
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);
-unsigned virPCIDeviceGetManaged(virPCIDevice *dev);
+unsigned int virPCIDeviceGetManaged(virPCIDevice *dev);
 void virPCIDeviceSetUsedBy(virPCIDevice *dev,
                            const char *used_by);
 const char *virPCIDeviceGetUsedBy(virPCIDevice *dev);
-unsigned virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev);
+unsigned int virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev);
 void  virPCIDeviceSetUnbindFromStub(virPCIDevice *dev,
                                     bool unbind);
-unsigned virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev);
+unsigned int virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev);
 void virPCIDeviceSetRemoveSlot(virPCIDevice *dev,
                                bool remove_slot);
-unsigned virPCIDeviceGetReprobe(virPCIDevicePtr dev);
+unsigned int virPCIDeviceGetReprobe(virPCIDevicePtr dev);
 void virPCIDeviceSetReprobe(virPCIDevice *dev,
                             bool reprobe);
 void virPCIDeviceReattachInit(virPCIDevice *dev);
@@ -135,10 +135,10 @@ int virPCIGetSysfsFile(char *virPCIDeviceName,
                              char **pci_sysfs_device_link)
     ATTRIBUTE_RETURN_CHECK;
 
-int virPCIGetAddrString(unsigned domain,
-                        unsigned bus,
-                        unsigned slot,
-                        unsigned function,
+int virPCIGetAddrString(unsigned int domain,
+                        unsigned int bus,
+                        unsigned int slot,
+                        unsigned int function,
                         char **pciConfigAddr)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 

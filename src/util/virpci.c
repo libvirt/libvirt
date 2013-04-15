@@ -51,18 +51,18 @@
 #define SRIOV_ERROR -1
 
 struct _virPCIDevice {
-    unsigned      domain;
-    unsigned      bus;
-    unsigned      slot;
-    unsigned      function;
+    unsigned int  domain;
+    unsigned int  bus;
+    unsigned int  slot;
+    unsigned int  function;
 
     char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
     char          *path;
     const char    *used_by;           /* The domain which uses the device */
 
-    unsigned      pcie_cap_pos;
-    unsigned      pci_pm_cap_pos;
+    unsigned int  pcie_cap_pos;
+    unsigned int  pci_pm_cap_pos;
     bool          has_flr;
     bool          has_pm_reset;
     bool          managed;
@@ -76,7 +76,7 @@ struct _virPCIDevice {
 struct _virPCIDeviceList {
     virObjectLockable parent;
 
-    unsigned count;
+    unsigned int count;
     virPCIDevicePtr *devs;
 };
 
@@ -222,9 +222,9 @@ virPCIDeviceConfigClose(virPCIDevicePtr dev, int cfgfd)
 static int
 virPCIDeviceRead(virPCIDevicePtr dev,
                  int cfgfd,
-                 unsigned pos,
+                 unsigned int pos,
                  uint8_t *buf,
-                 unsigned buflen)
+                 unsigned int buflen)
 {
     memset(buf, 0, buflen);
 
@@ -239,7 +239,7 @@ virPCIDeviceRead(virPCIDevicePtr dev,
 }
 
 static uint8_t
-virPCIDeviceRead8(virPCIDevicePtr dev, int cfgfd, unsigned pos)
+virPCIDeviceRead8(virPCIDevicePtr dev, int cfgfd, unsigned int pos)
 {
     uint8_t buf;
     virPCIDeviceRead(dev, cfgfd, pos, &buf, sizeof(buf));
@@ -247,7 +247,7 @@ virPCIDeviceRead8(virPCIDevicePtr dev, int cfgfd, unsigned pos)
 }
 
 static uint16_t
-virPCIDeviceRead16(virPCIDevicePtr dev, int cfgfd, unsigned pos)
+virPCIDeviceRead16(virPCIDevicePtr dev, int cfgfd, unsigned int pos)
 {
     uint8_t buf[2];
     virPCIDeviceRead(dev, cfgfd, pos, &buf[0], sizeof(buf));
@@ -255,7 +255,7 @@ virPCIDeviceRead16(virPCIDevicePtr dev, int cfgfd, unsigned pos)
 }
 
 static uint32_t
-virPCIDeviceRead32(virPCIDevicePtr dev, int cfgfd, unsigned pos)
+virPCIDeviceRead32(virPCIDevicePtr dev, int cfgfd, unsigned int pos)
 {
     uint8_t buf[4];
     virPCIDeviceRead(dev, cfgfd, pos, &buf[0], sizeof(buf));
@@ -265,9 +265,9 @@ virPCIDeviceRead32(virPCIDevicePtr dev, int cfgfd, unsigned pos)
 static int
 virPCIDeviceWrite(virPCIDevicePtr dev,
                   int cfgfd,
-                  unsigned pos,
+                  unsigned int pos,
                   uint8_t *buf,
-                  unsigned buflen)
+                  unsigned int buflen)
 {
     if (lseek(cfgfd, pos, SEEK_SET) != pos ||
         safewrite(cfgfd, buf, buflen) != buflen) {
@@ -280,14 +280,14 @@ virPCIDeviceWrite(virPCIDevicePtr dev,
 }
 
 static void
-virPCIDeviceWrite16(virPCIDevicePtr dev, int cfgfd, unsigned pos, uint16_t val)
+virPCIDeviceWrite16(virPCIDevicePtr dev, int cfgfd, unsigned int pos, uint16_t val)
 {
     uint8_t buf[2] = { (val >> 0), (val >> 8) };
     virPCIDeviceWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
 }
 
 static void
-virPCIDeviceWrite32(virPCIDevicePtr dev, int cfgfd, unsigned pos, uint32_t val)
+virPCIDeviceWrite32(virPCIDevicePtr dev, int cfgfd, unsigned int pos, uint32_t val)
 {
     uint8_t buf[4] = { (val >> 0), (val >> 8), (val >> 16), (val >> 24) };
     virPCIDeviceWrite(dev, cfgfd, pos, &buf[0], sizeof(buf));
@@ -370,7 +370,9 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
 }
 
 static uint8_t
-virPCIDeviceFindCapabilityOffset(virPCIDevicePtr dev, int cfgfd, unsigned capability)
+virPCIDeviceFindCapabilityOffset(virPCIDevicePtr dev,
+                                 int cfgfd,
+                                 unsigned int capability)
 {
     uint16_t status;
     uint8_t pos;
@@ -407,7 +409,7 @@ virPCIDeviceFindCapabilityOffset(virPCIDevicePtr dev, int cfgfd, unsigned capabi
 static unsigned int
 virPCIDeviceFindExtendedCapabilityOffset(virPCIDevicePtr dev,
                                          int cfgfd,
-                                         unsigned capability)
+                                         unsigned int capability)
 {
     int ttl;
     unsigned int pos;
@@ -496,7 +498,7 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
  * and that a D3hot->D0 transition will results in a full
  * internal reset, not just a soft reset.
  */
-static unsigned
+static unsigned int
 virPCIDeviceDetectPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
 {
     if (dev->pci_pm_cap_pos) {
@@ -1341,10 +1343,10 @@ virPCIDeviceReadID(virPCIDevicePtr dev, const char *id_name)
 }
 
 int
-virPCIGetAddrString(unsigned domain,
-                    unsigned bus,
-                    unsigned slot,
-                    unsigned function,
+virPCIGetAddrString(unsigned int domain,
+                    unsigned int bus,
+                    unsigned int slot,
+                    unsigned int function,
                     char **pciConfigAddr)
 {
     virPCIDevicePtr dev = NULL;
@@ -1365,10 +1367,10 @@ cleanup:
 }
 
 virPCIDevicePtr
-virPCIDeviceNew(unsigned domain,
-                unsigned bus,
-                unsigned slot,
-                unsigned function)
+virPCIDeviceNew(unsigned int domain,
+                unsigned int bus,
+                unsigned int slot,
+                unsigned int function)
 {
     virPCIDevicePtr dev;
     char *vendor = NULL;
@@ -1458,12 +1460,13 @@ void virPCIDeviceSetManaged(virPCIDevicePtr dev, bool managed)
     dev->managed = managed;
 }
 
-unsigned virPCIDeviceGetManaged(virPCIDevicePtr dev)
+unsigned int
+virPCIDeviceGetManaged(virPCIDevicePtr dev)
 {
     return dev->managed;
 }
 
-unsigned
+unsigned int
 virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev)
 {
     return dev->unbind_from_stub;
@@ -1475,7 +1478,7 @@ virPCIDeviceSetUnbindFromStub(virPCIDevicePtr dev, bool unbind)
     dev->unbind_from_stub = unbind;
 }
 
-unsigned
+unsigned int
 virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev)
 {
     return dev->remove_slot;
@@ -1487,7 +1490,7 @@ virPCIDeviceSetRemoveSlot(virPCIDevicePtr dev, bool remove_slot)
     dev->remove_slot = remove_slot;
 }
 
-unsigned
+unsigned int
 virPCIDeviceGetReprobe(virPCIDevicePtr dev)
 {
     return dev->reprobe;

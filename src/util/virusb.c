@@ -208,7 +208,7 @@ cleanup:
 
 int
 virUSBDeviceFindByVendor(unsigned int vendor,
-                         unsigned product,
+                         unsigned int product,
                          const char *vroot,
                          bool mandatory,
                          virUSBDeviceListPtr *devices)
@@ -247,7 +247,7 @@ virUSBDeviceFindByVendor(unsigned int vendor,
 
 int
 virUSBDeviceFindByBus(unsigned int bus,
-                      unsigned devno,
+                      unsigned int devno,
                       const char *vroot,
                       bool mandatory,
                       virUSBDevicePtr *usb)
