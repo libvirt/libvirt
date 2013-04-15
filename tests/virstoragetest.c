@@ -161,12 +161,14 @@ testPrepImages(void)
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
+#ifdef HAVE_SYMLINK
     /* Create some symlinks in a sub-directory. */
     if (symlink("../qcow2", datadir "/sub/link1") < 0 ||
         symlink("../wrap", datadir "/sub/link2") < 0) {
         fprintf(stderr, "unable to create symlink");
         goto cleanup;
     }
+#endif
 
     ret = 0;
 cleanup:
@@ -364,6 +366,7 @@ mymain(void)
         canonraw, absraw, datadir, VIR_STORAGE_FILE_RAW,
         true, 1024, false,
     };
+#if HAVE_SYMLINK
     const testFileData link1_rel = {
         canonraw, "../raw", "sub/../sub/..", VIR_STORAGE_FILE_RAW,
         true, 1024, false,
@@ -380,6 +383,7 @@ mymain(void)
         canonqcow2, "../sub/link1", datadir "/sub/../sub",
         VIR_STORAGE_FILE_QCOW2, true, 1024, false,
     };
+#endif
 
     /* The actual tests, in several groups. */
 
@@ -522,6 +526,7 @@ mymain(void)
                chain12a, EXP_PASS,
                chain12b, ALLOW_PROBE | EXP_PASS);
 
+#ifdef HAVE_SYMLINK
     /* Rewrite qcow2 and wrap file to use backing names relative to a
      * symlink from a different directory */
     virCommandFree(cmd);
@@ -545,6 +550,7 @@ mymain(void)
                chain13a, ALLOW_PROBE | EXP_PASS,
                chain13c, EXP_PASS,
                chain13c, ALLOW_PROBE | EXP_PASS);
+#endif
 
     /* Final cleanup */
     testCleanupImages();
