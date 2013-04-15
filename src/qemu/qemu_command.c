@@ -1187,8 +1187,14 @@ cleanup:
 
 #define QEMU_PCI_ADDRESS_SLOT_LAST 32
 #define QEMU_PCI_ADDRESS_FUNCTION_LAST 8
+
+/*
+ * Each bit represents a function
+ * Each byte represents a slot
+ */
+typedef uint8_t qemuDomainPCIAddressBus[QEMU_PCI_ADDRESS_SLOT_LAST];
 struct _qemuDomainPCIAddressSet {
-    virHashTablePtr used;
+    qemuDomainPCIAddressBus *used;
     virDevicePCIAddress lastaddr;
 };
 
@@ -1268,7 +1274,7 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if (!(str = qemuPCIAddressAsString(addr)))
         goto cleanup;
 
-    if (virHashLookup(addrs->used, str)) {
+    if (addrs->used[addr->bus][addr->slot] & (1 << addr->function)) {
         if (info->addr.pci.function != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Attempted double use of PCI Address '%s' "
@@ -1281,35 +1287,22 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    VIR_DEBUG("Remembering PCI addr %s", str);
-    if (virHashAddEntry(addrs->used, str, str) < 0)
-        goto cleanup;
-    str = NULL;
-
     if ((info->addr.pci.function == 0) &&
         (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
-        virDevicePCIAddress tmp_addr = *addr;
-        unsigned int *func = &tmp_addr.function;
-
-        for (*func = 1; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-            if (!(str = qemuPCIAddressAsString(&tmp_addr)))
-                goto cleanup;
-
-            if (virHashLookup(addrs->used, str)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Attempted double use of PCI Address '%s' "
-                                 "(need \"multifunction='off'\" for device "
-                                 "on function 0)"),
-                               str);
-                goto cleanup;
-            }
-
-            VIR_DEBUG("Remembering PCI addr %s (multifunction=off for function 0)", str);
-            if (virHashAddEntry(addrs->used, str, str))
-                goto cleanup;
-            str = NULL;
+        if (addrs->used[addr->bus][addr->slot]) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Attempted double use of PCI Address on slot '%s' "
+                             "(need \"multifunction='off'\" for device "
+                             "on function 0)"),
+                           str);
+            goto cleanup;
         }
+        addrs->used[addr->bus][addr->slot] = 0xFF;
+        VIR_DEBUG("Remembering PCI slot: %s (multifunction=off)", str);
+    } else {
+        VIR_DEBUG("Remembering PCI addr: %s", str);
+        addrs->used[addr->bus][addr->slot] |= 1 << addr->function;
     }
     ret = 0;
 cleanup:
@@ -1373,13 +1366,6 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
     return qemuDomainAssignPCIAddresses(def, qemuCaps, obj);
 }
 
-static void
-qemuDomainPCIAddressSetFreeEntry(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(payload);
-}
-
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
 {
     qemuDomainPCIAddressSetPtr addrs;
@@ -1387,8 +1373,8 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
     if (VIR_ALLOC(addrs) < 0)
         goto no_memory;
 
-    if (!(addrs->used = virHashCreate(10, qemuDomainPCIAddressSetFreeEntry)))
-        goto error;
+    if (VIR_ALLOC_N(addrs->used, 1) < 0)
+        goto no_memory;
 
     if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
         goto error;
@@ -1409,24 +1395,7 @@ error:
 static int qemuDomainPCIAddressCheckSlot(qemuDomainPCIAddressSetPtr addrs,
                                          virDevicePCIAddressPtr addr)
 {
-    char *str;
-    virDevicePCIAddress tmp_addr = *addr;
-    unsigned int *func = &(tmp_addr.function);
-
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-        str = qemuPCIAddressAsString(&tmp_addr);
-        if (!str)
-            return -1;
-
-        if (virHashLookup(addrs->used, str)) {
-            VIR_FREE(str);
-            return -1;
-        }
-
-        VIR_FREE(str);
-    }
-
-    return 0;
+    return addrs->used[addr->bus][addr->slot] ? -1 : 0;
 }
 
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
@@ -1434,48 +1403,47 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
 {
     char *str;
 
-    str = qemuPCIAddressAsString(addr);
-    if (!str)
+    if (!(str = qemuPCIAddressAsString(addr)))
         return -1;
 
     VIR_DEBUG("Reserving PCI addr %s", str);
 
-    if (virHashLookup(addrs->used, str)) {
+    if (addrs->used[addr->bus][addr->slot] & (1 << addr->function)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to reserve PCI address %s"), str);
         VIR_FREE(str);
         return -1;
     }
 
-    if (virHashAddEntry(addrs->used, str, str)) {
-        VIR_FREE(str);
-        return -1;
-    }
+    VIR_FREE(str);
 
     addrs->lastaddr = *addr;
     addrs->lastaddr.function = 0;
     addrs->lastaddr.multi = 0;
+    addrs->used[addr->bus][addr->slot] |= 1 << addr->function;
     return 0;
 }
 
 int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr)
 {
-    virDevicePCIAddress tmp_addr = *addr;
-    unsigned int *func = &tmp_addr.function;
-    unsigned int last;
+    char *str;
 
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
-            goto cleanup;
+    if (!(str = qemuPCIAddressAsString(addr)))
+        return -1;
+
+    VIR_DEBUG("Reserving PCI slot %s", str);
+
+    if (addrs->used[addr->bus][addr->slot]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to reserve PCI slot %s"), str);
+        VIR_FREE(str);
+        return -1;
     }
 
+    VIR_FREE(str);
+    addrs->used[addr->bus][addr->slot] = 0xFF;
     return 0;
-
-cleanup:
-    for (last = *func, *func = 0; *func < last; (*func)++)
-        qemuDomainPCIAddressReleaseAddr(addrs, &tmp_addr);
-    return -1;
 }
 
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
@@ -1507,48 +1475,18 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
 int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr)
 {
-    char *str;
-    int ret;
-
-    str = qemuPCIAddressAsString(addr);
-    if (!str)
-        return -1;
-
-    ret = virHashRemoveEntry(addrs->used, str);
-
-    VIR_FREE(str);
-
-    return ret;
+    addrs->used[addr->bus][addr->slot] &= ~(1 << addr->function);
+    return 0;
 }
 
 int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr)
 {
-    char *str;
-    int ret = 0;
-    virDevicePCIAddress tmp_addr = *addr;
-    unsigned int *func = &tmp_addr.function;
-
     if (!qemuPCIAddressValidate(addrs, addr))
         return -1;
 
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-        str = qemuPCIAddressAsString(&tmp_addr);
-        if (!str)
-            return -1;
-
-        if (!virHashLookup(addrs->used, str)) {
-            VIR_FREE(str);
-            continue;
-        }
-
-        VIR_FREE(str);
-
-        if (qemuDomainPCIAddressReleaseAddr(addrs, &tmp_addr) < 0)
-            ret = -1;
-    }
-
-    return ret;
+    addrs->used[addr->bus][addr->slot] = 0;
+    return 0;
 }
 
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
@@ -1556,7 +1494,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
     if (!addrs)
         return;
 
-    virHashFree(addrs->used);
+    VIR_FREE(addrs->used);
     VIR_FREE(addrs);
 }
 
