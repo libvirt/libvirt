@@ -1193,16 +1193,42 @@ struct _qemuDomainPCIAddressSet {
 };
 
 
+/*
+ * Check that the PCI address is valid for use
+ * with the specified PCI address set.
+ */
+static bool qemuPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs ATTRIBUTE_UNUSED,
+                                   virDevicePCIAddressPtr addr)
+{
+    if (addr->domain != 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Only PCI domain 0 is available"));
+        return false;
+    }
+    if (addr->bus != 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Only PCI bus 0 is available"));
+        return false;
+    }
+    if (addr->function >= QEMU_PCI_ADDRESS_FUNCTION_LAST) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid PCI address: function must be < %u"),
+                       QEMU_PCI_ADDRESS_FUNCTION_LAST);
+        return false;
+    }
+    if (addr->slot >= QEMU_PCI_ADDRESS_SLOT_LAST) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid PCI address: slot must be < %u"),
+                       QEMU_PCI_ADDRESS_SLOT_LAST);
+        return false;
+    }
+    return true;
+}
+
+
 static char *qemuPCIAddressAsString(virDevicePCIAddressPtr addr)
 {
     char *str;
-
-    if (addr->domain != 0 ||
-        addr->bus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Only PCI domain 0 and bus 0 are available"));
-        return NULL;
-    }
 
     if (virAsprintf(&str, "%.4x:%.2x:%.2x.%.1x",
                     addr->domain,
@@ -1222,7 +1248,8 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                  void *opaque)
 {
     int ret = -1;
-    char *addr = NULL;
+    char *str = NULL;
+    virDevicePCIAddressPtr addr = &info->addr.pci;
     qemuDomainPCIAddressSetPtr addrs = opaque;
 
     if ((info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
@@ -1235,57 +1262,58 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return 0;
     }
 
-    addr = qemuPCIAddressAsString(&info->addr.pci);
-    if (!addr)
+    if (!qemuPCIAddressValidate(addrs, addr))
+        return -1;
+
+    if (!(str = qemuPCIAddressAsString(addr)))
         goto cleanup;
 
-    if (virHashLookup(addrs->used, addr)) {
+    if (virHashLookup(addrs->used, str)) {
         if (info->addr.pci.function != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Attempted double use of PCI Address '%s' "
                              "(may need \"multifunction='on'\" for device on function 0)"),
-                           addr);
+                           str);
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Attempted double use of PCI Address '%s'"), addr);
+                           _("Attempted double use of PCI Address '%s'"), str);
         }
         goto cleanup;
     }
 
-    VIR_DEBUG("Remembering PCI addr %s", addr);
-    if (virHashAddEntry(addrs->used, addr, addr) < 0)
+    VIR_DEBUG("Remembering PCI addr %s", str);
+    if (virHashAddEntry(addrs->used, str, str) < 0)
         goto cleanup;
-    addr = NULL;
+    str = NULL;
 
     if ((info->addr.pci.function == 0) &&
         (info->addr.pci.multi != VIR_DEVICE_ADDRESS_PCI_MULTI_ON)) {
         /* a function 0 w/o multifunction=on must reserve the entire slot */
-        virDevicePCIAddress tmp_addr = info->addr.pci;
+        virDevicePCIAddress tmp_addr = *addr;
         unsigned int *func = &tmp_addr.function;
 
         for (*func = 1; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-            addr = qemuPCIAddressAsString(&tmp_addr);
-            if (!addr)
+            if (!(str = qemuPCIAddressAsString(&tmp_addr)))
                 goto cleanup;
 
-            if (virHashLookup(addrs->used, addr)) {
+            if (virHashLookup(addrs->used, str)) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("Attempted double use of PCI Address '%s' "
                                  "(need \"multifunction='off'\" for device "
                                  "on function 0)"),
-                               addr);
+                               str);
                 goto cleanup;
             }
 
-            VIR_DEBUG("Remembering PCI addr %s (multifunction=off for function 0)", addr);
-            if (virHashAddEntry(addrs->used, addr, addr))
+            VIR_DEBUG("Remembering PCI addr %s (multifunction=off for function 0)", str);
+            if (virHashAddEntry(addrs->used, str, str))
                 goto cleanup;
-            addr = NULL;
+            str = NULL;
         }
     }
     ret = 0;
 cleanup:
-    VIR_FREE(addr);
+    VIR_FREE(str);
     return ret;
 }
 
@@ -1465,6 +1493,9 @@ int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
             return -1;
         }
 
+        if (!qemuPCIAddressValidate(addrs, &dev->addr.pci))
+            return -1;
+
         ret = qemuDomainPCIAddressReserveSlot(addrs, &dev->addr.pci);
     } else {
         ret = qemuDomainPCIAddressSetNextAddr(addrs, dev);
@@ -1497,6 +1528,9 @@ int qemuDomainPCIAddressReleaseSlot(qemuDomainPCIAddressSetPtr addrs,
     int ret = 0;
     virDevicePCIAddress tmp_addr = *addr;
     unsigned int *func = &tmp_addr.function;
+
+    if (!qemuPCIAddressValidate(addrs, addr))
+        return -1;
 
     for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
         str = qemuPCIAddressAsString(&tmp_addr);
@@ -1965,24 +1999,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                           virQEMUCapsPtr qemuCaps)
 {
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (info->addr.pci.domain != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only PCI device addresses with domain=0 are supported"));
-            return -1;
-        }
-        if (info->addr.pci.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only PCI device addresses with bus=0 are supported"));
-            return -1;
-        }
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION)) {
-            if (info->addr.pci.function > 7) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("The function of PCI device addresses must "
-                                 "be less than 8"));
-                return -1;
-            }
-        } else {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION)) {
             if (info->addr.pci.function != 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only PCI device addresses with function=0 "
