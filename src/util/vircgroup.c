@@ -57,7 +57,7 @@
 
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
               "cpu", "cpuacct", "cpuset", "memory", "devices",
-              "freezer", "blkio");
+              "freezer", "blkio", "net_cls", "perf_event");
 
 typedef enum {
     VIR_CGROUP_NONE = 0, /* create subdir under each cgroup if possible. */
