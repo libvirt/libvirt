@@ -1209,6 +1209,10 @@ qemuAgentMakeCommand(const char *cmdname,
         case 'n': {
             ret = virJSONValueObjectAppendNull(jargs, key);
         }   break;
+        case 'a': {
+            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
+            ret = virJSONValueObjectAppend(jargs, key, val);
+        }   break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unsupported data type '%c' for arg '%s'"), type, key - 2);
