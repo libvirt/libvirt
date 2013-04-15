@@ -984,7 +984,8 @@ out:
 int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
                        virCgroupPtr *group ATTRIBUTE_UNUSED,
                        bool privileged ATTRIBUTE_UNUSED,
-                       bool create ATTRIBUTE_UNUSED)
+                       bool create ATTRIBUTE_UNUSED,
+                       int controllers ATTRIBUTE_UNUSED)
 {
     /* Claim no support */
     return -ENXIO;
