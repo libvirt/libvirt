@@ -23,7 +23,6 @@
 # define __VIR_UTIL_VIRTKEYCODE_H__
 
 # include "virutil.h"
-# include "libvirt/libvirt.h"
 
 VIR_ENUM_DECL(virKeycodeSet);
 int virKeycodeValueFromString(virKeycodeSet codeset, const char *keyname);

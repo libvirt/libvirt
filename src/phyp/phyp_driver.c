@@ -49,7 +49,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "driver.h"
-#include "libvirt/libvirt.h"
 #include "virerror.h"
 #include "viruuid.h"
 #include "domain_conf.h"
