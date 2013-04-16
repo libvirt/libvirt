@@ -39,7 +39,6 @@
 #include "viralloc.h"
 #include "viruuid.h"
 #include "vircommand.h"
-#include "libxl.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
 #include "xen_xm.h"

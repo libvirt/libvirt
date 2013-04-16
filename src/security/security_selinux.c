@@ -43,7 +43,6 @@
 #include "virfile.h"
 #include "virhash.h"
 #include "virrandom.h"
-#include "virutil.h"
 #include "virconf.h"
 #include "virtpm.h"
 

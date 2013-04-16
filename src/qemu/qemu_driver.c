@@ -38,7 +38,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <paths.h>
-#include <stdio.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/un.h>

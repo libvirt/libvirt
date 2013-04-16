@@ -39,7 +39,6 @@
 #include <signal.h>
 #include <paths.h>
 #include <pwd.h>
-#include <stdio.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>

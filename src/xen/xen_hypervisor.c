@@ -33,7 +33,6 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <limits.h>
-#include <stdint.h>
 #include <regex.h>
 #include <errno.h>
 

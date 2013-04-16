@@ -41,7 +41,6 @@
 #include <fcntl.h>
 #include <paths.h>
 #include <pwd.h>
-#include <stdio.h>
 #include <sys/wait.h>
 
 #include "virerror.h"

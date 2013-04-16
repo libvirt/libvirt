@@ -51,7 +51,6 @@
 #include "virnetlink.h"
 #include "virnetserver.h"
 #include "remote.h"
-#include "remote_driver.h"
 #include "virhook.h"
 #include "viraudit.h"
 #include "locking/lock_manager.h"

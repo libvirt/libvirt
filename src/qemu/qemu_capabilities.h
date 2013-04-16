@@ -27,7 +27,6 @@
 # include "virobject.h"
 # include "capabilities.h"
 # include "vircommand.h"
-# include "virobject.h"
 # include "qemu_monitor.h"
 
 /* Internal flags to keep track of qemu command line capabilities */

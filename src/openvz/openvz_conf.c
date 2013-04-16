@@ -36,7 +36,6 @@
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
