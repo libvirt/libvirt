@@ -180,6 +180,7 @@ networkRemoveInactive(struct network_driver *driver,
     char *radvdconfigfile = NULL;
     char *configfile = NULL;
     char *radvdpidbase = NULL;
+    char *statusfile = NULL;
     dnsmasqContext *dctx = NULL;
     virNetworkDefPtr def = virNetworkObjGetPersistentDef(net);
 
@@ -201,6 +202,9 @@ networkRemoveInactive(struct network_driver *driver,
     if (!(configfile = networkDnsmasqConfigFileName(def->name)))
         goto no_memory;
 
+    if (!(statusfile = virNetworkConfigFile(NETWORK_STATE_DIR, def->name)))
+        goto no_memory;
+
     /* dnsmasq */
     dnsmasqDelete(dctx);
     unlink(leasefile);
@@ -209,6 +213,9 @@ networkRemoveInactive(struct network_driver *driver,
     /* radvd */
     unlink(radvdconfigfile);
     virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+
+    /* remove status file */
+    unlink(statusfile);
 
     /* remove the network definition */
     virNetworkRemoveInactive(&driver->networks, net);
@@ -220,6 +227,7 @@ cleanup:
     VIR_FREE(configfile);
     VIR_FREE(radvdconfigfile);
     VIR_FREE(radvdpidbase);
+    VIR_FREE(statusfile);
     dnsmasqContextFree(dctx);
     return ret;
 
@@ -253,32 +261,14 @@ networkBridgeDummyNicName(const char *brname)
 }
 
 static void
-networkFindActiveConfigs(struct network_driver *driver) {
+networkFindActiveConfigs(struct network_driver *driver)
+{
     unsigned int i;
 
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
-        char *config;
 
         virNetworkObjLock(obj);
-
-        if ((config = virNetworkConfigFile(NETWORK_STATE_DIR,
-                                           obj->def->name)) == NULL) {
-            virNetworkObjUnlock(obj);
-            continue;
-        }
-
-        if (access(config, R_OK) < 0) {
-            VIR_FREE(config);
-            virNetworkObjUnlock(obj);
-            continue;
-        }
-
-        /* Try and load the live config */
-        if (virNetworkObjUpdateParseFile(config, obj) < 0)
-            VIR_WARN("Unable to update config of '%s' network",
-                     obj->def->name);
-        VIR_FREE(config);
 
         /* If bridge exists, then mark it active */
         if (obj->def->bridge &&
@@ -305,6 +295,21 @@ networkFindActiveConfigs(struct network_driver *driver) {
 
     cleanup:
         virNetworkObjUnlock(obj);
+    }
+
+    /* remove inactive transient networks */
+    i = 0;
+    while (i < driver->networks.count) {
+        virNetworkObjPtr obj = driver->networks.objs[i];
+        virNetworkObjLock(obj);
+
+        if (!obj->persistent && !obj->active) {
+            networkRemoveInactive(driver, obj);
+            continue;
+        }
+
+        virNetworkObjUnlock(obj);
+        i++;
     }
 }
 
@@ -415,6 +420,10 @@ networkStartup(bool privileged,
     /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
     driverState->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
+    if (virNetworkLoadAllState(&driverState->networks,
+                               NETWORK_STATE_DIR) < 0)
+        goto error;
+
     if (virNetworkLoadAllConfigs(&driverState->networks,
                                  driverState->networkConfigDir,
                                  driverState->networkAutostartDir) < 0)
@@ -479,6 +488,8 @@ networkReload(void) {
         return 0;
 
     networkDriverLock(driverState);
+    virNetworkLoadAllState(&driverState->networks,
+                           NETWORK_STATE_DIR);
     virNetworkLoadAllConfigs(&driverState->networks,
                              driverState->networkConfigDir,
                              driverState->networkAutostartDir);

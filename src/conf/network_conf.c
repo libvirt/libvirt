@@ -1967,81 +1967,6 @@ cleanup:
     return def;
 }
 
-int
-virNetworkObjUpdateParseFile(const char *filename,
-                             virNetworkObjPtr net)
-{
-    int ret = -1;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr node = NULL;
-    virNetworkDefPtr tmp = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-
-    xml = virXMLParse(filename, NULL, _("(network status)"));
-    if (!xml)
-        return -1;
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    node = xmlDocGetRootElement(xml);
-    if (xmlStrEqual(node->name, BAD_CAST "networkstatus")) {
-        /* Newer network status file. Contains useful
-         * info which are not to be found in bare config XML */
-        char *class_id = NULL;
-        char *floor_sum = NULL;
-
-        ctxt->node = node;
-        class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt);
-        if (class_id) {
-            virBitmapFree(net->class_id);
-            if (virBitmapParse(class_id, 0,
-                               &net->class_id, CLASS_ID_BITMAP_SIZE) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Malformed 'class_id' attribute: %s"),
-                               class_id);
-                VIR_FREE(class_id);
-                goto cleanup;
-            }
-        }
-        VIR_FREE(class_id);
-
-        floor_sum = virXPathString("string(./floor[1]/@sum)", ctxt);
-        if (floor_sum &&
-            virStrToLong_ull(floor_sum, NULL, 10, &net->floor_sum) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Malformed 'floor_sum' attribute: %s"),
-                           floor_sum);
-            VIR_FREE(floor_sum);
-        }
-        VIR_FREE(floor_sum);
-    }
-
-    node = virXPathNode("//network", ctxt);
-    if (!node) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not find any 'network' element"));
-        goto cleanup;
-    }
-
-    ctxt->node = node;
-    tmp = virNetworkDefParseXML(ctxt);
-
-    if (tmp) {
-        net->newDef = net->def;
-        net->def = tmp;
-    }
-
-    ret = 0;
-
-cleanup:
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
-    return ret;
-}
 
 static int
 virNetworkDNSDefFormat(virBufferPtr buf,
@@ -2554,6 +2479,104 @@ cleanup:
     return ret;
 }
 
+virNetworkObjPtr
+virNetworkLoadState(virNetworkObjListPtr nets,
+                    const char *stateDir,
+                    const char *name)
+{
+    char *configFile = NULL;
+    virNetworkDefPtr def = NULL;
+    virNetworkObjPtr net = NULL;
+    xmlDocPtr xml = NULL;
+    xmlNodePtr node = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virBitmapPtr class_id_map = NULL;
+    unsigned long long floor_sum_val = 0;
+
+
+    if ((configFile = virNetworkConfigFile(stateDir, name)) == NULL)
+        goto error;
+
+    if (!(xml = virXMLParseCtxt(configFile, NULL, _("(network status)"), &ctxt)))
+        goto error;
+
+    if (!(node = virXPathNode("//network", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find any 'network' element in status file"));
+        goto error;
+    }
+
+    /* parse the definition first */
+    ctxt->node = node;
+    if (!(def = virNetworkDefParseXML(ctxt)))
+        goto error;
+
+    if (!STREQ(name, def->name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Network config filename '%s'"
+                         " does not match network name '%s'"),
+                       configFile, def->name);
+        goto error;
+    }
+
+    /* now parse possible status data */
+    node = xmlDocGetRootElement(xml);
+    if (xmlStrEqual(node->name, BAD_CAST "networkstatus")) {
+        /* Newer network status file. Contains useful
+         * info which are not to be found in bare config XML */
+        char *class_id = NULL;
+        char *floor_sum = NULL;
+
+        ctxt->node = node;
+        if ((class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt))) {
+            if (virBitmapParse(class_id, 0, &class_id_map,
+                               CLASS_ID_BITMAP_SIZE) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Malformed 'class_id' attribute: %s"),
+                               class_id);
+                VIR_FREE(class_id);
+                goto error;
+            }
+        }
+        VIR_FREE(class_id);
+
+        floor_sum = virXPathString("string(./floor[1]/@sum)", ctxt);
+        if (floor_sum &&
+            virStrToLong_ull(floor_sum, NULL, 10, &floor_sum_val) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Malformed 'floor_sum' attribute: %s"),
+                           floor_sum);
+            VIR_FREE(floor_sum);
+        }
+        VIR_FREE(floor_sum);
+    }
+
+    /* create the object */
+    if (!(net = virNetworkAssignDef(nets, def, true)))
+        goto error;
+    /* do not put any "goto error" below this comment */
+
+    /* assign status data stored in the network object */
+    if (class_id_map) {
+        virBitmapFree(net->class_id);
+        net->class_id = class_id_map;
+    }
+
+    if (floor_sum_val > 0)
+        net->floor_sum = floor_sum_val;
+
+cleanup:
+    VIR_FREE(configFile);
+    xmlFreeDoc(xml);
+    xmlXPathFreeContext(ctxt);
+    return net;
+
+error:
+    virBitmapFree(class_id_map);
+    virNetworkDefFree(def);
+    goto cleanup;
+}
+
 virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *configDir,
                                       const char *autostartDir,
@@ -2611,6 +2634,40 @@ error:
     virNetworkDefFree(def);
     return NULL;
 }
+
+
+int
+virNetworkLoadAllState(virNetworkObjListPtr nets,
+                       const char *stateDir)
+{
+    DIR *dir;
+    struct dirent *entry;
+
+    if (!(dir = opendir(stateDir))) {
+        if (errno == ENOENT)
+            return 0;
+
+        virReportSystemError(errno, _("Failed to open dir '%s'"), stateDir);
+        return -1;
+    }
+
+    while ((entry = readdir(dir))) {
+        virNetworkObjPtr net;
+
+        if (entry->d_name[0] == '.')
+            continue;
+
+        if (!virFileStripSuffix(entry->d_name, ".xml"))
+            continue;
+
+        if ((net = virNetworkLoadState(nets, stateDir, entry->d_name)))
+            virNetworkObjUnlock(net);
+    }
+
+    closedir(dir);
+    return 0;
+}
+
 
 int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                              const char *configDir,

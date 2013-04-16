@@ -280,9 +280,6 @@ virNetworkDefPtr virNetworkDefParseString(const char *xmlStr);
 virNetworkDefPtr virNetworkDefParseFile(const char *filename);
 virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root);
-int virNetworkObjUpdateParseFile(const char *filename,
-                                 virNetworkObjPtr net);
-
 char *virNetworkDefFormat(const virNetworkDefPtr def, unsigned int flags);
 
 static inline const char *
@@ -318,9 +315,16 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *autostartDir,
                                       const char *file);
 
+virNetworkObjPtr virNetworkLoadState(virNetworkObjListPtr nets,
+                                     const char *stateDir,
+                                     const char *name);
+
 int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                              const char *configDir,
                              const char *autostartDir);
+
+int virNetworkLoadAllState(virNetworkObjListPtr nets,
+                           const char *stateDir);
 
 int virNetworkDeleteConfig(const char *configDir,
                            const char *autostartDir,
