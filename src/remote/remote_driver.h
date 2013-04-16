@@ -24,8 +24,7 @@
 #ifndef __VIR_REMOTE_INTERNAL_H__
 # define __VIR_REMOTE_INTERNAL_H__
 
-# include "libvirt/virterror.h"
-
+# include "internal.h"
 # include "configmake.h"
 
 int remoteRegister (void);
