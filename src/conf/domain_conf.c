@@ -2251,8 +2251,8 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
     if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
         if (!dom->persistent) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot change persistent config of a "
-                             "transient domain"));
+                           _("transient domains do not have any "
+                             "persistent config"));
             goto cleanup;
         }
         if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom))) {
