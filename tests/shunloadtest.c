@@ -40,6 +40,8 @@
 
 #include <config.h>
 
+#include "testutils.h"
+
 #ifdef linux
 
 # include <dlfcn.h>
@@ -50,7 +52,6 @@
 # include <signal.h>
 
 # include "internal.h"
-# include "testutils.h"
 
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -143,7 +144,6 @@ int main(int argc ATTRIBUTE_UNUSED, char **argv)
 }
 
 #else
-# include "testutils.h"
 
 int main(void)
 {

@@ -8,10 +8,11 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
+#include "testutils.h"
+
 #ifdef WITH_LXC
 
 # include "internal.h"
-# include "testutils.h"
 # include "lxc/lxc_conf.h"
 # include "testutilslxc.h"
 
@@ -136,7 +137,6 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
-# include "testutils.h"
 
 int
 main(void)

@@ -1,11 +1,12 @@
 #include <config.h>
 
+#include "testutils.h"
+
 #ifdef WITH_QEMU
 
 # include <stdio.h>
 # include <stdlib.h>
 
-# include "testutils.h"
 # include "qemu/qemu_capabilities.h"
 # include "viralloc.h"
 
@@ -1034,7 +1035,6 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
-# include "testutils.h"
 
 int main(void)
 {

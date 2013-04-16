@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include "testutils.h"
+
 #ifdef WITH_OPENVZ
 
 # include <stdio.h>
@@ -8,7 +10,6 @@
 
 # include "internal.h"
 # include "viralloc.h"
-# include "testutils.h"
 # include "virutil.h"
 # include "openvz/openvz_conf.h"
 
@@ -160,7 +161,6 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
-# include "testutils.h"
 
 int main(void)
 {

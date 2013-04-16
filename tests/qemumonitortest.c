@@ -5,11 +5,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "testutils.h"
+
 #ifdef WITH_QEMU
 
 # include "internal.h"
 # include "viralloc.h"
-# include "testutils.h"
 # include "virutil.h"
 # include "qemu/qemu_monitor.h"
 
@@ -108,7 +109,6 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
-# include "testutils.h"
 
 int main(void)
 {

@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include "testutils.h"
+
 #ifdef WITH_VMX
 
 # include <stdio.h>
@@ -8,7 +10,6 @@
 
 # include "internal.h"
 # include "viralloc.h"
-# include "testutils.h"
 # include "vmx/vmx.h"
 
 static virCapsPtr caps;
@@ -311,7 +312,6 @@ mymain(void)
 VIRT_TEST_MAIN(mymain)
 
 #else
-# include "testutils.h"
 
 int main(void)
 {
