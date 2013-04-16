@@ -220,8 +220,6 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "machine-usb-opt",
               "tpm-passthrough",
               "tpm-tis",
-
-              "query-tpm-models", /* 140 */
     );
 
 struct _virQEMUCaps {
@@ -1964,8 +1962,6 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_ADD_FD);
         else if (STREQ(name, "nbd-server-start"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_NBD_SERVER);
-        else if (STREQ(name, "query-tpm-models"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_TPM_MODELS);
         VIR_FREE(name);
     }
     VIR_FREE(commands);
@@ -2148,9 +2144,6 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
 {
     int nentries, i;
     char **entries = NULL;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_TPM_MODELS))
-        return 0;
 
     if ((nentries = qemuMonitorGetTPMModels(mon, &entries)) < 0)
         return -1;
