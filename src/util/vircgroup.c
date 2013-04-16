@@ -1296,13 +1296,13 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
                                 virCgroupPtr *group)
 {
     int rc;
-    char *dirname = NULL;
+    char *grpname = NULL;
 
-    if (virAsprintf(&dirname, "%s.%s.libvirt",
+    if (virAsprintf(&grpname, "%s.%s.libvirt",
                     name, driver) < 0)
         return -ENOMEM;
 
-    rc = virCgroupNew(dirname, partition, -1, group);
+    rc = virCgroupNew(grpname, partition, -1, group);
 
     if (rc == 0) {
         /*
@@ -1322,7 +1322,7 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
         }
     }
 
-    VIR_FREE(dirname);
+    VIR_FREE(grpname);
     return rc;
 }
 #else
