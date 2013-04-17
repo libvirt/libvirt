@@ -25,7 +25,7 @@
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='sdb' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-      <wwn>5000c50015ea71ad</wwn>
+      <wwn>0x5000c50015ea71ad</wwn>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='scsi' index='0' model='virtio-scsi'/>

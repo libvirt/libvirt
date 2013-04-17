@@ -3228,12 +3228,18 @@ bool virIsDevMapperDevice(const char *dev_name ATTRIBUTE_UNUSED)
 bool
 virValidateWWN(const char *wwn) {
     int i;
+    const char *p = wwn;
 
-    for (i = 0; wwn[i]; i++)
-        if (!c_isxdigit(wwn[i]))
+    if (STRPREFIX(wwn, "0x")) {
+        p += 2;
+    }
+
+    for (i = 0; p[i]; i++) {
+        if (!c_isxdigit(p[i]))
             break;
+    }
 
-    if (i != 16 || wwn[i]) {
+    if (i != 16 || p[i]) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed wwn: %s"));
         return false;

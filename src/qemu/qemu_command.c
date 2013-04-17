@@ -3358,8 +3358,12 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                               disk->blockio.physical_block_size);
     }
 
-    if (disk->wwn)
-        virBufferAsprintf(&opt, ",wwn=%s", disk->wwn);
+    if (disk->wwn) {
+        if (STRPREFIX(disk->wwn, "0x"))
+            virBufferAsprintf(&opt, ",wwn=%s", disk->wwn);
+        else
+            virBufferAsprintf(&opt, ",wwn=0x%s", disk->wwn);
+    }
 
     if (disk->vendor)
         virBufferAsprintf(&opt, ",vendor=%s", disk->vendor);
