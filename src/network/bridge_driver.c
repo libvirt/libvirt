@@ -3192,6 +3192,7 @@ networkUndefine(virNetworkPtr net) {
 
     /* make the network transient */
     network->persistent = 0;
+    network->autostart = 0;
     virNetworkDefFree(network->newDef);
     network->newDef = NULL;
 
