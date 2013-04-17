@@ -36,6 +36,7 @@
  * 'REMOTE_'.  This makes names quite long.
  */
 
+%#include <libvirt/libvirt.h>
 %#include "internal.h"
 %#include <arpa/inet.h>
 
