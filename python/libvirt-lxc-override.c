@@ -17,8 +17,8 @@
 #undef HAVE_PTHREAD_H
 
 #include <Python.h>
-#include "libvirt/libvirt-lxc.h"
-#include "libvirt/virterror.h"
+#include <libvirt/libvirt-lxc.h>
+#include <libvirt/virterror.h>
 #include "typewrappers.h"
 #include "libvirt-lxc.h"
 #include "viralloc.h"

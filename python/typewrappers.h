@@ -8,8 +8,8 @@
 
 #include <Python.h>
 #include <stdbool.h>
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
+#include <libvirt/libvirt.h>
+#include <libvirt/virterror.h>
 
 #ifdef __GNUC__
 # ifdef ATTRIBUTE_UNUSED

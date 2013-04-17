@@ -26,11 +26,10 @@
  */
 
 #include <config.h>
-#include "internal.h"
 
-#include <libvirt/libvirt.h>
-#include <libvirt/virterror.h>
 #include <stdlib.h>
+
+#include "internal.h"
 
 static void shunloadError(void *userData ATTRIBUTE_UNUSED,
                           virErrorPtr error ATTRIBUTE_UNUSED)

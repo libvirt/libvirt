@@ -747,9 +747,17 @@ sc_prohibit_duplicate_header:
 	fi;
 
 # Don't include "libvirt/*.h" in "" form.
-sc_prohibit_include_public_headers:
+sc_prohibit_include_public_headers_quote:
 	@prohibit='# *include *"libvirt/.*\.h"'				\
-	in_vc_files='\.[chx]$$'						\
+	in_vc_files='\.[ch]$$'						\
+	halt='Do not include libvirt/*.h in internal source'		\
+	  $(_sc_search_regexp)
+
+# Don't include "libvirt/*.h" in <> form. Except for external tools,
+# e.g. Python binding, examples and tools subdirectories.
+sc_prohibit_include_public_headers_brackets:
+	@prohibit='# *include *<libvirt/.*\.h>'				\
+	in_vc_files='\.[ch]$$'						\
 	halt='Do not include libvirt/*.h in internal source'		\
 	  $(_sc_search_regexp)
 
@@ -907,5 +915,8 @@ exclude_file_name_regexp--sc_correct_id_types = \
 
 exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
 
-exclude_file_name_regexp--sc_prohibit_include_public_headers = \
-  ^(src/internal\.h$$|python/|tools/|examples/|include/libvirt/libvirt-(qemu|lxc)\.h$$)
+exclude_file_name_regexp--sc_prohibit_include_public_headers_quote = \
+  ^src/internal\.h$$
+
+exclude_file_name_regexp--sc_prohibit_include_public_headers_brackets = \
+  ^(python/|tools/|examples/|include/libvirt/(virterror|libvirt-(qemu|lxc))\.h$$)

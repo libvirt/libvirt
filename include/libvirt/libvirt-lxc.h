@@ -26,7 +26,7 @@
 #ifndef __VIR_LXC_H__
 # define __VIR_LXC_H__
 
-# include "libvirt/libvirt.h"
+# include <libvirt/libvirt.h>
 
 # ifdef __cplusplus
 extern "C" {

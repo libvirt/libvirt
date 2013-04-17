@@ -20,8 +20,8 @@
 #define VIR_ENUM_SENTINELS
 
 #include <Python.h>
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
+#include <libvirt/libvirt.h>
+#include <libvirt/virterror.h>
 #include "typewrappers.h"
 #include "libvirt.h"
 #include "viralloc.h"
