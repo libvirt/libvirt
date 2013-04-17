@@ -746,6 +746,13 @@ sc_prohibit_duplicate_header:
 	  { echo "$(ME)": avoid duplicate headers >&2; exit 1; }	\
 	fi;
 
+# Don't include "libvirt/*.h" in "" form.
+sc_prohibit_include_public_headers:
+	@prohibit='# *include *"libvirt/.*\.h"'				\
+	in_vc_files='\.[chx]$$'						\
+	halt='Do not include libvirt/*.h in internal source'		\
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -899,3 +906,6 @@ exclude_file_name_regexp--sc_correct_id_types = \
   (^src/locking/lock_protocol.x$$)
 
 exclude_file_name_regexp--sc_m4_quote_check = m4/virt-lib.m4
+
+exclude_file_name_regexp--sc_prohibit_include_public_headers = \
+  ^(src/internal\.h$$|python/|tools/|examples/|include/libvirt/libvirt-(qemu|lxc)\.h$$)

@@ -38,8 +38,6 @@
 #include "virutil.h"
 #include "stream.h"
 #include "viruuid.h"
-#include "libvirt/libvirt-qemu.h"
-#include "libvirt/libvirt-lxc.h"
 #include "vircommand.h"
 #include "intprops.h"
 #include "virnetserverservice.h"

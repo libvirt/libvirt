@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "datatypes.h"
-#include "libvirt/libvirt-qemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
