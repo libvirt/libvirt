@@ -82,10 +82,11 @@ sub name_to_TypeName {
 
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
-my ($name, $ProcName, $id, $flags, %calls, @calls);
+my ($name, $ProcName, $id, $flags, %calls, @calls, %opts);
 
 my $collect_args_members = 0;
 my $collect_ret_members = 0;
+my $collect_opts = 0;
 my $last_name;
 
 open PROTOCOL, "<$protocol" or die "cannot open $protocol: $!";
@@ -103,6 +104,19 @@ while (<PROTOCOL>) {
         } elsif ($_ =~ m/^\s*(.*\S)\s*$/) {
             push(@{$calls{$name}->{ret_members}}, $1);
         }
+    } elsif ($collect_opts) {
+        if (m,^\s*\*\s*\@(\w+)\s*:\s*(\w+)\s*$,) {
+            $opts{$1} = $2;
+        } elsif (m,^\s*\*/\s*$,) {
+            $collect_opts = 0;
+        } elsif (m,^\s*\*\s*$,) {
+            # pass
+        } else {
+            die "cannot parse $_";
+        }
+    } elsif (m,/\*\*,) {
+        %opts = ();
+        $collect_opts = 1;
     } elsif (/^struct (${structprefix}_(.*)_args)/ ||
              /^struct (${structprefix}(.*)Args)/) {
         my $structname = $1;
@@ -171,11 +185,10 @@ while (<PROTOCOL>) {
 
         $collect_args_members = 0;
         $collect_ret_members = 0;
-    } elsif (/^\s*(${procprefix}_PROC_(.*?))\s*=\s*(\d+)\s*,?(.*)$/) {
+    } elsif (/^\s*(${procprefix}_PROC_(.*?))\s*=\s*(\d+)\s*,?\s*$/) {
         my $constname = $1;
         $name = $2;
         $id = $3;
-        $flags = $4;
         $ProcName = name_to_ProcName ($name);
         $name = lc $name;
         $name =~ s/_//g;
@@ -195,41 +208,45 @@ while (<PROTOCOL>) {
         $calls{$name}->{constname} = $constname;
 
         if ($opt_b or $opt_k) {
-            if (!($flags =~ m/^\s*\/\*\s*(\S+)\s+(\S+)\s*(\|.*)?\s+(priority:(\S+))?\s*\*\/\s*$/)) {
-                die "invalid generator flags '$flags' for $constname"
+            if (!exists $opts{generate}) {
+                die "'\@generate' annotation missing for $constname";
             }
 
-            my $genmode = $opt_b ? $1 : $2;
-            my $genflags = $3;
-            my $priority = defined $5 ? $5 : "low";
+            if ($opts{generate} !~ /^(both|server|client|none)$/) {
+                die "'\@generate' annotation value '$opts{generate}' invalid";
+            }
 
-            if ($genmode eq "autogen") {
+            if ($opts{generate} eq "both") {
                 push(@autogen, $ProcName);
-            } elsif ($genmode eq "skipgen") {
-                # ignore it
-            } else {
-                die "invalid generator flags for ${procprefix}_PROC_${name}"
+            } elsif ($opt_b && ($opts{generate} eq "server")) {
+                push(@autogen, $ProcName);
+            } elsif (!$opt_b && ($opts{generate} eq "client")) {
+                push(@autogen, $ProcName);
             }
 
-            if (defined $genflags and $genflags ne "") {
-                if ($genflags =~ m/^\|\s*(read|write)stream@(\d+)\s*$/) {
-                    $calls{$name}->{streamflag} = $1;
-                    $calls{$name}->{streamoffset} = int($2);
-                } else {
-                    die "invalid generator flags for ${procprefix}_PROC_${name}"
-                }
+            if (exists $opts{readstream}) {
+                $calls{$name}->{streamflag} = "read";
+                $calls{$name}->{streamoffset} = int($opts{readstream});
+            } elsif (exists $opts{writestream}) {
+                $calls{$name}->{streamflag} = "write";
+                $calls{$name}->{streamoffset} = int($opts{writestream});
             } else {
                 $calls{$name}->{streamflag} = "none";
             }
 
+
             # for now, we distinguish only two levels of prioroty:
             # low (0) and high (1)
-            if ($priority eq "high") {
-                $calls{$name}->{priority} = 1;
-            } elsif ($priority eq "low") {
-                $calls{$name}->{priority} = 0;
+            if (exists $opts{priority}) {
+                if ($opts{priority} eq "high") {
+                    $calls{$name}->{priority} = 1;
+                } elsif ($opts{priority} eq "low") {
+                    $calls{$name}->{priority} = 0;
+                } else {
+                    die "\@priority annotation value '$opts{priority}' invalid for $constname"
+                }
             } else {
-                die "invalid priority ${priority} for ${procprefix}_PROC_${name}"
+                $calls{$name}->{priority} = 0;
             }
         }
 
