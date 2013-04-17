@@ -324,4 +324,6 @@ char *virGetFCHostNameByWWN(const char *sysfs_prefix,
 
 char *virFindFCHostCapableVport(const char *sysfs_prefix);
 
+int virCompareLimitUlong(unsigned long long a, unsigned long b);
+
 #endif /* __VIR_UTIL_H__ */

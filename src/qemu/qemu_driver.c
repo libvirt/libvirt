@@ -7103,11 +7103,11 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
     unsigned long long swap_hard_limit;
-    unsigned long long memory_hard_limit;
-    unsigned long long memory_soft_limit;
+    unsigned long long hard_limit = 0;
+    unsigned long long soft_limit = 0;
     bool set_swap_hard_limit = false;
-    bool set_memory_hard_limit = false;
-    bool set_memory_soft_limit = false;
+    bool set_hard_limit = false;
+    bool set_soft_limit = false;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
     int rc;
@@ -7157,62 +7157,63 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         set_ ## VALUE = true;
 
     VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit)
-    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_HARD_LIMIT, memory_hard_limit)
-    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SOFT_LIMIT, memory_soft_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_HARD_LIMIT, hard_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SOFT_LIMIT, soft_limit)
 
 #undef VIR_GET_LIMIT_PARAMETER
 
+    /* Swap hard limit must be greater than hard limit.
+     * Note that limit of 0 denotes unlimited */
+    if (set_swap_hard_limit || set_hard_limit) {
+        unsigned long long mem_limit = vm->def->mem.hard_limit;
+        unsigned long long swap_limit = vm->def->mem.swap_hard_limit;
 
-    /* It will fail if hard limit greater than swap hard limit anyway */
-    if (set_swap_hard_limit && set_memory_hard_limit &&
-        memory_hard_limit > swap_hard_limit) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("memory hard_limit tunable value must be lower than "
-                         "swap_hard_limit"));
-        goto cleanup;
-    }
+        if (set_swap_hard_limit)
+            swap_limit = swap_hard_limit;
 
-    if (set_swap_hard_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            if ((rc = virCgroupSetMemSwapHardLimit(priv->cgroup, swap_hard_limit)) < 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory swap_hard_limit tunable"));
-                goto cleanup;
-            }
-            vm->def->mem.swap_hard_limit = swap_hard_limit;
+        if (set_hard_limit)
+            mem_limit = hard_limit;
+
+        if (virCompareLimitUlong(mem_limit, swap_limit) > 0) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("memory hard_limit tunable value must be lower "
+                             "than swap_hard_limit"));
+            goto cleanup;
         }
-
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-            persistentDef->mem.swap_hard_limit = swap_hard_limit;
     }
 
-    if (set_memory_hard_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            if ((rc = virCgroupSetMemoryHardLimit(priv->cgroup, memory_hard_limit)) < 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory hard_limit tunable"));
-                goto cleanup;
-            }
-            vm->def->mem.hard_limit = memory_hard_limit;
-        }
-
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-            persistentDef->mem.hard_limit = memory_hard_limit;
+#define QEMU_SET_MEM_PARAMETER(FUNC, VALUE)                                     \
+    if (set_ ## VALUE) {                                                        \
+        if (flags & VIR_DOMAIN_AFFECT_LIVE) {                                   \
+            if ((rc = FUNC(priv->cgroup, VALUE)) < 0) {                         \
+                virReportSystemError(-rc, _("unable to set memory %s tunable"), \
+                                     #VALUE);                                   \
+                                                                                \
+                goto cleanup;                                                   \
+            }                                                                   \
+            vm->def->mem.VALUE = VALUE;                                         \
+        }                                                                       \
+                                                                                \
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG)                                   \
+            persistentDef->mem.VALUE = VALUE;                                   \
     }
 
-    if (set_memory_soft_limit) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            if ((rc = virCgroupSetMemorySoftLimit(priv->cgroup, memory_soft_limit)) < 0) {
-                virReportSystemError(-rc, "%s",
-                                     _("unable to set memory soft_limit tunable"));
-                goto cleanup;
-            }
-            vm->def->mem.soft_limit = memory_soft_limit;
-        }
+    /* Soft limit doesn't clash with the others */
+    QEMU_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-            persistentDef->mem.soft_limit = memory_soft_limit;
+    /* set hard limit before swap hard limit if decreasing it */
+    if (virCompareLimitUlong(vm->def->mem.hard_limit, hard_limit) > 0) {
+        QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+        /* inhibit changing the limit a second time */
+        set_hard_limit = false;
     }
+
+    QEMU_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
+
+    /* otherwise increase it after swap hard limit */
+    QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+
+#undef QEMU_SET_MEM_PARAMETER
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
         virDomainSaveConfig(cfg->configDir, persistentDef) < 0)

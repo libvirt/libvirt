@@ -1836,6 +1836,7 @@ safezero;
 virArgvToString;
 virAsprintf;
 virBuildPathInternal;
+virCompareLimitUlong;
 virDirCreate;
 virDoubleToStr;
 virEnumFromString;
