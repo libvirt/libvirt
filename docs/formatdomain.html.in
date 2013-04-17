@@ -2124,7 +2124,7 @@
     <p>
       Each controller has a mandatory attribute <code>type</code>,
       which must be one of "ide", "fdc", "scsi", "sata", "usb",
-      "ccid", or "virtio-serial", and a mandatory
+      "ccid", "virtio-serial" or "pci", and a mandatory
       attribute <code>index</code> which is the decimal integer
       describing in which order the bus controller is encountered (for
       use in <code>controller</code> attributes
@@ -2178,6 +2178,31 @@
       &lt;address type='pci' domain='0' bus='0' slot='4' function='0' multifunction='on'/&gt;
     &lt;/controller&gt;
     ...
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      PCI controllers have an optional <code>model</code> attribute with
+      possible values <code>pci-root</code> or <code>pci-bridge</code>.
+      For machine types which provide an implicit pci bus, the pci-root
+      controller with index=0 is auto-added and required to use PCI devices.
+      PCI root has no address.
+      PCI bridges are auto-added if there are too many devices to fit on
+      the one bus provided by pci-root, or a PCI bus number greater than zero
+      was specified.
+      PCI bridges can also be specified manually, but their addresses should
+      only refer to PCI buses provided by already specified PCI controllers.
+      Leaving gaps in the PCI controller indexes might lead to an invalid
+      configuration.
+      (<span class="since">since 1.0.5</span>)
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;controller type='pci' index='0' model='pci-root'/&gt;
+    &lt;controller type='pci' index='1' model='pci-bridge'&gt;
+      &lt;address type='pci' domain='0' bus='0' slot='5' function='0' multifunction=off'/&gt;
+    &lt;/controller&gt;
   &lt;/devices&gt;
   ...</pre>
 

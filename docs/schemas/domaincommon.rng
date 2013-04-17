@@ -1470,6 +1470,18 @@
               <ref name="usbmaster"/>
             </optional>
           </group>
+          <!-- pci has an optional attribute "model" -->
+          <group>
+            <attribute name="type">
+              <value>pci</value>
+            </attribute>
+            <attribute name="model">
+              <choice>
+                <value>pci-root</value>
+                <value>pci-bridge</value>
+              </choice>
+            </attribute>
+          </group>
           <!-- virtio-serial has optional "ports" and "vectors" -->
           <group>
             <attribute name="type">

@@ -301,7 +301,12 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "sata",
               "virtio-serial",
               "ccid",
-              "usb")
+              "usb",
+              "pci")
+
+VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
+              "pci-root",
+              "pci-bridge")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
@@ -5164,6 +5169,8 @@ virDomainControllerModelTypeFromString(const virDomainControllerDefPtr def,
         return virDomainControllerModelSCSITypeFromString(model);
     else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
         return virDomainControllerModelUSBTypeFromString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+        return virDomainControllerModelPCITypeFromString(model);
 
     return -1;
 }
@@ -5289,6 +5296,16 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         }
         break;
     }
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        switch (def->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+            if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("pci-root controller should not "
+                                 "have an address"));
+                goto error;
+            }
+        }
 
     default:
         break;
@@ -13554,6 +13571,8 @@ virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
         return virDomainControllerModelSCSITypeToString(model);
     else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
         return virDomainControllerModelUSBTypeToString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+        return virDomainControllerModelPCITypeToString(model);
 
     return NULL;
 }
