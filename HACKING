@@ -786,9 +786,12 @@ stick to the following general plan for all *.c source files:
   {
       ...
 
-Of particular note: *Do not* include libvirt/libvirt.h or libvirt/virterror.h.
-It is included by "internal.h" already and there are some special reasons why
-you cannot include these files explicitly.
+Of particular note: *Do not* include libvirt/libvirt.h, libvirt/virterror.h,
+libvirt/libvirt-qemu.h, or libvirt/libvirt-lxc.h. They are included by
+"internal.h" already and there are some special reasons why you cannot include
+these files explicitly. One of the special cases, "libvirt/libvirt.h" is
+included prior to "internal.h" in "remote_protocol.x", to avoid exposing
+*_LAST enum elements.
 
 
 Printf-style functions
