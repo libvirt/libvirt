@@ -223,6 +223,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "nvram",  /* 140 */
               "pci-bridge", /* 141 */
+              "vfio-pci", /* 142 */
+              "vfio-pci.bootindex", /* 143 */
     );
 
 struct _virQEMUCaps {
@@ -1352,6 +1354,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
     { "spapr-nvram", QEMU_CAPS_DEVICE_NVRAM },
     { "pci-bridge", QEMU_CAPS_DEVICE_PCI_BRIDGE },
+    { "vfio-pci", QEMU_CAPS_DEVICE_VFIO_PCI },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
@@ -1372,6 +1375,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPciAssign[] = {
     { "rombar", QEMU_CAPS_PCI_ROMBAR },
     { "configfd", QEMU_CAPS_PCI_CONFIGFD },
     { "bootindex", QEMU_CAPS_PCI_BOOTINDEX },
+};
+
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVfioPci[] = {
+    { "bootindex", QEMU_CAPS_VFIO_PCI_BOOTINDEX },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsScsiDisk[] = {
@@ -1420,6 +1427,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsPciAssign) },
     { "kvm-pci-assign", virQEMUCapsObjectPropsPciAssign,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsPciAssign) },
+    { "vfio-pci", virQEMUCapsObjectPropsVfioPci,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVfioPci) },
     { "scsi-disk", virQEMUCapsObjectPropsScsiDisk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsScsiDisk) },
     { "ide-drive", virQEMUCapsObjectPropsIDEDrive,
