@@ -722,6 +722,30 @@ sc_prohibit_exit_in_tests:
 	halt='use return, not exit(), in tests'				\
 	  $(_sc_search_regexp)
 
+# Don't include duplicate header in the source (either *.c or *.h)
+sc_prohibit_duplicate_header:
+	@fail=0; for i in $$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); do	\
+	  awk '/# *include.*\.h/ {					\
+	    match($$0, /[<"][^>"]*[">]/);				\
+	    arr[substr($$0, RSTART + 1, RLENGTH - 2)]++;		\
+	  }								\
+	  END {								\
+	    for (key in arr) {						\
+	      if (arr[key] > 1)	{					\
+		fail=1;							\
+		printf("%d %s are included\n", arr[key], key);		\
+	      }								\
+	    }								\
+	    if (fail == 1) {						\
+	      printf("duplicate header(s) in " FILENAME "\n");		\
+	      exit 1;							\
+	    }								\
+	  }' $$i || fail=1;						\
+	done;								\
+	if test $$fail -eq 1; then					\
+	  { echo "$(ME)": avoid duplicate headers >&2; exit 1; }	\
+	fi;
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
