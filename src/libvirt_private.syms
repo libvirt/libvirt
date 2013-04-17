@@ -1388,9 +1388,12 @@ virHookPresent;
 
 # util/viridentity.h
 virIdentityGetAttr;
+virIdentityGetCurrent;
+virIdentityGetSystem;
 virIdentityIsEqual;
 virIdentityNew;
 virIdentitySetAttr;
+virIdentitySetCurrent;
 
 
 # util/virinitctl.h

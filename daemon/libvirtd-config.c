@@ -379,6 +379,10 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (remoteConfigGetAuth(conf, "auth_tls", &data->auth_tls, filename) < 0)
         goto error;
 
+    if (remoteConfigGetStringList(conf, "access_drivers",
+                                  &data->access_drivers, filename) < 0)
+        goto error;
+
     GET_CONF_STR(conf, filename, unix_sock_group);
     GET_CONF_STR(conf, filename, unix_sock_ro_perms);
     GET_CONF_STR(conf, filename, unix_sock_rw_perms);

@@ -45,6 +45,8 @@ struct daemonConfig {
     int auth_tcp;
     int auth_tls;
 
+    char **access_drivers;
+
     int mdns_adv;
     char *mdns_name;
 

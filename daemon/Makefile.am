@@ -24,6 +24,7 @@ INCLUDES = \
 	-I$(top_srcdir)/src/conf \
 	-I$(top_srcdir)/src/rpc \
 	-I$(top_srcdir)/src/remote \
+	-I$(top_srcdir)/src/access \
 	$(GETTEXT_CPPFLAGS)
 
 CLEANFILES =

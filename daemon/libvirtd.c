@@ -52,8 +52,9 @@
 #include "remote.h"
 #include "virhook.h"
 #include "viraudit.h"
-#include "locking/lock_manager.h"
 #include "virstring.h"
+#include "locking/lock_manager.h"
+#include "viraccessmanager.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"
@@ -728,6 +729,26 @@ error:
 }
 
 
+static int
+daemonSetupAccessManager(struct daemonConfig *config)
+{
+    virAccessManagerPtr mgr;
+    const char *none[] = { "none", NULL };
+    const char **driver = (const char **)config->access_drivers;
+
+    if (!driver ||
+        !driver[0])
+        driver = none;
+
+    if (!(mgr = virAccessManagerNewStack(driver)))
+        return -1;
+
+    virAccessManagerSetDefault(mgr);
+    virObjectUnref(mgr);
+    return 0;
+}
+
+
 /* Display version information. */
 static void
 daemonVersion(const char *argv0)
@@ -872,6 +893,9 @@ handleSystemMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
 static void daemonRunStateInit(void *opaque)
 {
     virNetServerPtr srv = opaque;
+    virIdentityPtr sysident = virIdentityGetSystem();
+
+    virIdentitySetCurrent(sysident);
 
     /* Since driver initialization can take time inhibit daemon shutdown until
        we're done so clients get a chance to connect */
@@ -914,6 +938,8 @@ static void daemonRunStateInit(void *opaque)
 cleanup:
     daemonInhibitCallback(false, srv);
     virObjectUnref(srv);
+    virObjectUnref(sysident);
+    virIdentitySetCurrent(NULL);
 }
 
 static int daemonStateInit(virNetServerPtr srv)
@@ -1257,6 +1283,11 @@ int main(int argc, char **argv) {
 
     if (daemonSetupLogging(config, privileged, verbose, godaemon) < 0) {
         VIR_ERROR(_("Can't initialize logging"));
+        exit(EXIT_FAILURE);
+    }
+
+    if (daemonSetupAccessManager(config) < 0) {
+        VIR_ERROR(_("Can't initialize access manager"));
         exit(EXIT_FAILURE);
     }
 
