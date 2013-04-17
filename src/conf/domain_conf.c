@@ -9745,22 +9745,20 @@ virDomainLookupVcpuPin(virDomainDefPtr def,
     return NULL;
 }
 
-static int virDomainDefMaybeAddController(virDomainDefPtr def,
-                                          int type,
-                                          int idx)
+static int
+virDomainDefMaybeAddController(virDomainDefPtr def,
+                               int type,
+                               int idx,
+                               int model)
 {
-    int found = 0;
     int i;
     virDomainControllerDefPtr cont;
 
-    for (i = 0 ; (i < def->ncontrollers) && !found; i++) {
+    for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == type &&
             def->controllers[i]->idx == idx)
-            found = 1;
+            return 0;
     }
-
-    if (found)
-        return 0;
 
     if (VIR_ALLOC(cont) < 0) {
         virReportOOMError();
@@ -9769,21 +9767,17 @@ static int virDomainDefMaybeAddController(virDomainDefPtr def,
 
     cont->type = type;
     cont->idx = idx;
-    cont->model = -1;
+    cont->model = model;
 
     if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
         cont->opts.vioserial.ports = -1;
         cont->opts.vioserial.vectors = -1;
     }
 
-
-    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
+    if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
         VIR_FREE(cont);
-        virReportOOMError();
         return -1;
     }
-    def->controllers[def->ncontrollers] = cont;
-    def->ncontrollers++;
 
     return 0;
 }
@@ -10839,7 +10833,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (def->virtType == VIR_DOMAIN_VIRT_QEMU ||
         def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
         def->virtType == VIR_DOMAIN_VIRT_KVM)
-        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0)
+        if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
             goto error;
 
     /* analysis of the resource leases */
@@ -12718,7 +12712,7 @@ virDomainDefAddDiskControllersForType(virDomainDefPtr def,
     }
 
     for (i = 0 ; i <= maxController ; i++) {
-        if (virDomainDefMaybeAddController(def, controllerType, i) < 0)
+        if (virDomainDefMaybeAddController(def, controllerType, i, -1) < 0)
             return -1;
     }
 
@@ -12741,7 +12735,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
                 idx = channel->info.addr.vioserial.controller;
 
             if (virDomainDefMaybeAddController(def,
-                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx) < 0)
+                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1) < 0)
                 return -1;
         }
     }
@@ -12756,7 +12750,7 @@ virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
                 idx = console->info.addr.vioserial.controller;
 
             if (virDomainDefMaybeAddController(def,
-                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx) < 0)
+                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx, -1) < 0)
                 return -1;
         }
     }
@@ -12796,7 +12790,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
 
         if (virDomainDefMaybeAddController(def,
                                            VIR_DOMAIN_CONTROLLER_TYPE_CCID,
-                                           idx) < 0)
+                                           idx, -1) < 0)
             return -1;
     }
 
