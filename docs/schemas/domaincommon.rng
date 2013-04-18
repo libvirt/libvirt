@@ -1402,80 +1402,97 @@
   </define>
   <define name="controller">
     <element name="controller">
-      <choice>
-        <group>
-          <optional>
+      <attribute name="index">
+        <ref name="unsignedInt"/>
+      </attribute>
+      <interleave>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <choice>
+          <!-- fdc/ide/sata/ccid have only the common attributes -->
+          <group>
             <attribute name="type">
               <choice>
                 <value>fdc</value>
                 <value>ide</value>
-                <value>scsi</value>
                 <value>sata</value>
                 <value>ccid</value>
-                <value>usb</value>
               </choice>
             </attribute>
-          </optional>
-        </group>
-        <!-- virtio-serial can have 2 additional attributes -->
-        <group>
-          <attribute name="type">
-            <value>virtio-serial</value>
-          </attribute>
-          <optional>
-            <attribute name="ports">
-              <ref name="unsignedInt"/>
+          </group>
+          <!-- scsi has an optional attribute "model" -->
+          <group>
+            <attribute name="type">
+              <value>scsi</value>
             </attribute>
-          </optional>
-          <optional>
-            <attribute name="vectors">
-              <ref name="unsignedInt"/>
+            <optional>
+              <attribute name="model">
+                <choice>
+                  <value>auto</value>
+                  <value>buslogic</value>
+                  <value>lsilogic</value>
+                  <value>lsisas1068</value>
+                  <value>vmpvscsi</value>
+                  <value>ibmvscsi</value>
+                  <value>virtio-scsi</value>
+                  <value>lsisas1078</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="num_queues">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </group>
+          <!-- usb has an optional attribute "model", and optional subelement "master" -->
+          <group>
+            <attribute name="type">
+              <value>usb</value>
             </attribute>
-          </optional>
-        </group>
-      </choice>
-      <attribute name="index">
-        <ref name="unsignedInt"/>
-      </attribute>
-      <optional>
-        <attribute name="model">
-          <choice>
-            <value>auto</value>
-            <value>buslogic</value>
-            <value>lsilogic</value>
-            <value>lsisas1068</value>
-            <value>vmpvscsi</value>
-            <value>ibmvscsi</value>
-            <value>virtio-scsi</value>
-            <value>lsisas1078</value>
-            <value>piix3-uhci</value>
-            <value>piix4-uhci</value>
-            <value>ehci</value>
-            <value>ich9-ehci1</value>
-            <value>ich9-uhci1</value>
-            <value>ich9-uhci2</value>
-            <value>ich9-uhci3</value>
-            <value>vt82c686b-uhci</value>
-            <value>pci-ohci</value>
-            <value>nec-xhci</value>
-            <value>none</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="num_queues">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </optional>
-      <optional>
-        <ref name="usbmaster"/>
-      </optional>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+            <optional>
+              <attribute name="model">
+                <choice>
+                  <value>piix3-uhci</value>
+                  <value>piix4-uhci</value>
+                  <value>ehci</value>
+                  <value>ich9-ehci1</value>
+                  <value>ich9-uhci1</value>
+                  <value>ich9-uhci2</value>
+                  <value>ich9-uhci3</value>
+                  <value>vt82c686b-uhci</value>
+                  <value>pci-ohci</value>
+                  <value>nec-xhci</value>
+                  <value>none</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <ref name="usbmaster"/>
+            </optional>
+          </group>
+          <!-- virtio-serial has optional "ports" and "vectors" -->
+          <group>
+            <attribute name="type">
+              <value>virtio-serial</value>
+            </attribute>
+            <optional>
+              <attribute name="ports">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="vectors">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </interleave>
     </element>
   </define>
   <define name="filesystem">
