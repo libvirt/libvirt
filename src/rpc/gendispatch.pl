@@ -123,7 +123,7 @@ while (<PROTOCOL>) {
             push(@{$calls{$name}->{ret_members}}, $1);
         }
     } elsif ($collect_opts) {
-        if (m,^\s*\*\s*\@(\w+)\s*:\s*(\w+)\s*$,) {
+        if (m,^\s*\*\s*\@(\w+)\s*:\s*((?:\w|:|\!|\|)+)\s*$,) {
             $opts{$1} = $2;
         } elsif (m,^\s*\*/\s*$,) {
             $collect_opts = 0;

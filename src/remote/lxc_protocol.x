@@ -65,6 +65,7 @@ enum lxc_procedure {
     /**
      * @generate: none
      * @priority: low
+     * @acl: domain:open_namespace
      */
     LXC_PROC_DOMAIN_OPEN_NAMESPACE = 1
 };

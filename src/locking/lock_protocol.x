@@ -105,41 +105,49 @@ enum virLockSpaceProtocolProcedure {
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_REGISTER = 1,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_RESTRICT = 2,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_NEW = 3,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_RESOURCE = 4,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_DELETE_RESOURCE = 5,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_ACQUIRE_RESOURCE = 6,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_RELEASE_RESOURCE = 7,
 
     /**
      * @generate: none
+     * @acl: none
      */
     VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_LOCKSPACE = 8
 };

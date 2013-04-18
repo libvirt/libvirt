@@ -91,18 +91,22 @@ enum qemu_procedure {
     /**
      * @generate: none
      * @priority: low
+     * @acl: domain:write
      */
     QEMU_PROC_DOMAIN_MONITOR_COMMAND = 1,
 
     /**
      * @generate: both
      * @priority: low
+     * @acl: domain:start
+     * @acl: domain:write
      */
     QEMU_PROC_DOMAIN_ATTACH = 2,
 
     /**
      * @generate: both
      * @priority: low
+     * @acl: domain:write
      */
     QEMU_PROC_DOMAIN_AGENT_COMMAND = 3
 };
