@@ -6725,7 +6725,7 @@ static const vshCmdOptDef opts_send_key[] = {
 };
 
 static int
-get_integer_keycode(const char *key_name)
+vshKeyCodeGetInt(const char *key_name)
 {
     unsigned int val;
 
@@ -6757,7 +6757,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
         holdtime = 0;
 
     codeset = virKeycodeSetTypeFromString(codeset_option);
-    if ((int)codeset < 0) {
+    if (codeset < 0) {
         vshError(ctl, _("unknown codeset: '%s'"), codeset_option);
         goto cleanup;
     }
@@ -6768,7 +6768,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        if ((keycode = get_integer_keycode(opt->data)) <= 0) {
+        if ((keycode = vshKeyCodeGetInt(opt->data)) <= 0) {
             if ((keycode = virKeycodeValueFromString(codeset, opt->data)) <= 0) {
                 vshError(ctl, _("invalid keycode: '%s'"), opt->data);
                 goto cleanup;
