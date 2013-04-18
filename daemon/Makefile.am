@@ -63,18 +63,18 @@ QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 
 $(srcdir)/remote_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b remote REMOTE \
-	  $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl \
+	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/lxc_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(LXC_PROTOCOL)
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b lxc LXC \
-	  $(LXC_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl \
+	  --mode=server lxc LXC $(LXC_PROTOCOL) > $@
 
 $(srcdir)/qemu_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL)
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl -b qemu QEMU \
-	  $(QEMU_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl \
+	  --mode=server qemu QEMU $(QEMU_PROTOCOL) > $@
 
 if WITH_LIBVIRTD
 

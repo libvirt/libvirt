@@ -198,8 +198,8 @@ LOCK_DAEMON_SOURCES = \
 
 $(srcdir)/locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
 		$(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl \
-	    -b virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
+	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
 	    $(LOCK_PROTOCOL) > $@
 
 
@@ -299,18 +299,18 @@ REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL) $(LXC_PROTOCOL)
 
 $(srcdir)/remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k remote REMOTE $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  remote REMOTE $(REMOTE_PROTOCOL) > $@
 
 $(srcdir)/remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k lxc LXC $(LXC_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  lxc LXC $(LXC_PROTOCOL) > $@
 
 $(srcdir)/remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k qemu QEMU $(QEMU_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  qemu QEMU $(QEMU_PROTOCOL) > $@
 
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
@@ -469,13 +469,13 @@ LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 
 $(srcdir)/lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_MONITOR_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -k virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
 
 $(srcdir)/lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl \
-	  -b virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
+	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > $@
 
 EXTRA_DIST += \
 	$(LXC_MONITOR_PROTOCOL) \

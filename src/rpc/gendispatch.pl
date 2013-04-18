@@ -17,13 +17,15 @@
 
 use strict;
 
-use Getopt::Std;
+use Getopt::Long;
 
-# Command line options.
-# -k - client bodies
-# -b - server bodies
-our ($opt_p, $opt_t, $opt_a, $opt_r, $opt_d, $opt_b, $opt_k);
-getopts ('ptardbk');
+my $mode = "debug";
+my $res = GetOptions("mode=s" => \$mode);
+
+die "cannot parse command line options" unless $res;
+
+die "unknown mode '$mode', expecting 'client', 'server' or 'debug'"
+    unless $mode =~ /^(client|server|debug)$/;
 
 my $structprefix = shift or die "missing struct prefix argument";
 my $procprefix = shift or die "missing procedure prefix argument";
@@ -159,7 +161,7 @@ while (<PROTOCOL>) {
             }
         }
 
-        if ($flags ne "" and ($opt_b or $opt_k)) {
+        if ($flags ne "") {
             if (!($flags =~ m/^\s*\/\*\s*insert@(\d+)\s*\*\/\s*$/)) {
                 die "invalid generator flags for $calls{$name}->{ret}";
             }
@@ -207,47 +209,45 @@ while (<PROTOCOL>) {
         }
         $calls{$name}->{constname} = $constname;
 
-        if ($opt_b or $opt_k) {
-            if (!exists $opts{generate}) {
-                die "'\@generate' annotation missing for $constname";
-            }
+        if (!exists $opts{generate}) {
+            die "'\@generate' annotation missing for $constname";
+        }
 
-            if ($opts{generate} !~ /^(both|server|client|none)$/) {
-                die "'\@generate' annotation value '$opts{generate}' invalid";
-            }
+        if ($opts{generate} !~ /^(both|server|client|none)$/) {
+            die "'\@generate' annotation value '$opts{generate}' invalid";
+        }
 
-            if ($opts{generate} eq "both") {
-                push(@autogen, $ProcName);
-            } elsif ($opt_b && ($opts{generate} eq "server")) {
-                push(@autogen, $ProcName);
-            } elsif (!$opt_b && ($opts{generate} eq "client")) {
-                push(@autogen, $ProcName);
-            }
+        if ($opts{generate} eq "both") {
+            push(@autogen, $ProcName);
+        } elsif ($mode eq "server" && ($opts{generate} eq "server")) {
+            push(@autogen, $ProcName);
+        } elsif ($mode eq "client" && ($opts{generate} eq "client")) {
+            push(@autogen, $ProcName);
+        }
 
-            if (exists $opts{readstream}) {
-                $calls{$name}->{streamflag} = "read";
-                $calls{$name}->{streamoffset} = int($opts{readstream});
-            } elsif (exists $opts{writestream}) {
-                $calls{$name}->{streamflag} = "write";
-                $calls{$name}->{streamoffset} = int($opts{writestream});
-            } else {
-                $calls{$name}->{streamflag} = "none";
-            }
+        if (exists $opts{readstream}) {
+            $calls{$name}->{streamflag} = "read";
+            $calls{$name}->{streamoffset} = int($opts{readstream});
+        } elsif (exists $opts{writestream}) {
+            $calls{$name}->{streamflag} = "write";
+            $calls{$name}->{streamoffset} = int($opts{writestream});
+        } else {
+            $calls{$name}->{streamflag} = "none";
+        }
 
 
-            # for now, we distinguish only two levels of prioroty:
-            # low (0) and high (1)
-            if (exists $opts{priority}) {
-                if ($opts{priority} eq "high") {
-                    $calls{$name}->{priority} = 1;
-                } elsif ($opts{priority} eq "low") {
-                    $calls{$name}->{priority} = 0;
-                } else {
-                    die "\@priority annotation value '$opts{priority}' invalid for $constname"
-                }
-            } else {
+        # for now, we distinguish only two levels of priority:
+        # low (0) and high (1)
+        if (exists $opts{priority}) {
+            if ($opts{priority} eq "high") {
+                $calls{$name}->{priority} = 1;
+            } elsif ($opts{priority} eq "low") {
                 $calls{$name}->{priority} = 0;
+            } else {
+                die "\@priority annotation value '$opts{priority}' invalid for $constname"
             }
+        } else {
+            $calls{$name}->{priority} = 0;
         }
 
         $calls[$id] = $calls{$name};
@@ -327,12 +327,8 @@ print <<__EOF__;
  */
 __EOF__
 
-if (!$opt_b and !$opt_k) {
-    print "\n";
-}
-
 # Debugging.
-if ($opt_d) {
+if ($mode eq "debug") {
     my @keys = sort (keys %calls);
     foreach (@keys) {
         print "$_:\n";
@@ -343,7 +339,7 @@ if ($opt_d) {
 }
 
 # Bodies for dispatch functions ("remote_dispatch_bodies.h").
-elsif ($opt_b) {
+elsif ($mode eq "server") {
     my %generate = map { $_ => 1 } @autogen;
     my @keys = sort (keys %calls);
 
@@ -1050,7 +1046,7 @@ elsif ($opt_b) {
 }
 
 # Bodies for client functions ("remote_client_bodies.h").
-elsif ($opt_k) {
+elsif ($mode eq "client") {
     my %generate = map { $_ => 1 } @autogen;
     my @keys = sort (keys %calls);
 
