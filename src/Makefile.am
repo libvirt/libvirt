@@ -789,6 +789,15 @@ SECURITY_DRIVER_SELINUX_SOURCES =				\
 SECURITY_DRIVER_APPARMOR_SOURCES =				\
 		security/security_apparmor.h security/security_apparmor.c
 
+ACCESS_DRIVER_GENERATED = \
+		access/viraccessapicheck.h access/viraccessapicheck.c \
+		access/viraccessapicheckqemu.h access/viraccessapicheckqemu.c \
+		access/viraccessapichecklxc.h access/viraccessapichecklxc.c
+
+ACCESS_DRIVER_SYMFILES = \
+		libvirt_access.syms \
+		libvirt_access_qemu.syms \
+		libvirt_access_lxc.syms
 
 ACCESS_DRIVER_SOURCES = \
 		access/viraccessperm.h access/viraccessperm.c \
@@ -1390,7 +1399,7 @@ libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
 libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
 endif
 
-libvirt_driver_access_la_SOURCES = $(ACCESS_DRIVER_SOURCES)
+libvirt_driver_access_la_SOURCES = $(ACCESS_DRIVER_SOURCES) $(ACCESS_DRIVER_GENERATED)
 noinst_LTLIBRARIES += libvirt_driver_access.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_access.la
 libvirt_driver_access_la_CFLAGS = \
@@ -1416,6 +1425,50 @@ else
 EXTRA_DIST += $(ACCESS_DRIVER_POLKIT_SOURCES)
 endif
 
+
+USED_SYM_FILES += $(ACCESS_DRIVER_SYMFILES)
+BUILT_SOURCES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_SYMFILES)
+CLEANFILES += $(ACCESS_DRIVER_GENERATED) $(ACCESS_DRIVER_SYMFILES)
+
+libvirt_access.syms: $(srcdir)/rpc/gendispatch.pl \
+			$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
+	  remote REMOTE $(REMOTE_PROTOCOL) > $@
+libvirt_access_qemu.syms: $(srcdir)/rpc/gendispatch.pl \
+			$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
+	  qemu QEMU $(QEMU_PROTOCOL) > $@
+libvirt_access_lxc.syms: $(srcdir)/rpc/gendispatch.pl \
+			$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclsym \
+	  lxc LXC $(LXC_PROTOCOL) > $@
+
+access/viraccessapicheck.h: $(srcdir)/rpc/gendispatch.pl \
+			$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
+	  remote REMOTE $(REMOTE_PROTOCOL) > $@
+access/viraccessapicheck.c: $(srcdir)/rpc/gendispatch.pl \
+			$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
+	  remote REMOTE $(REMOTE_PROTOCOL) access/viraccessapicheck.h > $@
+
+access/viraccessapicheckqemu.h: $(srcdir)/rpc/gendispatch.pl \
+			$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
+	  qemu QEMU $(QEMU_PROTOCOL) > $@
+access/viraccessapicheckqemu.c: $(srcdir)/rpc/gendispatch.pl \
+			$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
+	  qemu QEMU $(QEMU_PROTOCOL) access/viraccessapicheckqemu.h > $@
+
+access/viraccessapichecklxc.h: $(srcdir)/rpc/gendispatch.pl \
+			$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclheader \
+	  lxc LXC $(LXC_PROTOCOL) > $@
+access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
+			$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=aclbody \
+	  lxc LXC $(LXC_PROTOCOL) access/viraccessapichecklxc.h > $@
 
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\
