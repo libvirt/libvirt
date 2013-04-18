@@ -740,13 +740,26 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
+    /* Currently nothing besides TAP devices supports multiqueue. */
+    if (net->driver.virtio.queues > 0 &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Multiqueue network is not supported for: %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0) {
+        tapfdSize = vhostfdSize = net->driver.virtio.queues;
+        if (!tapfdSize)
+            tapfdSize = vhostfdSize = 1;
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
+            VIR_ALLOC_N(vhostfd, vhostfdSize) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-        tapfdSize = vhostfdSize = 1;
         if (qemuNetworkIfaceConnect(vm->def, conn, driver, net,
                                     priv->qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
@@ -754,11 +767,11 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        tapfdSize = vhostfdSize = 1;
         if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(vhostfd) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-        tapfdSize = vhostfdSize = 1;
         if ((tapfd[0] = qemuPhysIfaceConnect(vm->def, driver, net,
                                              priv->qemuCaps,
                                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE)) < 0)
@@ -767,11 +780,11 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        vhostfdSize = 1;
         if (VIR_ALLOC(vhostfd) < 0) {
             virReportOOMError();
             goto cleanup;
         }
-        vhostfdSize = 1;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
@@ -961,15 +974,17 @@ cleanup:
 
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
-    for (i = 0; i < tapfdSize; i++) {
+    for (i = 0; tapfd && i < tapfdSize; i++) {
         VIR_FORCE_CLOSE(tapfd[i]);
-        VIR_FREE(tapfdName[i]);
+        if (tapfdName)
+            VIR_FREE(tapfdName[i]);
     }
     VIR_FREE(tapfd);
     VIR_FREE(tapfdName);
-    for (i = 0; i < vhostfdSize; i++) {
+    for (i = 0; vhostfd && i < vhostfdSize; i++) {
         VIR_FORCE_CLOSE(vhostfd[i]);
-        VIR_FREE(vhostfdName[i]);
+        if (vhostfdName)
+            VIR_FREE(vhostfdName[i]);
     }
     VIR_FREE(vhostfd);
     VIR_FREE(vhostfdName);

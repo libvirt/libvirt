@@ -6519,14 +6519,28 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     if (!bootindex)
         bootindex = net->info.bootIndex;
 
+    /* Currently nothing besides TAP devices supports multiqueue. */
+    if (net->driver.virtio.queues > 0 &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Multiqueue network is not supported for: %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0) {
+        tapfdSize = net->driver.virtio.queues;
+        if (!tapfdSize)
+            tapfdSize = 1;
+
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
+            VIR_ALLOC_N(tapfdName, tapfdSize) < 0) {
             virReportOOMError();
             goto cleanup;
         }
 
-        tapfdSize = 1;
         if (qemuNetworkIfaceConnect(def, conn, driver, net,
                                     qemuCaps, tapfd, &tapfdSize) < 0)
             goto cleanup;
@@ -6548,11 +6562,15 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         /* Attempt to use vhost-net mode for these types of
            network device */
-        if (VIR_ALLOC(vhostfd) < 0 || VIR_ALLOC(vhostfdName)) {
+        vhostfdSize = net->driver.virtio.queues;
+        if (!vhostfdSize)
+            vhostfdSize = 1;
+
+        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0 ||
+            VIR_ALLOC_N(vhostfdName, vhostfdSize)) {
             virReportOOMError();
             goto cleanup;
         }
-        vhostfdSize = 1;
 
         if (qemuOpenVhostNet(def, net, qemuCaps, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
@@ -6616,15 +6634,17 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 cleanup:
     if (ret < 0)
         virDomainConfNWFilterTeardown(net);
-    for (i = 0; i < tapfdSize; i++) {
+    for (i = 0; tapfd && i < tapfdSize; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(tapfd[i]);
-        VIR_FREE(tapfdName[i]);
+        if (tapfdName)
+            VIR_FREE(tapfdName[i]);
     }
-    for (i = 0; i < vhostfdSize; i++) {
+    for (i = 0; vhostfd && i < vhostfdSize; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(vhostfd[i]);
-        VIR_FREE(vhostfdName[i]);
+        if (vhostfdName)
+            VIR_FREE(vhostfdName[i]);
     }
     VIR_FREE(tapfd);
     VIR_FREE(vhostfd);
