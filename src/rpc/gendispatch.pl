@@ -293,8 +293,8 @@ my $long_legacy = {
     DomainSetMaxMemory          => { arg => { memory => 1 } },
     DomainSetMemory             => { arg => { memory => 1 } },
     DomainSetMemoryFlags        => { arg => { memory => 1 } },
-    GetLibVersion               => { ret => { lib_ver => 1 } },
-    GetVersion                  => { ret => { hv_ver => 1 } },
+    ConnectGetLibVersion        => { ret => { lib_ver => 1 } },
+    ConnectGetVersion           => { ret => { hv_ver => 1 } },
     NodeGetInfo                 => { ret => { memory => 1 } },
     DomainBlockCommit           => { arg => { bandwidth => 1 } },
     DomainBlockPull             => { arg => { bandwidth => 1 } },
@@ -606,7 +606,7 @@ elsif ($mode eq "server") {
                     # error out on unannotated arrays
                     die "remote_nonnull_string array without insert@<offset> annotation: $ret_member";
                 } elsif ($ret_member =~ m/^remote_nonnull_string (\S+);/) {
-                    if ($call->{ProcName} eq "GetType") {
+                    if ($call->{ProcName} eq "ConnectGetType") {
                         # SPECIAL: virConnectGetType returns a constant string that must
                         #          not be freed. Therefore, duplicate the string here.
                         push(@vars_list, "const char *$1");
@@ -893,27 +893,13 @@ elsif ($mode eq "server") {
 
             if (! @args_list) {
                 push(@args_list, "priv->conn");
-
-                if ($call->{ProcName} ne "NodeGetFreeMemory") {
-                    $prefix = "Connect"
-                }
             }
 
-            if ($call->{ProcName} eq "GetSysinfo" or
-                $call->{ProcName} eq "GetMaxVcpus" or
-                $call->{ProcName} eq "DomainXMLFromNative" or
-                $call->{ProcName} eq "DomainXMLToNative" or
-                $call->{ProcName} eq "FindStoragePoolSources" or
-                $call->{ProcName} =~ m/^List/) {
-                $prefix = "Connect"
-            } elsif ($call->{ProcName} eq "SupportsFeature") {
-                $prefix = "Drv"
-            } elsif ($call->{ProcName} eq "CPUBaseline") {
-                $proc_name = "ConnectBaselineCPU"
-            } elsif ($call->{ProcName} eq "CPUCompare") {
-                $proc_name = "ConnectCompareCPU"
-            } elsif ($structprefix eq "qemu" && $call->{ProcName} =~ /^Domain/) {
+            if ($structprefix eq "qemu" && $call->{ProcName} =~ /^Domain/) {
                 $proc_name =~ s/^(Domain)/${1}Qemu/;
+            }
+            if ($structprefix eq "lxc" && $call->{ProcName} =~ /^Domain/) {
+                $proc_name =~ s/^(Domain)/${1}Lxc/;
             }
 
             if ($single_ret_as_list) {
@@ -1537,6 +1523,9 @@ elsif ($mode eq "client") {
         my $callflags = "0";
         if ($structprefix eq "qemu") {
             $callflags = "REMOTE_CALL_QEMU";
+        }
+        if ($structprefix eq "lxc") {
+            $callflags = "REMOTE_CALL_LXC";
         }
 
         print "\n";

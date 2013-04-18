@@ -401,7 +401,7 @@ struct remote_domain_disk_error {
  * Dynamic opaque and remote_nonnull_string arrays can be annotated with an
  * optional typecast */
 
-struct remote_open_args {
+struct remote_connect_open_args {
     /* NB. "name" might be NULL although in practice you can't
      * yet do that using the remote_internal driver.
      */
@@ -409,50 +409,50 @@ struct remote_open_args {
     unsigned int flags;
 };
 
-struct remote_supports_feature_args {
+struct remote_connect_supports_feature_args {
     int feature;
 };
 
-struct remote_supports_feature_ret {
+struct remote_connect_supports_feature_ret {
     int supported;
 };
 
-struct remote_get_type_ret {
+struct remote_connect_get_type_ret {
     remote_nonnull_string type;
 };
 
-struct remote_get_version_ret {
+struct remote_connect_get_version_ret {
     unsigned hyper hv_ver;
 };
 
-struct remote_get_lib_version_ret {
+struct remote_connect_get_lib_version_ret {
     unsigned hyper lib_ver;
 };
 
-struct remote_get_hostname_ret {
+struct remote_connect_get_hostname_ret {
     remote_nonnull_string hostname;
 };
 
-struct remote_get_sysinfo_args {
+struct remote_connect_get_sysinfo_args {
     unsigned int flags;
 };
 
-struct remote_get_sysinfo_ret {
+struct remote_connect_get_sysinfo_ret {
     remote_nonnull_string sysinfo;
 };
 
-struct remote_get_uri_ret {
+struct remote_connect_get_uri_ret {
     remote_nonnull_string uri;
 };
 
-struct remote_get_max_vcpus_args {
+struct remote_connect_get_max_vcpus_args {
     /* The only backend which supports this call is Xen HV, and
      * there the type is ignored so it could be NULL.
      */
     remote_string type;
 };
 
-struct remote_get_max_vcpus_ret {
+struct remote_connect_get_max_vcpus_ret {
     int max_vcpus;
 };
 
@@ -467,7 +467,7 @@ struct remote_node_get_info_ret { /* insert@1 */
     int threads;
 };
 
-struct remote_get_capabilities_ret {
+struct remote_connect_get_capabilities_ret {
     remote_nonnull_string capabilities;
 };
 
@@ -713,15 +713,15 @@ struct remote_domain_get_block_info_ret { /* insert@2 */
     unsigned hyper physical;
 };
 
-struct remote_list_domains_args {
+struct remote_connect_list_domains_args {
     int maxids;
 };
 
-struct remote_list_domains_ret {
+struct remote_connect_list_domains_ret {
     int ids<REMOTE_DOMAIN_ID_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_num_of_domains_ret {
+struct remote_connect_num_of_domains_ret {
     int num;
 };
 
@@ -964,15 +964,15 @@ struct remote_domain_migrate_finish2_ret {
     remote_nonnull_domain ddom;
 };
 
-struct remote_list_defined_domains_args {
+struct remote_connect_list_defined_domains_args {
     int maxnames;
 };
 
-struct remote_list_defined_domains_ret {
+struct remote_connect_list_defined_domains_ret {
     remote_nonnull_string names<REMOTE_DOMAIN_NAME_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_num_of_defined_domains_ret {
+struct remote_connect_num_of_defined_domains_ret {
     int num;
 };
 
@@ -1283,27 +1283,27 @@ struct remote_domain_get_hostname_ret {
 
 /* Network calls: */
 
-struct remote_num_of_networks_ret {
+struct remote_connect_num_of_networks_ret {
     int num;
 };
 
-struct remote_list_networks_args {
+struct remote_connect_list_networks_args {
     int maxnames;
 };
 
-struct remote_list_networks_ret {
+struct remote_connect_list_networks_ret {
     remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_num_of_defined_networks_ret {
+struct remote_connect_num_of_defined_networks_ret {
     int num;
 };
 
-struct remote_list_defined_networks_args {
+struct remote_connect_list_defined_networks_args {
     int maxnames;
 };
 
-struct remote_list_defined_networks_ret {
+struct remote_connect_list_defined_networks_ret {
     remote_nonnull_string names<REMOTE_NETWORK_NAME_LIST_MAX>; /* insert@1 */
 };
 
@@ -1392,15 +1392,15 @@ struct remote_network_set_autostart_args {
 
 /* network filter calls */
 
-struct remote_num_of_nwfilters_ret {
+struct remote_connect_num_of_nwfilters_ret {
     int num;
 };
 
-struct remote_list_nwfilters_args {
+struct remote_connect_list_nwfilters_args {
     int maxnames;
 };
 
-struct remote_list_nwfilters_ret {
+struct remote_connect_list_nwfilters_ret {
     remote_nonnull_string names<REMOTE_NWFILTER_NAME_LIST_MAX>; /* insert@1 */
 };
 
@@ -1444,27 +1444,27 @@ struct remote_nwfilter_get_xml_desc_ret {
 
 /* Interface calls: */
 
-struct remote_num_of_interfaces_ret {
+struct remote_connect_num_of_interfaces_ret {
     int num;
 };
 
-struct remote_list_interfaces_args {
+struct remote_connect_list_interfaces_args {
     int maxnames;
 };
 
-struct remote_list_interfaces_ret {
+struct remote_connect_list_interfaces_ret {
     remote_nonnull_string names<REMOTE_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_num_of_defined_interfaces_ret {
+struct remote_connect_num_of_defined_interfaces_ret {
     int num;
 };
 
-struct remote_list_defined_interfaces_args {
+struct remote_connect_list_defined_interfaces_args {
     int maxnames;
 };
 
-struct remote_list_defined_interfaces_ret {
+struct remote_connect_list_defined_interfaces_ret {
     remote_nonnull_string names<REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX>; /* insert@1 */
 };
 
@@ -1570,37 +1570,37 @@ struct remote_auth_polkit_ret {
 
 /* Storage pool calls: */
 
-struct remote_num_of_storage_pools_ret {
+struct remote_connect_num_of_storage_pools_ret {
     int num;
 };
 
-struct remote_list_storage_pools_args {
+struct remote_connect_list_storage_pools_args {
     int maxnames;
 };
 
-struct remote_list_storage_pools_ret {
+struct remote_connect_list_storage_pools_ret {
     remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_num_of_defined_storage_pools_ret {
+struct remote_connect_num_of_defined_storage_pools_ret {
     int num;
 };
 
-struct remote_list_defined_storage_pools_args {
+struct remote_connect_list_defined_storage_pools_args {
     int maxnames;
 };
 
-struct remote_list_defined_storage_pools_ret {
+struct remote_connect_list_defined_storage_pools_ret {
     remote_nonnull_string names<REMOTE_STORAGE_POOL_NAME_LIST_MAX>; /* insert@1 */
 };
 
-struct remote_find_storage_pool_sources_args {
+struct remote_connect_find_storage_pool_sources_args {
     remote_nonnull_string type;
     remote_string srcSpec;
     unsigned int flags;
 };
 
-struct remote_find_storage_pool_sources_ret {
+struct remote_connect_find_storage_pool_sources_ret {
     remote_nonnull_string xml;
 };
 
@@ -1928,11 +1928,11 @@ struct remote_node_device_destroy_args {
  * to be null. It will not generate the prototype otherwise.
  * Pass back a redundant boolean to force prototype generation.
  */
-struct remote_domain_events_register_ret {
+struct remote_connect_domain_event_register_ret {
     int cb_registered;
 };
 
-struct remote_domain_events_deregister_ret {
+struct remote_connect_domain_event_deregister_ret {
     int cb_registered;
 };
 
@@ -1943,37 +1943,37 @@ struct remote_domain_event_lifecycle_msg {
 };
 
 
-struct remote_domain_xml_from_native_args {
+struct remote_connect_domain_xml_from_native_args {
     remote_nonnull_string nativeFormat;
     remote_nonnull_string nativeConfig;
     unsigned int flags;
 };
 
-struct remote_domain_xml_from_native_ret {
+struct remote_connect_domain_xml_from_native_ret {
     remote_nonnull_string domainXml;
 };
 
 
-struct remote_domain_xml_to_native_args {
+struct remote_connect_domain_xml_to_native_args {
     remote_nonnull_string nativeFormat;
     remote_nonnull_string domainXml;
     unsigned int flags;
 };
 
-struct remote_domain_xml_to_native_ret {
+struct remote_connect_domain_xml_to_native_ret {
     remote_nonnull_string nativeConfig;
 };
 
 
-struct remote_num_of_secrets_ret {
+struct remote_connect_num_of_secrets_ret {
     int num;
 };
 
-struct remote_list_secrets_args {
+struct remote_connect_list_secrets_args {
     int maxuuids;
 };
 
-struct remote_list_secrets_ret {
+struct remote_connect_list_secrets_ret {
     remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>; /* insert@1 */
 };
 
@@ -2039,7 +2039,7 @@ struct remote_domain_migrate_prepare_tunnel_args {
 };
 
 
-struct remote_is_secure_ret {
+struct remote_connect_is_secure_ret {
     int secure;
 };
 
@@ -2112,22 +2112,22 @@ struct remote_interface_is_active_ret {
 };
 
 
-struct remote_cpu_compare_args {
+struct remote_connect_compare_cpu_args {
     remote_nonnull_string xml;
     unsigned int flags;
 };
 
-struct remote_cpu_compare_ret {
+struct remote_connect_compare_cpu_ret {
     int result;
 };
 
 
-struct remote_cpu_baseline_args {
+struct remote_connect_baseline_cpu_args {
     remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>; /* (const char **) */
     unsigned int flags;
 };
 
-struct remote_cpu_baseline_ret {
+struct remote_connect_baseline_cpu_ret {
     remote_nonnull_string cpu;
 };
 
@@ -2209,11 +2209,11 @@ struct remote_domain_migrate_get_max_speed_ret {
 };
 
 
-struct remote_domain_events_register_any_args {
+struct remote_connect_domain_event_register_any_args {
     int eventID;
 };
 
-struct remote_domain_events_deregister_any_args {
+struct remote_connect_domain_event_deregister_any_args {
     int eventID;
 };
 
@@ -2775,31 +2775,31 @@ enum remote_procedure {
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_OPEN = 1,
+    REMOTE_PROC_CONNECT_OPEN = 1,
 
     /**
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_CLOSE = 2,
+    REMOTE_PROC_CONNECT_CLOSE = 2,
 
     /**
      * @generate: server
      * @priority: high
      */
-    REMOTE_PROC_GET_TYPE = 3,
+    REMOTE_PROC_CONNECT_GET_TYPE = 3,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_GET_VERSION = 4,
+    REMOTE_PROC_CONNECT_GET_VERSION = 4,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_GET_MAX_VCPUS = 5,
+    REMOTE_PROC_CONNECT_GET_MAX_VCPUS = 5,
 
     /**
      * @generate: both
@@ -2810,7 +2810,7 @@ enum remote_procedure {
     /**
      * @generate: both
      */
-    REMOTE_PROC_GET_CAPABILITIES = 7,
+    REMOTE_PROC_CONNECT_GET_CAPABILITIES = 7,
 
     /**
      * @generate: both
@@ -2888,7 +2888,7 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_DEFINED_DOMAINS = 21,
+    REMOTE_PROC_CONNECT_LIST_DEFINED_DOMAINS = 21,
 
     /**
      * @generate: both
@@ -2912,7 +2912,7 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_DEFINED_DOMAINS = 25,
+    REMOTE_PROC_CONNECT_NUM_OF_DEFINED_DOMAINS = 25,
 
     /**
      * @generate: both
@@ -2971,19 +2971,19 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_DEFINED_NETWORKS = 36,
+    REMOTE_PROC_CONNECT_LIST_DEFINED_NETWORKS = 36,
 
     /**
      * @generate: server
      * @priority: high
      */
-    REMOTE_PROC_LIST_DOMAINS = 37,
+    REMOTE_PROC_CONNECT_LIST_DOMAINS = 37,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_NETWORKS = 38,
+    REMOTE_PROC_CONNECT_LIST_NETWORKS = 38,
 
     /**
      * @generate: both
@@ -3053,19 +3053,19 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_DEFINED_NETWORKS = 50,
+    REMOTE_PROC_CONNECT_NUM_OF_DEFINED_NETWORKS = 50,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_DOMAINS = 51,
+    REMOTE_PROC_CONNECT_NUM_OF_DOMAINS = 51,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_NETWORKS = 52,
+    REMOTE_PROC_CONNECT_NUM_OF_NETWORKS = 52,
 
     /**
      * @generate: both
@@ -3101,13 +3101,13 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_GET_HOSTNAME = 59,
+    REMOTE_PROC_CONNECT_GET_HOSTNAME = 59,
 
     /**
      * @generate: client
      * @priority: high
      */
-    REMOTE_PROC_SUPPORTS_FEATURE = 60,
+    REMOTE_PROC_CONNECT_SUPPORTS_FEATURE = 60,
 
     /**
      * @generate: none
@@ -3169,30 +3169,30 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_STORAGE_POOLS = 71,
+    REMOTE_PROC_CONNECT_NUM_OF_STORAGE_POOLS = 71,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_STORAGE_POOLS = 72,
+    REMOTE_PROC_CONNECT_LIST_STORAGE_POOLS = 72,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS = 73,
+    REMOTE_PROC_CONNECT_NUM_OF_DEFINED_STORAGE_POOLS = 73,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS = 74,
+    REMOTE_PROC_CONNECT_LIST_DEFINED_STORAGE_POOLS = 74,
 
     /**
      * @generate: server
      */
-    REMOTE_PROC_FIND_STORAGE_POOL_SOURCES = 75,
+    REMOTE_PROC_CONNECT_FIND_STORAGE_POOL_SOURCES = 75,
 
     /**
      * @generate: both
@@ -3363,13 +3363,13 @@ enum remote_procedure {
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER = 105,
 
     /**
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER = 106,
 
     /**
      * @generate: both
@@ -3390,7 +3390,7 @@ enum remote_procedure {
      * @generate: server
      * @priority: high
      */
-    REMOTE_PROC_GET_URI = 110,
+    REMOTE_PROC_CONNECT_GET_URI = 110,
 
     /**
      * @generate: both
@@ -3480,13 +3480,13 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_INTERFACES = 126,
+    REMOTE_PROC_CONNECT_NUM_OF_INTERFACES = 126,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_INTERFACES = 127,
+    REMOTE_PROC_CONNECT_LIST_INTERFACES = 127,
 
     /**
      * @generate: both
@@ -3531,36 +3531,36 @@ enum remote_procedure {
     /**
      * @generate: both
      */
-    REMOTE_PROC_DOMAIN_XML_FROM_NATIVE = 135,
+    REMOTE_PROC_CONNECT_DOMAIN_XML_FROM_NATIVE = 135,
 
     /**
      * @generate: both
      */
-    REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
-
-    /**
-     * @generate: both
-     * @priority: high
-     */
-    REMOTE_PROC_NUM_OF_DEFINED_INTERFACES = 137,
+    REMOTE_PROC_CONNECT_DOMAIN_XML_TO_NATIVE = 136,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_DEFINED_INTERFACES = 138,
+    REMOTE_PROC_CONNECT_NUM_OF_DEFINED_INTERFACES = 137,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_SECRETS = 139,
+    REMOTE_PROC_CONNECT_LIST_DEFINED_INTERFACES = 138,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_SECRETS = 140,
+    REMOTE_PROC_CONNECT_NUM_OF_SECRETS = 139,
+
+    /**
+     * @generate: both
+     * @priority: high
+     */
+    REMOTE_PROC_CONNECT_LIST_SECRETS = 140,
 
     /**
      * @generate: both
@@ -3614,7 +3614,7 @@ enum remote_procedure {
      * @generate: server
      * @priority: high
      */
-    REMOTE_PROC_IS_SECURE = 149,
+    REMOTE_PROC_CONNECT_IS_SECURE = 149,
 
     /**
      * @generate: both
@@ -3662,13 +3662,13 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_GET_LIB_VERSION = 157,
+    REMOTE_PROC_CONNECT_GET_LIB_VERSION = 157,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_CPU_COMPARE = 158,
+    REMOTE_PROC_CONNECT_COMPARE_CPU = 158,
 
     /**
      * @generate: none
@@ -3688,7 +3688,7 @@ enum remote_procedure {
     /**
      * @generate: both
      */
-    REMOTE_PROC_CPU_BASELINE = 162,
+    REMOTE_PROC_CONNECT_BASELINE_CPU = 162,
 
     /**
      * @generate: both
@@ -3714,13 +3714,13 @@ enum remote_procedure {
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY = 167,
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_REGISTER_ANY = 167,
 
     /**
      * @generate: none
      * @priority: high
      */
-    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168,
+    REMOTE_PROC_CONNECT_DOMAIN_EVENT_DEREGISTER_ANY = 168,
 
     /**
      * @generate: both
@@ -3774,13 +3774,13 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_NUM_OF_NWFILTERS = 178,
+    REMOTE_PROC_CONNECT_NUM_OF_NWFILTERS = 178,
 
     /**
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_LIST_NWFILTERS = 179,
+    REMOTE_PROC_CONNECT_LIST_NWFILTERS = 179,
 
     /**
      * @generate: both
@@ -3909,7 +3909,7 @@ enum remote_procedure {
      * @generate: both
      * @priority: high
      */
-    REMOTE_PROC_GET_SYSINFO = 203,
+    REMOTE_PROC_CONNECT_GET_SYSINFO = 203,
 
     /**
      * @generate: both

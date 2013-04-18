@@ -27,13 +27,13 @@
 %#include <arpa/inet.h>
 
 /*----- Protocol. -----*/
-struct qemu_monitor_command_args {
+struct qemu_domain_monitor_command_args {
     remote_nonnull_domain dom;
     remote_nonnull_string cmd;
     unsigned int flags;
 };
 
-struct qemu_monitor_command_ret {
+struct qemu_domain_monitor_command_ret {
     remote_nonnull_string result;
 };
 
@@ -92,7 +92,7 @@ enum qemu_procedure {
      * @generate: none
      * @priority: low
      */
-    QEMU_PROC_MONITOR_COMMAND = 1,
+    QEMU_PROC_DOMAIN_MONITOR_COMMAND = 1,
 
     /**
      * @generate: both
