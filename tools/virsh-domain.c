@@ -6741,7 +6741,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     int ret = false;
     const char *codeset_option;
     int codeset;
-    int holdtime;
+    unsigned int holdtime = 0;
     int count = 0;
     const vshCmdOpt *opt = NULL;
     int keycode;
@@ -6753,8 +6753,10 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptString(cmd, "codeset", &codeset_option) <= 0)
         codeset_option = "linux";
 
-    if (vshCommandOptInt(cmd, "holdtime", &holdtime) <= 0)
-        holdtime = 0;
+    if (vshCommandOptUInt(cmd, "holdtime", &holdtime) < 0) {
+        vshError(ctl, _("invalid value of --holdtime"));
+        goto cleanup;
+    }
 
     codeset = virKeycodeSetTypeFromString(codeset_option);
     if (codeset < 0) {
