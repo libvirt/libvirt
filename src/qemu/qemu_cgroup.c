@@ -236,7 +236,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!(res->partition = strdup("/system"))) {
+        if (!(res->partition = strdup("/machine"))) {
             virReportOOMError();
             VIR_FREE(res);
             goto cleanup;

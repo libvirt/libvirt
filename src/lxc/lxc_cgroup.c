@@ -537,7 +537,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
             goto cleanup;
         }
 
-        if (!(res->partition = strdup("/system"))) {
+        if (!(res->partition = strdup("/machine"))) {
             virReportOOMError();
             VIR_FREE(res);
             goto cleanup;
