@@ -2751,7 +2751,7 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    if (!auth->passwd && !cfg->vncPassword) {
+    if (!auth->passwd && !defaultPasswd) {
         ret = 0;
         goto cleanup;
     }
