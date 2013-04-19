@@ -2797,6 +2797,13 @@
       </optional>
     </element>
   </define>
+  <define name="nvram">
+    <element name="nvram">
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </element>
+  </define>
   <define name="memballoon">
     <element name="memballoon">
       <attribute name="model">
@@ -3283,6 +3290,9 @@
         </optional>
         <optional>
           <ref name="memballoon"/>
+        </optional>
+        <optional>
+          <ref name="nvram"/>
         </optional>
       </interleave>
     </element>

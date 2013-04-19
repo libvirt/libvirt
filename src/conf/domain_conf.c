@@ -194,6 +194,7 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "smartcard",
               "chr",
               "memballoon",
+              "nvram",
               "rng")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
@@ -1560,6 +1561,16 @@ void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def);
+}
+
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
 {
     if (!def)
@@ -1743,6 +1754,7 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
     }
@@ -1951,6 +1963,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainWatchdogDefFree(def->watchdog);
 
     virDomainMemballoonDefFree(def->memballoon);
+    virDomainNVRAMDefFree(def->nvram);
 
     for (i = 0; i < def->nseclabels; i++)
         virSecurityLabelDefFree(def->seclabels[i]);
@@ -2519,6 +2532,12 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->rng->info, opaque) < 0)
             return -1;
     }
+    if (def->nvram) {
+        device.type = VIR_DOMAIN_DEVICE_NVRAM;
+        device.data.nvram = def->nvram;
+        if (cb(def, &device, &def->nvram->info, opaque) < 0)
+            return -1;
+    }
     device.type = VIR_DOMAIN_DEVICE_HUB;
     for (i = 0; i < def->nhubs ; i++) {
         device.data.hub = def->hubs[i];
@@ -2550,6 +2569,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
         break;
@@ -8138,6 +8158,27 @@ error:
     goto cleanup;
 }
 
+static virDomainNVRAMDefPtr
+virDomainNVRAMDefParseXML(const xmlNodePtr node,
+                          unsigned int flags)
+{
+   virDomainNVRAMDefPtr def;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+        goto error;
+
+    return def;
+
+error:
+    virDomainNVRAMDefFree(def);
+    return NULL;
+}
+
 static virSysinfoDefPtr
 virSysinfoParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt)
@@ -11306,6 +11347,23 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./devices/nvram", ctxt, &nodes)) < 0) {
+        goto error;
+    }
+
+    if (n > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only a single nvram device is supported"));
+        goto error;
+    } else if (n == 1) {
+        virDomainNVRAMDefPtr nvram =
+            virDomainNVRAMDefParseXML(nodes[0], flags);
+        if (!nvram)
+            goto error;
+        def->nvram = nvram;
+        VIR_FREE(nodes);
+    }
+
     /* analysis of the hub devices */
     if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0) {
         goto error;
@@ -14396,6 +14454,21 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 }
 
 static int
+virDomainNVRAMDefFormat(virBufferPtr buf,
+                        virDomainNVRAMDefPtr def,
+                        unsigned int flags)
+{
+    virBufferAddLit(buf, "    <nvram>\n");
+    if (virDomainDeviceInfoIsSet(&def->info, flags) &&
+        virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
+
+    virBufferAddLit(buf, "    </nvram>\n");
+
+    return 0;
+}
+
+static int
 virDomainSysinfoDefFormat(virBufferPtr buf,
                           virSysinfoDefPtr def)
 {
@@ -15725,6 +15798,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->rng)
         virDomainRNGDefFormat(buf, def->rng, flags);
 
+    if (def->nvram)
+        virDomainNVRAMDefFormat(buf, def->nvram, flags);
+
     virBufferAddLit(buf, "  </devices>\n");
 
     virBufferAdjustIndent(buf, 2);
@@ -17007,6 +17083,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Copying definition of '%d' type "

@@ -109,6 +109,9 @@ typedef virDomainChrDef *virDomainChrDefPtr;
 typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
 typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
 
+typedef struct _virDomainNVRAMDef virDomainNVRAMDef;
+typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
+
 typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
 typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
 
@@ -137,6 +140,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_SMARTCARD,
     VIR_DOMAIN_DEVICE_CHR,
     VIR_DOMAIN_DEVICE_MEMBALLOON,
+    VIR_DOMAIN_DEVICE_NVRAM,
     VIR_DOMAIN_DEVICE_RNG,
 
     VIR_DOMAIN_DEVICE_LAST
@@ -163,6 +167,7 @@ struct _virDomainDeviceDef {
         virDomainSmartcardDefPtr smartcard;
         virDomainChrDefPtr chr;
         virDomainMemballoonDefPtr memballoon;
+        virDomainNVRAMDefPtr nvram;
         virDomainRNGDefPtr rng;
     } data;
 };
@@ -1469,6 +1474,9 @@ struct _virDomainMemballoonDef {
     virDomainDeviceInfo info;
 };
 
+struct _virDomainNVRAMDef {
+    virDomainDeviceInfo info;
+};
 
 enum virDomainSmbiosMode {
     VIR_DOMAIN_SMBIOS_NONE = 0,
@@ -1916,6 +1924,7 @@ struct _virDomainDef {
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
+    virDomainNVRAMDefPtr nvram;
     virDomainTPMDefPtr tpm;
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
@@ -2076,6 +2085,7 @@ int virDomainChrSourceDefCopy(virDomainChrSourceDefPtr src,
 void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
+void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 virDomainHostdevDefPtr virDomainHostdevDefAlloc(void);

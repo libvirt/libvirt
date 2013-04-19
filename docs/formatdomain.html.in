@@ -4506,6 +4506,40 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h4><a name="elementsNVRAM">NVRAM device</a></h4>
+    <p>
+      nvram device is always added to pSeries guest on PPC64, and its address
+      is allowed to be changed.  Element <code>nvram</code> (only valid for
+      pSeries guest, <span class="since">since 1.0.5</span>) is provided to
+      enable the address setting.
+    </p>
+    <p>
+      Example: usage of NVRAM configuration
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;nvram&gt;
+      &lt;address type='spapr-vio' reg='0x3000'/&gt;
+    &lt;/nvram&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+  <dl>
+    <dt><code>spapr-vio</code></dt>
+    <dd>
+      <p>
+        VIO device address type, only valid for PPC64.
+      </p>
+    </dd>
+    <dt><code>reg</code></dt>
+    <dd>
+      <p>
+        Device address
+      </p>
+    </dd>
+  </dl>
+
     <h3><a name="seclabel">Security label</a></h3>
 
     <p>
