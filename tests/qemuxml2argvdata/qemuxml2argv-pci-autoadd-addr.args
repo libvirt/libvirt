@@ -1,0 +1,12 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
+/usr/libexec/qemu-kvm -S -M pc-1.2 -m 2048 -smp 2 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -boot c \
+-device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
+-device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
+-device pci-bridge,chassis_nr=3,id=pci.3,bus=pci.0,addr=0x5 \
+-device pci-bridge,chassis_nr=4,id=pci.4,bus=pci.0,addr=0x6 \
+-device pci-bridge,chassis_nr=5,id=pci.5,bus=pci.0,addr=0x7 \
+-device pci-bridge,chassis_nr=6,id=pci.6,bus=pci.0,addr=0x8 \
+-device pci-bridge,chassis_nr=7,id=pci.7,bus=pci.0,addr=0x9 \
+-usb -cdrom /var/iso/f18kde.iso \
+-device virtio-balloon-pci,id=balloon0,bus=pci.7,addr=0x6

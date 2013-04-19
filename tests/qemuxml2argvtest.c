@@ -951,6 +951,9 @@ mymain(void)
     DO_TEST("tpm-passthrough", QEMU_CAPS_DEVICE,
             QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
 
+    DO_TEST("pci-autoadd-addr", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST("pci-autoadd-idx", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

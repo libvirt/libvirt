@@ -278,6 +278,9 @@ mymain(void)
     DO_TEST_DIFFERENT("metadata");
 
     DO_TEST("tpm-passthrough");
+    DO_TEST("pci-bridge");
+    DO_TEST_DIFFERENT("pci-autoadd-addr");
+    DO_TEST_DIFFERENT("pci-autoadd-idx");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

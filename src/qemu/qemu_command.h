@@ -197,7 +197,8 @@ int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps,
                                  virDomainObjPtr obj);
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
-                                                         unsigned int nbuses);
+                                                         unsigned int nbuses,
+                                                         bool dryRun);
 int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
                                     virDevicePCIAddressPtr addr);
 int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
