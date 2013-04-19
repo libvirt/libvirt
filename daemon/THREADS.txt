@@ -40,7 +40,7 @@ The server lock is used in conjunction with a condition variable
 to pass jobs from the event loop thread to the workers. The main
 event loop thread handles I/O from the client socket, and once a
 complete RPC message has been read off the wire (and optionally
-decrypted), it will be placed onto the 'dx' job queue for the
+decrypted), it will be placed on the 'dx' job queue for the
 associated client object. The job condition will be signalled and
 a worker will wakup and process it.
 

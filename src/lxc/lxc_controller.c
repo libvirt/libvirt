@@ -1699,7 +1699,7 @@ int main(int argc, char *argv[])
             _exit(0);
         }
 
-        /* Don't hold onto any cwd we inherit from libvirtd either */
+        /* Don't hold on to any cwd we inherit from libvirtd either */
         if (chdir("/") < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to change to root dir"));

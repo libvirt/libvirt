@@ -77,7 +77,7 @@ struct _qemuMonitorTest {
 static void qemuMonitorTestItemFree(qemuMonitorTestItemPtr item);
 
 /*
- * Appends data for a reply onto the outgoing buffer
+ * Appends data for a reply to the outgoing buffer
  */
 static int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
                                      const char *response)

@@ -330,7 +330,7 @@ Omitting braces with a single-line body is fine:
   while (expr) // one-line body -> omitting curly braces is ok
       single_line_stmt();
 
-However, the moment your loop/if/else body extends onto a second line, for
+However, the moment your loop/if/else body extends on to a second line, for
 whatever reason (even if it's just an added comment), then you should add
 braces. Otherwise, it would be too easy to insert a statement just before that
 comment (without adding braces), thinking it is already a multi-statement loop:

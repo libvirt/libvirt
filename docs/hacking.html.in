@@ -394,7 +394,7 @@
 </pre>
 
     <p>
-      However, the moment your loop/if/else body extends onto a second
+      However, the moment your loop/if/else body extends on to a second
       line, for whatever reason (even if it's just an added comment), then
       you should add braces.  Otherwise, it would be too easy to insert a
       statement just before that comment (without adding braces), thinking

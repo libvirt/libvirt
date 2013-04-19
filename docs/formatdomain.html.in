@@ -741,7 +741,7 @@
 
     <p>
       Resource partitions are currently supported by the QEMU and
-      LXC drivers, which map partition paths onto cgroups directories,
+      LXC drivers, which map partition paths to cgroups directories,
       in all mounted controllers. <span class="since">Since 1.0.5</span>
     </p>
 
@@ -2701,7 +2701,7 @@
     </p>
 
     <p>
-      Provides a bridge from the VM directly onto the LAN. This assumes
+      Provides a bridge from the VM directly to the LAN. This assumes
       there is a bridge device on the host which has one or more of the hosts
       physical NICs enslaved. The guest VM will have an associated tun device
       created with a name of vnetN, which can also be overridden with the
@@ -2908,7 +2908,7 @@
     <dl>
       <dt><code>profileid</code></dt>
       <dd>The profile ID contains the name of the port profile that is to
-        be applied onto this interface.  This name is resolved by the port
+        be applied to this interface.  This name is resolved by the port
         profile database into the network parameters from the port profile,
         and those network parameters will be applied to this interface.
       </dd>

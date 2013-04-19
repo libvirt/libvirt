@@ -418,7 +418,7 @@
       After a complete packet has been read, the header must be decoded
       and all 6 fields fully validated, before attempting to dispatch
       the payload. Once dispatched, the payload can be decoded and passed
-      onto the appropriate API for execution. The RPC code must not take
+      on to the appropriate API for execution. The RPC code must not take
       any action based on the payload, since it has no way to validate
       the semantics of the payload data. It must delegate this to the
       execution API (e.g. corresponding libvirt public API).
@@ -785,7 +785,7 @@
       return value and output parameters, or error object and encode
       them into a reply packet. Again it does not attempt to do any
       semantic validation of output data, aside from variable length
-      field limit checks. The worker thread puts the reply packet onto
+      field limit checks. The worker thread puts the reply packet on
       the transmission queue for the client. The worker is now finished
       and goes back to wait for another incoming method call.
     </p>
@@ -811,10 +811,10 @@
       for the worker threads, it is sidetracked into a per-stream
       processing queue. When the stream becomes writable, queued
       incoming stream packets will be processed, passing their data
-      payload onto the stream. Conversely when the stream becomes
+      payload on the stream. Conversely when the stream becomes
       readable, chunks of data will be read from it, encoded into
       new outgoing packets, and placed on the client's transmit
-      queue
+      queue.
     </p>
 
     <h4><a name="apiserverdispatchex1">Example with overlapping methods</a></h4>

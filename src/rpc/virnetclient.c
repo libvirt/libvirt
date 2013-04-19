@@ -1,7 +1,7 @@
 /*
  * virnetclient.c: generic network RPC client
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1771,7 +1771,7 @@ static int virNetClientIO(virNetClientPtr client,
             goto cleanup;
         }
 
-        /* Grr, someone passed the buck onto us ... */
+        /* Grr, someone passed the buck to us ... */
     } else {
         client->haveTheBuck = true;
     }

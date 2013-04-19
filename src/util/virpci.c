@@ -1208,8 +1208,8 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
  * condition where the hypervisor is still cleaning up the device while
  * libvirt is trying to re-attach it to the host device driver.  To avoid
  * this situation, we look through /proc/iomem, and if the hypervisor is
- * still holding onto the bar (denoted by the string in the matcher variable),
- * then we can wait around a bit for that to clear up.
+ * still holding on to the bar (denoted by the string in the matcher
+ * variable), then we can wait around a bit for that to clear up.
  *
  * A typical /proc/iomem looks like this (snipped for brevity):
  * 00010000-0008efff : System RAM
@@ -1230,7 +1230,7 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
  *   f0000000-f0003fff : kvm_assigned_device
  *
  * Returns 0 if we are clear to continue, and 1 if the hypervisor is still
- * holding onto the resource.
+ * holding on to the resource.
  */
 int
 virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)

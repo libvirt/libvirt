@@ -1,7 +1,7 @@
 /*
  * domain_event.c: domain event queue processing helpers
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -1179,7 +1179,7 @@ virDomainEventPtr virDomainEventBalloonChangeNewFromObj(virDomainObjPtr obj,
  * @evtQueue: the dom event queue
  * @event: the event to add
  *
- * Internal function to push onto the back of a virDomainEventQueue
+ * Internal function to push to the back of a virDomainEventQueue
  *
  * Returns: 0 on success, -1 on failure
  */
