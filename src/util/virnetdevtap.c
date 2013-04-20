@@ -43,6 +43,40 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 /**
+ * virNetDevTapGetName:
+ * @tapfd: a tun/tap file descriptor
+ * @ifname: a pointer that will receive the interface name
+ *
+ * Retrieve the interface name given a file descriptor for a tun/tap
+ * interface.
+ *
+ * Returns 0 if the interface name is successfully queried, -1 otherwise
+ */
+int
+virNetDevTapGetName(int tapfd, char **ifname)
+{
+#ifdef TUNGETIFF
+    struct ifreq ifr;
+
+    if (ioctl(tapfd, TUNGETIFF, &ifr) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to query tap interface name"));
+        return -1;
+    }
+
+    *ifname = strdup(ifr.ifr_name);
+    if (*ifname == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+    return 0;
+#else
+    return -1;
+#endif
+}
+
+
+/**
  * virNetDevProbeVnetHdr:
  * @tapfd: a tun/tap file descriptor
  *

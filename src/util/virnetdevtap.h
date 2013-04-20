@@ -35,6 +35,9 @@ int virNetDevTapCreate(char **ifname,
 int virNetDevTapDelete(const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevTapGetName(int tapfd, char **ifname)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
 typedef enum {
    VIR_NETDEV_TAP_CREATE_NONE = 0,
    /* Bring the interface up */
