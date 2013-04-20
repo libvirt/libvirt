@@ -28,12 +28,14 @@
 #include "qemu_capabilities.h"
 #include "qemu_bridge_filter.h"
 #include "cpu/cpu.h"
+#include "passfd.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virarch.h"
 #include "virerror.h"
 #include "virutil.h"
 #include "virfile.h"
+#include "virnetdev.h"
 #include "virstring.h"
 #include "viruuid.h"
 #include "c-ctype.h"
@@ -47,6 +49,9 @@
 #include "device_conf.h"
 #include "virstoragefile.h"
 #include "virtpm.h"
+#if defined(__linux__)
+# include <linux/capability.h>
+#endif
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -198,6 +203,77 @@ error:
 }
 
 
+/**
+ * qemuCreateInBridgePortWithHelper:
+ * @cfg: the configuration object in which the helper name is looked up
+ * @brname: the bridge name
+ * @ifname: the returned interface name
+ * @macaddr: the returned MAC address
+ * @tapfd: file descriptor return value for the new tap device
+ * @flags: OR of virNetDevTapCreateFlags:
+
+ *   VIR_NETDEV_TAP_CREATE_VNET_HDR
+ *     - Enable IFF_VNET_HDR on the tap device
+ *
+ * This function creates a new tap device on a bridge using an external
+ * helper.  The final name for the bridge will be stored in @ifname.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
+                                            const char *brname,
+                                            char **ifname,
+                                            int *tapfd,
+                                            unsigned int flags)
+{
+    virCommandPtr cmd;
+    int status;
+    int pair[2] = { -1, -1 };
+
+    if ((flags & ~VIR_NETDEV_TAP_CREATE_VNET_HDR) != VIR_NETDEV_TAP_CREATE_IFUP)
+        return -1;
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0) {
+        virReportSystemError(errno, "%s", _("failed to create socket"));
+        return -1;
+    }
+
+    cmd = virCommandNew(cfg->bridgeHelperName);
+    if (flags & VIR_NETDEV_TAP_CREATE_VNET_HDR)
+        virCommandAddArgFormat(cmd, "--use-vnet");
+    virCommandAddArgFormat(cmd, "--br=%s", brname);
+    virCommandAddArgFormat(cmd, "--fd=%d", pair[1]);
+    virCommandTransferFD(cmd, pair[1]);
+    virCommandClearCaps(cmd);
+#ifdef CAP_NET_ADMIN
+    virCommandAllowCap(cmd, CAP_NET_ADMIN);
+#endif
+    if (virCommandRunAsync(cmd, NULL) < 0) {
+        *tapfd = -1;
+        goto cleanup;
+    }
+
+    do {
+        *tapfd = recvfd(pair[0], 0);
+    } while (*tapfd < 0 && errno == EINTR);
+    if (*tapfd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to retrieve file descriptor for interface"));
+        goto cleanup;
+    }
+
+    if (virNetDevTapGetName(*tapfd, ifname) < 0 ||
+        virCommandWait(cmd, &status) < 0) {
+        VIR_FORCE_CLOSE(*tapfd);
+        *tapfd = -1;
+    }
+
+cleanup:
+    virCommandFree(cmd);
+    VIR_FORCE_CLOSE(pair[0]);
+    return *tapfd < 0 ? -1 : 0;
+}
+
 int
 qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virConnectPtr conn,
@@ -275,11 +351,17 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
     }
 
-    err = virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
-                                         def->uuid, &tapfd,
-                                         virDomainNetGetActualVirtPortProfile(net),
-                                         virDomainNetGetActualVlan(net),
-                                         tap_create_flags);
+    if (cfg->privileged)
+        err = virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
+                                             def->uuid, &tapfd,
+                                             virDomainNetGetActualVirtPortProfile(net),
+                                             virDomainNetGetActualVlan(net),
+                                             tap_create_flags);
+    else
+        err = qemuCreateInBridgePortWithHelper(cfg, brname,
+                                               &net->ifname,
+                                               &tapfd, tap_create_flags);
+
     virDomainAuditNetDevice(def, net, "/dev/net/tun", tapfd >= 0);
     if (err < 0) {
         if (template_ifname)
@@ -3936,7 +4018,6 @@ error:
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
                     virQEMUDriverPtr driver,
-                    virQEMUCapsPtr qemuCaps,
                     char type_sep,
                     int vlan,
                     const char *tapfd,
@@ -3945,7 +4026,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     bool is_tap = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     enum virDomainNetType netType = virDomainNetGetActualType(net);
-    const char *brname = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
@@ -3963,14 +4043,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
      * through, -net tap,fd
      */
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (!cfg->privileged &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE)) {
-            brname = virDomainNetGetActualBridgeName(net);
-            virBufferAsprintf(&buf, "bridge%cbr=%s", type_sep, brname);
-            type_sep = ',';
-            is_tap = true;
-            break;
-        }
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         virBufferAsprintf(&buf, "tap%cfd=%s", type_sep, tapfd);
@@ -7086,26 +7158,17 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                /*
-                 * If type='bridge' then we attempt to allocate the tap fd here only if
-                 * running under a privilged user or -netdev bridge option is not
-                 * supported.
-                 */
-                if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-                    cfg->privileged ||
-                    (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE))) {
-                    int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
-                                                        qemuCaps);
-                    if (tapfd < 0)
-                        goto error;
+                int tapfd = qemuNetworkIfaceConnect(def, conn, driver, net,
+                                                    qemuCaps);
+                if (tapfd < 0)
+                    goto error;
 
-                    last_good_net = i;
-                    virCommandTransferFD(cmd, tapfd);
+                last_good_net = i;
+                virCommandTransferFD(cmd, tapfd);
 
-                    if (snprintf(tapfd_name, sizeof(tapfd_name), "%d",
-                                 tapfd) >= sizeof(tapfd_name))
-                        goto no_memory;
-                }
+                if (snprintf(tapfd_name, sizeof(tapfd_name), "%d",
+                             tapfd) >= sizeof(tapfd_name))
+                    goto no_memory;
             } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 int tapfd = qemuPhysIfaceConnect(def, driver, net,
                                                  qemuCaps, vmop);
@@ -7149,7 +7212,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 virCommandAddArg(cmd, "-netdev");
-                if (!(host = qemuBuildHostNetStr(net, driver, qemuCaps,
+                if (!(host = qemuBuildHostNetStr(net, driver,
                                                  ',', vlan, tapfd_name,
                                                  vhostfd_name)))
                     goto error;
@@ -7173,7 +7236,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV) &&
                   virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
                 virCommandAddArg(cmd, "-net");
-                if (!(host = qemuBuildHostNetStr(net, driver, qemuCaps,
+                if (!(host = qemuBuildHostNetStr(net, driver,
                                                  ',', vlan, tapfd_name,
                                                  vhostfd_name)))
                     goto error;
