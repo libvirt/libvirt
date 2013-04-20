@@ -1700,6 +1700,7 @@ virSocketAddrCheckNetmask;
 virSocketAddrEqual;
 virSocketAddrFormat;
 virSocketAddrFormatFull;
+virSocketAddrGetIpPrefix;
 virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;

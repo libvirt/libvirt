@@ -116,6 +116,9 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddrPtr netmask);
 int virSocketAddrPrefixToNetmask(unsigned int prefix,
                                  virSocketAddrPtr netmask,
                                  int family);
+int virSocketAddrGetIpPrefix(const virSocketAddrPtr address,
+                             const virSocketAddrPtr netmask,
+                             int prefix);
 bool virSocketAddrEqual(const virSocketAddrPtr s1,
                         const virSocketAddrPtr s2);
 bool virSocketAddrIsPrivate(const virSocketAddrPtr addr);

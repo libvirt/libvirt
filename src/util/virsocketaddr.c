@@ -754,4 +754,53 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
 
 error:
     return result;
+ }
+
+/**
+ * virSocketAddrGetIpPrefix:
+ * @address: network address
+ * @netmask: netmask for this network
+ * @prefix: prefix if specified instead of netmask
+ *
+ * Returns prefix value on success or -1 on error.
+ */
+
+int
+virSocketAddrGetIpPrefix(const virSocketAddrPtr address,
+                         const virSocketAddrPtr netmask,
+                         int prefix)
+{
+    if (prefix > 0) {
+        return prefix;
+    } else if (VIR_SOCKET_ADDR_VALID(netmask)) {
+        return virSocketAddrGetNumNetmaskBits(netmask);
+    } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET)) {
+        /* Return the natural prefix for the network's ip address.
+         * On Linux we could use the IN_CLASSx() macros, but those
+         * aren't guaranteed on all platforms, so we just deal with
+         * the bits ourselves.
+         */
+        unsigned char octet
+            = ntohl(address->data.inet4.sin_addr.s_addr) >> 24;
+        if ((octet & 0x80) == 0) {
+            /* Class A network */
+            return 8;
+        } else if ((octet & 0xC0) == 0x80) {
+            /* Class B network */
+            return 16;
+        } else if ((octet & 0xE0) == 0xC0) {
+            /* Class C network */
+            return 24;
+        }
+        return -1;
+    } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6)) {
+        return 64;
+    }
+
+    /* When none of the three (address/netmask/prefix) is given, 0 is
+     * returned rather than error, because this is a valid
+     * expectation, e.g. for the address/prefix used for a default
+     * route (the destination of a default route is 0.0.0.0/0).
+     */
+    return 0;
 }
