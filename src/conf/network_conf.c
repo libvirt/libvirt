@@ -1125,7 +1125,8 @@ virNetworkIPDefParseXML(const char *networkName,
 
     xmlNodePtr cur, save;
     char *address = NULL, *netmask = NULL;
-    unsigned long prefix;
+    unsigned long prefix = 0;
+    int prefixRc;
     int result = -1;
 
     save = ctxt->node;
@@ -1133,88 +1134,95 @@ virNetworkIPDefParseXML(const char *networkName,
 
     /* grab raw data from XML */
     def->family = virXPathString("string(./@family)", ctxt);
+
     address = virXPathString("string(./@address)", ctxt);
-    if (virXPathULong("string(./@prefix)", ctxt, &prefix) < 0)
+    if (!address) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required address attribute in network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+    if (virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid address '%s' in network '%s'"),
+                       address, networkName);
+        goto cleanup;
+    }
+
+    netmask = virXPathString("string(./@netmask)", ctxt);
+    if (netmask &&
+        (virSocketAddrParse(&def->netmask, netmask, AF_UNSPEC) < 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid netmask '%s' in network '%s'"),
+                       netmask, networkName);
+        goto cleanup;
+    }
+
+    prefixRc = virXPathULong("string(./@prefix)", ctxt, &prefix);
+    if (prefixRc == -2) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid ULong value specified for prefix in definition of network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+    if (prefixRc < 0)
         def->prefix = 0;
     else
         def->prefix = prefix;
 
-    netmask = virXPathString("string(./@netmask)", ctxt);
-
-    if (address) {
-        if (virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Bad address '%s' in definition of network '%s'"),
-                           address, networkName);
-            goto cleanup;
-        }
-
-    }
-
-    /* validate family vs. address */
-    if (def->family == NULL) {
+    /* validate address, etc. for each family */
+    if ((def->family == NULL) || (STREQ(def->family, "ipv4"))) {
         if (!(VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) ||
               VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_UNSPEC))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("no family specified for non-IPv4 address '%s' in network '%s'"),
-                           address, networkName);
+                           _("%s family specified for non-IPv4 address '%s' in network '%s'"),
+                           def->family == NULL? "no" : "ipv4", address, networkName);
             goto cleanup;
         }
-    } else if (STREQ(def->family, "ipv4")) {
-        if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
+        if (netmask) {
+            if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid netmask '%s' for address '%s' "
+                                 "in network '%s' (both must be IPv4)"),
+                               netmask, address, networkName);
+                goto cleanup;
+            }
+            if (def->prefix > 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Network '%s' IP address cannot have "
+                                 "both a prefix and a netmask"), networkName);
+                goto cleanup;
+            }
+        } else if (def->prefix > 32) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("family 'ipv4' specified for non-IPv4 address '%s' in network '%s'"),
-                           address, networkName);
+                           _("Invalid IPv4 prefix '%lu' in network '%s'"),
+                           prefix, networkName);
             goto cleanup;
         }
     } else if (STREQ(def->family, "ipv6")) {
         if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"),
+                           _("Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"),
                            address, networkName);
+            goto cleanup;
+        }
+        if (netmask) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("netmask not allowed for IPv6 address '%s' in network '%s'"),
+                           address, networkName);
+            goto cleanup;
+        }
+        if (def->prefix > 128) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid IPv6 prefix '%lu' in network '%s'"),
+                           prefix, networkName);
             goto cleanup;
         }
     } else {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Unrecognized family '%s' in definition of network '%s'"),
+                       _("Unrecognized family '%s' in network '%s'"),
                        def->family, networkName);
         goto cleanup;
-    }
-
-    /* parse/validate netmask */
-    if (netmask) {
-        if (address == NULL) {
-            /* netmask is meaningless without an address */
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("netmask specified without address in network '%s'"),
-                           networkName);
-            goto cleanup;
-        }
-
-        if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("netmask not supported for address '%s' in network '%s' (IPv4 only)"),
-                           address, networkName);
-            goto cleanup;
-        }
-
-        if (def->prefix > 0) {
-            /* can't have both netmask and prefix at the same time */
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("network '%s' cannot have both prefix='%u' and a netmask"),
-                           networkName, def->prefix);
-            goto cleanup;
-        }
-
-        if (virSocketAddrParse(&def->netmask, netmask, AF_UNSPEC) < 0)
-            goto cleanup;
-
-        if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("network '%s' has invalid netmask '%s' for address '%s' (both must be IPv4)"),
-                           networkName, netmask, address);
-            goto cleanup;
-        }
     }
 
     cur = node->children;
