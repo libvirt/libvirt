@@ -427,7 +427,18 @@ else !WITH_REMOTE
 check-protocol:
 endif
 EXTRA_DIST += $(PROTOCOL_STRUCTS)
-check-local: check-protocol check-symfile check-symsorting
+
+check-drivername:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
+		$(srcdir)/driver.h \
+		$(srcdir)/libvirt_public.syms \
+		$(srcdir)/libvirt_qemu.syms \
+		$(srcdir)/libvirt_lxc.syms
+
+EXTRA_DIST += check-drivername.pl
+
+check-local: check-protocol check-symfile check-symsorting \
+	check-drivername
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc

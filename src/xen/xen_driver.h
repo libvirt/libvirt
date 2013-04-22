@@ -93,9 +93,9 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvClose xenClose; /* Only mandatory callback; all others may be NULL */
-    virDrvGetVersion  xenVersion;
-    virDrvGetHostname xenGetHostname;
+    virDrvConnectClose xenClose; /* Only mandatory callback; all others may be NULL */
+    virDrvConnectGetVersion  xenVersion;
+    virDrvConnectGetHostname xenGetHostname;
     virDrvDomainSuspend xenDomainSuspend;
     virDrvDomainResume xenDomainResume;
     virDrvDomainShutdown xenDomainShutdown;
@@ -108,8 +108,8 @@ struct xenUnifiedDriver {
     virDrvDomainGetInfo xenDomainGetInfo;
     virDrvDomainPinVcpu xenDomainPinVcpu;
     virDrvDomainGetVcpus xenDomainGetVcpus;
-    virDrvListDefinedDomains xenListDefinedDomains;
-    virDrvNumOfDefinedDomains xenNumOfDefinedDomains;
+    virDrvConnectListDefinedDomains xenListDefinedDomains;
+    virDrvConnectNumOfDefinedDomains xenNumOfDefinedDomains;
     virDrvDomainCreate xenDomainCreate;
     virDrvDomainDefineXML xenDomainDefineXML;
     virDrvDomainUndefine xenDomainUndefine;

@@ -154,7 +154,7 @@ close FILE;
 
 # Some special things which aren't public APIs,
 # but we want to report
-$apis{virConnectDrvSupportsFeature} = "0.3.2";
+$apis{virConnectSupportsFeature} = "0.3.2";
 $apis{virDomainMigratePrepare} = "0.3.2";
 $apis{virDomainMigratePerform} = "0.3.2";
 $apis{virDomainMigrateFinish} = "0.3.2";
