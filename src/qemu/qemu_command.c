@@ -5498,6 +5498,181 @@ cleanup:
     return ret;
 }
 
+
+static int
+qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
+                                  virCommandPtr cmd,
+                                  virQEMUCapsPtr qemuCaps,
+                                  virDomainGraphicsDefPtr graphics)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *listenNetwork;
+    const char *listenAddr = NULL;
+    char *netAddr = NULL;
+    int ret;
+    int defaultMode = graphics->data.spice.defaultMode;
+    int port = graphics->data.spice.port;
+    int tlsPort = graphics->data.spice.tlsPort;
+    int i;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("spice graphics are not supported with this QEMU"));
+        goto error;
+    }
+
+    if (port > 0 || tlsPort <= 0)
+        virBufferAsprintf(&opt, "port=%u", port);
+
+    if (tlsPort > 0) {
+        if (!cfg->spiceTLS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("spice TLS port set in XML configuration,"
+                             " but TLS is disabled in qemu.conf"));
+            goto error;
+        }
+        if (port > 0)
+            virBufferAddChar(&opt, ',');
+        virBufferAsprintf(&opt, "tls-port=%u", tlsPort);
+    }
+
+    switch (virDomainGraphicsListenGetType(graphics, 0)) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+        listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+        listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
+        if (!listenNetwork)
+            break;
+        ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+        if (ret <= -2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("network-based listen not possible, "
+                                   "network driver not present"));
+            goto error;
+        }
+        if (ret < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("listen network '%s' had no usable address"),
+                           listenNetwork);
+            goto error;
+        }
+        listenAddr = netAddr;
+        /* store the address we found in the <graphics> element so it will
+         * show up in status. */
+        if (virDomainGraphicsListenSetAddress(graphics, 0,
+                                              listenAddr, -1, false) < 0)
+           goto error;
+        break;
+    }
+
+    if (!listenAddr)
+        listenAddr = cfg->spiceListen;
+    if (listenAddr)
+        virBufferAsprintf(&opt, ",addr=%s", listenAddr);
+
+    VIR_FREE(netAddr);
+
+    if (graphics->data.spice.mousemode) {
+        switch (graphics->data.spice.mousemode) {
+        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
+            virBufferAsprintf(&opt, ",agent-mouse=off");
+            break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
+            virBufferAsprintf(&opt, ",agent-mouse=on");
+            break;
+        default:
+            break;
+        }
+    }
+
+    /* In the password case we set it via monitor command, to avoid
+     * making it visible on CLI, so there's no use of password=XXX
+     * in this bit of the code */
+    if (!graphics->data.spice.auth.passwd &&
+        !cfg->spicePassword)
+        virBufferAddLit(&opt, ",disable-ticketing");
+
+    if (cfg->spiceTLS)
+        virBufferAsprintf(&opt, ",x509-dir=%s",
+                          cfg->spiceTLSx509certdir);
+
+    switch (defaultMode) {
+    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+        virBufferAsprintf(&opt, ",tls-channel=default");
+        break;
+    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+        virBufferAsprintf(&opt, ",plaintext-channel=default");
+        break;
+    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+        /* nothing */
+        break;
+    }
+
+    for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+        int mode = graphics->data.spice.channels[i];
+        switch (mode) {
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+            if (!cfg->spiceTLS) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("spice secure channels set in XML configuration, "
+                                 "but TLS is disabled in qemu.conf"));
+                goto error;
+            }
+            virBufferAsprintf(&opt, ",tls-channel=%s",
+                              virDomainGraphicsSpiceChannelNameTypeToString(i));
+            break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+            virBufferAsprintf(&opt, ",plaintext-channel=%s",
+                              virDomainGraphicsSpiceChannelNameTypeToString(i));
+            break;
+        }
+    }
+    if (graphics->data.spice.image)
+        virBufferAsprintf(&opt, ",image-compression=%s",
+                          virDomainGraphicsSpiceImageCompressionTypeToString(graphics->data.spice.image));
+    if (graphics->data.spice.jpeg)
+        virBufferAsprintf(&opt, ",jpeg-wan-compression=%s",
+                          virDomainGraphicsSpiceJpegCompressionTypeToString(graphics->data.spice.jpeg));
+    if (graphics->data.spice.zlib)
+        virBufferAsprintf(&opt, ",zlib-glz-wan-compression=%s",
+                          virDomainGraphicsSpiceZlibCompressionTypeToString(graphics->data.spice.zlib));
+    if (graphics->data.spice.playback)
+        virBufferAsprintf(&opt, ",playback-compression=%s",
+                          virDomainGraphicsSpicePlaybackCompressionTypeToString(graphics->data.spice.playback));
+    if (graphics->data.spice.streaming)
+        virBufferAsprintf(&opt, ",streaming-video=%s",
+                          virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
+    if (graphics->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
+        virBufferAddLit(&opt, ",disable-copy-paste");
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
+        /* If qemu supports seamless migration turn it
+         * unconditionally on. If migration destination
+         * doesn't support it, it fallbacks to previous
+         * migration algorithm silently. */
+        virBufferAddLit(&opt, ",seamless-migration=on");
+    }
+
+    virCommandAddArg(cmd, "-spice");
+    virCommandAddArgBuffer(cmd, &opt);
+    if (graphics->data.spice.keymap)
+        virCommandAddArgList(cmd, "-k",
+                             graphics->data.spice.keymap, NULL);
+    /* SPICE includes native support for tunnelling audio, so we
+     * set the audio backend to point at SPICE's own driver
+     */
+    virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=spice");
+
+    return 0;
+
+error:
+    VIR_FREE(netAddr);
+    virBufferFreeAndReset(&opt);
+    return -1;
+}
+
 static int
 qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virCommandPtr cmd,
@@ -5505,8 +5680,6 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virQEMUCapsPtr qemuCaps,
                              virDomainGraphicsDefPtr graphics)
 {
-    int i;
-
     if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
 
@@ -5658,165 +5831,8 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
             virCommandAddArg(cmd, "-sdl");
 
     } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        virBuffer opt = VIR_BUFFER_INITIALIZER;
-        const char *listenNetwork;
-        const char *listenAddr = NULL;
-        char *netAddr = NULL;
-        int ret;
-        int defaultMode = graphics->data.spice.defaultMode;
-        int port = graphics->data.spice.port;
-        int tlsPort = graphics->data.spice.tlsPort;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("spice graphics are not supported with this QEMU"));
+        if (qemuBuildGraphicsSPICECommandLine(cfg, cmd, qemuCaps, graphics) < 0)
             goto error;
-        }
-
-        if (port > 0 || tlsPort <= 0)
-            virBufferAsprintf(&opt, "port=%u", port);
-
-        if (tlsPort > 0) {
-            if (!cfg->spiceTLS) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("spice TLS port set in XML configuration,"
-                                 " but TLS is disabled in qemu.conf"));
-                goto error;
-            }
-            if (port > 0)
-                virBufferAddChar(&opt, ',');
-            virBufferAsprintf(&opt, "tls-port=%u", tlsPort);
-        }
-
-        switch (virDomainGraphicsListenGetType(graphics, 0)) {
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-            if (!listenNetwork)
-                break;
-            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-            if (ret <= -2) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("network-based listen not possible, "
-                                       "network driver not present"));
-                goto error;
-            }
-            if (ret < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("listen network '%s' had no usable address"),
-                               listenNetwork);
-                goto error;
-            }
-            listenAddr = netAddr;
-            /* store the address we found in the <graphics> element so it will
-             * show up in status. */
-            if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                  listenAddr, -1, false) < 0)
-               goto error;
-            break;
-        }
-
-        if (!listenAddr)
-            listenAddr = cfg->spiceListen;
-        if (listenAddr)
-            virBufferAsprintf(&opt, ",addr=%s", listenAddr);
-
-        VIR_FREE(netAddr);
-
-        int mm = graphics->data.spice.mousemode;
-        if (mm) {
-            switch (mm) {
-            case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
-                virBufferAsprintf(&opt, ",agent-mouse=off");
-                break;
-            case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
-                virBufferAsprintf(&opt, ",agent-mouse=on");
-                break;
-            default:
-                break;
-            }
-        }
-
-        /* In the password case we set it via monitor command, to avoid
-         * making it visible on CLI, so there's no use of password=XXX
-         * in this bit of the code */
-        if (!graphics->data.spice.auth.passwd &&
-            !cfg->spicePassword)
-            virBufferAddLit(&opt, ",disable-ticketing");
-
-        if (cfg->spiceTLS)
-            virBufferAsprintf(&opt, ",x509-dir=%s",
-                              cfg->spiceTLSx509certdir);
-
-        switch (defaultMode) {
-        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-            virBufferAsprintf(&opt, ",tls-channel=default");
-            break;
-        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-            virBufferAsprintf(&opt, ",plaintext-channel=default");
-            break;
-        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-            /* nothing */
-            break;
-        }
-
-        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
-            int mode = graphics->data.spice.channels[i];
-            switch (mode) {
-            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-                if (!cfg->spiceTLS) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("spice secure channels set in XML configuration, but TLS is disabled in qemu.conf"));
-                    goto error;
-                }
-                virBufferAsprintf(&opt, ",tls-channel=%s",
-                                  virDomainGraphicsSpiceChannelNameTypeToString(i));
-                break;
-            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-                virBufferAsprintf(&opt, ",plaintext-channel=%s",
-                                  virDomainGraphicsSpiceChannelNameTypeToString(i));
-                break;
-            }
-        }
-        if (graphics->data.spice.image)
-            virBufferAsprintf(&opt, ",image-compression=%s",
-                              virDomainGraphicsSpiceImageCompressionTypeToString(graphics->data.spice.image));
-        if (graphics->data.spice.jpeg)
-            virBufferAsprintf(&opt, ",jpeg-wan-compression=%s",
-                              virDomainGraphicsSpiceJpegCompressionTypeToString(graphics->data.spice.jpeg));
-        if (graphics->data.spice.zlib)
-            virBufferAsprintf(&opt, ",zlib-glz-wan-compression=%s",
-                              virDomainGraphicsSpiceZlibCompressionTypeToString(graphics->data.spice.zlib));
-        if (graphics->data.spice.playback)
-            virBufferAsprintf(&opt, ",playback-compression=%s",
-                              virDomainGraphicsSpicePlaybackCompressionTypeToString(graphics->data.spice.playback));
-        if (graphics->data.spice.streaming)
-            virBufferAsprintf(&opt, ",streaming-video=%s",
-                              virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
-        if (graphics->data.spice.copypaste == VIR_DOMAIN_GRAPHICS_SPICE_CLIPBOARD_COPYPASTE_NO)
-            virBufferAddLit(&opt, ",disable-copy-paste");
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
-            /* If qemu supports seamless migration turn it
-             * unconditionally on. If migration destination
-             * doesn't support it, it fallbacks to previous
-             * migration algorithm silently. */
-            virBufferAddLit(&opt, ",seamless-migration=on");
-        }
-
-        virCommandAddArg(cmd, "-spice");
-        virCommandAddArgBuffer(cmd, &opt);
-        if (graphics->data.spice.keymap)
-            virCommandAddArgList(cmd, "-k",
-                                 graphics->data.spice.keymap, NULL);
-        /* SPICE includes native support for tunnelling audio, so we
-         * set the audio backend to point at SPICE's own driver
-         */
-        virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=spice");
-
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported graphics type '%s'"),
