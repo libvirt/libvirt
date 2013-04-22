@@ -1346,6 +1346,41 @@ error:
     return ret;
 }
 
+static int
+qemuProcessReadLog(int fd, char *buf, int buflen, int off)
+{
+    char *filter_next = buf;
+    ssize_t bytes;
+    char *eol;
+
+    buf[0] = '\0';
+
+    while (off < buflen - 1) {
+        bytes = saferead(fd, buf + off, buflen - off - 1);
+        if (bytes < 0)
+            return -1;
+        else if (bytes == 0)
+            break;
+
+        off += bytes;
+        buf[off] = '\0';
+
+        /* Filter out debug messages from intermediate libvirt process */
+        while ((eol = strchr(filter_next, '\n'))) {
+            *eol = '\0';
+            if (virLogProbablyLogMessage(filter_next)) {
+                memmove(filter_next, eol + 1, off - (eol - buf));
+                off -= eol + 1 - filter_next;
+            } else {
+                filter_next = eol + 1;
+                *eol = '\n';
+            }
+        }
+    }
+
+    return off;
+}
+
 typedef int qemuProcessLogHandleOutput(virDomainObjPtr vm,
                                        const char *output,
                                        int fd);
@@ -1365,44 +1400,24 @@ qemuProcessReadLogOutput(virDomainObjPtr vm,
     int retries = (timeout*10);
     int got = 0;
     int ret = -1;
-    char *filter_next = buf;
 
     buf[0] = '\0';
 
     while (retries) {
-        ssize_t func_ret, bytes;
+        ssize_t func_ret;
         int isdead = 0;
-        char *eol;
 
         func_ret = func(vm, buf, fd);
 
         if (kill(vm->pid, 0) == -1 && errno == ESRCH)
             isdead = 1;
 
-        /* Any failures should be detected before we read the log, so we
-         * always have something useful to report on failure. */
-        bytes = saferead(fd, buf+got, buflen-got-1);
-        if (bytes < 0) {
+        got = qemuProcessReadLog(fd, buf, buflen, got);
+        if (got < 0) {
             virReportSystemError(errno,
                                  _("Failure while reading %s log output"),
                                  what);
             goto cleanup;
-        }
-
-        got += bytes;
-        buf[got] = '\0';
-
-        /* Filter out debug messages from intermediate libvirt process */
-        while ((eol = strchr(filter_next, '\n'))) {
-            *eol = '\0';
-            VIR_ERROR("<<<<<<<<<<<<%s>>>>>>>>>>", filter_next);
-            if (virLogProbablyLogMessage(filter_next)) {
-                memmove(filter_next, eol + 1, got - (eol - buf));
-                got -= eol + 1 - filter_next;
-            } else {
-                filter_next = eol + 1;
-                *eol = '\n';
-            }
         }
 
         if (got == buflen-1) {
