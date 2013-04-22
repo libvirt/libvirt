@@ -89,7 +89,6 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
     int ret = -1;
     int i = 0;
     int maxnode = 0;
-    bool warned = false;
     virBitmapPtr tmp_nodemask = NULL;
 
     if (numatune.memory.placement_mode ==
@@ -113,19 +112,16 @@ virNumaSetupMemoryPolicy(virNumaTuneDef numatune,
     }
 
     maxnode = numa_max_node() + 1;
+
     /* Convert nodemask to NUMA bitmask. */
     nodemask_zero(&mask);
     i = -1;
     while ((i = virBitmapNextSetBit(tmp_nodemask, i)) >= 0) {
-        if (i > NUMA_NUM_NODES) {
+        if (i > maxnode || i > NUMA_NUM_NODES) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Host cannot support NUMA node %d"), i);
+                           _("Nodeset is out of range, host cannot support "
+                             "NUMA node bigger than %d"), i);
             return -1;
-        }
-        if (i > maxnode && !warned) {
-            VIR_WARN("nodeset is out of range, there is only %d NUMA "
-                     "nodes on host", maxnode);
-            warned = true;
         }
         nodemask_set(&mask, i);
     }
