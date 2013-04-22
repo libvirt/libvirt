@@ -29,6 +29,7 @@
 # include <stdio.h>
 
 # include "internal.h"
+# include "virstoragefile.h"
 
 typedef enum virFileCloseFlags {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,
@@ -113,6 +114,11 @@ int virFileUpdatePerm(const char *path,
 
 int virFileLoopDeviceAssociate(const char *file,
                                char **dev);
+
+int virFileNBDDeviceAssociate(const char *file,
+                              enum virStorageFileFormat fmt,
+                              bool readonly,
+                              char **dev);
 
 int virFileDeleteTree(const char *dir);
 

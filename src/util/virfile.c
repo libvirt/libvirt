@@ -653,6 +653,138 @@ cleanup:
     return lofd;
 }
 
+
+# define SYSFS_BLOCK_DIR "/sys/block"
+
+
+static int
+virFileNBDDeviceIsBusy(const char *devname)
+{
+    char *path;
+    int ret = -1;
+
+    if (virAsprintf(&path, SYSFS_BLOCK_DIR "/%s/pid",
+                    devname) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (access(path, F_OK) < 0) {
+        if (errno == ENOENT)
+            ret = 0;
+        else
+            virReportSystemError(errno,
+                                 _("Cannot check NBD device %s pid"),
+                                 devname);
+        goto cleanup;
+    }
+    ret = 1;
+
+cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
+static char *
+virFileNBDDeviceFindUnused(void)
+{
+    DIR *dh;
+    char *ret = NULL;
+    struct dirent *de;
+
+    if (!(dh = opendir(SYSFS_BLOCK_DIR))) {
+        virReportSystemError(errno,
+                             _("Cannot read directory %s"),
+                             SYSFS_BLOCK_DIR);
+        return NULL;
+    }
+
+    errno = 0;
+    while ((de = readdir(dh)) != NULL) {
+        if (STRPREFIX(de->d_name, "nbd")) {
+            int rv = virFileNBDDeviceIsBusy(de->d_name);
+            if (rv < 0)
+                goto cleanup;
+            if (rv == 0) {
+                if (virAsprintf(&ret, "/dev/%s", de->d_name) < 0) {
+                    virReportOOMError();
+                    goto cleanup;
+                }
+                goto cleanup;
+            }
+        }
+        errno = 0;
+    }
+
+    if (errno != 0)
+        virReportSystemError(errno, "%s",
+                             _("Unable to iterate over NBD devices"));
+    else
+        virReportSystemError(EBUSY, "%s",
+                             _("No free NBD devices"));
+
+cleanup:
+    closedir(dh);
+    return ret;
+}
+
+
+int virFileNBDDeviceAssociate(const char *file,
+                              enum virStorageFileFormat fmt,
+                              bool readonly,
+                              char **dev)
+{
+    char *nbddev;
+    char *qemunbd;
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+    const char *fmtstr = NULL;
+
+    if (!(nbddev = virFileNBDDeviceFindUnused()))
+        goto cleanup;
+
+    if (!(qemunbd = virFindFileInPath("qemu-nbd"))) {
+        virReportSystemError(ENOENT, "%s",
+                             _("Unable to find 'qemu-nbd' binary in $PATH"));
+        goto cleanup;
+    }
+
+    if (fmt > 0)
+        fmtstr = virStorageFileFormatTypeToString(fmt);
+
+    cmd = virCommandNew(qemunbd);
+
+    /* Explicitly not trying to cope with old qemu-nbd which
+     * lacked --format. We want to see a fatal error in that
+     * case since it would be security flaw to continue */
+    if (fmtstr)
+        virCommandAddArgList(cmd, "--format", fmtstr, NULL);
+
+    if (readonly)
+        virCommandAddArg(cmd, "-r");
+
+    virCommandAddArgList(cmd,
+                         "-n", /* Don't cache in qemu-nbd layer */
+                         "-c", nbddev,
+                         file, NULL);
+
+    /* qemu-nbd will daemonize itself */
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    *dev = nbddev;
+    nbddev = NULL;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(nbddev);
+    VIR_FREE(qemunbd);
+    virCommandFree(cmd);
+    return ret;
+}
+
 #else /* __linux__ */
 
 int virFileLoopDeviceAssociate(const char *file,
@@ -662,6 +794,17 @@ int virFileLoopDeviceAssociate(const char *file,
                          _("Unable to associate file %s with loop device"),
                          file);
     *dev = NULL;
+    return -1;
+}
+
+int virFileNBDDeviceAssociate(const char *file,
+                              enum virStorageFileFormat fmt ATTRIBUTE_UNUSED,
+                              bool readonly ATTRIBUTE_UNUSED,
+                              char **dev ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS,
+                         _("Unable to associate file %s with NBD device"),
+                         file);
     return -1;
 }
 

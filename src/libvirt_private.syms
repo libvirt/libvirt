@@ -1298,6 +1298,7 @@ virFileLoopDeviceAssociate;
 virFileMakePath;
 virFileMakePathWithMode;
 virFileMatchesNameSuffix;
+virFileNBDDeviceAssociate;
 virFileOpenAs;
 virFileOpenTty;
 virFileReadAll;
