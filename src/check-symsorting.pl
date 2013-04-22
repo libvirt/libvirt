@@ -11,7 +11,7 @@ my $lastgroup = undef;
 foreach my $symfile (@ARGV) {
     open SYMFILE, $symfile or die "cannot read $symfile: $!";
 
-    my $line;
+    my $line = 0;
     my $groupfile = "";
     my @group;
 
