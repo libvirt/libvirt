@@ -401,17 +401,31 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         if (fs->type != VIR_DOMAIN_FS_TYPE_FILE)
             continue;
 
-        fd = virLXCControllerSetupLoopDeviceFS(fs);
-        if (fd < 0)
-            goto cleanup;
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_LOOP) {
+            if (fs->format != VIR_STORAGE_FILE_RAW &&
+                fs->format != VIR_STORAGE_FILE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("fs format %s is not supported"),
+                               virStorageFileFormatTypeToString(fs->format));
+                goto cleanup;
+            }
 
-        VIR_DEBUG("Saving loop fd %d", fd);
-        if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            virReportOOMError();
-            goto cleanup;
+            fd = virLXCControllerSetupLoopDeviceFS(fs);
+            if (fd < 0)
+                goto cleanup;
+
+            VIR_DEBUG("Saving loop fd %d", fd);
+            if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
+                VIR_FORCE_CLOSE(fd);
+                virReportOOMError();
+                goto cleanup;
+            }
+            ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("fs driver %s is not supported"),
+                           virDomainFSDriverTypeTypeToString(fs->fsdriver));
         }
-        ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
     }
 
     for (i = 0 ; i < ctrl->def->ndisks ; i++) {
@@ -421,40 +435,36 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         if (disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
             continue;
 
-        switch (disk->format) {
+        if (!disk->driverName ||
+            STREQ(disk->driverName, "loop")) {
+            if (disk->format != VIR_STORAGE_FILE_RAW &&
+                disk->format != VIR_STORAGE_FILE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("disk format %s is not supported"),
+                               virStorageFileFormatTypeToString(disk->format));
+                goto cleanup;
+            }
+
             /* We treat 'none' as meaning 'raw' since we
              * don't want to go into the auto-probing
              * business for security reasons
              */
-        case VIR_STORAGE_FILE_RAW:
-        case VIR_STORAGE_FILE_NONE:
-            if (disk->driverName &&
-                STRNEQ(disk->driverName, "loop")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("disk driver %s is not supported"),
-                               disk->driverName);
-                goto cleanup;
-            }
-
             fd = virLXCControllerSetupLoopDeviceDisk(disk);
             if (fd < 0)
                 goto cleanup;
-            break;
 
-        default:
+            VIR_DEBUG("Saving loop fd %d", fd);
+            if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
+                VIR_FORCE_CLOSE(fd);
+                virReportOOMError();
+                goto cleanup;
+            }
+            ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
+        } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk format %s is not supported"),
-                           virStorageFileFormatTypeToString(disk->format));
-            goto cleanup;
+                           _("disk driver %s is not supported"),
+                           disk->driverName);
         }
-
-        VIR_DEBUG("Saving loop fd %d", fd);
-        if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
-            VIR_FORCE_CLOSE(fd);
-            virReportOOMError();
-            goto cleanup;
-        }
-        ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
     }
 
     VIR_DEBUG("Setup all loop devices");
