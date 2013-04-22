@@ -3160,8 +3160,14 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
     freeDef = false;
 
     if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
-        virNetworkRemoveInactive(&driver->networks, network);
-        network = NULL;
+        if (!virNetworkObjIsActive(network)) {
+            virNetworkRemoveInactive(&driver->networks, network);
+            network = NULL;
+            goto cleanup;
+        }
+        network->persistent = 0;
+        virNetworkDefFree(network->newDef);
+        network->newDef = NULL;
         goto cleanup;
     }
 
