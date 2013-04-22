@@ -19,6 +19,11 @@
       <source file='/root/container.img'/>
       <target dir='/'/>
     </filesystem>
+    <filesystem type='file' accessmode='passthrough'>
+      <driver type='nbd' format='qcow2'/>
+      <source file='/root/container.qcow2'/>
+      <target dir='/home'/>
+    </filesystem>
     <console type='pty'>
       <target type='lxc' port='0'/>
     </console>

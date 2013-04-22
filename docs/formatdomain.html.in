@@ -1992,8 +1992,9 @@
             the <code>type</code> attribute selects the primary
             backend driver name, while the <code>format</code>
             attribute provides the format type. For example, LXC
-            supports a type of "loop", with a format of "raw". QEMU
-            supports a type of "path" or "handle", but no formats.
+            supports a type of "loop", with a format of "raw" or
+            "nbd" with any format. QEMU supports a type of "path"
+            or "handle", but no formats.
           </li>
         </ul>
       </dd>

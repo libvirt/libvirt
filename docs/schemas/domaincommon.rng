@@ -1675,6 +1675,7 @@
             <value>path</value>
             <value>handle</value>
             <value>loop</value>
+            <value>nbd</value>
           </choice>
         </attribute>
       </optional>
