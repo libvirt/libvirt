@@ -7470,7 +7470,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                     continue;
                 }
 
-                if ((rc = virCgroupSetCpusetMems(priv->cgroup, nodeset_str) != 0)) {
+                if ((rc = virCgroupSetCpusetMems(priv->cgroup, nodeset_str)) != 0) {
                     virReportSystemError(-rc, "%s",
                                          _("unable to set numa tunable"));
                     virBitmapFree(nodeset);
