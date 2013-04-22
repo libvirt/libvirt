@@ -800,6 +800,7 @@ enum virDomainFSDriverType {
     VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT = 0,
     VIR_DOMAIN_FS_DRIVER_TYPE_PATH,
     VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE,
+    VIR_DOMAIN_FS_DRIVER_TYPE_LOOP,
 
     VIR_DOMAIN_FS_DRIVER_TYPE_LAST
 };
@@ -826,9 +827,10 @@ enum virDomainFSWrpolicy {
 
 struct _virDomainFSDef {
     int type;
-    int fsdriver;
-    int accessmode;
+    int fsdriver; /* enum virDomainFSDriverType */
+    int accessmode; /* enum virDomainFSAccessMode */
     int wrpolicy; /* enum virDomainFSWrpolicy */
+    int format; /* enum virStorageFileFormat */
     unsigned long long usage;
     char *src;
     char *dst;

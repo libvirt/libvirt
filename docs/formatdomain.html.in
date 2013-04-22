@@ -1883,6 +1883,13 @@
       &lt;target dir='/import/from/host'/&gt;
       &lt;readonly/&gt;
     &lt;/filesystem&gt;
+    &lt;filesystem type='file' accessmode='passthrough'&gt;
+      &lt;driver name='loop' type='raw'/&gt;
+      &lt;driver type='path' wrpolicy='immediate'/&gt;
+      &lt;source file='/export/to/guest.img'/&gt;
+      &lt;target dir='/import/from/host'/&gt;
+      &lt;readonly/&gt;
+    &lt;/filesystem&gt;
     ...
   &lt;/devices&gt;
   ...</pre>
@@ -1972,6 +1979,23 @@
         </dd>
         </dl>
 
+      </dd>
+
+      <dt><code>driver</code></dt>
+      <dd>
+        The optional driver element allows specifying further details
+        related to the hypervisor driver used to provide the filesystem.
+        <span class="since">Since 1.0.6</span>
+        <ul>
+          <li>
+            If the hypervisor supports multiple backend drivers, then
+            the <code>type</code> attribute selects the primary
+            backend driver name, while the <code>format</code>
+            attribute provides the format type. For example, LXC
+            supports a type of "loop", with a format of "raw". QEMU
+            supports a type of "path" or "handle", but no formats.
+          </li>
+        </ul>
       </dd>
 
       <dt><code>source</code></dt>

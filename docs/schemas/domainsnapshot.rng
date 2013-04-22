@@ -128,7 +128,7 @@
               <element name='driver'>
                 <optional>
                   <attribute name='type'>
-                    <ref name='diskFormat'/>
+                    <ref name='storageFormat'/>
                   </attribute>
                 </optional>
                 <empty/>

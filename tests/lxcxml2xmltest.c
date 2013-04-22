@@ -128,6 +128,7 @@ mymain(void)
 
     DO_TEST("systemd");
     DO_TEST("hostdev");
+    DO_TEST("disk-formats");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

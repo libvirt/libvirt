@@ -139,7 +139,8 @@ VIR_ENUM_DECL(qemuDomainFSDriver)
 VIR_ENUM_IMPL(qemuDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "local",
               "local",
-              "handle");
+              "handle",
+              NULL);
 
 
 /**

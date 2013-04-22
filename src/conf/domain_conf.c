@@ -342,7 +342,8 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainFSDriverType, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
               "path",
-              "handle")
+              "handle",
+              "loop")
 
 VIR_ENUM_IMPL(virDomainFSAccessMode, VIR_DOMAIN_FS_ACCESSMODE_LAST,
               "passthrough",
@@ -5596,6 +5597,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     char *fsdriver = NULL;
     char *source = NULL;
     char *target = NULL;
+    char *format = NULL;
     char *accessmode = NULL;
     char *wrpolicy = NULL;
     char *usage = NULL;
@@ -5664,9 +5666,13 @@ virDomainFSDefParseXML(xmlNodePtr node,
                 target = virXMLPropString(cur, "dir");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = true;
-            } else if (!fsdriver && xmlStrEqual(cur->name, BAD_CAST "driver")) {
-                fsdriver = virXMLPropString(cur, "type");
-                wrpolicy = virXMLPropString(cur, "wrpolicy");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
+                if (!fsdriver)
+                    fsdriver = virXMLPropString(cur, "type");
+                if (!wrpolicy)
+                    wrpolicy = virXMLPropString(cur, "wrpolicy");
+                if (!format)
+                    format = virXMLPropString(cur, "format");
             }
         }
         cur = cur->next;
@@ -5674,8 +5680,16 @@ virDomainFSDefParseXML(xmlNodePtr node,
 
     if (fsdriver) {
         if ((def->fsdriver = virDomainFSDriverTypeTypeFromString(fsdriver)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown fs driver type '%s'"), fsdriver);
+            goto error;
+        }
+    }
+
+    if (format) {
+        if ((def->format = virStorageFileFormatTypeFromString(format)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown driver format value '%s'"), format);
             goto error;
         }
     }
@@ -5739,6 +5753,7 @@ cleanup:
     VIR_FREE(wrpolicy);
     VIR_FREE(usage);
     VIR_FREE(unit);
+    VIR_FREE(format);
 
     return def;
 
@@ -13947,10 +13962,13 @@ virDomainFSDefFormat(virBufferPtr buf,
     if (def->fsdriver) {
         virBufferAsprintf(buf, "      <driver type='%s'", fsdriver);
 
+        if (def->format)
+            virBufferAsprintf(buf, " format='%s'",
+                              virStorageFileFormatTypeToString(def->format));
+
         /* Don't generate anything if wrpolicy is set to default */
-        if (def->wrpolicy) {
+        if (def->wrpolicy)
             virBufferAsprintf(buf, " wrpolicy='%s'", wrpolicy);
-        }
 
         virBufferAddLit(buf, "/>\n");
     }

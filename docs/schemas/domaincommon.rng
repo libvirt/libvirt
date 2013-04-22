@@ -888,7 +888,7 @@
   <define name="diskspec">
     <interleave>
       <optional>
-        <ref name="driver"/>
+        <ref name="diskDriver"/>
       </optional>
       <optional>
         <ref name='diskMirror'/>
@@ -1270,7 +1270,7 @@
   <!--
       Disk may use a special driver for access.
     -->
-  <define name="driver">
+  <define name="diskDriver">
     <element name="driver">
       <choice>
         <group>
@@ -1314,13 +1314,13 @@
     <optional>
       <attribute name='type'>
         <choice>
-          <ref name='diskFormat'/>
+          <ref name='storageFormat'/>
           <value>aio</value> <!-- back-compat for 'raw' -->
         </choice>
       </attribute>
     </optional>
   </define>
-  <define name='diskFormat'>
+  <define name='storageFormat'>
     <choice>
       <value>raw</value>
       <value>dir</value>
@@ -1518,6 +1518,9 @@
           <attribute name="type">
             <value>file</value>
           </attribute>
+          <optional>
+            <ref name="fsDriver"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="file">
@@ -1531,6 +1534,9 @@
           <attribute name="type">
             <value>block</value>
           </attribute>
+          <optional>
+            <ref name="fsDriver"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="dev">
@@ -1547,6 +1553,9 @@
               <value>mount</value>
             </attribute>
           </optional>
+          <optional>
+            <ref name="fsDriver"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="dir">
@@ -1554,22 +1563,6 @@
               </attribute>
               <empty/>
             </element>
-            <optional>
-              <element name="driver">
-                <attribute name="type">
-                  <choice>
-                    <value>path</value>
-                    <value>handle</value>
-                  </choice>
-                </attribute>
-                <optional>
-                  <attribute name="wrpolicy">
-                    <value>immediate</value>
-                  </attribute>
-                </optional>
-                <empty/>
-              </element>
-            </optional>
           </interleave>
         </group>
         <group>
@@ -1577,6 +1570,9 @@
             <attribute name="type">
               <value>bind</value>
             </attribute>
+          </optional>
+          <optional>
+            <ref name="fsDriver"/>
           </optional>
           <interleave>
             <element name="source">
@@ -1591,6 +1587,9 @@
           <attribute name="type">
             <value>template</value>
           </attribute>
+          <optional>
+            <ref name="fsDriver"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="name">
@@ -1604,6 +1603,9 @@
           <attribute name="type">
             <value>ram</value>
           </attribute>
+          <optional>
+            <ref name="fsDriver"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="usage">
@@ -1661,6 +1663,35 @@
       </interleave>
     </element>
   </define>
+  <define name="fsDriver">
+    <element name="driver">
+      <!-- Annoying inconsistency. 'disk' uses 'name'
+           for this kind of info, and 'type' for the
+           storage format. We need the latter too, so
+           had to invent a new attribute name -->
+      <optional>
+        <attribute name="type">
+          <choice>
+            <value>path</value>
+            <value>handle</value>
+            <value>loop</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="format">
+          <ref name="storageFormat"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="wrpolicy">
+          <value>immediate</value>
+        </attribute>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+
   <!--
       An interface description can either be of type bridge in which case
       it will use a bridging source, or of type ethernet which uses a device
@@ -3838,7 +3869,7 @@
       </attribute>
       <optional>
         <attribute name='format'>
-          <ref name='diskFormat'/>
+          <ref name='storageFormat'/>
         </attribute>
       </optional>
       <optional>
