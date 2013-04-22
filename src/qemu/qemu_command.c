@@ -5804,24 +5804,19 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virQEMUCapsPtr qemuCaps,
                              virDomainGraphicsDefPtr graphics)
 {
-    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        if (qemuBuildGraphicsVNCCommandLine(cfg, cmd, def, qemuCaps, graphics) < 0)
-            goto error;
-    } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
+    switch ((enum virDomainGraphicsType) graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("sdl not supported by '%s'"),
-                           def->emulator);
-            goto error;
+                           _("sdl not supported by '%s'"), def->emulator);
+            return -1;
         }
 
         if (graphics->data.sdl.xauth)
-            virCommandAddEnvPair(cmd, "XAUTHORITY",
-                                 graphics->data.sdl.xauth);
+            virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
         if (graphics->data.sdl.display)
-            virCommandAddEnvPair(cmd, "DISPLAY",
-                                 graphics->data.sdl.display);
+            virCommandAddEnvPair(cmd, "DISPLAY", graphics->data.sdl.display);
         if (graphics->data.sdl.fullscreen)
             virCommandAddArg(cmd, "-full-screen");
 
@@ -5838,20 +5833,24 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL))
             virCommandAddArg(cmd, "-sdl");
 
-    } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        if (qemuBuildGraphicsSPICECommandLine(cfg, cmd, qemuCaps, graphics) < 0)
-            goto error;
-    } else {
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        return qemuBuildGraphicsVNCCommandLine(cfg, cmd, def, qemuCaps, graphics);
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        return qemuBuildGraphicsSPICECommandLine(cfg, cmd, qemuCaps, graphics);
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported graphics type '%s'"),
                        virDomainGraphicsTypeToString(graphics->type));
-        goto error;
+        return -1;
     }
 
     return 0;
-
-error:
-    return -1;
 }
 
 /*

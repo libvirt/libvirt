@@ -1230,7 +1230,7 @@ struct _virDomainVideoDef {
     virDomainDeviceInfo info;
 };
 
-/* 3 possible graphics console modes */
+/* graphics console modes */
 enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_SDL,
     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
