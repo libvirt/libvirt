@@ -3269,6 +3269,53 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
     return ret;
 }
 
+
+static int
+qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
+                              virQEMUDriverConfigPtr cfg,
+                              virDomainGraphicsDefPtr graphics)
+{
+    int ret = -1;
+    unsigned short port = 0;
+    unsigned short tlsPort;
+
+    if (graphics->data.spice.autoport ||
+        graphics->data.spice.port == -1) {
+        if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
+            goto cleanup;
+
+        if (port == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to find an unused port for SPICE"));
+            goto cleanup;
+        }
+
+        graphics->data.spice.port = port;
+    }
+
+    if (cfg->spiceTLS &&
+        (graphics->data.spice.autoport ||
+         graphics->data.spice.tlsPort == -1)) {
+        if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
+            goto cleanup;
+
+        if (tlsPort == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Unable to find an unused port for SPICE TLS"));
+            virPortAllocatorRelease(driver->remotePorts, port);
+            goto cleanup;
+        }
+
+        graphics->data.spice.tlsPort = tlsPort;
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -3403,36 +3450,8 @@ int qemuProcessStart(virConnectPtr conn,
                 goto cleanup;
             graphics->data.vnc.port = port;
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            unsigned short port = 0;
-            if (graphics->data.spice.autoport ||
-                graphics->data.spice.port == -1) {
-                if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
-                    goto cleanup;
-
-                if (port == 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused port for SPICE"));
-                    goto cleanup;
-                }
-
-                graphics->data.spice.port = port;
-            }
-            if (cfg->spiceTLS &&
-                (graphics->data.spice.autoport ||
-                 graphics->data.spice.tlsPort == -1)) {
-                unsigned short tlsPort;
-                if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
-                    goto cleanup;
-
-                if (tlsPort == 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to find an unused port for SPICE TLS"));
-                    virPortAllocatorRelease(driver->remotePorts, port);
-                    goto cleanup;
-                }
-
-                graphics->data.spice.tlsPort = tlsPort;
-            }
+            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics) < 0)
+                goto cleanup;
         }
 
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
