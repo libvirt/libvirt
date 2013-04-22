@@ -97,12 +97,10 @@ virStorageBackendSheepdogAddHostArg(virCommandPtr cmd,
     const char *address = "localhost";
     int port = 7000;
     if (pool->def->source.nhost > 0) {
-        if (pool->def->source.hosts[0].name != NULL) {
+        if (pool->def->source.hosts[0].name != NULL)
             address = pool->def->source.hosts[0].name;
-        }
-        if (pool->def->source.hosts[0].port) {
+        if (pool->def->source.hosts[0].port)
             port = pool->def->source.hosts[0].port;
-        }
     }
     virCommandAddArg(cmd, "-a");
     virCommandAddArgFormat(cmd, "%s", address);
@@ -210,11 +208,10 @@ virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
             continue;
 
         /* skip space */
-        if (p + 2 < next) {
+        if (p + 2 < next)
             p += 2;
-        } else {
+        else
             return -1;
-        }
 
         /* skip name */
         while (*p != '\0' && *p != ' ') {
