@@ -557,7 +557,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def, bool startup)
         /* We only auto-create the default partition. In other
          * cases we expec the sysadmin/app to have done so */
         rc = virCgroupNewPartition(def->resource->partition,
-                                   STREQ(def->resource->partition, "/system"),
+                                   STREQ(def->resource->partition, "/machine"),
                                    -1,
                                    &parent);
         if (rc != 0) {

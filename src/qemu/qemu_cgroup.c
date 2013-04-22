@@ -256,7 +256,7 @@ int qemuInitCgroup(virQEMUDriverPtr driver,
         /* We only auto-create the default partition. In other
          * cases we expec the sysadmin/app to have done so */
         rc = virCgroupNewPartition(vm->def->resource->partition,
-                                   STREQ(vm->def->resource->partition, "/system"),
+                                   STREQ(vm->def->resource->partition, "/machine"),
                                    cfg->cgroupControllers,
                                    &parent);
         if (rc != 0) {
