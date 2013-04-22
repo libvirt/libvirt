@@ -5500,6 +5500,130 @@ cleanup:
 
 
 static int
+qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
+                                virCommandPtr cmd,
+                                virDomainDefPtr def,
+                                virQEMUCapsPtr qemuCaps,
+                                virDomainGraphicsDefPtr graphics)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *listenNetwork;
+    const char *listenAddr = NULL;
+    char *netAddr = NULL;
+    bool escapeAddr;
+    int ret;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vnc graphics are not supported with this QEMU"));
+        goto error;
+    }
+
+    if (graphics->data.vnc.socket || cfg->vncAutoUnixSocket) {
+        if (!graphics->data.vnc.socket &&
+            virAsprintf(&graphics->data.vnc.socket,
+                        "%s/%s.vnc", cfg->libDir, def->name) == -1)
+            goto no_memory;
+
+        virBufferAsprintf(&opt, "unix:%s", graphics->data.vnc.socket);
+
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
+        switch (virDomainGraphicsListenGetType(graphics, 0)) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
+            if (!listenNetwork)
+                break;
+            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+            if (ret <= -2) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("network-based listen not possible, "
+                                       "network driver not present"));
+                goto error;
+            }
+            if (ret < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("listen network '%s' had no usable address"),
+                               listenNetwork);
+                goto error;
+            }
+            listenAddr = netAddr;
+            /* store the address we found in the <graphics> element so it will
+             * show up in status. */
+            if (virDomainGraphicsListenSetAddress(graphics, 0,
+                                                  listenAddr, -1, false) < 0)
+               goto error;
+            break;
+        }
+
+        if (!listenAddr)
+            listenAddr = cfg->vncListen;
+
+        escapeAddr = strchr(listenAddr, ':') != NULL;
+        if (escapeAddr)
+            virBufferAsprintf(&opt, "[%s]", listenAddr);
+        else
+            virBufferAdd(&opt, listenAddr, -1);
+        virBufferAsprintf(&opt, ":%d",
+                          graphics->data.vnc.port - 5900);
+
+        VIR_FREE(netAddr);
+    } else {
+        virBufferAsprintf(&opt, "%d",
+                          graphics->data.vnc.port - 5900);
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
+        if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
+            virBufferAddLit(&opt, ",password");
+
+        if (cfg->vncTLS) {
+            virBufferAddLit(&opt, ",tls");
+            if (cfg->vncTLSx509verify)
+                virBufferAsprintf(&opt, ",x509verify=%s", cfg->vncTLSx509certdir);
+            else
+                virBufferAsprintf(&opt, ",x509=%s", cfg->vncTLSx509certdir);
+        }
+
+        if (cfg->vncSASL) {
+            virBufferAddLit(&opt, ",sasl");
+
+            if (cfg->vncSASLdir)
+                virCommandAddEnvPair(cmd, "SASL_CONF_DIR", cfg->vncSASLdir);
+
+            /* TODO: Support ACLs later */
+        }
+    }
+
+    virCommandAddArg(cmd, "-vnc");
+    virCommandAddArgBuffer(cmd, &opt);
+    if (graphics->data.vnc.keymap)
+        virCommandAddArgList(cmd, "-k", graphics->data.vnc.keymap, NULL);
+
+    /* Unless user requested it, set the audio backend to none, to
+     * prevent it opening the host OS audio devices, since that causes
+     * security issues and might not work when using VNC.
+     */
+    if (cfg->vncAllowHostAudio)
+        virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+    else
+        virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+error:
+    VIR_FREE(netAddr);
+    virBufferFreeAndReset(&opt);
+    return -1;
+}
+
+
+static int
 qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virCommandPtr cmd,
                                   virQEMUCapsPtr qemuCaps,
@@ -5681,124 +5805,8 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virDomainGraphicsDefPtr graphics)
 {
     if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        virBuffer opt = VIR_BUFFER_INITIALIZER;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("vnc graphics are not supported with this QEMU"));
+        if (qemuBuildGraphicsVNCCommandLine(cfg, cmd, def, qemuCaps, graphics) < 0)
             goto error;
-        }
-
-        if (graphics->data.vnc.socket ||
-            cfg->vncAutoUnixSocket) {
-
-            if (!graphics->data.vnc.socket &&
-                virAsprintf(&graphics->data.vnc.socket,
-                            "%s/%s.vnc", cfg->libDir, def->name) == -1) {
-                goto no_memory;
-            }
-
-            virBufferAsprintf(&opt, "unix:%s",
-                              graphics->data.vnc.socket);
-
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-            const char *listenNetwork;
-            const char *listenAddr = NULL;
-            char *netAddr = NULL;
-            bool escapeAddr;
-            int ret;
-
-            switch (virDomainGraphicsListenGetType(graphics, 0)) {
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-                if (!listenNetwork)
-                    break;
-                ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-                if (ret <= -2) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("network-based listen not possible, "
-                                           "network driver not present"));
-                    goto error;
-                }
-                if (ret < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("listen network '%s' had no usable address"),
-                                   listenNetwork);
-                    goto error;
-                }
-                listenAddr = netAddr;
-                /* store the address we found in the <graphics> element so it will
-                 * show up in status. */
-                if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                      listenAddr, -1, false) < 0)
-                   goto error;
-                break;
-            }
-
-            if (!listenAddr)
-                listenAddr = cfg->vncListen;
-
-            escapeAddr = strchr(listenAddr, ':') != NULL;
-            if (escapeAddr)
-                virBufferAsprintf(&opt, "[%s]", listenAddr);
-            else
-                virBufferAdd(&opt, listenAddr, -1);
-            virBufferAsprintf(&opt, ":%d",
-                              graphics->data.vnc.port - 5900);
-
-            VIR_FREE(netAddr);
-        } else {
-            virBufferAsprintf(&opt, "%d",
-                              graphics->data.vnc.port - 5900);
-        }
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-            if (graphics->data.vnc.auth.passwd ||
-                cfg->vncPassword)
-                virBufferAddLit(&opt, ",password");
-
-            if (cfg->vncTLS) {
-                virBufferAddLit(&opt, ",tls");
-                if (cfg->vncTLSx509verify) {
-                    virBufferAsprintf(&opt, ",x509verify=%s",
-                                      cfg->vncTLSx509certdir);
-                } else {
-                    virBufferAsprintf(&opt, ",x509=%s",
-                                      cfg->vncTLSx509certdir);
-                }
-            }
-
-            if (cfg->vncSASL) {
-                virBufferAddLit(&opt, ",sasl");
-
-                if (cfg->vncSASLdir)
-                    virCommandAddEnvPair(cmd, "SASL_CONF_DIR",
-                                         cfg->vncSASLdir);
-
-                /* TODO: Support ACLs later */
-            }
-        }
-
-        virCommandAddArg(cmd, "-vnc");
-        virCommandAddArgBuffer(cmd, &opt);
-        if (graphics->data.vnc.keymap) {
-            virCommandAddArgList(cmd, "-k", graphics->data.vnc.keymap,
-                                 NULL);
-        }
-
-        /* Unless user requested it, set the audio backend to none, to
-         * prevent it opening the host OS audio devices, since that causes
-         * security issues and might not work when using VNC.
-         */
-        if (cfg->vncAllowHostAudio) {
-            virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
-        } else {
-            virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
-        }
     } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
@@ -5842,8 +5850,6 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
