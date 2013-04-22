@@ -2730,7 +2730,7 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
-static int
+int
 virDomainDefPostParse(virDomainDefPtr def,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt)

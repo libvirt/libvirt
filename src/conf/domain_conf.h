@@ -2040,6 +2040,11 @@ virDomainXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
     ATTRIBUTE_NONNULL(1);
 
+int
+virDomainDefPostParse(virDomainDefPtr def,
+                      virCapsPtr caps,
+                      virDomainXMLOptionPtr xmlopt);
+
 static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
 {

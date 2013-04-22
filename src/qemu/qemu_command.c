@@ -8242,6 +8242,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     def->bus = VIR_DOMAIN_DISK_BUS_IDE;
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
+    def->format = VIR_STORAGE_FILE_AUTO;
 
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "file")) {
@@ -9489,6 +9490,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             if (VIR_ALLOC(disk) < 0)
                 goto no_memory;
 
+            disk->format = VIR_STORAGE_FILE_AUTO;
+
             if (STRPREFIX(val, "/dev/"))
                 disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
             else if (STRPREFIX(val, "nbd:")) {
@@ -10149,6 +10152,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
     VIR_FREE(nics);
 
     if (virDomainDefAddImplicitControllers(def) < 0)
+        goto error;
+
+    if (virDomainDefPostParse(def, qemuCaps, xmlopt) < 0)
         goto error;
 
     if (cmd->num_args || cmd->num_env) {

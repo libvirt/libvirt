@@ -119,6 +119,7 @@ virDomainDefGetSecurityLabelDef;
 virDomainDefParseFile;
 virDomainDefParseNode;
 virDomainDefParseString;
+virDomainDefPostParse;
 virDomainDeleteConfig;
 virDomainDeviceAddressIsValid;
 virDomainDeviceAddressTypeToString;
