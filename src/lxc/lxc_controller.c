@@ -389,6 +389,62 @@ static int virLXCControllerSetupLoopDeviceDisk(virDomainDiskDefPtr disk)
 }
 
 
+static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
+{
+    char *dev;
+
+    if (fs->format <= VIR_STORAGE_FILE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("An explicit disk format must be specified"));
+        return -1;
+    }
+
+    if (virFileNBDDeviceAssociate(fs->src,
+                                  fs->format,
+                                  fs->readonly,
+                                  &dev) < 0)
+        return -1;
+
+    /*
+     * We now change it into a block device type, so that
+     * the rest of container setup 'just works'
+     */
+    fs->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+    VIR_FREE(fs->src);
+    fs->src = dev;
+
+    return 0;
+}
+
+
+static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
+{
+    char *dev;
+
+    if (disk->format <= VIR_STORAGE_FILE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("An explicit disk format must be specified"));
+        return -1;
+    }
+
+    if (virFileNBDDeviceAssociate(disk->src,
+                                  disk->format,
+                                  disk->readonly,
+                                  &dev) < 0)
+        return -1;
+
+    /*
+     * We now change it into a block device type, so that
+     * the rest of container setup 'just works'
+     */
+    disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;
+    VIR_FREE(disk->src);
+    disk->src = dev;
+
+    return 0;
+}
+
+
 static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
@@ -421,6 +477,9 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 goto cleanup;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
+        } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_NBD) {
+            if (virLXCControllerSetupNBDDeviceFS(fs) < 0)
+                goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("fs driver %s is not supported"),
@@ -435,8 +494,14 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
         if (disk->type != VIR_DOMAIN_DISK_TYPE_FILE)
             continue;
 
-        if (!disk->driverName ||
-            STREQ(disk->driverName, "loop")) {
+        /* If no driverName is set, we prefer 'loop' for
+         * dealing with raw or undefined formats, otherwise
+         * we use 'nbd'.
+         */
+        if (STREQ_NULLABLE(disk->driverName, "loop") ||
+            (!disk->driverName &&
+             (disk->format == VIR_STORAGE_FILE_RAW ||
+              disk->format == VIR_STORAGE_FILE_NONE))) {
             if (disk->format != VIR_STORAGE_FILE_RAW &&
                 disk->format != VIR_STORAGE_FILE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -460,6 +525,17 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 goto cleanup;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
+        } else if (STREQ_NULLABLE(disk->driverName, "nbd") ||
+                   !disk->driverName) {
+            if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT &&
+                disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Disk cache mode %s is not supported"),
+                               virDomainDiskCacheTypeToString(disk->cachemode));
+                goto cleanup;
+            }
+            if (virLXCControllerSetupNBDDeviceDisk(disk) < 0)
+                goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk driver %s is not supported"),
