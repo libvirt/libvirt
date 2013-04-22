@@ -668,9 +668,47 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        void *opaque ATTRIBUTE_UNUSED)
 {
+    bool addPCIRoot = false;
+
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
+        return -1;
+
+    /* Add implicit PCI root controller if the machine has one */
+    switch (def->os.arch) {
+    case VIR_ARCH_I686:
+    case VIR_ARCH_X86_64:
+        if (!def->os.machine)
+            break;
+        if (STRPREFIX(def->os.machine, "pc-q35") ||
+            STREQ(def->os.machine, "q35") ||
+            STREQ(def->os.machine, "isapc"))
+            break;
+        if (!STRPREFIX(def->os.machine, "pc-0.") &&
+            !STRPREFIX(def->os.machine, "pc-1.") &&
+            !STREQ(def->os.machine, "pc") &&
+            !STRPREFIX(def->os.machine, "rhel"))
+            break;
+        addPCIRoot = true;
+        break;
+
+    case VIR_ARCH_ALPHA:
+    case VIR_ARCH_PPC:
+    case VIR_ARCH_PPC64:
+    case VIR_ARCH_PPCEMB:
+    case VIR_ARCH_SH4:
+    case VIR_ARCH_SH4EB:
+        addPCIRoot = true;
+        break;
+    default:
+        break;
+    }
+
+    if (addPCIRoot &&
+        virDomainDefMaybeAddController(
+            def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+            VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
         return -1;
 
     return 0;
@@ -1255,7 +1293,8 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
         int i;
-        virDomainControllerDefPtr usb = NULL;
+        int remove = 0;
+        virDomainControllerDefPtr usb = NULL, pci = NULL;
 
         /* If only the default USB controller is present, we can remove it
          * and make the XML compatible with older versions of libvirt which
@@ -1274,9 +1313,36 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
         if (usb && usb->idx == 0 && usb->model == -1) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);
+            remove++;
+        } else {
+            usb = NULL;
+        }
+
+        /* Remove the default PCI controller if there is only one present
+         * and its model is pci-root */
+        for (i = 0; i < def->ncontrollers; i++) {
+            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+                if (pci) {
+                    pci = NULL;
+                    break;
+                }
+                pci = def->controllers[i];
+            }
+        }
+
+        if (pci && pci->idx == 0 &&
+            pci->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+            VIR_DEBUG("Removing default 'pci-root' from domain '%s'"
+                      " for migration compatibility", def->name);
+            remove++;
+        } else {
+            pci = NULL;
+        }
+
+        if (remove) {
             controllers = def->controllers;
             ncontrollers = def->ncontrollers;
-            if (VIR_ALLOC_N(def->controllers, ncontrollers - 1) < 0) {
+            if (VIR_ALLOC_N(def->controllers, ncontrollers - remove) < 0) {
                 controllers = NULL;
                 virReportOOMError();
                 goto cleanup;
@@ -1284,10 +1350,12 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
             def->ncontrollers = 0;
             for (i = 0; i < ncontrollers; i++) {
-                if (controllers[i] != usb)
+                if (controllers[i] != usb && controllers[i] != pci)
                     def->controllers[def->ncontrollers++] = controllers[i];
             }
         }
+
+
     }
 
     ret = virDomainDefFormatInternal(def, flags, buf);

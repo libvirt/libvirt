@@ -16,6 +16,7 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

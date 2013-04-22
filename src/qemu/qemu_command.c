@@ -1209,6 +1209,7 @@ typedef uint8_t qemuDomainPCIAddressBus[QEMU_PCI_ADDRESS_SLOT_LAST];
 struct _qemuDomainPCIAddressSet {
     qemuDomainPCIAddressBus *used;
     virDevicePCIAddress lastaddr;
+    size_t nbuses;        /* allocation of 'used' */
 };
 
 
@@ -1219,6 +1220,10 @@ struct _qemuDomainPCIAddressSet {
 static bool qemuPCIAddressValidate(qemuDomainPCIAddressSetPtr addrs ATTRIBUTE_UNUSED,
                                    virDevicePCIAddressPtr addr)
 {
+    if (addrs->nbuses == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("No PCI buses available"));
+        return false;
+    }
     if (addr->domain != 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Only PCI domain 0 is available"));
@@ -1334,7 +1339,15 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
+        int nbuses = 0;
+        int i;
+
+        for (i = 0; i < def->ncontrollers; i++) {
+            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+                nbuses++;
+        }
+
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses)))
             goto cleanup;
 
         if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
@@ -1379,15 +1392,24 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
     return qemuDomainAssignPCIAddresses(def, qemuCaps, obj);
 }
 
-qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
+qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
+                                                         unsigned int nbuses)
 {
     qemuDomainPCIAddressSetPtr addrs;
+    int i;
 
     if (VIR_ALLOC(addrs) < 0)
         goto no_memory;
 
-    if (VIR_ALLOC_N(addrs->used, 1) < 0)
+    if (VIR_ALLOC_N(addrs->used, nbuses) < 0)
         goto no_memory;
+
+    addrs->nbuses = nbuses;
+
+    /* reserve slot 0 in every bus - it's used by the host bridge on bus 0
+     * and unusable on PCI bridges */
+    for (i = 0; i < nbuses; i++)
+        addrs->used[i][0] = 0xFF;
 
     if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
         goto error;
@@ -1617,12 +1639,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     virDevicePCIAddressPtr addrptr;
     unsigned int *func = &tmp_addr.function;
 
-
-    /* Reserve slot 0 for the host bridge */
-    memset(&tmp_addr, 0, sizeof(tmp_addr));
-    if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr) < 0)
-        goto error;
-
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers ; i++) {
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
@@ -1674,16 +1690,18 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
      * hardcoded slot=1, multifunction device
      */
-    memset(&tmp_addr, 0, sizeof(tmp_addr));
-    tmp_addr.slot = 1;
-    for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-        if ((*func == 1 && reservedIDE) ||
-            (*func == 2 && reservedUSB))
-            /* we have reserved this pci address */
-            continue;
+    if (addrs->nbuses) {
+        memset(&tmp_addr, 0, sizeof(tmp_addr));
+        tmp_addr.slot = 1;
+        for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
+            if ((*func == 1 && reservedIDE) ||
+                (*func == 2 && reservedUSB))
+                /* we have reserved this pci address */
+                continue;
 
-        if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
-            goto error;
+            if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
+                goto error;
+        }
     }
 
     if (def->nvideos > 0) {
@@ -1775,6 +1793,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
 
     /* Device controllers (SCSI, USB, but not IDE, FDC or CCID) */
     for (i = 0; i < def->ncontrollers ; i++) {
+        /* PCI root has no address */
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+            continue;
         /* FDC lives behind the ISA bridge; CCID is a usb device */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC ||
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_CCID)

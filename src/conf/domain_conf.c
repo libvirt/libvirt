@@ -9811,7 +9811,7 @@ virDomainLookupVcpuPin(virDomainDefPtr def,
     return NULL;
 }
 
-static int
+int
 virDomainDefMaybeAddController(virDomainDefPtr def,
                                int type,
                                int idx,

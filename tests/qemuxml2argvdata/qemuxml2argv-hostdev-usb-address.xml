@@ -22,6 +22,7 @@
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
     <hostdev mode='subsystem' type='usb' managed='no'>
       <source>
         <address bus='14' device='6'/>

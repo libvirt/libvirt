@@ -21,6 +21,7 @@
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
     <channel type='pipe'>
       <source path='/tmp/guestfwd'/>
       <target type='guestfwd' address='10.0.2.1' port='4600'/>

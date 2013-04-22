@@ -116,6 +116,7 @@ virDomainDefFree;
 virDomainDefGenSecurityLabelDef;
 virDomainDefGetDefaultEmulator;
 virDomainDefGetSecurityLabelDef;
+virDomainDefMaybeAddController;
 virDomainDefParseFile;
 virDomainDefParseNode;
 virDomainDefParseString;
