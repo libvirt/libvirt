@@ -79,8 +79,8 @@ static int virLogEnd = 0;
 static regex_t *virLogRegex = NULL;
 
 
-#define VIR_LOG_DATE_REGEX "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"
-#define VIR_LOG_TIME_REGEX "[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\.[0-9][0-9][0-9]\\+[0-9][0-9][0-9][0-9]"
+#define VIR_LOG_DATE_REGEX "[0-9]{4}-[0-9]{2}-[0-9]{2}"
+#define VIR_LOG_TIME_REGEX "[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}\\+[0-9]{4}"
 #define VIR_LOG_PID_REGEX "[0-9]+"
 #define VIR_LOG_LEVEL_REGEX "debug|info|warning|error"
 
