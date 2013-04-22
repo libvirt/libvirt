@@ -455,9 +455,9 @@ static virStreamDriver virFDStreamDrv = {
     .streamRecv = virFDStreamRead,
     .streamFinish = virFDStreamClose,
     .streamAbort = virFDStreamAbort,
-    .streamAddCallback = virFDStreamAddCallback,
-    .streamUpdateCallback = virFDStreamUpdateCallback,
-    .streamRemoveCallback = virFDStreamRemoveCallback
+    .streamEventAddCallback = virFDStreamAddCallback,
+    .streamEventUpdateCallback = virFDStreamUpdateCallback,
+    .streamEventRemoveCallback = virFDStreamRemoveCallback
 };
 
 static int virFDStreamOpenInternal(virStreamPtr st,

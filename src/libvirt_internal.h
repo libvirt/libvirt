@@ -113,7 +113,7 @@ enum {
 };
 
 
-int virDrvSupportsFeature (virConnectPtr conn, int feature);
+int virConnectSupportsFeature(virConnectPtr conn, int feature);
 
 int virDomainMigratePrepare (virConnectPtr dconn,
                              char **cookie,

@@ -62,9 +62,9 @@ typedef enum {
  *   != 0  Feature is supported.
  *   0     Feature is not supported.
  */
-# define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                         \
-    ((drv)->supports_feature ?                                              \
-        (drv)->supports_feature((conn), (feature)) > 0 : 0)
+# define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                     \
+    ((drv)->connectSupportsFeature ?                                    \
+        (drv)->connectSupportsFeature((conn), (feature)) > 0 : 0)
 
 typedef virDrvOpenStatus
         (*virDrvConnectOpen)    (virConnectPtr conn,
@@ -956,20 +956,20 @@ typedef int
 struct _virDriver {
     int                                 no;    /* the number virDrvNo */
     const char                          *name; /* the name of the driver */
-    virDrvConnectOpen                          open;
-    virDrvConnectClose                         close;
-    virDrvConnectSupportsFeature            supports_feature;
-    virDrvConnectGetType                       type;
-    virDrvConnectGetVersion                    version;
-    virDrvConnectGetLibVersion                 libvirtVersion;
-    virDrvConnectGetHostname                   getHostname;
-    virDrvConnectGetSysinfo                    getSysinfo;
-    virDrvConnectGetMaxVcpus                   getMaxVcpus;
+    virDrvConnectOpen                         connectOpen;
+    virDrvConnectClose                        connectClose;
+    virDrvConnectSupportsFeature            connectSupportsFeature;
+    virDrvConnectGetType                       connectGetType;
+    virDrvConnectGetVersion                    connectGetVersion;
+    virDrvConnectGetLibVersion                 connectGetLibVersion;
+    virDrvConnectGetHostname                   connectGetHostname;
+    virDrvConnectGetSysinfo                    connectGetSysinfo;
+    virDrvConnectGetMaxVcpus                   connectGetMaxVcpus;
     virDrvNodeGetInfo                   nodeGetInfo;
-    virDrvConnectGetCapabilities               getCapabilities;
-    virDrvConnectListDomains                   listDomains;
-    virDrvConnectNumOfDomains                  numOfDomains;
-    virDrvConnectListAllDomains                listAllDomains;
+    virDrvConnectGetCapabilities               connectGetCapabilities;
+    virDrvConnectListDomains                   connectListDomains;
+    virDrvConnectNumOfDomains                  connectNumOfDomains;
+    virDrvConnectListAllDomains                connectListAllDomains;
     virDrvDomainCreateXML               domainCreateXML;
     virDrvDomainLookupByID              domainLookupByID;
     virDrvDomainLookupByUUID            domainLookupByUUID;
@@ -1021,10 +1021,10 @@ struct _virDriver {
     virDrvDomainGetSecurityLabelList     domainGetSecurityLabelList;
     virDrvNodeGetSecurityModel          nodeGetSecurityModel;
     virDrvDomainGetXMLDesc              domainGetXMLDesc;
-    virDrvConnectDomainXMLFromNative    domainXMLFromNative;
-    virDrvConnectDomainXMLToNative      domainXMLToNative;
-    virDrvConnectListDefinedDomains            listDefinedDomains;
-    virDrvConnectNumOfDefinedDomains           numOfDefinedDomains;
+    virDrvConnectDomainXMLFromNative    connectDomainXMLFromNative;
+    virDrvConnectDomainXMLToNative      connectDomainXMLToNative;
+    virDrvConnectListDefinedDomains            connectListDefinedDomains;
+    virDrvConnectNumOfDefinedDomains           connectNumOfDefinedDomains;
     virDrvDomainCreate                  domainCreate;
     virDrvDomainCreateWithFlags         domainCreateWithFlags;
     virDrvDomainDefineXML               domainDefineXML;
@@ -1059,21 +1059,21 @@ struct _virDriver {
     virDrvNodeGetMemoryStats            nodeGetMemoryStats;
     virDrvNodeGetCellsFreeMemory        nodeGetCellsFreeMemory;
     virDrvNodeGetFreeMemory             nodeGetFreeMemory;
-    virDrvConnectDomainEventRegister           domainEventRegister;
-    virDrvConnectDomainEventDeregister         domainEventDeregister;
+    virDrvConnectDomainEventRegister           connectDomainEventRegister;
+    virDrvConnectDomainEventDeregister         connectDomainEventDeregister;
     virDrvDomainMigratePrepare2         domainMigratePrepare2;
     virDrvDomainMigrateFinish2          domainMigrateFinish2;
     virDrvNodeDeviceDettach             nodeDeviceDettach;
     virDrvNodeDeviceReAttach            nodeDeviceReAttach;
     virDrvNodeDeviceReset               nodeDeviceReset;
     virDrvDomainMigratePrepareTunnel    domainMigratePrepareTunnel;
-    virDrvConnectIsEncrypted            isEncrypted;
-    virDrvConnectIsSecure               isSecure;
+    virDrvConnectIsEncrypted            connectIsEncrypted;
+    virDrvConnectIsSecure               connectIsSecure;
     virDrvDomainIsActive                domainIsActive;
     virDrvDomainIsPersistent            domainIsPersistent;
     virDrvDomainIsUpdated               domainIsUpdated;
-    virDrvConnectCompareCPU                    cpuCompare;
-    virDrvConnectBaselineCPU                   cpuBaseline;
+    virDrvConnectCompareCPU                    connectCompareCPU;
+    virDrvConnectBaselineCPU                   connectBaselineCPU;
     virDrvDomainGetJobInfo              domainGetJobInfo;
     virDrvDomainGetJobStats             domainGetJobStats;
     virDrvDomainAbortJob                domainAbortJob;
@@ -1082,8 +1082,8 @@ struct _virDriver {
     virDrvDomainMigrateSetCompressionCache domainMigrateSetCompressionCache;
     virDrvDomainMigrateGetMaxSpeed      domainMigrateGetMaxSpeed;
     virDrvDomainMigrateSetMaxSpeed      domainMigrateSetMaxSpeed;
-    virDrvConnectDomainEventRegisterAny        domainEventRegisterAny;
-    virDrvConnectDomainEventDeregisterAny      domainEventDeregisterAny;
+    virDrvConnectDomainEventRegisterAny        connectDomainEventRegisterAny;
+    virDrvConnectDomainEventDeregisterAny      connectDomainEventDeregisterAny;
     virDrvDomainManagedSave             domainManagedSave;
     virDrvDomainHasManagedSaveImage     domainHasManagedSaveImage;
     virDrvDomainManagedSaveRemove       domainManagedSaveRemove;
@@ -1103,9 +1103,9 @@ struct _virDriver {
     virDrvDomainSnapshotHasMetadata     domainSnapshotHasMetadata;
     virDrvDomainRevertToSnapshot        domainRevertToSnapshot;
     virDrvDomainSnapshotDelete          domainSnapshotDelete;
-    virDrvDomainQemuMonitorCommand      qemuDomainMonitorCommand;
-    virDrvDomainQemuAttach              qemuDomainAttach;
-    virDrvDomainQemuAgentCommand        qemuDomainArbitraryAgentCommand;
+    virDrvDomainQemuMonitorCommand      domainQemuMonitorCommand;
+    virDrvDomainQemuAttach              domainQemuAttach;
+    virDrvDomainQemuAgentCommand        domainQemuAgentCommand;
     virDrvDomainOpenConsole             domainOpenConsole;
     virDrvDomainOpenChannel             domainOpenChannel;
     virDrvDomainOpenGraphics            domainOpenGraphics;
@@ -1123,8 +1123,8 @@ struct _virDriver {
     virDrvDomainBlockPull               domainBlockPull;
     virDrvDomainBlockRebase             domainBlockRebase;
     virDrvDomainBlockCommit             domainBlockCommit;
-    virDrvConnectSetKeepAlive                  setKeepAlive;
-    virDrvConnectIsAlive                isAlive;
+    virDrvConnectSetKeepAlive                  connectSetKeepAlive;
+    virDrvConnectIsAlive                connectIsAlive;
     virDrvNodeSuspendForDuration        nodeSuspendForDuration;
     virDrvDomainSetBlockIoTune          domainSetBlockIoTune;
     virDrvDomainGetBlockIoTune          domainGetBlockIoTune;
@@ -1215,13 +1215,13 @@ typedef virNetworkDriver *virNetworkDriverPtr;
  */
 struct _virNetworkDriver {
         const char * name;  /* the name of the driver */
-        virDrvConnectOpen                  open;
-        virDrvConnectClose                 close;
-        virDrvConnectNumOfNetworks         numOfNetworks;
-        virDrvConnectListNetworks          listNetworks;
-        virDrvConnectNumOfDefinedNetworks  numOfDefinedNetworks;
-        virDrvConnectListDefinedNetworks   listDefinedNetworks;
-        virDrvConnectListAllNetworks       listAllNetworks;
+        virDrvConnectOpen                 connectOpen;
+        virDrvConnectClose                connectClose;
+        virDrvConnectNumOfNetworks         connectNumOfNetworks;
+        virDrvConnectListNetworks          connectListNetworks;
+        virDrvConnectNumOfDefinedNetworks  connectNumOfDefinedNetworks;
+        virDrvConnectListDefinedNetworks   connectListDefinedNetworks;
+        virDrvConnectListAllNetworks       connectListAllNetworks;
         virDrvNetworkLookupByUUID   networkLookupByUUID;
         virDrvNetworkLookupByName   networkLookupByName;
         virDrvNetworkCreateXML      networkCreateXML;
@@ -1307,13 +1307,13 @@ typedef virInterfaceDriver *virInterfaceDriverPtr;
  */
 struct _virInterfaceDriver {
     const char                      *name; /* the name of the driver */
-    virDrvConnectOpen                       open;
-    virDrvConnectClose                      close;
-    virDrvConnectNumOfInterfaces            numOfInterfaces;
-    virDrvConnectListInterfaces             listInterfaces;
-    virDrvConnectNumOfDefinedInterfaces     numOfDefinedInterfaces;
-    virDrvConnectListDefinedInterfaces      listDefinedInterfaces;
-    virDrvConnectListAllInterfaces          listAllInterfaces;
+    virDrvConnectOpen                      connectOpen;
+    virDrvConnectClose                     connectClose;
+    virDrvConnectNumOfInterfaces            connectNumOfInterfaces;
+    virDrvConnectListInterfaces             connectListInterfaces;
+    virDrvConnectNumOfDefinedInterfaces     connectNumOfDefinedInterfaces;
+    virDrvConnectListDefinedInterfaces      connectListDefinedInterfaces;
+    virDrvConnectListAllInterfaces          connectListAllInterfaces;
     virDrvInterfaceLookupByName      interfaceLookupByName;
     virDrvInterfaceLookupByMACString interfaceLookupByMACString;
     virDrvInterfaceGetXMLDesc        interfaceGetXMLDesc;
@@ -1484,50 +1484,50 @@ typedef virStorageDriver *virStorageDriverPtr;
  */
 struct _virStorageDriver {
     const char * name;    /* the name of the driver */
-    virDrvConnectOpen                              open;
-    virDrvConnectClose                             close;
+    virDrvConnectOpen                             connectOpen;
+    virDrvConnectClose                            connectClose;
 
-    virDrvConnectNumOfStoragePools          numOfPools;
-    virDrvConnectListStoragePools           listPools;
-    virDrvConnectNumOfDefinedStoragePools   numOfDefinedPools;
-    virDrvConnectListDefinedStoragePools    listDefinedPools;
-    virDrvConnectListAllStoragePools        listAllPools;
-    virDrvConnectFindStoragePoolSources     findPoolSources;
-    virDrvStoragePoolLookupByName           poolLookupByName;
-    virDrvStoragePoolLookupByUUID           poolLookupByUUID;
-    virDrvStoragePoolLookupByVolume         poolLookupByVolume;
-    virDrvStoragePoolCreateXML              poolCreateXML;
-    virDrvStoragePoolDefineXML              poolDefineXML;
-    virDrvStoragePoolBuild                  poolBuild;
-    virDrvStoragePoolUndefine               poolUndefine;
-    virDrvStoragePoolCreate                 poolCreate;
-    virDrvStoragePoolDestroy                poolDestroy;
-    virDrvStoragePoolDelete                 poolDelete;
-    virDrvStoragePoolRefresh                poolRefresh;
-    virDrvStoragePoolGetInfo                poolGetInfo;
-    virDrvStoragePoolGetXMLDesc             poolGetXMLDesc;
-    virDrvStoragePoolGetAutostart           poolGetAutostart;
-    virDrvStoragePoolSetAutostart           poolSetAutostart;
-    virDrvStoragePoolNumOfVolumes           poolNumOfVolumes;
-    virDrvStoragePoolListVolumes            poolListVolumes;
-    virDrvStoragePoolListAllVolumes         poolListAllVolumes;
+    virDrvConnectNumOfStoragePools          connectNumOfStoragePools;
+    virDrvConnectListStoragePools           connectListStoragePools;
+    virDrvConnectNumOfDefinedStoragePools   connectNumOfDefinedStoragePools;
+    virDrvConnectListDefinedStoragePools    connectListDefinedStoragePools;
+    virDrvConnectListAllStoragePools        connectListAllStoragePools;
+    virDrvConnectFindStoragePoolSources     connectFindStoragePoolSources;
+    virDrvStoragePoolLookupByName           storagePoolLookupByName;
+    virDrvStoragePoolLookupByUUID           storagePoolLookupByUUID;
+    virDrvStoragePoolLookupByVolume         storagePoolLookupByVolume;
+    virDrvStoragePoolCreateXML              storagePoolCreateXML;
+    virDrvStoragePoolDefineXML              storagePoolDefineXML;
+    virDrvStoragePoolBuild                  storagePoolBuild;
+    virDrvStoragePoolUndefine               storagePoolUndefine;
+    virDrvStoragePoolCreate                 storagePoolCreate;
+    virDrvStoragePoolDestroy                storagePoolDestroy;
+    virDrvStoragePoolDelete                 storagePoolDelete;
+    virDrvStoragePoolRefresh                storagePoolRefresh;
+    virDrvStoragePoolGetInfo                storagePoolGetInfo;
+    virDrvStoragePoolGetXMLDesc             storagePoolGetXMLDesc;
+    virDrvStoragePoolGetAutostart           storagePoolGetAutostart;
+    virDrvStoragePoolSetAutostart           storagePoolSetAutostart;
+    virDrvStoragePoolNumOfVolumes           storagePoolNumOfVolumes;
+    virDrvStoragePoolListVolumes            storagePoolListVolumes;
+    virDrvStoragePoolListAllVolumes         storagePoolListAllVolumes;
 
-    virDrvStorageVolLookupByName            volLookupByName;
-    virDrvStorageVolLookupByKey             volLookupByKey;
-    virDrvStorageVolLookupByPath            volLookupByPath;
-    virDrvStorageVolCreateXML               volCreateXML;
-    virDrvStorageVolCreateXMLFrom           volCreateXMLFrom;
-    virDrvStorageVolDownload                volDownload;
-    virDrvStorageVolUpload                  volUpload;
-    virDrvStorageVolDelete                  volDelete;
-    virDrvStorageVolWipe                    volWipe;
-    virDrvStorageVolWipePattern             volWipePattern;
-    virDrvStorageVolGetInfo                 volGetInfo;
-    virDrvStorageVolGetXMLDesc              volGetXMLDesc;
-    virDrvStorageVolGetPath                 volGetPath;
-    virDrvStorageVolResize                  volResize;
-    virDrvStoragePoolIsActive               poolIsActive;
-    virDrvStoragePoolIsPersistent           poolIsPersistent;
+    virDrvStorageVolLookupByName            storageVolLookupByName;
+    virDrvStorageVolLookupByKey             storageVolLookupByKey;
+    virDrvStorageVolLookupByPath            storageVolLookupByPath;
+    virDrvStorageVolCreateXML               storageVolCreateXML;
+    virDrvStorageVolCreateXMLFrom           storageVolCreateXMLFrom;
+    virDrvStorageVolDownload                storageVolDownload;
+    virDrvStorageVolUpload                  storageVolUpload;
+    virDrvStorageVolDelete                  storageVolDelete;
+    virDrvStorageVolWipe                    storageVolWipe;
+    virDrvStorageVolWipePattern             storageVolWipePattern;
+    virDrvStorageVolGetInfo                 storageVolGetInfo;
+    virDrvStorageVolGetXMLDesc              storageVolGetXMLDesc;
+    virDrvStorageVolGetPath                 storageVolGetPath;
+    virDrvStorageVolResize                  storageVolResize;
+    virDrvStoragePoolIsActive               storagePoolIsActive;
+    virDrvStoragePoolIsPersistent           storagePoolIsPersistent;
 };
 
 # ifdef WITH_LIBVIRTD
@@ -1544,10 +1544,10 @@ typedef virStateDriver *virStateDriverPtr;
 
 struct _virStateDriver {
     const char *name;
-    virDrvStateInitialize  initialize;
-    virDrvStateCleanup     cleanup;
-    virDrvStateReload      reload;
-    virDrvStateStop        stop;
+    virDrvStateInitialize  stateInitialize;
+    virDrvStateCleanup     stateCleanup;
+    virDrvStateReload      stateReload;
+    virDrvStateStop        stateStop;
 };
 # endif
 
@@ -1601,19 +1601,19 @@ typedef int (*virDrvNodeDeviceDestroy)(virNodeDevicePtr dev);
  */
 struct _virDeviceMonitor {
     const char * name;    /* the name of the driver */
-    virDrvConnectOpen                 open;
-    virDrvConnectClose                close;
-    virDrvNodeNumOfDevices       numOfDevices;
-    virDrvNodeListDevices        listDevices;
-    virDrvConnectListAllNodeDevices listAllNodeDevices;
-    virDrvNodeDeviceLookupByName deviceLookupByName;
-    virDrvNodeDeviceLookupSCSIHostByWWN  deviceLookupSCSIHostByWWN;
-    virDrvNodeDeviceGetXMLDesc   deviceGetXMLDesc;
-    virDrvNodeDeviceGetParent    deviceGetParent;
-    virDrvNodeDeviceNumOfCaps    deviceNumOfCaps;
-    virDrvNodeDeviceListCaps     deviceListCaps;
-    virDrvNodeDeviceCreateXML   deviceCreateXML;
-    virDrvNodeDeviceDestroy     deviceDestroy;
+    virDrvConnectOpen                 connectOpen;
+    virDrvConnectClose                connectClose;
+    virDrvNodeNumOfDevices       nodeNumOfDevices;
+    virDrvNodeListDevices        nodeListDevices;
+    virDrvConnectListAllNodeDevices connectListAllNodeDevices;
+    virDrvNodeDeviceLookupByName nodeDeviceLookupByName;
+    virDrvNodeDeviceLookupSCSIHostByWWN  nodeDeviceLookupSCSIHostByWWN;
+    virDrvNodeDeviceGetXMLDesc   nodeDeviceGetXMLDesc;
+    virDrvNodeDeviceGetParent    nodeDeviceGetParent;
+    virDrvNodeDeviceNumOfCaps    nodeDeviceNumOfCaps;
+    virDrvNodeDeviceListCaps     nodeDeviceListCaps;
+    virDrvNodeDeviceCreateXML   nodeDeviceCreateXML;
+    virDrvNodeDeviceDestroy     nodeDeviceDestroy;
 };
 
 enum {
@@ -1674,19 +1674,19 @@ typedef virSecretDriver *virSecretDriverPtr;
  */
 struct _virSecretDriver {
     const char *name;
-    virDrvConnectOpen                  open;
-    virDrvConnectClose                 close;
+    virDrvConnectOpen                 connectOpen;
+    virDrvConnectClose                connectClose;
 
-    virDrvConnectNumOfSecrets          numOfSecrets;
-    virDrvConnectListSecrets           listSecrets;
-    virDrvConnectListAllSecrets        listAllSecrets;
-    virDrvSecretLookupByUUID    lookupByUUID;
-    virDrvSecretLookupByUsage   lookupByUsage;
-    virDrvSecretDefineXML       defineXML;
-    virDrvSecretGetXMLDesc      getXMLDesc;
-    virDrvSecretSetValue        setValue;
-    virDrvSecretGetValue        getValue;
-    virDrvSecretUndefine        undefine;
+    virDrvConnectNumOfSecrets          connectNumOfSecrets;
+    virDrvConnectListSecrets           connectListSecrets;
+    virDrvConnectListAllSecrets        connectListAllSecrets;
+    virDrvSecretLookupByUUID    secretLookupByUUID;
+    virDrvSecretLookupByUsage   secretLookupByUsage;
+    virDrvSecretDefineXML       secretDefineXML;
+    virDrvSecretGetXMLDesc      secretGetXMLDesc;
+    virDrvSecretSetValue        secretSetValue;
+    virDrvSecretGetValue        secretGetValue;
+    virDrvSecretUndefine        secretUndefine;
 };
 
 
@@ -1716,9 +1716,9 @@ typedef int (*virDrvStreamAbort)(virStreamPtr st);
 struct _virStreamDriver {
     virDrvStreamSend                streamSend;
     virDrvStreamRecv                streamRecv;
-    virDrvStreamEventAddCallback    streamAddCallback;
-    virDrvStreamEventUpdateCallback streamUpdateCallback;
-    virDrvStreamEventRemoveCallback streamRemoveCallback;
+    virDrvStreamEventAddCallback    streamEventAddCallback;
+    virDrvStreamEventUpdateCallback streamEventUpdateCallback;
+    virDrvStreamEventRemoveCallback streamEventRemoveCallback;
     virDrvStreamFinish              streamFinish;
     virDrvStreamAbort               streamAbort;
 };
@@ -1766,17 +1766,17 @@ typedef virNWFilterDriver *virNWFilterDriverPtr;
  */
 struct _virNWFilterDriver {
     const char * name;    /* the name of the driver */
-    virDrvConnectOpen                  open;
-    virDrvConnectClose                 close;
+    virDrvConnectOpen                 connectOpen;
+    virDrvConnectClose                connectClose;
 
-    virDrvConnectNumOfNWFilters numOfNWFilters;
-    virDrvConnectListNWFilters  listNWFilters;
-    virDrvConnectListAllNWFilters  listAllNWFilters;
+    virDrvConnectNumOfNWFilters connectNumOfNWFilters;
+    virDrvConnectListNWFilters  connectListNWFilters;
+    virDrvConnectListAllNWFilters  connectListAllNWFilters;
     virDrvNWFilterLookupByName  nwfilterLookupByName;
     virDrvNWFilterLookupByUUID  nwfilterLookupByUUID;
-    virDrvNWFilterDefineXML     defineXML;
-    virDrvNWFilterUndefine      undefine;
-    virDrvNWFilterGetXMLDesc    getXMLDesc;
+    virDrvNWFilterDefineXML     nwfilterDefineXML;
+    virDrvNWFilterUndefine      nwfilterUndefine;
+    virDrvNWFilterGetXMLDesc    nwfilterGetXMLDesc;
 };
 
 

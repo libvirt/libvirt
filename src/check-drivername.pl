@@ -62,6 +62,19 @@ while (<DRVFILE>) {
         my $name = $1;
         print "Bogus name $1\n";
         $status = 1;
+    } elsif (/^\s*(virDrv\w+)\s+(\w+);\s*/) {
+        my $drv = $1;
+        my $field = $2;
+
+        my $tmp = $drv;
+        $tmp =~ s/virDrv//;
+        $tmp =~ s/^NWFilter/nwfilter/;
+        $tmp =~ s/^(\w)/lc $1/e;
+
+        unless ($tmp eq $field) {
+            print "Driver struct field $field should be named $tmp\n";
+            $status = 1;
+        }
     }
 }
 

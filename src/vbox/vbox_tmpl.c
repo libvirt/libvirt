@@ -9405,16 +9405,16 @@ no_memory:
 virDriver NAME(Driver) = {
     .no = VIR_DRV_VBOX,
     .name = "VBOX",
-    .open = vboxOpen, /* 0.6.3 */
-    .close = vboxClose, /* 0.6.3 */
-    .version = vboxGetVersion, /* 0.6.3 */
-    .getHostname = virGetHostname, /* 0.6.3 */
-    .getMaxVcpus = vboxGetMaxVcpus, /* 0.6.3 */
+    .connectOpen = vboxOpen, /* 0.6.3 */
+    .connectClose = vboxClose, /* 0.6.3 */
+    .connectGetVersion = vboxGetVersion, /* 0.6.3 */
+    .connectGetHostname = virGetHostname, /* 0.6.3 */
+    .connectGetMaxVcpus = vboxGetMaxVcpus, /* 0.6.3 */
     .nodeGetInfo = nodeGetInfo, /* 0.6.3 */
-    .getCapabilities = vboxGetCapabilities, /* 0.6.3 */
-    .listDomains = vboxListDomains, /* 0.6.3 */
-    .numOfDomains = vboxNumOfDomains, /* 0.6.3 */
-    .listAllDomains = vboxListAllDomains, /* 0.9.13 */
+    .connectGetCapabilities = vboxGetCapabilities, /* 0.6.3 */
+    .connectListDomains = vboxListDomains, /* 0.6.3 */
+    .connectNumOfDomains = vboxNumOfDomains, /* 0.6.3 */
+    .connectListAllDomains = vboxListAllDomains, /* 0.9.13 */
     .domainCreateXML = vboxDomainCreateXML, /* 0.6.3 */
     .domainLookupByID = vboxDomainLookupByID, /* 0.6.3 */
     .domainLookupByUUID = vboxDomainLookupByUUID, /* 0.6.3 */
@@ -9436,8 +9436,8 @@ virDriver NAME(Driver) = {
     .domainGetVcpusFlags = vboxDomainGetVcpusFlags, /* 0.8.5 */
     .domainGetMaxVcpus = vboxDomainGetMaxVcpus, /* 0.7.1 */
     .domainGetXMLDesc = vboxDomainGetXMLDesc, /* 0.6.3 */
-    .listDefinedDomains = vboxListDefinedDomains, /* 0.6.3 */
-    .numOfDefinedDomains = vboxNumOfDefinedDomains, /* 0.6.3 */
+    .connectListDefinedDomains = vboxListDefinedDomains, /* 0.6.3 */
+    .connectNumOfDefinedDomains = vboxNumOfDefinedDomains, /* 0.6.3 */
     .domainCreate = vboxDomainCreate, /* 0.6.3 */
     .domainCreateWithFlags = vboxDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = vboxDomainDefineXML, /* 0.6.3 */
@@ -9454,17 +9454,17 @@ virDriver NAME(Driver) = {
     .domainScreenshot = vboxDomainScreenshot, /* 0.9.2 */
 #endif
 #if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
-    .domainEventRegister = vboxDomainEventRegister, /* 0.7.0 */
-    .domainEventDeregister = vboxDomainEventDeregister, /* 0.7.0 */
+    .connectDomainEventRegister = vboxDomainEventRegister, /* 0.7.0 */
+    .connectDomainEventDeregister = vboxDomainEventDeregister, /* 0.7.0 */
 #endif
-    .isEncrypted = vboxIsEncrypted, /* 0.7.3 */
-    .isSecure = vboxIsSecure, /* 0.7.3 */
+    .connectIsEncrypted = vboxIsEncrypted, /* 0.7.3 */
+    .connectIsSecure = vboxIsSecure, /* 0.7.3 */
     .domainIsActive = vboxDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = vboxDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = vboxDomainIsUpdated, /* 0.8.6 */
 #if VBOX_API_VERSION > 2002 && VBOX_API_VERSION < 4000
-    .domainEventRegisterAny = vboxDomainEventRegisterAny, /* 0.8.0 */
-    .domainEventDeregisterAny = vboxDomainEventDeregisterAny, /* 0.8.0 */
+    .connectDomainEventRegisterAny = vboxDomainEventRegisterAny, /* 0.8.0 */
+    .connectDomainEventDeregisterAny = vboxDomainEventDeregisterAny, /* 0.8.0 */
 #endif
     .domainSnapshotCreateXML = vboxDomainSnapshotCreateXML, /* 0.8.0 */
     .domainSnapshotGetXMLDesc = vboxDomainSnapshotGetXMLDesc, /* 0.8.0 */
@@ -9478,43 +9478,43 @@ virDriver NAME(Driver) = {
     .domainSnapshotHasMetadata = vboxDomainSnapshotHasMetadata, /* 0.9.13 */
     .domainRevertToSnapshot = vboxDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = vboxDomainSnapshotDelete, /* 0.8.0 */
-    .isAlive = vboxIsAlive, /* 0.9.8 */
+    .connectIsAlive = vboxIsAlive, /* 0.9.8 */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
     "VBOX",
-    .open                   = vboxNetworkOpen, /* 0.6.4 */
-    .close                  = vboxNetworkClose, /* 0.6.4 */
-    .numOfNetworks          = vboxNumOfNetworks, /* 0.6.4 */
-    .listNetworks           = vboxListNetworks, /* 0.6.4 */
-    .numOfDefinedNetworks   = vboxNumOfDefinedNetworks, /* 0.6.4 */
-    .listDefinedNetworks    = vboxListDefinedNetworks, /* 0.6.4 */
-    .networkLookupByUUID    = vboxNetworkLookupByUUID, /* 0.6.4 */
-    .networkLookupByName    = vboxNetworkLookupByName, /* 0.6.4 */
-    .networkCreateXML       = vboxNetworkCreateXML, /* 0.6.4 */
-    .networkDefineXML       = vboxNetworkDefineXML, /* 0.6.4 */
-    .networkUndefine        = vboxNetworkUndefine, /* 0.6.4 */
-    .networkCreate          = vboxNetworkCreate, /* 0.6.4 */
-    .networkDestroy         = vboxNetworkDestroy, /* 0.6.4 */
-    .networkGetXMLDesc      = vboxNetworkGetXMLDesc, /* 0.6.4 */
+    .connectOpen = vboxNetworkOpen, /* 0.6.4 */
+    .connectClose = vboxNetworkClose, /* 0.6.4 */
+    .connectNumOfNetworks = vboxNumOfNetworks, /* 0.6.4 */
+    .connectListNetworks = vboxListNetworks, /* 0.6.4 */
+    .connectNumOfDefinedNetworks = vboxNumOfDefinedNetworks, /* 0.6.4 */
+    .connectListDefinedNetworks = vboxListDefinedNetworks, /* 0.6.4 */
+    .networkLookupByUUID = vboxNetworkLookupByUUID, /* 0.6.4 */
+    .networkLookupByName = vboxNetworkLookupByName, /* 0.6.4 */
+    .networkCreateXML = vboxNetworkCreateXML, /* 0.6.4 */
+    .networkDefineXML = vboxNetworkDefineXML, /* 0.6.4 */
+    .networkUndefine = vboxNetworkUndefine, /* 0.6.4 */
+    .networkCreate = vboxNetworkCreate, /* 0.6.4 */
+    .networkDestroy = vboxNetworkDestroy, /* 0.6.4 */
+    .networkGetXMLDesc = vboxNetworkGetXMLDesc, /* 0.6.4 */
 };
 
 virStorageDriver NAME(StorageDriver) = {
     .name               = "VBOX",
-    .open               = vboxStorageOpen, /* 0.7.1 */
-    .close              = vboxStorageClose, /* 0.7.1 */
-    .numOfPools         = vboxStorageNumOfPools, /* 0.7.1 */
-    .listPools          = vboxStorageListPools, /* 0.7.1 */
-    .poolLookupByName   = vboxStoragePoolLookupByName, /* 0.7.1 */
-    .poolNumOfVolumes   = vboxStoragePoolNumOfVolumes, /* 0.7.1 */
-    .poolListVolumes    = vboxStoragePoolListVolumes, /* 0.7.1 */
+    .connectOpen = vboxStorageOpen, /* 0.7.1 */
+    .connectClose = vboxStorageClose, /* 0.7.1 */
+    .connectNumOfStoragePools = vboxStorageNumOfPools, /* 0.7.1 */
+    .connectListStoragePools = vboxStorageListPools, /* 0.7.1 */
+    .storagePoolLookupByName = vboxStoragePoolLookupByName, /* 0.7.1 */
+    .storagePoolNumOfVolumes = vboxStoragePoolNumOfVolumes, /* 0.7.1 */
+    .storagePoolListVolumes = vboxStoragePoolListVolumes, /* 0.7.1 */
 
-    .volLookupByName    = vboxStorageVolLookupByName, /* 0.7.1 */
-    .volLookupByKey     = vboxStorageVolLookupByKey, /* 0.7.1 */
-    .volLookupByPath    = vboxStorageVolLookupByPath, /* 0.7.1 */
-    .volCreateXML       = vboxStorageVolCreateXML, /* 0.7.1 */
-    .volDelete          = vboxStorageVolDelete, /* 0.7.1 */
-    .volGetInfo         = vboxStorageVolGetInfo, /* 0.7.1 */
-    .volGetXMLDesc      = vboxStorageVolGetXMLDesc, /* 0.7.1 */
-    .volGetPath         = vboxStorageVolGetPath /* 0.7.1 */
+    .storageVolLookupByName = vboxStorageVolLookupByName, /* 0.7.1 */
+    .storageVolLookupByKey = vboxStorageVolLookupByKey, /* 0.7.1 */
+    .storageVolLookupByPath = vboxStorageVolLookupByPath, /* 0.7.1 */
+    .storageVolCreateXML = vboxStorageVolCreateXML, /* 0.7.1 */
+    .storageVolDelete = vboxStorageVolDelete, /* 0.7.1 */
+    .storageVolGetInfo = vboxStorageVolGetInfo, /* 0.7.1 */
+    .storageVolGetXMLDesc = vboxStorageVolGetXMLDesc, /* 0.7.1 */
+    .storageVolGetPath = vboxStorageVolGetPath /* 0.7.1 */
 };

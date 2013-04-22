@@ -66,8 +66,8 @@ hypervSecretClose(virConnectPtr conn)
 
 static virSecretDriver hypervSecretDriver = {
     .name = "Hyper-V",
-    .open = hypervSecretOpen, /* 0.9.5 */
-    .close = hypervSecretClose, /* 0.9.5 */
+    .connectOpen = hypervSecretOpen, /* 0.9.5 */
+    .connectClose = hypervSecretClose, /* 0.9.5 */
 };
 
 

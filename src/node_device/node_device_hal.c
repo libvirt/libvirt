@@ -763,27 +763,27 @@ static int halNodeDrvClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virDeviceMonitor halDeviceMonitor = {
     .name = "halDeviceMonitor",
-    .open = halNodeDrvOpen, /* 0.5.0 */
-    .close = halNodeDrvClose, /* 0.5.0 */
-    .numOfDevices = nodeNumOfDevices, /* 0.5.0 */
-    .listDevices = nodeListDevices, /* 0.5.0 */
-    .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
-    .deviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
-    .deviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
-    .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
-    .deviceGetParent = nodeDeviceGetParent, /* 0.5.0 */
-    .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.5.0 */
-    .deviceListCaps = nodeDeviceListCaps, /* 0.5.0 */
-    .deviceCreateXML = nodeDeviceCreateXML, /* 0.6.5 */
-    .deviceDestroy = nodeDeviceDestroy, /* 0.6.5 */
+    .connectOpen = halNodeDrvOpen, /* 0.5.0 */
+    .connectClose = halNodeDrvClose, /* 0.5.0 */
+    .nodeNumOfDevices = nodeNumOfDevices, /* 0.5.0 */
+    .nodeListDevices = nodeListDevices, /* 0.5.0 */
+    .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
+    .nodeDeviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
+    .nodeDeviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
+    .nodeDeviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
+    .nodeDeviceGetParent = nodeDeviceGetParent, /* 0.5.0 */
+    .nodeDeviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.5.0 */
+    .nodeDeviceListCaps = nodeDeviceListCaps, /* 0.5.0 */
+    .nodeDeviceCreateXML = nodeDeviceCreateXML, /* 0.6.5 */
+    .nodeDeviceDestroy = nodeDeviceDestroy, /* 0.6.5 */
 };
 
 
 static virStateDriver halStateDriver = {
     .name = "HAL",
-    .initialize = halDeviceMonitorStartup, /* 0.5.0 */
-    .cleanup = halDeviceMonitorShutdown, /* 0.5.0 */
-    .reload = halDeviceMonitorReload, /* 0.5.0 */
+    .stateInitialize = halDeviceMonitorStartup, /* 0.5.0 */
+    .stateCleanup = halDeviceMonitorShutdown, /* 0.5.0 */
+    .stateReload = halDeviceMonitorReload, /* 0.5.0 */
 };
 
 int halNodeRegister(void)

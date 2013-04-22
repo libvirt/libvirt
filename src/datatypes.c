@@ -144,19 +144,19 @@ virConnectDispose(void *obj)
     virConnectPtr conn = obj;
 
     if (conn->networkDriver)
-        conn->networkDriver->close(conn);
+        conn->networkDriver->connectClose(conn);
     if (conn->interfaceDriver)
-        conn->interfaceDriver->close(conn);
+        conn->interfaceDriver->connectClose(conn);
     if (conn->storageDriver)
-        conn->storageDriver->close(conn);
+        conn->storageDriver->connectClose(conn);
     if (conn->deviceMonitor)
-        conn->deviceMonitor->close(conn);
+        conn->deviceMonitor->connectClose(conn);
     if (conn->secretDriver)
-        conn->secretDriver->close(conn);
+        conn->secretDriver->connectClose(conn);
     if (conn->nwfilterDriver)
-        conn->nwfilterDriver->close(conn);
+        conn->nwfilterDriver->connectClose(conn);
     if (conn->driver)
-        conn->driver->close(conn);
+        conn->driver->connectClose(conn);
 
     virMutexLock(&conn->lock);
 

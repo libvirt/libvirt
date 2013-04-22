@@ -1793,26 +1793,26 @@ static int udevNodeDrvClose(virConnectPtr conn)
 
 static virDeviceMonitor udevDeviceMonitor = {
     .name = "udevDeviceMonitor",
-    .open = udevNodeDrvOpen, /* 0.7.3 */
-    .close = udevNodeDrvClose, /* 0.7.3 */
-    .numOfDevices = nodeNumOfDevices, /* 0.7.3 */
-    .listDevices = nodeListDevices, /* 0.7.3 */
-    .listAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
-    .deviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
-    .deviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
-    .deviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
-    .deviceGetParent = nodeDeviceGetParent, /* 0.7.3 */
-    .deviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.7.3 */
-    .deviceListCaps = nodeDeviceListCaps, /* 0.7.3 */
-    .deviceCreateXML = nodeDeviceCreateXML, /* 0.7.3 */
-    .deviceDestroy = nodeDeviceDestroy, /* 0.7.3 */
+    .connectOpen = udevNodeDrvOpen, /* 0.7.3 */
+    .connectClose = udevNodeDrvClose, /* 0.7.3 */
+    .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
+    .nodeListDevices = nodeListDevices, /* 0.7.3 */
+    .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
+    .nodeDeviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
+    .nodeDeviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
+    .nodeDeviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
+    .nodeDeviceGetParent = nodeDeviceGetParent, /* 0.7.3 */
+    .nodeDeviceNumOfCaps = nodeDeviceNumOfCaps, /* 0.7.3 */
+    .nodeDeviceListCaps = nodeDeviceListCaps, /* 0.7.3 */
+    .nodeDeviceCreateXML = nodeDeviceCreateXML, /* 0.7.3 */
+    .nodeDeviceDestroy = nodeDeviceDestroy, /* 0.7.3 */
 };
 
 static virStateDriver udevStateDriver = {
     .name = "udev",
-    .initialize = udevDeviceMonitorStartup, /* 0.7.3 */
-    .cleanup = udevDeviceMonitorShutdown, /* 0.7.3 */
-    .reload = udevDeviceMonitorReload, /* 0.7.3 */
+    .stateInitialize = udevDeviceMonitorStartup, /* 0.7.3 */
+    .stateCleanup = udevDeviceMonitorShutdown, /* 0.7.3 */
+    .stateReload = udevDeviceMonitorReload, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)

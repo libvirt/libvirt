@@ -614,13 +614,13 @@ cleanup:
 }
 static virNetworkDriver parallelsNetworkDriver = {
     "Parallels",
-    .open = parallelsOpenNetwork, /* 1.0.1 */
-    .close = parallelsCloseNetwork, /* 1.0.1 */
-    .numOfNetworks = parallelsNumNetworks, /* 1.0.1 */
-    .listNetworks = parallelsListNetworks, /* 1.0.1 */
-    .numOfDefinedNetworks = parallelsNumDefinedNetworks, /* 1.0.1 */
-    .listDefinedNetworks = parallelsListDefinedNetworks, /* 1.0.1 */
-    .listAllNetworks = parallelsListAllNetworks, /* 1.0.1 */
+    .connectOpen = parallelsOpenNetwork, /* 1.0.1 */
+    .connectClose = parallelsCloseNetwork, /* 1.0.1 */
+    .connectNumOfNetworks = parallelsNumNetworks, /* 1.0.1 */
+    .connectListNetworks = parallelsListNetworks, /* 1.0.1 */
+    .connectNumOfDefinedNetworks = parallelsNumDefinedNetworks, /* 1.0.1 */
+    .connectListDefinedNetworks = parallelsListDefinedNetworks, /* 1.0.1 */
+    .connectListAllNetworks = parallelsListAllNetworks, /* 1.0.1 */
     .networkLookupByUUID = parallelsNetworkLookupByUUID, /* 1.0.1 */
     .networkLookupByName = parallelsNetworkLookupByName, /* 1.0.1 */
     .networkGetXMLDesc = parallelsNetworkGetXMLDesc, /* 1.0.1 */

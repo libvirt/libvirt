@@ -1398,14 +1398,14 @@ no_memory:
 static virDriver hypervDriver = {
     .no = VIR_DRV_HYPERV,
     .name = "Hyper-V",
-    .open = hypervOpen, /* 0.9.5 */
-    .close = hypervClose, /* 0.9.5 */
-    .type = hypervGetType, /* 0.9.5 */
-    .getHostname = hypervGetHostname, /* 0.9.5 */
+    .connectOpen = hypervOpen, /* 0.9.5 */
+    .connectClose = hypervClose, /* 0.9.5 */
+    .connectGetType = hypervGetType, /* 0.9.5 */
+    .connectGetHostname = hypervGetHostname, /* 0.9.5 */
     .nodeGetInfo = hypervNodeGetInfo, /* 0.9.5 */
-    .listDomains = hypervListDomains, /* 0.9.5 */
-    .numOfDomains = hypervNumberOfDomains, /* 0.9.5 */
-    .listAllDomains = hypervListAllDomains, /* 0.10.2 */
+    .connectListDomains = hypervListDomains, /* 0.9.5 */
+    .connectNumOfDomains = hypervNumberOfDomains, /* 0.9.5 */
+    .connectListAllDomains = hypervListAllDomains, /* 0.10.2 */
     .domainLookupByID = hypervDomainLookupByID, /* 0.9.5 */
     .domainLookupByUUID = hypervDomainLookupByUUID, /* 0.9.5 */
     .domainLookupByName = hypervDomainLookupByName, /* 0.9.5 */
@@ -1417,19 +1417,19 @@ static virDriver hypervDriver = {
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
     .domainGetXMLDesc = hypervDomainGetXMLDesc, /* 0.9.5 */
-    .listDefinedDomains = hypervListDefinedDomains, /* 0.9.5 */
-    .numOfDefinedDomains = hypervNumberOfDefinedDomains, /* 0.9.5 */
+    .connectListDefinedDomains = hypervListDefinedDomains, /* 0.9.5 */
+    .connectNumOfDefinedDomains = hypervNumberOfDefinedDomains, /* 0.9.5 */
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
-    .isEncrypted = hypervIsEncrypted, /* 0.9.5 */
-    .isSecure = hypervIsSecure, /* 0.9.5 */
+    .connectIsEncrypted = hypervIsEncrypted, /* 0.9.5 */
+    .connectIsSecure = hypervIsSecure, /* 0.9.5 */
     .domainIsActive = hypervDomainIsActive, /* 0.9.5 */
     .domainIsPersistent = hypervDomainIsPersistent, /* 0.9.5 */
     .domainIsUpdated = hypervDomainIsUpdated, /* 0.9.5 */
     .domainManagedSave = hypervDomainManagedSave, /* 0.9.5 */
     .domainHasManagedSaveImage = hypervDomainHasManagedSaveImage, /* 0.9.5 */
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
-    .isAlive = hypervIsAlive, /* 0.9.8 */
+    .connectIsAlive = hypervIsAlive, /* 0.9.8 */
 };
 
 

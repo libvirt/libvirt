@@ -784,13 +784,13 @@ static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 
 static virInterfaceDriver interfaceDriver = {
     "netcf",
-    .open = interfaceOpenInterface, /* 0.7.0 */
-    .close = interfaceCloseInterface, /* 0.7.0 */
-    .numOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
-    .listInterfaces = interfaceListInterfaces, /* 0.7.0 */
-    .numOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */
-    .listDefinedInterfaces = interfaceListDefinedInterfaces, /* 0.7.0 */
-    .listAllInterfaces = interfaceListAllInterfaces, /* 0.10.2 */
+    .connectOpen = interfaceOpenInterface, /* 0.7.0 */
+    .connectClose = interfaceCloseInterface, /* 0.7.0 */
+    .connectNumOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
+    .connectListInterfaces = interfaceListInterfaces, /* 0.7.0 */
+    .connectNumOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */
+    .connectListDefinedInterfaces = interfaceListDefinedInterfaces, /* 0.7.0 */
+    .connectListAllInterfaces = interfaceListAllInterfaces, /* 0.10.2 */
     .interfaceLookupByName = interfaceLookupByName, /* 0.7.0 */
     .interfaceLookupByMACString = interfaceLookupByMACString, /* 0.7.0 */
     .interfaceGetXMLDesc = interfaceGetXMLDesc, /* 0.7.0 */

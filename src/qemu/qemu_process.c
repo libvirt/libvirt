@@ -429,8 +429,8 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
     }
 
     if (conn->secretDriver == NULL ||
-        conn->secretDriver->lookupByUUID == NULL ||
-        conn->secretDriver->getValue == NULL) {
+        conn->secretDriver->secretLookupByUUID == NULL ||
+        conn->secretDriver->secretGetValue == NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("secret storage not supported"));
         goto cleanup;
@@ -445,12 +445,12 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
         goto cleanup;
     }
 
-    secret = conn->secretDriver->lookupByUUID(conn,
-                                              enc->secrets[0]->uuid);
+    secret = conn->secretDriver->secretLookupByUUID(conn,
+                                                    enc->secrets[0]->uuid);
     if (secret == NULL)
         goto cleanup;
-    data = conn->secretDriver->getValue(secret, &size, 0,
-                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    data = conn->secretDriver->secretGetValue(secret, &size, 0,
+                                              VIR_SECRET_GET_VALUE_INTERNAL_CALL);
     virObjectUnref(secret);
     if (data == NULL)
         goto cleanup;

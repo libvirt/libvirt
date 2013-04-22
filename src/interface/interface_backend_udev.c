@@ -1149,13 +1149,13 @@ cleanup:
 
 static virInterfaceDriver udevIfaceDriver = {
     "udev",
-    .open = udevIfaceOpenInterface, /* 1.0.0 */
-    .close = udevIfaceCloseInterface, /* 1.0.0 */
-    .numOfInterfaces = udevIfaceNumOfInterfaces, /* 1.0.0 */
-    .listInterfaces = udevIfaceListInterfaces, /* 1.0.0 */
-    .numOfDefinedInterfaces = udevIfaceNumOfDefinedInterfaces, /* 1.0.0 */
-    .listDefinedInterfaces = udevIfaceListDefinedInterfaces, /* 1.0.0 */
-    .listAllInterfaces = udevIfaceListAllInterfaces, /* 1.0.0 */
+    .connectOpen = udevIfaceOpenInterface, /* 1.0.0 */
+    .connectClose = udevIfaceCloseInterface, /* 1.0.0 */
+    .connectNumOfInterfaces = udevIfaceNumOfInterfaces, /* 1.0.0 */
+    .connectListInterfaces = udevIfaceListInterfaces, /* 1.0.0 */
+    .connectNumOfDefinedInterfaces = udevIfaceNumOfDefinedInterfaces, /* 1.0.0 */
+    .connectListDefinedInterfaces = udevIfaceListDefinedInterfaces, /* 1.0.0 */
+    .connectListAllInterfaces = udevIfaceListAllInterfaces, /* 1.0.0 */
     .interfaceLookupByName = udevIfaceLookupByName, /* 1.0.0 */
     .interfaceLookupByMACString = udevIfaceLookupByMACString, /* 1.0.0 */
     .interfaceIsActive = udevIfaceIsActive, /* 1.0.0 */

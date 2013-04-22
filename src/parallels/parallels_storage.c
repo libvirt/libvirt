@@ -1671,39 +1671,39 @@ cleanup:
 
 static virStorageDriver parallelsStorageDriver = {
     .name = "Parallels",
-    .open = parallelsStorageOpen,     /* 0.10.0 */
-    .close = parallelsStorageClose,   /* 0.10.0 */
+    .connectOpen = parallelsStorageOpen,     /* 0.10.0 */
+    .connectClose = parallelsStorageClose,   /* 0.10.0 */
 
-    .numOfPools = parallelsStorageNumPools,   /* 0.10.0 */
-    .listPools = parallelsStorageListPools,   /* 0.10.0 */
-    .numOfDefinedPools = parallelsStorageNumDefinedPools,     /* 0.10.0 */
-    .listDefinedPools = parallelsStorageListDefinedPools,     /* 0.10.0 */
-    .poolLookupByName = parallelsStoragePoolLookupByName,     /* 0.10.0 */
-    .poolLookupByUUID = parallelsStoragePoolLookupByUUID,     /* 0.10.0 */
-    .poolLookupByVolume = parallelsStoragePoolLookupByVolume, /* 0.10.0 */
-    .poolDefineXML = parallelsStoragePoolDefine,      /* 0.10.0 */
-    .poolUndefine = parallelsStoragePoolUndefine,     /* 0.10.0 */
-    .poolCreate = parallelsStoragePoolStart,  /* 0.10.0 */
-    .poolDestroy = parallelsStoragePoolDestroy,       /* 0.10.0 */
-    .poolRefresh = parallelsStoragePoolRefresh,       /* 0.10.0 */
-    .poolGetInfo = parallelsStoragePoolGetInfo,       /* 0.10.0 */
-    .poolGetXMLDesc = parallelsStoragePoolGetXMLDesc, /* 0.10.0 */
-    .poolGetAutostart = parallelsStoragePoolGetAutostart,     /* 0.10.0 */
-    .poolSetAutostart = parallelsStoragePoolSetAutostart,     /* 0.10.0 */
-    .poolNumOfVolumes = parallelsStoragePoolNumVolumes,       /* 0.10.0 */
-    .poolListVolumes = parallelsStoragePoolListVolumes,       /* 0.10.0 */
+    .connectNumOfStoragePools = parallelsStorageNumPools,   /* 0.10.0 */
+    .connectListStoragePools = parallelsStorageListPools,   /* 0.10.0 */
+    .connectNumOfDefinedStoragePools = parallelsStorageNumDefinedPools,     /* 0.10.0 */
+    .connectListDefinedStoragePools = parallelsStorageListDefinedPools,     /* 0.10.0 */
+    .storagePoolLookupByName = parallelsStoragePoolLookupByName,     /* 0.10.0 */
+    .storagePoolLookupByUUID = parallelsStoragePoolLookupByUUID,     /* 0.10.0 */
+    .storagePoolLookupByVolume = parallelsStoragePoolLookupByVolume, /* 0.10.0 */
+    .storagePoolDefineXML = parallelsStoragePoolDefine,      /* 0.10.0 */
+    .storagePoolUndefine = parallelsStoragePoolUndefine,     /* 0.10.0 */
+    .storagePoolCreate = parallelsStoragePoolStart,  /* 0.10.0 */
+    .storagePoolDestroy = parallelsStoragePoolDestroy,       /* 0.10.0 */
+    .storagePoolRefresh = parallelsStoragePoolRefresh,       /* 0.10.0 */
+    .storagePoolGetInfo = parallelsStoragePoolGetInfo,       /* 0.10.0 */
+    .storagePoolGetXMLDesc = parallelsStoragePoolGetXMLDesc, /* 0.10.0 */
+    .storagePoolGetAutostart = parallelsStoragePoolGetAutostart,     /* 0.10.0 */
+    .storagePoolSetAutostart = parallelsStoragePoolSetAutostart,     /* 0.10.0 */
+    .storagePoolNumOfVolumes = parallelsStoragePoolNumVolumes,       /* 0.10.0 */
+    .storagePoolListVolumes = parallelsStoragePoolListVolumes,       /* 0.10.0 */
 
-    .volLookupByName = parallelsStorageVolumeLookupByName,    /* 0.10.0 */
-    .volLookupByKey = parallelsStorageVolumeLookupByKey,      /* 0.10.0 */
-    .volLookupByPath = parallelsStorageVolumeLookupByPath,    /* 0.10.0 */
-    .volCreateXML = parallelsStorageVolumeCreateXML,  /* 0.10.0 */
-    .volCreateXMLFrom = parallelsStorageVolumeCreateXMLFrom,  /* 0.10.0 */
-    .volDelete = parallelsStorageVolumeDelete,        /* 0.10.0 */
-    .volGetInfo = parallelsStorageVolumeGetInfo,      /* 0.10.0 */
-    .volGetXMLDesc = parallelsStorageVolumeGetXMLDesc,        /* 0.10.0 */
-    .volGetPath = parallelsStorageVolumeGetPath,      /* 0.10.0 */
-    .poolIsActive = parallelsStoragePoolIsActive,     /* 0.10.0 */
-    .poolIsPersistent = parallelsStoragePoolIsPersistent,     /* 0.10.0 */
+    .storageVolLookupByName = parallelsStorageVolumeLookupByName,    /* 0.10.0 */
+    .storageVolLookupByKey = parallelsStorageVolumeLookupByKey,      /* 0.10.0 */
+    .storageVolLookupByPath = parallelsStorageVolumeLookupByPath,    /* 0.10.0 */
+    .storageVolCreateXML = parallelsStorageVolumeCreateXML,  /* 0.10.0 */
+    .storageVolCreateXMLFrom = parallelsStorageVolumeCreateXMLFrom,  /* 0.10.0 */
+    .storageVolDelete = parallelsStorageVolumeDelete,        /* 0.10.0 */
+    .storageVolGetInfo = parallelsStorageVolumeGetInfo,      /* 0.10.0 */
+    .storageVolGetXMLDesc = parallelsStorageVolumeGetXMLDesc,        /* 0.10.0 */
+    .storageVolGetPath = parallelsStorageVolumeGetPath,      /* 0.10.0 */
+    .storagePoolIsActive = parallelsStoragePoolIsActive,     /* 0.10.0 */
+    .storagePoolIsPersistent = parallelsStoragePoolIsPersistent,     /* 0.10.0 */
 };
 
 int

@@ -66,8 +66,8 @@ hypervNetworkClose(virConnectPtr conn)
 
 static virNetworkDriver hypervNetworkDriver = {
     .name = "Hyper-V",
-    .open = hypervNetworkOpen, /* 0.9.5 */
-    .close = hypervNetworkClose, /* 0.9.5 */
+    .connectOpen = hypervNetworkOpen, /* 0.9.5 */
+    .connectClose = hypervNetworkClose, /* 0.9.5 */
 };
 
 

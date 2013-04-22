@@ -1934,17 +1934,17 @@ xenapiIsAlive(virConnectPtr conn)
 static virDriver xenapiDriver = {
     .no = VIR_DRV_XENAPI,
     .name = "XenAPI",
-    .open = xenapiOpen, /* 0.8.0 */
-    .close = xenapiClose, /* 0.8.0 */
-    .supports_feature = xenapiSupportsFeature, /* 0.8.0 */
-    .type = xenapiType, /* 0.8.0 */
-    .version = xenapiGetVersion, /* 0.8.0 */
-    .getHostname = xenapiGetHostname, /* 0.8.0 */
-    .getMaxVcpus = xenapiGetMaxVcpus, /* 0.8.0 */
+    .connectOpen = xenapiOpen, /* 0.8.0 */
+    .connectClose = xenapiClose, /* 0.8.0 */
+    .connectSupportsFeature = xenapiSupportsFeature, /* 0.8.0 */
+    .connectGetType = xenapiType, /* 0.8.0 */
+    .connectGetVersion = xenapiGetVersion, /* 0.8.0 */
+    .connectGetHostname = xenapiGetHostname, /* 0.8.0 */
+    .connectGetMaxVcpus = xenapiGetMaxVcpus, /* 0.8.0 */
     .nodeGetInfo = xenapiNodeGetInfo, /* 0.8.0 */
-    .getCapabilities = xenapiGetCapabilities, /* 0.8.0 */
-    .listDomains = xenapiListDomains, /* 0.8.0 */
-    .numOfDomains = xenapiNumOfDomains, /* 0.8.0 */
+    .connectGetCapabilities = xenapiGetCapabilities, /* 0.8.0 */
+    .connectListDomains = xenapiListDomains, /* 0.8.0 */
+    .connectNumOfDomains = xenapiNumOfDomains, /* 0.8.0 */
     .domainCreateXML = xenapiDomainCreateXML, /* 0.8.0 */
     .domainLookupByID = xenapiDomainLookupByID, /* 0.8.0 */
     .domainLookupByUUID = xenapiDomainLookupByUUID, /* 0.8.0 */
@@ -1968,8 +1968,8 @@ static virDriver xenapiDriver = {
     .domainGetVcpus = xenapiDomainGetVcpus, /* 0.8.0 */
     .domainGetMaxVcpus = xenapiDomainGetMaxVcpus, /* 0.8.0 */
     .domainGetXMLDesc = xenapiDomainGetXMLDesc, /* 0.8.0 */
-    .listDefinedDomains = xenapiListDefinedDomains, /* 0.8.0 */
-    .numOfDefinedDomains = xenapiNumOfDefinedDomains, /* 0.8.0 */
+    .connectListDefinedDomains = xenapiListDefinedDomains, /* 0.8.0 */
+    .connectNumOfDefinedDomains = xenapiNumOfDefinedDomains, /* 0.8.0 */
     .domainCreate = xenapiDomainCreate, /* 0.8.0 */
     .domainCreateWithFlags = xenapiDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = xenapiDomainDefineXML, /* 0.8.0 */
@@ -1981,7 +1981,7 @@ static virDriver xenapiDriver = {
     .nodeGetCellsFreeMemory = xenapiNodeGetCellsFreeMemory, /* 0.8.0 */
     .nodeGetFreeMemory = xenapiNodeGetFreeMemory, /* 0.8.0 */
     .domainIsUpdated = xenapiDomainIsUpdated, /* 0.8.6 */
-    .isAlive = xenapiIsAlive, /* 0.9.8 */
+    .connectIsAlive = xenapiIsAlive, /* 0.9.8 */
 };
 
 /**

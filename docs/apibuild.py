@@ -50,6 +50,7 @@ ignored_words = {
 }
 
 ignored_functions = {
+  "virConnectSupportsFeature": "private function for remote access",
   "virDomainMigrateFinish": "private function for migration",
   "virDomainMigrateFinish2": "private function for migration",
   "virDomainMigratePerform": "private function for migration",
@@ -62,7 +63,6 @@ ignored_functions = {
   "virDomainMigratePrepare3": "private function for migration",
   "virDomainMigrateConfirm3": "private function for migration",
   "virDomainMigratePrepareTunnel3": "private function for tunnelled migration",
-  "virDrvSupportsFeature": "private function for remote access",
   "DllMain": "specific function for Win32",
   "virTypedParameterArrayValidate": "internal function in virtypedparam.c",
   "virTypedParameterAssign": "internal function in virtypedparam.c",

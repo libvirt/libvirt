@@ -659,24 +659,24 @@ nwfilterTeardownFilter(virDomainNetDefPtr net) {
 
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
-    .open = nwfilterOpen, /* 0.8.0 */
-    .close = nwfilterClose, /* 0.8.0 */
-    .numOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
-    .listNWFilters = nwfilterListNWFilters, /* 0.8.0 */
-    .listAllNWFilters = nwfilterListAllNWFilters, /* 0.10.2 */
+    .connectOpen = nwfilterOpen, /* 0.8.0 */
+    .connectClose = nwfilterClose, /* 0.8.0 */
+    .connectNumOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
+    .connectListNWFilters = nwfilterListNWFilters, /* 0.8.0 */
+    .connectListAllNWFilters = nwfilterListAllNWFilters, /* 0.10.2 */
     .nwfilterLookupByName = nwfilterLookupByName, /* 0.8.0 */
     .nwfilterLookupByUUID = nwfilterLookupByUUID, /* 0.8.0 */
-    .defineXML = nwfilterDefine, /* 0.8.0 */
-    .undefine = nwfilterUndefine, /* 0.8.0 */
-    .getXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
+    .nwfilterDefineXML = nwfilterDefine, /* 0.8.0 */
+    .nwfilterUndefine = nwfilterUndefine, /* 0.8.0 */
+    .nwfilterGetXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
 };
 
 
 static virStateDriver stateDriver = {
     .name = "NWFilter",
-    .initialize = nwfilterDriverStartup,
-    .cleanup = nwfilterDriverShutdown,
-    .reload = nwfilterDriverReload,
+    .stateInitialize = nwfilterDriverStartup,
+    .stateCleanup = nwfilterDriverShutdown,
+    .stateReload = nwfilterDriverReload,
 };
 
 

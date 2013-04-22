@@ -753,22 +753,22 @@ esxStorageBackendISCSIVolumeGetPath(virStorageVolPtr volume)
 
 
 virStorageDriver esxStorageBackendISCSI = {
-    .numOfPools = esxStorageBackendISCSINumberOfPools, /* 1.0.1 */
-    .listPools = esxStorageBackendISCSIListPools, /* 1.0.1 */
-    .poolLookupByName = esxStorageBackendISCSIPoolLookupByName, /* 1.0.1 */
-    .poolLookupByUUID = esxStorageBackendISCSIPoolLookupByUUID, /* 1.0.1 */
-    .poolRefresh = esxStorageBackendISCSIPoolRefresh, /* 1.0.1 */
-    .poolGetInfo = esxStorageBackendISCSIPoolGetInfo, /* 1.0.1 */
-    .poolGetXMLDesc = esxStorageBackendISCSIPoolGetXMLDesc, /* 1.0.1 */
-    .poolNumOfVolumes = esxStorageBackendISCSIPoolNumberOfVolumes, /* 1.0.1 */
-    .poolListVolumes = esxStorageBackendISCSIPoolListVolumes, /* 1.0.1 */
-    .volLookupByName = esxStorageBackendISCSIVolumeLookupByName, /* 1.0.1 */
-    .volLookupByPath = esxStorageBackendISCSIVolumeLookupByPath, /* 1.0.1 */
-    .volLookupByKey = esxStorageBackendISCSIVolumeLookupByKey, /* 1.0.1 */
-    .volCreateXML = esxStorageBackendISCSIVolumeCreateXML, /* 1.0.1 */
-    .volCreateXMLFrom = esxStorageBackendISCSIVolumeCreateXMLFrom, /* 1.0.1 */
-    .volGetXMLDesc = esxStorageBackendISCSIVolumeGetXMLDesc, /* 1.0.1 */
-    .volDelete = esxStorageBackendISCSIVolumeDelete, /* 1.0.1 */
-    .volWipe = esxStorageBackendISCSIVolumeWipe, /* 1.0.1 */
-    .volGetPath = esxStorageBackendISCSIVolumeGetPath, /* 1.0.1 */
+    .connectNumOfStoragePools = esxStorageBackendISCSINumberOfPools, /* 1.0.1 */
+    .connectListStoragePools = esxStorageBackendISCSIListPools, /* 1.0.1 */
+    .storagePoolLookupByName = esxStorageBackendISCSIPoolLookupByName, /* 1.0.1 */
+    .storagePoolLookupByUUID = esxStorageBackendISCSIPoolLookupByUUID, /* 1.0.1 */
+    .storagePoolRefresh = esxStorageBackendISCSIPoolRefresh, /* 1.0.1 */
+    .storagePoolGetInfo = esxStorageBackendISCSIPoolGetInfo, /* 1.0.1 */
+    .storagePoolGetXMLDesc = esxStorageBackendISCSIPoolGetXMLDesc, /* 1.0.1 */
+    .storagePoolNumOfVolumes = esxStorageBackendISCSIPoolNumberOfVolumes, /* 1.0.1 */
+    .storagePoolListVolumes = esxStorageBackendISCSIPoolListVolumes, /* 1.0.1 */
+    .storageVolLookupByName = esxStorageBackendISCSIVolumeLookupByName, /* 1.0.1 */
+    .storageVolLookupByPath = esxStorageBackendISCSIVolumeLookupByPath, /* 1.0.1 */
+    .storageVolLookupByKey = esxStorageBackendISCSIVolumeLookupByKey, /* 1.0.1 */
+    .storageVolCreateXML = esxStorageBackendISCSIVolumeCreateXML, /* 1.0.1 */
+    .storageVolCreateXMLFrom = esxStorageBackendISCSIVolumeCreateXMLFrom, /* 1.0.1 */
+    .storageVolGetXMLDesc = esxStorageBackendISCSIVolumeGetXMLDesc, /* 1.0.1 */
+    .storageVolDelete = esxStorageBackendISCSIVolumeDelete, /* 1.0.1 */
+    .storageVolWipe = esxStorageBackendISCSIVolumeWipe, /* 1.0.1 */
+    .storageVolGetPath = esxStorageBackendISCSIVolumeGetPath, /* 1.0.1 */
 };

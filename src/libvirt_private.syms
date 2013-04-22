@@ -700,6 +700,7 @@ virFDStreamOpenFile;
 
 
 # libvirt_internal.h
+virConnectSupportsFeature;
 virDomainMigrateBegin3;
 virDomainMigrateConfirm3;
 virDomainMigrateFinish;
@@ -712,7 +713,6 @@ virDomainMigratePrepare2;
 virDomainMigratePrepare3;
 virDomainMigratePrepareTunnel;
 virDomainMigratePrepareTunnel3;
-virDrvSupportsFeature;
 virRegisterDeviceMonitor;
 virRegisterDriver;
 virRegisterInterfaceDriver;

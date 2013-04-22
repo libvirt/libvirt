@@ -827,12 +827,12 @@ int virStateInitialize(bool privileged,
         return -1;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->initialize) {
+        if (virStateDriverTab[i]->stateInitialize) {
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
-            if (virStateDriverTab[i]->initialize(privileged,
-                                                 callback,
-                                                 opaque) < 0) {
+            if (virStateDriverTab[i]->stateInitialize(privileged,
+                                                      callback,
+                                                      opaque) < 0) {
                 VIR_ERROR(_("Initialization of %s state driver failed"),
                           virStateDriverTab[i]->name);
                 return -1;
@@ -853,8 +853,8 @@ int virStateCleanup(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->cleanup &&
-            virStateDriverTab[i]->cleanup() < 0)
+        if (virStateDriverTab[i]->stateCleanup &&
+            virStateDriverTab[i]->stateCleanup() < 0)
             ret = -1;
     }
     return ret;
@@ -871,8 +871,8 @@ int virStateReload(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->reload &&
-            virStateDriverTab[i]->reload() < 0)
+        if (virStateDriverTab[i]->stateReload &&
+            virStateDriverTab[i]->stateReload() < 0)
             ret = -1;
     }
     return ret;
@@ -889,8 +889,8 @@ int virStateStop(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->stop &&
-            virStateDriverTab[i]->stop())
+        if (virStateDriverTab[i]->stateStop &&
+            virStateDriverTab[i]->stateStop())
             ret = 1;
     }
     return ret;
@@ -1209,7 +1209,7 @@ do_open(const char *name,
         }
 
         VIR_DEBUG("trying driver %d (%s) ...", i, virDriverTab[i]->name);
-        res = virDriverTab[i]->open(ret, auth, flags);
+        res = virDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("driver %d %s returned %s",
                   i, virDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1233,7 +1233,7 @@ do_open(const char *name,
     }
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->open(ret, auth, flags);
+        res = virNetworkDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("network driver %d %s returned %s",
                   i, virNetworkDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1249,7 +1249,7 @@ do_open(const char *name,
     }
 
     for (i = 0; i < virInterfaceDriverTabCount; i++) {
-        res = virInterfaceDriverTab[i]->open(ret, auth, flags);
+        res = virInterfaceDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("interface driver %d %s returned %s",
                   i, virInterfaceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1266,7 +1266,7 @@ do_open(const char *name,
 
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
-        res = virStorageDriverTab[i]->open(ret, auth, flags);
+        res = virStorageDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("storage driver %d %s returned %s",
                   i, virStorageDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1283,7 +1283,7 @@ do_open(const char *name,
 
     /* Node driver (optional) */
     for (i = 0; i < virDeviceMonitorTabCount; i++) {
-        res = virDeviceMonitorTab[i]->open(ret, auth, flags);
+        res = virDeviceMonitorTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("node driver %d %s returned %s",
                   i, virDeviceMonitorTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1300,7 +1300,7 @@ do_open(const char *name,
 
     /* Secret manipulation driver. Optional */
     for (i = 0; i < virSecretDriverTabCount; i++) {
-        res = virSecretDriverTab[i]->open(ret, auth, flags);
+        res = virSecretDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("secret driver %d %s returned %s",
                   i, virSecretDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1317,7 +1317,7 @@ do_open(const char *name,
 
     /* Network filter driver. Optional */
     for (i = 0; i < virNWFilterDriverTabCount; i++) {
-        res = virNWFilterDriverTab[i]->open(ret, auth, flags);
+        res = virNWFilterDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("nwfilter driver %d %s returned %s",
                   i, virNWFilterDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1544,7 +1544,7 @@ virConnectRef(virConnectPtr conn)
  * implementation of driver features in the remote case.
  */
 int
-virDrvSupportsFeature(virConnectPtr conn, int feature)
+virConnectSupportsFeature(virConnectPtr conn, int feature)
 {
     int ret;
     VIR_DEBUG("conn=%p, feature=%d", conn, feature);
@@ -1557,10 +1557,10 @@ virDrvSupportsFeature(virConnectPtr conn, int feature)
         return -1;
     }
 
-    if (!conn->driver->supports_feature)
+    if (!conn->driver->connectSupportsFeature)
         ret = 0;
     else
-        ret = conn->driver->supports_feature(conn, feature);
+        ret = conn->driver->connectSupportsFeature(conn, feature);
 
     if (ret < 0)
         virDispatchError(conn);
@@ -1593,8 +1593,8 @@ virConnectGetType(virConnectPtr conn)
         return NULL;
     }
 
-    if (conn->driver->type) {
-        ret = conn->driver->type(conn);
+    if (conn->driver->connectGetType) {
+        ret = conn->driver->connectGetType(conn);
         if (ret) return ret;
     }
     return conn->driver->name;
@@ -1628,8 +1628,8 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 
     virCheckNonNullArgGoto(hvVer, error);
 
-    if (conn->driver->version) {
-        int ret = conn->driver->version(conn, hvVer);
+    if (conn->driver->connectGetVersion) {
+        int ret = conn->driver->connectGetVersion(conn, hvVer);
         if (ret < 0)
             goto error;
         return ret;
@@ -1669,8 +1669,8 @@ virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
 
     virCheckNonNullArgGoto(libVer, error);
 
-    if (conn->driver->libvirtVersion) {
-        ret = conn->driver->libvirtVersion(conn, libVer);
+    if (conn->driver->connectGetLibVersion) {
+        ret = conn->driver->connectGetLibVersion(conn, libVer);
         if (ret < 0)
             goto error;
         return ret;
@@ -1709,8 +1709,8 @@ virConnectGetHostname(virConnectPtr conn)
         return NULL;
     }
 
-    if (conn->driver->getHostname) {
-        char *ret = conn->driver->getHostname(conn);
+    if (conn->driver->connectGetHostname) {
+        char *ret = conn->driver->connectGetHostname(conn);
         if (!ret)
             goto error;
         return ret;
@@ -1788,8 +1788,8 @@ virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
         return NULL;
     }
 
-    if (conn->driver->getSysinfo) {
-        char *ret = conn->driver->getSysinfo(conn, flags);
+    if (conn->driver->connectGetSysinfo) {
+        char *ret = conn->driver->connectGetSysinfo(conn, flags);
         if (!ret)
             goto error;
         return ret;
@@ -1827,8 +1827,8 @@ virConnectGetMaxVcpus(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->driver->getMaxVcpus) {
-        int ret = conn->driver->getMaxVcpus(conn, type);
+    if (conn->driver->connectGetMaxVcpus) {
+        int ret = conn->driver->connectGetMaxVcpus(conn, type);
         if (ret < 0)
             goto error;
         return ret;
@@ -1873,8 +1873,8 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     virCheckNonNullArgGoto(ids, error);
     virCheckNonNegativeArgGoto(maxids, error);
 
-    if (conn->driver->listDomains) {
-        int ret = conn->driver->listDomains(conn, ids, maxids);
+    if (conn->driver->connectListDomains) {
+        int ret = conn->driver->connectListDomains(conn, ids, maxids);
         if (ret < 0)
             goto error;
         return ret;
@@ -1907,8 +1907,8 @@ virConnectNumOfDomains(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->driver->numOfDomains) {
-        int ret = conn->driver->numOfDomains(conn);
+    if (conn->driver->connectNumOfDomains) {
+        int ret = conn->driver->connectNumOfDomains(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -4447,12 +4447,12 @@ char *virConnectDomainXMLFromNative(virConnectPtr conn,
     virCheckNonNullArgGoto(nativeFormat, error);
     virCheckNonNullArgGoto(nativeConfig, error);
 
-    if (conn->driver->domainXMLFromNative) {
+    if (conn->driver->connectDomainXMLFromNative) {
         char *ret;
-        ret = conn->driver->domainXMLFromNative(conn,
-                                                nativeFormat,
-                                                nativeConfig,
-                                                flags);
+        ret = conn->driver->connectDomainXMLFromNative(conn,
+                                                       nativeFormat,
+                                                       nativeConfig,
+                                                       flags);
         if (!ret)
             goto error;
         return ret;
@@ -4502,12 +4502,12 @@ char *virConnectDomainXMLToNative(virConnectPtr conn,
     virCheckNonNullArgGoto(nativeFormat, error);
     virCheckNonNullArgGoto(domainXml, error);
 
-    if (conn->driver->domainXMLToNative) {
+    if (conn->driver->connectDomainXMLToNative) {
         char *ret;
-        ret = conn->driver->domainXMLToNative(conn,
-                                              nativeFormat,
-                                              domainXml,
-                                              flags);
+        ret = conn->driver->connectDomainXMLToNative(conn,
+                                                     nativeFormat,
+                                                     domainXml,
+                                                     flags);
         if (!ret)
             goto error;
         return ret;
@@ -6590,9 +6590,9 @@ virConnectGetCapabilities(virConnectPtr conn)
         return NULL;
     }
 
-    if (conn->driver->getCapabilities) {
+    if (conn->driver->connectGetCapabilities) {
         char *ret;
-        ret = conn->driver->getCapabilities(conn);
+        ret = conn->driver->connectGetCapabilities(conn);
         if (!ret)
             goto error;
         VIR_DEBUG("conn=%p ret=%s", conn, ret);
@@ -8257,9 +8257,9 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->driver->numOfDefinedDomains) {
+    if (conn->driver->connectNumOfDefinedDomains) {
         int ret;
-        ret = conn->driver->numOfDefinedDomains(conn);
+        ret = conn->driver->connectNumOfDefinedDomains(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -8306,9 +8306,9 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->driver->listDefinedDomains) {
+    if (conn->driver->connectListDefinedDomains) {
         int ret;
-        ret = conn->driver->listDefinedDomains(conn, names, maxnames);
+        ret = conn->driver->connectListDefinedDomains(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -8411,9 +8411,9 @@ virConnectListAllDomains(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->driver->listAllDomains) {
+    if (conn->driver->connectListAllDomains) {
         int ret;
-        ret = conn->driver->listAllDomains(conn, domains, flags);
+        ret = conn->driver->connectListAllDomains(conn, domains, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -10222,9 +10222,9 @@ virConnectListAllNetworks(virConnectPtr conn,
     }
 
     if (conn->networkDriver &&
-        conn->networkDriver->listAllNetworks) {
+        conn->networkDriver->connectListAllNetworks) {
         int ret;
-        ret = conn->networkDriver->listAllNetworks(conn, nets, flags);
+        ret = conn->networkDriver->connectListAllNetworks(conn, nets, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -10259,9 +10259,9 @@ virConnectNumOfNetworks(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->networkDriver && conn->networkDriver->numOfNetworks) {
+    if (conn->networkDriver && conn->networkDriver->connectNumOfNetworks) {
         int ret;
-        ret = conn->networkDriver->numOfNetworks(conn);
+        ret = conn->networkDriver->connectNumOfNetworks(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -10306,9 +10306,9 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->networkDriver && conn->networkDriver->listNetworks) {
+    if (conn->networkDriver && conn->networkDriver->connectListNetworks) {
         int ret;
-        ret = conn->networkDriver->listNetworks(conn, names, maxnames);
+        ret = conn->networkDriver->connectListNetworks(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -10342,9 +10342,9 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->networkDriver && conn->networkDriver->numOfDefinedNetworks) {
+    if (conn->networkDriver && conn->networkDriver->connectNumOfDefinedNetworks) {
         int ret;
-        ret = conn->networkDriver->numOfDefinedNetworks(conn);
+        ret = conn->networkDriver->connectNumOfDefinedNetworks(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -10390,10 +10390,9 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->networkDriver && conn->networkDriver->listDefinedNetworks) {
+    if (conn->networkDriver && conn->networkDriver->connectListDefinedNetworks) {
         int ret;
-        ret = conn->networkDriver->listDefinedNetworks(conn,
-                                                       names, maxnames);
+        ret = conn->networkDriver->connectListDefinedNetworks(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -11204,9 +11203,9 @@ virConnectListAllInterfaces(virConnectPtr conn,
     }
 
     if (conn->interfaceDriver &&
-        conn->interfaceDriver->listAllInterfaces) {
+        conn->interfaceDriver->connectListAllInterfaces) {
         int ret;
-        ret = conn->interfaceDriver->listAllInterfaces(conn, ifaces, flags);
+        ret = conn->interfaceDriver->connectListAllInterfaces(conn, ifaces, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -11240,9 +11239,9 @@ virConnectNumOfInterfaces(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->interfaceDriver && conn->interfaceDriver->numOfInterfaces) {
+    if (conn->interfaceDriver && conn->interfaceDriver->connectNumOfInterfaces) {
         int ret;
-        ret = conn->interfaceDriver->numOfInterfaces(conn);
+        ret = conn->interfaceDriver->connectNumOfInterfaces(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -11288,9 +11287,9 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->interfaceDriver && conn->interfaceDriver->listInterfaces) {
+    if (conn->interfaceDriver && conn->interfaceDriver->connectListInterfaces) {
         int ret;
-        ret = conn->interfaceDriver->listInterfaces(conn, names, maxnames);
+        ret = conn->interfaceDriver->connectListInterfaces(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -11324,9 +11323,9 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->interfaceDriver && conn->interfaceDriver->numOfDefinedInterfaces) {
+    if (conn->interfaceDriver && conn->interfaceDriver->connectNumOfDefinedInterfaces) {
         int ret;
-        ret = conn->interfaceDriver->numOfDefinedInterfaces(conn);
+        ret = conn->interfaceDriver->connectNumOfDefinedInterfaces(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -11374,9 +11373,9 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->interfaceDriver && conn->interfaceDriver->listDefinedInterfaces) {
+    if (conn->interfaceDriver && conn->interfaceDriver->connectListDefinedInterfaces) {
         int ret;
-        ret = conn->interfaceDriver->listDefinedInterfaces(conn, names, maxnames);
+        ret = conn->interfaceDriver->connectListDefinedInterfaces(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -12071,9 +12070,9 @@ virConnectListAllStoragePools(virConnectPtr conn,
     }
 
     if (conn->storageDriver &&
-        conn->storageDriver->listAllPools) {
+        conn->storageDriver->connectListAllStoragePools) {
         int ret;
-        ret = conn->storageDriver->listAllPools(conn, pools, flags);
+        ret = conn->storageDriver->connectListAllStoragePools(conn, pools, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -12107,9 +12106,9 @@ virConnectNumOfStoragePools(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->storageDriver && conn->storageDriver->numOfPools) {
+    if (conn->storageDriver && conn->storageDriver->connectNumOfStoragePools) {
         int ret;
-        ret = conn->storageDriver->numOfPools(conn);
+        ret = conn->storageDriver->connectNumOfStoragePools(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -12158,9 +12157,9 @@ virConnectListStoragePools(virConnectPtr conn,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->storageDriver && conn->storageDriver->listPools) {
+    if (conn->storageDriver && conn->storageDriver->connectListStoragePools) {
         int ret;
-        ret = conn->storageDriver->listPools(conn, names, maxnames);
+        ret = conn->storageDriver->connectListStoragePools(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -12195,9 +12194,9 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->storageDriver && conn->storageDriver->numOfDefinedPools) {
+    if (conn->storageDriver && conn->storageDriver->connectNumOfDefinedStoragePools) {
         int ret;
-        ret = conn->storageDriver->numOfDefinedPools(conn);
+        ret = conn->storageDriver->connectNumOfDefinedStoragePools(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -12247,9 +12246,9 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->storageDriver && conn->storageDriver->listDefinedPools) {
+    if (conn->storageDriver && conn->storageDriver->connectListDefinedStoragePools) {
         int ret;
-        ret = conn->storageDriver->listDefinedPools(conn, names, maxnames);
+        ret = conn->storageDriver->connectListDefinedStoragePools(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -12307,9 +12306,9 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->findPoolSources) {
+    if (conn->storageDriver && conn->storageDriver->connectFindStoragePoolSources) {
         char *ret;
-        ret = conn->storageDriver->findPoolSources(conn, type, srcSpec, flags);
+        ret = conn->storageDriver->connectFindStoragePoolSources(conn, type, srcSpec, flags);
         if (!ret)
             goto error;
         return ret;
@@ -12347,9 +12346,9 @@ virStoragePoolLookupByName(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(name, error);
 
-    if (conn->storageDriver && conn->storageDriver->poolLookupByName) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolLookupByName) {
         virStoragePoolPtr ret;
-        ret = conn->storageDriver->poolLookupByName(conn, name);
+        ret = conn->storageDriver->storagePoolLookupByName(conn, name);
         if (!ret)
             goto error;
         return ret;
@@ -12387,9 +12386,9 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(uuid, error);
 
-    if (conn->storageDriver && conn->storageDriver->poolLookupByUUID) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolLookupByUUID) {
         virStoragePoolPtr ret;
-        ret = conn->storageDriver->poolLookupByUUID(conn, uuid);
+        ret = conn->storageDriver->storagePoolLookupByUUID(conn, uuid);
         if (!ret)
             goto error;
         return ret;
@@ -12464,9 +12463,9 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
         return NULL;
     }
 
-    if (vol->conn->storageDriver && vol->conn->storageDriver->poolLookupByVolume) {
+    if (vol->conn->storageDriver && vol->conn->storageDriver->storagePoolLookupByVolume) {
         virStoragePoolPtr ret;
-        ret = vol->conn->storageDriver->poolLookupByVolume(vol);
+        ret = vol->conn->storageDriver->storagePoolLookupByVolume(vol);
         if (!ret)
             goto error;
         return ret;
@@ -12512,9 +12511,9 @@ virStoragePoolCreateXML(virConnectPtr conn,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolCreateXML) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolCreateXML) {
         virStoragePoolPtr ret;
-        ret = conn->storageDriver->poolCreateXML(conn, xmlDesc, flags);
+        ret = conn->storageDriver->storagePoolCreateXML(conn, xmlDesc, flags);
         if (!ret)
             goto error;
         return ret;
@@ -12558,9 +12557,9 @@ virStoragePoolDefineXML(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(xml, error);
 
-    if (conn->storageDriver && conn->storageDriver->poolDefineXML) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolDefineXML) {
         virStoragePoolPtr ret;
-        ret = conn->storageDriver->poolDefineXML(conn, xml, flags);
+        ret = conn->storageDriver->storagePoolDefineXML(conn, xml, flags);
         if (!ret)
             goto error;
         return ret;
@@ -12605,9 +12604,9 @@ virStoragePoolBuild(virStoragePoolPtr pool,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolBuild) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolBuild) {
         int ret;
-        ret = conn->storageDriver->poolBuild(pool, flags);
+        ret = conn->storageDriver->storagePoolBuild(pool, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -12648,9 +12647,9 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolUndefine) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolUndefine) {
         int ret;
-        ret = conn->storageDriver->poolUndefine(pool);
+        ret = conn->storageDriver->storagePoolUndefine(pool);
         if (ret < 0)
             goto error;
         return ret;
@@ -12693,9 +12692,9 @@ virStoragePoolCreate(virStoragePoolPtr pool,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolCreate) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolCreate) {
         int ret;
-        ret = conn->storageDriver->poolCreate(pool, flags);
+        ret = conn->storageDriver->storagePoolCreate(pool, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -12741,9 +12740,9 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolDestroy) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolDestroy) {
         int ret;
-        ret = conn->storageDriver->poolDestroy(pool);
+        ret = conn->storageDriver->storagePoolDestroy(pool);
         if (ret < 0)
             goto error;
         return ret;
@@ -12788,9 +12787,9 @@ virStoragePoolDelete(virStoragePoolPtr pool,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolDelete) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolDelete) {
         int ret;
-        ret = conn->storageDriver->poolDelete(pool, flags);
+        ret = conn->storageDriver->storagePoolDelete(pool, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -12893,9 +12892,9 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->poolRefresh) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolRefresh) {
         int ret;
-        ret = conn->storageDriver->poolRefresh(pool, flags);
+        ret = conn->storageDriver->storagePoolRefresh(pool, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -13033,9 +13032,9 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
 
     conn = pool->conn;
 
-    if (conn->storageDriver->poolGetInfo) {
+    if (conn->storageDriver->storagePoolGetInfo) {
         int ret;
-        ret = conn->storageDriver->poolGetInfo(pool, info);
+        ret = conn->storageDriver->storagePoolGetInfo(pool, info);
         if (ret < 0)
             goto error;
         return ret;
@@ -13077,9 +13076,9 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
 
     conn = pool->conn;
 
-    if (conn->storageDriver && conn->storageDriver->poolGetXMLDesc) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolGetXMLDesc) {
         char *ret;
-        ret = conn->storageDriver->poolGetXMLDesc(pool, flags);
+        ret = conn->storageDriver->storagePoolGetXMLDesc(pool, flags);
         if (!ret)
             goto error;
         return ret;
@@ -13121,9 +13120,9 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
 
     conn = pool->conn;
 
-    if (conn->storageDriver && conn->storageDriver->poolGetAutostart) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolGetAutostart) {
         int ret;
-        ret = conn->storageDriver->poolGetAutostart(pool, autostart);
+        ret = conn->storageDriver->storagePoolGetAutostart(pool, autostart);
         if (ret < 0)
             goto error;
         return ret;
@@ -13168,9 +13167,9 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
 
     conn = pool->conn;
 
-    if (conn->storageDriver && conn->storageDriver->poolSetAutostart) {
+    if (conn->storageDriver && conn->storageDriver->storagePoolSetAutostart) {
         int ret;
-        ret = conn->storageDriver->poolSetAutostart(pool, autostart);
+        ret = conn->storageDriver->storagePoolSetAutostart(pool, autostart);
         if (ret < 0)
             goto error;
         return ret;
@@ -13217,9 +13216,9 @@ virStoragePoolListAllVolumes(virStoragePoolPtr pool,
     }
 
     if (pool->conn->storageDriver &&
-        pool->conn->storageDriver->poolListAllVolumes) {
+        pool->conn->storageDriver->storagePoolListAllVolumes) {
         int ret;
-        ret = pool->conn->storageDriver->poolListAllVolumes(pool, vols, flags);
+        ret = pool->conn->storageDriver->storagePoolListAllVolumes(pool, vols, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -13253,9 +13252,9 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
         return -1;
     }
 
-    if (pool->conn->storageDriver && pool->conn->storageDriver->poolNumOfVolumes) {
+    if (pool->conn->storageDriver && pool->conn->storageDriver->storagePoolNumOfVolumes) {
         int ret;
-        ret = pool->conn->storageDriver->poolNumOfVolumes(pool);
+        ret = pool->conn->storageDriver->storagePoolNumOfVolumes(pool);
         if (ret < 0)
             goto error;
         return ret;
@@ -13300,9 +13299,9 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (pool->conn->storageDriver && pool->conn->storageDriver->poolListVolumes) {
+    if (pool->conn->storageDriver && pool->conn->storageDriver->storagePoolListVolumes) {
         int ret;
-        ret = pool->conn->storageDriver->poolListVolumes(pool, names, maxnames);
+        ret = pool->conn->storageDriver->storagePoolListVolumes(pool, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -13372,9 +13371,9 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
 
     virCheckNonNullArgGoto(name, error);
 
-    if (pool->conn->storageDriver && pool->conn->storageDriver->volLookupByName) {
+    if (pool->conn->storageDriver && pool->conn->storageDriver->storageVolLookupByName) {
         virStorageVolPtr ret;
-        ret = pool->conn->storageDriver->volLookupByName(pool, name);
+        ret = pool->conn->storageDriver->storageVolLookupByName(pool, name);
         if (!ret)
             goto error;
         return ret;
@@ -13415,9 +13414,9 @@ virStorageVolLookupByKey(virConnectPtr conn,
 
     virCheckNonNullArgGoto(key, error);
 
-    if (conn->storageDriver && conn->storageDriver->volLookupByKey) {
+    if (conn->storageDriver && conn->storageDriver->storageVolLookupByKey) {
         virStorageVolPtr ret;
-        ret = conn->storageDriver->volLookupByKey(conn, key);
+        ret = conn->storageDriver->storageVolLookupByKey(conn, key);
         if (!ret)
             goto error;
         return ret;
@@ -13455,9 +13454,9 @@ virStorageVolLookupByPath(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(path, error);
 
-    if (conn->storageDriver && conn->storageDriver->volLookupByPath) {
+    if (conn->storageDriver && conn->storageDriver->storageVolLookupByPath) {
         virStorageVolPtr ret;
-        ret = conn->storageDriver->volLookupByPath(conn, path);
+        ret = conn->storageDriver->storageVolLookupByPath(conn, path);
         if (!ret)
             goto error;
         return ret;
@@ -13561,9 +13560,9 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
         goto error;
     }
 
-    if (pool->conn->storageDriver && pool->conn->storageDriver->volCreateXML) {
+    if (pool->conn->storageDriver && pool->conn->storageDriver->storageVolCreateXML) {
         virStorageVolPtr ret;
-        ret = pool->conn->storageDriver->volCreateXML(pool, xmlDesc, flags);
+        ret = pool->conn->storageDriver->storageVolCreateXML(pool, xmlDesc, flags);
         if (!ret)
             goto error;
         return ret;
@@ -13627,9 +13626,9 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     if (pool->conn->storageDriver &&
-        pool->conn->storageDriver->volCreateXMLFrom) {
+        pool->conn->storageDriver->storageVolCreateXMLFrom) {
         virStorageVolPtr ret;
-        ret = pool->conn->storageDriver->volCreateXMLFrom(pool, xmlDesc,
+        ret = pool->conn->storageDriver->storageVolCreateXMLFrom(pool, xmlDesc,
                                                           clonevol, flags);
         if (!ret)
             goto error;
@@ -13693,9 +13692,9 @@ virStorageVolDownload(virStorageVolPtr vol,
     }
 
     if (vol->conn->storageDriver &&
-        vol->conn->storageDriver->volDownload) {
+        vol->conn->storageDriver->storageVolDownload) {
         int ret;
-        ret = vol->conn->storageDriver->volDownload(vol,
+        ret = vol->conn->storageDriver->storageVolDownload(vol,
                                                     stream,
                                                     offset,
                                                     length,
@@ -13764,9 +13763,9 @@ virStorageVolUpload(virStorageVolPtr vol,
     }
 
     if (vol->conn->storageDriver &&
-        vol->conn->storageDriver->volUpload) {
+        vol->conn->storageDriver->storageVolUpload) {
         int ret;
-        ret = vol->conn->storageDriver->volUpload(vol,
+        ret = vol->conn->storageDriver->storageVolUpload(vol,
                                                   stream,
                                                   offset,
                                                   length,
@@ -13814,9 +13813,9 @@ virStorageVolDelete(virStorageVolPtr vol,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->volDelete) {
+    if (conn->storageDriver && conn->storageDriver->storageVolDelete) {
         int ret;
-        ret = conn->storageDriver->volDelete(vol, flags);
+        ret = conn->storageDriver->storageVolDelete(vol, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -13860,9 +13859,9 @@ virStorageVolWipe(virStorageVolPtr vol,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->volWipe) {
+    if (conn->storageDriver && conn->storageDriver->storageVolWipe) {
         int ret;
-        ret = conn->storageDriver->volWipe(vol, flags);
+        ret = conn->storageDriver->storageVolWipe(vol, flags);
         if (ret < 0) {
             goto error;
         }
@@ -13910,9 +13909,9 @@ virStorageVolWipePattern(virStorageVolPtr vol,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->volWipePattern) {
+    if (conn->storageDriver && conn->storageDriver->storageVolWipePattern) {
         int ret;
-        ret = conn->storageDriver->volWipePattern(vol, algorithm, flags);
+        ret = conn->storageDriver->storageVolWipePattern(vol, algorithm, flags);
         if (ret < 0) {
             goto error;
         }
@@ -14012,9 +14011,9 @@ virStorageVolGetInfo(virStorageVolPtr vol,
 
     conn = vol->conn;
 
-    if (conn->storageDriver->volGetInfo){
+    if (conn->storageDriver->storageVolGetInfo){
         int ret;
-        ret = conn->storageDriver->volGetInfo(vol, info);
+        ret = conn->storageDriver->storageVolGetInfo(vol, info);
         if (ret < 0)
             goto error;
         return ret;
@@ -14055,9 +14054,9 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
 
     conn = vol->conn;
 
-    if (conn->storageDriver && conn->storageDriver->volGetXMLDesc) {
+    if (conn->storageDriver && conn->storageDriver->storageVolGetXMLDesc) {
         char *ret;
-        ret = conn->storageDriver->volGetXMLDesc(vol, flags);
+        ret = conn->storageDriver->storageVolGetXMLDesc(vol, flags);
         if (!ret)
             goto error;
         return ret;
@@ -14100,9 +14099,9 @@ virStorageVolGetPath(virStorageVolPtr vol)
 
     conn = vol->conn;
 
-    if (conn->storageDriver && conn->storageDriver->volGetPath) {
+    if (conn->storageDriver && conn->storageDriver->storageVolGetPath) {
         char *ret;
-        ret = conn->storageDriver->volGetPath(vol);
+        ret = conn->storageDriver->storageVolGetPath(vol);
         if (!ret)
             goto error;
         return ret;
@@ -14180,9 +14179,9 @@ virStorageVolResize(virStorageVolPtr vol,
         goto error;
     }
 
-    if (conn->storageDriver && conn->storageDriver->volResize) {
+    if (conn->storageDriver && conn->storageDriver->storageVolResize) {
         int ret;
-        ret = conn->storageDriver->volResize(vol, capacity, flags);
+        ret = conn->storageDriver->storageVolResize(vol, capacity, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14221,9 +14220,9 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
         return -1;
     }
 
-    if (conn->deviceMonitor && conn->deviceMonitor->numOfDevices) {
+    if (conn->deviceMonitor && conn->deviceMonitor->nodeNumOfDevices) {
         int ret;
-        ret = conn->deviceMonitor->numOfDevices(conn, cap, flags);
+        ret = conn->deviceMonitor->nodeNumOfDevices(conn, cap, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14293,9 +14292,9 @@ virConnectListAllNodeDevices(virConnectPtr conn,
     }
 
     if (conn->deviceMonitor &&
-        conn->deviceMonitor->listAllNodeDevices) {
+        conn->deviceMonitor->connectListAllNodeDevices) {
         int ret;
-        ret = conn->deviceMonitor->listAllNodeDevices(conn, devices, flags);
+        ret = conn->deviceMonitor->connectListAllNodeDevices(conn, devices, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14344,9 +14343,9 @@ virNodeListDevices(virConnectPtr conn,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->deviceMonitor && conn->deviceMonitor->listDevices) {
+    if (conn->deviceMonitor && conn->deviceMonitor->nodeListDevices) {
         int ret;
-        ret = conn->deviceMonitor->listDevices(conn, cap, names, maxnames, flags);
+        ret = conn->deviceMonitor->nodeListDevices(conn, cap, names, maxnames, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14383,9 +14382,9 @@ virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 
     virCheckNonNullArgGoto(name, error);
 
-    if (conn->deviceMonitor && conn->deviceMonitor->deviceLookupByName) {
+    if (conn->deviceMonitor && conn->deviceMonitor->nodeDeviceLookupByName) {
         virNodeDevicePtr ret;
-        ret = conn->deviceMonitor->deviceLookupByName(conn, name);
+        ret = conn->deviceMonitor->nodeDeviceLookupByName(conn, name);
         if (!ret)
             goto error;
         return ret;
@@ -14429,9 +14428,9 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     virCheckNonNullArgGoto(wwpn, error);
 
     if (conn->deviceMonitor &&
-        conn->deviceMonitor->deviceLookupSCSIHostByWWN) {
+        conn->deviceMonitor->nodeDeviceLookupSCSIHostByWWN) {
         virNodeDevicePtr ret;
-        ret = conn->deviceMonitor->deviceLookupSCSIHostByWWN(conn, wwnn,
+        ret = conn->deviceMonitor->nodeDeviceLookupSCSIHostByWWN(conn, wwnn,
                                                              wwpn, flags);
         if (!ret)
             goto error;
@@ -14467,9 +14466,9 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
         return NULL;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetXMLDesc) {
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceGetXMLDesc) {
         char *ret;
-        ret = dev->conn->deviceMonitor->deviceGetXMLDesc(dev, flags);
+        ret = dev->conn->deviceMonitor->nodeDeviceGetXMLDesc(dev, flags);
         if (!ret)
             goto error;
         return ret;
@@ -14526,8 +14525,8 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
     }
 
     if (!dev->parent) {
-        if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceGetParent) {
-            dev->parent = dev->conn->deviceMonitor->deviceGetParent(dev);
+        if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceGetParent) {
+            dev->parent = dev->conn->deviceMonitor->nodeDeviceGetParent(dev);
         } else {
             virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             virDispatchError(dev->conn);
@@ -14557,9 +14556,9 @@ int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceNumOfCaps) {
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceNumOfCaps) {
         int ret;
-        ret = dev->conn->deviceMonitor->deviceNumOfCaps(dev);
+        ret = dev->conn->deviceMonitor->nodeDeviceNumOfCaps(dev);
         if (ret < 0)
             goto error;
         return ret;
@@ -14600,9 +14599,9 @@ int virNodeDeviceListCaps(virNodeDevicePtr dev,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->deviceListCaps) {
+    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceListCaps) {
         int ret;
-        ret = dev->conn->deviceMonitor->deviceListCaps(dev, names, maxnames);
+        ret = dev->conn->deviceMonitor->nodeDeviceListCaps(dev, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -14856,8 +14855,8 @@ virNodeDeviceCreateXML(virConnectPtr conn,
     virCheckNonNullArgGoto(xmlDesc, error);
 
     if (conn->deviceMonitor &&
-        conn->deviceMonitor->deviceCreateXML) {
-        virNodeDevicePtr dev = conn->deviceMonitor->deviceCreateXML(conn, xmlDesc, flags);
+        conn->deviceMonitor->nodeDeviceCreateXML) {
+        virNodeDevicePtr dev = conn->deviceMonitor->nodeDeviceCreateXML(conn, xmlDesc, flags);
         if (dev == NULL)
             goto error;
         return dev;
@@ -14899,8 +14898,8 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
     }
 
     if (dev->conn->deviceMonitor &&
-        dev->conn->deviceMonitor->deviceDestroy) {
-        int retval = dev->conn->deviceMonitor->deviceDestroy(dev);
+        dev->conn->deviceMonitor->nodeDeviceDestroy) {
+        int retval = dev->conn->deviceMonitor->nodeDeviceDestroy(dev);
         if (retval < 0) {
             goto error;
         }
@@ -14959,9 +14958,9 @@ virConnectDomainEventRegister(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(cb, error);
 
-    if ((conn->driver) && (conn->driver->domainEventRegister)) {
+    if ((conn->driver) && (conn->driver->connectDomainEventRegister)) {
         int ret;
-        ret = conn->driver->domainEventRegister(conn, cb, opaque, freecb);
+        ret = conn->driver->connectDomainEventRegister(conn, cb, opaque, freecb);
         if (ret < 0)
             goto error;
         return ret;
@@ -15002,9 +15001,9 @@ virConnectDomainEventDeregister(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(cb, error);
 
-    if ((conn->driver) && (conn->driver->domainEventDeregister)) {
+    if ((conn->driver) && (conn->driver->connectDomainEventDeregister)) {
         int ret;
-        ret = conn->driver->domainEventDeregister(conn, cb);
+        ret = conn->driver->connectDomainEventDeregister(conn, cb);
         if (ret < 0)
             goto error;
         return ret;
@@ -15065,10 +15064,10 @@ virConnectNumOfSecrets(virConnectPtr conn)
     }
 
     if (conn->secretDriver != NULL &&
-        conn->secretDriver->numOfSecrets != NULL) {
+        conn->secretDriver->connectNumOfSecrets != NULL) {
         int ret;
 
-        ret = conn->secretDriver->numOfSecrets(conn);
+        ret = conn->secretDriver->connectNumOfSecrets(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -15133,9 +15132,9 @@ virConnectListAllSecrets(virConnectPtr conn,
     }
 
     if (conn->secretDriver &&
-        conn->secretDriver->listAllSecrets) {
+        conn->secretDriver->connectListAllSecrets) {
         int ret;
-        ret = conn->secretDriver->listAllSecrets(conn, secrets, flags);
+        ret = conn->secretDriver->connectListAllSecrets(conn, secrets, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -15173,10 +15172,10 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
     virCheckNonNullArgGoto(uuids, error);
     virCheckNonNegativeArgGoto(maxuuids, error);
 
-    if (conn->secretDriver != NULL && conn->secretDriver->listSecrets != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->connectListSecrets != NULL) {
         int ret;
 
-        ret = conn->secretDriver->listSecrets(conn, uuids, maxuuids);
+        ret = conn->secretDriver->connectListSecrets(conn, uuids, maxuuids);
         if (ret < 0)
             goto error;
         return ret;
@@ -15215,9 +15214,9 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virCheckNonNullArgGoto(uuid, error);
 
     if (conn->secretDriver &&
-        conn->secretDriver->lookupByUUID) {
+        conn->secretDriver->secretLookupByUUID) {
         virSecretPtr ret;
-        ret = conn->secretDriver->lookupByUUID(conn, uuid);
+        ret = conn->secretDriver->secretLookupByUUID(conn, uuid);
         if (!ret)
             goto error;
         return ret;
@@ -15301,9 +15300,9 @@ virSecretLookupByUsage(virConnectPtr conn,
     virCheckNonNullArgGoto(usageID, error);
 
     if (conn->secretDriver &&
-        conn->secretDriver->lookupByUsage) {
+        conn->secretDriver->secretLookupByUsage) {
         virSecretPtr ret;
-        ret = conn->secretDriver->lookupByUsage(conn, usageType, usageID);
+        ret = conn->secretDriver->secretLookupByUsage(conn, usageType, usageID);
         if (!ret)
             goto error;
         return ret;
@@ -15350,10 +15349,10 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
     }
     virCheckNonNullArgGoto(xml, error);
 
-    if (conn->secretDriver != NULL && conn->secretDriver->defineXML != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->secretDefineXML != NULL) {
         virSecretPtr ret;
 
-        ret = conn->secretDriver->defineXML(conn, xml, flags);
+        ret = conn->secretDriver->secretDefineXML(conn, xml, flags);
         if (ret == NULL)
             goto error;
         return ret;
@@ -15521,10 +15520,10 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
     }
 
     conn = secret->conn;
-    if (conn->secretDriver != NULL && conn->secretDriver->getXMLDesc != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->secretGetXMLDesc != NULL) {
         char *ret;
 
-        ret = conn->secretDriver->getXMLDesc(secret, flags);
+        ret = conn->secretDriver->secretGetXMLDesc(secret, flags);
         if (ret == NULL)
             goto error;
         return ret;
@@ -15571,10 +15570,10 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
     }
     virCheckNonNullArgGoto(value, error);
 
-    if (conn->secretDriver != NULL && conn->secretDriver->setValue != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->secretSetValue != NULL) {
         int ret;
 
-        ret = conn->secretDriver->setValue(secret, value, value_size, flags);
+        ret = conn->secretDriver->secretSetValue(secret, value, value_size, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -15619,10 +15618,10 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
     }
     virCheckNonNullArgGoto(value_size, error);
 
-    if (conn->secretDriver != NULL && conn->secretDriver->getValue != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->secretGetValue != NULL) {
         unsigned char *ret;
 
-        ret = conn->secretDriver->getValue(secret, value_size, flags, 0);
+        ret = conn->secretDriver->secretGetValue(secret, value_size, flags, 0);
         if (ret == NULL)
             goto error;
         return ret;
@@ -15664,10 +15663,10 @@ virSecretUndefine(virSecretPtr secret)
         goto error;
     }
 
-    if (conn->secretDriver != NULL && conn->secretDriver->undefine != NULL) {
+    if (conn->secretDriver != NULL && conn->secretDriver->secretUndefine != NULL) {
         int ret;
 
-        ret = conn->secretDriver->undefine(secret);
+        ret = conn->secretDriver->secretUndefine(secret);
         if (ret < 0)
             goto error;
         return ret;
@@ -16231,9 +16230,9 @@ int virStreamEventAddCallback(virStreamPtr stream,
     }
 
     if (stream->driver &&
-        stream->driver->streamAddCallback) {
+        stream->driver->streamEventAddCallback) {
         int ret;
-        ret = (stream->driver->streamAddCallback)(stream, events, cb, opaque, ff);
+        ret = (stream->driver->streamEventAddCallback)(stream, events, cb, opaque, ff);
         if (ret < 0)
             goto error;
         return ret;
@@ -16273,9 +16272,9 @@ int virStreamEventUpdateCallback(virStreamPtr stream,
     }
 
     if (stream->driver &&
-        stream->driver->streamUpdateCallback) {
+        stream->driver->streamEventUpdateCallback) {
         int ret;
-        ret = (stream->driver->streamUpdateCallback)(stream, events);
+        ret = (stream->driver->streamEventUpdateCallback)(stream, events);
         if (ret < 0)
             goto error;
         return ret;
@@ -16309,9 +16308,9 @@ int virStreamEventRemoveCallback(virStreamPtr stream)
     }
 
     if (stream->driver &&
-        stream->driver->streamRemoveCallback) {
+        stream->driver->streamEventRemoveCallback) {
         int ret;
-        ret = (stream->driver->streamRemoveCallback)(stream);
+        ret = (stream->driver->streamEventRemoveCallback)(stream);
         if (ret < 0)
             goto error;
         return ret;
@@ -16633,9 +16632,9 @@ int virStoragePoolIsActive(virStoragePoolPtr pool)
         virDispatchError(NULL);
         return -1;
     }
-    if (pool->conn->storageDriver->poolIsActive) {
+    if (pool->conn->storageDriver->storagePoolIsActive) {
         int ret;
-        ret = pool->conn->storageDriver->poolIsActive(pool);
+        ret = pool->conn->storageDriver->storagePoolIsActive(pool);
         if (ret < 0)
             goto error;
         return ret;
@@ -16668,9 +16667,9 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool)
         virDispatchError(NULL);
         return -1;
     }
-    if (pool->conn->storageDriver->poolIsPersistent) {
+    if (pool->conn->storageDriver->storagePoolIsPersistent) {
         int ret;
-        ret = pool->conn->storageDriver->poolIsPersistent(pool);
+        ret = pool->conn->storageDriver->storagePoolIsPersistent(pool);
         if (ret < 0)
             goto error;
         return ret;
@@ -16705,9 +16704,9 @@ virConnectNumOfNWFilters(virConnectPtr conn)
         return -1;
     }
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->numOfNWFilters) {
+    if (conn->nwfilterDriver && conn->nwfilterDriver->connectNumOfNWFilters) {
         int ret;
-        ret = conn->nwfilterDriver->numOfNWFilters(conn);
+        ret = conn->nwfilterDriver->connectNumOfNWFilters(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -16756,9 +16755,9 @@ virConnectListAllNWFilters(virConnectPtr conn,
     }
 
     if (conn->nwfilterDriver &&
-        conn->nwfilterDriver->listAllNWFilters) {
+        conn->nwfilterDriver->connectListAllNWFilters) {
         int ret;
-        ret = conn->nwfilterDriver->listAllNWFilters(conn, filters, flags);
+        ret = conn->nwfilterDriver->connectListAllNWFilters(conn, filters, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -16797,9 +16796,9 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->listNWFilters) {
+    if (conn->nwfilterDriver && conn->nwfilterDriver->connectListNWFilters) {
         int ret;
-        ret = conn->nwfilterDriver->listNWFilters(conn, names, maxnames);
+        ret = conn->nwfilterDriver->connectListNWFilters(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -17078,9 +17077,9 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
         goto error;
     }
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->defineXML) {
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterDefineXML) {
         virNWFilterPtr ret;
-        ret = conn->nwfilterDriver->defineXML(conn, xmlDesc);
+        ret = conn->nwfilterDriver->nwfilterDefineXML(conn, xmlDesc);
         if (!ret)
             goto error;
         return ret;
@@ -17124,9 +17123,9 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
         goto error;
     }
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->undefine) {
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterUndefine) {
         int ret;
-        ret = conn->nwfilterDriver->undefine(nwfilter);
+        ret = conn->nwfilterDriver->nwfilterUndefine(nwfilter);
         if (ret < 0)
             goto error;
         return ret;
@@ -17167,9 +17166,9 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 
     conn = nwfilter->conn;
 
-    if (conn->nwfilterDriver && conn->nwfilterDriver->getXMLDesc) {
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterGetXMLDesc) {
         char *ret;
-        ret = conn->nwfilterDriver->getXMLDesc(nwfilter, flags);
+        ret = conn->nwfilterDriver->nwfilterGetXMLDesc(nwfilter, flags);
         if (!ret)
             goto error;
         return ret;
@@ -17267,9 +17266,9 @@ int virConnectIsEncrypted(virConnectPtr conn)
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->driver->isEncrypted) {
+    if (conn->driver->connectIsEncrypted) {
         int ret;
-        ret = conn->driver->isEncrypted(conn);
+        ret = conn->driver->connectIsEncrypted(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -17304,9 +17303,9 @@ int virConnectIsSecure(virConnectPtr conn)
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->driver->isSecure) {
+    if (conn->driver->connectIsSecure) {
         int ret;
-        ret = conn->driver->isSecure(conn);
+        ret = conn->driver->connectIsSecure(conn);
         if (ret < 0)
             goto error;
         return ret;
@@ -17345,10 +17344,10 @@ virConnectCompareCPU(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->driver->cpuCompare) {
+    if (conn->driver->connectCompareCPU) {
         int ret;
 
-        ret = conn->driver->cpuCompare(conn, xmlDesc, flags);
+        ret = conn->driver->connectCompareCPU(conn, xmlDesc, flags);
         if (ret == VIR_CPU_COMPARE_ERROR)
             goto error;
         return ret;
@@ -17399,10 +17398,10 @@ virConnectBaselineCPU(virConnectPtr conn,
     }
     virCheckNonNullArgGoto(xmlCPUs, error);
 
-    if (conn->driver->cpuBaseline) {
+    if (conn->driver->connectBaselineCPU) {
         char *cpu;
 
-        cpu = conn->driver->cpuBaseline(conn, xmlCPUs, ncpus, flags);
+        cpu = conn->driver->connectBaselineCPU(conn, xmlCPUs, ncpus, flags);
         if (!cpu)
             goto error;
         return cpu;
@@ -17872,9 +17871,9 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         goto error;
     }
 
-    if ((conn->driver) && (conn->driver->domainEventRegisterAny)) {
+    if ((conn->driver) && (conn->driver->connectDomainEventRegisterAny)) {
         int ret;
-        ret = conn->driver->domainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb);
+        ret = conn->driver->connectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb);
         if (ret < 0)
             goto error;
         return ret;
@@ -17911,9 +17910,9 @@ virConnectDomainEventDeregisterAny(virConnectPtr conn,
     }
     virCheckNonNegativeArgGoto(callbackID, error);
 
-    if ((conn->driver) && (conn->driver->domainEventDeregisterAny)) {
+    if ((conn->driver) && (conn->driver->connectDomainEventDeregisterAny)) {
         int ret;
-        ret = conn->driver->domainEventDeregisterAny(conn, callbackID);
+        ret = conn->driver->connectDomainEventDeregisterAny(conn, callbackID);
         if (ret < 0)
             goto error;
         return ret;
@@ -20108,8 +20107,8 @@ int virConnectSetKeepAlive(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->driver->setKeepAlive) {
-        ret = conn->driver->setKeepAlive(conn, interval, count);
+    if (conn->driver->connectSetKeepAlive) {
+        ret = conn->driver->connectSetKeepAlive(conn, interval, count);
         if (ret < 0)
             goto error;
         return ret;
@@ -20144,9 +20143,9 @@ int virConnectIsAlive(virConnectPtr conn)
         virDispatchError(NULL);
         return -1;
     }
-    if (conn->driver->isAlive) {
+    if (conn->driver->connectIsAlive) {
         int ret;
-        ret = conn->driver->isAlive(conn);
+        ret = conn->driver->connectIsAlive(conn);
         if (ret < 0)
             goto error;
         return ret;

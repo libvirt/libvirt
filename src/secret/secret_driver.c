@@ -1157,25 +1157,25 @@ secretDriverReload(void)
 
 static virSecretDriver secretDriver = {
     .name = "secret",
-    .open = secretOpen, /* 0.7.1 */
-    .close = secretClose, /* 0.7.1 */
-    .numOfSecrets = secretNumOfSecrets, /* 0.7.1 */
-    .listSecrets = secretListSecrets, /* 0.7.1 */
-    .listAllSecrets = secretListAllSecrets, /* 0.10.2 */
-    .lookupByUUID = secretLookupByUUID, /* 0.7.1 */
-    .lookupByUsage = secretLookupByUsage, /* 0.7.1 */
-    .defineXML = secretDefineXML, /* 0.7.1 */
-    .getXMLDesc = secretGetXMLDesc, /* 0.7.1 */
-    .setValue = secretSetValue, /* 0.7.1 */
-    .getValue = secretGetValue, /* 0.7.1 */
-    .undefine = secretUndefine, /* 0.7.1 */
+    .connectOpen = secretOpen, /* 0.7.1 */
+    .connectClose = secretClose, /* 0.7.1 */
+    .connectNumOfSecrets = secretNumOfSecrets, /* 0.7.1 */
+    .connectListSecrets = secretListSecrets, /* 0.7.1 */
+    .connectListAllSecrets = secretListAllSecrets, /* 0.10.2 */
+    .secretLookupByUUID = secretLookupByUUID, /* 0.7.1 */
+    .secretLookupByUsage = secretLookupByUsage, /* 0.7.1 */
+    .secretDefineXML = secretDefineXML, /* 0.7.1 */
+    .secretGetXMLDesc = secretGetXMLDesc, /* 0.7.1 */
+    .secretSetValue = secretSetValue, /* 0.7.1 */
+    .secretGetValue = secretGetValue, /* 0.7.1 */
+    .secretUndefine = secretUndefine, /* 0.7.1 */
 };
 
 static virStateDriver stateDriver = {
     .name = "Secret",
-    .initialize = secretDriverStartup,
-    .cleanup = secretDriverCleanup,
-    .reload = secretDriverReload,
+    .stateInitialize = secretDriverStartup,
+    .stateCleanup = secretDriverCleanup,
+    .stateReload = secretDriverReload,
 };
 
 int

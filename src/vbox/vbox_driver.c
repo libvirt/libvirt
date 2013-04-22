@@ -184,5 +184,5 @@ static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
 static virDriver vboxDriverDummy = {
     VIR_DRV_VBOX,
     "VBOX",
-    .open = vboxOpenDummy,
+    .connectOpen = vboxOpenDummy,
 };

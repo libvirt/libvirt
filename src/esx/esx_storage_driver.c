@@ -95,7 +95,7 @@ esxNumberOfStoragePools(virConnectPtr conn)
     }
 
     for (i = 0; i < LAST_BACKEND; ++i) {
-        tmp = backends[i]->numOfPools(conn);
+        tmp = backends[i]->connectNumOfStoragePools(conn);
 
         if (tmp < 0) {
             return -1;
@@ -127,7 +127,7 @@ esxListStoragePools(virConnectPtr conn, char **const names, int maxnames)
     }
 
     for (i = 0; i < LAST_BACKEND; ++i) {
-        tmp = backends[i]->listPools(conn, &names[count], maxnames - count);
+        tmp = backends[i]->connectListStoragePools(conn, &names[count], maxnames - count);
 
         if (tmp < 0) {
             goto cleanup;
@@ -186,7 +186,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     }
 
     for (i = 0; i < LAST_BACKEND; ++i) {
-        pool = backends[i]->poolLookupByName(conn, name);
+        pool = backends[i]->storagePoolLookupByName(conn, name);
 
         if (pool != NULL) {
             return pool;
@@ -215,7 +215,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     /* invoke backend drive method to search all known pools */
     for (i = 0; i < LAST_BACKEND; ++i) {
-        pool = backends[i]->poolLookupByUUID(conn, uuid);
+        pool = backends[i]->storagePoolLookupByUUID(conn, uuid);
 
         if (pool != NULL) {
             return pool;
@@ -252,7 +252,7 @@ esxStoragePoolRefresh(virStoragePoolPtr pool, unsigned int flags)
         return -1;
     }
 
-    return backend->poolRefresh(pool, flags);
+    return backend->storagePoolRefresh(pool, flags);
 }
 
 
@@ -271,7 +271,7 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
         return -1;
     }
 
-    return backend->poolGetInfo(pool, info);
+    return backend->storagePoolGetInfo(pool, info);
 }
 
 
@@ -288,7 +288,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         return NULL;
     }
 
-    return backend->poolGetXMLDesc(pool, flags);
+    return backend->storagePoolGetXMLDesc(pool, flags);
 }
 
 
@@ -335,7 +335,7 @@ esxStoragePoolNumberOfStorageVolumes(virStoragePoolPtr pool)
         return -1;
     }
 
-    return backend->poolNumOfVolumes(pool);
+    return backend->storagePoolNumOfVolumes(pool);
 }
 
 
@@ -353,7 +353,7 @@ esxStoragePoolListStorageVolumes(virStoragePoolPtr pool, char **const names,
         return -1;
     }
 
-    return backend->poolListVolumes(pool, names, maxnames);
+    return backend->storagePoolListVolumes(pool, names, maxnames);
 }
 
 
@@ -370,7 +370,7 @@ esxStorageVolumeLookupByName(virStoragePoolPtr pool, const char *name)
         return NULL;
     }
 
-    return backend->volLookupByName(pool, name);
+    return backend->storageVolLookupByName(pool, name);
 }
 
 
@@ -393,9 +393,9 @@ esxStorageVolumeLookupByPath(virConnectPtr conn, const char *path)
      * iSCSI LUNs device path follows normal linux path convention
      */
     if (STRPREFIX(path, "[")) {
-        return backends[VMFS]->volLookupByPath(conn, path);
+        return backends[VMFS]->storageVolLookupByPath(conn, path);
     } else if (STRPREFIX(path, "/")) {
-        return backends[ISCSI]->volLookupByPath(conn, path);
+        return backends[ISCSI]->storageVolLookupByPath(conn, path);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unexpected volume path format: %s"), path);
@@ -418,7 +418,7 @@ esxStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
     }
 
     for (i = 0; i < LAST_BACKEND; ++i) {
-        volume = backends[i]->volLookupByKey(conn, key);
+        volume = backends[i]->storageVolLookupByKey(conn, key);
 
         if (volume != NULL) {
             return volume;
@@ -447,7 +447,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
         return NULL;
     }
 
-    return backend->volCreateXML(pool, xmldesc, flags);
+    return backend->storageVolCreateXML(pool, xmldesc, flags);
 }
 
 
@@ -465,7 +465,7 @@ esxStorageVolumeCreateXMLFrom(virStoragePoolPtr pool, const char *xmldesc,
         return NULL;
     }
 
-    return backend->volCreateXMLFrom(pool, xmldesc, sourceVolume, flags);
+    return backend->storageVolCreateXMLFrom(pool, xmldesc, sourceVolume, flags);
 }
 
 
@@ -482,7 +482,7 @@ esxStorageVolumeDelete(virStorageVolPtr volume, unsigned int flags)
         return -1;
     }
 
-    return backend->volDelete(volume, flags);
+    return backend->storageVolDelete(volume, flags);
 }
 
 
@@ -499,7 +499,7 @@ esxStorageVolumeWipe(virStorageVolPtr volume, unsigned int flags)
         return -1;
     }
 
-    return backend->volWipe(volume, flags);
+    return backend->storageVolWipe(volume, flags);
 }
 
 
@@ -516,7 +516,7 @@ esxStorageVolumeGetInfo(virStorageVolPtr volume, virStorageVolInfoPtr info)
         return -1;
     }
 
-    return backend->volGetInfo(volume, info);
+    return backend->storageVolGetInfo(volume, info);
 }
 
 
@@ -533,7 +533,7 @@ esxStorageVolumeGetXMLDesc(virStorageVolPtr volume, unsigned int flags)
         return NULL;
     }
 
-    return backend->volGetXMLDesc(volume, flags);
+    return backend->storageVolGetXMLDesc(volume, flags);
 }
 
 
@@ -550,7 +550,7 @@ esxStorageVolumeGetPath(virStorageVolPtr volume)
         return NULL;
     }
 
-    return backend->volGetPath(volume);
+    return backend->storageVolGetPath(volume);
 }
 
 
@@ -575,34 +575,34 @@ esxStoragePoolIsPersistent(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
 
 static virStorageDriver esxStorageDriver = {
     .name = "ESX",
-    .open = esxStorageOpen, /* 0.7.6 */
-    .close = esxStorageClose, /* 0.7.6 */
-    .numOfPools = esxNumberOfStoragePools, /* 0.8.2 */
-    .listPools = esxListStoragePools, /* 0.8.2 */
-    .numOfDefinedPools = esxNumberOfDefinedStoragePools, /* 0.8.2 */
-    .listDefinedPools = esxListDefinedStoragePools, /* 0.8.2 */
-    .poolLookupByName = esxStoragePoolLookupByName, /* 0.8.2 */
-    .poolLookupByUUID = esxStoragePoolLookupByUUID, /* 0.8.2 */
-    .poolLookupByVolume = esxStoragePoolLookupByVolume, /* 0.8.4 */
-    .poolRefresh = esxStoragePoolRefresh, /* 0.8.2 */
-    .poolGetInfo = esxStoragePoolGetInfo, /* 0.8.2 */
-    .poolGetXMLDesc = esxStoragePoolGetXMLDesc, /* 0.8.2 */
-    .poolGetAutostart = esxStoragePoolGetAutostart, /* 0.8.2 */
-    .poolSetAutostart = esxStoragePoolSetAutostart, /* 0.8.2 */
-    .poolNumOfVolumes = esxStoragePoolNumberOfStorageVolumes, /* 0.8.4 */
-    .poolListVolumes = esxStoragePoolListStorageVolumes, /* 0.8.4 */
-    .volLookupByName = esxStorageVolumeLookupByName, /* 0.8.4 */
-    .volLookupByPath = esxStorageVolumeLookupByPath, /* 0.8.4 */
-    .volLookupByKey = esxStorageVolumeLookupByKey, /* 0.8.4 */
-    .volCreateXML = esxStorageVolumeCreateXML, /* 0.8.4 */
-    .volCreateXMLFrom = esxStorageVolumeCreateXMLFrom, /* 0.8.7 */
-    .volDelete = esxStorageVolumeDelete, /* 0.8.7 */
-    .volWipe = esxStorageVolumeWipe, /* 0.8.7 */
-    .volGetInfo = esxStorageVolumeGetInfo, /* 0.8.4 */
-    .volGetXMLDesc = esxStorageVolumeGetXMLDesc, /* 0.8.4 */
-    .volGetPath = esxStorageVolumeGetPath, /* 0.8.4 */
-    .poolIsActive = esxStoragePoolIsActive, /* 0.8.2 */
-    .poolIsPersistent = esxStoragePoolIsPersistent, /* 0.8.2 */
+    .connectOpen = esxStorageOpen, /* 0.7.6 */
+    .connectClose = esxStorageClose, /* 0.7.6 */
+    .connectNumOfStoragePools = esxNumberOfStoragePools, /* 0.8.2 */
+    .connectListStoragePools = esxListStoragePools, /* 0.8.2 */
+    .connectNumOfDefinedStoragePools = esxNumberOfDefinedStoragePools, /* 0.8.2 */
+    .connectListDefinedStoragePools = esxListDefinedStoragePools, /* 0.8.2 */
+    .storagePoolLookupByName = esxStoragePoolLookupByName, /* 0.8.2 */
+    .storagePoolLookupByUUID = esxStoragePoolLookupByUUID, /* 0.8.2 */
+    .storagePoolLookupByVolume = esxStoragePoolLookupByVolume, /* 0.8.4 */
+    .storagePoolRefresh = esxStoragePoolRefresh, /* 0.8.2 */
+    .storagePoolGetInfo = esxStoragePoolGetInfo, /* 0.8.2 */
+    .storagePoolGetXMLDesc = esxStoragePoolGetXMLDesc, /* 0.8.2 */
+    .storagePoolGetAutostart = esxStoragePoolGetAutostart, /* 0.8.2 */
+    .storagePoolSetAutostart = esxStoragePoolSetAutostart, /* 0.8.2 */
+    .storagePoolNumOfVolumes = esxStoragePoolNumberOfStorageVolumes, /* 0.8.4 */
+    .storagePoolListVolumes = esxStoragePoolListStorageVolumes, /* 0.8.4 */
+    .storageVolLookupByName = esxStorageVolumeLookupByName, /* 0.8.4 */
+    .storageVolLookupByPath = esxStorageVolumeLookupByPath, /* 0.8.4 */
+    .storageVolLookupByKey = esxStorageVolumeLookupByKey, /* 0.8.4 */
+    .storageVolCreateXML = esxStorageVolumeCreateXML, /* 0.8.4 */
+    .storageVolCreateXMLFrom = esxStorageVolumeCreateXMLFrom, /* 0.8.7 */
+    .storageVolDelete = esxStorageVolumeDelete, /* 0.8.7 */
+    .storageVolWipe = esxStorageVolumeWipe, /* 0.8.7 */
+    .storageVolGetInfo = esxStorageVolumeGetInfo, /* 0.8.4 */
+    .storageVolGetXMLDesc = esxStorageVolumeGetXMLDesc, /* 0.8.4 */
+    .storageVolGetPath = esxStorageVolumeGetPath, /* 0.8.4 */
+    .storagePoolIsActive = esxStoragePoolIsActive, /* 0.8.2 */
+    .storagePoolIsPersistent = esxStoragePoolIsPersistent, /* 0.8.2 */
 };
 
 

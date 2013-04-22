@@ -60,17 +60,17 @@ fakeSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virSecretDriver fakeSecretDriver = {
     .name = "fake_secret",
-    .open = NULL,
-    .close = fakeSecretClose,
-    .numOfSecrets = NULL,
-    .listSecrets = NULL,
-    .lookupByUUID = NULL,
-    .lookupByUsage = fakeSecretLookupByUsage,
-    .defineXML = NULL,
-    .getXMLDesc = NULL,
-    .setValue = NULL,
-    .getValue = fakeSecretGetValue,
-    .undefine = NULL,
+    .connectOpen = NULL,
+    .connectClose = fakeSecretClose,
+    .connectNumOfSecrets = NULL,
+    .connectListSecrets = NULL,
+    .secretLookupByUUID = NULL,
+    .secretLookupByUsage = fakeSecretLookupByUsage,
+    .secretDefineXML = NULL,
+    .secretGetXMLDesc = NULL,
+    .secretSetValue = NULL,
+    .secretGetValue = fakeSecretGetValue,
+    .secretUndefine = NULL,
 };
 
 typedef enum {

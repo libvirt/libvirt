@@ -3732,7 +3732,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
         break;
 
     default:
-        if ((supported = virDrvSupportsFeature(priv->conn, args->feature)) < 0)
+        if ((supported = virConnectSupportsFeature(priv->conn, args->feature)) < 0)
             goto cleanup;
         break;
     }

@@ -2076,8 +2076,8 @@ qemuBuildRBDString(virConnectPtr conn,
         if (sec) {
             char *base64 = NULL;
 
-            secret = (char *)conn->secretDriver->getValue(sec, &secret_size, 0,
-                                                          VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+            secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
+                                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
             if (secret == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret for username %s"),
@@ -2522,8 +2522,8 @@ qemuBuildDriveURIString(virConnectPtr conn,
         }
 
         if (sec) {
-            secret = (char *)conn->secretDriver->getValue(sec, &secret_size, 0,
-                                                          VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+            secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
+                                                                VIR_SECRET_GET_VALUE_INTERNAL_CALL);
             if (secret == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("could not get the value of the secret for username %s"),

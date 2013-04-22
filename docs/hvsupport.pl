@@ -190,17 +190,13 @@ while (defined($line = <FILE>)) {
             $groups{$ingrp} = { apis => {}, drivers => {} };
         }
     } elsif ($ingrp) {
-        if ($line =~ /^\s*vir(?:Drv|DevMon)(\w+)\s+(\w+);\s*$/) {
+        if ($line =~ /^\s*vir(?:Drv)(\w+)\s+(\w+);\s*$/) {
             my $field = $2;
             my $name = $1;
 
             my $api;
             if (exists $apis{"vir$name"}) {
                 $api = "vir$name";
-            } elsif (exists $apis{"virConnect$name"}) {
-                $api = "virConnect$name";
-            } elsif (exists $apis{"virNode$name"}) {
-                $api = "virNode$name";
             } else {
                 die "driver $name does not have a public API";
             }
@@ -290,24 +286,24 @@ $groups{virDriver}->{apis}->{"domainMigrate"} = "virDomainMigrate";
 my $openAuthVers = (0 * 1000 * 1000) + (4 * 1000) + 0;
 
 foreach my $drv (keys %{$groups{"virDriver"}->{drivers}}) {
-    my $openVersStr = $groups{"virDriver"}->{drivers}->{$drv}->{"open"};
+    my $openVersStr = $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpen"};
     my $openVers;
     if ($openVersStr =~ /(\d+)\.(\d+)\.(\d+)/) {
         $openVers = ($1 * 1000 * 1000) + ($2 * 1000) + $3;
     }
 
     # virConnectOpenReadOnly always matches virConnectOpen version
-    $groups{"virDriver"}->{drivers}->{$drv}->{"openReadOnly"} =
-        $groups{"virDriver"}->{drivers}->{$drv}->{"open"};
+    $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenReadOnly"} =
+        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpen"};
 
     # virConnectOpenAuth is always 0.4.0 if the driver existed
     # before this time, otherwise it matches the version of
     # the driver's virConnectOpen entry
     if ($openVersStr eq "Y" ||
         $openVers >= $openAuthVers) {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = $openVersStr;
+        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = $openVersStr;
     } else {
-        $groups{"virDriver"}->{drivers}->{$drv}->{"openAuth"} = "0.4.0";
+        $groups{"virDriver"}->{drivers}->{$drv}->{"connectOpenAuth"} = "0.4.0";
     }
 }
 

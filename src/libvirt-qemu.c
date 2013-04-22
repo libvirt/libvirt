@@ -95,9 +95,9 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
         goto error;
     }
 
-    if (conn->driver->qemuDomainMonitorCommand) {
+    if (conn->driver->domainQemuMonitorCommand) {
         int ret;
-        ret = conn->driver->qemuDomainMonitorCommand(domain, cmd, result,
+        ret = conn->driver->domainQemuMonitorCommand(domain, cmd, result,
                                                      flags);
         if (ret < 0)
             goto error;
@@ -170,9 +170,9 @@ virDomainQemuAttach(virConnectPtr conn,
         goto error;
     }
 
-    if (conn->driver->qemuDomainAttach) {
+    if (conn->driver->domainQemuAttach) {
         virDomainPtr ret;
-        ret = conn->driver->qemuDomainAttach(conn, pid_value, flags);
+        ret = conn->driver->domainQemuAttach(conn, pid_value, flags);
         if (!ret)
             goto error;
         return ret;
@@ -227,9 +227,9 @@ virDomainQemuAgentCommand(virDomainPtr domain,
 
     conn = domain->conn;
 
-    if (conn->driver->qemuDomainArbitraryAgentCommand) {
-        return conn->driver->qemuDomainArbitraryAgentCommand(domain, cmd,
-                                                             timeout, flags);
+    if (conn->driver->domainQemuAgentCommand) {
+        return conn->driver->domainQemuAgentCommand(domain, cmd,
+                                                    timeout, flags);
     }
 
     virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);

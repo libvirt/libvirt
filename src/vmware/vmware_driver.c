@@ -1120,13 +1120,13 @@ vmwareListAllDomains(virConnectPtr conn,
 static virDriver vmwareDriver = {
     .no = VIR_DRV_VMWARE,
     .name = "VMWARE",
-    .open = vmwareOpen, /* 0.8.7 */
-    .close = vmwareClose, /* 0.8.7 */
-    .type = vmwareGetType, /* 0.8.7 */
-    .version = vmwareGetVersion, /* 0.8.7 */
-    .listDomains = vmwareListDomains, /* 0.8.7 */
-    .numOfDomains = vmwareNumDomains, /* 0.8.7 */
-    .listAllDomains = vmwareListAllDomains, /* 0.9.13 */
+    .connectOpen = vmwareOpen, /* 0.8.7 */
+    .connectClose = vmwareClose, /* 0.8.7 */
+    .connectGetType = vmwareGetType, /* 0.8.7 */
+    .connectGetVersion = vmwareGetVersion, /* 0.8.7 */
+    .connectListDomains = vmwareListDomains, /* 0.8.7 */
+    .connectNumOfDomains = vmwareNumDomains, /* 0.8.7 */
+    .connectListAllDomains = vmwareListAllDomains, /* 0.9.13 */
     .domainCreateXML = vmwareDomainCreateXML, /* 0.8.7 */
     .domainLookupByID = vmwareDomainLookupByID, /* 0.8.7 */
     .domainLookupByUUID = vmwareDomainLookupByUUID, /* 0.8.7 */
@@ -1142,9 +1142,9 @@ static virDriver vmwareDriver = {
     .domainGetInfo = vmwareDomainGetInfo, /* 0.8.7 */
     .domainGetState = vmwareDomainGetState, /* 0.9.2 */
     .domainGetXMLDesc = vmwareDomainGetXMLDesc, /* 0.8.7 */
-    .domainXMLFromNative = vmwareDomainXMLFromNative, /* 0.9.11 */
-    .listDefinedDomains = vmwareListDefinedDomains, /* 0.8.7 */
-    .numOfDefinedDomains = vmwareNumDefinedDomains, /* 0.8.7 */
+    .connectDomainXMLFromNative = vmwareDomainXMLFromNative, /* 0.9.11 */
+    .connectListDefinedDomains = vmwareListDefinedDomains, /* 0.8.7 */
+    .connectNumOfDefinedDomains = vmwareNumDefinedDomains, /* 0.8.7 */
     .domainCreate = vmwareDomainCreate, /* 0.8.7 */
     .domainCreateWithFlags = vmwareDomainCreateWithFlags, /* 0.8.7 */
     .domainDefineXML = vmwareDomainDefineXML, /* 0.8.7 */
@@ -1152,7 +1152,7 @@ static virDriver vmwareDriver = {
     .domainUndefineFlags = vmwareDomainUndefineFlags, /* 0.9.4 */
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
-    .isAlive = vmwareIsAlive, /* 0.9.8 */
+    .connectIsAlive = vmwareIsAlive, /* 0.9.8 */
 };
 
 int

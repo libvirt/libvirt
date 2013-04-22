@@ -66,8 +66,8 @@ hypervDeviceClose(virConnectPtr conn)
 
 static virDeviceMonitor hypervDeviceMonitor = {
     "Hyper-V",
-    .open = hypervDeviceOpen, /* 0.9.5 */
-    .close = hypervDeviceClose, /* 0.9.5 */
+    .connectOpen = hypervDeviceOpen, /* 0.9.5 */
+    .connectClose = hypervDeviceClose, /* 0.9.5 */
 };
 
 

@@ -1515,23 +1515,23 @@ esxStorageBackendVMFSVolumeGetPath(virStorageVolPtr volume)
 
 
 virStorageDriver esxStorageBackendVMFS = {
-    .numOfPools = esxStorageBackendVMFSNumberOfPools, /* 0.8.2 */
-    .listPools = esxStorageBackendVMFSListPools, /* 0.8.2 */
-    .poolLookupByName = esxStorageBackendVMFSPoolLookupByName, /* 0.8.2 */
-    .poolLookupByUUID = esxStorageBackendVMFSPoolLookupByUUID, /* 0.8.2 */
-    .poolRefresh = esxStorageBackendVMFSPoolRefresh, /* 0.8.2 */
-    .poolGetInfo = esxStorageBackendVMFSPoolGetInfo, /* 0.8.2 */
-    .poolGetXMLDesc = esxStorageBackendVMFSPoolGetXMLDesc, /* 0.8.2 */
-    .poolNumOfVolumes = esxStorageBackendVMFSPoolNumberOfVolumes, /* 0.8.4 */
-    .poolListVolumes = esxStorageBackendVMFSPoolListVolumes, /* 0.8.4 */
-    .volLookupByName = esxStorageBackendVMFSVolumeLookupByName, /* 0.8.4 */
-    .volLookupByPath = esxStorageBackendVMFSVolumeLookupByPath, /* 0.8.4 */
-    .volLookupByKey = esxStorageBackendVMFSVolumeLookupByKey, /* 0.8.4 */
-    .volCreateXML = esxStorageBackendVMFSVolumeCreateXML, /* 0.8.4 */
-    .volCreateXMLFrom = esxStorageBackendVMFSVolumeCreateXMLFrom, /* 0.8.7 */
-    .volDelete = esxStorageBackendVMFSVolumeDelete, /* 0.8.7 */
-    .volWipe = esxStorageBackendVMFSVolumeWipe, /* 0.8.7 */
-    .volGetInfo = esxStorageBackendVMFSVolumeGetInfo, /* 0.8.4 */
-    .volGetXMLDesc = esxStorageBackendVMFSVolumeGetXMLDesc, /* 0.8.4 */
-    .volGetPath = esxStorageBackendVMFSVolumeGetPath, /* 0.8.4 */
+    .connectNumOfStoragePools = esxStorageBackendVMFSNumberOfPools, /* 0.8.2 */
+    .connectListStoragePools = esxStorageBackendVMFSListPools, /* 0.8.2 */
+    .storagePoolLookupByName = esxStorageBackendVMFSPoolLookupByName, /* 0.8.2 */
+    .storagePoolLookupByUUID = esxStorageBackendVMFSPoolLookupByUUID, /* 0.8.2 */
+    .storagePoolRefresh = esxStorageBackendVMFSPoolRefresh, /* 0.8.2 */
+    .storagePoolGetInfo = esxStorageBackendVMFSPoolGetInfo, /* 0.8.2 */
+    .storagePoolGetXMLDesc = esxStorageBackendVMFSPoolGetXMLDesc, /* 0.8.2 */
+    .storagePoolNumOfVolumes = esxStorageBackendVMFSPoolNumberOfVolumes, /* 0.8.4 */
+    .storagePoolListVolumes = esxStorageBackendVMFSPoolListVolumes, /* 0.8.4 */
+    .storageVolLookupByName = esxStorageBackendVMFSVolumeLookupByName, /* 0.8.4 */
+    .storageVolLookupByPath = esxStorageBackendVMFSVolumeLookupByPath, /* 0.8.4 */
+    .storageVolLookupByKey = esxStorageBackendVMFSVolumeLookupByKey, /* 0.8.4 */
+    .storageVolCreateXML = esxStorageBackendVMFSVolumeCreateXML, /* 0.8.4 */
+    .storageVolCreateXMLFrom = esxStorageBackendVMFSVolumeCreateXMLFrom, /* 0.8.7 */
+    .storageVolDelete = esxStorageBackendVMFSVolumeDelete, /* 0.8.7 */
+    .storageVolWipe = esxStorageBackendVMFSVolumeWipe, /* 0.8.7 */
+    .storageVolGetInfo = esxStorageBackendVMFSVolumeGetInfo, /* 0.8.4 */
+    .storageVolGetXMLDesc = esxStorageBackendVMFSVolumeGetXMLDesc, /* 0.8.4 */
+    .storageVolGetPath = esxStorageBackendVMFSVolumeGetPath, /* 0.8.4 */
 };

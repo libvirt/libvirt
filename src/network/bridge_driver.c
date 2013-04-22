@@ -3592,13 +3592,13 @@ cleanup:
 
 static virNetworkDriver networkDriver = {
     "Network",
-    .open = networkOpenNetwork, /* 0.2.0 */
-    .close = networkCloseNetwork, /* 0.2.0 */
-    .numOfNetworks = networkNumNetworks, /* 0.2.0 */
-    .listNetworks = networkListNetworks, /* 0.2.0 */
-    .numOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */
-    .listDefinedNetworks = networkListDefinedNetworks, /* 0.2.0 */
-    .listAllNetworks = networkListAllNetworks, /* 0.10.2 */
+    .connectOpen = networkOpenNetwork, /* 0.2.0 */
+    .connectClose = networkCloseNetwork, /* 0.2.0 */
+    .connectNumOfNetworks = networkNumNetworks, /* 0.2.0 */
+    .connectListNetworks = networkListNetworks, /* 0.2.0 */
+    .connectNumOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */
+    .connectListDefinedNetworks = networkListDefinedNetworks, /* 0.2.0 */
+    .connectListAllNetworks = networkListAllNetworks, /* 0.10.2 */
     .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
     .networkLookupByName = networkLookupByName, /* 0.2.0 */
     .networkCreateXML = networkCreate, /* 0.2.0 */
@@ -3617,9 +3617,9 @@ static virNetworkDriver networkDriver = {
 
 static virStateDriver networkStateDriver = {
     .name = "Network",
-    .initialize  = networkStartup,
-    .cleanup = networkShutdown,
-    .reload = networkReload,
+    .stateInitialize  = networkStartup,
+    .stateCleanup = networkShutdown,
+    .stateReload = networkReload,
 };
 
 int networkRegister(void) {
