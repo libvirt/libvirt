@@ -197,6 +197,8 @@ while (defined($line = <FILE>)) {
             my $api;
             if (exists $apis{"vir$name"}) {
                 $api = "vir$name";
+            } elsif ($name =~ /\w+(Open|Close)/) {
+                next;
             } else {
                 die "driver $name does not have a public API";
             }
@@ -254,6 +256,8 @@ foreach my $src (@srcs) {
                 die "Driver method for $api is NULL in $src" if $meth eq "NULL";
 
                 if (!exists($groups{$ingrp}->{apis}->{$api})) {
+                    next if $api =~ /\w(Open|Close)/;
+
                     die "Found unexpected method $api in $ingrp\n";
                 }
 

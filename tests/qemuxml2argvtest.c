@@ -60,8 +60,8 @@ fakeSecretClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virSecretDriver fakeSecretDriver = {
     .name = "fake_secret",
-    .connectOpen = NULL,
-    .connectClose = fakeSecretClose,
+    .secretOpen = NULL,
+    .secretClose = fakeSecretClose,
     .connectNumOfSecrets = NULL,
     .connectListSecrets = NULL,
     .secretLookupByUUID = NULL,

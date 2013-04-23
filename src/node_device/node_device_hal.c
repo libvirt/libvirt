@@ -763,8 +763,8 @@ static int halNodeDrvClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virNodeDeviceDriver halNodeDeviceDriver = {
     .name = "halNodeDeviceDriver",
-    .connectOpen = halNodeDrvOpen, /* 0.5.0 */
-    .connectClose = halNodeDrvClose, /* 0.5.0 */
+    .nodeDeviceOpen = halNodeDrvOpen, /* 0.5.0 */
+    .nodDeviceClose = halNodeDrvClose, /* 0.5.0 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = nodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */

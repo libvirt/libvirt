@@ -1228,6 +1228,10 @@ struct _virDriver {
     virDrvDomainLxcOpenNamespace domainLxcOpenNamespace;
 };
 
+
+typedef virDrvConnectOpen virDrvNetworkOpen;
+typedef virDrvConnectClose virDrvNetworkClose;
+
 typedef int
 (*virDrvConnectNumOfNetworks)(virConnectPtr conn);
 
@@ -1320,8 +1324,8 @@ typedef virNetworkDriver *virNetworkDriverPtr;
  */
 struct _virNetworkDriver {
     const char * name; /* the name of the driver */
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvNetworkOpen networkOpen;
+    virDrvNetworkClose networkClose;
     virDrvConnectNumOfNetworks connectNumOfNetworks;
     virDrvConnectListNetworks connectListNetworks;
     virDrvConnectNumOfDefinedNetworks connectNumOfDefinedNetworks;
@@ -1343,6 +1347,9 @@ struct _virNetworkDriver {
     virDrvNetworkIsPersistent networkIsPersistent;
 };
 
+
+typedef virDrvConnectOpen virDrvInterfaceOpen;
+typedef virDrvConnectClose virDrvInterfaceClose;
 
 typedef int
 (*virDrvConnectNumOfInterfaces)(virConnectPtr conn);
@@ -1423,8 +1430,8 @@ typedef virInterfaceDriver *virInterfaceDriverPtr;
  */
 struct _virInterfaceDriver {
     const char *name; /* the name of the driver */
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvInterfaceOpen interfaceOpen;
+    virDrvInterfaceClose interfaceClose;
     virDrvConnectNumOfInterfaces connectNumOfInterfaces;
     virDrvConnectListInterfaces connectListInterfaces;
     virDrvConnectNumOfDefinedInterfaces connectNumOfDefinedInterfaces;
@@ -1442,6 +1449,10 @@ struct _virInterfaceDriver {
     virDrvInterfaceChangeCommit interfaceChangeCommit;
     virDrvInterfaceChangeRollback interfaceChangeRollback;
 };
+
+
+typedef virDrvConnectOpen virDrvStorageOpen;
+typedef virDrvConnectClose virDrvStorageClose;
 
 
 typedef int
@@ -1632,8 +1643,8 @@ typedef virStorageDriver *virStorageDriverPtr;
  */
 struct _virStorageDriver {
     const char * name; /* the name of the driver */
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvStorageOpen storageOpen;
+    virDrvStorageClose storageClose;
     virDrvConnectNumOfStoragePools connectNumOfStoragePools;
     virDrvConnectListStoragePools connectListStoragePools;
     virDrvConnectNumOfDefinedStoragePools connectNumOfDefinedStoragePools;
@@ -1705,6 +1716,10 @@ struct _virStateDriver {
 # endif
 
 
+typedef virDrvConnectOpen virDrvNodeDeviceOpen;
+typedef virDrvConnectClose virDrvNodeDeviceClose;
+
+
 typedef int
 (*virDrvNodeNumOfDevices)(virConnectPtr conn,
                           const char *cap,
@@ -1769,8 +1784,8 @@ typedef virNodeDeviceDriver *virNodeDeviceDriverPtr;
  */
 struct _virNodeDeviceDriver {
     const char * name; /* the name of the driver */
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvNodeDeviceOpen nodeDeviceOpen;
+    virDrvNodeDeviceClose nodeDeviceClose;
     virDrvNodeNumOfDevices nodeNumOfDevices;
     virDrvNodeListDevices nodeListDevices;
     virDrvConnectListAllNodeDevices connectListAllNodeDevices;
@@ -1789,6 +1804,10 @@ enum {
        This flag cannot be set by outside callers. */
     VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 0,
 };
+
+typedef virDrvConnectOpen virDrvSecretOpen;
+typedef virDrvConnectClose virDrvSecretClose;
+
 
 typedef virSecretPtr
 (*virDrvSecretLookupByUUID)(virConnectPtr conn,
@@ -1851,8 +1870,8 @@ typedef virSecretDriver *virSecretDriverPtr;
  */
 struct _virSecretDriver {
     const char *name;
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvSecretOpen secretOpen;
+    virDrvSecretClose secretClose;
     virDrvConnectNumOfSecrets connectNumOfSecrets;
     virDrvConnectListSecrets connectListSecrets;
     virDrvConnectListAllSecrets connectListAllSecrets;
@@ -1910,6 +1929,10 @@ struct _virStreamDriver {
 };
 
 
+typedef virDrvConnectOpen virDrvNWFilterOpen;
+typedef virDrvConnectClose virDrvNWFilterClose;
+
+
 typedef int
 (*virDrvConnectNumOfNWFilters)(virConnectPtr conn);
 
@@ -1958,8 +1981,8 @@ typedef virNWFilterDriver *virNWFilterDriverPtr;
  */
 struct _virNWFilterDriver {
     const char * name; /* the name of the driver */
-    virDrvConnectOpen connectOpen;
-    virDrvConnectClose connectClose;
+    virDrvNWFilterOpen nwfilterOpen;
+    virDrvNWFilterClose nwfilterClose;
     virDrvConnectNumOfNWFilters connectNumOfNWFilters;
     virDrvConnectListNWFilters connectListNWFilters;
     virDrvConnectListAllNWFilters connectListAllNWFilters;

@@ -1671,8 +1671,8 @@ cleanup:
 
 static virStorageDriver parallelsStorageDriver = {
     .name = "Parallels",
-    .connectOpen = parallelsStorageOpen,     /* 0.10.0 */
-    .connectClose = parallelsStorageClose,   /* 0.10.0 */
+    .storageOpen = parallelsStorageOpen,     /* 0.10.0 */
+    .storageClose = parallelsStorageClose,   /* 0.10.0 */
 
     .connectNumOfStoragePools = parallelsStorageNumPools,   /* 0.10.0 */
     .connectListStoragePools = parallelsStorageListPools,   /* 0.10.0 */

@@ -1233,7 +1233,7 @@ do_open(const char *name,
     }
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virNetworkDriverTab[i]->networkOpen(ret, auth, flags);
         VIR_DEBUG("network driver %d %s returned %s",
                   i, virNetworkDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1249,7 +1249,7 @@ do_open(const char *name,
     }
 
     for (i = 0; i < virInterfaceDriverTabCount; i++) {
-        res = virInterfaceDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virInterfaceDriverTab[i]->interfaceOpen(ret, auth, flags);
         VIR_DEBUG("interface driver %d %s returned %s",
                   i, virInterfaceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1266,7 +1266,7 @@ do_open(const char *name,
 
     /* Secondary driver for storage. Optional */
     for (i = 0; i < virStorageDriverTabCount; i++) {
-        res = virStorageDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virStorageDriverTab[i]->storageOpen(ret, auth, flags);
         VIR_DEBUG("storage driver %d %s returned %s",
                   i, virStorageDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1283,7 +1283,7 @@ do_open(const char *name,
 
     /* Node driver (optional) */
     for (i = 0; i < virNodeDeviceDriverTabCount; i++) {
-        res = virNodeDeviceDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virNodeDeviceDriverTab[i]->nodeDeviceOpen(ret, auth, flags);
         VIR_DEBUG("node driver %d %s returned %s",
                   i, virNodeDeviceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1300,7 +1300,7 @@ do_open(const char *name,
 
     /* Secret manipulation driver. Optional */
     for (i = 0; i < virSecretDriverTabCount; i++) {
-        res = virSecretDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virSecretDriverTab[i]->secretOpen(ret, auth, flags);
         VIR_DEBUG("secret driver %d %s returned %s",
                   i, virSecretDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
@@ -1317,7 +1317,7 @@ do_open(const char *name,
 
     /* Network filter driver. Optional */
     for (i = 0; i < virNWFilterDriverTabCount; i++) {
-        res = virNWFilterDriverTab[i]->connectOpen(ret, auth, flags);
+        res = virNWFilterDriverTab[i]->nwfilterOpen(ret, auth, flags);
         VIR_DEBUG("nwfilter driver %d %s returned %s",
                   i, virNWFilterDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :

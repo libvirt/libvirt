@@ -1793,8 +1793,8 @@ static int udevNodeDrvClose(virConnectPtr conn)
 
 static virNodeDeviceDriver udevNodeDeviceDriver = {
     .name = "udevNodeDeviceDriver",
-    .connectOpen = udevNodeDrvOpen, /* 0.7.3 */
-    .connectClose = udevNodeDrvClose, /* 0.7.3 */
+    .nodeDeviceOpen = udevNodeDrvOpen, /* 0.7.3 */
+    .nodeDeviceClose = udevNodeDrvClose, /* 0.7.3 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
     .nodeListDevices = nodeListDevices, /* 0.7.3 */
     .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */

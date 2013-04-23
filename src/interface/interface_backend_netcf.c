@@ -784,8 +784,8 @@ static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 
 static virInterfaceDriver interfaceDriver = {
     "netcf",
-    .connectOpen = interfaceOpenInterface, /* 0.7.0 */
-    .connectClose = interfaceCloseInterface, /* 0.7.0 */
+    .interfaceOpen = interfaceOpenInterface, /* 0.7.0 */
+    .interfaceClose = interfaceCloseInterface, /* 0.7.0 */
     .connectNumOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
     .connectListInterfaces = interfaceListInterfaces, /* 0.7.0 */
     .connectNumOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */

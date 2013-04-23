@@ -1149,8 +1149,8 @@ cleanup:
 
 static virInterfaceDriver udevIfaceDriver = {
     "udev",
-    .connectOpen = udevIfaceOpenInterface, /* 1.0.0 */
-    .connectClose = udevIfaceCloseInterface, /* 1.0.0 */
+    .interfaceOpen = udevIfaceOpenInterface, /* 1.0.0 */
+    .interfaceClose = udevIfaceCloseInterface, /* 1.0.0 */
     .connectNumOfInterfaces = udevIfaceNumOfInterfaces, /* 1.0.0 */
     .connectListInterfaces = udevIfaceListInterfaces, /* 1.0.0 */
     .connectNumOfDefinedInterfaces = udevIfaceNumOfDefinedInterfaces, /* 1.0.0 */

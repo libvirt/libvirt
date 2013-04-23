@@ -66,8 +66,8 @@ hypervDeviceClose(virConnectPtr conn)
 
 static virNodeDeviceDriver hypervNodeDeviceDriver = {
     "Hyper-V",
-    .connectOpen = hypervDeviceOpen, /* 0.9.5 */
-    .connectClose = hypervDeviceClose, /* 0.9.5 */
+    .nodeDeviceOpen = hypervDeviceOpen, /* 0.9.5 */
+    .nodeDeviceClose = hypervDeviceClose, /* 0.9.5 */
 };
 
 

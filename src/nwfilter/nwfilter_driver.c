@@ -659,8 +659,8 @@ nwfilterTeardownFilter(virDomainNetDefPtr net) {
 
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
-    .connectOpen = nwfilterOpen, /* 0.8.0 */
-    .connectClose = nwfilterClose, /* 0.8.0 */
+    .nwfilterOpen = nwfilterOpen, /* 0.8.0 */
+    .nwfilterClose = nwfilterClose, /* 0.8.0 */
     .connectNumOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
     .connectListNWFilters = nwfilterListNWFilters, /* 0.8.0 */
     .connectListAllNWFilters = nwfilterListAllNWFilters, /* 0.10.2 */

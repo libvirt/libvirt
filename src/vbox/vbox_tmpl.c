@@ -9483,8 +9483,8 @@ virDriver NAME(Driver) = {
 
 virNetworkDriver NAME(NetworkDriver) = {
     "VBOX",
-    .connectOpen = vboxNetworkOpen, /* 0.6.4 */
-    .connectClose = vboxNetworkClose, /* 0.6.4 */
+    .networkOpen = vboxNetworkOpen, /* 0.6.4 */
+    .networkClose = vboxNetworkClose, /* 0.6.4 */
     .connectNumOfNetworks = vboxNumOfNetworks, /* 0.6.4 */
     .connectListNetworks = vboxListNetworks, /* 0.6.4 */
     .connectNumOfDefinedNetworks = vboxNumOfDefinedNetworks, /* 0.6.4 */
@@ -9501,8 +9501,8 @@ virNetworkDriver NAME(NetworkDriver) = {
 
 virStorageDriver NAME(StorageDriver) = {
     .name               = "VBOX",
-    .connectOpen = vboxStorageOpen, /* 0.7.1 */
-    .connectClose = vboxStorageClose, /* 0.7.1 */
+    .storageOpen = vboxStorageOpen, /* 0.7.1 */
+    .storageClose = vboxStorageClose, /* 0.7.1 */
     .connectNumOfStoragePools = vboxStorageNumOfPools, /* 0.7.1 */
     .connectListStoragePools = vboxStorageListPools, /* 0.7.1 */
     .storagePoolLookupByName = vboxStoragePoolLookupByName, /* 0.7.1 */

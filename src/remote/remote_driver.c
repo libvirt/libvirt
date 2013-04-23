@@ -6306,8 +6306,8 @@ static virDriver remote_driver = {
 
 static virNetworkDriver network_driver = {
     .name = "remote",
-    .connectOpen = remoteNetworkOpen, /* 0.3.0 */
-    .connectClose = remoteNetworkClose, /* 0.3.0 */
+    .networkOpen = remoteNetworkOpen, /* 0.3.0 */
+    .networkClose = remoteNetworkClose, /* 0.3.0 */
     .connectNumOfNetworks = remoteConnectNumOfNetworks, /* 0.3.0 */
     .connectListNetworks = remoteConnectListNetworks, /* 0.3.0 */
     .connectNumOfDefinedNetworks = remoteConnectNumOfDefinedNetworks, /* 0.3.0 */
@@ -6331,8 +6331,8 @@ static virNetworkDriver network_driver = {
 
 static virInterfaceDriver interface_driver = {
     .name = "remote",
-    .connectOpen = remoteInterfaceOpen, /* 0.7.2 */
-    .connectClose = remoteInterfaceClose, /* 0.7.2 */
+    .interfaceOpen = remoteInterfaceOpen, /* 0.7.2 */
+    .interfaceClose = remoteInterfaceClose, /* 0.7.2 */
     .connectNumOfInterfaces = remoteConnectNumOfInterfaces, /* 0.7.2 */
     .connectListInterfaces = remoteConnectListInterfaces, /* 0.7.2 */
     .connectNumOfDefinedInterfaces = remoteConnectNumOfDefinedInterfaces, /* 0.7.2 */
@@ -6353,8 +6353,8 @@ static virInterfaceDriver interface_driver = {
 
 static virStorageDriver storage_driver = {
     .name = "remote",
-    .connectOpen = remoteStorageOpen, /* 0.4.1 */
-    .connectClose = remoteStorageClose, /* 0.4.1 */
+    .storageOpen = remoteStorageOpen, /* 0.4.1 */
+    .storageClose = remoteStorageClose, /* 0.4.1 */
     .connectNumOfStoragePools = remoteConnectNumOfStoragePools, /* 0.4.1 */
     .connectListStoragePools = remoteConnectListStoragePools, /* 0.4.1 */
     .connectNumOfDefinedStoragePools = remoteConnectNumOfDefinedStoragePools, /* 0.4.1 */
@@ -6400,8 +6400,8 @@ static virStorageDriver storage_driver = {
 
 static virSecretDriver secret_driver = {
     .name = "remote",
-    .connectOpen = remoteSecretOpen, /* 0.7.1 */
-    .connectClose = remoteSecretClose, /* 0.7.1 */
+    .secretOpen = remoteSecretOpen, /* 0.7.1 */
+    .secretClose = remoteSecretClose, /* 0.7.1 */
     .connectNumOfSecrets = remoteConnectNumOfSecrets, /* 0.7.1 */
     .connectListSecrets = remoteConnectListSecrets, /* 0.7.1 */
     .connectListAllSecrets = remoteConnectListAllSecrets, /* 0.10.2 */
@@ -6416,8 +6416,8 @@ static virSecretDriver secret_driver = {
 
 static virNodeDeviceDriver node_device_driver = {
     .name = "remote",
-    .connectOpen = remoteNodeDeviceOpen, /* 0.5.0 */
-    .connectClose = remoteNodeDeviceClose, /* 0.5.0 */
+    .nodeDeviceOpen = remoteNodeDeviceOpen, /* 0.5.0 */
+    .nodeDeviceClose = remoteNodeDeviceClose, /* 0.5.0 */
     .nodeNumOfDevices = remoteNodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = remoteNodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
@@ -6433,8 +6433,8 @@ static virNodeDeviceDriver node_device_driver = {
 
 static virNWFilterDriver nwfilter_driver = {
     .name = "remote",
-    .connectOpen = remoteNWFilterOpen, /* 0.8.0 */
-    .connectClose = remoteNWFilterClose, /* 0.8.0 */
+    .nwfilterOpen = remoteNWFilterOpen, /* 0.8.0 */
+    .nwfilterClose = remoteNWFilterClose, /* 0.8.0 */
     .nwfilterLookupByUUID = remoteNWFilterLookupByUUID, /* 0.8.0 */
     .nwfilterLookupByName = remoteNWFilterLookupByName, /* 0.8.0 */
     .nwfilterGetXMLDesc           = remoteNWFilterGetXMLDesc, /* 0.8.0 */

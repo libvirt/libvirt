@@ -5864,8 +5864,8 @@ static virDriver testDriver = {
 
 static virNetworkDriver testNetworkDriver = {
     "Test",
-    .connectOpen = testOpenNetwork, /* 0.3.2 */
-    .connectClose = testCloseNetwork, /* 0.3.2 */
+    .networkOpen = testOpenNetwork, /* 0.3.2 */
+    .networkClose = testCloseNetwork, /* 0.3.2 */
     .connectNumOfNetworks = testNumNetworks, /* 0.3.2 */
     .connectListNetworks = testListNetworks, /* 0.3.2 */
     .connectNumOfDefinedNetworks = testNumDefinedNetworks, /* 0.3.2 */
@@ -5889,8 +5889,8 @@ static virNetworkDriver testNetworkDriver = {
 
 static virInterfaceDriver testInterfaceDriver = {
     "Test",                     /* name */
-    .connectOpen = testOpenInterface, /* 0.7.0 */
-    .connectClose = testCloseInterface, /* 0.7.0 */
+    .interfaceOpen = testOpenInterface, /* 0.7.0 */
+    .interfaceClose = testCloseInterface, /* 0.7.0 */
     .connectNumOfInterfaces = testNumOfInterfaces, /* 0.7.0 */
     .connectListInterfaces = testListInterfaces, /* 0.7.0 */
     .connectNumOfDefinedInterfaces = testNumOfDefinedInterfaces, /* 0.7.0 */
@@ -5911,8 +5911,8 @@ static virInterfaceDriver testInterfaceDriver = {
 
 static virStorageDriver testStorageDriver = {
     .name = "Test",
-    .connectOpen = testStorageOpen, /* 0.4.1 */
-    .connectClose = testStorageClose, /* 0.4.1 */
+    .storageOpen = testStorageOpen, /* 0.4.1 */
+    .storageClose = testStorageClose, /* 0.4.1 */
 
     .connectNumOfStoragePools = testStorageNumPools, /* 0.5.0 */
     .connectListStoragePools = testStorageListPools, /* 0.5.0 */
@@ -5954,8 +5954,8 @@ static virStorageDriver testStorageDriver = {
 
 static virNodeDeviceDriver testNodeDeviceDriver = {
     .name = "Test",
-    .connectOpen = testNodeDeviceOpen, /* 0.6.0 */
-    .connectClose = testNodeDeviceClose, /* 0.6.0 */
+    .nodeDeviceOpen = testNodeDeviceOpen, /* 0.6.0 */
+    .nodeDeviceClose = testNodeDeviceClose, /* 0.6.0 */
 
     .nodeNumOfDevices = testNodeNumOfDevices, /* 0.7.2 */
     .nodeListDevices = testNodeListDevices, /* 0.7.2 */
@@ -5970,15 +5970,15 @@ static virNodeDeviceDriver testNodeDeviceDriver = {
 
 static virSecretDriver testSecretDriver = {
     .name = "Test",
-    .connectOpen = testSecretOpen, /* 0.7.1 */
-    .connectClose = testSecretClose, /* 0.7.1 */
+    .secretOpen = testSecretOpen, /* 0.7.1 */
+    .secretClose = testSecretClose, /* 0.7.1 */
 };
 
 
 static virNWFilterDriver testNWFilterDriver = {
     .name = "Test",
-    .connectOpen = testNWFilterOpen, /* 0.8.0 */
-    .connectClose = testNWFilterClose, /* 0.8.0 */
+    .nwfilterOpen = testNWFilterOpen, /* 0.8.0 */
+    .nwfilterClose = testNWFilterClose, /* 0.8.0 */
 };
 
 /**

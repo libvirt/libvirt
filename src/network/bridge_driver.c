@@ -3592,8 +3592,8 @@ cleanup:
 
 static virNetworkDriver networkDriver = {
     "Network",
-    .connectOpen = networkOpenNetwork, /* 0.2.0 */
-    .connectClose = networkCloseNetwork, /* 0.2.0 */
+    .networkOpen = networkOpenNetwork, /* 0.2.0 */
+    .networkClose = networkCloseNetwork, /* 0.2.0 */
     .connectNumOfNetworks = networkNumNetworks, /* 0.2.0 */
     .connectListNetworks = networkListNetworks, /* 0.2.0 */
     .connectNumOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */

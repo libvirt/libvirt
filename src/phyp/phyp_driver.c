@@ -3795,8 +3795,8 @@ static virDriver phypDriver = {
 
 static virStorageDriver phypStorageDriver = {
     .name = "PHYP",
-    .connectOpen = phypVIOSDriverOpen, /* 0.8.2 */
-    .connectClose = phypVIOSDriverClose, /* 0.8.2 */
+    .storageOpen = phypVIOSDriverOpen, /* 0.8.2 */
+    .storageClose = phypVIOSDriverClose, /* 0.8.2 */
 
     .connectNumOfStoragePools = phypNumOfStoragePools, /* 0.8.2 */
     .connectListStoragePools = phypListStoragePools, /* 0.8.2 */
@@ -3817,8 +3817,8 @@ static virStorageDriver phypStorageDriver = {
 
 static virInterfaceDriver phypInterfaceDriver = {
     .name = "PHYP",
-    .connectOpen = phypVIOSDriverOpen, /* 0.9.1 */
-    .connectClose = phypVIOSDriverClose, /* 0.9.1 */
+    .interfaceOpen = phypVIOSDriverOpen, /* 0.9.1 */
+    .interfaceClose = phypVIOSDriverClose, /* 0.9.1 */
     .connectNumOfInterfaces = phypNumOfInterfaces, /* 0.9.1 */
     .connectListInterfaces = phypListInterfaces, /* 0.9.1 */
     .interfaceLookupByName = phypInterfaceLookupByName, /* 0.9.1 */

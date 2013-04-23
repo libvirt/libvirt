@@ -1157,8 +1157,8 @@ secretDriverReload(void)
 
 static virSecretDriver secretDriver = {
     .name = "secret",
-    .connectOpen = secretOpen, /* 0.7.1 */
-    .connectClose = secretClose, /* 0.7.1 */
+    .secretOpen = secretOpen, /* 0.7.1 */
+    .secretClose = secretClose, /* 0.7.1 */
     .connectNumOfSecrets = secretNumOfSecrets, /* 0.7.1 */
     .connectListSecrets = secretListSecrets, /* 0.7.1 */
     .connectListAllSecrets = secretListAllSecrets, /* 0.10.2 */

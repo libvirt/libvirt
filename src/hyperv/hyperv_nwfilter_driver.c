@@ -66,8 +66,8 @@ hypervNWFilterClose(virConnectPtr conn)
 
 static virNWFilterDriver hypervNWFilterDriver = {
     .name = "Hyper-V",
-    .connectOpen = hypervNWFilterOpen, /* 0.9.5 */
-    .connectClose = hypervNWFilterClose, /* 0.9.5 */
+    .nwfilterOpen = hypervNWFilterOpen, /* 0.9.5 */
+    .nwfilterClose = hypervNWFilterClose, /* 0.9.5 */
 };
 
 

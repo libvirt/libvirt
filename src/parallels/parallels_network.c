@@ -614,8 +614,8 @@ cleanup:
 }
 static virNetworkDriver parallelsNetworkDriver = {
     "Parallels",
-    .connectOpen = parallelsOpenNetwork, /* 1.0.1 */
-    .connectClose = parallelsCloseNetwork, /* 1.0.1 */
+    .networkOpen = parallelsOpenNetwork, /* 1.0.1 */
+    .networkClose = parallelsCloseNetwork, /* 1.0.1 */
     .connectNumOfNetworks = parallelsNumNetworks, /* 1.0.1 */
     .connectListNetworks = parallelsListNetworks, /* 1.0.1 */
     .connectNumOfDefinedNetworks = parallelsNumDefinedNetworks, /* 1.0.1 */

@@ -2369,8 +2369,8 @@ storageListAllPools(virConnectPtr conn,
 
 static virStorageDriver storageDriver = {
     .name = "storage",
-    .connectOpen = storageOpen, /* 0.4.0 */
-    .connectClose = storageClose, /* 0.4.0 */
+    .storageOpen = storageOpen, /* 0.4.0 */
+    .storageClose = storageClose, /* 0.4.0 */
     .connectNumOfStoragePools = storageNumPools, /* 0.4.0 */
     .connectListStoragePools = storageListPools, /* 0.4.0 */
     .connectNumOfDefinedStoragePools = storageNumDefinedPools, /* 0.4.0 */

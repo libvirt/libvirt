@@ -933,8 +933,8 @@ esxNetworkIsPersistent(virNetworkPtr network ATTRIBUTE_UNUSED)
 
 static virNetworkDriver esxNetworkDriver = {
     .name = "ESX",
-    .connectOpen = esxNetworkOpen, /* 0.7.6 */
-    .connectClose = esxNetworkClose, /* 0.7.6 */
+    .networkOpen = esxNetworkOpen, /* 0.7.6 */
+    .networkClose = esxNetworkClose, /* 0.7.6 */
     .connectNumOfNetworks = esxNumberOfNetworks, /* 0.10.0 */
     .connectListNetworks = esxListNetworks, /* 0.10.0 */
     .connectNumOfDefinedNetworks = esxNumberOfDefinedNetworks, /* 0.10.0 */

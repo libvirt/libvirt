@@ -298,8 +298,8 @@ esxInterfaceIsActive(virInterfacePtr iface ATTRIBUTE_UNUSED)
 
 static virInterfaceDriver esxInterfaceDriver = {
     .name = "ESX",
-    .connectOpen = esxInterfaceOpen, /* 0.7.6 */
-    .connectClose = esxInterfaceClose, /* 0.7.6 */
+    .interfaceOpen = esxInterfaceOpen, /* 0.7.6 */
+    .interfaceClose = esxInterfaceClose, /* 0.7.6 */
     .connectNumOfInterfaces = esxNumberOfInterfaces, /* 0.10.0 */
     .connectListInterfaces = esxListInterfaces, /* 0.10.0 */
     .connectNumOfDefinedInterfaces = esxNumberOfDefinedInterfaces, /* 0.10.0 */

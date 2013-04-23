@@ -69,8 +69,8 @@ esxDeviceClose(virConnectPtr conn)
 
 static virNodeDeviceDriver esxNodeDeviceDriver = {
     .name = "ESX",
-    .connectOpen = esxDeviceOpen, /* 0.7.6 */
-    .connectClose = esxDeviceClose, /* 0.7.6 */
+    .nodeDeviceOpen = esxDeviceOpen, /* 0.7.6 */
+    .nodeDeviceClose = esxDeviceClose, /* 0.7.6 */
 };
 
 
