@@ -2594,6 +2594,63 @@ virDomainDeviceInfoIterate(virDomainDefPtr def,
 
 
 static int
+virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
+{
+    int max_idx[VIR_DOMAIN_CONTROLLER_TYPE_LAST];
+    virBitmapPtr bitmaps[VIR_DOMAIN_CONTROLLER_TYPE_LAST] = { NULL };
+    virDomainControllerDefPtr cont;
+    size_t nbitmaps = 0;
+    int ret = -1;
+    bool b;
+    int i;
+
+    memset(max_idx, -1, sizeof(max_idx));
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        cont = def->controllers[i];
+        if (cont->idx > max_idx[cont->type])
+            max_idx[cont->type] = cont->idx;
+    }
+
+    /* multiple USB controllers with the same index are allowed */
+    max_idx[VIR_DOMAIN_CONTROLLER_TYPE_USB] = -1;
+
+    for (i = 0; i < VIR_DOMAIN_CONTROLLER_TYPE_LAST; i++) {
+        if (max_idx[i] >= 0 && !(bitmaps[i] = virBitmapNew(max_idx[i] + 1)))
+            goto no_memory;
+        nbitmaps++;
+    }
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        cont = def->controllers[i];
+
+        if (max_idx[cont->type] == -1)
+            continue;
+
+        ignore_value(virBitmapGetBit(bitmaps[cont->type], cont->idx, &b));
+        if (b) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Multiple '%s' controllers with index '%d'"),
+                           virDomainControllerTypeToString(cont->type),
+                           cont->idx);
+            goto cleanup;
+        }
+        ignore_value(virBitmapSetBit(bitmaps[cont->type], cont->idx));
+    }
+
+    ret = 0;
+cleanup:
+    for (i = 0; i < nbitmaps; i++)
+        virBitmapFree(bitmaps[i]);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+
+static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
                               virCapsPtr caps ATTRIBUTE_UNUSED)
 {
@@ -2673,6 +2730,8 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         }
     }
 
+    if (virDomainDefRejectDuplicateControllers(def) < 0)
+        return -1;
     return 0;
 
 no_memory:
