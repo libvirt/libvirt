@@ -67,6 +67,7 @@ struct _virPCIDevice {
     bool          has_flr;
     bool          has_pm_reset;
     bool          managed;
+    const char   *stubDriver;
 
     /* used by reattach function */
     bool          unbind_from_stub;
@@ -1152,6 +1153,9 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *inactiveDevs,
                    const char *driver)
 {
+    if (!driver && dev->stubDriver)
+        driver = dev->stubDriver;
+
     if (virPCIProbeStubDriver(driver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s"), driver);
@@ -1182,6 +1186,9 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
                      virPCIDeviceListPtr inactiveDevs,
                      const char *driver)
 {
+    if (!driver && dev->stubDriver)
+        driver = dev->stubDriver;
+
     if (virPCIProbeStubDriver(driver) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s"), driver);
@@ -1465,6 +1472,18 @@ unsigned int
 virPCIDeviceGetManaged(virPCIDevicePtr dev)
 {
     return dev->managed;
+}
+
+void
+virPCIDeviceSetStubDriver(virPCIDevicePtr dev, const char *driver)
+{
+    dev->stubDriver = driver;
+}
+
+const char *
+virPCIDeviceGetStubDriver(virPCIDevicePtr dev)
+{
+    return dev->stubDriver;
 }
 
 unsigned int

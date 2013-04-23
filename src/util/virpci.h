@@ -1,7 +1,7 @@
 /*
  * virpci.h: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009, 2011-2012 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,9 @@ int virPCIDeviceReset(virPCIDevicePtr dev,
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);
 unsigned int virPCIDeviceGetManaged(virPCIDevice *dev);
+void virPCIDeviceSetStubDriver(virPCIDevicePtr dev,
+                               const char *driver);
+const char *virPCIDeviceGetStubDriver(virPCIDevicePtr dev);
 void virPCIDeviceSetUsedBy(virPCIDevice *dev,
                            const char *used_by);
 const char *virPCIDeviceGetUsedBy(virPCIDevice *dev);
