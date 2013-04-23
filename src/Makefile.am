@@ -961,6 +961,7 @@ endif
 
 libvirt_driver_xen_impl_la_CFLAGS =					\
 		$(XEN_CFLAGS)					\
+		-I$(top_srcdir)/src/access			\
 		-I$(top_srcdir)/src/conf			\
 		-I$(top_srcdir)/src/xenxs			\
 		$(AM_CFLAGS)
