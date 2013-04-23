@@ -67,6 +67,12 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         }
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
+        if (hostdev->source.subsys.u.pci.backend
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            virPCIDeviceSetStubDriver(dev, "vfio-pci");
+        } else {
+            virPCIDeviceSetStubDriver(dev, "pci-stub");
+        }
     }
 
     return list;
@@ -150,6 +156,12 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
             goto cleanup;
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
+        if (hostdev->source.subsys.u.pci.backend
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            virPCIDeviceSetStubDriver(dev, "vfio-pci");
+        } else {
+            virPCIDeviceSetStubDriver(dev, "pci-stub");
+        }
         virPCIDeviceSetUsedBy(dev, def->name);
 
         /* Setup the original states for the PCI device */
@@ -472,11 +484,11 @@ int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
         }
     }
 
-    /* Loop 2: detach managed devices */
+    /* Loop 2: detach managed devices (i.e. bind to appropriate stub driver) */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         if (virPCIDeviceGetManaged(dev) &&
-            virPCIDeviceDetach(dev, driver->activePciHostdevs, NULL, "pci-stub") < 0)
+            virPCIDeviceDetach(dev, driver->activePciHostdevs, NULL, NULL) < 0)
             goto reattachdevs;
     }
 
@@ -593,7 +605,11 @@ resetvfnetconfig:
 reattachdevs:
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
-        virPCIDeviceReattach(dev, driver->activePciHostdevs, NULL, "pci-stub");
+
+        /* NB: This doesn't actually re-bind to original driver, just
+         * unbinds from the stub driver
+         */
+        virPCIDeviceReattach(dev, driver->activePciHostdevs, NULL, NULL);
     }
 
 cleanup:
