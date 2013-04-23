@@ -6422,6 +6422,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     int last_good_net = -1;
     bool hasHwVirt = false;
     virCommandPtr cmd = NULL;
+    bool allowReboot = true;
     bool emitBootindex = false;
     int sdl = 0;
     int vnc = 0;
@@ -6808,16 +6809,24 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_REBOOT) &&
-        def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART)
-        virCommandAddArg(cmd, "-no-reboot");
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_REBOOT)) {
+        /* Only add -no-reboot option if each event destroys domain */
+        if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+            def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+            def->onCrash == VIR_DOMAIN_LIFECYCLE_DESTROY) {
+            allowReboot = false;
+            virCommandAddArg(cmd, "-no-reboot");
+        }
+    }
 
     /* If JSON monitor is enabled, we can receive an event
      * when QEMU stops. If we use no-shutdown, then we can
      * watch for this event and do a soft/warm reboot.
      */
-    if (monitor_json && virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN))
+    if (monitor_json && allowReboot &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
         virCommandAddArg(cmd, "-no-shutdown");
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
         if (!(def->features & (1 << VIR_DOMAIN_FEATURE_ACPI)))
