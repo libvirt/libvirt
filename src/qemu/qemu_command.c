@@ -5885,6 +5885,15 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)
         goto error;
 
+    if (disableKQEMU)
+        virCommandAddArg(cmd, "-no-kqemu");
+    else if (enableKQEMU)
+        virCommandAddArgList(cmd, "-enable-kqemu", "-kernel-kqemu", NULL);
+    if (disableKVM)
+        virCommandAddArg(cmd, "-no-kvm");
+    if (enableKVM)
+        virCommandAddArg(cmd, "-enable-kvm");
+
     if (qemuBuildCpuArgStr(driver, def, emulator, qemuCaps,
                            hostarch, &cpu, &hasHwVirt, !!migrateFrom) < 0)
         goto error;
@@ -5897,15 +5906,6 @@ qemuBuildCommandLine(virConnectPtr conn,
             hasHwVirt)
             virCommandAddArg(cmd, "-enable-nesting");
     }
-
-    if (disableKQEMU)
-        virCommandAddArg(cmd, "-no-kqemu");
-    else if (enableKQEMU)
-        virCommandAddArgList(cmd, "-enable-kqemu", "-kernel-kqemu", NULL);
-    if (disableKVM)
-        virCommandAddArg(cmd, "-no-kvm");
-    if (enableKVM)
-        virCommandAddArg(cmd, "-enable-kvm");
 
     if (def->os.loader) {
         virCommandAddArg(cmd, "-bios");
