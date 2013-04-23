@@ -9930,6 +9930,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     xmlNodePtr cur;
     bool usb_none = false;
     bool usb_other = false;
+    bool usb_master = false;
     bool primaryVideo = false;
 
     if (VIR_ALLOC(def) < 0) {
@@ -10890,11 +10891,20 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
                 usb_other = true;
             }
+
+            if (controller->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_NONE)
+                usb_master = true;
         }
 
         virDomainControllerInsertPreAlloced(def, controller);
     }
     VIR_FREE(nodes);
+
+    if (usb_other && !usb_master) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("No master USB controller specified"));
+        goto error;
+    }
 
     if (def->virtType == VIR_DOMAIN_VIRT_QEMU ||
         def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
