@@ -5275,10 +5275,79 @@ no_memory:
 }
 
 static int
+qemuBuildObsoleteAccelArg(virCommandPtr cmd,
+                          const virDomainDefPtr def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    int disableKQEMU = 0;
+    int enableKQEMU = 0;
+    int disableKVM = 0;
+    int enableKVM = 0;
+
+    switch (def->virtType) {
+    case VIR_DOMAIN_VIRT_QEMU:
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
+            disableKQEMU = 1;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+            disableKVM = 1;
+        break;
+
+    case VIR_DOMAIN_VIRT_KQEMU:
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+            disableKVM = 1;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KQEMU)) {
+            enableKQEMU = 1;
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the QEMU binary does not support kqemu"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_VIRT_KVM:
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
+            disableKQEMU = 1;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM)) {
+            enableKVM = 1;
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the QEMU binary does not support kvm"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_VIRT_XEN:
+        /* XXX better check for xenner */
+        break;
+
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("the QEMU binary does not support %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
+
+    if (disableKQEMU)
+        virCommandAddArg(cmd, "-no-kqemu");
+    else if (enableKQEMU)
+        virCommandAddArgList(cmd, "-enable-kqemu", "-kernel-kqemu", NULL);
+    if (disableKVM)
+        virCommandAddArg(cmd, "-no-kvm");
+    if (enableKVM)
+        virCommandAddArg(cmd, "-enable-kvm");
+
+    return 0;
+}
+
+static int
 qemuBuildMachineArgStr(virCommandPtr cmd,
                        const virDomainDefPtr def,
                        virQEMUCapsPtr qemuCaps)
 {
+    bool obsoleteAccel = false;
+
     /* This should *never* be NULL, since we always provide
      * a machine in the capabilities data for QEMU. So this
      * check is just here as a safety in case the unexpected
@@ -5297,11 +5366,19 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                              "with this QEMU binary"));
             return -1;
         }
+        obsoleteAccel = true;
     } else {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
 
         virCommandAddArg(cmd, "-machine");
         virBufferAdd(&buf, def->os.machine, -1);
+
+        if (def->virtType == VIR_DOMAIN_VIRT_QEMU)
+            virBufferAddLit(&buf, ",accel=tcg");
+        else if (def->virtType == VIR_DOMAIN_VIRT_KVM)
+            virBufferAddLit(&buf, ",accel=kvm");
+        else
+            obsoleteAccel = true;
 
         /* To avoid the collision of creating USB controllers when calling
          * machine->init in QEMU, it needs to set usb=off
@@ -5324,6 +5401,10 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
 
         virCommandAddArgBuffer(cmd, &buf);
     }
+
+    if (obsoleteAccel &&
+        qemuBuildObsoleteAccelArg(cmd, def, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
@@ -5771,10 +5852,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                      enum virNetDevVPortProfileOp vmop)
 {
     int i, j;
-    int disableKQEMU = 0;
-    int enableKQEMU = 0;
-    int disableKVM = 0;
-    int enableKVM = 0;
     const char *emulator;
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *cpu;
@@ -5819,53 +5896,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         (def->virtType == VIR_DOMAIN_VIRT_QEMU))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DRIVE_BOOT);
 
-    switch (def->virtType) {
-    case VIR_DOMAIN_VIRT_QEMU:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = 1;
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = 1;
-        break;
-
-    case VIR_DOMAIN_VIRT_KQEMU:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = 1;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KQEMU)) {
-            enableKQEMU = 1;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("the QEMU binary %s does not support kqemu"),
-                           emulator);
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_VIRT_KVM:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = 1;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM)) {
-            enableKVM = 1;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("the QEMU binary %s does not support kvm"),
-                           emulator);
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_VIRT_XEN:
-        /* XXX better check for xenner */
-        break;
-
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("the QEMU binary %s does not support %s"),
-                       emulator, virDomainVirtTypeToString(def->virtType));
-        break;
-    }
-
     cmd = virCommandNew(emulator);
 
     virCommandAddEnvPassCommon(cmd);
@@ -5884,15 +5914,6 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)
         goto error;
-
-    if (disableKQEMU)
-        virCommandAddArg(cmd, "-no-kqemu");
-    else if (enableKQEMU)
-        virCommandAddArgList(cmd, "-enable-kqemu", "-kernel-kqemu", NULL);
-    if (disableKVM)
-        virCommandAddArg(cmd, "-no-kvm");
-    if (enableKVM)
-        virCommandAddArg(cmd, "-enable-kvm");
 
     if (qemuBuildCpuArgStr(driver, def, emulator, qemuCaps,
                            hostarch, &cpu, &hasHwVirt, !!migrateFrom) < 0)
