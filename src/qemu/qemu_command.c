@@ -5718,9 +5718,8 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         !cfg->spicePassword)
         virBufferAddLit(&opt, ",disable-ticketing");
 
-    if (cfg->spiceTLS)
-        virBufferAsprintf(&opt, ",x509-dir=%s",
-                          cfg->spiceTLSx509certdir);
+    if (tlsPort > 0)
+        virBufferAsprintf(&opt, ",x509-dir=%s", cfg->spiceTLSx509certdir);
 
     switch (defaultMode) {
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
@@ -5735,24 +5734,56 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
-        int mode = graphics->data.spice.channels[i];
-        switch (mode) {
+        switch (graphics->data.spice.channels[i]) {
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-            if (!cfg->spiceTLS) {
+            if (tlsPort <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("spice secure channels set in XML configuration, "
-                                 "but TLS is disabled in qemu.conf"));
+                                 "but TLS port is not provided"));
                 goto error;
             }
             virBufferAsprintf(&opt, ",tls-channel=%s",
                               virDomainGraphicsSpiceChannelNameTypeToString(i));
             break;
+
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+            if (port <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("spice insecure channels set in XML "
+                                 "configuration, but plain port is not provided"));
+                goto error;
+            }
             virBufferAsprintf(&opt, ",plaintext-channel=%s",
                               virDomainGraphicsSpiceChannelNameTypeToString(i));
             break;
+
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+            switch (defaultMode) {
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                if (tlsPort <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("spice defaultMode secure requested in XML "
+                                     "configuration but TLS port not provided"));
+                    goto error;
+                }
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                if (port <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("spice defaultMode insecure requested in XML "
+                                     "configuration but plain port not provided"));
+                    goto error;
+                }
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+                /* don't care */
+            break;
+            }
         }
     }
+
     if (graphics->data.spice.image)
         virBufferAsprintf(&opt, ",image-compression=%s",
                           virDomainGraphicsSpiceImageCompressionTypeToString(graphics->data.spice.image));
