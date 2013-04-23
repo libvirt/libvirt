@@ -1281,7 +1281,9 @@ endif
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_impl_la_SOURCES =
 libvirt_driver_storage_impl_la_CFLAGS = \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS)
+		-I$(top_srcdir)/src/access \
+		-I$(top_srcdir)/src/conf \
+		$(AM_CFLAGS)
 libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_storage_impl_la_LIBADD =
 libvirt_driver_storage_impl_la_LIBADD += $(SECDRIVER_LIBS)
