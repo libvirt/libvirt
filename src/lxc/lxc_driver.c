@@ -68,6 +68,8 @@
 #include "virtypedparam.h"
 #include "viruri.h"
 #include "virstring.h"
+#include "viraccessapicheck.h"
+#include "viraccessapichecklxc.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -148,6 +150,9 @@ static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
         }
     }
 
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
     conn->privateData = lxc_driver;
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -190,6 +195,9 @@ static char *lxcConnectGetCapabilities(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     char *xml;
 
+    if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
+        return NULL;
+
     lxcDriverLock(driver);
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
         virReportOOMError();
@@ -215,6 +223,9 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
                        _("No domain with matching id %d"), id);
         goto cleanup;
     }
+
+    if (virDomainLookupByIDEnsureACL(conn, vm->def) < 0)
+        goto cleanup;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
@@ -245,6 +256,9 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (virDomainLookupByUUIDEnsureACL(conn, vm->def) < 0)
+        goto cleanup;
+
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
@@ -270,6 +284,9 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
                        _("No domain with matching name '%s'"), name);
         goto cleanup;
     }
+
+    if (virDomainLookupByNameEnsureACL(conn, vm->def) < 0)
+        goto cleanup;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
@@ -298,6 +315,10 @@ static int lxcDomainIsActive(virDomainPtr dom)
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainIsActiveEnsureACL(dom->conn, obj->def) < 0)
+        goto cleanup;
+
     ret = virDomainObjIsActive(obj);
 
 cleanup:
@@ -323,6 +344,10 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainIsPersistentEnsureACL(dom->conn, obj->def) < 0)
+        goto cleanup;
+
     ret = obj->persistent;
 
 cleanup:
@@ -347,6 +372,10 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainIsUpdatedEnsureACL(dom->conn, obj->def) < 0)
+        goto cleanup;
+
     ret = obj->updated;
 
 cleanup:
@@ -359,6 +388,9 @@ static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
+    if (virConnectListDomainsEnsureACL(conn) < 0)
+        return -1;
+
     lxcDriverLock(driver);
     n = virDomainObjListGetActiveIDs(driver->domains, ids, nids);
     lxcDriverUnlock(driver);
@@ -369,6 +401,9 @@ static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
 static int lxcConnectNumOfDomains(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
+
+    if (virConnectNumOfDomainsEnsureACL(conn) < 0)
+        return -1;
 
     lxcDriverLock(driver);
     n = virDomainObjListNumOfDomains(driver->domains, 1);
@@ -382,6 +417,9 @@ static int lxcConnectListDefinedDomains(virConnectPtr conn,
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
+    if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
+        return -1;
+
     lxcDriverLock(driver);
     n = virDomainObjListGetInactiveNames(driver->domains, names, nnames);
     lxcDriverUnlock(driver);
@@ -393,6 +431,9 @@ static int lxcConnectListDefinedDomains(virConnectPtr conn,
 static int lxcConnectNumOfDefinedDomains(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
+
+    if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
+        return -1;
 
     lxcDriverLock(driver);
     n = virDomainObjListNumOfDomains(driver->domains, 0);
@@ -416,6 +457,9 @@ static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_LXC,
                                         VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (virDomainDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
@@ -482,6 +526,9 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainUndefineFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Cannot undefine transient domain"));
@@ -541,6 +588,9 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     priv = vm->privateData;
 
+    if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     info->state = virDomainObjGetState(vm, NULL);
 
     if (!virDomainObjIsActive(vm)) {
@@ -599,6 +649,9 @@ lxcDomainGetState(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainGetStateEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     *state = virDomainObjGetState(vm, reason);
     ret = 0;
 
@@ -626,7 +679,11 @@ static char *lxcDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, vm->def->os.type));
+    if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(ret, vm->def->os.type) < 0)
+        goto cleanup;
 
 cleanup:
     if (vm)
@@ -654,6 +711,9 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
         goto cleanup;
     }
 
+    if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     ret = vm->def->mem.max_balloon;
 
 cleanup:
@@ -678,6 +738,9 @@ static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainSetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (newmax < vm->def->mem.cur_balloon) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -711,6 +774,9 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
     priv = vm->privateData;
+
+    if (virDomainSetMemoryEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (newmem > vm->def->mem.max_balloon) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -774,6 +840,9 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     ret = 0;
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -836,6 +905,9 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
     priv = vm->privateData;
+
+    if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if ((*nparams) == 0) {
         /* Current number of memory parameters supported by cgroups */
@@ -923,6 +995,9 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) &&
                              vm->newDef ? vm->newDef : vm->def,
                              flags);
@@ -960,6 +1035,9 @@ static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if ((vm->def->nets != NULL) && !(driver->have_netns)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1036,6 +1114,9 @@ lxcDomainCreateXML(virConnectPtr conn,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
+    if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
@@ -1101,6 +1182,9 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
         goto cleanup;
     }
 
+    if (virDomainGetSecurityLabelEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!virDomainVirtTypeToString(vm->def->virtType)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown virt type in domain definition '%d'"),
@@ -1157,6 +1241,9 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
     lxcDriverLock(driver);
     memset(secmodel, 0, sizeof(*secmodel));
 
+    if (virNodeGetSecurityModelEnsureACL(conn) < 0)
+        goto cleanup;
+
     /* we treat no driver as success, but simply return no data in *secmodel */
     if (driver->caps->host.nsecModels == 0
         || driver->caps->host.secModels[0].model == NULL)
@@ -1195,6 +1282,9 @@ lxcConnectDomainEventRegister(virConnectPtr conn,
     virLXCDriverPtr driver = conn->privateData;
     int ret;
 
+    if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
+        return -1;
+
     lxcDriverLock(driver);
     ret = virDomainEventStateRegister(conn,
                                       driver->domainEventState,
@@ -1211,6 +1301,9 @@ lxcConnectDomainEventDeregister(virConnectPtr conn,
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
+
+    if (virConnectDomainEventDeregisterEnsureACL(conn) < 0)
+        return -1;
 
     lxcDriverLock(driver);
     ret = virDomainEventStateDeregister(conn,
@@ -1233,6 +1326,9 @@ lxcConnectDomainEventRegisterAny(virConnectPtr conn,
     virLXCDriverPtr driver = conn->privateData;
     int ret;
 
+    if (virConnectDomainEventRegisterAnyEnsureACL(conn) < 0)
+        return -1;
+
     lxcDriverLock(driver);
     if (virDomainEventStateRegisterID(conn,
                                       driver->domainEventState,
@@ -1251,6 +1347,9 @@ lxcConnectDomainEventDeregisterAny(virConnectPtr conn,
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
+
+    if (virConnectDomainEventDeregisterAnyEnsureACL(conn) < 0)
+        return -1;
 
     lxcDriverLock(driver);
     ret = virDomainEventStateDeregisterID(conn,
@@ -1292,6 +1391,9 @@ lxcDomainDestroyFlags(virDomainPtr dom,
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1544,11 +1646,14 @@ static int lxcStateCleanup(void)
 }
 
 
-static int lxcConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
+static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     struct utsname ver;
 
     uname(&ver);
+
+    if (virConnectGetVersionEnsureACL(conn) < 0)
+        return -1;
 
     if (virParseVersionString(ver.release, version, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
@@ -1559,8 +1664,11 @@ static int lxcConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned lo
 }
 
 
-static char *lxcConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+static char *lxcConnectGetHostname(virConnectPtr conn)
 {
+    if (virConnectGetHostnameEnsureACL(conn) < 0)
+        return NULL;
+
     return virGetHostname();
 }
 
@@ -1616,6 +1724,9 @@ static char *lxcDomainGetSchedulerType(virDomainPtr dom,
         goto cleanup;
     }
     priv = vm->privateData;
+
+    if (virDomainGetSchedulerTypeEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     /* Domain not running, thus no cgroups - return defaults */
     if (!virDomainObjIsActive(vm)) {
@@ -1761,6 +1872,9 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainSetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &vmdef) < 0)
         goto cleanup;
@@ -1890,6 +2004,9 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainGetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (*nparams > 1) {
         rc = lxcGetCpuBWStatus(priv->cgroup);
         if (rc < 0)
@@ -2005,6 +2122,9 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainSetBlkioParametersEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     if (virDomainLiveConfigHelperMethod(driver->caps, driver->xmlopt,
                                         vm, &flags, &persistentDef) < 0)
         goto cleanup;
@@ -2096,6 +2216,9 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
     priv = vm->privateData;
+
+    if (virDomainGetBlkioParametersEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if ((*nparams) == 0) {
         /* Current number of blkio parameters supported by cgroups */
@@ -2193,6 +2316,9 @@ lxcDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainInterfaceStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
@@ -2248,6 +2374,9 @@ static int lxcDomainGetAutostart(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainGetAutostartEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     *autostart = vm->autostart;
     ret = 0;
 
@@ -2274,6 +2403,9 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
                        _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2436,6 +2568,9 @@ static int lxcDomainSuspend(virDomainPtr dom)
         goto cleanup;
     }
 
+    if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
@@ -2488,6 +2623,9 @@ static int lxcDomainResume(virDomainPtr dom)
     }
 
     priv = vm->privateData;
+
+    if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2545,6 +2683,9 @@ lxcDomainOpenConsole(virDomainPtr dom,
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2626,6 +2767,9 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainSendProcessSignalEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
@@ -2681,6 +2825,9 @@ lxcConnectListAllDomains(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
+    if (virConnectListAllDomainsEnsureACL(conn) < 0)
+        return -1;
+
     lxcDriverLock(driver);
     ret = virDomainObjListExport(driver->domains, conn, domains, flags);
     lxcDriverUnlock(driver);
@@ -2716,6 +2863,9 @@ lxcDomainShutdownFlags(virDomainPtr dom,
     }
 
     priv = vm->privateData;
+
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2805,6 +2955,9 @@ lxcDomainReboot(virDomainPtr dom,
     }
 
     priv = vm->privateData;
+
+    if (virDomainRebootEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -4162,6 +4315,9 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         if (affect == VIR_DOMAIN_AFFECT_CURRENT)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -4287,6 +4443,9 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virDomainUpdateDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         if (affect == VIR_DOMAIN_AFFECT_CURRENT)
             flags |= VIR_DOMAIN_AFFECT_LIVE;
@@ -4395,6 +4554,9 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
                        _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virDomainDetachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
         if (affect == VIR_DOMAIN_AFFECT_CURRENT)
@@ -4519,6 +4681,9 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
     }
     priv = vm->privateData;
 
+    if (virDomainLxcOpenNamespaceEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
@@ -4550,6 +4715,9 @@ lxcConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
+    if (virConnectGetSysinfoEnsureACL(conn) < 0)
+        return NULL;
+
     if (!driver->hostsysinfo) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Host SMBIOS information is not available"));
@@ -4567,88 +4735,115 @@ lxcConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
 
 static int
-lxcNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetInfo(virConnectPtr conn,
                virNodeInfoPtr nodeinfo)
 {
+    if (virNodeGetInfoEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetInfo(nodeinfo);
 }
 
 
 static int
-lxcNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetCPUStats(virConnectPtr conn,
                    int cpuNum,
                    virNodeCPUStatsPtr params,
                    int *nparams,
                    unsigned int flags)
 {
+    if (virNodeGetCPUStatsEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetCPUStats(cpuNum, params, nparams, flags);
 }
 
 
 static int
-lxcNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetMemoryStats(virConnectPtr conn,
                       int cellNum,
                       virNodeMemoryStatsPtr params,
                       int *nparams,
                       unsigned int flags)
 {
+    if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetMemoryStats(cellNum, params, nparams, flags);
 }
 
 
 static int
-lxcNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetCellsFreeMemory(virConnectPtr conn,
                           unsigned long long *freeMems,
                           int startCell,
                           int maxCells)
 {
+    if (virNodeGetCellsFreeMemoryEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
 }
 
 
 static unsigned long long
-lxcNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+lxcNodeGetFreeMemory(virConnectPtr conn)
 {
+    if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
+        return 0;
+
     return nodeGetFreeMemory();
 }
 
 
 static int
-lxcNodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetMemoryParameters(virConnectPtr conn,
                            virTypedParameterPtr params,
                            int *nparams,
                            unsigned int flags)
 {
+    if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetMemoryParameters(params, nparams, flags);
 }
 
 
 static int
-lxcNodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeSetMemoryParameters(virConnectPtr conn,
                            virTypedParameterPtr params,
                            int nparams,
                            unsigned int flags)
 {
+    if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
+        return -1;
+
     return nodeSetMemoryParameters(params, nparams, flags);
 }
 
 
 static int
-lxcNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeGetCPUMap(virConnectPtr conn,
                  unsigned char **cpumap,
                  unsigned int *online,
                  unsigned int flags)
 {
+    if (virNodeGetCPUMapEnsureACL(conn) < 0)
+        return -1;
+
     return nodeGetCPUMap(cpumap, online, flags);
 }
 
 
 static int
-lxcNodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
+lxcNodeSuspendForDuration(virConnectPtr conn,
                           unsigned int target,
                           unsigned long long duration,
                           unsigned int flags)
 {
+    if (virNodeSuspendForDurationEnsureACL(conn) < 0)
+        return -1;
+
     return nodeSuspendForDuration(target, duration, flags);
 }
 
