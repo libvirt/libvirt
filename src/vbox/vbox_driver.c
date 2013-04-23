@@ -141,9 +141,9 @@ int vboxRegister(void) {
     return 0;
 }
 
-static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
-                                      virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                      unsigned int flags)
+static virDrvOpenStatus vboxConnectOpen(virConnectPtr conn,
+                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                        unsigned int flags)
 {
     uid_t uid = getuid();
 
@@ -184,5 +184,5 @@ static virDrvOpenStatus vboxOpenDummy(virConnectPtr conn,
 static virDriver vboxDriverDummy = {
     VIR_DRV_VBOX,
     "VBOX",
-    .connectOpen = vboxOpenDummy,
+    .connectOpen = vboxConnectOpen,
 };

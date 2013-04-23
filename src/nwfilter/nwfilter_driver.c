@@ -62,9 +62,9 @@
 
 static virNWFilterDriverStatePtr driverState;
 
-static int nwfilterDriverShutdown(void);
+static int nwfilterStateCleanup(void);
 
-static int nwfilterDriverReload(void);
+static int nwfilterStateReload(void);
 
 static void nwfilterDriverLock(virNWFilterDriverStatePtr driver)
 {
@@ -87,7 +87,7 @@ nwfilterFirewalldDBusFilter(DBusConnection *connection ATTRIBUTE_UNUSED,
         dbus_message_is_signal(message, "org.fedoraproject.FirewallD1",
                                "Reloaded")) {
         VIR_DEBUG("Reload in nwfilter_driver because of firewalld.");
-        nwfilterDriverReload();
+        nwfilterStateReload();
     }
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -160,14 +160,14 @@ nwfilterDriverInstallDBusMatches(DBusConnection *sysbus ATTRIBUTE_UNUSED)
 #endif /* HAVE_FIREWALLD */
 
 /**
- * virNWFilterStartup:
+ * nwfilterStateInitialize:
  *
  * Initialization function for the QEmu daemon
  */
 static int
-nwfilterDriverStartup(bool privileged,
-                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+nwfilterStateInitialize(bool privileged,
+                        virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                        void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
     DBusConnection *sysbus = NULL;
@@ -244,7 +244,7 @@ out_of_memory:
 error:
     VIR_FREE(base);
     nwfilterDriverUnlock(driverState);
-    nwfilterDriverShutdown();
+    nwfilterStateCleanup();
 
     return -1;
 
@@ -263,13 +263,13 @@ err_free_driverstate:
 }
 
 /**
- * virNWFilterReload:
+ * nwfilterStateReload:
  *
  * Function to restart the nwfilter driver, it will recheck the configuration
  * files and update its state
  */
 static int
-nwfilterDriverReload(void) {
+nwfilterStateReload(void) {
     virConnectPtr conn;
 
     if (!driverState) {
@@ -328,12 +328,12 @@ virNWFilterDriverIsWatchingFirewallD(void)
 }
 
 /**
- * virNWFilterShutdown:
+ * nwfilterStateCleanup:
  *
  * Shutdown the nwfilter driver, it will stop all active nwfilters
  */
 static int
-nwfilterDriverShutdown(void) {
+nwfilterStateCleanup(void) {
     if (!driverState)
         return -1;
 
@@ -437,16 +437,16 @@ nwfilterClose(virConnectPtr conn) {
 
 
 static int
-nwfilterNumNWFilters(virConnectPtr conn) {
+nwfilterConnectNumOfNWFilters(virConnectPtr conn) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     return driver->nwfilters.count;
 }
 
 
 static int
-nwfilterListNWFilters(virConnectPtr conn,
-                      char **const names,
-                      int nnames) {
+nwfilterConnectListNWFilters(virConnectPtr conn,
+                             char **const names,
+                             int nnames) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     int got = 0, i;
 
@@ -474,9 +474,9 @@ nwfilterListNWFilters(virConnectPtr conn,
 
 
 static int
-nwfilterListAllNWFilters(virConnectPtr conn,
-                         virNWFilterPtr **filters,
-                         unsigned int flags) {
+nwfilterConnectListAllNWFilters(virConnectPtr conn,
+                                virNWFilterPtr **filters,
+                                unsigned int flags) {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterPtr *tmp_filters = NULL;
     int nfilters = 0;
@@ -529,8 +529,8 @@ nwfilterListAllNWFilters(virConnectPtr conn,
 }
 
 static virNWFilterPtr
-nwfilterDefine(virConnectPtr conn,
-               const char *xml)
+nwfilterDefineXML(virConnectPtr conn,
+                  const char *xml)
 {
     virNWFilterDriverStatePtr driver = conn->nwfilterPrivateData;
     virNWFilterDefPtr def;
@@ -661,12 +661,12 @@ static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
     .nwfilterOpen = nwfilterOpen, /* 0.8.0 */
     .nwfilterClose = nwfilterClose, /* 0.8.0 */
-    .connectNumOfNWFilters = nwfilterNumNWFilters, /* 0.8.0 */
-    .connectListNWFilters = nwfilterListNWFilters, /* 0.8.0 */
-    .connectListAllNWFilters = nwfilterListAllNWFilters, /* 0.10.2 */
+    .connectNumOfNWFilters = nwfilterConnectNumOfNWFilters, /* 0.8.0 */
+    .connectListNWFilters = nwfilterConnectListNWFilters, /* 0.8.0 */
+    .connectListAllNWFilters = nwfilterConnectListAllNWFilters, /* 0.10.2 */
     .nwfilterLookupByName = nwfilterLookupByName, /* 0.8.0 */
     .nwfilterLookupByUUID = nwfilterLookupByUUID, /* 0.8.0 */
-    .nwfilterDefineXML = nwfilterDefine, /* 0.8.0 */
+    .nwfilterDefineXML = nwfilterDefineXML, /* 0.8.0 */
     .nwfilterUndefine = nwfilterUndefine, /* 0.8.0 */
     .nwfilterGetXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
 };
@@ -674,9 +674,9 @@ static virNWFilterDriver nwfilterDriver = {
 
 static virStateDriver stateDriver = {
     .name = "NWFilter",
-    .stateInitialize = nwfilterDriverStartup,
-    .stateCleanup = nwfilterDriverShutdown,
-    .stateReload = nwfilterDriverReload,
+    .stateInitialize = nwfilterStateInitialize,
+    .stateCleanup = nwfilterStateCleanup,
+    .stateReload = nwfilterStateReload,
 };
 
 

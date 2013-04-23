@@ -53,7 +53,7 @@
 
 static virStorageDriverStatePtr driverState;
 
-static int storageDriverShutdown(void);
+static int storageStateCleanup(void);
 
 static void storageDriverLock(virStorageDriverStatePtr driver)
 {
@@ -128,9 +128,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
  * Initialization function for the QEmu daemon
  */
 static int
-storageDriverStartup(bool privileged,
-                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED)
+storageStateInitialize(bool privileged,
+                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                       void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
 
@@ -179,18 +179,18 @@ out_of_memory:
 error:
     VIR_FREE(base);
     storageDriverUnlock(driverState);
-    storageDriverShutdown();
+    storageStateCleanup();
     return -1;
 }
 
 /**
- * virStorageReload:
+ * storageStateReload:
  *
  * Function to restart the storage driver, it will recheck the configuration
  * files and update its state
  */
 static int
-storageDriverReload(void) {
+storageStateReload(void) {
     if (!driverState)
         return -1;
 
@@ -206,12 +206,12 @@ storageDriverReload(void) {
 
 
 /**
- * virStorageShutdown:
+ * storageStateCleanup
  *
  * Shutdown the storage driver, it will stop all active storage pools
  */
 static int
-storageDriverShutdown(void) {
+storageStateCleanup(void) {
     if (!driverState)
         return -1;
 
@@ -309,7 +309,7 @@ storageClose(virConnectPtr conn) {
 }
 
 static int
-storageNumPools(virConnectPtr conn) {
+storageConnectNumOfStoragePools(virConnectPtr conn) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     unsigned int i, nactive = 0;
 
@@ -326,9 +326,9 @@ storageNumPools(virConnectPtr conn) {
 }
 
 static int
-storageListPools(virConnectPtr conn,
-                 char **const names,
-                 int nnames) {
+storageConnectListStoragePools(virConnectPtr conn,
+                               char **const names,
+                               int nnames) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     int got = 0, i;
 
@@ -357,7 +357,7 @@ storageListPools(virConnectPtr conn,
 }
 
 static int
-storageNumDefinedPools(virConnectPtr conn) {
+storageConnectNumOfDefinedStoragePools(virConnectPtr conn) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     unsigned int i, nactive = 0;
 
@@ -374,9 +374,9 @@ storageNumDefinedPools(virConnectPtr conn) {
 }
 
 static int
-storageListDefinedPools(virConnectPtr conn,
-                        char **const names,
-                        int nnames) {
+storageConnectListDefinedStoragePools(virConnectPtr conn,
+                                      char **const names,
+                                      int nnames) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     int got = 0, i;
 
@@ -408,10 +408,10 @@ storageListDefinedPools(virConnectPtr conn,
 /* This method is required to be re-entrant / thread safe, so
    uses no driver lock */
 static char *
-storageFindPoolSources(virConnectPtr conn,
-                       const char *type,
-                       const char *srcSpec,
-                       unsigned int flags)
+storageConnectFindStoragePoolSources(virConnectPtr conn,
+                                     const char *type,
+                                     const char *srcSpec,
+                                     unsigned int flags)
 {
     int backend_type;
     virStorageBackendPtr backend;
@@ -486,9 +486,9 @@ cleanup:
 
 
 static virStoragePoolPtr
-storagePoolCreate(virConnectPtr conn,
-                  const char *xml,
-                  unsigned int flags)
+storagePoolCreateXML(virConnectPtr conn,
+                     const char *xml,
+                     unsigned int flags)
 {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     virStoragePoolDefPtr def;
@@ -544,9 +544,9 @@ cleanup:
 }
 
 static virStoragePoolPtr
-storagePoolDefine(virConnectPtr conn,
-                  const char *xml,
-                  unsigned int flags)
+storagePoolDefineXML(virConnectPtr conn,
+                     const char *xml,
+                     unsigned int flags)
 {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     virStoragePoolDefPtr def;
@@ -643,8 +643,8 @@ cleanup:
 }
 
 static int
-storagePoolStart(virStoragePoolPtr obj,
-                 unsigned int flags)
+storagePoolCreate(virStoragePoolPtr obj,
+                  unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
@@ -1062,7 +1062,7 @@ cleanup:
 
 
 static int
-storagePoolNumVolumes(virStoragePoolPtr obj) {
+storagePoolNumOfVolumes(virStoragePoolPtr obj) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     int ret = -1;
@@ -1207,8 +1207,8 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
 }
 
 static virStorageVolPtr
-storageVolumeLookupByName(virStoragePoolPtr obj,
-                          const char *name) {
+storageVolLookupByName(virStoragePoolPtr obj,
+                       const char *name) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageVolDefPtr vol;
@@ -1250,8 +1250,8 @@ cleanup:
 
 
 static virStorageVolPtr
-storageVolumeLookupByKey(virConnectPtr conn,
-                         const char *key) {
+storageVolLookupByKey(virConnectPtr conn,
+                      const char *key) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     unsigned int i;
     virStorageVolPtr ret = NULL;
@@ -1282,8 +1282,8 @@ storageVolumeLookupByKey(virConnectPtr conn,
 }
 
 static virStorageVolPtr
-storageVolumeLookupByPath(virConnectPtr conn,
-                          const char *path) {
+storageVolLookupByPath(virConnectPtr conn,
+                       const char *path) {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     unsigned int i;
     virStorageVolPtr ret = NULL;
@@ -1336,12 +1336,12 @@ storageVolumeLookupByPath(virConnectPtr conn,
     return ret;
 }
 
-static int storageVolumeDelete(virStorageVolPtr obj, unsigned int flags);
+static int storageVolDelete(virStorageVolPtr obj, unsigned int flags);
 
 static virStorageVolPtr
-storageVolumeCreateXML(virStoragePoolPtr obj,
-                       const char *xmldesc,
-                       unsigned int flags)
+storageVolCreateXML(virStoragePoolPtr obj,
+                    const char *xmldesc,
+                    unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
@@ -1440,7 +1440,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
         if (buildret < 0) {
             virStoragePoolObjUnlock(pool);
-            storageVolumeDelete(volobj, 0);
+            storageVolDelete(volobj, 0);
             pool = NULL;
             goto cleanup;
         }
@@ -1462,10 +1462,10 @@ cleanup:
 }
 
 static virStorageVolPtr
-storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
-                           const char *xmldesc,
-                           virStorageVolPtr vobj,
-                           unsigned int flags)
+storageVolCreateXMLFrom(virStoragePoolPtr obj,
+                        const char *xmldesc,
+                        virStorageVolPtr vobj,
+                        unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool, origpool = NULL;
@@ -1605,7 +1605,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
 
     if (buildret < 0) {
         virStoragePoolObjUnlock(pool);
-        storageVolumeDelete(volobj, 0);
+        storageVolDelete(volobj, 0);
         pool = NULL;
         goto cleanup;
     }
@@ -1627,11 +1627,11 @@ cleanup:
 
 
 static int
-storageVolumeDownload(virStorageVolPtr obj,
-                      virStreamPtr stream,
-                      unsigned long long offset,
-                      unsigned long long length,
-                      unsigned int flags)
+storageVolDownload(virStorageVolPtr obj,
+                   virStreamPtr stream,
+                   unsigned long long offset,
+                   unsigned long long length,
+                   unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool = NULL;
@@ -1690,11 +1690,11 @@ out:
 
 
 static int
-storageVolumeUpload(virStorageVolPtr obj,
-                    virStreamPtr stream,
-                    unsigned long long offset,
-                    unsigned long long length,
-                    unsigned int flags)
+storageVolUpload(virStorageVolPtr obj,
+                 virStreamPtr stream,
+                 unsigned long long offset,
+                 unsigned long long length,
+                 unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool = NULL;
@@ -1754,9 +1754,9 @@ out:
 }
 
 static int
-storageVolumeResize(virStorageVolPtr obj,
-                    unsigned long long capacity,
-                    unsigned int flags)
+storageVolResize(virStorageVolPtr obj,
+                 unsigned long long capacity,
+                 unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStorageBackendPtr backend;
@@ -1858,9 +1858,9 @@ out:
  * appear as if it were zero-filled.
  */
 static int
-storageVolumeZeroSparseFile(virStorageVolDefPtr vol,
-                            off_t size,
-                            int fd)
+storageVolZeroSparseFile(virStorageVolDefPtr vol,
+                         off_t size,
+                         int fd)
 {
     int ret = -1;
 
@@ -1947,8 +1947,8 @@ out:
 
 
 static int
-storageVolumeWipeInternal(virStorageVolDefPtr def,
-                          unsigned int algorithm)
+storageVolWipeInternal(virStorageVolDefPtr def,
+                       unsigned int algorithm)
 {
     int ret = -1, fd = -1;
     struct stat st;
@@ -2017,7 +2017,7 @@ storageVolumeWipeInternal(virStorageVolDefPtr def,
         goto out;
     } else {
         if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
-            ret = storageVolumeZeroSparseFile(def, st.st_size, fd);
+            ret = storageVolZeroSparseFile(def, st.st_size, fd);
         } else {
 
             if (VIR_ALLOC_N(writebuf, st.st_blksize) != 0) {
@@ -2044,9 +2044,9 @@ out:
 
 
 static int
-storageVolumeWipePattern(virStorageVolPtr obj,
-                         unsigned int algorithm,
-                         unsigned int flags)
+storageVolWipePattern(virStorageVolPtr obj,
+                      unsigned int algorithm,
+                      unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool = NULL;
@@ -2095,7 +2095,7 @@ storageVolumeWipePattern(virStorageVolPtr obj,
         goto out;
     }
 
-    if (storageVolumeWipeInternal(vol, algorithm) == -1) {
+    if (storageVolWipeInternal(vol, algorithm) == -1) {
         goto out;
     }
 
@@ -2111,15 +2111,15 @@ out:
 }
 
 static int
-storageVolumeWipe(virStorageVolPtr obj,
-                  unsigned int flags)
+storageVolWipe(virStorageVolPtr obj,
+               unsigned int flags)
 {
-    return storageVolumeWipePattern(obj, VIR_STORAGE_VOL_WIPE_ALG_ZERO, flags);
+    return storageVolWipePattern(obj, VIR_STORAGE_VOL_WIPE_ALG_ZERO, flags);
 }
 
 static int
-storageVolumeDelete(virStorageVolPtr obj,
-                    unsigned int flags) {
+storageVolDelete(virStorageVolPtr obj,
+                 unsigned int flags) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
@@ -2201,8 +2201,8 @@ cleanup:
 }
 
 static int
-storageVolumeGetInfo(virStorageVolPtr obj,
-                     virStorageVolInfoPtr info) {
+storageVolGetInfo(virStorageVolPtr obj,
+                  virStorageVolInfoPtr info) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
@@ -2255,8 +2255,8 @@ cleanup:
 }
 
 static char *
-storageVolumeGetXMLDesc(virStorageVolPtr obj,
-                        unsigned int flags)
+storageVolGetXMLDesc(virStorageVolPtr obj,
+                     unsigned int flags)
 {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
@@ -2309,7 +2309,7 @@ cleanup:
 }
 
 static char *
-storageVolumeGetPath(virStorageVolPtr obj) {
+storageVolGetPath(virStorageVolPtr obj) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
     virStorageVolDefPtr vol;
@@ -2351,9 +2351,9 @@ cleanup:
 }
 
 static int
-storageListAllPools(virConnectPtr conn,
-                    virStoragePoolPtr **pools,
-                    unsigned int flags)
+storageConnectListAllStoragePools(virConnectPtr conn,
+                                  virStoragePoolPtr **pools,
+                                  unsigned int flags)
 {
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     int ret = -1;
@@ -2371,20 +2371,20 @@ static virStorageDriver storageDriver = {
     .name = "storage",
     .storageOpen = storageOpen, /* 0.4.0 */
     .storageClose = storageClose, /* 0.4.0 */
-    .connectNumOfStoragePools = storageNumPools, /* 0.4.0 */
-    .connectListStoragePools = storageListPools, /* 0.4.0 */
-    .connectNumOfDefinedStoragePools = storageNumDefinedPools, /* 0.4.0 */
-    .connectListDefinedStoragePools = storageListDefinedPools, /* 0.4.0 */
-    .connectListAllStoragePools = storageListAllPools, /* 0.10.2 */
-    .connectFindStoragePoolSources = storageFindPoolSources, /* 0.4.0 */
+    .connectNumOfStoragePools = storageConnectNumOfStoragePools, /* 0.4.0 */
+    .connectListStoragePools = storageConnectListStoragePools, /* 0.4.0 */
+    .connectNumOfDefinedStoragePools = storageConnectNumOfDefinedStoragePools, /* 0.4.0 */
+    .connectListDefinedStoragePools = storageConnectListDefinedStoragePools, /* 0.4.0 */
+    .connectListAllStoragePools = storageConnectListAllStoragePools, /* 0.10.2 */
+    .connectFindStoragePoolSources = storageConnectFindStoragePoolSources, /* 0.4.0 */
     .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
     .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
     .storagePoolLookupByVolume = storagePoolLookupByVolume, /* 0.4.0 */
-    .storagePoolCreateXML = storagePoolCreate, /* 0.4.0 */
-    .storagePoolDefineXML = storagePoolDefine, /* 0.4.0 */
+    .storagePoolCreateXML = storagePoolCreateXML, /* 0.4.0 */
+    .storagePoolDefineXML = storagePoolDefineXML, /* 0.4.0 */
     .storagePoolBuild = storagePoolBuild, /* 0.4.0 */
     .storagePoolUndefine = storagePoolUndefine, /* 0.4.0 */
-    .storagePoolCreate = storagePoolStart, /* 0.4.0 */
+    .storagePoolCreate = storagePoolCreate, /* 0.4.0 */
     .storagePoolDestroy = storagePoolDestroy, /* 0.4.0 */
     .storagePoolDelete = storagePoolDelete, /* 0.4.0 */
     .storagePoolRefresh = storagePoolRefresh, /* 0.4.0 */
@@ -2392,24 +2392,24 @@ static virStorageDriver storageDriver = {
     .storagePoolGetXMLDesc = storagePoolGetXMLDesc, /* 0.4.0 */
     .storagePoolGetAutostart = storagePoolGetAutostart, /* 0.4.0 */
     .storagePoolSetAutostart = storagePoolSetAutostart, /* 0.4.0 */
-    .storagePoolNumOfVolumes = storagePoolNumVolumes, /* 0.4.0 */
+    .storagePoolNumOfVolumes = storagePoolNumOfVolumes, /* 0.4.0 */
     .storagePoolListVolumes = storagePoolListVolumes, /* 0.4.0 */
     .storagePoolListAllVolumes = storagePoolListAllVolumes, /* 0.10.2 */
 
-    .storageVolLookupByName = storageVolumeLookupByName, /* 0.4.0 */
-    .storageVolLookupByKey = storageVolumeLookupByKey, /* 0.4.0 */
-    .storageVolLookupByPath = storageVolumeLookupByPath, /* 0.4.0 */
-    .storageVolCreateXML = storageVolumeCreateXML, /* 0.4.0 */
-    .storageVolCreateXMLFrom = storageVolumeCreateXMLFrom, /* 0.6.4 */
-    .storageVolDownload = storageVolumeDownload, /* 0.9.0 */
-    .storageVolUpload = storageVolumeUpload, /* 0.9.0 */
-    .storageVolDelete = storageVolumeDelete, /* 0.4.0 */
-    .storageVolWipe = storageVolumeWipe, /* 0.8.0 */
-    .storageVolWipePattern = storageVolumeWipePattern, /* 0.9.10 */
-    .storageVolGetInfo = storageVolumeGetInfo, /* 0.4.0 */
-    .storageVolGetXMLDesc = storageVolumeGetXMLDesc, /* 0.4.0 */
-    .storageVolGetPath = storageVolumeGetPath, /* 0.4.0 */
-    .storageVolResize = storageVolumeResize, /* 0.9.10 */
+    .storageVolLookupByName = storageVolLookupByName, /* 0.4.0 */
+    .storageVolLookupByKey = storageVolLookupByKey, /* 0.4.0 */
+    .storageVolLookupByPath = storageVolLookupByPath, /* 0.4.0 */
+    .storageVolCreateXML = storageVolCreateXML, /* 0.4.0 */
+    .storageVolCreateXMLFrom = storageVolCreateXMLFrom, /* 0.6.4 */
+    .storageVolDownload = storageVolDownload, /* 0.9.0 */
+    .storageVolUpload = storageVolUpload, /* 0.9.0 */
+    .storageVolDelete = storageVolDelete, /* 0.4.0 */
+    .storageVolWipe = storageVolWipe, /* 0.8.0 */
+    .storageVolWipePattern = storageVolWipePattern, /* 0.9.10 */
+    .storageVolGetInfo = storageVolGetInfo, /* 0.4.0 */
+    .storageVolGetXMLDesc = storageVolGetXMLDesc, /* 0.4.0 */
+    .storageVolGetPath = storageVolGetPath, /* 0.4.0 */
+    .storageVolResize = storageVolResize, /* 0.9.10 */
 
     .storagePoolIsActive = storagePoolIsActive, /* 0.7.3 */
     .storagePoolIsPersistent = storagePoolIsPersistent, /* 0.7.3 */
@@ -2418,9 +2418,9 @@ static virStorageDriver storageDriver = {
 
 static virStateDriver stateDriver = {
     .name = "Storage",
-    .stateInitialize = storageDriverStartup,
-    .stateCleanup = storageDriverShutdown,
-    .stateReload = storageDriverReload,
+    .stateInitialize = storageStateInitialize,
+    .stateCleanup = storageStateCleanup,
+    .stateReload = storageStateReload,
 };
 
 int storageRegister(void) {

@@ -238,7 +238,7 @@ int  xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr info,
 void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
                                     virDomainEventPtr event);
 unsigned long xenUnifiedVersion(void);
-int xenUnifiedGetMaxVcpus(virConnectPtr conn, const char *type);
+int xenUnifiedConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 
 void xenUnifiedLock(xenUnifiedPrivatePtr priv);
 void xenUnifiedUnlock(xenUnifiedPrivatePtr priv);

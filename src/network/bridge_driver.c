@@ -98,7 +98,7 @@ static void networkDriverUnlock(struct network_driver *driver)
     virMutexUnlock(&driver->lock);
 }
 
-static int networkShutdown(void);
+static int networkStateCleanup(void);
 
 static int networkStartNetwork(struct network_driver *driver,
                                virNetworkObjPtr network);
@@ -350,14 +350,14 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
 #endif
 
 /**
- * networkStartup:
+ * networkStateInitialize:
  *
  * Initialization function for the QEmu daemon
  */
 static int
-networkStartup(bool privileged,
-               virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-               void *opaque ATTRIBUTE_UNUSED)
+networkStateInitialize(bool privileged,
+                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                       void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
 #ifdef HAVE_FIREWALLD
@@ -472,18 +472,18 @@ error:
         networkDriverUnlock(driverState);
 
     VIR_FREE(base);
-    networkShutdown();
+    networkStateCleanup();
     return -1;
 }
 
 /**
- * networkReload:
+ * networkStateReload:
  *
  * Function to restart the QEmu daemon, it will recheck the configuration
  * files and update its state and the networking
  */
 static int
-networkReload(void) {
+networkStateReload(void) {
     if (!driverState)
         return 0;
 
@@ -502,12 +502,12 @@ networkReload(void) {
 
 
 /**
- * networkShutdown:
+ * networkStateCleanup:
  *
  * Shutdown the QEmu daemon, it will stop all active domains and networks
  */
 static int
-networkShutdown(void) {
+networkStateCleanup(void) {
     if (!driverState)
         return -1;
 
@@ -2778,9 +2778,9 @@ cleanup:
     return ret;
 }
 
-static virDrvOpenStatus networkOpenNetwork(virConnectPtr conn,
-                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                           unsigned int flags)
+static virDrvOpenStatus networkOpen(virConnectPtr conn,
+                                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                    unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -2791,12 +2791,12 @@ static virDrvOpenStatus networkOpenNetwork(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int networkCloseNetwork(virConnectPtr conn) {
+static int networkClose(virConnectPtr conn) {
     conn->networkPrivateData = NULL;
     return 0;
 }
 
-static int networkNumNetworks(virConnectPtr conn) {
+static int networkConnectNumOfNetworks(virConnectPtr conn) {
     int nactive = 0, i;
     struct network_driver *driver = conn->networkPrivateData;
 
@@ -2812,7 +2812,7 @@ static int networkNumNetworks(virConnectPtr conn) {
     return nactive;
 }
 
-static int networkListNetworks(virConnectPtr conn, char **const names, int nnames) {
+static int networkConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
     int got = 0, i;
 
@@ -2840,7 +2840,7 @@ static int networkListNetworks(virConnectPtr conn, char **const names, int nname
     return -1;
 }
 
-static int networkNumDefinedNetworks(virConnectPtr conn) {
+static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
     int ninactive = 0, i;
     struct network_driver *driver = conn->networkPrivateData;
 
@@ -2856,7 +2856,7 @@ static int networkNumDefinedNetworks(virConnectPtr conn) {
     return ninactive;
 }
 
-static int networkListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
+static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
     int got = 0, i;
 
@@ -2884,9 +2884,9 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
 }
 
 static int
-networkListAllNetworks(virConnectPtr conn,
-                       virNetworkPtr **nets,
-                       unsigned int flags)
+networkConnectListAllNetworks(virConnectPtr conn,
+                              virNetworkPtr **nets,
+                              unsigned int flags)
 {
     struct network_driver *driver = conn->networkPrivateData;
     int ret = -1;
@@ -3090,7 +3090,7 @@ networkValidate(struct network_driver *driver,
     return 0;
 }
 
-static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
+static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
     virNetworkDefPtr def;
     virNetworkObjPtr network = NULL;
@@ -3129,7 +3129,7 @@ cleanup:
     return ret;
 }
 
-static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
+static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
     virNetworkDefPtr def = NULL;
     bool freeDef = true;
@@ -3372,7 +3372,7 @@ cleanup:
     return ret;
 }
 
-static int networkStart(virNetworkPtr net) {
+static int networkCreate(virNetworkPtr net) {
     struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr network;
     int ret = -1;
@@ -3592,20 +3592,20 @@ cleanup:
 
 static virNetworkDriver networkDriver = {
     "Network",
-    .networkOpen = networkOpenNetwork, /* 0.2.0 */
-    .networkClose = networkCloseNetwork, /* 0.2.0 */
-    .connectNumOfNetworks = networkNumNetworks, /* 0.2.0 */
-    .connectListNetworks = networkListNetworks, /* 0.2.0 */
-    .connectNumOfDefinedNetworks = networkNumDefinedNetworks, /* 0.2.0 */
-    .connectListDefinedNetworks = networkListDefinedNetworks, /* 0.2.0 */
-    .connectListAllNetworks = networkListAllNetworks, /* 0.10.2 */
+    .networkOpen = networkOpen, /* 0.2.0 */
+    .networkClose = networkClose, /* 0.2.0 */
+    .connectNumOfNetworks = networkConnectNumOfNetworks, /* 0.2.0 */
+    .connectListNetworks = networkConnectListNetworks, /* 0.2.0 */
+    .connectNumOfDefinedNetworks = networkConnectNumOfDefinedNetworks, /* 0.2.0 */
+    .connectListDefinedNetworks = networkConnectListDefinedNetworks, /* 0.2.0 */
+    .connectListAllNetworks = networkConnectListAllNetworks, /* 0.10.2 */
     .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
     .networkLookupByName = networkLookupByName, /* 0.2.0 */
-    .networkCreateXML = networkCreate, /* 0.2.0 */
-    .networkDefineXML = networkDefine, /* 0.2.0 */
+    .networkCreateXML = networkCreateXML, /* 0.2.0 */
+    .networkDefineXML = networkDefineXML, /* 0.2.0 */
     .networkUndefine = networkUndefine, /* 0.2.0 */
     .networkUpdate = networkUpdate, /* 0.10.2 */
-    .networkCreate = networkStart, /* 0.2.0 */
+    .networkCreate = networkCreate, /* 0.2.0 */
     .networkDestroy = networkDestroy, /* 0.2.0 */
     .networkGetXMLDesc = networkGetXMLDesc, /* 0.2.0 */
     .networkGetBridgeName = networkGetBridgeName, /* 0.2.0 */
@@ -3617,9 +3617,9 @@ static virNetworkDriver networkDriver = {
 
 static virStateDriver networkStateDriver = {
     .name = "Network",
-    .stateInitialize  = networkStartup,
-    .stateCleanup = networkShutdown,
-    .stateReload = networkReload,
+    .stateInitialize  = networkStateInitialize,
+    .stateCleanup = networkStateCleanup,
+    .stateReload = networkStateReload,
 };
 
 int networkRegister(void) {

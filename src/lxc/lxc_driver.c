@@ -74,10 +74,10 @@
 
 #define LXC_NB_MEM_PARAM  3
 
-static int lxcStartup(bool privileged,
-                      virStateInhibitCallback callback,
-                      void *opaque);
-static int lxcShutdown(void);
+static int lxcStateInitialize(bool privileged,
+                              virStateInhibitCallback callback,
+                              void *opaque);
+static int lxcStateCleanup(void);
 virLXCDriverPtr lxc_driver = NULL;
 
 /* callbacks for nwfilter */
@@ -109,9 +109,9 @@ static virNWFilterCallbackDriver lxcCallbackDriver = {
 
 /* Functions */
 
-static virDrvOpenStatus lxcOpen(virConnectPtr conn,
-                                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                unsigned int flags)
+static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
+                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                       unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -153,7 +153,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int lxcClose(virConnectPtr conn)
+static int lxcConnectClose(virConnectPtr conn)
 {
     virLXCDriverPtr driver = conn->privateData;
 
@@ -166,27 +166,27 @@ static int lxcClose(virConnectPtr conn)
 }
 
 
-static int lxcIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int lxcIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int lxcIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
 
 
-static char *lxcGetCapabilities(virConnectPtr conn) {
+static char *lxcConnectGetCapabilities(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     char *xml;
 
@@ -355,7 +355,7 @@ cleanup:
     return ret;
 }
 
-static int lxcListDomains(virConnectPtr conn, int *ids, int nids) {
+static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -366,7 +366,7 @@ static int lxcListDomains(virConnectPtr conn, int *ids, int nids) {
     return n;
 }
 
-static int lxcNumDomains(virConnectPtr conn) {
+static int lxcConnectNumOfDomains(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -377,8 +377,8 @@ static int lxcNumDomains(virConnectPtr conn) {
     return n;
 }
 
-static int lxcListDefinedDomains(virConnectPtr conn,
-                                 char **const names, int nnames) {
+static int lxcConnectListDefinedDomains(virConnectPtr conn,
+                                        char **const names, int nnames) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -390,7 +390,7 @@ static int lxcListDefinedDomains(virConnectPtr conn,
 }
 
 
-static int lxcNumDefinedDomains(virConnectPtr conn) {
+static int lxcConnectNumOfDefinedDomains(virConnectPtr conn) {
     virLXCDriverPtr driver = conn->privateData;
     int n;
 
@@ -403,7 +403,7 @@ static int lxcNumDefinedDomains(virConnectPtr conn) {
 
 
 
-static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
+static virDomainPtr lxcDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     virLXCDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -608,7 +608,7 @@ cleanup:
     return ret;
 }
 
-static char *lxcGetOSType(virDomainPtr dom)
+static char *lxcDomainGetOSType(virDomainPtr dom)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -937,7 +937,7 @@ cleanup:
 }
 
 /**
- * lxcDomainStartWithFlags:
+ * lxcDomainCreateWithFlags:
  * @dom: domain to start
  * @flags: Must be 0 for now
  *
@@ -945,7 +945,7 @@ cleanup:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
+static int lxcDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -999,20 +999,20 @@ cleanup:
 }
 
 /**
- * lxcDomainStart:
+ * lxcDomainCreate:
  * @dom: domain to start
  *
  * Looks up domain and starts it.
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcDomainStart(virDomainPtr dom)
+static int lxcDomainCreate(virDomainPtr dom)
 {
-    return lxcDomainStartWithFlags(dom, 0);
+    return lxcDomainCreateWithFlags(dom, 0);
 }
 
 /**
- * lxcDomainCreateAndStart:
+ * lxcDomainCreateXML:
  * @conn: pointer to connection
  * @xml: XML definition of domain
  * @flags: Must be 0 for now
@@ -1022,9 +1022,9 @@ static int lxcDomainStart(virDomainPtr dom)
  * Returns 0 on success or -1 in case of error
  */
 static virDomainPtr
-lxcDomainCreateAndStart(virConnectPtr conn,
-                        const char *xml,
-                        unsigned int flags) {
+lxcDomainCreateXML(virConnectPtr conn,
+                   const char *xml,
+                   unsigned int flags) {
     virLXCDriverPtr driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
@@ -1190,10 +1190,10 @@ cleanup:
 
 
 static int
-lxcDomainEventRegister(virConnectPtr conn,
-                       virConnectDomainEventCallback callback,
-                       void *opaque,
-                       virFreeCallback freecb)
+lxcConnectDomainEventRegister(virConnectPtr conn,
+                              virConnectDomainEventCallback callback,
+                              void *opaque,
+                              virFreeCallback freecb)
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
@@ -1209,8 +1209,8 @@ lxcDomainEventRegister(virConnectPtr conn,
 
 
 static int
-lxcDomainEventDeregister(virConnectPtr conn,
-                         virConnectDomainEventCallback callback)
+lxcConnectDomainEventDeregister(virConnectPtr conn,
+                                virConnectDomainEventCallback callback)
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
@@ -1226,12 +1226,12 @@ lxcDomainEventDeregister(virConnectPtr conn,
 
 
 static int
-lxcDomainEventRegisterAny(virConnectPtr conn,
-                          virDomainPtr dom,
-                          int eventID,
-                          virConnectDomainEventGenericCallback callback,
-                          void *opaque,
-                          virFreeCallback freecb)
+lxcConnectDomainEventRegisterAny(virConnectPtr conn,
+                                 virDomainPtr dom,
+                                 int eventID,
+                                 virConnectDomainEventGenericCallback callback,
+                                 void *opaque,
+                                 virFreeCallback freecb)
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
@@ -1249,8 +1249,8 @@ lxcDomainEventRegisterAny(virConnectPtr conn,
 
 
 static int
-lxcDomainEventDeregisterAny(virConnectPtr conn,
-                            int callbackID)
+lxcConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                   int callbackID)
 {
     virLXCDriverPtr driver = conn->privateData;
     int ret;
@@ -1376,9 +1376,9 @@ error:
 }
 
 
-static int lxcStartup(bool privileged,
-                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+static int lxcStateInitialize(bool privileged,
+                              virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                              void *opaque ATTRIBUTE_UNUSED)
 {
     char *ld;
 
@@ -1475,7 +1475,7 @@ static int lxcStartup(bool privileged,
 
 cleanup:
     lxcDriverUnlock(lxc_driver);
-    lxcShutdown();
+    lxcStateCleanup();
     return -1;
 }
 
@@ -1494,13 +1494,13 @@ static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
 }
 
 /**
- * lxcReload:
+ * lxcStateReload:
  *
  * Function to restart the LXC driver, it will recheck the configuration
  * files and perform autostart
  */
 static int
-lxcReload(void) {
+lxcStateReload(void) {
     if (!lxc_driver)
         return 0;
 
@@ -1517,7 +1517,7 @@ lxcReload(void) {
     return 0;
 }
 
-static int lxcShutdown(void)
+static int lxcStateCleanup(void)
 {
     if (lxc_driver == NULL)
         return -1;
@@ -1547,7 +1547,7 @@ static int lxcShutdown(void)
 }
 
 
-static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
+static int lxcConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
 {
     struct utsname ver;
 
@@ -1595,8 +1595,8 @@ cleanup:
 }
 
 
-static char *lxcGetSchedulerType(virDomainPtr dom,
-                                 int *nparams)
+static char *lxcDomainGetSchedulerType(virDomainPtr dom,
+                                       int *nparams)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     char *ret = NULL;
@@ -1715,10 +1715,10 @@ cleanup:
 
 
 static int
-lxcSetSchedulerParametersFlags(virDomainPtr dom,
-                               virTypedParameterPtr params,
-                               int nparams,
-                               unsigned int flags)
+lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
+                                     virTypedParameterPtr params,
+                                     int nparams,
+                                     unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     int i;
@@ -1841,18 +1841,18 @@ cleanup:
 }
 
 static int
-lxcSetSchedulerParameters(virDomainPtr domain,
-                          virTypedParameterPtr params,
-                          int nparams)
+lxcDomainSetSchedulerParameters(virDomainPtr domain,
+                                virTypedParameterPtr params,
+                                int nparams)
 {
-    return lxcSetSchedulerParametersFlags(domain, params, nparams, 0);
+    return lxcDomainSetSchedulerParametersFlags(domain, params, nparams, 0);
 }
 
 static int
-lxcGetSchedulerParametersFlags(virDomainPtr dom,
-                               virTypedParameterPtr params,
-                               int *nparams,
-                               unsigned int flags)
+lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
+                                     virTypedParameterPtr params,
+                                     int *nparams,
+                                     unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -1954,11 +1954,11 @@ cleanup:
 }
 
 static int
-lxcGetSchedulerParameters(virDomainPtr domain,
-                          virTypedParameterPtr params,
-                          int *nparams)
+lxcDomainGetSchedulerParameters(virDomainPtr domain,
+                                virTypedParameterPtr params,
+                                int *nparams)
 {
-    return lxcGetSchedulerParametersFlags(domain, params, nparams, 0);
+    return lxcDomainGetSchedulerParametersFlags(domain, params, nparams, 0);
 }
 
 
@@ -2661,8 +2661,8 @@ cleanup:
 
 
 static int
-lxcListAllDomains(virConnectPtr conn,
-                  virDomainPtr **domains,
+lxcConnectListAllDomains(virConnectPtr conn,
+                         virDomainPtr **domains,
                   unsigned int flags)
 {
     virLXCDriverPtr driver = conn->privateData;
@@ -4323,9 +4323,9 @@ static int lxcDomainDetachDevice(virDomainPtr dom,
 }
 
 
-static int lxcDomainOpenNamespace(virDomainPtr dom,
-                                  int **fdlist,
-                                  unsigned int flags)
+static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
+                                     int **fdlist,
+                                     unsigned int flags)
 {
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -4372,7 +4372,7 @@ cleanup:
 
 
 static char *
-lxcGetSysinfo(virConnectPtr conn, unsigned int flags)
+lxcConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
     virLXCDriverPtr driver = conn->privateData;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4399,17 +4399,17 @@ lxcGetSysinfo(virConnectPtr conn, unsigned int flags)
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
     .name = LXC_DRIVER_NAME,
-    .connectOpen = lxcOpen, /* 0.4.2 */
-    .connectClose = lxcClose, /* 0.4.2 */
-    .connectGetVersion = lxcVersion, /* 0.4.6 */
+    .connectOpen = lxcConnectOpen, /* 0.4.2 */
+    .connectClose = lxcConnectClose, /* 0.4.2 */
+    .connectGetVersion = lxcConnectGetVersion, /* 0.4.6 */
     .connectGetHostname = virGetHostname, /* 0.6.3 */
-    .connectGetSysinfo = lxcGetSysinfo, /* 1.0.5 */
+    .connectGetSysinfo = lxcConnectGetSysinfo, /* 1.0.5 */
     .nodeGetInfo = nodeGetInfo, /* 0.6.5 */
-    .connectGetCapabilities = lxcGetCapabilities, /* 0.6.5 */
-    .connectListDomains = lxcListDomains, /* 0.4.2 */
-    .connectNumOfDomains = lxcNumDomains, /* 0.4.2 */
-    .connectListAllDomains = lxcListAllDomains, /* 0.9.13 */
-    .domainCreateXML = lxcDomainCreateAndStart, /* 0.4.4 */
+    .connectGetCapabilities = lxcConnectGetCapabilities, /* 0.6.5 */
+    .connectListDomains = lxcConnectListDomains, /* 0.4.2 */
+    .connectNumOfDomains = lxcConnectNumOfDomains, /* 0.4.2 */
+    .connectListAllDomains = lxcConnectListAllDomains, /* 0.9.13 */
+    .domainCreateXML = lxcDomainCreateXML, /* 0.4.4 */
     .domainLookupByID = lxcDomainLookupByID, /* 0.4.2 */
     .domainLookupByUUID = lxcDomainLookupByUUID, /* 0.4.2 */
     .domainLookupByName = lxcDomainLookupByName, /* 0.4.2 */
@@ -4417,7 +4417,7 @@ static virDriver lxcDriver = {
     .domainResume = lxcDomainResume, /* 0.7.2 */
     .domainDestroy = lxcDomainDestroy, /* 0.4.4 */
     .domainDestroyFlags = lxcDomainDestroyFlags, /* 0.9.4 */
-    .domainGetOSType = lxcGetOSType, /* 0.4.2 */
+    .domainGetOSType = lxcDomainGetOSType, /* 0.4.2 */
     .domainGetMaxMemory = lxcDomainGetMaxMemory, /* 0.7.2 */
     .domainSetMaxMemory = lxcDomainSetMaxMemory, /* 0.7.2 */
     .domainSetMemory = lxcDomainSetMemory, /* 0.7.2 */
@@ -4430,11 +4430,11 @@ static virDriver lxcDriver = {
     .domainGetSecurityLabel = lxcDomainGetSecurityLabel, /* 0.9.10 */
     .nodeGetSecurityModel = lxcNodeGetSecurityModel, /* 0.9.10 */
     .domainGetXMLDesc = lxcDomainGetXMLDesc, /* 0.4.2 */
-    .connectListDefinedDomains = lxcListDefinedDomains, /* 0.4.2 */
-    .connectNumOfDefinedDomains = lxcNumDefinedDomains, /* 0.4.2 */
-    .domainCreate = lxcDomainStart, /* 0.4.4 */
-    .domainCreateWithFlags = lxcDomainStartWithFlags, /* 0.8.2 */
-    .domainDefineXML = lxcDomainDefine, /* 0.4.2 */
+    .connectListDefinedDomains = lxcConnectListDefinedDomains, /* 0.4.2 */
+    .connectNumOfDefinedDomains = lxcConnectNumOfDefinedDomains, /* 0.4.2 */
+    .domainCreate = lxcDomainCreate, /* 0.4.4 */
+    .domainCreateWithFlags = lxcDomainCreateWithFlags, /* 0.8.2 */
+    .domainDefineXML = lxcDomainDefineXML, /* 0.4.2 */
     .domainUndefine = lxcDomainUndefine, /* 0.4.2 */
     .domainUndefineFlags = lxcDomainUndefineFlags, /* 0.9.4 */
     .domainAttachDevice = lxcDomainAttachDevice, /* 1.0.1 */
@@ -4444,28 +4444,28 @@ static virDriver lxcDriver = {
     .domainUpdateDeviceFlags = lxcDomainUpdateDeviceFlags, /* 1.0.1 */
     .domainGetAutostart = lxcDomainGetAutostart, /* 0.7.0 */
     .domainSetAutostart = lxcDomainSetAutostart, /* 0.7.0 */
-    .domainGetSchedulerType = lxcGetSchedulerType, /* 0.5.0 */
-    .domainGetSchedulerParameters = lxcGetSchedulerParameters, /* 0.5.0 */
-    .domainGetSchedulerParametersFlags = lxcGetSchedulerParametersFlags, /* 0.9.2 */
-    .domainSetSchedulerParameters = lxcSetSchedulerParameters, /* 0.5.0 */
-    .domainSetSchedulerParametersFlags = lxcSetSchedulerParametersFlags, /* 0.9.2 */
+    .domainGetSchedulerType = lxcDomainGetSchedulerType, /* 0.5.0 */
+    .domainGetSchedulerParameters = lxcDomainGetSchedulerParameters, /* 0.5.0 */
+    .domainGetSchedulerParametersFlags = lxcDomainGetSchedulerParametersFlags, /* 0.9.2 */
+    .domainSetSchedulerParameters = lxcDomainSetSchedulerParameters, /* 0.5.0 */
+    .domainSetSchedulerParametersFlags = lxcDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
     .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
     .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
     .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
-    .connectDomainEventRegister = lxcDomainEventRegister, /* 0.7.0 */
-    .connectDomainEventDeregister = lxcDomainEventDeregister, /* 0.7.0 */
-    .connectIsEncrypted = lxcIsEncrypted, /* 0.7.3 */
-    .connectIsSecure = lxcIsSecure, /* 0.7.3 */
+    .connectDomainEventRegister = lxcConnectDomainEventRegister, /* 0.7.0 */
+    .connectDomainEventDeregister = lxcConnectDomainEventDeregister, /* 0.7.0 */
+    .connectIsEncrypted = lxcConnectIsEncrypted, /* 0.7.3 */
+    .connectIsSecure = lxcConnectIsSecure, /* 0.7.3 */
     .domainIsActive = lxcDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = lxcDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = lxcDomainIsUpdated, /* 0.8.6 */
-    .connectDomainEventRegisterAny = lxcDomainEventRegisterAny, /* 0.8.0 */
-    .connectDomainEventDeregisterAny = lxcDomainEventDeregisterAny, /* 0.8.0 */
+    .connectDomainEventRegisterAny = lxcConnectDomainEventRegisterAny, /* 0.8.0 */
+    .connectDomainEventDeregisterAny = lxcConnectDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
-    .connectIsAlive = lxcIsAlive, /* 0.9.8 */
+    .connectIsAlive = lxcConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
     .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
@@ -4473,14 +4473,14 @@ static virDriver lxcDriver = {
     .domainShutdown = lxcDomainShutdown, /* 1.0.1 */
     .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */
     .domainReboot = lxcDomainReboot, /* 1.0.1 */
-    .domainLxcOpenNamespace = lxcDomainOpenNamespace, /* 1.0.2 */
+    .domainLxcOpenNamespace = lxcDomainLxcOpenNamespace, /* 1.0.2 */
 };
 
 static virStateDriver lxcStateDriver = {
     .name = LXC_DRIVER_NAME,
-    .stateInitialize = lxcStartup,
-    .stateCleanup = lxcShutdown,
-    .stateReload = lxcReload,
+    .stateInitialize = lxcStateInitialize,
+    .stateCleanup = lxcStateCleanup,
+    .stateReload = lxcStateReload,
 };
 
 int lxcRegister(void)

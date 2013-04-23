@@ -82,9 +82,9 @@ vmwareDomainXMLConfigInit(void)
 }
 
 static virDrvOpenStatus
-vmwareOpen(virConnectPtr conn,
-           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-           unsigned int flags)
+vmwareConnectOpen(virConnectPtr conn,
+                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                  unsigned int flags)
 {
     struct vmware_driver *driver;
     char * vmrun = NULL;
@@ -162,7 +162,7 @@ vmwareOpen(virConnectPtr conn,
 };
 
 static int
-vmwareClose(virConnectPtr conn)
+vmwareConnectClose(virConnectPtr conn)
 {
     struct vmware_driver *driver = conn->privateData;
 
@@ -174,13 +174,13 @@ vmwareClose(virConnectPtr conn)
 }
 
 static const char *
-vmwareGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+vmwareConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return "VMware";
 }
 
 static int
-vmwareGetVersion(virConnectPtr conn, unsigned long *version)
+vmwareConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     struct vmware_driver *driver = conn->privateData;
 
@@ -428,6 +428,19 @@ static int
 vmwareDomainShutdown(virDomainPtr dom)
 {
     return vmwareDomainShutdownFlags(dom, 0);
+}
+
+static int
+vmwareDomainDestroy(virDomainPtr dom)
+{
+    return vmwareDomainShutdownFlags(dom, 0);
+}
+
+static int
+vmwareDomainDestroyFlags(virDomainPtr dom,
+                         unsigned int flags)
+{
+    return vmwareDomainShutdownFlags(dom, flags);
 }
 
 static int
@@ -773,7 +786,7 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
 }
 
 static char *
-vmwareGetOSType(virDomainPtr dom)
+vmwareDomainGetOSType(virDomainPtr dom)
 {
     struct vmware_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -924,9 +937,9 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 }
 
 static char *
-vmwareDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
-                          const char *nativeConfig,
-                          unsigned int flags)
+vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
+                                 const char *nativeConfig,
+                                 unsigned int flags)
 {
     struct vmware_driver *driver = conn->privateData;
     virVMXContext ctx;
@@ -969,7 +982,7 @@ vmwareDomainObjListUpdateAll(virDomainObjListPtr doms, struct vmware_driver *dri
 }
 
 static int
-vmwareNumDefinedDomains(virConnectPtr conn)
+vmwareConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     struct vmware_driver *driver = conn->privateData;
     int n;
@@ -983,7 +996,7 @@ vmwareNumDefinedDomains(virConnectPtr conn)
 }
 
 static int
-vmwareNumDomains(virConnectPtr conn)
+vmwareConnectNumOfDomains(virConnectPtr conn)
 {
     struct vmware_driver *driver = conn->privateData;
     int n;
@@ -998,7 +1011,7 @@ vmwareNumDomains(virConnectPtr conn)
 
 
 static int
-vmwareListDomains(virConnectPtr conn, int *ids, int nids)
+vmwareConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     struct vmware_driver *driver = conn->privateData;
     int n;
@@ -1012,8 +1025,8 @@ vmwareListDomains(virConnectPtr conn, int *ids, int nids)
 }
 
 static int
-vmwareListDefinedDomains(virConnectPtr conn,
-                         char **const names, int nnames)
+vmwareConnectListDefinedDomains(virConnectPtr conn,
+                                char **const names, int nnames)
 {
     struct vmware_driver *driver = conn->privateData;
     int n;
@@ -1093,15 +1106,15 @@ vmwareDomainGetState(virDomainPtr dom,
 }
 
 static int
-vmwareIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+vmwareConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
 
 static int
-vmwareListAllDomains(virConnectPtr conn,
-                     virDomainPtr **domains,
-                     unsigned int flags)
+vmwareConnectListAllDomains(virConnectPtr conn,
+                            virDomainPtr **domains,
+                            unsigned int flags)
 {
     struct vmware_driver *driver = conn->privateData;
     int ret = -1;
@@ -1120,13 +1133,13 @@ vmwareListAllDomains(virConnectPtr conn,
 static virDriver vmwareDriver = {
     .no = VIR_DRV_VMWARE,
     .name = "VMWARE",
-    .connectOpen = vmwareOpen, /* 0.8.7 */
-    .connectClose = vmwareClose, /* 0.8.7 */
-    .connectGetType = vmwareGetType, /* 0.8.7 */
-    .connectGetVersion = vmwareGetVersion, /* 0.8.7 */
-    .connectListDomains = vmwareListDomains, /* 0.8.7 */
-    .connectNumOfDomains = vmwareNumDomains, /* 0.8.7 */
-    .connectListAllDomains = vmwareListAllDomains, /* 0.9.13 */
+    .connectOpen = vmwareConnectOpen, /* 0.8.7 */
+    .connectClose = vmwareConnectClose, /* 0.8.7 */
+    .connectGetType = vmwareConnectGetType, /* 0.8.7 */
+    .connectGetVersion = vmwareConnectGetVersion, /* 0.8.7 */
+    .connectListDomains = vmwareConnectListDomains, /* 0.8.7 */
+    .connectNumOfDomains = vmwareConnectNumOfDomains, /* 0.8.7 */
+    .connectListAllDomains = vmwareConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = vmwareDomainCreateXML, /* 0.8.7 */
     .domainLookupByID = vmwareDomainLookupByID, /* 0.8.7 */
     .domainLookupByUUID = vmwareDomainLookupByUUID, /* 0.8.7 */
@@ -1136,15 +1149,15 @@ static virDriver vmwareDriver = {
     .domainShutdown = vmwareDomainShutdown, /* 0.8.7 */
     .domainShutdownFlags = vmwareDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = vmwareDomainReboot, /* 0.8.7 */
-    .domainDestroy = vmwareDomainShutdown, /* 0.8.7 */
-    .domainDestroyFlags = vmwareDomainShutdownFlags, /* 0.9.4 */
-    .domainGetOSType = vmwareGetOSType, /* 0.8.7 */
+    .domainDestroy = vmwareDomainDestroy, /* 0.8.7 */
+    .domainDestroyFlags = vmwareDomainDestroyFlags, /* 0.9.4 */
+    .domainGetOSType = vmwareDomainGetOSType, /* 0.8.7 */
     .domainGetInfo = vmwareDomainGetInfo, /* 0.8.7 */
     .domainGetState = vmwareDomainGetState, /* 0.9.2 */
     .domainGetXMLDesc = vmwareDomainGetXMLDesc, /* 0.8.7 */
-    .connectDomainXMLFromNative = vmwareDomainXMLFromNative, /* 0.9.11 */
-    .connectListDefinedDomains = vmwareListDefinedDomains, /* 0.8.7 */
-    .connectNumOfDefinedDomains = vmwareNumDefinedDomains, /* 0.8.7 */
+    .connectDomainXMLFromNative = vmwareConnectDomainXMLFromNative, /* 0.9.11 */
+    .connectListDefinedDomains = vmwareConnectListDefinedDomains, /* 0.8.7 */
+    .connectNumOfDefinedDomains = vmwareConnectNumOfDefinedDomains, /* 0.8.7 */
     .domainCreate = vmwareDomainCreate, /* 0.8.7 */
     .domainCreateWithFlags = vmwareDomainCreateWithFlags, /* 0.8.7 */
     .domainDefineXML = vmwareDomainDefineXML, /* 0.8.7 */
@@ -1152,7 +1165,7 @@ static virDriver vmwareDriver = {
     .domainUndefineFlags = vmwareDomainUndefineFlags, /* 0.9.4 */
     .domainIsActive = vmwareDomainIsActive, /* 0.8.7 */
     .domainIsPersistent = vmwareDomainIsPersistent, /* 0.8.7 */
-    .connectIsAlive = vmwareIsAlive, /* 0.9.8 */
+    .connectIsAlive = vmwareConnectIsAlive, /* 0.9.8 */
 };
 
 int

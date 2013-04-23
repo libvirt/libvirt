@@ -1426,7 +1426,15 @@ elsif ($mode eq "client") {
         # print function
         print "\n";
         print "static $single_ret_type\n";
-        print "$structprefix$call->{ProcName}(";
+        if ($structprefix eq "remote") {
+            print "$structprefix$call->{ProcName}(";
+        } else {
+            my $proc = $call->{ProcName};
+            my $extra = $structprefix;
+            $extra =~ s/^(\w)/uc $1/e;
+            $proc =~ s/^(Domain)(.*)/$1 . $extra . $2/e;
+            print "remote$proc(";
+        }
 
         print join(", ", @args_list);
 

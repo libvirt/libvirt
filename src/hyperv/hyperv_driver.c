@@ -66,7 +66,7 @@ hypervFreePrivate(hypervPrivate **priv)
 
 
 static virDrvOpenStatus
-hypervOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
+hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     char *plus;
@@ -215,7 +215,7 @@ hypervOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 
 
 static int
-hypervClose(virConnectPtr conn)
+hypervConnectClose(virConnectPtr conn)
 {
     hypervPrivate *priv = conn->privateData;
 
@@ -229,7 +229,7 @@ hypervClose(virConnectPtr conn)
 
 
 static const char *
-hypervGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+hypervConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return "Hyper-V";
 }
@@ -237,7 +237,7 @@ hypervGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static char *
-hypervGetHostname(virConnectPtr conn)
+hypervConnectGetHostname(virConnectPtr conn)
 {
     char *hostname = NULL;
     hypervPrivate *priv = conn->privateData;
@@ -371,7 +371,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 
 
 static int
-hypervListDomains(virConnectPtr conn, int *ids, int maxids)
+hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
@@ -415,7 +415,7 @@ hypervListDomains(virConnectPtr conn, int *ids, int maxids)
 
 
 static int
-hypervNumberOfDomains(virConnectPtr conn)
+hypervConnectNumOfDomains(virConnectPtr conn)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
@@ -954,7 +954,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
 
 static int
-hypervListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
+hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
@@ -1014,7 +1014,7 @@ hypervListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 
 
 static int
-hypervNumberOfDefinedDomains(virConnectPtr conn)
+hypervConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
@@ -1088,7 +1088,7 @@ hypervDomainCreate(virDomainPtr domain)
 
 
 static int
-hypervIsEncrypted(virConnectPtr conn)
+hypervConnectIsEncrypted(virConnectPtr conn)
 {
     hypervPrivate *priv = conn->privateData;
 
@@ -1102,7 +1102,7 @@ hypervIsEncrypted(virConnectPtr conn)
 
 
 static int
-hypervIsSecure(virConnectPtr conn)
+hypervConnectIsSecure(virConnectPtr conn)
 {
     hypervPrivate *priv = conn->privateData;
 
@@ -1116,7 +1116,7 @@ hypervIsSecure(virConnectPtr conn)
 
 
 static int
-hypervIsAlive(virConnectPtr conn)
+hypervConnectIsAlive(virConnectPtr conn)
 {
     hypervPrivate *priv = conn->privateData;
 
@@ -1258,9 +1258,9 @@ hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 
 #define MATCH(FLAG) (flags & (FLAG))
 static int
-hypervListAllDomains(virConnectPtr conn,
-                     virDomainPtr **domains,
-                     unsigned int flags)
+hypervConnectListAllDomains(virConnectPtr conn,
+                            virDomainPtr **domains,
+                            unsigned int flags)
 {
     hypervPrivate *priv = conn->privateData;
     virBuffer query = VIR_BUFFER_INITIALIZER;
@@ -1398,14 +1398,14 @@ no_memory:
 static virDriver hypervDriver = {
     .no = VIR_DRV_HYPERV,
     .name = "Hyper-V",
-    .connectOpen = hypervOpen, /* 0.9.5 */
-    .connectClose = hypervClose, /* 0.9.5 */
-    .connectGetType = hypervGetType, /* 0.9.5 */
-    .connectGetHostname = hypervGetHostname, /* 0.9.5 */
+    .connectOpen = hypervConnectOpen, /* 0.9.5 */
+    .connectClose = hypervConnectClose, /* 0.9.5 */
+    .connectGetType = hypervConnectGetType, /* 0.9.5 */
+    .connectGetHostname = hypervConnectGetHostname, /* 0.9.5 */
     .nodeGetInfo = hypervNodeGetInfo, /* 0.9.5 */
-    .connectListDomains = hypervListDomains, /* 0.9.5 */
-    .connectNumOfDomains = hypervNumberOfDomains, /* 0.9.5 */
-    .connectListAllDomains = hypervListAllDomains, /* 0.10.2 */
+    .connectListDomains = hypervConnectListDomains, /* 0.9.5 */
+    .connectNumOfDomains = hypervConnectNumOfDomains, /* 0.9.5 */
+    .connectListAllDomains = hypervConnectListAllDomains, /* 0.10.2 */
     .domainLookupByID = hypervDomainLookupByID, /* 0.9.5 */
     .domainLookupByUUID = hypervDomainLookupByUUID, /* 0.9.5 */
     .domainLookupByName = hypervDomainLookupByName, /* 0.9.5 */
@@ -1417,19 +1417,19 @@ static virDriver hypervDriver = {
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
     .domainGetXMLDesc = hypervDomainGetXMLDesc, /* 0.9.5 */
-    .connectListDefinedDomains = hypervListDefinedDomains, /* 0.9.5 */
-    .connectNumOfDefinedDomains = hypervNumberOfDefinedDomains, /* 0.9.5 */
+    .connectListDefinedDomains = hypervConnectListDefinedDomains, /* 0.9.5 */
+    .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
-    .connectIsEncrypted = hypervIsEncrypted, /* 0.9.5 */
-    .connectIsSecure = hypervIsSecure, /* 0.9.5 */
+    .connectIsEncrypted = hypervConnectIsEncrypted, /* 0.9.5 */
+    .connectIsSecure = hypervConnectIsSecure, /* 0.9.5 */
     .domainIsActive = hypervDomainIsActive, /* 0.9.5 */
     .domainIsPersistent = hypervDomainIsPersistent, /* 0.9.5 */
     .domainIsUpdated = hypervDomainIsUpdated, /* 0.9.5 */
     .domainManagedSave = hypervDomainManagedSave, /* 0.9.5 */
     .domainHasManagedSaveImage = hypervDomainHasManagedSaveImage, /* 0.9.5 */
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
-    .connectIsAlive = hypervIsAlive, /* 0.9.8 */
+    .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
 };
 
 

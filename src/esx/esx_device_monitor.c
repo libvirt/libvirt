@@ -40,9 +40,9 @@
 
 
 static virDrvOpenStatus
-esxDeviceOpen(virConnectPtr conn,
-              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              unsigned int flags)
+esxNodeDeviceOpen(virConnectPtr conn,
+                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                  unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -58,7 +58,7 @@ esxDeviceOpen(virConnectPtr conn,
 
 
 static int
-esxDeviceClose(virConnectPtr conn)
+esxNodeDeviceClose(virConnectPtr conn)
 {
     conn->nodeDevicePrivateData = NULL;
 
@@ -69,8 +69,8 @@ esxDeviceClose(virConnectPtr conn)
 
 static virNodeDeviceDriver esxNodeDeviceDriver = {
     .name = "ESX",
-    .nodeDeviceOpen = esxDeviceOpen, /* 0.7.6 */
-    .nodeDeviceClose = esxDeviceClose, /* 0.7.6 */
+    .nodeDeviceOpen = esxNodeDeviceOpen, /* 0.7.6 */
+    .nodeDeviceClose = esxNodeDeviceClose, /* 0.7.6 */
 };
 
 

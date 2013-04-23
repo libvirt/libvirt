@@ -37,9 +37,9 @@
 
 
 static virDrvOpenStatus
-hypervDeviceOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 unsigned int flags)
+hypervNodeDeviceOpen(virConnectPtr conn,
+                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                     unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -55,7 +55,7 @@ hypervDeviceOpen(virConnectPtr conn,
 
 
 static int
-hypervDeviceClose(virConnectPtr conn)
+hypervNodeDeviceClose(virConnectPtr conn)
 {
     conn->nodeDevicePrivateData = NULL;
 
@@ -66,8 +66,8 @@ hypervDeviceClose(virConnectPtr conn)
 
 static virNodeDeviceDriver hypervNodeDeviceDriver = {
     "Hyper-V",
-    .nodeDeviceOpen = hypervDeviceOpen, /* 0.9.5 */
-    .nodeDeviceClose = hypervDeviceClose, /* 0.9.5 */
+    .nodeDeviceOpen = hypervNodeDeviceOpen, /* 0.9.5 */
+    .nodeDeviceClose = hypervNodeDeviceClose, /* 0.9.5 */
 };
 
 

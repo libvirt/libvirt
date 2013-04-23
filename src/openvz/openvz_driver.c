@@ -68,7 +68,7 @@
 #define OPENVZ_NB_MEM_PARAM 3
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
-static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type);
+static int openvzConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 static int openvzDomainGetMaxVcpus(virDomainPtr dom);
 static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
                                         unsigned int nvcpus);
@@ -335,7 +335,7 @@ cleanup:
     return dom;
 }
 
-static int openvzGetVersion(virConnectPtr conn, unsigned long *version) {
+static int openvzConnectGetVersion(virConnectPtr conn, unsigned long *version) {
     struct  openvz_driver *driver = conn->privateData;
     openvzDriverLock(driver);
     *version = driver->version;
@@ -343,7 +343,7 @@ static int openvzGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
-static char *openvzGetOSType(virDomainPtr dom)
+static char *openvzDomainGetOSType(virDomainPtr dom)
 {
     struct  openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -710,6 +710,18 @@ static int
 openvzDomainShutdown(virDomainPtr dom)
 {
     return openvzDomainShutdownFlags(dom, 0);
+}
+
+static int
+openvzDomainDestroy(virDomainPtr dom)
+{
+    return openvzDomainShutdownFlags(dom, 0);
+}
+
+static int
+openvzDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
+{
+    return openvzDomainShutdownFlags(dom, flags);
 }
 
 static int openvzDomainReboot(virDomainPtr dom,
@@ -1326,8 +1338,8 @@ cleanup:
     return ret;
 }
 
-static int openvzGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             const char *type)
+static int openvzConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    const char *type)
 {
     if (type == NULL || STRCASEEQ(type, "openvz"))
         return 1028; /* OpenVZ has no limitation */
@@ -1347,7 +1359,7 @@ openvzDomainGetVcpusFlags(virDomainPtr dom ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    return openvzGetMaxVCPUs(NULL, "openvz");
+    return openvzConnectGetMaxVcpus(NULL, "openvz");
 }
 
 static int openvzDomainGetMaxVcpus(virDomainPtr dom)
@@ -1428,9 +1440,9 @@ openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
     return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
-static virDrvOpenStatus openvzOpen(virConnectPtr conn,
-                                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                   unsigned int flags)
+static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
+                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                          unsigned int flags)
 {
     struct openvz_driver *driver;
 
@@ -1510,7 +1522,7 @@ cleanup:
     return VIR_DRV_OPEN_ERROR;
 };
 
-static int openvzClose(virConnectPtr conn) {
+static int openvzConnectClose(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
 
     openvzFreeDriver(driver);
@@ -1519,27 +1531,27 @@ static int openvzClose(virConnectPtr conn) {
     return 0;
 }
 
-static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static const char *openvzConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "OpenVZ";
 }
 
-static int openvzIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int openvzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
     /* Encryption is not relevant / applicable to way we talk to openvz */
     return 0;
 }
 
-static int openvzIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static int openvzConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
     /* We run CLI tools directly so this is secure */
     return 1;
 }
 
 static int
-openvzIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+openvzConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
 
-static char *openvzGetCapabilities(virConnectPtr conn) {
+static char *openvzConnectGetCapabilities(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
     char *ret;
 
@@ -1550,8 +1562,8 @@ static char *openvzGetCapabilities(virConnectPtr conn) {
     return ret;
 }
 
-static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             int *ids, int nids) {
+static int openvzConnectListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    int *ids, int nids) {
     int got = 0;
     int veid;
     int outfd = -1;
@@ -1593,7 +1605,7 @@ cleanup:
     return rc;
 }
 
-static int openvzNumDomains(virConnectPtr conn) {
+static int openvzConnectNumOfDomains(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
     int n;
 
@@ -1604,8 +1616,8 @@ static int openvzNumDomains(virConnectPtr conn) {
     return n;
 }
 
-static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    char **const names, int nnames) {
+static int openvzConnectListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                           char **const names, int nnames) {
     int got = 0;
     int veid, outfd = -1, ret;
     int rc = -1;
@@ -1707,7 +1719,7 @@ Version: 2.2
     return 0;
 }
 
-static int openvzNumDefinedDomains(virConnectPtr conn) {
+static int openvzConnectNumOfDefinedDomains(virConnectPtr conn) {
     struct openvz_driver *driver =  conn->privateData;
     int n;
 
@@ -2146,9 +2158,9 @@ cleanup:
 }
 
 static int
-openvzListAllDomains(virConnectPtr conn,
-                     virDomainPtr **domains,
-                     unsigned int flags)
+openvzConnectListAllDomains(virConnectPtr conn,
+                            virDomainPtr **domains,
+                            unsigned int flags)
 {
     struct openvz_driver *driver = conn->privateData;
     int ret = -1;
@@ -2166,22 +2178,22 @@ openvzListAllDomains(virConnectPtr conn,
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
     .name = "OPENVZ",
-    .connectOpen = openvzOpen, /* 0.3.1 */
-    .connectClose = openvzClose, /* 0.3.1 */
-    .connectGetType = openvzGetType, /* 0.3.1 */
-    .connectGetVersion = openvzGetVersion, /* 0.5.0 */
+    .connectOpen = openvzConnectOpen, /* 0.3.1 */
+    .connectClose = openvzConnectClose, /* 0.3.1 */
+    .connectGetType = openvzConnectGetType, /* 0.3.1 */
+    .connectGetVersion = openvzConnectGetVersion, /* 0.5.0 */
     .connectGetHostname = virGetHostname, /* 0.9.12 */
-    .connectGetMaxVcpus = openvzGetMaxVCPUs, /* 0.4.6 */
+    .connectGetMaxVcpus = openvzConnectGetMaxVcpus, /* 0.4.6 */
     .nodeGetInfo = nodeGetInfo, /* 0.3.2 */
     .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.12 */
     .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.12 */
     .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.9.12 */
     .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.9.12 */
     .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
-    .connectGetCapabilities = openvzGetCapabilities, /* 0.4.6 */
-    .connectListDomains = openvzListDomains, /* 0.3.1 */
-    .connectNumOfDomains = openvzNumDomains, /* 0.3.1 */
-    .connectListAllDomains = openvzListAllDomains, /* 0.9.13 */
+    .connectGetCapabilities = openvzConnectGetCapabilities, /* 0.4.6 */
+    .connectListDomains = openvzConnectListDomains, /* 0.3.1 */
+    .connectNumOfDomains = openvzConnectNumOfDomains, /* 0.3.1 */
+    .connectListAllDomains = openvzConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = openvzDomainCreateXML, /* 0.3.3 */
     .domainLookupByID = openvzDomainLookupByID, /* 0.3.1 */
     .domainLookupByUUID = openvzDomainLookupByUUID, /* 0.3.1 */
@@ -2191,9 +2203,9 @@ static virDriver openvzDriver = {
     .domainShutdown = openvzDomainShutdown, /* 0.3.1 */
     .domainShutdownFlags = openvzDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = openvzDomainReboot, /* 0.3.1 */
-    .domainDestroy = openvzDomainShutdown, /* 0.3.1 */
-    .domainDestroyFlags = openvzDomainShutdownFlags, /* 0.9.4 */
-    .domainGetOSType = openvzGetOSType, /* 0.3.1 */
+    .domainDestroy = openvzDomainDestroy, /* 0.3.1 */
+    .domainDestroyFlags = openvzDomainDestroyFlags, /* 0.9.4 */
+    .domainGetOSType = openvzDomainGetOSType, /* 0.3.1 */
     .domainGetMemoryParameters = openvzDomainGetMemoryParameters, /* 0.9.12 */
     .domainSetMemoryParameters = openvzDomainSetMemoryParameters, /* 0.9.12 */
     .domainGetInfo = openvzDomainGetInfo, /* 0.3.1 */
@@ -2203,8 +2215,8 @@ static virDriver openvzDriver = {
     .domainGetVcpusFlags = openvzDomainGetVcpusFlags, /* 0.8.5 */
     .domainGetMaxVcpus = openvzDomainGetMaxVcpus, /* 0.4.6 */
     .domainGetXMLDesc = openvzDomainGetXMLDesc, /* 0.4.6 */
-    .connectListDefinedDomains = openvzListDefinedDomains, /* 0.3.1 */
-    .connectNumOfDefinedDomains = openvzNumDefinedDomains, /* 0.3.1 */
+    .connectListDefinedDomains = openvzConnectListDefinedDomains, /* 0.3.1 */
+    .connectNumOfDefinedDomains = openvzConnectNumOfDefinedDomains, /* 0.3.1 */
     .domainCreate = openvzDomainCreate, /* 0.3.1 */
     .domainCreateWithFlags = openvzDomainCreateWithFlags, /* 0.8.2 */
     .domainDefineXML = openvzDomainDefineXML, /* 0.3.3 */
@@ -2213,12 +2225,12 @@ static virDriver openvzDriver = {
     .domainGetAutostart = openvzDomainGetAutostart, /* 0.4.6 */
     .domainSetAutostart = openvzDomainSetAutostart, /* 0.4.6 */
     .domainInterfaceStats = openvzDomainInterfaceStats, /* 0.9.12 */
-    .connectIsEncrypted = openvzIsEncrypted, /* 0.7.3 */
-    .connectIsSecure = openvzIsSecure, /* 0.7.3 */
+    .connectIsEncrypted = openvzConnectIsEncrypted, /* 0.7.3 */
+    .connectIsSecure = openvzConnectIsSecure, /* 0.7.3 */
     .domainIsActive = openvzDomainIsActive, /* 0.7.3 */
     .domainIsPersistent = openvzDomainIsPersistent, /* 0.7.3 */
     .domainIsUpdated = openvzDomainIsUpdated, /* 0.8.6 */
-    .connectIsAlive = openvzIsAlive, /* 0.9.8 */
+    .connectIsAlive = openvzConnectIsAlive, /* 0.9.8 */
     .domainUpdateDeviceFlags = openvzDomainUpdateDeviceFlags, /* 0.9.13 */
     .domainGetHostname = openvzDomainGetHostname, /* 0.10.0 */
 };

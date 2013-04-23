@@ -437,8 +437,56 @@ check-drivername:
 
 EXTRA_DIST += check-drivername.pl
 
+DRIVER_SOURCE_FILES = \
+	esx/esx_device_monitor.c \
+	esx/esx_driver.c \
+	esx/esx_interface_driver.c \
+	esx/esx_network_driver.c \
+	esx/esx_nwfilter_driver.c \
+	esx/esx_secret_driver.c \
+	esx/esx_storage_driver.c \
+	hyperv/hyperv_device_monitor.c \
+	hyperv/hyperv_driver.c \
+	hyperv/hyperv_interface_driver.c \
+	hyperv/hyperv_network_driver.c \
+	hyperv/hyperv_nwfilter_driver.c \
+	hyperv/hyperv_secret_driver.c \
+	hyperv/hyperv_storage_driver.c \
+	interface/interface_backend_netcf.c \
+	interface/interface_backend_udev.c \
+	libxl/libxl_driver.c \
+	lxc/lxc_driver.c \
+	network/bridge_driver.c \
+	node_device/node_device_hal.c \
+	node_device/node_device_udev.c \
+	nwfilter/nwfilter_driver.c \
+	openvz/openvz_driver.c \
+	parallels/parallels_driver.c \
+	parallels/parallels_network.c \
+	parallels/parallels_storage.c \
+	phyp/phyp_driver.c \
+	qemu/qemu_driver.c \
+	remote/remote_driver.c \
+	secret/secret_driver.c \
+	storage/storage_driver.c \
+	test/test_driver.c \
+	uml/uml_driver.c \
+	vbox/vbox_driver.c \
+	vbox/vbox_tmpl.c \
+	vmware/vmware_driver.c \
+	xen/xen_driver.c \
+	xenapi/xenapi_driver.c \
+	$(NULL)
+
+
+check-driverimpls:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
+		$(DRIVER_SOURCE_FILES)
+
+EXTRA_DIST += check-driverimpls.pl
+
 check-local: check-protocol check-symfile check-symsorting \
-	check-drivername
+	check-drivername check-driverimpls
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc

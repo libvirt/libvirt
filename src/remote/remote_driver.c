@@ -158,9 +158,9 @@ static char *get_transport_from_scheme(char *scheme);
 
 #ifdef WITH_LIBVIRTD
 static int
-remoteStartup(bool privileged ATTRIBUTE_UNUSED,
-              virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-              void *opaque ATTRIBUTE_UNUSED)
+remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
 {
     /* Mark that we're inside the daemon so we can avoid
      * re-entering ourselves
@@ -936,9 +936,9 @@ remoteOpenSecondaryDriver(virConnectPtr conn,
 }
 
 static virDrvOpenStatus
-remoteOpen(virConnectPtr conn,
-           virConnectAuthPtr auth,
-           unsigned int flags)
+remoteConnectOpen(virConnectPtr conn,
+                  virConnectAuthPtr auth,
+                  unsigned int flags)
 {
     struct private_data *priv;
     int ret, rflags = 0;
@@ -1058,7 +1058,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
 }
 
 static int
-remoteClose(virConnectPtr conn)
+remoteConnectClose(virConnectPtr conn)
 {
     int ret = 0;
     struct private_data *priv = conn->privateData;
@@ -5049,7 +5049,7 @@ done:
 /*----------------------------------------------------------------------*/
 
 static int
-remoteQemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
+remoteDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
                                char **result, unsigned int flags)
 {
     int rv = -1;
@@ -5472,7 +5472,7 @@ done:
 
 
 static int
-remoteSetKeepAlive(virConnectPtr conn, int interval, unsigned int count)
+remoteConnectSetKeepAlive(virConnectPtr conn, int interval, unsigned int count)
 {
     struct private_data *priv = conn->privateData;
     int ret = -1;
@@ -5504,7 +5504,7 @@ cleanup:
 
 
 static int
-remoteIsAlive(virConnectPtr conn)
+remoteConnectIsAlive(virConnectPtr conn)
 {
     struct private_data *priv = conn->privateData;
     bool ret;
@@ -6120,8 +6120,8 @@ unsigned long remoteVersion(void)
 static virDriver remote_driver = {
     .no = VIR_DRV_REMOTE,
     .name = "remote",
-    .connectOpen = remoteOpen, /* 0.3.0 */
-    .connectClose = remoteClose, /* 0.3.0 */
+    .connectOpen = remoteConnectOpen, /* 0.3.0 */
+    .connectClose = remoteConnectClose, /* 0.3.0 */
     .connectSupportsFeature = remoteConnectSupportsFeature, /* 0.3.0 */
     .connectGetType = remoteConnectGetType, /* 0.3.0 */
     .connectGetVersion = remoteConnectGetVersion, /* 0.3.0 */
@@ -6264,9 +6264,9 @@ static virDriver remote_driver = {
     .domainSnapshotIsCurrent = remoteDomainSnapshotIsCurrent, /* 0.9.13 */
     .domainSnapshotHasMetadata = remoteDomainSnapshotHasMetadata, /* 0.9.13 */
     .domainSnapshotDelete = remoteDomainSnapshotDelete, /* 0.8.0 */
-    .domainQemuMonitorCommand = remoteQemuDomainMonitorCommand, /* 0.8.3 */
-    .domainQemuAttach = qemuDomainAttach, /* 0.9.4 */
-    .domainQemuAgentCommand = qemuDomainAgentCommand, /* 0.10.0 */
+    .domainQemuMonitorCommand = remoteDomainQemuMonitorCommand, /* 0.8.3 */
+    .domainQemuAttach = remoteDomainQemuAttach, /* 0.9.4 */
+    .domainQemuAgentCommand = remoteDomainQemuAgentCommand, /* 0.10.0 */
     .domainOpenConsole = remoteDomainOpenConsole, /* 0.8.6 */
     .domainOpenChannel = remoteDomainOpenChannel, /* 1.0.2 */
     .domainOpenGraphics = remoteDomainOpenGraphics, /* 0.9.7 */
@@ -6285,8 +6285,8 @@ static virDriver remote_driver = {
     .domainBlockPull = remoteDomainBlockPull, /* 0.9.4 */
     .domainBlockRebase = remoteDomainBlockRebase, /* 0.9.10 */
     .domainBlockCommit = remoteDomainBlockCommit, /* 0.10.2 */
-    .connectSetKeepAlive = remoteSetKeepAlive, /* 0.9.8 */
-    .connectIsAlive = remoteIsAlive, /* 0.9.8 */
+    .connectSetKeepAlive = remoteConnectSetKeepAlive, /* 0.9.8 */
+    .connectIsAlive = remoteConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = remoteNodeSuspendForDuration, /* 0.9.8 */
     .domainSetBlockIoTune = remoteDomainSetBlockIoTune, /* 0.9.8 */
     .domainGetBlockIoTune = remoteDomainGetBlockIoTune, /* 0.9.8 */
@@ -6449,7 +6449,7 @@ static virNWFilterDriver nwfilter_driver = {
 #ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
     .name = "Remote",
-    .stateInitialize = remoteStartup,
+    .stateInitialize = remoteStateInitialize,
 };
 #endif
 

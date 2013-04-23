@@ -1095,7 +1095,7 @@ libxlReconnectDomains(libxlDriverPrivatePtr driver)
 }
 
 static int
-libxlShutdown(void)
+libxlStateCleanup(void)
 {
     if (!libxl_driver)
         return -1;
@@ -1128,9 +1128,9 @@ libxlShutdown(void)
 }
 
 static int
-libxlStartup(bool privileged,
-             virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-             void *opaque ATTRIBUTE_UNUSED)
+libxlStateInitialize(bool privileged,
+                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                     void *opaque ATTRIBUTE_UNUSED)
 {
     const libxl_version_info *ver_info;
     char *log_file = NULL;
@@ -1308,12 +1308,12 @@ fail:
     VIR_FREE(log_file);
     if (libxl_driver)
         libxlDriverUnlock(libxl_driver);
-    libxlShutdown();
+    libxlStateCleanup();
     return ret;
 }
 
 static int
-libxlReload(void)
+libxlStateReload(void)
 {
     if (!libxl_driver)
         return 0;
@@ -1338,9 +1338,9 @@ libxlReload(void)
 
 
 static virDrvOpenStatus
-libxlOpen(virConnectPtr conn,
-          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-          unsigned int flags)
+libxlConnectOpen(virConnectPtr conn,
+                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                 unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -1384,20 +1384,20 @@ libxlOpen(virConnectPtr conn,
 };
 
 static int
-libxlClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+libxlConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     conn->privateData = NULL;
     return 0;
 }
 
 static const char *
-libxlGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+libxlConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return "xenlight";
 }
 
 static int
-libxlGetVersion(virConnectPtr conn, unsigned long *version)
+libxlConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
 
@@ -1408,7 +1408,7 @@ libxlGetVersion(virConnectPtr conn, unsigned long *version)
 }
 
 static int
-libxlGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 {
     int ret;
     libxlDriverPrivatePtr driver = conn->privateData;
@@ -1429,7 +1429,7 @@ libxlNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 }
 
 static char *
-libxlGetCapabilities(virConnectPtr conn)
+libxlConnectGetCapabilities(virConnectPtr conn)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     char *xml;
@@ -1443,7 +1443,7 @@ libxlGetCapabilities(virConnectPtr conn)
 }
 
 static int
-libxlListDomains(virConnectPtr conn, int *ids, int nids)
+libxlConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int n;
@@ -1456,7 +1456,7 @@ libxlListDomains(virConnectPtr conn, int *ids, int nids)
 }
 
 static int
-libxlNumDomains(virConnectPtr conn)
+libxlConnectNumOfDomains(virConnectPtr conn)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int n;
@@ -2585,7 +2585,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto cleanup;
     }
 
-    if ((max = libxlGetMaxVcpus(dom->conn, NULL)) < 0) {
+    if ((max = libxlConnectGetMaxVcpus(dom->conn, NULL)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("could not determine max vcpus for the domain"));
         goto cleanup;
@@ -2889,9 +2889,9 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 }
 
 static char *
-libxlDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
-                         const char * nativeConfig,
-                         unsigned int flags)
+libxlConnectDomainXMLFromNative(virConnectPtr conn, const char * nativeFormat,
+                                const char * nativeConfig,
+                                unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     const libxl_version_info *ver_info;
@@ -2931,9 +2931,9 @@ cleanup:
 
 #define MAX_CONFIG_SIZE (1024 * 65)
 static char *
-libxlDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
-                       const char * domainXml,
-                       unsigned int flags)
+libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
+                              const char * domainXml,
+                              unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     const libxl_version_info *ver_info;
@@ -2981,8 +2981,8 @@ cleanup:
 }
 
 static int
-libxlListDefinedDomains(virConnectPtr conn,
-                        char **const names, int nnames)
+libxlConnectListDefinedDomains(virConnectPtr conn,
+                               char **const names, int nnames)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int n;
@@ -2994,7 +2994,7 @@ libxlListDefinedDomains(virConnectPtr conn,
 }
 
 static int
-libxlNumDefinedDomains(virConnectPtr conn)
+libxlConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int n;
@@ -3715,9 +3715,9 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
 }
 
 static int
-libxlDomainEventRegister(virConnectPtr conn,
-                         virConnectDomainEventCallback callback, void *opaque,
-                         virFreeCallback freecb)
+libxlConnectDomainEventRegister(virConnectPtr conn,
+                                virConnectDomainEventCallback callback, void *opaque,
+                                virFreeCallback freecb)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int ret;
@@ -3733,8 +3733,8 @@ libxlDomainEventRegister(virConnectPtr conn,
 
 
 static int
-libxlDomainEventDeregister(virConnectPtr conn,
-                          virConnectDomainEventCallback callback)
+libxlConnectDomainEventDeregister(virConnectPtr conn,
+                                  virConnectDomainEventCallback callback)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int ret;
@@ -4132,9 +4132,9 @@ cleanup:
 }
 
 static int
-libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
-                            virConnectDomainEventGenericCallback callback,
-                            void *opaque, virFreeCallback freecb)
+libxlConnectDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
+                                   virConnectDomainEventGenericCallback callback,
+                                   void *opaque, virFreeCallback freecb)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int ret;
@@ -4152,7 +4152,7 @@ libxlDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
 
 
 static int
-libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
+libxlConnectDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int ret;
@@ -4168,15 +4168,15 @@ libxlDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 
 
 static int
-libxlIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+libxlConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
 }
 
 static int
-libxlListAllDomains(virConnectPtr conn,
-                    virDomainPtr **domains,
-                    unsigned int flags)
+libxlConnectListAllDomains(virConnectPtr conn,
+                           virDomainPtr **domains,
+                           unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     int ret = -1;
@@ -4195,17 +4195,17 @@ libxlListAllDomains(virConnectPtr conn,
 static virDriver libxlDriver = {
     .no = VIR_DRV_LIBXL,
     .name = "xenlight",
-    .connectOpen = libxlOpen, /* 0.9.0 */
-    .connectClose = libxlClose, /* 0.9.0 */
-    .connectGetType = libxlGetType, /* 0.9.0 */
-    .connectGetVersion = libxlGetVersion, /* 0.9.0 */
+    .connectOpen = libxlConnectOpen, /* 0.9.0 */
+    .connectClose = libxlConnectClose, /* 0.9.0 */
+    .connectGetType = libxlConnectGetType, /* 0.9.0 */
+    .connectGetVersion = libxlConnectGetVersion, /* 0.9.0 */
     .connectGetHostname = virGetHostname, /* 0.9.0 */
-    .connectGetMaxVcpus = libxlGetMaxVcpus, /* 0.9.0 */
+    .connectGetMaxVcpus = libxlConnectGetMaxVcpus, /* 0.9.0 */
     .nodeGetInfo = libxlNodeGetInfo, /* 0.9.0 */
-    .connectGetCapabilities = libxlGetCapabilities, /* 0.9.0 */
-    .connectListDomains = libxlListDomains, /* 0.9.0 */
-    .connectNumOfDomains = libxlNumDomains, /* 0.9.0 */
-    .connectListAllDomains = libxlListAllDomains, /* 0.9.13 */
+    .connectGetCapabilities = libxlConnectGetCapabilities, /* 0.9.0 */
+    .connectListDomains = libxlConnectListDomains, /* 0.9.0 */
+    .connectNumOfDomains = libxlConnectNumOfDomains, /* 0.9.0 */
+    .connectListAllDomains = libxlConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = libxlDomainCreateXML, /* 0.9.0 */
     .domainLookupByID = libxlDomainLookupByID, /* 0.9.0 */
     .domainLookupByUUID = libxlDomainLookupByUUID, /* 0.9.0 */
@@ -4235,10 +4235,10 @@ static virDriver libxlDriver = {
     .domainPinVcpu = libxlDomainPinVcpu, /* 0.9.0 */
     .domainGetVcpus = libxlDomainGetVcpus, /* 0.9.0 */
     .domainGetXMLDesc = libxlDomainGetXMLDesc, /* 0.9.0 */
-    .connectDomainXMLFromNative = libxlDomainXMLFromNative, /* 0.9.0 */
-    .connectDomainXMLToNative = libxlDomainXMLToNative, /* 0.9.0 */
-    .connectListDefinedDomains = libxlListDefinedDomains, /* 0.9.0 */
-    .connectNumOfDefinedDomains = libxlNumDefinedDomains, /* 0.9.0 */
+    .connectDomainXMLFromNative = libxlConnectDomainXMLFromNative, /* 0.9.0 */
+    .connectDomainXMLToNative = libxlConnectDomainXMLToNative, /* 0.9.0 */
+    .connectListDefinedDomains = libxlConnectListDefinedDomains, /* 0.9.0 */
+    .connectNumOfDefinedDomains = libxlConnectNumOfDefinedDomains, /* 0.9.0 */
     .domainCreate = libxlDomainCreate, /* 0.9.0 */
     .domainCreateWithFlags = libxlDomainCreateWithFlags, /* 0.9.0 */
     .domainDefineXML = libxlDomainDefineXML, /* 0.9.0 */
@@ -4257,24 +4257,24 @@ static virDriver libxlDriver = {
     .domainSetSchedulerParameters = libxlDomainSetSchedulerParameters, /* 0.9.0 */
     .domainSetSchedulerParametersFlags = libxlDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
-    .connectDomainEventRegister = libxlDomainEventRegister, /* 0.9.0 */
-    .connectDomainEventDeregister = libxlDomainEventDeregister, /* 0.9.0 */
+    .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
+    .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
     .domainHasManagedSaveImage = libxlDomainHasManagedSaveImage, /* 0.9.2 */
     .domainManagedSaveRemove = libxlDomainManagedSaveRemove, /* 0.9.2 */
     .domainIsActive = libxlDomainIsActive, /* 0.9.0 */
     .domainIsPersistent = libxlDomainIsPersistent, /* 0.9.0 */
     .domainIsUpdated = libxlDomainIsUpdated, /* 0.9.0 */
-    .connectDomainEventRegisterAny = libxlDomainEventRegisterAny, /* 0.9.0 */
-    .connectDomainEventDeregisterAny = libxlDomainEventDeregisterAny, /* 0.9.0 */
-    .connectIsAlive = libxlIsAlive, /* 0.9.8 */
+    .connectDomainEventRegisterAny = libxlConnectDomainEventRegisterAny, /* 0.9.0 */
+    .connectDomainEventDeregisterAny = libxlConnectDomainEventDeregisterAny, /* 0.9.0 */
+    .connectIsAlive = libxlConnectIsAlive, /* 0.9.8 */
 };
 
 static virStateDriver libxlStateDriver = {
     .name = "LIBXL",
-    .stateInitialize = libxlStartup,
-    .stateCleanup = libxlShutdown,
-    .stateReload = libxlReload,
+    .stateInitialize = libxlStateInitialize,
+    .stateCleanup = libxlStateCleanup,
+    .stateReload = libxlStateReload,
 };
 
 

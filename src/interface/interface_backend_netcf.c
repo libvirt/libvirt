@@ -116,9 +116,9 @@ static struct netcf_if *interfaceDriverGetNetcfIF(struct netcf *ncf, virInterfac
     return iface;
 }
 
-static virDrvOpenStatus interfaceOpenInterface(virConnectPtr conn,
-                                               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                               unsigned int flags)
+static virDrvOpenStatus netcfInterfaceOpen(virConnectPtr conn,
+                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                           unsigned int flags)
 {
     struct interface_driver *driverState;
 
@@ -159,7 +159,7 @@ alloc_error:
     return VIR_DRV_OPEN_ERROR;
 }
 
-static int interfaceCloseInterface(virConnectPtr conn)
+static int netcfInterfaceClose(virConnectPtr conn)
 {
 
     if (conn->interfacePrivateData != NULL)
@@ -177,7 +177,7 @@ static int interfaceCloseInterface(virConnectPtr conn)
     return 0;
 }
 
-static int interfaceNumOfInterfaces(virConnectPtr conn)
+static int netcfConnectNumOfInterfaces(virConnectPtr conn)
 {
     int count;
     struct interface_driver *driver = conn->interfacePrivateData;
@@ -196,7 +196,7 @@ static int interfaceNumOfInterfaces(virConnectPtr conn)
     return count;
 }
 
-static int interfaceListInterfaces(virConnectPtr conn, char **const names, int nnames)
+static int netcfConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int count;
@@ -218,7 +218,7 @@ static int interfaceListInterfaces(virConnectPtr conn, char **const names, int n
 
 }
 
-static int interfaceNumOfDefinedInterfaces(virConnectPtr conn)
+static int netcfConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
     int count;
     struct interface_driver *driver = conn->interfacePrivateData;
@@ -238,7 +238,7 @@ static int interfaceNumOfDefinedInterfaces(virConnectPtr conn)
     return count;
 }
 
-static int interfaceListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
+static int netcfConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int count;
@@ -261,9 +261,9 @@ static int interfaceListDefinedInterfaces(virConnectPtr conn, char **const names
 }
 
 static int
-interfaceListAllInterfaces(virConnectPtr conn,
-                           virInterfacePtr **ifaces,
-                           unsigned int flags)
+netcfConnectListAllInterfaces(virConnectPtr conn,
+                              virInterfacePtr **ifaces,
+                              unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int count;
@@ -407,8 +407,8 @@ cleanup:
 }
 
 
-static virInterfacePtr interfaceLookupByName(virConnectPtr conn,
-                                             const char *name)
+static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
+                                                  const char *name)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     struct netcf_if *iface;
@@ -439,8 +439,8 @@ cleanup:
     return ret;
 }
 
-static virInterfacePtr interfaceLookupByMACString(virConnectPtr conn,
-                                                  const char *macstr)
+static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
+                                                       const char *macstr)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     struct netcf_if *iface;
@@ -479,8 +479,8 @@ cleanup:
     return ret;
 }
 
-static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
-                                 unsigned int flags)
+static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
+                                      unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -533,9 +533,9 @@ cleanup:
     return ret;
 }
 
-static virInterfacePtr interfaceDefineXML(virConnectPtr conn,
-                                          const char *xml,
-                                          unsigned int flags)
+static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
+                                               const char *xml,
+                                               unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -580,7 +580,7 @@ cleanup:
     return ret;
 }
 
-static int interfaceUndefine(virInterfacePtr ifinfo) {
+static int netcfInterfaceUndefine(virInterfacePtr ifinfo) {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
     int ret = -1;
@@ -610,8 +610,8 @@ cleanup:
     return ret;
 }
 
-static int interfaceCreate(virInterfacePtr ifinfo,
-                           unsigned int flags)
+static int netcfInterfaceCreate(virInterfacePtr ifinfo,
+                                unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -644,8 +644,8 @@ cleanup:
     return ret;
 }
 
-static int interfaceDestroy(virInterfacePtr ifinfo,
-                            unsigned int flags)
+static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
+                                 unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -678,7 +678,7 @@ cleanup:
     return ret;
 }
 
-static int interfaceIsActive(virInterfacePtr ifinfo)
+static int netcfInterfaceIsActive(virInterfacePtr ifinfo)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -712,7 +712,7 @@ cleanup:
 }
 
 #ifdef HAVE_NETCF_TRANSACTIONS
-static int interfaceChangeBegin(virConnectPtr conn, unsigned int flags)
+static int netcfInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int ret;
@@ -735,7 +735,7 @@ static int interfaceChangeBegin(virConnectPtr conn, unsigned int flags)
     return ret;
 }
 
-static int interfaceChangeCommit(virConnectPtr conn, unsigned int flags)
+static int netcfInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int ret;
@@ -758,7 +758,7 @@ static int interfaceChangeCommit(virConnectPtr conn, unsigned int flags)
     return ret;
 }
 
-static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
+static int netcfInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 {
     struct interface_driver *driver = conn->interfacePrivateData;
     int ret;
@@ -784,25 +784,25 @@ static int interfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 
 static virInterfaceDriver interfaceDriver = {
     "netcf",
-    .interfaceOpen = interfaceOpenInterface, /* 0.7.0 */
-    .interfaceClose = interfaceCloseInterface, /* 0.7.0 */
-    .connectNumOfInterfaces = interfaceNumOfInterfaces, /* 0.7.0 */
-    .connectListInterfaces = interfaceListInterfaces, /* 0.7.0 */
-    .connectNumOfDefinedInterfaces = interfaceNumOfDefinedInterfaces, /* 0.7.0 */
-    .connectListDefinedInterfaces = interfaceListDefinedInterfaces, /* 0.7.0 */
-    .connectListAllInterfaces = interfaceListAllInterfaces, /* 0.10.2 */
-    .interfaceLookupByName = interfaceLookupByName, /* 0.7.0 */
-    .interfaceLookupByMACString = interfaceLookupByMACString, /* 0.7.0 */
-    .interfaceGetXMLDesc = interfaceGetXMLDesc, /* 0.7.0 */
-    .interfaceDefineXML = interfaceDefineXML, /* 0.7.0 */
-    .interfaceUndefine = interfaceUndefine, /* 0.7.0 */
-    .interfaceCreate = interfaceCreate, /* 0.7.0 */
-    .interfaceDestroy = interfaceDestroy, /* 0.7.0 */
-    .interfaceIsActive = interfaceIsActive, /* 0.7.3 */
+    .interfaceOpen = netcfInterfaceOpen, /* 0.7.0 */
+    .interfaceClose = netcfInterfaceClose, /* 0.7.0 */
+    .connectNumOfInterfaces = netcfConnectNumOfInterfaces, /* 0.7.0 */
+    .connectListInterfaces = netcfConnectListInterfaces, /* 0.7.0 */
+    .connectNumOfDefinedInterfaces = netcfConnectNumOfDefinedInterfaces, /* 0.7.0 */
+    .connectListDefinedInterfaces = netcfConnectListDefinedInterfaces, /* 0.7.0 */
+    .connectListAllInterfaces = netcfConnectListAllInterfaces, /* 0.10.2 */
+    .interfaceLookupByName = netcfInterfaceLookupByName, /* 0.7.0 */
+    .interfaceLookupByMACString = netcfInterfaceLookupByMACString, /* 0.7.0 */
+    .interfaceGetXMLDesc = netcfInterfaceGetXMLDesc, /* 0.7.0 */
+    .interfaceDefineXML = netcfInterfaceDefineXML, /* 0.7.0 */
+    .interfaceUndefine = netcfInterfaceUndefine, /* 0.7.0 */
+    .interfaceCreate = netcfInterfaceCreate, /* 0.7.0 */
+    .interfaceDestroy = netcfInterfaceDestroy, /* 0.7.0 */
+    .interfaceIsActive = netcfInterfaceIsActive, /* 0.7.3 */
 #ifdef HAVE_NETCF_TRANSACTIONS
-    .interfaceChangeBegin = interfaceChangeBegin, /* 0.9.2 */
-    .interfaceChangeCommit = interfaceChangeCommit, /* 0.9.2 */
-    .interfaceChangeRollback = interfaceChangeRollback, /* 0.9.2 */
+    .interfaceChangeBegin = netcfInterfaceChangeBegin, /* 0.9.2 */
+    .interfaceChangeCommit = netcfInterfaceChangeCommit, /* 0.9.2 */
+    .interfaceChangeRollback = netcfInterfaceChangeRollback, /* 0.9.2 */
 #endif /* HAVE_NETCF_TRANSACTIONS */
 };
 

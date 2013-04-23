@@ -590,9 +590,9 @@ static void device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
 }
 
 
-static int halNodeDeviceDriverStartup(bool privileged ATTRIBUTE_UNUSED,
-                                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                                      void *opaque ATTRIBUTE_UNUSED)
+static int nodeDeviceStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                                     void *opaque ATTRIBUTE_UNUSED)
 {
     LibHalContext *hal_ctx = NULL;
     char **udi = NULL;
@@ -691,7 +691,7 @@ static int halNodeDeviceDriverStartup(bool privileged ATTRIBUTE_UNUSED,
 }
 
 
-static int halNodeDeviceDriverShutdown(void)
+static int nodeDeviceStateCleanup(void)
 {
     if (driverState) {
         nodeDeviceLock(driverState);
@@ -708,7 +708,7 @@ static int halNodeDeviceDriverShutdown(void)
 }
 
 
-static int halNodeDeviceDriverReload(void)
+static int nodeDeviceStateReload(void)
 {
     DBusError err;
     char **udi = NULL;
@@ -740,7 +740,7 @@ static int halNodeDeviceDriverReload(void)
 }
 
 
-static virDrvOpenStatus halNodeDrvOpen(virConnectPtr conn,
+static virDrvOpenStatus nodeDeviceOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                        unsigned int flags)
 {
@@ -754,7 +754,7 @@ static virDrvOpenStatus halNodeDrvOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int halNodeDrvClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int nodeDeviceClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     conn->nodeDevicePrivateData = NULL;
     return 0;
@@ -763,8 +763,8 @@ static int halNodeDrvClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static virNodeDeviceDriver halNodeDeviceDriver = {
     .name = "halNodeDeviceDriver",
-    .nodeDeviceOpen = halNodeDrvOpen, /* 0.5.0 */
-    .nodDeviceClose = halNodeDrvClose, /* 0.5.0 */
+    .nodeDeviceOpen = nodeDeviceOpen, /* 0.5.0 */
+    .nodDeviceClose = nodDeviceClose, /* 0.5.0 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = nodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
@@ -781,9 +781,9 @@ static virNodeDeviceDriver halNodeDeviceDriver = {
 
 static virStateDriver halStateDriver = {
     .name = "HAL",
-    .stateInitialize = halNodeDeviceDriverStartup, /* 0.5.0 */
-    .stateCleanup = halNodeDeviceDriverShutdown, /* 0.5.0 */
-    .stateReload = halNodeDeviceDriverReload, /* 0.5.0 */
+    .stateInitialize = nodeDeviceStateInitialize, /* 0.5.0 */
+    .stateCleanup = nodeDeviceStateCleanup, /* 0.5.0 */
+    .stateReload = nodeDeviceStateReload, /* 0.5.0 */
 };
 
 int halNodeRegister(void)

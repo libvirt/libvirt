@@ -553,7 +553,7 @@ secretClose(virConnectPtr conn) {
 }
 
 static int
-secretNumOfSecrets(virConnectPtr conn)
+secretConnectNumOfSecrets(virConnectPtr conn)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     int i;
@@ -570,7 +570,7 @@ secretNumOfSecrets(virConnectPtr conn)
 }
 
 static int
-secretListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
+secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     int i;
@@ -629,9 +629,9 @@ secretUsageIDForDef(virSecretDefPtr def)
 
 #define MATCH(FLAG) (flags & (FLAG))
 static int
-secretListAllSecrets(virConnectPtr conn,
-                     virSecretPtr **secrets,
-                     unsigned int flags) {
+secretConnectListAllSecrets(virConnectPtr conn,
+                            virSecretPtr **secrets,
+                            unsigned int flags) {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     virSecretPtr *tmp_secrets = NULL;
     int nsecrets = 0;
@@ -1058,7 +1058,7 @@ cleanup:
 }
 
 static int
-secretDriverCleanup(void)
+secretStateCleanup(void)
 {
     if (driverState == NULL)
         return -1;
@@ -1081,9 +1081,9 @@ secretDriverCleanup(void)
 }
 
 static int
-secretDriverStartup(bool privileged,
-                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                    void *opaque ATTRIBUTE_UNUSED)
+secretStateInitialize(bool privileged,
+                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
 {
     char *base = NULL;
 
@@ -1120,12 +1120,12 @@ secretDriverStartup(bool privileged,
  error:
     VIR_FREE(base);
     secretDriverUnlock(driverState);
-    secretDriverCleanup();
+    secretStateCleanup();
     return -1;
 }
 
 static int
-secretDriverReload(void)
+secretStateReload(void)
 {
     virSecretEntryPtr new_secrets = NULL;
 
@@ -1159,9 +1159,9 @@ static virSecretDriver secretDriver = {
     .name = "secret",
     .secretOpen = secretOpen, /* 0.7.1 */
     .secretClose = secretClose, /* 0.7.1 */
-    .connectNumOfSecrets = secretNumOfSecrets, /* 0.7.1 */
-    .connectListSecrets = secretListSecrets, /* 0.7.1 */
-    .connectListAllSecrets = secretListAllSecrets, /* 0.10.2 */
+    .connectNumOfSecrets = secretConnectNumOfSecrets, /* 0.7.1 */
+    .connectListSecrets = secretConnectListSecrets, /* 0.7.1 */
+    .connectListAllSecrets = secretConnectListAllSecrets, /* 0.10.2 */
     .secretLookupByUUID = secretLookupByUUID, /* 0.7.1 */
     .secretLookupByUsage = secretLookupByUsage, /* 0.7.1 */
     .secretDefineXML = secretDefineXML, /* 0.7.1 */
@@ -1173,9 +1173,9 @@ static virSecretDriver secretDriver = {
 
 static virStateDriver stateDriver = {
     .name = "Secret",
-    .stateInitialize = secretDriverStartup,
-    .stateCleanup = secretDriverCleanup,
-    .stateReload = secretDriverReload,
+    .stateInitialize = secretStateInitialize,
+    .stateCleanup = secretStateCleanup,
+    .stateReload = secretStateReload,
 };
 
 int

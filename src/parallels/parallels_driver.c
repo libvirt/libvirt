@@ -68,7 +68,7 @@
 
 #define IS_CT(def)  (STREQ_NULLABLE(def->os.type, "exe"))
 
-static int parallelsClose(virConnectPtr conn);
+static int parallelsConnectClose(virConnectPtr conn);
 
 static const char * parallelsGetDiskBusName(int bus) {
     switch (bus) {
@@ -151,7 +151,7 @@ parallelsBuildCapabilities(void)
 }
 
 static char *
-parallelsGetCapabilities(virConnectPtr conn)
+parallelsConnectGetCapabilities(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     char *xml;
@@ -947,9 +947,9 @@ parallelsOpenDefault(virConnectPtr conn)
 }
 
 static virDrvOpenStatus
-parallelsOpen(virConnectPtr conn,
-              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              unsigned int flags)
+parallelsConnectOpen(virConnectPtr conn,
+                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                     unsigned int flags)
 {
     int ret;
 
@@ -980,7 +980,7 @@ parallelsOpen(virConnectPtr conn,
 }
 
 static int
-parallelsClose(virConnectPtr conn)
+parallelsConnectClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
 
@@ -998,7 +998,7 @@ parallelsClose(virConnectPtr conn)
 }
 
 static int
-parallelsGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
+parallelsConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
 {
     char *output, *sVer, *tmp;
     const char *searchStr = "prlsrvctl version ";
@@ -1044,7 +1044,7 @@ cleanup:
 }
 
 static int
-parallelsListDomains(virConnectPtr conn, int *ids, int maxids)
+parallelsConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     parallelsConnPtr privconn = conn->privateData;
     int n;
@@ -1057,7 +1057,7 @@ parallelsListDomains(virConnectPtr conn, int *ids, int maxids)
 }
 
 static int
-parallelsNumOfDomains(virConnectPtr conn)
+parallelsConnectNumOfDomains(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     int count;
@@ -1070,7 +1070,7 @@ parallelsNumOfDomains(virConnectPtr conn)
 }
 
 static int
-parallelsListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
+parallelsConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
     parallelsConnPtr privconn = conn->privateData;
     int n;
@@ -1085,7 +1085,7 @@ parallelsListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
 }
 
 static int
-parallelsNumOfDefinedDomains(virConnectPtr conn)
+parallelsConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
     int count;
@@ -1098,9 +1098,9 @@ parallelsNumOfDefinedDomains(virConnectPtr conn)
 }
 
 static int
-parallelsListAllDomains(virConnectPtr conn,
-                        virDomainPtr **domains,
-                        unsigned int flags)
+parallelsConnectListAllDomains(virConnectPtr conn,
+                               virDomainPtr **domains,
+                               unsigned int flags)
 {
     parallelsConnPtr privconn = conn->privateData;
     int ret = -1;
@@ -1114,7 +1114,7 @@ parallelsListAllDomains(virConnectPtr conn,
 }
 
 static virDomainPtr
-parallelsLookupDomainByID(virConnectPtr conn, int id)
+parallelsDomainLookupByID(virConnectPtr conn, int id)
 {
     parallelsConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
@@ -1140,7 +1140,7 @@ parallelsLookupDomainByID(virConnectPtr conn, int id)
 }
 
 static virDomainPtr
-parallelsLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
+parallelsDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     parallelsConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
@@ -1169,7 +1169,7 @@ parallelsLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
 }
 
 static virDomainPtr
-parallelsLookupDomainByName(virConnectPtr conn, const char *name)
+parallelsDomainLookupByName(virConnectPtr conn, const char *name)
 {
     parallelsConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
@@ -1196,7 +1196,7 @@ parallelsLookupDomainByName(virConnectPtr conn, const char *name)
 }
 
 static int
-parallelsGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
+parallelsDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1225,7 +1225,7 @@ parallelsGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 static char *
-parallelsGetOSType(virDomainPtr domain)
+parallelsDomainGetOSType(virDomainPtr domain)
 {
     parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
@@ -1404,7 +1404,7 @@ static int parallelsPause(virDomainObjPtr privdom)
 }
 
 static int
-parallelsPauseDomain(virDomainPtr domain)
+parallelsDomainSuspend(virDomainPtr domain)
 {
     return parallelsDomainChangeState(domain,
                                       VIR_DOMAIN_RUNNING, "running",
@@ -1418,7 +1418,7 @@ static int parallelsResume(virDomainObjPtr privdom)
 }
 
 static int
-parallelsResumeDomain(virDomainPtr domain)
+parallelsDomainResume(virDomainPtr domain)
 {
     return parallelsDomainChangeState(domain,
                                       VIR_DOMAIN_PAUSED, "paused",
@@ -1446,7 +1446,7 @@ static int parallelsKill(virDomainObjPtr privdom)
 }
 
 static int
-parallelsDestroyDomain(virDomainPtr domain)
+parallelsDomainDestroy(virDomainPtr domain)
 {
     return parallelsDomainChangeState(domain,
                                       VIR_DOMAIN_RUNNING, "running",
@@ -1460,7 +1460,7 @@ static int parallelsStop(virDomainObjPtr privdom)
 }
 
 static int
-parallelsShutdownDomain(virDomainPtr domain)
+parallelsDomainShutdown(virDomainPtr domain)
 {
     return parallelsDomainChangeState(domain,
                                       VIR_DOMAIN_RUNNING, "running",
@@ -1650,7 +1650,7 @@ static int parallelsAddHddByVolume(parallelsDomObjPtr pdom,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (parallelsStorageVolumeDefRemove(pool, voldef))
+    if (parallelsStorageVolDefRemove(pool, voldef))
         goto cleanup;
 
     ret = 0;
@@ -1669,7 +1669,7 @@ static int parallelsAddHdd(virConnectPtr conn,
     virStorageVolPtr vol = NULL;
     int ret = -1;
 
-    if (!(vol = parallelsStorageVolumeLookupByPathLocked(conn, disk->src))) {
+    if (!(vol = parallelsStorageVolLookupByPathLocked(conn, disk->src))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Can't find volume with path '%s'"), disk->src);
         return -1;
@@ -2229,7 +2229,7 @@ parallelsCreateVm(virConnectPtr conn, virDomainDefPtr def)
         if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
             continue;
 
-        vol = parallelsStorageVolumeLookupByPathLocked(conn, def->disks[i]->src);
+        vol = parallelsStorageVolLookupByPathLocked(conn, def->disks[i]->src);
         if (!vol) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Can't find volume with path '%s'"),
@@ -2390,30 +2390,30 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
-    .connectOpen = parallelsOpen,            /* 0.10.0 */
-    .connectClose = parallelsClose,          /* 0.10.0 */
-    .connectGetVersion = parallelsGetVersion,   /* 0.10.0 */
+    .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
+    .connectClose = parallelsConnectClose,          /* 0.10.0 */
+    .connectGetVersion = parallelsConnectGetVersion,   /* 0.10.0 */
     .connectGetHostname = virGetHostname,      /* 0.10.0 */
     .nodeGetInfo = nodeGetInfo,      /* 0.10.0 */
-    .connectGetCapabilities = parallelsGetCapabilities,      /* 0.10.0 */
-    .connectListDomains = parallelsListDomains,      /* 0.10.0 */
-    .connectNumOfDomains = parallelsNumOfDomains,    /* 0.10.0 */
-    .connectListDefinedDomains = parallelsListDefinedDomains,        /* 0.10.0 */
-    .connectNumOfDefinedDomains = parallelsNumOfDefinedDomains,      /* 0.10.0 */
-    .connectListAllDomains = parallelsListAllDomains, /* 0.10.0 */
-    .domainLookupByID = parallelsLookupDomainByID,    /* 0.10.0 */
-    .domainLookupByUUID = parallelsLookupDomainByUUID,        /* 0.10.0 */
-    .domainLookupByName = parallelsLookupDomainByName,        /* 0.10.0 */
-    .domainGetOSType = parallelsGetOSType,    /* 0.10.0 */
-    .domainGetInfo = parallelsGetDomainInfo,  /* 0.10.0 */
+    .connectGetCapabilities = parallelsConnectGetCapabilities,      /* 0.10.0 */
+    .connectListDomains = parallelsConnectListDomains,      /* 0.10.0 */
+    .connectNumOfDomains = parallelsConnectNumOfDomains,    /* 0.10.0 */
+    .connectListDefinedDomains = parallelsConnectListDefinedDomains,        /* 0.10.0 */
+    .connectNumOfDefinedDomains = parallelsConnectNumOfDefinedDomains,      /* 0.10.0 */
+    .connectListAllDomains = parallelsConnectListAllDomains, /* 0.10.0 */
+    .domainLookupByID = parallelsDomainLookupByID,    /* 0.10.0 */
+    .domainLookupByUUID = parallelsDomainLookupByUUID,        /* 0.10.0 */
+    .domainLookupByName = parallelsDomainLookupByName,        /* 0.10.0 */
+    .domainGetOSType = parallelsDomainGetOSType,    /* 0.10.0 */
+    .domainGetInfo = parallelsDomainGetInfo,  /* 0.10.0 */
     .domainGetState = parallelsDomainGetState,        /* 0.10.0 */
     .domainGetXMLDesc = parallelsDomainGetXMLDesc,    /* 0.10.0 */
     .domainIsPersistent = parallelsDomainIsPersistent,        /* 0.10.0 */
     .domainGetAutostart = parallelsDomainGetAutostart,        /* 0.10.0 */
-    .domainSuspend = parallelsPauseDomain,    /* 0.10.0 */
-    .domainResume = parallelsResumeDomain,    /* 0.10.0 */
-    .domainDestroy = parallelsDestroyDomain,  /* 0.10.0 */
-    .domainShutdown = parallelsShutdownDomain, /* 0.10.0 */
+    .domainSuspend = parallelsDomainSuspend,    /* 0.10.0 */
+    .domainResume = parallelsDomainResume,    /* 0.10.0 */
+    .domainDestroy = parallelsDomainDestroy,  /* 0.10.0 */
+    .domainShutdown = parallelsDomainShutdown, /* 0.10.0 */
     .domainCreate = parallelsDomainCreate,    /* 0.10.0 */
     .domainDefineXML = parallelsDomainDefineXML,      /* 0.10.0 */
 };

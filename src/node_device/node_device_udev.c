@@ -1437,7 +1437,7 @@ out:
 }
 
 
-static int udevNodeDeviceDriverShutdown(void)
+static int nodeDeviceStateCleanup(void)
 {
     int ret = 0;
 
@@ -1649,9 +1649,9 @@ out:
     return ret;
 }
 
-static int udevNodeDeviceDriverStartup(bool privileged ATTRIBUTE_UNUSED,
-                                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                                       void *opaque ATTRIBUTE_UNUSED)
+static int nodeDeviceStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                                     void *opaque ATTRIBUTE_UNUSED)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
@@ -1758,21 +1758,21 @@ out_unlock:
 
 out:
     if (ret == -1) {
-        udevNodeDeviceDriverShutdown();
+        nodeDeviceStateCleanup();
     }
     return ret;
 }
 
 
-static int udevNodeDeviceDriverReload(void)
+static int nodeDeviceStateReload(void)
 {
     return 0;
 }
 
 
-static virDrvOpenStatus udevNodeDrvOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
+static virDrvOpenStatus nodeDeviceOpen(virConnectPtr conn,
+                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                       unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -1785,7 +1785,7 @@ static virDrvOpenStatus udevNodeDrvOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int udevNodeDrvClose(virConnectPtr conn)
+static int nodeDeviceClose(virConnectPtr conn)
 {
     conn->nodeDevicePrivateData = NULL;
     return 0;
@@ -1793,8 +1793,8 @@ static int udevNodeDrvClose(virConnectPtr conn)
 
 static virNodeDeviceDriver udevNodeDeviceDriver = {
     .name = "udevNodeDeviceDriver",
-    .nodeDeviceOpen = udevNodeDrvOpen, /* 0.7.3 */
-    .nodeDeviceClose = udevNodeDrvClose, /* 0.7.3 */
+    .nodeDeviceOpen = nodeDeviceOpen, /* 0.7.3 */
+    .nodeDeviceClose = nodeDeviceClose, /* 0.7.3 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
     .nodeListDevices = nodeListDevices, /* 0.7.3 */
     .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
@@ -1810,9 +1810,9 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
 
 static virStateDriver udevStateDriver = {
     .name = "udev",
-    .stateInitialize = udevNodeDeviceDriverStartup, /* 0.7.3 */
-    .stateCleanup = udevNodeDeviceDriverShutdown, /* 0.7.3 */
-    .stateReload = udevNodeDeviceDriverReload, /* 0.7.3 */
+    .stateInitialize = nodeDeviceStateInitialize, /* 0.7.3 */
+    .stateCleanup = nodeDeviceStateCleanup, /* 0.7.3 */
+    .stateReload = nodeDeviceStateReload, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)
