@@ -967,7 +967,13 @@
 
     <p>
       It is sometimes necessary to override the default actions taken
-      on various events.
+      on various events. Not all hypervisors support all events and actions.
+      The actions may be taken as a result of calls to libvirt APIs
+      <code class='docref'>virDomainReboot</code>,
+      <code class='docref'>virDomainShutdown</code>, or
+      <code class='docref'>virDomainShutdownFlags</code>.
+      Using <code>virsh reboot</code> or <code>virsh shutdown</code> would
+      also trigger the event.
     </p>
 
 <pre>
@@ -1004,20 +1010,29 @@
     <dl>
       <dt><code>destroy</code></dt>
       <dd>The domain will be terminated completely and all resources
-        released</dd>
+        released.</dd>
       <dt><code>restart</code></dt>
-      <dd>The domain will be terminated, and then restarted with
-        the same configuration</dd>
+      <dd>The domain will be terminated and then restarted with
+        the same configuration.</dd>
       <dt><code>preserve</code></dt>
-      <dd>The domain will be terminated, and its resource preserved
+      <dd>The domain will be terminated and its resource preserved
         to allow analysis.</dd>
       <dt><code>rename-restart</code></dt>
-      <dd>The domain will be terminated, and then restarted with
-        a new name</dd>
+      <dd>The domain will be terminated and then restarted with
+        a new name.</dd>
     </dl>
 
     <p>
-      on_crash supports these additional
+    QEMU/KVM supports the <code>on_poweroff</code> and <code>on_reboot</code>
+    events handling the <code>destroy</code> and <code>restart</code> actions.
+    The <code>preserve</code> action for an <code>on_reboot</code> event
+    is treated as a <code>destroy</code> and the <code>rename-restart</code>
+    action for an <code>on_poweroff</code> event is treated as a
+    <code>restart</code> event.
+    </p>
+
+    <p>
+      The <code>on_crash</code> event supports these additional
       actions <span class="since">since 0.8.4</span>.
     </p>
 
