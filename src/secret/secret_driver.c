@@ -42,6 +42,7 @@
 #include "virfile.h"
 #include "configmake.h"
 #include "virstring.h"
+#include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -559,6 +560,9 @@ secretConnectNumOfSecrets(virConnectPtr conn)
     int i;
     virSecretEntryPtr secret;
 
+    if (virConnectNumOfSecretsEnsureACL(conn) < 0)
+        return -1;
+
     secretDriverLock(driver);
 
     i = 0;
@@ -577,6 +581,9 @@ secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
     virSecretEntryPtr secret;
 
     memset(uuids, 0, maxuuids * sizeof(*uuids));
+
+    if (virConnectListSecretsEnsureACL(conn) < 0)
+        return -1;
 
     secretDriverLock(driver);
 
@@ -642,6 +649,9 @@ secretConnectListAllSecrets(virConnectPtr conn,
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_SECRETS_FILTERS_ALL, -1);
+
+    if (virConnectListAllSecretsEnsureACL(conn) < 0)
+        return -1;
 
     secretDriverLock(driver);
 
@@ -725,6 +735,9 @@ secretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         goto cleanup;
     }
 
+    if (virSecretLookupByUUIDEnsureACL(conn, secret->def) < 0)
+        goto cleanup;
+
     ret = virGetSecret(conn,
                        secret->def->uuid,
                        secret->def->usage_type,
@@ -751,6 +764,9 @@ secretLookupByUsage(virConnectPtr conn, int usageType, const char *usageID)
                        _("no secret with matching usage '%s'"), usageID);
         goto cleanup;
     }
+
+    if (virSecretLookupByUsageEnsureACL(conn, secret->def) < 0)
+        goto cleanup;
 
     ret = virGetSecret(conn,
                        secret->def->uuid,
@@ -780,6 +796,9 @@ secretDefineXML(virConnectPtr conn, const char *xml,
         return NULL;
 
     secretDriverLock(driver);
+
+    if (virSecretDefineXMLEnsureACL(conn, new_attrs) < 0)
+        goto cleanup;
 
     secret = secretFindByUUID(driver, new_attrs->uuid);
     if (secret == NULL) {
@@ -897,6 +916,9 @@ secretGetXMLDesc(virSecretPtr obj, unsigned int flags)
         goto cleanup;
     }
 
+    if (virSecretGetXMLDescEnsureACL(obj->conn, secret->def) < 0)
+        goto cleanup;
+
     ret = virSecretDefFormat(secret->def);
 
 cleanup:
@@ -932,6 +954,9 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
                        _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virSecretSetValueEnsureACL(obj->conn, secret->def) < 0)
+        goto cleanup;
 
     old_value = secret->value;
     old_value_size = secret->value_size;
@@ -988,6 +1013,9 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
         goto cleanup;
     }
 
+    if (virSecretGetValueEnsureACL(obj->conn, secret->def) < 0)
+        goto cleanup;
+
     if (secret->value == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->uuid, uuidstr);
@@ -1033,6 +1061,9 @@ secretUndefine(virSecretPtr obj)
                        _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+
+    if (virSecretUndefineEnsureACL(obj->conn, secret->def) < 0)
+        goto cleanup;
 
     if (!secret->def->ephemeral &&
         secretDeleteSaved(driver, secret) < 0)
