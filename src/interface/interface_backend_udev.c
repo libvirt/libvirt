@@ -31,6 +31,7 @@
 #include "interface_conf.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
@@ -60,6 +61,36 @@ virUdevStatusString(virUdevStatus status)
 
     return "";
 }
+
+/*
+ * Get a minimal virInterfaceDef containing enough metadata
+ * for access control checks to be performed. Currently
+ * this implies existance of name and mac address attributes
+ */
+static virInterfaceDef * ATTRIBUTE_NONNULL(1)
+udevGetMinimalDefForDevice(struct udev_device *dev)
+{
+    virInterfaceDef *def;
+
+    /* Allocate our interface definition structure */
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (VIR_STRDUP(def->name, udev_device_get_sysname(dev)) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(def->mac, udev_device_get_sysattr_value(dev, "address")) < 0)
+        goto cleanup;
+
+    return def;
+
+cleanup:
+    virInterfaceDefFree(def);
+    return NULL;
+}
+
 
 static struct udev_enumerate * ATTRIBUTE_NONNULL(1)
 udevGetDevices(struct udev *udev, virUdevStatus status)
@@ -255,6 +286,9 @@ error:
 static int
 udevConnectNumOfInterfaces(virConnectPtr conn)
 {
+    if (virConnectNumOfInterfacesEnsureACL(conn) < 0)
+        return -1;
+
     return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_ACTIVE);
 }
 
@@ -263,6 +297,9 @@ udevConnectListInterfaces(virConnectPtr conn,
                           char **const names,
                           int names_len)
 {
+    if (virConnectListInterfacesEnsureACL(conn) < 0)
+        return -1;
+
     return udevListInterfacesByStatus(conn, names, names_len,
                                       VIR_UDEV_IFACE_ACTIVE);
 }
@@ -270,6 +307,9 @@ udevConnectListInterfaces(virConnectPtr conn,
 static int
 udevConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
+    if (virConnectNumOfDefinedInterfacesEnsureACL(conn) < 0)
+        return -1;
+
     return udevNumOfInterfacesByStatus(conn, VIR_UDEV_IFACE_INACTIVE);
 }
 
@@ -278,6 +318,9 @@ udevConnectListDefinedInterfaces(virConnectPtr conn,
                                  char **const names,
                                  int names_len)
 {
+    if (virConnectListDefinedInterfacesEnsureACL(conn) < 0)
+        return -1;
+
     return udevListInterfacesByStatus(conn, names, names_len,
                                       VIR_UDEV_IFACE_INACTIVE);
 }
@@ -301,6 +344,9 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     int ret;
 
     virCheckFlags(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE, -1);
+
+    if (virConnectListAllInterfacesEnsureACL(conn) < 0)
+        return -1;
 
     /* Grab a udev reference */
     udev = udev_ref(driverState->udev);
@@ -412,8 +458,8 @@ udevInterfaceLookupByName(virConnectPtr conn, const char *name)
     struct udev_iface_driver *driverState = conn->interfacePrivateData;
     struct udev *udev = udev_ref(driverState->udev);
     struct udev_device *dev;
-    const char *macaddr;
     virInterfacePtr ret = NULL;
+    virInterfaceDefPtr def = NULL;
 
     /* get a device reference based on the device name */
     dev = udev_device_new_from_subsystem_sysname(udev, "net", name);
@@ -424,12 +470,18 @@ udevInterfaceLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
     }
 
-    macaddr = udev_device_get_sysattr_value(dev, "address");
-    ret = virGetInterface(conn, name, macaddr);
+    if (!(def = udevGetMinimalDefForDevice(dev)))
+        goto cleanup;
+
+    if (virInterfaceLookupByNameEnsureACL(conn, def) < 0)
+       goto cleanup;
+
+    ret = virGetInterface(conn, def->name, def->mac);
     udev_device_unref(dev);
 
 cleanup:
     udev_unref(udev);
+    virInterfaceDefFree(def);
 
     return ret;
 }
@@ -442,7 +494,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *dev_entry;
     struct udev_device *dev;
-    const char *name;
+    virInterfaceDefPtr def = NULL;
     virInterfacePtr ret = NULL;
 
     enumerate = udevGetDevices(udev, VIR_UDEV_IFACE_ALL);
@@ -480,14 +532,21 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
     }
 
     dev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(dev_entry));
-    name = udev_device_get_sysname(dev);
-    ret = virGetInterface(conn, name, macstr);
+
+    if (!(def = udevGetMinimalDefForDevice(dev)))
+        goto cleanup;
+
+    if (virInterfaceLookupByMACStringEnsureACL(conn, def) < 0)
+       goto cleanup;
+
+    ret = virGetInterface(conn, def->name, def->mac);
     udev_device_unref(dev);
 
 cleanup:
     if (enumerate)
         udev_enumerate_unref(enumerate);
     udev_unref(udev);
+    virInterfaceDefFree(def);
 
     return ret;
 }
@@ -1044,6 +1103,9 @@ udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
     if (!ifacedef)
         goto cleanup;
 
+    if (virInterfaceGetXMLDescEnsureACL(ifinfo->conn, ifacedef) < 0)
+        goto cleanup;
+
     xmlstr = virInterfaceDefFormat(ifacedef);
 
     virInterfaceDefFree(ifacedef);
@@ -1061,7 +1123,8 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
     struct udev_iface_driver *driverState = ifinfo->conn->interfacePrivateData;
     struct udev *udev = udev_ref(driverState->udev);
     struct udev_device *dev;
-    int status;
+    virInterfaceDefPtr def = NULL;
+    int status = -1;
 
     dev = udev_device_new_from_subsystem_sysname(udev, "net",
                                                  ifinfo->name);
@@ -1069,9 +1132,14 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
         virReportError(VIR_ERR_NO_INTERFACE,
                        _("couldn't find interface named '%s'"),
                        ifinfo->name);
-        status = -1;
         goto cleanup;
     }
+
+    if (!(def = udevGetMinimalDefForDevice(dev)))
+        goto cleanup;
+
+    if (virInterfaceIsActiveEnsureACL(ifinfo->conn, def) < 0)
+       goto cleanup;
 
     /* Check if it's active or not */
     status = STREQ(udev_device_get_sysattr_value(dev, "operstate"), "up");
@@ -1080,6 +1148,7 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
 
 cleanup:
     udev_unref(udev);
+    virInterfaceDefFree(def);
 
     return status;
 }
