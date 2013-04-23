@@ -3181,9 +3181,11 @@ error:
  * virDomainShutdown:
  * @domain: a domain object
  *
- * Shutdown a domain, the domain object is still usable thereafter but
+ * Shutdown a domain, the domain object is still usable thereafter, but
  * the domain OS is being stopped. Note that the guest OS may ignore the
- * request.  For guests that react to a shutdown request, the differences
+ * request. Additionally, the hypervisor may check and support the domain
+ * 'on_poweroff' XML setting resulting in a domain that reboots instead of
+ * shutting down. For guests that react to a shutdown request, the differences
  * from virDomainDestroy() are that the guests disk storage will be in a
  * stable state rather than having the (virtual) power cord pulled, and
  * this command returns as soon as the shutdown request is issued rather
@@ -3238,7 +3240,9 @@ error:
  *
  * Shutdown a domain, the domain object is still usable thereafter but
  * the domain OS is being stopped. Note that the guest OS may ignore the
- * request.  For guests that react to a shutdown request, the differences
+ * request. Additionally, the hypervisor may check and support the domain
+ * 'on_poweroff' XML setting resulting in a domain that reboots instead of
+ * shutting down. For guests that react to a shutdown request, the differences
  * from virDomainDestroy() are that the guest's disk storage will be in a
  * stable state rather than having the (virtual) power cord pulled, and
  * this command returns as soon as the shutdown request is issued rather
@@ -3297,9 +3301,12 @@ error:
  * @domain: a domain object
  * @flags: bitwise-OR of virDomainRebootFlagValues
  *
- * Reboot a domain, the domain object is still usable there after but
+ * Reboot a domain, the domain object is still usable thereafter, but
  * the domain OS is being stopped for a restart.
  * Note that the guest OS may ignore the request.
+ * Additionally, the hypervisor may check and support the domain
+ * 'on_reboot' XML setting resulting in a domain that shuts down instead
+ * of rebooting.
  *
  * If @flags is set to zero, then the hypervisor will choose the
  * method of shutdown it considers best. To have greater control
