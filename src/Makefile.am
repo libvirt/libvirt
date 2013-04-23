@@ -1042,9 +1042,11 @@ noinst_LTLIBRARIES += libvirt_driver_libxl.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_libxl.la
 endif
 
-libvirt_driver_libxl_impl_la_CFLAGS = $(LIBXL_CFLAGS)		\
-		-I$(top_srcdir)/src/conf			\
-		-I$(top_srcdir)/src/xenxs			\
+libvirt_driver_libxl_impl_la_CFLAGS = 		\
+		$(LIBXL_CFLAGS)			\
+		-I$(top_srcdir)/src/access	\
+		-I$(top_srcdir)/src/conf	\
+		-I$(top_srcdir)/src/xenxs	\
 		$(AM_CFLAGS)
 libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) libvirt_xenxs.la
