@@ -1227,8 +1227,11 @@ noinst_LTLIBRARIES += libvirt_driver_network.la
 endif
 
 libvirt_driver_network_impl_la_CFLAGS = \
-		$(LIBNL_CFLAGS) $(DBUS_CFLAGS) \
-		-I$(top_srcdir)/src/conf $(AM_CFLAGS) $(DBUS_CFLAGS)
+		$(LIBNL_CFLAGS) \
+		$(DBUS_CFLAGS) \
+		-I$(top_srcdir)/src/access \
+		-I$(top_srcdir)/src/conf \
+		$(AM_CFLAGS)
 libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
 EXTRA_DIST += network/default.xml

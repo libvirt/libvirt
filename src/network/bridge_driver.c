@@ -65,6 +65,7 @@
 #include "virdbus.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -2834,6 +2835,9 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (virNetworkLookupByUUIDEnsureACL(conn, network->def) < 0)
+        goto cleanup;
+
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -2856,6 +2860,9 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
                        _("no network with matching name '%s'"), name);
         goto cleanup;
     }
+
+    if (virNetworkLookupByNameEnsureACL(conn, network->def) < 0)
+        goto cleanup;
 
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
@@ -2887,6 +2894,9 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
     int nactive = 0, i;
     struct network_driver *driver = conn->networkPrivateData;
 
+    if (virConnectNumOfNetworksEnsureACL(conn) < 0)
+        return -1;
+
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
@@ -2902,6 +2912,9 @@ static int networkConnectNumOfNetworks(virConnectPtr conn) {
 static int networkConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
     int got = 0, i;
+
+    if (virConnectListNetworksEnsureACL(conn) < 0)
+        return -1;
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count && got < nnames; i++) {
@@ -2930,6 +2943,9 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
     int ninactive = 0, i;
     struct network_driver *driver = conn->networkPrivateData;
 
+    if (virConnectNumOfDefinedNetworksEnsureACL(conn) < 0)
+        return -1;
+
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
@@ -2945,6 +2961,9 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn) {
 static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct network_driver *driver = conn->networkPrivateData;
     int got = 0, i;
+
+    if (virConnectListDefinedNetworksEnsureACL(conn) < 0)
+        return -1;
 
     networkDriverLock(driver);
     for (i = 0; i < driver->networks.count && got < nnames; i++) {
@@ -2978,10 +2997,14 @@ networkConnectListAllNetworks(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
+    if (virConnectListAllNetworksEnsureACL(conn) < 0)
+        goto cleanup;
+
     networkDriverLock(driver);
     ret = virNetworkList(conn, driver->networks, nets, flags);
     networkDriverUnlock(driver);
 
+cleanup:
     return ret;
 }
 
@@ -2998,6 +3021,10 @@ static int networkIsActive(virNetworkPtr net)
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
     }
+
+    if (virNetworkIsActiveEnsureACL(net->conn, obj->def) < 0)
+        goto cleanup;
+
     ret = virNetworkObjIsActive(obj);
 
 cleanup:
@@ -3019,6 +3046,10 @@ static int networkIsPersistent(virNetworkPtr net)
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
     }
+
+    if (virNetworkIsPersistentEnsureACL(net->conn, obj->def) < 0)
+        goto cleanup;
+
     ret = obj->persistent;
 
 cleanup:
@@ -3186,6 +3217,9 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml) {
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
+    if (virNetworkCreateXMLEnsureACL(conn, def) < 0)
+        goto cleanup;
+
     if (networkValidate(driver, def, true) < 0)
        goto cleanup;
 
@@ -3224,6 +3258,9 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml) {
     networkDriverLock(driver);
 
     if (!(def = virNetworkDefParseString(xml)))
+        goto cleanup;
+
+    if (virNetworkDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (networkValidate(driver, def, false) < 0)
@@ -3284,6 +3321,9 @@ networkUndefine(virNetworkPtr net) {
         goto cleanup;
     }
 
+    if (virNetworkUndefineEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
+
     if (virNetworkObjIsActive(network))
         active = true;
 
@@ -3343,6 +3383,9 @@ networkUpdate(virNetworkPtr net,
                        "%s", _("no network with matching uuid"));
         goto cleanup;
     }
+
+    if (virNetworkUpdateEnsureACL(net->conn, network->def, flags) < 0)
+        goto cleanup;
 
     /* see if we are listening for dhcp pre-modification */
     for (ii = 0;
@@ -3479,6 +3522,9 @@ static int networkCreate(virNetworkPtr net) {
         goto cleanup;
     }
 
+    if (virNetworkCreateEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
+
     ret = networkStartNetwork(driver, network);
 
 cleanup:
@@ -3501,6 +3547,9 @@ static int networkDestroy(virNetworkPtr net) {
                        "%s", _("no network with matching uuid"));
         goto cleanup;
     }
+
+    if (virNetworkDestroyEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
 
     if (!virNetworkObjIsActive(network)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3547,6 +3596,9 @@ static char *networkGetXMLDesc(virNetworkPtr net,
         goto cleanup;
     }
 
+    if (virNetworkGetXMLDescEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
+
     if ((flags & VIR_NETWORK_XML_INACTIVE) && network->newDef)
         def = network->newDef;
     else
@@ -3574,6 +3626,9 @@ static char *networkGetBridgeName(virNetworkPtr net) {
                        "%s", _("no network with matching id"));
         goto cleanup;
     }
+
+    if (virNetworkGetBridgeNameEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
 
     if (!(network->def->bridge)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3605,6 +3660,9 @@ static int networkGetAutostart(virNetworkPtr net,
         goto cleanup;
     }
 
+    if (virNetworkGetAutostartEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
+
     *autostart = network->autostart;
     ret = 0;
 
@@ -3629,6 +3687,9 @@ static int networkSetAutostart(virNetworkPtr net,
                        "%s", _("no network with matching uuid"));
         goto cleanup;
     }
+
+    if (virNetworkSetAutostartEnsureACL(net->conn, network->def) < 0)
+        goto cleanup;
 
     if (!network->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
