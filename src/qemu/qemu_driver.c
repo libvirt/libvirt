@@ -1712,12 +1712,21 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool useAgent = false, agentRequested, acpiRequested;
+    bool isReboot = false;
+    int agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
                   VIR_DOMAIN_SHUTDOWN_GUEST_AGENT, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
+
+    if (vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_RESTART ||
+        vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_RESTART_RENAME) {
+        isReboot = true;
+        agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
+        VIR_INFO("Domain on_poweroff setting overridden, attempting reboot");
+    }
 
     priv = vm->privateData;
     agentRequested = flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
@@ -1759,7 +1768,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
 
     if (useAgent) {
         qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentShutdown(priv->agent, QEMU_AGENT_SHUTDOWN_POWERDOWN);
+        ret = qemuAgentShutdown(priv->agent, agentFlag);
         qemuDomainObjExitAgent(vm);
     }
 
@@ -1768,7 +1777,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags) {
      */
     if (!useAgent ||
         (ret < 0 && (acpiRequested || !flags))) {
-        qemuDomainSetFakeReboot(driver, vm, false);
+        qemuDomainSetFakeReboot(driver, vm, isReboot);
 
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
@@ -1799,6 +1808,8 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool useAgent = false;
+    bool isReboot = true;
+    int agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
                   VIR_DOMAIN_REBOOT_GUEST_AGENT , -1);
@@ -1813,6 +1824,13 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
+
+    if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY ||
+        vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_PRESERVE) {
+        agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
+        isReboot = false;
+        VIR_INFO("Domain on_reboot setting overridden, shutting down");
+    }
 
     priv = vm->privateData;
 
@@ -1862,7 +1880,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     if (useAgent) {
         qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentShutdown(priv->agent, QEMU_AGENT_SHUTDOWN_REBOOT);
+        ret = qemuAgentShutdown(priv->agent, agentFlag);
         qemuDomainObjExitAgent(vm);
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
@@ -1870,7 +1888,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
         qemuDomainObjExitMonitor(driver, vm);
 
         if (ret == 0)
-            qemuDomainSetFakeReboot(driver, vm, true);
+            qemuDomainSetFakeReboot(driver, vm, isReboot);
     }
 
 endjob:
