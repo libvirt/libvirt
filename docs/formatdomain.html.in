@@ -3470,7 +3470,7 @@ qemu-kvm -net nic,model=? /dev/null
               while <code>tlsPort</code> gives an alternative secure
               port number. The <code>autoport</code> attribute is the
               new preferred syntax for indicating autoallocation of
-              both port numbers.  The <code>listen</code> attribute is
+              needed port numbers.  The <code>listen</code> attribute is
               an IP address for the server to listen
               on. The <code>passwd</code> attribute provides a SPICE
               password in clear text. The <code>keymap</code>

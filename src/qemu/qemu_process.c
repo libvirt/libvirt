@@ -3275,44 +3275,80 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                               virQEMUDriverConfigPtr cfg,
                               virDomainGraphicsDefPtr graphics)
 {
-    int ret = -1;
     unsigned short port = 0;
     unsigned short tlsPort;
+    int i;
+    int defaultMode = graphics->data.spice.defaultMode;
 
-    if (graphics->data.spice.autoport ||
-        graphics->data.spice.port == -1) {
+    bool needTLSPort = false;
+    bool needPort = false;
+
+    if (graphics->data.spice.autoport) {
+        /* check if tlsPort or port need allocation */
+        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+            switch (graphics->data.spice.channels[i]) {
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                needTLSPort = true;
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                needPort = true;
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+                switch (defaultMode) {
+                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                    needTLSPort = true;
+                    break;
+
+                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                    needPort = true;
+                    break;
+
+                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+                    needTLSPort = true;
+                    needPort = true;
+                    break;
+                }
+                break;
+            }
+        }
+    }
+
+    if (needPort || graphics->data.spice.port == -1) {
         if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
-            goto cleanup;
+            goto error;
 
         if (port == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to find an unused port for SPICE"));
-            goto cleanup;
+            goto error;
         }
 
         graphics->data.spice.port = port;
     }
 
     if (cfg->spiceTLS &&
-        (graphics->data.spice.autoport ||
-         graphics->data.spice.tlsPort == -1)) {
+        (needTLSPort || graphics->data.spice.tlsPort == -1)) {
         if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
-            goto cleanup;
+            goto error;
 
         if (tlsPort == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Unable to find an unused port for SPICE TLS"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to find an unused port for SPICE TLS"));
             virPortAllocatorRelease(driver->remotePorts, port);
-            goto cleanup;
+            goto error;
         }
 
         graphics->data.spice.tlsPort = tlsPort;
     }
 
-    ret = 0;
+    return 0;
 
-cleanup:
-    return ret;
+error:
+    if (port)
+        virPortAllocatorRelease(driver->remotePorts, port);
+    return -1;
 }
 
 
