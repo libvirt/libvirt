@@ -50,7 +50,7 @@ esxDeviceOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->devMonPrivateData = conn->privateData;
+    conn->nodeDevicePrivateData = conn->privateData;
 
     return VIR_DRV_OPEN_SUCCESS;
 }
@@ -60,14 +60,14 @@ esxDeviceOpen(virConnectPtr conn,
 static int
 esxDeviceClose(virConnectPtr conn)
 {
-    conn->devMonPrivateData = NULL;
+    conn->nodeDevicePrivateData = NULL;
 
     return 0;
 }
 
 
 
-static virDeviceMonitor esxDeviceMonitor = {
+static virNodeDeviceDriver esxNodeDeviceDriver = {
     .name = "ESX",
     .connectOpen = esxDeviceOpen, /* 0.7.6 */
     .connectClose = esxDeviceClose, /* 0.7.6 */
@@ -78,5 +78,5 @@ static virDeviceMonitor esxDeviceMonitor = {
 int
 esxDeviceRegister(void)
 {
-    return virRegisterDeviceMonitor(&esxDeviceMonitor);
+    return virRegisterNodeDeviceDriver(&esxNodeDeviceDriver);
 }

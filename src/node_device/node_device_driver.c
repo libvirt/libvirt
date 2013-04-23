@@ -112,11 +112,11 @@ static int update_driver_name(virNodeDeviceObjPtr dev ATTRIBUTE_UNUSED)
 #endif
 
 
-void nodeDeviceLock(virDeviceMonitorStatePtr driver)
+void nodeDeviceLock(virNodeDeviceDriverStatePtr driver)
 {
     virMutexLock(&driver->lock);
 }
-void nodeDeviceUnlock(virDeviceMonitorStatePtr driver)
+void nodeDeviceUnlock(virNodeDeviceDriverStatePtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
@@ -126,7 +126,7 @@ nodeNumOfDevices(virConnectPtr conn,
                  const char *cap,
                  unsigned int flags)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ndevs = 0;
     unsigned int i;
 
@@ -151,7 +151,7 @@ nodeListDevices(virConnectPtr conn,
                 char **const names, int maxnames,
                 unsigned int flags)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ndevs = 0;
     unsigned int i;
 
@@ -187,7 +187,7 @@ nodeListAllNodeDevices(virConnectPtr conn,
                        virNodeDevicePtr **devices,
                        unsigned int flags)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP, -1);
@@ -201,7 +201,7 @@ nodeListAllNodeDevices(virConnectPtr conn,
 virNodeDevicePtr
 nodeDeviceLookupByName(virConnectPtr conn, const char *name)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj;
     virNodeDevicePtr ret = NULL;
 
@@ -230,7 +230,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                               unsigned int flags)
 {
     unsigned int i;
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     virNodeDeviceObjListPtr devs = &driver->devs;
     virNodeDevCapsDefPtr cap = NULL;
     virNodeDeviceObjPtr obj = NULL;
@@ -274,7 +274,7 @@ char *
 nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
                      unsigned int flags)
 {
-    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = dev->conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
@@ -306,7 +306,7 @@ cleanup:
 char *
 nodeDeviceGetParent(virNodeDevicePtr dev)
 {
-    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = dev->conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
@@ -340,7 +340,7 @@ cleanup:
 int
 nodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
-    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = dev->conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
@@ -371,7 +371,7 @@ cleanup:
 int
 nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 {
-    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = dev->conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
@@ -442,7 +442,7 @@ get_time(time_t *t)
 static virNodeDevicePtr
 find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     virNodeDevicePtr dev = NULL;
     time_t start = 0, now = 0;
 
@@ -481,7 +481,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
                     const char *xmlDesc,
                     unsigned int flags)
 {
-    virDeviceMonitorStatePtr driver = conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     virNodeDeviceDefPtr def = NULL;
     char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
@@ -537,7 +537,7 @@ int
 nodeDeviceDestroy(virNodeDevicePtr dev)
 {
     int ret = -1;
-    virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
+    virNodeDeviceDriverStatePtr driver = dev->conn->nodeDevicePrivateData;
     virNodeDeviceObjPtr obj = NULL;
     char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;

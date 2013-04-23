@@ -149,8 +149,8 @@ virConnectDispose(void *obj)
         conn->interfaceDriver->connectClose(conn);
     if (conn->storageDriver)
         conn->storageDriver->connectClose(conn);
-    if (conn->deviceMonitor)
-        conn->deviceMonitor->connectClose(conn);
+    if (conn->nodeDeviceDriver)
+        conn->nodeDeviceDriver->connectClose(conn);
     if (conn->secretDriver)
         conn->secretDriver->connectClose(conn);
     if (conn->nwfilterDriver)

@@ -50,7 +50,7 @@ struct _udevPrivate {
     int watch;
 };
 
-static virDeviceMonitorStatePtr driverState = NULL;
+static virNodeDeviceDriverStatePtr driverState = NULL;
 
 static int udevStrToLong_ull(char const *s,
                              char **end_ptr,
@@ -1437,7 +1437,7 @@ out:
 }
 
 
-static int udevDeviceMonitorShutdown(void)
+static int udevNodeDeviceDriverShutdown(void)
 {
     int ret = 0;
 
@@ -1649,9 +1649,9 @@ out:
     return ret;
 }
 
-static int udevDeviceMonitorStartup(bool privileged ATTRIBUTE_UNUSED,
-                                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                                    void *opaque ATTRIBUTE_UNUSED)
+static int udevNodeDeviceDriverStartup(bool privileged ATTRIBUTE_UNUSED,
+                                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                                       void *opaque ATTRIBUTE_UNUSED)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
@@ -1758,13 +1758,13 @@ out_unlock:
 
 out:
     if (ret == -1) {
-        udevDeviceMonitorShutdown();
+        udevNodeDeviceDriverShutdown();
     }
     return ret;
 }
 
 
-static int udevDeviceMonitorReload(void)
+static int udevNodeDeviceDriverReload(void)
 {
     return 0;
 }
@@ -1780,19 +1780,19 @@ static virDrvOpenStatus udevNodeDrvOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    conn->devMonPrivateData = driverState;
+    conn->nodeDevicePrivateData = driverState;
 
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int udevNodeDrvClose(virConnectPtr conn)
 {
-    conn->devMonPrivateData = NULL;
+    conn->nodeDevicePrivateData = NULL;
     return 0;
 }
 
-static virDeviceMonitor udevDeviceMonitor = {
-    .name = "udevDeviceMonitor",
+static virNodeDeviceDriver udevNodeDeviceDriver = {
+    .name = "udevNodeDeviceDriver",
     .connectOpen = udevNodeDrvOpen, /* 0.7.3 */
     .connectClose = udevNodeDrvClose, /* 0.7.3 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
@@ -1810,16 +1810,16 @@ static virDeviceMonitor udevDeviceMonitor = {
 
 static virStateDriver udevStateDriver = {
     .name = "udev",
-    .stateInitialize = udevDeviceMonitorStartup, /* 0.7.3 */
-    .stateCleanup = udevDeviceMonitorShutdown, /* 0.7.3 */
-    .stateReload = udevDeviceMonitorReload, /* 0.7.3 */
+    .stateInitialize = udevNodeDeviceDriverStartup, /* 0.7.3 */
+    .stateCleanup = udevNodeDeviceDriverShutdown, /* 0.7.3 */
+    .stateReload = udevNodeDeviceDriverReload, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)
 {
     VIR_DEBUG("Registering udev node device backend");
 
-    if (virRegisterDeviceMonitor(&udevDeviceMonitor) < 0) {
+    if (virRegisterNodeDeviceDriver(&udevNodeDeviceDriver) < 0) {
         return -1;
     }
 

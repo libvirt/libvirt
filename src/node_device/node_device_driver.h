@@ -46,8 +46,8 @@ int halNodeRegister(void);
 int udevNodeRegister(void);
 # endif
 
-void nodeDeviceLock(virDeviceMonitorStatePtr driver);
-void nodeDeviceUnlock(virDeviceMonitorStatePtr driver);
+void nodeDeviceLock(virNodeDeviceDriverStatePtr driver);
+void nodeDeviceUnlock(virNodeDeviceDriverStatePtr driver);
 
 int nodedevRegister(void);
 

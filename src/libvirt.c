@@ -112,8 +112,8 @@ static virInterfaceDriverPtr virInterfaceDriverTab[MAX_DRIVERS];
 static int virInterfaceDriverTabCount = 0;
 static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
 static int virStorageDriverTabCount = 0;
-static virDeviceMonitorPtr virDeviceMonitorTab[MAX_DRIVERS];
-static int virDeviceMonitorTabCount = 0;
+static virNodeDeviceDriverPtr virNodeDeviceDriverTab[MAX_DRIVERS];
+static int virNodeDeviceDriverTabCount = 0;
 static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
 static int virSecretDriverTabCount = 0;
 static virNWFilterDriverPtr virNWFilterDriverTab[MAX_DRIVERS];
@@ -672,7 +672,7 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
 }
 
 /**
- * virRegisterDeviceMonitor:
+ * virRegisterNodeDeviceDriver:
  * @driver: pointer to a device monitor block
  *
  * Register a device monitor
@@ -680,11 +680,11 @@ virRegisterStorageDriver(virStorageDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
+virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
-    if (virDeviceMonitorTabCount >= MAX_DRIVERS) {
+    if (virNodeDeviceDriverTabCount >= MAX_DRIVERS) {
         virLibConnError(VIR_ERR_INTERNAL_ERROR,
                         _("Too many drivers, cannot register %s"),
                         driver->name);
@@ -692,10 +692,10 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
     }
 
     VIR_DEBUG("registering %s as device driver %d",
-           driver->name, virDeviceMonitorTabCount);
+           driver->name, virNodeDeviceDriverTabCount);
 
-    virDeviceMonitorTab[virDeviceMonitorTabCount] = driver;
-    return virDeviceMonitorTabCount++;
+    virNodeDeviceDriverTab[virNodeDeviceDriverTabCount] = driver;
+    return virNodeDeviceDriverTabCount++;
 }
 
 /**
@@ -1282,16 +1282,16 @@ do_open(const char *name,
     }
 
     /* Node driver (optional) */
-    for (i = 0; i < virDeviceMonitorTabCount; i++) {
-        res = virDeviceMonitorTab[i]->connectOpen(ret, auth, flags);
+    for (i = 0; i < virNodeDeviceDriverTabCount; i++) {
+        res = virNodeDeviceDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("node driver %d %s returned %s",
-                  i, virDeviceMonitorTab[i]->name,
+                  i, virNodeDeviceDriverTab[i]->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                   (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                   (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
 
         if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->deviceMonitor = virDeviceMonitorTab[i];
+            ret->nodeDeviceDriver = virNodeDeviceDriverTab[i];
             break;
         } else if (res == VIR_DRV_OPEN_ERROR) {
             break;
@@ -14220,9 +14220,9 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
         return -1;
     }
 
-    if (conn->deviceMonitor && conn->deviceMonitor->nodeNumOfDevices) {
+    if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeNumOfDevices) {
         int ret;
-        ret = conn->deviceMonitor->nodeNumOfDevices(conn, cap, flags);
+        ret = conn->nodeDeviceDriver->nodeNumOfDevices(conn, cap, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14291,10 +14291,10 @@ virConnectListAllNodeDevices(virConnectPtr conn,
         return -1;
     }
 
-    if (conn->deviceMonitor &&
-        conn->deviceMonitor->connectListAllNodeDevices) {
+    if (conn->nodeDeviceDriver &&
+        conn->nodeDeviceDriver->connectListAllNodeDevices) {
         int ret;
-        ret = conn->deviceMonitor->connectListAllNodeDevices(conn, devices, flags);
+        ret = conn->nodeDeviceDriver->connectListAllNodeDevices(conn, devices, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14343,9 +14343,9 @@ virNodeListDevices(virConnectPtr conn,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (conn->deviceMonitor && conn->deviceMonitor->nodeListDevices) {
+    if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeListDevices) {
         int ret;
-        ret = conn->deviceMonitor->nodeListDevices(conn, cap, names, maxnames, flags);
+        ret = conn->nodeDeviceDriver->nodeListDevices(conn, cap, names, maxnames, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -14382,9 +14382,9 @@ virNodeDevicePtr virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 
     virCheckNonNullArgGoto(name, error);
 
-    if (conn->deviceMonitor && conn->deviceMonitor->nodeDeviceLookupByName) {
+    if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeDeviceLookupByName) {
         virNodeDevicePtr ret;
-        ret = conn->deviceMonitor->nodeDeviceLookupByName(conn, name);
+        ret = conn->nodeDeviceDriver->nodeDeviceLookupByName(conn, name);
         if (!ret)
             goto error;
         return ret;
@@ -14427,10 +14427,10 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     virCheckNonNullArgGoto(wwnn, error);
     virCheckNonNullArgGoto(wwpn, error);
 
-    if (conn->deviceMonitor &&
-        conn->deviceMonitor->nodeDeviceLookupSCSIHostByWWN) {
+    if (conn->nodeDeviceDriver &&
+        conn->nodeDeviceDriver->nodeDeviceLookupSCSIHostByWWN) {
         virNodeDevicePtr ret;
-        ret = conn->deviceMonitor->nodeDeviceLookupSCSIHostByWWN(conn, wwnn,
+        ret = conn->nodeDeviceDriver->nodeDeviceLookupSCSIHostByWWN(conn, wwnn,
                                                              wwpn, flags);
         if (!ret)
             goto error;
@@ -14466,9 +14466,9 @@ char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
         return NULL;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceGetXMLDesc) {
+    if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetXMLDesc) {
         char *ret;
-        ret = dev->conn->deviceMonitor->nodeDeviceGetXMLDesc(dev, flags);
+        ret = dev->conn->nodeDeviceDriver->nodeDeviceGetXMLDesc(dev, flags);
         if (!ret)
             goto error;
         return ret;
@@ -14525,8 +14525,8 @@ const char *virNodeDeviceGetParent(virNodeDevicePtr dev)
     }
 
     if (!dev->parent) {
-        if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceGetParent) {
-            dev->parent = dev->conn->deviceMonitor->nodeDeviceGetParent(dev);
+        if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetParent) {
+            dev->parent = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
         } else {
             virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
             virDispatchError(dev->conn);
@@ -14556,9 +14556,9 @@ int virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
         return -1;
     }
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceNumOfCaps) {
+    if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceNumOfCaps) {
         int ret;
-        ret = dev->conn->deviceMonitor->nodeDeviceNumOfCaps(dev);
+        ret = dev->conn->nodeDeviceDriver->nodeDeviceNumOfCaps(dev);
         if (ret < 0)
             goto error;
         return ret;
@@ -14599,9 +14599,9 @@ int virNodeDeviceListCaps(virNodeDevicePtr dev,
     virCheckNonNullArgGoto(names, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
-    if (dev->conn->deviceMonitor && dev->conn->deviceMonitor->nodeDeviceListCaps) {
+    if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceListCaps) {
         int ret;
-        ret = dev->conn->deviceMonitor->nodeDeviceListCaps(dev, names, maxnames);
+        ret = dev->conn->nodeDeviceDriver->nodeDeviceListCaps(dev, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -14854,9 +14854,9 @@ virNodeDeviceCreateXML(virConnectPtr conn,
 
     virCheckNonNullArgGoto(xmlDesc, error);
 
-    if (conn->deviceMonitor &&
-        conn->deviceMonitor->nodeDeviceCreateXML) {
-        virNodeDevicePtr dev = conn->deviceMonitor->nodeDeviceCreateXML(conn, xmlDesc, flags);
+    if (conn->nodeDeviceDriver &&
+        conn->nodeDeviceDriver->nodeDeviceCreateXML) {
+        virNodeDevicePtr dev = conn->nodeDeviceDriver->nodeDeviceCreateXML(conn, xmlDesc, flags);
         if (dev == NULL)
             goto error;
         return dev;
@@ -14897,9 +14897,9 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
         goto error;
     }
 
-    if (dev->conn->deviceMonitor &&
-        dev->conn->deviceMonitor->nodeDeviceDestroy) {
-        int retval = dev->conn->deviceMonitor->nodeDeviceDestroy(dev);
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceDestroy) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceDestroy(dev);
         if (retval < 0) {
             goto error;
         }

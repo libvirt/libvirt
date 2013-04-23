@@ -47,7 +47,7 @@ let driverTables = [
   "virDriver";
   "virNetworkDriver";
   "virStorageDriver";
-  "virDeviceMonitor";
+  "virNodeDeviceDriver";
 (*  "virStateDriver"; Disable for now, since shutdown/startup have weird locking rules *)
 ]
 
@@ -160,7 +160,7 @@ let lockableDrivers = [
       "uml_driver";
       "virStorageDriverStatePtr";
       "network_driver";
-      "virDeviceMonitorState";
+      "virNodeDeviceState";
       "one_driver_t";
 ]
 

@@ -1757,17 +1757,17 @@ typedef int
 
 
 
-typedef struct _virDeviceMonitor virDeviceMonitor;
-typedef virDeviceMonitor *virDeviceMonitorPtr;
+typedef struct _virNodeDeviceDriver virNodeDeviceDriver;
+typedef virNodeDeviceDriver *virNodeDeviceDriverPtr;
 
 /**
- * _virDeviceMonitor:
+ * _virNodeDeviceDriver:
  *
  * Structure associated with monitoring the devices
  * on a virtualized node.
  *
  */
-struct _virDeviceMonitor {
+struct _virNodeDeviceDriver {
     const char * name; /* the name of the driver */
     virDrvConnectOpen connectOpen;
     virDrvConnectClose connectClose;
@@ -1980,7 +1980,7 @@ int virRegisterDriver(virDriverPtr);
 int virRegisterNetworkDriver(virNetworkDriverPtr);
 int virRegisterInterfaceDriver(virInterfaceDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
-int virRegisterDeviceMonitor(virDeviceMonitorPtr);
+int virRegisterNodeDeviceDriver(virNodeDeviceDriverPtr);
 int virRegisterSecretDriver(virSecretDriverPtr);
 int virRegisterNWFilterDriver(virNWFilterDriverPtr);
 # ifdef WITH_LIBVIRTD

@@ -200,9 +200,9 @@ struct _virNodeDeviceObjList {
     virNodeDeviceObjPtr *objs;
 };
 
-typedef struct _virDeviceMonitorState virDeviceMonitorState;
-typedef virDeviceMonitorState *virDeviceMonitorStatePtr;
-struct _virDeviceMonitorState {
+typedef struct _virNodeDeviceDriverState virNodeDeviceDriverState;
+typedef virNodeDeviceDriverState *virNodeDeviceDriverStatePtr;
+struct _virNodeDeviceDriverState {
     virMutex lock;
 
     virNodeDeviceObjList devs;		/* currently-known devices */

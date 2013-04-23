@@ -3367,16 +3367,16 @@ done:
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL(1)
-remoteDevMonOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                 unsigned int flags)
+remoteNodeDeviceOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                     unsigned int flags)
 {
-    return remoteGenericOpen(conn, auth, flags, &conn->devMonPrivateData);
+    return remoteGenericOpen(conn, auth, flags, &conn->nodeDevicePrivateData);
 }
 
 static int
-remoteDevMonClose(virConnectPtr conn)
+remoteNodeDeviceClose(virConnectPtr conn)
 {
-    return remoteGenericClose(conn, &conn->devMonPrivateData);
+    return remoteGenericClose(conn, &conn->nodeDevicePrivateData);
 }
 
 static int
@@ -3385,7 +3385,7 @@ remoteNodeDeviceDettach(virNodeDevicePtr dev)
     int rv = -1;
     remote_node_device_dettach_args args;
     /* This method is unusual in that it uses the HV driver, not the devMon driver
-     * hence its use of privateData, instead of devMonPrivateData */
+     * hence its use of privateData, instead of nodeDevicePrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -3410,7 +3410,7 @@ remoteNodeDeviceReAttach(virNodeDevicePtr dev)
     int rv = -1;
     remote_node_device_re_attach_args args;
     /* This method is unusual in that it uses the HV driver, not the devMon driver
-     * hence its use of privateData, instead of devMonPrivateData */
+     * hence its use of privateData, instead of nodeDevicePrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -3435,7 +3435,7 @@ remoteNodeDeviceReset(virNodeDevicePtr dev)
     int rv = -1;
     remote_node_device_reset_args args;
     /* This method is unusual in that it uses the HV driver, not the devMon driver
-     * hence its use of privateData, instead of devMonPrivateData */
+     * hence its use of privateData, instead of nodeDevicePrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -6414,10 +6414,10 @@ static virSecretDriver secret_driver = {
     .secretUndefine = remoteSecretUndefine /* 0.7.1 */
 };
 
-static virDeviceMonitor dev_monitor = {
+static virNodeDeviceDriver node_device_driver = {
     .name = "remote",
-    .connectOpen = remoteDevMonOpen, /* 0.5.0 */
-    .connectClose = remoteDevMonClose, /* 0.5.0 */
+    .connectOpen = remoteNodeDeviceOpen, /* 0.5.0 */
+    .connectClose = remoteNodeDeviceClose, /* 0.5.0 */
     .nodeNumOfDevices = remoteNodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = remoteNodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
@@ -6469,7 +6469,7 @@ remoteRegister(void)
     if (virRegisterNetworkDriver(&network_driver) == -1) return -1;
     if (virRegisterInterfaceDriver(&interface_driver) == -1) return -1;
     if (virRegisterStorageDriver(&storage_driver) == -1) return -1;
-    if (virRegisterDeviceMonitor(&dev_monitor) == -1) return -1;
+    if (virRegisterNodeDeviceDriver(&node_device_driver) == -1) return -1;
     if (virRegisterSecretDriver(&secret_driver) == -1) return -1;
     if (virRegisterNWFilterDriver(&nwfilter_driver) == -1) return -1;
 #ifdef WITH_LIBVIRTD

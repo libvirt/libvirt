@@ -1072,7 +1072,7 @@ elsif ($mode eq "client") {
                 !($argtype =~ m/^remote_node_device_lookup_by_name_/) and
                 !($argtype =~ m/^remote_node_device_create_xml_/)) {
                 $has_node_device = 1;
-                $priv_name = "devMonPrivateData";
+                $priv_name = "nodeDevicePrivateData";
             }
 
             foreach my $args_member (@{$call->{args_members}}) {
@@ -1309,7 +1309,7 @@ elsif ($mode eq "client") {
                     my $type_name = name_to_TypeName($name);
 
                     if ($name eq "node_device") {
-                        $priv_name = "devMonPrivateData";
+                        $priv_name = "nodeDevicePrivateData";
                     } elsif ($name =~ m/^storage_/) {
                         $priv_name = "storagePrivateData";
                     } elsif (!($name =~ m/^domain/)) {

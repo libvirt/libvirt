@@ -5245,21 +5245,21 @@ cleanup:
 
 
 /* Node device implementations */
-static virDrvOpenStatus testDevMonOpen(virConnectPtr conn,
-                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       unsigned int flags)
+static virDrvOpenStatus testNodeDeviceOpen(virConnectPtr conn,
+                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                           unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->devMonPrivateData = conn->privateData;
+    conn->nodeDevicePrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testDevMonClose(virConnectPtr conn) {
-    conn->devMonPrivateData = NULL;
+static int testNodeDeviceClose(virConnectPtr conn) {
+    conn->nodeDevicePrivateData = NULL;
     return 0;
 }
 
@@ -5952,10 +5952,10 @@ static virStorageDriver testStorageDriver = {
     .storagePoolIsPersistent = testStoragePoolIsPersistent, /* 0.7.3 */
 };
 
-static virDeviceMonitor testDevMonitor = {
+static virNodeDeviceDriver testNodeDeviceDriver = {
     .name = "Test",
-    .connectOpen = testDevMonOpen, /* 0.6.0 */
-    .connectClose = testDevMonClose, /* 0.6.0 */
+    .connectOpen = testNodeDeviceOpen, /* 0.6.0 */
+    .connectClose = testNodeDeviceClose, /* 0.6.0 */
 
     .nodeNumOfDevices = testNodeNumOfDevices, /* 0.7.2 */
     .nodeListDevices = testNodeListDevices, /* 0.7.2 */
@@ -5997,7 +5997,7 @@ testRegister(void)
         return -1;
     if (virRegisterStorageDriver(&testStorageDriver) < 0)
         return -1;
-    if (virRegisterDeviceMonitor(&testDevMonitor) < 0)
+    if (virRegisterNodeDeviceDriver(&testNodeDeviceDriver) < 0)
         return -1;
     if (virRegisterSecretDriver(&testSecretDriver) < 0)
         return -1;

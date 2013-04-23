@@ -18,7 +18,7 @@ my %groupheaders = (
     "virDriver" => "Hypervisor APIs",
     "virNetworkDriver" => "Virtual Network APIs",
     "virInterfaceDriver" => "Host Interface APIs",
-    "virDeviceMonitor" => "Host Device APIs",
+    "virNodeDeviceDriver" => "Host Device APIs",
     "virStorageDriver" => "Storage Pool APIs",
     "virSecretDriver" => "Secret APIs",
     "virNWFilterDriver" => "Network Filter APIs",
@@ -182,7 +182,7 @@ open FILE, "<$drivertable"
 my %groups;
 my $ingrp;
 while (defined($line = <FILE>)) {
-    if ($line =~ /struct _(vir\w*(?:Driver|Monitor))/) {
+    if ($line =~ /struct _(vir\w*Driver)/) {
         my $grp = $1;
         if ($grp ne "virStateDriver" &&
             $grp ne "virStreamDriver") {

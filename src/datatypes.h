@@ -128,7 +128,7 @@ struct _virConnect {
     virNetworkDriverPtr networkDriver;
     virInterfaceDriverPtr interfaceDriver;
     virStorageDriverPtr storageDriver;
-    virDeviceMonitorPtr  deviceMonitor;
+    virNodeDeviceDriverPtr  nodeDeviceDriver;
     virSecretDriverPtr secretDriver;
     virNWFilterDriverPtr nwfilterDriver;
 
@@ -140,7 +140,7 @@ struct _virConnect {
     void *            networkPrivateData;
     void *            interfacePrivateData;
     void *            storagePrivateData;
-    void *            devMonPrivateData;
+    void *            nodeDevicePrivateData;
     void *            secretPrivateData;
     void *            nwfilterPrivateData;
 
