@@ -5156,6 +5156,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                unsigned int flags)
 {
     virDomainControllerDefPtr def;
+    xmlNodePtr cur = NULL;
     char *type = NULL;
     char *idx = NULL;
     char *model = NULL;
@@ -5195,12 +5196,19 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         def->model = -1;
     }
 
-    if ((queues = virXMLPropString(node, "queues"))) {
-        if (virStrToLong_ui(queues, NULL, 10, &def->queues) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Malformed 'queues' value '%s'"), queues);
-            goto error;
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "driver"))
+                queues = virXMLPropString(cur, "queues");
         }
+        cur = cur->next;
+    }
+
+    if (queues && virStrToLong_ui(queues, NULL, 10, &def->queues) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Malformed 'queues' value '%s'"), queues);
+        goto error;
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
@@ -13524,9 +13532,6 @@ virDomainControllerDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, " model='%s'", model);
     }
 
-    if (def->queues)
-        virBufferAsprintf(buf, " queues='%u'", def->queues);
-
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (def->opts.vioserial.ports != -1) {
@@ -13543,10 +13548,16 @@ virDomainControllerDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoIsSet(&def->info, flags)) {
+    if (def->queues || virDomainDeviceInfoIsSet(&def->info, flags)) {
         virBufferAddLit(buf, ">\n");
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+
+        if (def->queues)
+            virBufferAsprintf(buf, "      <driver queues='%u'/>\n", def->queues);
+
+        if (virDomainDeviceInfoIsSet(&def->info, flags) &&
+            virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
+
         virBufferAddLit(buf, "    </controller>\n");
     } else {
         virBufferAddLit(buf, "/>\n");

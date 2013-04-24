@@ -1443,11 +1443,6 @@
                 </choice>
               </attribute>
             </optional>
-            <optional>
-              <attribute name="queues">
-                <ref name="unsignedInt"/>
-              </attribute>
-            </optional>
           </group>
           <!-- usb has an optional attribute "model", and optional subelement "master" -->
           <group>
@@ -1492,6 +1487,15 @@
             </optional>
           </group>
         </choice>
+        <optional>
+          <element name="driver">
+            <optional>
+              <attribute name="queues">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

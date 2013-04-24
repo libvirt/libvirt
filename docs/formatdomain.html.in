@@ -2135,17 +2135,14 @@
       controller.  A "scsi" controller has an optional
       attribute <code>model</code>, which is one of "auto", "buslogic",
       "ibmvscsi", "lsilogic", "lsisas1068", "lsisas1078", "virtio-scsi" or
-      "vmpvscsi".  The attribute <code>queues</code>
-      (<span class="since">1.0.5 (QEMU and KVM only)</span>) specifies
-      the number of queues for the controller. For best performance, it's
-      recommended to specify a value matching the number of vCPUs.  A "usb"
-      controller has an optional attribute <code>model</code>, which is one
-      of "piix3-uhci", "piix4-uhci", "ehci", "ich9-ehci1", "ich9-uhci1",
-      "ich9-uhci2", "ich9-uhci3", "vt82c686b-uhci", "pci-ohci" or "nec-xhci".
-      Additionally, <span class="since">since 0.10.0</span>, if the USB bus
-      needs to be explicitly disabled for the guest, <code>model='none'</code>
-      may be used.  The PowerPC64 "spapr-vio" addresses do not have an
-      associated controller.
+      "vmpvscsi".  A "usb" controller has an optional attribute
+      <code>model</code>, which is one of "piix3-uhci", "piix4-uhci", "ehci",
+      "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3", "vt82c686b-uhci",
+      "pci-ohci" or "nec-xhci".  Additionally,
+      <span class="since">since 0.10.0</span>, if the USB bus needs to be
+      explicitly disabled for the guest, <code>model='none'</code> may be
+      used.  The PowerPC64 "spapr-vio" addresses do not have an associated
+      controller.
     </p>
 
     <p>
@@ -2155,6 +2152,13 @@
       semantics <a href="#elementsAddress">given above</a>.
     </p>
 
+    <p>
+      An optional sub-element <code>driver</code> can specify the driver
+      specific options. Currently it only supports attribute <code>queues</code>
+      (<span class="since">1.0.5</span>, QEMU and KVM only), which specifies the
+      number of queues for the controller. For best performance, it's recommended
+      to specify a value matching the number of vCPUs.
+    </p>
     <p>
       USB companion controllers have an optional
       sub-element <code>&lt;master&gt;</code> to specify the exact
