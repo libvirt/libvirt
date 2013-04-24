@@ -611,4 +611,9 @@ LIBVIRT_1.0.3 {
         virNodeDeviceLookupSCSIHostByWWN;
 } LIBVIRT_1.0.2;
 
+LIBVIRT_1.0.5 {
+    global:
+        virNodeDeviceDetachFlags;
+} LIBVIRT_1.0.3;
+
 # .... define new API here using predicted next version number ....

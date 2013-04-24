@@ -604,6 +604,11 @@ typedef int
 (*virDrvNodeDeviceDettach)(virNodeDevicePtr dev);
 
 typedef int
+(*virDrvNodeDeviceDetachFlags)(virNodeDevicePtr dev,
+                               const char *driverName,
+                               unsigned int flags);
+
+typedef int
 (*virDrvNodeDeviceReAttach)(virNodeDevicePtr dev);
 
 typedef int
@@ -1152,6 +1157,7 @@ struct _virDriver {
     virDrvDomainMigratePrepare2 domainMigratePrepare2;
     virDrvDomainMigrateFinish2 domainMigrateFinish2;
     virDrvNodeDeviceDettach nodeDeviceDettach;
+    virDrvNodeDeviceDetachFlags nodeDeviceDetachFlags;
     virDrvNodeDeviceReAttach nodeDeviceReAttach;
     virDrvNodeDeviceReset nodeDeviceReset;
     virDrvDomainMigratePrepareTunnel domainMigratePrepareTunnel;

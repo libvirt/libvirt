@@ -14687,6 +14687,11 @@ virNodeDeviceRef(virNodeDevicePtr dev)
  * Once the device is not assigned to any guest, it may be re-attached
  * to the node using the virNodeDeviceReattach() method.
  *
+ * If the caller needs control over which backend driver will be used
+ * during PCI device assignment (to use something other than the
+ * default, for example VFIO), the newer virNodeDeviceDetachFlags()
+ * API should be used instead.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
@@ -14710,6 +14715,70 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
     if (dev->conn->driver->nodeDeviceDettach) {
         int ret;
         ret = dev->conn->driver->nodeDeviceDettach(dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(dev->conn);
+    return -1;
+}
+
+/**
+ * virNodeDeviceDetachFlags:
+ * @dev: pointer to the node device
+ * @driverName: name of backend driver that will be used
+ *              for later device assignment to a domain. NULL
+ *              means "use the hypervisor default driver"
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Detach the node device from the node itself so that it may be
+ * assigned to a guest domain.
+ *
+ * Depending on the hypervisor, this may involve operations such as
+ * unbinding any device drivers from the device, binding the device to
+ * a dummy device driver and resetting the device. Different backend
+ * drivers expect the device to be bound to different dummy
+ * devices. For example, QEMU's "kvm" backend driver (the default)
+ * expects the device to be bound to "pci-stub", but its "vfio"
+ * backend driver expects the device to be bound to "vfio-pci".
+ *
+ * If the device is currently in use by the node, this method may
+ * fail.
+ *
+ * Once the device is not assigned to any guest, it may be re-attached
+ * to the node using the virNodeDeviceReAttach() method.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                         const char *driverName,
+                         unsigned int flags)
+{
+    VIR_DEBUG("dev=%p, conn=%p driverName=%s flags=%x",
+              dev, dev ? dev->conn : NULL,
+              driverName ? driverName : "(default)", flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NODE_DEVICE(dev)) {
+        virLibNodeDeviceError(VIR_ERR_INVALID_NODE_DEVICE, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (dev->conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (dev->conn->driver->nodeDeviceDetachFlags) {
+        int ret;
+        ret = dev->conn->driver->nodeDeviceDetachFlags(dev, driverName, flags);
         if (ret < 0)
             goto error;
         return ret;

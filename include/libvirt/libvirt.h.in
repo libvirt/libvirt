@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              virtualized domains
  *
- * Copyright (C) 2005-2006, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3289,6 +3289,9 @@ int                     virNodeDeviceRef        (virNodeDevicePtr dev);
 int                     virNodeDeviceFree       (virNodeDevicePtr dev);
 
 int                     virNodeDeviceDettach    (virNodeDevicePtr dev);
+int                     virNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                                                 const char *driverName,
+                                                 unsigned int flags);
 int                     virNodeDeviceReAttach   (virNodeDevicePtr dev);
 int                     virNodeDeviceReset      (virNodeDevicePtr dev);
 
