@@ -2,7 +2,7 @@
  * remote_driver.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3405,6 +3405,37 @@ done:
 }
 
 static int
+remoteNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                            const char *driverName,
+                            unsigned int flags)
+{
+    int rv = -1;
+    remote_node_device_detach_flags_args args;
+    /* This method is unusual in that it uses the HV driver, not the
+     * devMon driver hence its use of privateData, instead of
+     * nodeDevicePrivateData
+     */
+    struct private_data *priv = dev->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.name = dev->name;
+    args.driverName = driverName ? (char**)&driverName : NULL;
+    args.flags = flags;
+
+    if (call(dev->conn, priv, 0, REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS,
+             (xdrproc_t) xdr_remote_node_device_detach_flags_args,
+             (char *) &args, (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteNodeDeviceReAttach(virNodeDevicePtr dev)
 {
     int rv = -1;
@@ -6225,6 +6256,7 @@ static virDriver remote_driver = {
     .domainMigratePrepare2 = remoteDomainMigratePrepare2, /* 0.5.0 */
     .domainMigrateFinish2 = remoteDomainMigrateFinish2, /* 0.5.0 */
     .nodeDeviceDettach = remoteNodeDeviceDettach, /* 0.6.1 */
+    .nodeDeviceDetachFlags = remoteNodeDeviceDetachFlags, /* 1.0.5 */
     .nodeDeviceReAttach = remoteNodeDeviceReAttach, /* 0.6.1 */
     .nodeDeviceReset = remoteNodeDeviceReset, /* 0.6.1 */
     .domainMigratePrepareTunnel = remoteDomainMigratePrepareTunnel, /* 0.7.2 */

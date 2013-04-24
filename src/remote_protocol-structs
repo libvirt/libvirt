@@ -1440,6 +1440,11 @@ struct remote_node_device_list_caps_ret {
 struct remote_node_device_dettach_args {
         remote_nonnull_string      name;
 };
+struct remote_node_device_detach_flags_args {
+        remote_nonnull_string      name;
+        remote_string              driverName;
+        u_int                      flags;
+};
 struct remote_node_device_re_attach_args {
         remote_nonnull_string      name;
 };
@@ -2488,4 +2493,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_JOB_STATS = 298,
         REMOTE_PROC_DOMAIN_MIGRATE_GET_COMPRESSION_CACHE = 299,
         REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300,
+        REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301,
 };

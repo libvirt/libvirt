@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1898,6 +1898,12 @@ struct remote_node_device_list_caps_ret {
 
 struct remote_node_device_dettach_args {
     remote_nonnull_string name;
+};
+
+struct remote_node_device_detach_flags_args {
+    remote_nonnull_string name;
+    remote_string driverName;
+    unsigned int flags;
 };
 
 struct remote_node_device_re_attach_args {
@@ -4423,6 +4429,11 @@ enum remote_procedure {
     /**
      * @generate: both
      */
-    REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_COMPRESSION_CACHE = 300,
+
+    /**
+     * @generate: server
+     */
+    REMOTE_PROC_NODE_DEVICE_DETACH_FLAGS = 301
 
 };
