@@ -9741,13 +9741,17 @@ out:
 }
 
 static int
-qemuNodeDeviceDettach(virNodeDevicePtr dev)
+qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                          const char *driverName,
+                          unsigned int flags)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
     bool in_inactive_list = false;
+
+    virCheckFlags(0, -1);
 
     if (qemuNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
@@ -9756,12 +9760,22 @@ qemuNodeDeviceDettach(virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
+    if (!driverName || STREQ(driverName, "kvm")) {
+        virPCIDeviceSetStubDriver(pci, "pci-stub");
+    } else if (STREQ(driverName, "vfio")) {
+        virPCIDeviceSetStubDriver(pci, "vfio-pci");
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown driver name '%s'"), driverName);
+        goto out;
+    }
+
     virObjectLock(driver->activePciHostdevs);
     virObjectLock(driver->inactivePciHostdevs);
     in_inactive_list = virPCIDeviceListFind(driver->inactivePciHostdevs, pci);
 
     if (virPCIDeviceDetach(pci, driver->activePciHostdevs,
-                           driver->inactivePciHostdevs, "pci-stub") < 0)
+                           driver->inactivePciHostdevs, NULL) < 0)
         goto out;
 
     ret = 0;
@@ -9771,6 +9785,12 @@ out:
     if (in_inactive_list)
         virPCIDeviceFree(pci);
     return ret;
+}
+
+static int
+qemuNodeDeviceDettach(virNodeDevicePtr dev)
+{
+    return qemuNodeDeviceDetachFlags(dev, NULL, 0);
 }
 
 static int
@@ -14721,6 +14741,7 @@ static virDriver qemuDriver = {
     .domainMigratePrepare2 = qemuDomainMigratePrepare2, /* 0.5.0 */
     .domainMigrateFinish2 = qemuDomainMigrateFinish2, /* 0.5.0 */
     .nodeDeviceDettach = qemuNodeDeviceDettach, /* 0.6.1 */
+    .nodeDeviceDetachFlags = qemuNodeDeviceDetachFlags, /* 1.0.5 */
     .nodeDeviceReAttach = qemuNodeDeviceReAttach, /* 0.6.1 */
     .nodeDeviceReset = qemuNodeDeviceReset, /* 0.6.1 */
     .domainMigratePrepareTunnel = qemuDomainMigratePrepareTunnel, /* 0.7.2 */
