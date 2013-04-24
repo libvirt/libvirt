@@ -4600,8 +4600,16 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
       <dt><code>baselabel</code></dt>
       <dd>If dynamic labelling is used, this can optionally be
-        used to specify the base security label. The format
-        of the content depends on the security driver in use.
+        used to specify the base security label that will be used to generate
+        the actual label. The format of the content depends on the security
+        driver in use.
+
+        The SELinux driver uses only the <code>type</code> field of the
+        baselabel in the generated label. Other fields are inherited from
+        the parent process when using SELinux baselabels.
+
+        (The example above demonstrates the use of <code>my_svirt_t</code>
+        as the value for the <code>type</code> field.)
       </dd>
       <dt><code>imagelabel</code></dt>
       <dd>This is an output only element, which shows the
