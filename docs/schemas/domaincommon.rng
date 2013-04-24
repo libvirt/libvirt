@@ -1444,7 +1444,7 @@
               </attribute>
             </optional>
             <optional>
-              <attribute name="num_queues">
+              <attribute name="queues">
                 <ref name="unsignedInt"/>
               </attribute>
             </optional>

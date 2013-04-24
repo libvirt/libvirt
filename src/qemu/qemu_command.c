@@ -3524,11 +3524,11 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int model;
 
-    if (def->num_queues &&
+    if (def->queues &&
         !(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
           def->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'num_queues' is only supported by virtio-scsi controller"));
+                       _("'queues' is only supported by virtio-scsi controller"));
         return NULL;
     }
 
@@ -3615,8 +3615,8 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         goto error;
     }
 
-    if (def->num_queues)
-        virBufferAsprintf(&buf, ",num_queues=%u", def->num_queues);
+    if (def->queues)
+        virBufferAsprintf(&buf, ",num_queues=%u", def->queues);
 
     if (qemuBuildDeviceAddressStr(&buf, &def->info, qemuCaps) < 0)
         goto error;

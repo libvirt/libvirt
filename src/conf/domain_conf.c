@@ -5159,7 +5159,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *idx = NULL;
     char *model = NULL;
-    char *num_queues = NULL;
+    char *queues = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -5195,10 +5195,10 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         def->model = -1;
     }
 
-    if ((num_queues = virXMLPropString(node, "num_queues"))) {
-        if (virStrToLong_ui(num_queues, NULL, 10, &def->num_queues) < 0) {
+    if ((queues = virXMLPropString(node, "queues"))) {
+        if (virStrToLong_ui(queues, NULL, 10, &def->queues) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Malformed 'num_queues' value '%s'"), num_queues);
+                           _("Malformed 'queues' value '%s'"), queues);
             goto error;
         }
     }
@@ -5280,7 +5280,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(idx);
     VIR_FREE(model);
-    VIR_FREE(num_queues);
+    VIR_FREE(queues);
 
     return def;
 
@@ -13524,8 +13524,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, " model='%s'", model);
     }
 
-    if (def->num_queues)
-        virBufferAsprintf(buf, " num_queues='%u'", def->num_queues);
+    if (def->queues)
+        virBufferAsprintf(buf, " queues='%u'", def->queues);
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:

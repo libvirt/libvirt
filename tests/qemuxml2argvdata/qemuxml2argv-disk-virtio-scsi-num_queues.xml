@@ -20,7 +20,7 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>
-    <controller type='scsi' index='0' model='virtio-scsi' num_queues='8'/>
+    <controller type='scsi' index='0' model='virtio-scsi' queues='8'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>
