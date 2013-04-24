@@ -5903,6 +5903,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virDomainSnapshotObjPtr snapshot,
                      enum virNetDevVPortProfileOp vmop)
 {
+    virErrorPtr originalError = NULL;
     int i, j;
     const char *emulator;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -7833,13 +7834,16 @@ qemuBuildCommandLine(virConnectPtr conn,
     virObjectUnref(cfg);
     return cmd;
 
- no_memory:
+no_memory:
     virReportOOMError();
- error:
+error:
     virObjectUnref(cfg);
-    /* free up any resources in the network driver */
+    /* free up any resources in the network driver
+     * but don't overwrite the original error */
+    originalError = virSaveLastError();
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
+    virSetError(originalError);
     virCommandFree(cmd);
     return NULL;
 }
