@@ -685,13 +685,10 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
             }
         }
 
-        seclabel->label =
-            virSecuritySELinuxGenNewContext(baselabel, mcs, false);
-        if (!seclabel->label)  {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot generate selinux context for %s"), mcs);
+        seclabel->label = virSecuritySELinuxGenNewContext(baselabel, mcs, false);
+        if (!seclabel->label)
             goto cleanup;
-        }
+
         break;
 
     case VIR_DOMAIN_SECLABEL_NONE:
@@ -709,11 +706,8 @@ virSecuritySELinuxGenSecurityLabel(virSecurityManagerPtr mgr,
         seclabel->imagelabel = virSecuritySELinuxGenNewContext(data->file_context,
                                                                mcs,
                                                                true);
-        if (!seclabel->imagelabel)  {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot generate selinux context for %s"), mcs);
+        if (!seclabel->imagelabel)
             goto cleanup;
-        }
     }
 
     if (!seclabel->model &&
