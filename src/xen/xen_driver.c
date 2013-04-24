@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2133,11 +2133,15 @@ out:
 }
 
 static int
-xenUnifiedNodeDeviceDettach(virNodeDevicePtr dev)
+xenUnifiedNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                                const char *driverName,
+                                unsigned int flags)
 {
     virPCIDevicePtr pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
@@ -2146,13 +2150,27 @@ xenUnifiedNodeDeviceDettach(virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
-    if (virPCIDeviceDetach(pci, NULL, NULL, "pciback") < 0)
+    if (!driverName) {
+        virPCIDeviceSetStubDriver(pci, "pciback");
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown driver name '%s'"), driverName);
+        goto out;
+    }
+
+    if (virPCIDeviceDetach(pci, NULL, NULL, NULL) < 0)
         goto out;
 
     ret = 0;
 out:
     virPCIDeviceFree(pci);
     return ret;
+}
+
+static int
+xenUnifiedNodeDeviceDettach(virNodeDevicePtr dev)
+{
+    return xenUnifiedNodeDeviceDetachFlags(dev, NULL, 0);
 }
 
 static int
@@ -2405,6 +2423,7 @@ static virDriver xenUnifiedDriver = {
     .connectDomainEventRegister = xenUnifiedConnectDomainEventRegister, /* 0.5.0 */
     .connectDomainEventDeregister = xenUnifiedConnectDomainEventDeregister, /* 0.5.0 */
     .nodeDeviceDettach = xenUnifiedNodeDeviceDettach, /* 0.6.1 */
+    .nodeDeviceDetachFlags = xenUnifiedNodeDeviceDetachFlags, /* 1.0.5 */
     .nodeDeviceReAttach = xenUnifiedNodeDeviceReAttach, /* 0.6.1 */
     .nodeDeviceReset = xenUnifiedNodeDeviceReset, /* 0.6.1 */
     .connectIsEncrypted = xenUnifiedConnectIsEncrypted, /* 0.7.3 */
