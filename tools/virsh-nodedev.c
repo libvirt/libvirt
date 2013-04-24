@@ -1,7 +1,7 @@
 /*
  * virsh-nodedev.c: Commands in node device group
  *
- * Copyright (C) 2005, 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -600,6 +600,10 @@ static const vshCmdOptDef opts_node_device_detach[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("device key")
     },
+    {.name = "driver",
+     .type = VSH_OT_STRING,
+     .help = N_("pci device assignment backend driver (e.g. 'vfio' or 'kvm'")
+    },
     {.name = NULL}
 };
 
@@ -607,25 +611,35 @@ static bool
 cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
+    const char *driverName = NULL;
     virNodeDevicePtr device;
     bool ret = true;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
 
+    ignore_value(vshCommandOptString(cmd, "driver", &driverName));
+
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
         vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
 
-    /* Yes, our public API is misspelled.  At least virsh can accept
-     * either spelling.  */
-    if (virNodeDeviceDettach(device) == 0) {
-        vshPrint(ctl, _("Device %s detached\n"), name);
+    if (driverName) {
+        /* we must use the newer API that accepts a driverName */
+        if (virNodeDeviceDetachFlags(device, driverName, 0) < 0)
+            ret = false;
     } else {
-        vshError(ctl, _("Failed to detach device %s"), name);
-        ret = false;
+        /* Yes, our (old) public API is misspelled.  At least virsh
+         * can accept either spelling.  */
+        if (virNodeDeviceDettach(device) < 0)
+            ret = false;
     }
+
+    if (ret)
+        vshPrint(ctl, _("Device %s detached\n"), name);
+    else
+        vshError(ctl, _("Failed to detach device %s"), name);
 
     virNodeDeviceFree(device);
     return ret;
