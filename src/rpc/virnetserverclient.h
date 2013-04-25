@@ -71,7 +71,8 @@ int virNetServerClientSetIdentity(virNetServerClientPtr client,
 const char *virNetServerClientGetIdentity(virNetServerClientPtr client);
 
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
-                                      uid_t *uid, gid_t *gid, pid_t *pid);
+                                      uid_t *uid, gid_t *gid, pid_t *pid,
+                                      unsigned long long *timestamp);
 
 void virNetServerClientRef(virNetServerClientPtr client);
 

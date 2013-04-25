@@ -39,4 +39,7 @@ virProcessWait(pid_t pid, int *exitstatus)
 int virProcessKill(pid_t pid, int sig);
 
 
+int virProcessGetStartTime(pid_t pid,
+                           unsigned long long *timestamp);
+
 #endif /* __VIR_PROCESS_H__ */

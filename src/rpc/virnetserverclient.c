@@ -448,15 +448,19 @@ int virNetServerClientGetFD(virNetServerClientPtr client)
 }
 
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
-                                      uid_t *uid, gid_t *gid, pid_t *pid)
+                                      uid_t *uid, gid_t *gid, pid_t *pid,
+                                      unsigned long long *timestamp)
 {
     int ret = -1;
     virNetServerClientLock(client);
     if (client->sock)
-        ret = virNetSocketGetUNIXIdentity(client->sock, uid, gid, pid);
+        ret = virNetSocketGetUNIXIdentity(client->sock,
+                                          uid, gid, pid,
+                                          timestamp);
     virNetServerClientUnlock(client);
     return ret;
 }
+
 
 bool virNetServerClientIsSecure(virNetServerClientPtr client)
 {
