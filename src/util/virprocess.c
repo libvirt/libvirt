@@ -1,7 +1,7 @@
 /*
  * virprocess.c: interaction with processes
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,10 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
+#if HAVE_SETRLIMIT
+# include <sys/time.h>
+# include <sys/resource.h>
+#endif
 #include <sched.h>
 
 #include "virprocess.h"
@@ -605,3 +609,149 @@ int virProcessSetNamespaces(size_t nfdlist ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif /* ! HAVE_SETNS */
+
+#if HAVE_PRLIMIT
+static int
+virProcessPrLimit(pid_t pid, int resource, struct rlimit *rlim)
+{
+    return prlimit(pid, resource, rlim, NULL);
+}
+#else /* ! HAVE_PRLIMIT */
+static int
+virProcessPrLimit(pid_t pid ATTRIBUTE_UNUSED,
+                  int resource ATTRIBUTE_UNUSED,
+                  struct rlimit *rlim ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+#endif /* ! HAVE_PRLIMIT */
+
+#if HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)
+int
+virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
+{
+    struct rlimit rlim;
+
+    if (bytes == 0)
+        return 0;
+
+    rlim.rlim_cur = rlim.rlim_max = bytes;
+    if (pid == 0) {
+        if (setrlimit(RLIMIT_MEMLOCK, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit locked memory to %llu"),
+                                 bytes);
+            return -1;
+        }
+    } else {
+        if (virProcessPrLimit(pid, RLIMIT_MEMLOCK, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit locked memory "
+                                   "of process %lld to %llu"),
+                                 (long long int)pid, bytes);
+            return -1;
+        }
+    }
+    return 0;
+}
+#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+int
+virProcessSetMaxMemLock(pid_t pid ATTRIBUTE_UNUSED, unsigned long long bytes)
+{
+    if (bytes == 0)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+
+
+#if HAVE_SETRLIMIT && defined(RLIMIT_NPROC)
+int
+virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
+{
+    struct rlimit rlim;
+
+    if (procs == 0)
+        return 0;
+
+    rlim.rlim_cur = rlim.rlim_max = procs;
+    if (pid == 0) {
+        if (setrlimit(RLIMIT_NPROC, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit number of subprocesses to %u"),
+                                 procs);
+            return -1;
+        }
+    } else {
+        if (virProcessPrLimit(pid, RLIMIT_NPROC, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit number of subprocesses "
+                                   "of process %lld to %u"),
+                                 (long long int)pid, procs);
+            return -1;
+        }
+    }
+    return 0;
+}
+#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NPROC)) */
+int
+virProcessSetMaxProcesses(pid_t pid ATTRIBUTE_UNUSED, unsigned int procs)
+{
+    if (procs == 0)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NPROC)) */
+
+#if HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)
+int
+virProcessSetMaxFiles(pid_t pid, unsigned int files)
+{
+    struct rlimit rlim;
+
+    if (files == 0)
+        return 0;
+
+   /* Max number of opened files is one greater than actual limit. See
+    * man setrlimit.
+    *
+    * NB: That indicates to me that we would want the following code
+    * to say "files - 1", but the original of this code in
+    * qemu_process.c also had files + 1, so this preserves current
+    * behavior.
+    */
+    rlim.rlim_cur = rlim.rlim_max = files + 1;
+    if (pid == 0) {
+        if (setrlimit(RLIMIT_NOFILE, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit number of open files to %u"),
+                                 files);
+            return -1;
+        }
+    } else {
+        if (virProcessPrLimit(pid, RLIMIT_NOFILE, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit number of open files "
+                                   "of process %lld to %u"),
+                                 (long long int)pid, files);
+            return -1;
+        }
+    }
+    return 0;
+}
+#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)) */
+int
+virProcessSetMaxFiles(pid_t pid ATTRIBUTE_UNUSED, unsigned int files)
+{
+    if (files == 0)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)) */

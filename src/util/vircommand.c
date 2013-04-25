@@ -107,6 +107,10 @@ struct _virCommand {
     char *pidfile;
     bool reap;
 
+    unsigned long long maxMemLock;
+    unsigned int maxProcesses;
+    unsigned int maxFiles;
+
     uid_t uid;
     gid_t gid;
     unsigned long long capabilities;
@@ -598,6 +602,13 @@ virExec(virCommandPtr cmd)
         goto fork_error;
     }
 
+    if (virProcessSetMaxMemLock(0, cmd->maxMemLock) < 0)
+        goto fork_error;
+    if (virProcessSetMaxProcesses(0, cmd->maxProcesses) < 0)
+        goto fork_error;
+    if (virProcessSetMaxFiles(0, cmd->maxFiles) < 0)
+        goto fork_error;
+
     if (cmd->hook) {
         VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
         ret = cmd->hook(cmd->opaque);
@@ -956,6 +967,33 @@ virCommandSetUID(virCommandPtr cmd, uid_t uid)
         return;
 
     cmd->uid = uid;
+}
+
+void
+virCommandSetMaxMemLock(virCommandPtr cmd, unsigned long long bytes)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->maxMemLock = bytes;
+}
+
+void
+virCommandSetMaxProcesses(virCommandPtr cmd, unsigned int procs)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->maxProcesses = procs;
+}
+
+void
+virCommandSetMaxFiles(virCommandPtr cmd, unsigned int files)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->maxFiles = files;
 }
 
 /**

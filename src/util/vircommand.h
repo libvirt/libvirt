@@ -65,6 +65,10 @@ void virCommandSetGID(virCommandPtr cmd, gid_t gid);
 
 void virCommandSetUID(virCommandPtr cmd, uid_t uid);
 
+void virCommandSetMaxMemLock(virCommandPtr cmd, unsigned long long bytes);
+void virCommandSetMaxProcesses(virCommandPtr cmd, unsigned int procs);
+void virCommandSetMaxFiles(virCommandPtr cmd, unsigned int files);
+
 void virCommandClearCaps(virCommandPtr cmd);
 
 void virCommandAllowCap(virCommandPtr cmd,
