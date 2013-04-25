@@ -4701,7 +4701,7 @@ typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
  * This callback occurs when the guest is waken up.
  *
  * The callback signature to use when registering for an event of type
- * VIR_DOMAIN_EVENT_ID_PMSuspend with virConnectDomainEventRegisterAny()
+ * VIR_DOMAIN_EVENT_ID_PMSUSPEND with virConnectDomainEventRegisterAny()
  */
 typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
