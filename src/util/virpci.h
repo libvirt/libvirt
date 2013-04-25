@@ -111,6 +111,8 @@ typedef int (*virPCIDeviceFileActor)(virPCIDevicePtr dev,
 int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                             virPCIDeviceFileActor actor,
                             void *opaque);
+char *
+virPCIDeviceGetVFIOGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
                              int strict_acs_check);

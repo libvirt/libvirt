@@ -1609,6 +1609,7 @@ virPCIDeviceGetReprobe;
 virPCIDeviceGetStubDriver;
 virPCIDeviceGetUnbindFromStub;
 virPCIDeviceGetUsedBy;
+virPCIDeviceGetVFIOGroupDev;
 virPCIDeviceIsAssignable;
 virPCIDeviceListAdd;
 virPCIDeviceListCount;

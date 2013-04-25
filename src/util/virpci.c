@@ -1727,6 +1727,41 @@ cleanup:
     return ret;
 }
 
+/* virPCIDeviceGetVFIOGroupDev - return the name of the device used to
+ * control this PCI device's group (e.g. "/dev/vfio/15")
+ */
+char *
+virPCIDeviceGetVFIOGroupDev(virPCIDevicePtr dev)
+{
+    char *devPath = NULL;
+    char *groupPath = NULL;
+    char *groupDev = NULL;
+
+    if (virPCIFile(&devPath, dev->name, "iommu_group") < 0)
+        goto cleanup;
+    if (virFileIsLink(devPath) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid device %s iommu_group file %s is not a symlink"),
+                       dev->name, devPath);
+        goto cleanup;
+    }
+    if (virFileResolveLink(devPath, &groupPath) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device %s iommu_group symlink %s"),
+                       dev->name, devPath);
+        goto cleanup;
+    }
+    if (virAsprintf(&groupDev, "/dev/vfio/%s",
+                    last_component(groupPath)) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+cleanup:
+    VIR_FREE(devPath);
+    VIR_FREE(groupPath);
+    return groupDev;
+}
+
 static int
 virPCIDeviceDownstreamLacksACS(virPCIDevicePtr dev)
 {
