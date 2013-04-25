@@ -35,4 +35,6 @@ char *virStringJoin(const char **strings,
 
 void virStringFreeList(char **strings);
 
+size_t virStringListLength(char **strings);
+
 #endif /* __VIR_STRING_H__ */
