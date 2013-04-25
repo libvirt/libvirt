@@ -53,6 +53,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+#define VIO_ADDR_NET 0x1000ul
+#define VIO_ADDR_SCSI 0x2000ul
+#define VIO_ADDR_SERIAL 0x30000000ul
+#define VIO_ADDR_NVRAM 0x3000ul
 
 VIR_ENUM_DECL(virDomainDiskQEMUBus)
 VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
@@ -1148,7 +1152,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             STREQ(def->nets[i]->model, "spapr-vlan"))
             def->nets[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->nets[i]->info,
-                                      0x1000ul) < 0)
+                                      VIO_ADDR_NET) < 0)
             goto cleanup;
     }
 
@@ -1163,7 +1167,7 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->controllers[i]->info,
-                                      0x2000ul) < 0)
+                                      VIO_ADDR_SCSI) < 0)
             goto cleanup;
     }
 
@@ -1173,7 +1177,16 @@ int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
             STREQ(def->os.machine, "pseries"))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuAssignSpaprVIOAddress(def, &def->serials[i]->info,
-                                      0x30000000ul) < 0)
+                                      VIO_ADDR_SERIAL) < 0)
+            goto cleanup;
+    }
+
+    if (def->nvram) {
+        if (def->os.arch == VIR_ARCH_PPC64 &&
+            STREQ(def->os.machine, "pseries"))
+            def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        if (qemuAssignSpaprVIOAddress(def, &def->nvram->info,
+                                      VIO_ADDR_NVRAM) < 0)
             goto cleanup;
     }
 
@@ -3923,6 +3936,32 @@ error:
     return NULL;
 }
 
+static char *
+qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+        dev->info.addr.spaprvio.has_reg) {
+        virBufferAsprintf(&buf, "spapr-nvram.reg=0x%llx",
+                          dev->info.addr.spaprvio.reg);
+    } else {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("nvram address type must be spaprvio"));
+        goto error;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
 
 char *
 qemuBuildUSBInputDevStr(virDomainInputDefPtr dev,
@@ -7805,6 +7844,30 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
     }
 
+    if (def->nvram) {
+        if (def->os.arch == VIR_ARCH_PPC64 &&
+            STREQ(def->os.machine, "pseries")) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("nvram device is not supported by "
+                                 "this QEMU binary"));
+                goto error;
+            }
+
+            char *optstr;
+            virCommandAddArg(cmd, "-global");
+            optstr = qemuBuildNVRAMDevStr(def->nvram);
+            if (!optstr)
+                goto error;
+            if (optstr)
+                virCommandAddArg(cmd, optstr);
+            VIR_FREE(optstr);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                          _("nvram device is only supported for PPC64"));
+            goto error;
+        }
+    }
     if (snapshot)
         virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
@@ -9916,6 +9979,23 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto error;
             }
 
+        } else if (STREQ(arg, "-global") &&
+                   STRPREFIX(progargv[i + 1], "spapr-nvram.reg=")) {
+            WANT_VALUE();
+
+            if (VIR_ALLOC(def->nvram) < 0)
+                goto no_memory;
+
+            def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+            def->nvram->info.addr.spaprvio.has_reg = true;
+
+            val += strlen("spapr-nvram.reg=");
+            if (virStrToLong_ull(val, NULL, 16,
+                                 &def->nvram->info.addr.spaprvio.reg) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse nvram's address '%s'"), val);
+                goto error;
+            }
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {

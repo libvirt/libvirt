@@ -220,6 +220,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "machine-usb-opt",
               "tpm-passthrough",
               "tpm-tis",
+
+              "nvram",  /* 140 */
     );
 
 struct _virQEMUCaps {
@@ -1347,6 +1349,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-rng-ccw", QEMU_CAPS_DEVICE_VIRTIO_RNG },
     { "rng-random", QEMU_CAPS_OBJECT_RNG_RANDOM },
     { "rng-egd", QEMU_CAPS_OBJECT_RNG_EGD },
+    { "spapr-nvram", QEMU_CAPS_DEVICE_NVRAM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

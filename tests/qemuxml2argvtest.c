@@ -916,6 +916,7 @@ mymain(void)
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST_ERROR("pseries-vio-address-clash", QEMU_CAPS_DRIVE,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("pseries-nvram", QEMU_CAPS_DEVICE_NVRAM);
     DO_TEST("disk-ide-drive-split",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD);

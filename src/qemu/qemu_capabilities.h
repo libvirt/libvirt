@@ -179,6 +179,8 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_TPM_PASSTHROUGH = 138, /* -tpmdev passthrough */
     QEMU_CAPS_DEVICE_TPM_TIS     = 139, /* -device tpm_tis */
 
+    QEMU_CAPS_DEVICE_NVRAM       = 140,  /* -global spapr-nvram.reg=xxxx */
+
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };
 
