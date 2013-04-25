@@ -2,6 +2,7 @@
  * parallels_storage.c: core privconn functions for managing
  * Parallels Cloud Server hosts
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Parallels, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +24,7 @@
 #include <config.h>
 
 #include "datatypes.h"
+#include "dirname.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "md5.h"
@@ -64,7 +66,7 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
         goto cleanup;
     }
 
-    if (!(def->bridge = strdup(basename(bridgePath)))) {
+    if (!(def->bridge = strdup(last_component(bridgePath)))) {
         virReportOOMError();
         goto cleanup;
     }

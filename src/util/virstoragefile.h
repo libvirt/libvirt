@@ -56,7 +56,7 @@ typedef virStorageFileMetadata *virStorageFileMetadataPtr;
 struct _virStorageFileMetadata {
     char *backingStore; /* Canonical name (absolute file, or protocol) */
     char *backingStoreRaw; /* If file, original name, possibly relative */
-    char *directory; /* The directory containing basename(backingStoreRaw) */
+    char *directory; /* The directory containing basename of backingStoreRaw */
     int backingStoreFormat; /* enum virStorageFileFormat */
     bool backingStoreIsFile;
     virStorageFileMetadataPtr backingMeta;

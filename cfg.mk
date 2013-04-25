@@ -493,6 +493,12 @@ sc_prohibit_gethostby:
 	halt='use getaddrinfo, not gethostby*'				\
 	  $(_sc_search_regexp)
 
+# dirname and basename from <libgen.h> are not required to be thread-safe
+sc_prohibit_libgen:
+	@prohibit='( (base|dir)name *\(|include .libgen\.h)'		\
+	halt='use functions from gnulib "dirname.h", not <libgen.h>'	\
+	  $(_sc_search_regexp)
+
 # raw xmlGetProp requires some nasty casts
 sc_prohibit_xmlGetProp:
 	@prohibit='\<xmlGetProp *\('					\

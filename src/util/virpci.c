@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "dirname.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "vircommand.h"
@@ -1925,7 +1926,7 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
         return ret;
     }
 
-    config_address = basename(device_path);
+    config_address = last_component(device_path);
     if (VIR_ALLOC(*bdf) != 0) {
         virReportOOMError();
         goto out;

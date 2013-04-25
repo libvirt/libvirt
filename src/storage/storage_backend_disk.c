@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include "dirname.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "storage_backend_disk.h"
@@ -728,8 +729,8 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    dev_name = basename(devpath);
-    srcname = basename(pool->def->source.devices[0].path);
+    dev_name = last_component(devpath);
+    srcname = last_component(pool->def->source.devices[0].path);
     VIR_DEBUG("dev_name=%s, srcname=%s", dev_name, srcname);
 
     isDevMapperDevice = virIsDevMapperDevice(devpath);

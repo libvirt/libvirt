@@ -1,7 +1,7 @@
 /*
  * node_device_udev.c: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2009-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 #include <scsi/scsi.h>
 #include <c-ctype.h>
 
+#include "dirname.h"
 #include "node_device_udev.h"
 #include "virerror.h"
 #include "node_device_conf.h"
@@ -653,7 +654,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
     union _virNodeDevCapData *data = &def->caps->data;
     char *filename = NULL;
 
-    filename = basename(def->sysfs_path);
+    filename = last_component(def->sysfs_path);
 
     if (!STRPREFIX(filename, "host")) {
         VIR_ERROR(_("SCSI host found, but its udev name '%s' does "
@@ -774,7 +775,7 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
     union _virNodeDevCapData *data = &def->caps->data;
     char *filename = NULL, *p = NULL;
 
-    filename = basename(def->sysfs_path);
+    filename = last_component(def->sysfs_path);
 
     if (udevStrToLong_ui(filename, &p, 10, &data->scsi.host) == -1) {
         goto out;

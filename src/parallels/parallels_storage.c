@@ -2,6 +2,7 @@
  * parallels_storage.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Parallels, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -28,9 +29,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <libgen.h>
 
 #include "datatypes.h"
+#include "dirname.h"
 #include "viralloc.h"
 #include "configmake.h"
 #include "virstoragefile.h"
@@ -230,12 +231,11 @@ parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
     virStoragePoolObjPtr pool = NULL;
     int j;
 
-    if (!(poolPath = strdup(pdom->home))) {
+    poolPath = mdir_name(pdom->home);
+    if (!poolPath) {
         virReportOOMError();
         return NULL;
     }
-
-    poolPath = dirname(poolPath);
 
     for (j = 0; j < pools->count; j++) {
         if (STREQ(poolPath, pools->objs[j]->def->target.path)) {

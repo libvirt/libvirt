@@ -1,7 +1,7 @@
 /*
  * vircgroup.c: methods for managing control cgroups
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * This library is free software; you can redistribute it and/or
@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <signal.h>
-#include <libgen.h>
 #include <dirent.h>
 
 #define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
