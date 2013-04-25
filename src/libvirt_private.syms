@@ -1724,6 +1724,7 @@ virStorageFileResize;
 # util/virstring.h
 virStringFreeList;
 virStringJoin;
+virStringListLength;
 virStringSplit;
 
 

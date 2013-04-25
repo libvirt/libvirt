@@ -166,3 +166,13 @@ void virStringFreeList(char **strings)
     }
     VIR_FREE(strings);
 }
+
+size_t virStringListLength(char **strings)
+{
+    size_t i = 0;
+
+    while (strings && strings[i])
+        i++;
+
+    return i;
+}

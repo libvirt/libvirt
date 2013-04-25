@@ -113,7 +113,8 @@ int virNetSocketGetPort(virNetSocketPtr sock);
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 uid_t *uid,
                                 gid_t *gid,
-                                pid_t *pid);
+                                pid_t *pid,
+                                unsigned long long *timestamp);
 int virNetSocketGetSecurityContext(virNetSocketPtr sock,
                                    char **context);
 
