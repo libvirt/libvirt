@@ -4355,7 +4355,7 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
 
     <p>
-      Example automatically added device with KVM
+      Example: automatically added device with KVM
     </p>
 <pre>
   ...
@@ -4365,13 +4365,14 @@ qemu-kvm -net nic,model=? /dev/null
   ...</pre>
 
     <p>
-      Example manually added device with static PCI slot 2 requested
+      Example: manually added device with static PCI slot 2 requested
     </p>
 <pre>
   ...
   &lt;devices&gt;
-    &lt;watchdog model='virtio'/&gt;
-    &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/&gt;
+    &lt;memballoon model='virtio'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/&gt;
+    &lt;/memballoon&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;</pre>
 
