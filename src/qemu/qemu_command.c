@@ -1459,7 +1459,7 @@ int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
 }
 
 int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev)
+                                   virDomainDeviceInfoPtr dev)
 {
     int ret = 0;
     if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
