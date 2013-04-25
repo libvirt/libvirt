@@ -173,7 +173,7 @@ virIdentityPtr virIdentityGetSystem(void)
         goto error;
     if (seccontext &&
         virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_SECURITY_CONTEXT,
+                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
                            seccontext) < 0)
         goto error;
 

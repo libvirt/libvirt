@@ -1161,8 +1161,8 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
 #endif
 
 #ifdef WITH_SELINUX
-int virNetSocketGetSecurityContext(virNetSocketPtr sock,
-                                   char **context)
+int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
+                                  char **context)
 {
     security_context_t seccon = NULL;
     int ret = -1;
@@ -1192,8 +1192,8 @@ cleanup:
     return ret;
 }
 #else
-int virNetSocketGetSecurityContext(virNetSocketPtr sock ATTRIBUTE_UNUSED,
-                                   char **context)
+int virNetSocketGetSELinuxContext(virNetSocketPtr sock ATTRIBUTE_UNUSED,
+                                  char **context)
 {
     *context = NULL;
     return 0;

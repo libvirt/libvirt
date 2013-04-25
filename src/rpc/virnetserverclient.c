@@ -701,7 +701,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 #endif
 
     if (client->sock &&
-        virNetSocketGetSecurityContext(client->sock, &seccontext) < 0)
+        virNetSocketGetSELinuxContext(client->sock, &seccontext) < 0)
         goto cleanup;
 
     if (!(ret = virIdentityNew()))
@@ -736,7 +736,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
         goto error;
     if (seccontext &&
         virIdentitySetAttr(ret,
-                           VIR_IDENTITY_ATTR_SECURITY_CONTEXT,
+                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
                            seccontext) < 0)
         goto error;
 
@@ -771,14 +771,14 @@ virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client)
 }
 
 
-int virNetServerClientGetSecurityContext(virNetServerClientPtr client,
-                                         char **context)
+int virNetServerClientGetSELinuxContext(virNetServerClientPtr client,
+                                        char **context)
 {
     int ret = 0;
     *context = NULL;
     virObjectLock(client);
     if (client->sock)
-        ret = virNetSocketGetSecurityContext(client->sock, context);
+        ret = virNetSocketGetSELinuxContext(client->sock, context);
     virObjectUnlock(client);
     return ret;
 }
