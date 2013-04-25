@@ -204,13 +204,16 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     if (err != 0) {
         char error[100];
         regerror(err, reg, error, sizeof(error));
+        regfree(reg);
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to compile regex %s"),
                               error);
         goto cleanup;
     }
 
-    if (regexec(reg, groups[3], nvars, vars, 0) != 0) {
+    err = regexec(reg, groups[3], nvars, vars, 0);
+    regfree(reg);
+    if (err != 0) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("malformed volume extent devices value"));
         goto cleanup;
