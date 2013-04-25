@@ -618,12 +618,15 @@ int virNetServerClientGetFD(virNetServerClientPtr client)
 }
 
 int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
-                                      uid_t *uid, gid_t *gid, pid_t *pid)
+                                      uid_t *uid, gid_t *gid, pid_t *pid,
+                                      unsigned long long *timestamp)
 {
     int ret = -1;
     virObjectLock(client);
     if (client->sock)
-        ret = virNetSocketGetUNIXIdentity(client->sock, uid, gid, pid);
+        ret = virNetSocketGetUNIXIdentity(client->sock,
+                                          uid, gid, pid,
+                                          timestamp);
     virObjectUnlock(client);
     return ret;
 }

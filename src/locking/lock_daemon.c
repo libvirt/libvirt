@@ -782,6 +782,7 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     virLockDaemonClientPtr priv;
     uid_t clientuid;
     gid_t clientgid;
+    unsigned long long timestamp;
     bool privileged = opaque != NULL;
 
     if (VIR_ALLOC(priv) < 0) {
@@ -798,7 +799,8 @@ virLockDaemonClientNew(virNetServerClientPtr client,
     if (virNetServerClientGetUNIXIdentity(client,
                                           &clientuid,
                                           &clientgid,
-                                          &priv->clientPid) < 0)
+                                          &priv->clientPid,
+                                          &timestamp) < 0)
         goto error;
 
     VIR_DEBUG("New client pid %llu uid %llu",
