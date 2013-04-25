@@ -831,7 +831,17 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         if (!pci)
             goto done;
 
-        ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
+        if (dev->source.subsys.u.pci.backend
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
+
+            if (!vfioGroupDev)
+                goto done;
+            ret = AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr);
+            VIR_FREE(vfioGroupDev);
+        } else {
+            ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
+        }
         virPCIDeviceFree(pci);
         break;
     }
