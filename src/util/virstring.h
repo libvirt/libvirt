@@ -88,7 +88,6 @@ char *virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 # define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
-
 /* Don't call these directly - use the macros below */
 int virStrdup(char **dest, const char *src, bool report, int domcode,
               const char *filename, const char *funcname, size_t linenr)
@@ -159,4 +158,7 @@ int virStrndup(char **dest, const char *src, size_t n, bool report, int domcode,
  */
 # define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n, false, \
                                                    0, NULL, NULL, 0)
+
+size_t virStringListLength(char **strings);
+
 #endif /* __VIR_STRING_H__ */

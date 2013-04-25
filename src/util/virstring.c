@@ -593,3 +593,14 @@ virStrndup(char **dest,
 
    return 1;
 }
+
+
+size_t virStringListLength(char **strings)
+{
+    size_t i = 0;
+
+    while (strings && strings[i])
+        i++;
+
+    return i;
+}

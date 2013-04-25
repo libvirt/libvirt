@@ -47,6 +47,9 @@ int virProcessGetAffinity(pid_t pid,
                           virBitmapPtr *map,
                           int maxcpu);
 
+int virProcessGetStartTime(pid_t pid,
+                           unsigned long long *timestamp);
+
 int virProcessGetNamespaces(pid_t pid,
                             size_t *nfdlist,
                             int **fdlist);
