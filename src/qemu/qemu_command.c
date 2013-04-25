@@ -1634,7 +1634,7 @@ qemuDomainPCIAddressGetNextSlot(qemuDomainPCIAddressSetPtr addrs,
 
     /* Start the search at the last used bus and slot */
     for (a.slot++; a.bus < addrs->nbuses; a.bus++) {
-        for ( ; a.slot < QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
+        for (; a.slot < QEMU_PCI_ADDRESS_SLOT_LAST; a.slot++) {
             if (!qemuDomainPCIAddressSlotInUse(addrs, &a))
                 goto success;
 
