@@ -7906,13 +7906,24 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
 
-            if ((hostdev->source.subsys.u.pci.backend
-                 == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("VFIO PCI device assignment is not supported by "
-                                 "this version of qemu"));
-                goto error;
+            if (hostdev->source.subsys.u.pci.backend
+                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+                unsigned long long memKB;
+
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO PCI device assignment is not "
+                                     "supported by this version of qemu"));
+                    goto error;
+                }
+                /* VFIO requires all of the guest's memory to be
+                 * locked resident, plus some amount for IO
+                 * space. Alex Williamson suggested adding 1GiB for IO
+                 * space just to be safe (some finer tuning might be
+                 * nice, though).
+                 */
+                memKB = def->mem.max_balloon + (1024 * 1024);
+                virCommandSetMaxMemLock(cmd, memKB * 1024);
             }
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
