@@ -1294,7 +1294,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
         int i;
-        int remove = 0;
+        int toremove = 0;
         virDomainControllerDefPtr usb = NULL, pci = NULL;
 
         /* If only the default USB controller is present, we can remove it
@@ -1314,7 +1314,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
         if (usb && usb->idx == 0 && usb->model == -1) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);
-            remove++;
+            toremove++;
         } else {
             usb = NULL;
         }
@@ -1335,15 +1335,15 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             pci->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
             VIR_DEBUG("Removing default 'pci-root' from domain '%s'"
                       " for migration compatibility", def->name);
-            remove++;
+            toremove++;
         } else {
             pci = NULL;
         }
 
-        if (remove) {
+        if (toremove) {
             controllers = def->controllers;
             ncontrollers = def->ncontrollers;
-            if (VIR_ALLOC_N(def->controllers, ncontrollers - remove) < 0) {
+            if (VIR_ALLOC_N(def->controllers, ncontrollers - toremove) < 0) {
                 controllers = NULL;
                 virReportOOMError();
                 goto cleanup;
