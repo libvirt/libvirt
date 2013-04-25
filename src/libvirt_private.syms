@@ -1750,6 +1750,7 @@ virStorageFileResize;
 virStringArrayHasString;
 virStringFreeList;
 virStringJoin;
+virStringListLength;
 virStringSplit;
 
 

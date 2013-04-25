@@ -37,4 +37,6 @@ void virStringFreeList(char **strings);
 
 bool virStringArrayHasString(char **strings, const char *needle);
 
+size_t virStringListLength(char **strings);
+
 #endif /* __VIR_STRING_H__ */
