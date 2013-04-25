@@ -208,6 +208,7 @@ mymain(void)
     DO_TEST("net-eth-ifname");
     DO_TEST("net-virtio-network-portgroup");
     DO_TEST("net-hostdev");
+    DO_TEST("net-hostdev-vfio");
     DO_TEST("net-openvswitch");
     DO_TEST("sound");
     DO_TEST("sound-device");
@@ -230,6 +231,7 @@ mymain(void)
 
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");
+    DO_TEST("hostdev-vfio");
     DO_TEST("pci-rom");
 
     DO_TEST("encrypted-disk");

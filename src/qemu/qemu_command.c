@@ -4345,14 +4345,19 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAddLit(&buf, "pci-assign");
+    if (dev->source.subsys.u.pci.backend
+        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+        virBufferAddLit(&buf, "vfio-pci");
+    } else {
+        virBufferAddLit(&buf, "pci-assign");
+        if (configfd && *configfd)
+            virBufferAsprintf(&buf, ",configfd=%s", configfd);
+    }
     virBufferAsprintf(&buf, ",host=%.2x:%.2x.%.1x",
                       dev->source.subsys.u.pci.addr.bus,
                       dev->source.subsys.u.pci.addr.slot,
                       dev->source.subsys.u.pci.addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
-    if (configfd && *configfd)
-        virBufferAsprintf(&buf, ",configfd=%s", configfd);
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, dev->info, qemuCaps) < 0)
@@ -7846,22 +7851,33 @@ qemuBuildCommandLine(virConnectPtr conn,
                 (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
                  hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("booting from assigned devices is only"
-                                 " supported for PCI and USB devices"));
+                               _("booting from assigned devices is only "
+                                 "supported for PCI and USB devices"));
                 goto error;
             } else {
-                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_BOOTINDEX)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("booting from assigned PCI devices is not"
-                                     " supported with this version of qemu"));
-                    goto error;
+                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+                    if (hostdev->source.subsys.u.pci.backend
+                        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_BOOTINDEX)) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("booting from PCI devices assigned with VFIO "
+                                             "is not supported with this version of qemu"));
+                            goto error;
+                        }
+                    } else {
+                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_BOOTINDEX)) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("booting from assigned PCI devices is not "
+                                             "supported with this version of qemu"));
+                            goto error;
+                        }
+                    }
                 }
                 if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
                     !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_BOOTINDEX)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("booting from assigned USB devices is not"
-                                     " supported with this version of qemu"));
+                                   _("booting from assigned USB devices is not "
+                                     "supported with this version of qemu"));
                     goto error;
                 }
             }
@@ -7889,9 +7905,21 @@ qemuBuildCommandLine(virConnectPtr conn,
         /* PCI */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+
+            if ((hostdev->source.subsys.u.pci.backend
+                 == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("VFIO PCI device assignment is not supported by "
+                                 "this version of qemu"));
+                goto error;
+            }
+
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *configfd_name = NULL;
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+                if ((hostdev->source.subsys.u.pci.backend
+                     != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
                     int configfd = qemuOpenPCIConfig(hostdev);
 
                     if (configfd >= 0) {

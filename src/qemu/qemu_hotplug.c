@@ -999,13 +999,24 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
                                      &hostdev, 1) < 0)
         return -1;
 
+    if ((hostdev->source.subsys.u.pci.backend
+         == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("VFIO PCI device assignment is not supported by "
+                         "this version of qemu"));
+        goto error;
+    }
+
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
             goto error;
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
             goto error;
         releaseaddr = true;
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+        if ((hostdev->source.subsys.u.pci.backend
+             != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {
                 if (virAsprintf(&configfd_name, "fd-%s",
