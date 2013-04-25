@@ -241,7 +241,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         }
     }
 #endif
-    cfg->bridgeHelperName = strdup("/usr/libexec/qemu-bridge-helper");
+    if (!(cfg->bridgeHelperName = strdup("/usr/libexec/qemu-bridge-helper")))
+        goto no_memory;
 
     cfg->clearEmulatorCapabilities = true;
 
