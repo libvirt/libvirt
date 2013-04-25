@@ -25,8 +25,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #if defined(__linux__)
 # include <linux/capability.h>
 #elif defined(__FreeBSD__)
@@ -2453,37 +2451,6 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 
-static int
-qemuProcessLimits(virQEMUDriverConfigPtr cfg)
-{
-    struct rlimit rlim;
-
-    if (cfg->maxProcesses > 0) {
-        rlim.rlim_cur = rlim.rlim_max = cfg->maxProcesses;
-        if (setrlimit(RLIMIT_NPROC, &rlim) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot limit number of processes to %d"),
-                                 cfg->maxProcesses);
-            return -1;
-        }
-    }
-
-    if (cfg->maxFiles > 0) {
-        /* Max number of opened files is one greater than
-         * actual limit. See man setrlimit */
-        rlim.rlim_cur = rlim.rlim_max = cfg->maxFiles + 1;
-        if (setrlimit(RLIMIT_NOFILE, &rlim) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot set max opened files to %d"),
-                                 cfg->maxFiles);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 struct qemuProcessHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -2524,9 +2491,6 @@ static int qemuProcessHook(void *data)
                                   &fd) < 0)
         goto cleanup;
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
-        goto cleanup;
-
-    if (qemuProcessLimits(h->cfg) < 0)
         goto cleanup;
 
     /* This must take place before exec(), so that all QEMU
@@ -3697,6 +3661,8 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
+    virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
+    virCommandSetMaxFiles(cmd, cfg->maxFiles);
 
     VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
