@@ -308,7 +308,8 @@
     &lt;/bios&gt;
     &lt;system&gt;
       &lt;entry name='manufacturer'&gt;Fedora&lt;/entry&gt;
-      &lt;entry name='vendor'&gt;Virt-Manager&lt;/entry&gt;
+      &lt;entry name='product'&gt;Virt-Manager&lt;/entry&gt;
+      &lt;entry name='version'&gt;0.9.4&lt;/entry&gt;
     &lt;/system&gt;
   &lt;/sysinfo&gt;
   ...</pre>
@@ -332,17 +333,49 @@
         <dl>
           <dt><code>bios</code></dt>
           <dd>
-            This is block 0 of SMBIOS, with entry names drawn from
-            "vendor", "version", "date", and "release".
+            This is block 0 of SMBIOS, with entry names drawn from:
+            <dl>
+               <dt><code>vendor</code></dt>
+               <dd>BIOS Vendor's Name</dd>
+               <dt><code>version</code></dt>
+               <dd>BIOS Version</dd>
+               <dt><code>date</code></dt>
+               <dd>BIOS release date. If supplied, is in either mm/dd/yy or
+                   mm/dd/yyyy format. If the year portion of the string is
+                   two digits, the year is assumed to be 19yy.</dd>
+               <dt><code>release</code></dt>
+               <dd>System BIOS Major and Minor release number values
+                   concatenated together as one string separated by
+                   a period, for example, 10.22.</dd>
+           </dl>
           </dd>
           <dt><code>system</code></dt>
           <dd>
-            This is block 1 of SMBIOS, with entry names drawn from
-            "manufacturer", "product", "version", "serial", "uuid",
-            "sku", and "family".  If a "uuid" entry is provided
-            alongside a
-            top-level <a href="#elementsMetadata"><code>uuid</code>
-            element</a>, the two values must match.
+            This is block 1 of SMBIOS, with entry names drawn from:
+            <dl>
+                <dt><code>manufacturer</code></dt>
+                <dd>Manufacturer of BIOS</dd>
+                <dt><code>product</code></dt>
+                <dd>Product Name</dd>
+                <dt><code>version</code></dt>
+                <dd>Version of the product</dd>
+                <dt><code>serial</code></dt>
+                <dd>Serial number</dd>
+                <dt><code>uuid</code></dt>
+                <dd>Universal Unique ID number. If this entry is provided
+                alongside a top-level
+                <a href="#elementsMetadata"><code>uuid</code></a> element,
+                then the two values must match.</dd>
+                <dt><code>sku</code></dt>
+                <dd>SKU number to identify a particular configuration.</dd>
+                <dt><code>family</code></dt>
+                <dd>Identify the family a particular computer belongs to.</dd>
+            </dl>
+            NB: Incorrectly supplied entries in either the <code>bios</code>
+            or <code>system</code> blocks will be ignored without error.
+            Other than <code>uuid</code> validation and <code>date</code>
+            format checking, all values are passed as strings to the
+            hypervisor driver.
           </dd>
         </dl>
       </dd>
