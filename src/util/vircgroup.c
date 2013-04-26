@@ -1297,7 +1297,7 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
     int rc;
     char *grpname = NULL;
 
-    if (virAsprintf(&grpname, "%s.%s.libvirt",
+    if (virAsprintf(&grpname, "%s.libvirt-%s",
                     name, driver) < 0)
         return -ENOMEM;
 

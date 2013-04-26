@@ -362,13 +362,13 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     int rv;
     const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/production/foo.lxc.libvirt",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/production/foo.lxc.libvirt",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/production/foo.lxc.libvirt",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/production/foo.lxc.libvirt",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/production/foo.libvirt-lxc",
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/production/foo.lxc.libvirt",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/production/foo.lxc.libvirt",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/production/foo.libvirt-lxc",
     };
 
     if ((rv = virCgroupNewPartition("/production", true, -1, &partitioncgroup)) != 0) {
@@ -381,7 +381,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "/production/foo.lxc.libvirt", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/production/foo.libvirt-lxc", mountsFull, links, placement);
 
 cleanup:
     virCgroupFree(&partitioncgroup);
