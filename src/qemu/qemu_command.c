@@ -1909,6 +1909,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             primaryVideo->info.addr.pci.function = 0;
             addrptr = &primaryVideo->info.addr.pci;
 
+            if (!qemuPCIAddressValidate(addrs, addrptr))
+                goto error;
+
             if (qemuDomainPCIAddressSlotInUse(addrs, addrptr)) {
                 if (qemuDeviceVideoUsable) {
                     virResetLastError();
@@ -1935,7 +1938,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             /* If TYPE==PCI, then qemuCollectPCIAddress() function
              * has already reserved the address, so we must skip */
         }
-    } else if (!qemuDeviceVideoUsable) {
+    } else if (addrs->nbuses && !qemuDeviceVideoUsable) {
         memset(&tmp_addr, 0, sizeof(tmp_addr));
         tmp_addr.slot = 2;
 
