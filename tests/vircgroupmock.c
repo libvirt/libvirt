@@ -66,7 +66,7 @@ static char *fakesysfsdir;
  * Co-mounting cpu & cpuacct controllers
  * An anonymous controller for systemd
  */
-const char *mounts =
+const char *procmounts =
     "rootfs / rootfs rw 0 0\n"
     "tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0\n"
     "tmpfs /not/really/sys/fs/cgroup tmpfs rw,seclabel,nosuid,nodev,noexec,mode=755 0 0\n"
@@ -79,13 +79,24 @@ const char *mounts =
     "/dev/sda1 /boot ext4 rw,seclabel,relatime,data=ordered 0 0\n"
     "tmpfs /tmp tmpfs rw,seclabel,relatime,size=1024000k 0 0\n";
 
-const char *cgroups =
+const char *procselfcgroups =
     "115:memory:/\n"
     "8:blkio:/\n"
     "6:freezer:/\n"
     "3:cpuacct,cpu:/system\n"
     "2:cpuset:/\n"
     "1:name=systemd:/user/berrange/123\n";
+
+const char *proccgroups =
+    "#subsys_name    hierarchy       num_cgroups     enabled\n"
+    "cpuset  2       4       1\n"
+    "cpu     3       48      1\n"
+    "cpuacct 3       48      1\n"
+    "memory  4       4       1\n"
+    "devices 5       4       1\n"
+    "freezer 6       4       1\n"
+    "blkio   8       4       1\n";
+
 
 static int make_file(const char *path,
                      const char *name,
@@ -366,7 +377,15 @@ FILE *fopen(const char *path, const char *mode)
 
     if (STREQ(path, "/proc/mounts")) {
         if (STREQ(mode, "r")) {
-            return fmemopen((void *)mounts, strlen(mounts), mode);
+            return fmemopen((void *)procmounts, strlen(procmounts), mode);
+        } else {
+            errno = EACCES;
+            return NULL;
+        }
+    }
+    if (STREQ(path, "/proc/cgroups")) {
+        if (STREQ(mode, "r")) {
+            return fmemopen((void *)proccgroups, strlen(proccgroups), mode);
         } else {
             errno = EACCES;
             return NULL;
@@ -374,7 +393,7 @@ FILE *fopen(const char *path, const char *mode)
     }
     if (STREQ(path, "/proc/self/cgroup")) {
         if (STREQ(mode, "r")) {
-            return fmemopen((void *)cgroups, strlen(cgroups), mode);
+            return fmemopen((void *)procselfcgroups, strlen(procselfcgroups), mode);
         } else {
             errno = EACCES;
             return NULL;

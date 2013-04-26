@@ -441,6 +441,58 @@ cleanup:
     return ret;
 }
 
+static int testCgroupNewForPartitionDomainEscaped(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr partitioncgroup1 = NULL;
+    virCgroupPtr partitioncgroup2 = NULL;
+    virCgroupPtr partitioncgroup3 = NULL;
+    virCgroupPtr domaincgroup = NULL;
+    int ret = -1;
+    int rv;
+    const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPU] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc",
+    };
+
+    if ((rv = virCgroupNewPartition("/cgroup.evil", true, -1, &partitioncgroup1)) != 0) {
+        fprintf(stderr, "Failed to create /cgroup.evil cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupNewPartition("/cgroup.evil/net_cls.evil", true, -1, &partitioncgroup2)) != 0) {
+        fprintf(stderr, "Failed to create /cgroup.evil/cpu.evil cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupNewPartition("/cgroup.evil/net_cls.evil/_evil.evil", true, -1, &partitioncgroup3)) != 0) {
+        fprintf(stderr, "Failed to create /cgroup.evil cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupNewDomainPartition(partitioncgroup3, "lxc", "cpu.foo", true, &domaincgroup)) != 0) {
+        fprintf(stderr, "Cannot create LXC cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    /* NB we're not expecting 'net_cls.evil' to be escaped,
+     * since our fake /proc/cgroups pretends this controller
+     * isn't compiled into the kernel
+     */
+    ret = validateCgroup(domaincgroup, "/_cgroup.evil/net_cls.evil/__evil.evil/_cpu.foo.libvirt-lxc", mountsFull, links, placement);
+
+cleanup:
+    virCgroupFree(&partitioncgroup3);
+    virCgroupFree(&partitioncgroup2);
+    virCgroupFree(&partitioncgroup1);
+    virCgroupFree(&domaincgroup);
+    return ret;
+}
+
 # define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
 
 static int
@@ -482,6 +534,8 @@ mymain(void)
     if (virtTestRun("New cgroup for domain partition", 1, testCgroupNewForPartitionDomain, NULL) < 0)
         ret = -1;
 
+    if (virtTestRun("New cgroup for domain partition escaped", 1, testCgroupNewForPartitionDomainEscaped, NULL) < 0)
+        ret = -1;
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakesysfsdir);
