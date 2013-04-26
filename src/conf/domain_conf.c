@@ -9924,6 +9924,7 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
 
     if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
         VIR_FREE(cont);
+        virReportOOMError();
         return -1;
     }
 
