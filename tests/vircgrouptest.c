@@ -246,22 +246,22 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     int rv;
     const char *placementSmall[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/virtualmachines",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/virtualmachines",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/virtualmachines.partition",
         [VIR_CGROUP_CONTROLLER_CPUSET] = NULL,
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/virtualmachines",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/virtualmachines.partition",
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
         [VIR_CGROUP_CONTROLLER_FREEZER] = NULL,
         [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
     };
     const char *placementFull[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/virtualmachines",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/virtualmachines",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/virtualmachines",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/virtualmachines",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/virtualmachines.partition",
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/virtualmachines",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/virtualmachines",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/virtualmachines.partition",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/virtualmachines.partition",
     };
 
     if ((rv = virCgroupNewPartition("/virtualmachines", false, -1, &cgroup)) != -ENOENT) {
@@ -294,14 +294,14 @@ static int testCgroupNewForPartition(const void *args ATTRIBUTE_UNUSED)
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines", mountsSmall, links, placementSmall);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsSmall, links, placementSmall);
     virCgroupFree(&cgroup);
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true, -1, &cgroup)) != 0) {
         fprintf(stderr, "Cannot create /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }
-    ret = validateCgroup(cgroup, "/virtualmachines", mountsFull, links, placementFull);
+    ret = validateCgroup(cgroup, "/virtualmachines.partition", mountsFull, links, placementFull);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -315,38 +315,90 @@ static int testCgroupNewForPartitionNested(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     int rv;
     const char *placementFull[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/users/berrange",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/users/berrange",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/users/berrange",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/users/berrange",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/deployment.partition/production.partition",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/deployment.partition/production.partition",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/deployment.partition/production.partition",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/deployment.partition/production.partition",
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/users/berrange",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/users/berrange",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/deployment.partition/production.partition",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/deployment.partition/production.partition",
     };
 
-    if ((rv = virCgroupNewPartition("/users/berrange", false, -1, &cgroup)) != -ENOENT) {
-        fprintf(stderr, "Unexpected found /users/berrange cgroup: %d\n", -rv);
+    if ((rv = virCgroupNewPartition("/deployment/production", false, -1, &cgroup)) != -ENOENT) {
+        fprintf(stderr, "Unexpected found /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
 
-    /* Should not work, since we require /users to be pre-created */
-    if ((rv = virCgroupNewPartition("/users/berrange", true, -1, &cgroup)) != -ENOENT) {
-        fprintf(stderr, "Unexpected created /users/berrange cgroup: %d\n", -rv);
+    /* Should not work, since we require /deployment to be pre-created */
+    if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != -ENOENT) {
+        fprintf(stderr, "Unexpected created /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
 
-    if ((rv = virCgroupNewPartition("/users", true, -1, &cgroup)) != 0) {
-        fprintf(stderr, "Failed to create /users cgroup: %d\n", -rv);
+    if ((rv = virCgroupNewPartition("/deployment", true, -1, &cgroup)) != 0) {
+        fprintf(stderr, "Failed to create /deployment cgroup: %d\n", -rv);
         goto cleanup;
     }
 
     /* Should now work */
-    if ((rv = virCgroupNewPartition("/users/berrange", true, -1, &cgroup)) != 0) {
-        fprintf(stderr, "Failed to create /users/berrange cgroup: %d\n", -rv);
+    if ((rv = virCgroupNewPartition("/deployment/production", true, -1, &cgroup)) != 0) {
+        fprintf(stderr, "Failed to create /deployment/production cgroup: %d\n", -rv);
         goto cleanup;
     }
 
-    ret = validateCgroup(cgroup, "/users/berrange", mountsFull, links, placementFull);
+    ret = validateCgroup(cgroup, "/deployment.partition/production.partition",
+                         mountsFull, links, placementFull);
+
+cleanup:
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+
+static int testCgroupNewForPartitionNestedDeep(const void *args ATTRIBUTE_UNUSED)
+{
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+    int rv;
+    const char *placementFull[VIR_CGROUP_CONTROLLER_LAST] = {
+        [VIR_CGROUP_CONTROLLER_CPU] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/user/berrange.user/production.partition",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/user/berrange.user/production.partition",
+    };
+
+    if ((rv = virCgroupNewPartition("/user/berrange.user/production", false, -1, &cgroup)) != -ENOENT) {
+        fprintf(stderr, "Unexpected found /user/berrange.user/production cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    /* Should not work, since we require /user/berrange.user to be pre-created */
+    if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != -ENOENT) {
+        fprintf(stderr, "Unexpected created /user/berrange.user/production cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupNewPartition("/user", true, -1, &cgroup)) != 0) {
+        fprintf(stderr, "Failed to create /user/berrange.user cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    if ((rv = virCgroupNewPartition("/user/berrange.user", true, -1, &cgroup)) != 0) {
+        fprintf(stderr, "Failed to create /user/berrange.user cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    /* Should now work */
+    if ((rv = virCgroupNewPartition("/user/berrange.user/production", true, -1, &cgroup)) != 0) {
+        fprintf(stderr, "Failed to create /user/berrange.user/production cgroup: %d\n", -rv);
+        goto cleanup;
+    }
+
+    ret = validateCgroup(cgroup, "/user/berrange.user/production.partition",
+                         mountsFull, links, placementFull);
 
 cleanup:
     virCgroupFree(&cgroup);
@@ -362,13 +414,13 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
     int ret = -1;
     int rv;
     const char *placement[VIR_CGROUP_CONTROLLER_LAST] = {
-        [VIR_CGROUP_CONTROLLER_CPU] = "/production/foo.libvirt-lxc",
-        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/production/foo.libvirt-lxc",
-        [VIR_CGROUP_CONTROLLER_CPUSET] = "/production/foo.libvirt-lxc",
-        [VIR_CGROUP_CONTROLLER_MEMORY] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPU] = "/production.partition/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUACCT] = "/production.partition/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_CPUSET] = "/production.partition/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_MEMORY] = "/production.partition/foo.libvirt-lxc",
         [VIR_CGROUP_CONTROLLER_DEVICES] = NULL,
-        [VIR_CGROUP_CONTROLLER_FREEZER] = "/production/foo.libvirt-lxc",
-        [VIR_CGROUP_CONTROLLER_BLKIO] = "/production/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_FREEZER] = "/production.partition/foo.libvirt-lxc",
+        [VIR_CGROUP_CONTROLLER_BLKIO] = "/production.partition/foo.libvirt-lxc",
     };
 
     if ((rv = virCgroupNewPartition("/production", true, -1, &partitioncgroup)) != 0) {
@@ -381,7 +433,7 @@ static int testCgroupNewForPartitionDomain(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    ret = validateCgroup(domaincgroup, "/production/foo.libvirt-lxc", mountsFull, links, placement);
+    ret = validateCgroup(domaincgroup, "/production.partition/foo.libvirt-lxc", mountsFull, links, placement);
 
 cleanup:
     virCgroupFree(&partitioncgroup);
@@ -422,6 +474,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("New cgroup for partition nested", 1, testCgroupNewForPartitionNested, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("New cgroup for partition nested deeply", 1, testCgroupNewForPartitionNestedDeep, NULL) < 0)
         ret = -1;
 
     if (virtTestRun("New cgroup for domain partition", 1, testCgroupNewForPartitionDomain, NULL) < 0)

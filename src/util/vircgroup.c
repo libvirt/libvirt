@@ -49,6 +49,7 @@
 #include "virfile.h"
 #include "virhash.h"
 #include "virhashcode.h"
+#include "virstring.h"
 
 #define CGROUP_MAX_VAL 512
 
@@ -1091,6 +1092,47 @@ cleanup:
 
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+static char *virCgroupSetPartitionSuffix(const char *path)
+{
+    char **tokens = virStringSplit(path, "/", 0);
+    size_t i;
+    char *ret = NULL;
+
+    if (!tokens)
+        return NULL;
+
+    for (i = 0 ; tokens[i] != NULL ; i++) {
+        /* Whitelist the 3 top level fixed dirs
+         * NB i == 0 is "", since we have leading '/'
+         */
+        if (i == 1 &&
+            (STREQ(tokens[i], "machine") ||
+             STREQ(tokens[i], "system") ||
+             STREQ(tokens[i], "user"))) {
+            continue;
+        }
+        /* If there is no suffix set already, then
+         * add ".partition"
+         */
+        if (STRNEQ(tokens[i], "") &&
+            !strchr(tokens[i], '.')) {
+            if (VIR_REALLOC_N(tokens[i],
+                              strlen(tokens[i]) + strlen(".partition") + 1) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            strcat(tokens[i], ".partition");
+        }
+    }
+
+    if (!(ret = virStringJoin((const char **)tokens, "/")))
+        goto cleanup;
+
+cleanup:
+    virStringFreeList(tokens);
+    return ret;
+}
+
 /**
  * virCgroupNewPartition:
  * @path: path for the partition
@@ -1110,19 +1152,28 @@ int virCgroupNewPartition(const char *path,
     int rc;
     char *parentPath = NULL;
     virCgroupPtr parent = NULL;
+    char *newpath;
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
 
     if (path[0] != '/')
         return -EINVAL;
 
-    rc = virCgroupNew(path, NULL, controllers, group);
+    /* XXX convert all cgroups APIs to use error report
+     * APIs instead of returning errno */
+    if (!(newpath = virCgroupSetPartitionSuffix(path))) {
+        virResetLastError();
+        rc = -ENOMEM;
+        goto cleanup;
+    }
+
+    rc = virCgroupNew(newpath, NULL, controllers, group);
     if (rc != 0)
         goto cleanup;
 
-    if (STRNEQ(path, "/")) {
+    if (STRNEQ(newpath, "/")) {
         char *tmp;
-        if (!(parentPath = strdup(path))) {
+        if (!(parentPath = strdup(newpath))) {
             rc = -ENOMEM;
             goto cleanup;
         }
