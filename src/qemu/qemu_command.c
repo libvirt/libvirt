@@ -1407,6 +1407,25 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         return 0;
     }
 
+    /* Ignore implicit controllers on slot 0:0:1.0:
+     * implicit IDE controller on 0:0:1.1 (no qemu command line)
+     * implicit USB controller on 0:0:1.2 (-usb)
+     *
+     * If the machine does have a PCI bus, they will get reserved
+     * in qemuAssignDevicePCISlots().
+     */
+    if (device->type == VIR_DOMAIN_DEVICE_CONTROLLER && addr->domain == 0 &&
+        addr->bus == 0 && addr->slot == 1) {
+        virDomainControllerDefPtr cont = device->data.controller;
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE && cont->idx == 0 &&
+            addr->function == 1)
+            return 0;
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB && cont->idx == 0 &&
+            (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
+             cont->model == -1) && addr->function == 2)
+            return 0;
+    }
+
     if (addrs->dryRun && qemuDomainPCIAddressSetGrow(addrs, addr) < 0)
         return -1;
 
@@ -1822,12 +1841,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                          qemuDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
-    bool reservedIDE = false;
-    bool reservedUSB = false;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     virDevicePCIAddress tmp_addr;
     virDevicePCIAddressPtr addrptr;
-    unsigned int *func = &tmp_addr.function;
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers ; i++) {
@@ -1843,9 +1859,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                                    _("Primary IDE controller must have PCI address 0:0:1.1"));
                     goto error;
                 }
-                /* If TYPE==PCI, then qemuCollectPCIAddress() function
-                 * has already reserved the address, so we must skip */
-                reservedIDE = true;
             } else {
                 def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                 def->controllers[i]->info.addr.pci.domain = 0;
@@ -1866,7 +1879,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                                    _("PIIX3 USB controller must have PCI address 0:0:1.2"));
                     goto error;
                 }
-                reservedUSB = true;
             } else {
                 def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                 def->controllers[i]->info.addr.pci.domain = 0;
@@ -1883,15 +1895,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
     if (addrs->nbuses) {
         memset(&tmp_addr, 0, sizeof(tmp_addr));
         tmp_addr.slot = 1;
-        for (*func = 0; *func < QEMU_PCI_ADDRESS_FUNCTION_LAST; (*func)++) {
-            if ((*func == 1 && reservedIDE) ||
-                (*func == 2 && reservedUSB))
-                /* we have reserved this pci address */
-                continue;
-
-            if (qemuDomainPCIAddressReserveAddr(addrs, &tmp_addr) < 0)
-                goto error;
-        }
+        if (qemuDomainPCIAddressReserveSlot(addrs, &tmp_addr) < 0)
+            goto error;
     }
 
     if (def->nvideos > 0) {
