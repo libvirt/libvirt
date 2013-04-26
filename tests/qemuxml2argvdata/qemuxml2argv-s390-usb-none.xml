@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>test</name>
+  <memory>219100</memory>
+  <currentMemory>219100</currentMemory>
+  <os>
+    <type arch='s390x' machine='s390-virtio'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+      <emulator>/usr/bin/qemu-system-s390x</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='virtio'/>
+      <boot order='1'/>
+    </disk>
+    <console type='pty'>
+      <target type='virtio'/>
+    </console>
+    <controller type='usb' index='0' model='none'/>
+    <memballoon model='virtio'>
+    </memballoon>
+    <rng model='virtio'>
+      <backend model='random'>/dev/hwrng</backend>
+    </rng>
+  </devices>
+</domain>

@@ -1917,6 +1917,11 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
             continue;
 
+        /* USB controller model 'none' doesn't need a PCI address */
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+            continue;
+
         /* FDC lives behind the ISA bridge; CCID is a usb device */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC ||
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_CCID)
