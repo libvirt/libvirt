@@ -8429,10 +8429,13 @@ error:
 
 static virSysinfoDefPtr
 virSysinfoParseXML(const xmlNodePtr node,
-                  xmlXPathContextPtr ctxt)
+                  xmlXPathContextPtr ctxt,
+                  unsigned char *domUUID,
+                  bool uuid_generated)
 {
     virSysinfoDefPtr def;
     char *type;
+    char *tmpUUID = NULL;
 
     if (!xmlStrEqual(node->name, BAD_CAST "sysinfo")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -8500,8 +8503,33 @@ virSysinfoParseXML(const xmlNodePtr node,
         virXPathString("string(system/entry[@name='version'])", ctxt);
     def->system_serial =
         virXPathString("string(system/entry[@name='serial'])", ctxt);
-    def->system_uuid =
-        virXPathString("string(system/entry[@name='uuid'])", ctxt);
+    tmpUUID = virXPathString("string(system/entry[@name='uuid'])", ctxt);
+    if (tmpUUID) {
+        unsigned char uuidbuf[VIR_UUID_BUFLEN];
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        if (virUUIDParse(tmpUUID, uuidbuf) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           "%s", _("malformed <sysinfo> uuid element"));
+            goto error;
+        }
+        if (uuid_generated)
+            memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
+        else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("UUID mismatch between <uuid> and "
+                             "<sysinfo>"));
+            goto error;
+        }
+        /* Although we've validated the UUID as good, virUUIDParse() is
+         * lax with respect to allowing extraneous "-" and " ", but the
+         * underlying hypervisor may be less forgiving. Use virUUIDFormat()
+         * to validate format in xml is right. If not, then format it
+         * properly so that it's used correctly later.
+         */
+        virUUIDFormat(uuidbuf, uuidstr);
+        if (VIR_STRDUP(def->system_uuid, uuidstr) < 0)
+            goto error;
+    }
     def->system_sku =
         virXPathString("string(system/entry[@name='sku'])", ctxt);
     def->system_family =
@@ -8509,6 +8537,7 @@ virSysinfoParseXML(const xmlNodePtr node,
 
 cleanup:
     VIR_FREE(type);
+    VIR_FREE(tmpUUID);
     return def;
 
 error:
@@ -11767,27 +11796,12 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((node = virXPathNode("./sysinfo[1]", ctxt)) != NULL) {
         xmlNodePtr oldnode = ctxt->node;
         ctxt->node = node;
-        def->sysinfo = virSysinfoParseXML(node, ctxt);
+        def->sysinfo = virSysinfoParseXML(node, ctxt,
+                                          def->uuid, uuid_generated);
         ctxt->node = oldnode;
 
         if (def->sysinfo == NULL)
             goto error;
-        if (def->sysinfo->system_uuid != NULL) {
-            unsigned char uuidbuf[VIR_UUID_BUFLEN];
-            if (virUUIDParse(def->sysinfo->system_uuid, uuidbuf) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("malformed uuid element"));
-                goto error;
-            }
-            if (uuid_generated)
-                memcpy(def->uuid, uuidbuf, VIR_UUID_BUFLEN);
-            else if (memcmp(def->uuid, uuidbuf, VIR_UUID_BUFLEN) != 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("UUID mismatch between <uuid> and "
-                                 "<sysinfo>"));
-                goto error;
-            }
-        }
     }
 
     if ((tmp = virXPathString("string(./os/smbios/@mode)", ctxt))) {

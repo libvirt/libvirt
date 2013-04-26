@@ -826,6 +826,7 @@ mymain(void)
 
     DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE);
     DO_TEST_PARSE_ERROR("smbios-date", QEMU_CAPS_SMBIOS_TYPE);
+    DO_TEST_PARSE_ERROR("smbios-uuid-match", QEMU_CAPS_SMBIOS_TYPE);
 
     DO_TEST("watchdog", NONE);
     DO_TEST("watchdog-device", QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
