@@ -3978,7 +3978,8 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(infolist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(infolist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4091,7 +4092,8 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(cpulist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(cpulist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4116,11 +4118,8 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     *cpus = cpulist;
 
 cleanup:
-    if (ret < 0 && cpulist) {
-        for (i = 0 ; i < n ; i++)
-            VIR_FREE(cpulist[i]);
-        VIR_FREE(cpulist);
-    }
+    if (ret < 0)
+        virStringFreeList(cpulist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -4165,7 +4164,8 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(commandlist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(commandlist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4190,11 +4190,8 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
     *commands = commandlist;
 
 cleanup:
-    if (ret < 0 && commandlist) {
-        for (i = 0 ; i < n ; i++)
-            VIR_FREE(commandlist[i]);
-        VIR_FREE(commandlist);
-    }
+    if (ret < 0)
+        virStringFreeList(commandlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -4244,7 +4241,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(eventlist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(eventlist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4269,11 +4267,8 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     *events = eventlist;
 
 cleanup:
-    if (ret < 0 && eventlist) {
-        for (i = 0 ; i < n ; i++)
-            VIR_FREE(eventlist[i]);
-        VIR_FREE(eventlist);
-    }
+    if (ret < 0)
+        virStringFreeList(eventlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -4369,7 +4364,8 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(typelist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(typelist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4394,11 +4390,8 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     *types = typelist;
 
 cleanup:
-    if (ret < 0 && typelist) {
-        for (i = 0 ; i < n ; i++)
-            VIR_FREE(typelist[i]);
-        VIR_FREE(typelist);
-    }
+    if (ret < 0)
+        virStringFreeList(typelist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -4451,7 +4444,8 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(proplist, n) < 0) {
+    /* null-terminated list */
+    if (VIR_ALLOC_N(proplist, n + 1) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -4476,11 +4470,8 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
     *props = proplist;
 
 cleanup:
-    if (ret < 0 && proplist) {
-        for (i = 0 ; i < n ; i++)
-            VIR_FREE(proplist[i]);
-        VIR_FREE(proplist);
-    }
+    if (ret < 0)
+        virStringFreeList(proplist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
