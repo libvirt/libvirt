@@ -25,6 +25,7 @@
 #include "qemu/qemu_conf.h"
 #include "virthread.h"
 #include "virerror.h"
+#include "virstring.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -440,6 +441,59 @@ cleanup:
 
 
 static int
+testQemuMonitorJSONGetTPMModels(const void *data)
+{
+    const virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNew(true, xmlopt);
+    int ret = -1;
+    char **tpmmodels = NULL;
+    int ntpmmodels = 0;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-tpm-models",
+                               "{ "
+                               "  \"return\": [ "
+                               "  \"passthrough\""
+                               "  ]"
+                               "}") < 0)
+        goto cleanup;
+
+    if ((ntpmmodels = qemuMonitorGetTPMModels(qemuMonitorTestGetMonitor(test),
+                                              &tpmmodels)) < 0)
+        goto cleanup;
+
+    if (ntpmmodels != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "ntpmmodels %d is not 1", ntpmmodels);
+        goto cleanup;
+    }
+
+#define CHECK(i, wantname)                                              \
+    do {                                                                \
+        if (STRNEQ(tpmmodels[i], (wantname))) {                         \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "name %s is not %s",                         \
+                           tpmmodels[i], (wantname));                   \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK(0, "passthrough");
+
+#undef CHECK
+
+    ret = 0;
+
+cleanup:
+    qemuMonitorTestFree(test);
+    virStringFreeList(tpmmodels);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -465,6 +519,7 @@ mymain(void)
     DO_TEST(GetMachines);
     DO_TEST(GetCPUDefinitions);
     DO_TEST(GetCommands);
+    DO_TEST(GetTPMModels);
 
     virObjectUnref(xmlopt);
 
