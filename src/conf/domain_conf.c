@@ -8465,6 +8465,29 @@ virSysinfoParseXML(const xmlNodePtr node,
         virXPathString("string(bios/entry[@name='version'])", ctxt);
     def->bios_date =
         virXPathString("string(bios/entry[@name='date'])", ctxt);
+    if (def->bios_date != NULL) {
+        char *ptr;
+        int month, day, year;
+
+        /* Validate just the format of the date
+         * Expect mm/dd/yyyy or mm/dd/yy,
+         * where yy must be 00->99 and would be assumed to be 19xx
+         * a yyyy date should be 1900 and beyond
+         */
+        if (virStrToLong_i(def->bios_date, &ptr, 10, &month) < 0 ||
+            *ptr != '/' ||
+            virStrToLong_i(ptr + 1, &ptr, 10, &day) < 0 ||
+            *ptr != '/' ||
+            virStrToLong_i(ptr + 1, &ptr, 10, &year) < 0 ||
+            *ptr != '\0' ||
+            (month < 1 || month > 12) ||
+            (day < 1 || day > 31) ||
+            (year < 0 || (year >= 100 && year < 1900))) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Invalid BIOS 'date' format"));
+            goto error;
+        }
+    }
     def->bios_release =
         virXPathString("string(bios/entry[@name='release'])", ctxt);
 

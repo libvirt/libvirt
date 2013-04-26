@@ -1,0 +1,23 @@
+<domain type='qemu'>
+  <name>smbios</name>
+  <uuid>362d1fc1-df7d-193e-5c18-49a71bd1da66</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <smbios mode="sysinfo"/>
+  </os>
+  <sysinfo type="smbios">
+    <bios>
+      <entry name="date">999/999/123</entry>
+    </bios>
+  </sysinfo>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+  </devices>
+</domain>
