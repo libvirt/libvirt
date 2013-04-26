@@ -131,7 +131,7 @@ struct _qemuDomainObjPrivate {
 
     qemuMonitorPtr mon;
     virDomainChrSourceDefPtr monConfig;
-    int monJSON;
+    bool monJSON;
     bool monError;
     unsigned long long monStart;
 

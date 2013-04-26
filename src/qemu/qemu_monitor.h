@@ -147,12 +147,12 @@ char *qemuMonitorUnescapeArg(const char *in);
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
-                               int json,
+                               bool json,
                                qemuMonitorCallbacksPtr cb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  int sockfd,
-                                 int json,
+                                 bool json,
                                  qemuMonitorCallbacksPtr cb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 

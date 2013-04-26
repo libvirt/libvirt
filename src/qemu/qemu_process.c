@@ -3578,11 +3578,7 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuProcessPrepareMonitorChr(cfg, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
-        priv->monJSON = 1;
-    else
-        priv->monJSON = 0;
-
+    priv->monJSON = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON);
     priv->monError = false;
     priv->monStart = 0;
     priv->gotShutdown = false;
@@ -3622,7 +3618,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                                     priv->monJSON != 0, priv->qemuCaps,
+                                     priv->monJSON, priv->qemuCaps,
                                      migrateFrom, stdin_fd, snapshot, vmop)))
         goto cleanup;
 

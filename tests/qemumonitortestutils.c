@@ -501,7 +501,7 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json, virDomainXMLOptionPtr xmlopt)
 
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
-                                      json ? 1 : 0,
+                                      json,
                                       &qemuCallbacks)))
         goto error;
     virObjectLock(test->mon);
