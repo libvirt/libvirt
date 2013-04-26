@@ -162,12 +162,16 @@ int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
 int qemuMonitorSetLink(qemuMonitorPtr mon,
                        const char *name,
-                       enum virDomainNetInterfaceLinkState state) ;
+                       enum virDomainNetInterfaceLinkState state);
 
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
 char *qemuMonitorNextCommandID(qemuMonitorPtr mon);
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg);
+virJSONValuePtr qemuMonitorGetOptions(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
+void qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
+    ATTRIBUTE_NONNULL(1);
 int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 const char *cmd,
                                 int scm_fd,
@@ -664,6 +668,9 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
                            char ***commands);
 int qemuMonitorGetEvents(qemuMonitorPtr mon,
                          char ***events);
+int qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
+                                              const char *option,
+                                              char ***params);
 
 int qemuMonitorGetKVMState(qemuMonitorPtr mon,
                            bool *enabled,

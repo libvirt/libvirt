@@ -4275,6 +4275,126 @@ cleanup:
 }
 
 
+int
+qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
+                                              const char *option,
+                                              char ***params)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data = NULL;
+    virJSONValuePtr array = NULL;
+    char **paramlist = NULL;
+    int n = 0;
+    size_t i;
+
+    *params = NULL;
+
+    /* query-command-line-options has fixed output for a given qemu
+     * binary; but since callers want to query parameters for one
+     * option at a time, we cache the option list from qemu.  */
+    if (!(array = qemuMonitorGetOptions(mon))) {
+        if (!(cmd = qemuMonitorJSONMakeCommand("query-command-line-options",
+                                               NULL)))
+            return -1;
+
+        ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+        if (ret == 0) {
+            if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+                goto cleanup;
+            ret = qemuMonitorJSONCheckError(cmd, reply);
+        }
+
+        if (ret < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectRemoveKey(reply, "return", &array) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-command-line-options reply was missing "
+                             "return data"));
+            goto cleanup;
+        }
+        qemuMonitorSetOptions(mon, array);
+    }
+
+    ret = -1;
+
+    if ((n = virJSONValueArraySize(array)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-command-line-options reply data was not "
+                         "an array"));
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(array, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "option"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-command-line-options reply data was "
+                             "missing 'option'"));
+            goto cleanup;
+        }
+        if (STREQ(tmp, option)) {
+            data = virJSONValueObjectGet(child, "parameters");
+            break;
+        }
+    }
+
+    if (!data) {
+        /* Option not found; return 0 parameters rather than an error.  */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-command-line-options parameter data was not "
+                         "an array"));
+        goto cleanup;
+    }
+
+    /* null-terminated list */
+    if (VIR_ALLOC_N(paramlist, n + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-command-line-options parameter data was "
+                             "missing 'name'"));
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(paramlist[i], tmp) < 0)
+            goto cleanup;
+    }
+
+    ret = n;
+    *params = paramlist;
+
+cleanup:
+    /* If we failed before getting the JSON array of options, we (try)
+     * to cache an empty array to speed up the next failure.  */
+    if (!qemuMonitorGetOptions(mon))
+        qemuMonitorSetOptions(mon, virJSONValueNewArray());
+
+    if (ret < 0)
+        virStringFreeList(paramlist);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
                                bool *enabled,
                                bool *present)

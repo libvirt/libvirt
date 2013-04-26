@@ -319,6 +319,10 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
 int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
                              char ***events)
     ATTRIBUTE_NONNULL(2);
+int qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
+                                                  const char *option,
+                                                  char ***params)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
                                bool *enabled,

@@ -79,6 +79,9 @@ struct _qemuMonitor {
 
     bool json;
     bool waitGreeting;
+
+    /* cache of query-command-line-options results */
+    virJSONValuePtr options;
 };
 
 static virClassPtr qemuMonitorClass;
@@ -243,6 +246,7 @@ static void qemuMonitorDispose(void *obj)
         (mon->cb->destroy)(mon, mon->vm);
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
+    virJSONValueFree(mon->options);
 }
 
 
@@ -911,6 +915,18 @@ cleanup:
     return ret;
 }
 
+
+virJSONValuePtr
+qemuMonitorGetOptions(qemuMonitorPtr mon)
+{
+    return mon->options;
+}
+
+void
+qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
+{
+    mon->options = options;
+}
 
 int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 const char *cmd,
@@ -3331,6 +3347,31 @@ int qemuMonitorGetEvents(qemuMonitorPtr mon,
     }
 
     return qemuMonitorJSONGetEvents(mon, events);
+}
+
+
+/* Collect the parameters associated with a given command line option.
+ * Return count of known parameters or -1 on error.  */
+int
+qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
+                                          const char *option,
+                                          char ***params)
+{
+    VIR_DEBUG("mon=%p option=%s params=%p", mon, option, params);
+
+    if (!mon) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("monitor must not be NULL"));
+        return -1;
+    }
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return -1;
+    }
+
+    return qemuMonitorJSONGetCommandLineOptionParameters(mon, option, params);
 }
 
 
