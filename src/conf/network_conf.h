@@ -1,7 +1,7 @@
 /*
  * network_conf.h: network XML handling
  *
- * Copyright (C) 2006-2008, 2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -61,6 +61,20 @@ enum virNetworkForwardHostdevDeviceType {
 
     VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
 };
+
+/* The backend driver used for devices from the pool. Currently used
+ * only for PCI devices (vfio vs. kvm), but could be used for other
+ * device types in the future.
+ */
+typedef enum {
+    VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT, /* kvm now, could change */
+    VIR_NETWORK_FORWARD_DRIVER_NAME_KVM,    /* force legacy kvm style */
+    VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO,   /* force vfio */
+
+    VIR_NETWORK_FORWARD_DRIVER_NAME_LAST
+} virNetworkForwardDriverNameType;
+
+VIR_ENUM_DECL(virNetworkForwardDriverName)
 
 typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
 typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
@@ -159,6 +173,7 @@ typedef virNetworkForwardDef *virNetworkForwardDefPtr;
 struct _virNetworkForwardDef {
     int type;     /* One of virNetworkForwardType constants */
     bool managed;  /* managed attribute for hostdev mode */
+    int driverName; /* enum virNetworkForwardDriverNameType */
 
     /* If there are multiple forward devices (i.e. a pool of
      * interfaces), they will be listed here.

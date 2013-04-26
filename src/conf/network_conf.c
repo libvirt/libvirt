@@ -60,6 +60,12 @@ VIR_ENUM_IMPL(virNetworkForwardHostdevDevice,
               VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST,
               "none", "pci", "netdev")
 
+VIR_ENUM_IMPL(virNetworkForwardDriverName,
+              VIR_NETWORK_FORWARD_DRIVER_NAME_LAST,
+              "default",
+              "kvm",
+              "vfio")
+
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
                                       const unsigned char *uuid)
 {
@@ -1443,6 +1449,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     int nForwardIfs, nForwardAddrs, nForwardPfs, nForwardNats;
     char *forwardDev = NULL;
     char *forwardManaged = NULL;
+    char *forwardDriverName = NULL;
     char *type = NULL;
     xmlNodePtr save = ctxt->node;
 
@@ -1463,6 +1470,21 @@ virNetworkForwardDefParseXML(const char *networkName,
     if (forwardManaged != NULL &&
         STRCASEEQ(forwardManaged, "yes")) {
         def->managed = true;
+    }
+
+    forwardDriverName = virXPathString("string(./driver/@name)", ctxt);
+    if (forwardDriverName) {
+        int driverName
+            = virNetworkForwardDriverNameTypeFromString(forwardDriverName);
+
+        if (driverName <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown forward <driver name='%s'/> "
+                             "in network %s"),
+                           forwardDriverName, networkName);
+            goto cleanup;
+        }
+        def->driverName = driverName;
     }
 
     /* bridge and hostdev modes can use a pool of physical interfaces */
@@ -1646,6 +1668,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(forwardDev);
     VIR_FREE(forwardManaged);
+    VIR_FREE(forwardDriverName);
     VIR_FREE(forwardPfNodes);
     VIR_FREE(forwardIfNodes);
     VIR_FREE(forwardAddrNodes);
@@ -2230,10 +2253,24 @@ virNetworkDefFormatInternal(virBufferPtr buf,
                          || VIR_SOCKET_ADDR_VALID(&def->forward.addr.start)
                          || VIR_SOCKET_ADDR_VALID(&def->forward.addr.end)
                          || def->forward.port.start
-                         || def->forward.port.end);
+                         || def->forward.port.end
+                         || (def->forward.driverName
+                             != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT));
         virBufferAsprintf(buf, "%s>\n", shortforward ? "/" : "");
         virBufferAdjustIndent(buf, 2);
 
+        if (def->forward.driverName
+            != VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT) {
+            const char *driverName
+                = virNetworkForwardDriverNameTypeToString(def->forward.driverName);
+            if (!driverName) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected hostdev driver name type %d "),
+                               def->forward.driverName);
+                goto error;
+            }
+            virBufferAsprintf(buf, "<driver name='%s'/>\n", driverName);
+        }
         if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
             if (virNetworkForwardNatDefFormat(buf, &def->forward) < 0)
                 goto error;
