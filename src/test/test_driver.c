@@ -1223,6 +1223,12 @@ static int testConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static char *testConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int testConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 1;
@@ -5796,7 +5802,7 @@ static virDriver testDriver = {
     .connectOpen = testConnectOpen, /* 0.1.1 */
     .connectClose = testConnectClose, /* 0.1.1 */
     .connectGetVersion = testConnectGetVersion, /* 0.1.1 */
-    .connectGetHostname = virGetHostname, /* 0.6.3 */
+    .connectGetHostname = testConnectGetHostname, /* 0.6.3 */
     .connectGetMaxVcpus = testConnectGetMaxVcpus, /* 0.3.2 */
     .nodeGetInfo = testNodeGetInfo, /* 0.1.1 */
     .connectGetCapabilities = testConnectGetCapabilities, /* 0.2.1 */

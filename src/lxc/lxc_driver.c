@@ -1562,6 +1562,13 @@ static int lxcConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned lo
 }
 
 
+static char *lxcConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
+
 /*
  * check whether the host supports CFS bandwidth
  *
@@ -4402,7 +4409,7 @@ static virDriver lxcDriver = {
     .connectOpen = lxcConnectOpen, /* 0.4.2 */
     .connectClose = lxcConnectClose, /* 0.4.2 */
     .connectGetVersion = lxcConnectGetVersion, /* 0.4.6 */
-    .connectGetHostname = virGetHostname, /* 0.6.3 */
+    .connectGetHostname = lxcConnectGetHostname, /* 0.6.3 */
     .connectGetSysinfo = lxcConnectGetSysinfo, /* 1.0.5 */
     .nodeGetInfo = nodeGetInfo, /* 0.6.5 */
     .connectGetCapabilities = lxcConnectGetCapabilities, /* 0.6.5 */

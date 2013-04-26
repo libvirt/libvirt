@@ -1942,7 +1942,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
  *         we got from getaddrinfo().  Return the value from gethostname()
  *         and hope for the best.
  */
-char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+char *virGetHostname(void)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result;

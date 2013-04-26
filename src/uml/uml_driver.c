@@ -1494,6 +1494,13 @@ cleanup:
     return ret;
 }
 
+
+static char *umlConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int umlConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     struct uml_driver *driver = conn->privateData;
     int n;
@@ -2597,7 +2604,7 @@ static virDriver umlDriver = {
     .connectClose = umlConnectClose, /* 0.5.0 */
     .connectGetType = umlConnectGetType, /* 0.5.0 */
     .connectGetVersion = umlConnectGetVersion, /* 0.5.0 */
-    .connectGetHostname = virGetHostname, /* 0.5.0 */
+    .connectGetHostname = umlConnectGetHostname, /* 0.5.0 */
     .nodeGetInfo = nodeGetInfo, /* 0.5.0 */
     .connectGetCapabilities = umlConnectGetCapabilities, /* 0.5.0 */
     .connectListDomains = umlConnectListDomains, /* 0.5.0 */

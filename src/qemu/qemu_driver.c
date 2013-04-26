@@ -1412,6 +1412,13 @@ cleanup:
     return ret;
 }
 
+
+static char *qemuConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids) {
     virQEMUDriverPtr driver = conn->privateData;
     int n;
@@ -14703,7 +14710,7 @@ static virDriver qemuDriver = {
     .connectSupportsFeature = qemuConnectSupportsFeature, /* 0.5.0 */
     .connectGetType = qemuConnectGetType, /* 0.2.0 */
     .connectGetVersion = qemuConnectGetVersion, /* 0.2.0 */
-    .connectGetHostname = virGetHostname, /* 0.3.3 */
+    .connectGetHostname = qemuConnectGetHostname, /* 0.3.3 */
     .connectGetSysinfo = qemuConnectGetSysinfo, /* 0.8.8 */
     .connectGetMaxVcpus = qemuConnectGetMaxVcpus, /* 0.2.1 */
     .nodeGetInfo = nodeGetInfo, /* 0.2.0 */

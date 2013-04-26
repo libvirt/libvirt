@@ -546,6 +546,13 @@ xenUnifiedConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
     return -1;
 }
 
+
+static char *xenUnifiedConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int
 xenUnifiedConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
@@ -2353,7 +2360,7 @@ static virDriver xenUnifiedDriver = {
     .connectSupportsFeature = xenUnifiedConnectSupportsFeature, /* 0.3.2 */
     .connectGetType = xenUnifiedConnectGetType, /* 0.0.3 */
     .connectGetVersion = xenUnifiedConnectGetVersion, /* 0.0.3 */
-    .connectGetHostname = virGetHostname, /* 0.7.3 */
+    .connectGetHostname = xenUnifiedConnectGetHostname, /* 0.7.3 */
     .connectGetMaxVcpus = xenUnifiedConnectGetMaxVcpus, /* 0.2.1 */
     .nodeGetInfo = xenUnifiedNodeGetInfo, /* 0.1.0 */
     .connectGetCapabilities = xenUnifiedConnectGetCapabilities, /* 0.2.1 */

@@ -2926,7 +2926,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain, int autostart)
 }
 
 int
-xenDaemonDomainMigratePrepare(virConnectPtr dconn,
+xenDaemonDomainMigratePrepare(virConnectPtr dconn ATTRIBUTE_UNUSED,
                               char **cookie ATTRIBUTE_UNUSED,
                               int *cookielen ATTRIBUTE_UNUSED,
                               const char *uri_in,
@@ -2942,7 +2942,7 @@ xenDaemonDomainMigratePrepare(virConnectPtr dconn,
      * deallocates this string.
      */
     if (uri_in == NULL) {
-        *uri_out = virGetHostname(dconn);
+        *uri_out = virGetHostname();
         if (*uri_out == NULL)
             return -1;
     }

@@ -1411,6 +1411,13 @@ libxlConnectGetVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
+
+static char *libxlConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int
 libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
 {
@@ -4203,7 +4210,7 @@ static virDriver libxlDriver = {
     .connectClose = libxlConnectClose, /* 0.9.0 */
     .connectGetType = libxlConnectGetType, /* 0.9.0 */
     .connectGetVersion = libxlConnectGetVersion, /* 0.9.0 */
-    .connectGetHostname = virGetHostname, /* 0.9.0 */
+    .connectGetHostname = libxlConnectGetHostname, /* 0.9.0 */
     .connectGetMaxVcpus = libxlConnectGetMaxVcpus, /* 0.9.0 */
     .nodeGetInfo = libxlNodeGetInfo, /* 0.9.0 */
     .connectGetCapabilities = libxlConnectGetCapabilities, /* 0.9.0 */

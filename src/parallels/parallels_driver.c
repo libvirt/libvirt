@@ -1043,6 +1043,13 @@ cleanup:
     return ret;
 }
 
+
+static char *parallelsConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int
 parallelsConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
@@ -2393,7 +2400,7 @@ static virDriver parallelsDriver = {
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
     .connectClose = parallelsConnectClose,          /* 0.10.0 */
     .connectGetVersion = parallelsConnectGetVersion,   /* 0.10.0 */
-    .connectGetHostname = virGetHostname,      /* 0.10.0 */
+    .connectGetHostname = parallelsConnectGetHostname,      /* 0.10.0 */
     .nodeGetInfo = nodeGetInfo,      /* 0.10.0 */
     .connectGetCapabilities = parallelsConnectGetCapabilities,      /* 0.10.0 */
     .connectListDomains = parallelsConnectListDomains,      /* 0.10.0 */

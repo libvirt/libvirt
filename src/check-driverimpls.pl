@@ -44,7 +44,6 @@ while (<>) {
 
             # External impls
             next if $prefix eq "node";
-            next if $prefix eq "vir";
 
             if (defined $mainprefix) {
                 if ($mainprefix ne $prefix) {

@@ -277,7 +277,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->keepalive_count = 5;
     data->keepalive_required = 0;
 
-    localhost = virGetHostname(NULL);
+    localhost = virGetHostname();
     if (localhost == NULL) {
         /* we couldn't resolve the hostname; assume that we are
          * running in disconnected operation, and report a less

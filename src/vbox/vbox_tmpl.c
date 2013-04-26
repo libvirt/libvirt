@@ -1090,6 +1090,13 @@ static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
+
+static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
     /* Driver is using local, non-network based transport */
     return 1;
@@ -9409,7 +9416,7 @@ virDriver NAME(Driver) = {
     .connectOpen = vboxConnectOpen, /* 0.6.3 */
     .connectClose = vboxConnectClose, /* 0.6.3 */
     .connectGetVersion = vboxConnectGetVersion, /* 0.6.3 */
-    .connectGetHostname = virGetHostname, /* 0.6.3 */
+    .connectGetHostname = vboxConnectGetHostname, /* 0.6.3 */
     .connectGetMaxVcpus = vboxConnectGetMaxVcpus, /* 0.6.3 */
     .nodeGetInfo = nodeGetInfo, /* 0.6.3 */
     .connectGetCapabilities = vboxConnectGetCapabilities, /* 0.6.3 */

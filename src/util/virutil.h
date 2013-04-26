@@ -211,7 +211,7 @@ static inline int geteuid (void) { return 0; }
 static inline int getgid (void) { return 0; }
 # endif
 
-char *virGetHostname(virConnectPtr conn);
+char *virGetHostname(void);
 
 char *virGetUserDirectory(void);
 char *virGetUserConfigDirectory(void);

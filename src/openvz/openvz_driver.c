@@ -343,6 +343,13 @@ static int openvzConnectGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
+
+static char *openvzConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostname();
+}
+
+
 static char *openvzDomainGetOSType(virDomainPtr dom)
 {
     struct  openvz_driver *driver = dom->conn->privateData;
@@ -2182,7 +2189,7 @@ static virDriver openvzDriver = {
     .connectClose = openvzConnectClose, /* 0.3.1 */
     .connectGetType = openvzConnectGetType, /* 0.3.1 */
     .connectGetVersion = openvzConnectGetVersion, /* 0.5.0 */
-    .connectGetHostname = virGetHostname, /* 0.9.12 */
+    .connectGetHostname = openvzConnectGetHostname, /* 0.9.12 */
     .connectGetMaxVcpus = openvzConnectGetMaxVcpus, /* 0.4.6 */
     .nodeGetInfo = nodeGetInfo, /* 0.3.2 */
     .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.12 */
