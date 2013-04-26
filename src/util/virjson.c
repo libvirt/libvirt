@@ -1,7 +1,7 @@
 /*
  * virjson.c: JSON object parsing/formatting
  *
- * Copyright (C) 2009-2010, 2012 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -446,6 +446,38 @@ const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n)
         return NULL;
 
     return object->data.object.pairs[n].key;
+}
+
+/* Remove the key-value pair tied to @key out of @object.  If @value is
+ * not NULL, the dropped value object is returned instead of freed.
+ * Returns 1 on success, 0 if no key was found, and -1 on error.  */
+int
+virJSONValueObjectRemoveKey(virJSONValuePtr object, const char *key,
+                            virJSONValuePtr *value)
+{
+    int i;
+
+    if (value)
+        *value = NULL;
+
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return -1;
+
+    for (i = 0 ; i < object->data.object.npairs ; i++) {
+        if (STREQ(object->data.object.pairs[i].key, key)) {
+            if (value) {
+                *value = object->data.object.pairs[i].value;
+                object->data.object.pairs[i].value = NULL;
+            }
+            VIR_FREE(object->data.object.pairs[i].key);
+            virJSONValueFree(object->data.object.pairs[i].value);
+            VIR_DELETE_ELEMENT(object->data.object.pairs, i,
+                               object->data.object.npairs);
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 virJSONValuePtr virJSONValueObjectGetValue(virJSONValuePtr object, unsigned int n)

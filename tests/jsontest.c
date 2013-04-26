@@ -11,6 +11,7 @@
 
 struct testInfo {
     const char *doc;
+    const char *expect;
     bool pass;
 };
 
@@ -55,19 +56,88 @@ cleanup:
 
 
 static int
+testJSONAddRemove(const void *data)
+{
+    const struct testInfo *info = data;
+    virJSONValuePtr json;
+    virJSONValuePtr name;
+    char *result = NULL;
+    int ret = -1;
+
+    json = virJSONValueFromString(info->doc);
+
+    switch (virJSONValueObjectRemoveKey(json, "name", &name)) {
+    case 1:
+        if (!info->pass) {
+            if (virTestGetVerbose())
+                fprintf(stderr, "should not remove from non-object %s\n",
+                        info->doc);
+            goto cleanup;
+        }
+        break;
+    case -1:
+        if (!info->pass)
+            ret = 0;
+        else if (virTestGetVerbose())
+            fprintf(stderr, "Fail to recognize non-object %s\n", info->doc);
+        goto cleanup;
+    default:
+        if (virTestGetVerbose())
+            fprintf(stderr, "unexpected result when removing from %s\n",
+                    info->doc);
+        goto cleanup;
+    }
+    if (STRNEQ_NULLABLE(virJSONValueGetString(name), "sample")) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "unexpected value after removing name: %s\n",
+                    NULLSTR(virJSONValueGetString(name)));
+        goto cleanup;
+    }
+    if (virJSONValueObjectRemoveKey(json, "name", NULL)) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "%s",
+                    "unexpected success when removing missing key\n");
+        goto cleanup;
+    }
+    if (virJSONValueObjectAppendString(json, "newname", "foo") < 0) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "%s", "unexpected failure adding new key\n");
+        goto cleanup;
+    }
+    if (!(result = virJSONValueToString(json, false))) {
+        if (virTestGetVerbose())
+            fprintf(stderr, "%s", "failed to stringize result\n");
+        goto cleanup;
+    }
+    if (STRNEQ(info->expect, result)) {
+        if (virTestGetVerbose())
+            virtTestDifference(stderr, info->expect, result);
+        goto cleanup;
+    }
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(json);
+    virJSONValueFree(name);
+    VIR_FREE(result);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, cmd, doc, pass)                          \
+#define DO_TEST_FULL(name, cmd, doc, expect, pass)                  \
     do {                                                            \
-        struct testInfo info = { doc, pass };                       \
+        struct testInfo info = { doc, expect, pass };               \
         if (virtTestRun(name, 1, testJSON ## cmd, &info) < 0)       \
             ret = -1;                                               \
     } while (0)
 
 #define DO_TEST_PARSE(name, doc)                \
-    DO_TEST_FULL(name, FromString, doc, true)
+    DO_TEST_FULL(name, FromString, doc, NULL, true)
 
     DO_TEST_PARSE("Simple", "{\"return\": {}, \"id\": \"libvirt-1\"}");
     DO_TEST_PARSE("NotSoSimple", "{\"QMP\": {\"version\": {\"qemu\":"
@@ -104,6 +174,13 @@ mymain(void)
                   "\"query-spice\"}, {\"name\": \"query-name\"}, {\"name\": "
                   "\"query-uuid\"}, {\"name\": \"query-migrate\"}, {\"name\": "
                   "\"query-balloon\"}], \"id\": \"libvirt-2\"}");
+
+    DO_TEST_FULL("add and remove", AddRemove,
+                 "{\"name\": \"sample\", \"value\": true}",
+                 "{\"value\":true,\"newname\":\"foo\"}",
+                 true);
+    DO_TEST_FULL("add and remove", AddRemove,
+                 "[ 1 ]", NULL, false);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

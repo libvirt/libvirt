@@ -1,7 +1,7 @@
 /*
  * virjson.h: JSON object parsing/formatting
  *
- * Copyright (C) 2009, 2012 Red Hat, Inc.
+ * Copyright (C) 2009, 2012-2013 Red Hat, Inc.
  * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -55,12 +55,12 @@ struct _virJSONObjectPair {
 };
 
 struct _virJSONObject {
-    unsigned int npairs;
+    size_t npairs;
     virJSONObjectPairPtr pairs;
 };
 
 struct _virJSONArray {
-    unsigned int nvalues;
+    size_t nvalues;
     virJSONValuePtr *values;
 };
 
@@ -130,6 +130,10 @@ int virJSONValueObjectAppendNumberUlong(virJSONValuePtr object, const char *key,
 int virJSONValueObjectAppendNumberDouble(virJSONValuePtr object, const char *key, double number);
 int virJSONValueObjectAppendBoolean(virJSONValuePtr object, const char *key, int boolean);
 int virJSONValueObjectAppendNull(virJSONValuePtr object, const char *key);
+
+int virJSONValueObjectRemoveKey(virJSONValuePtr object, const char *key,
+                                virJSONValuePtr *value)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 virJSONValuePtr virJSONValueFromString(const char *jsonstring);
 char *virJSONValueToString(virJSONValuePtr object,
