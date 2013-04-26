@@ -2596,6 +2596,82 @@ static int umlConnectListAllDomains(virConnectPtr conn,
 }
 
 
+static int
+umlNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+               virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
+static int
+umlNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   int cpuNum,
+                   virNodeCPUStatsPtr params,
+                   int *nparams,
+                   unsigned int flags)
+{
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+
+static int
+umlNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      int cellNum,
+                      virNodeMemoryStatsPtr params,
+                      int *nparams,
+                      unsigned int flags)
+{
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+}
+
+
+static int
+umlNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          unsigned long long *freeMems,
+                          int startCell,
+                          int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+
+static unsigned long long
+umlNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return nodeGetFreeMemory();
+}
+
+
+static int
+umlNodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virTypedParameterPtr params,
+                           int *nparams,
+                           unsigned int flags)
+{
+    return nodeGetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+umlNodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    return nodeSetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+umlNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+                 unsigned char **cpumap,
+                 unsigned int *online,
+                 unsigned int flags)
+{
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
 
 static virDriver umlDriver = {
     .no = VIR_DRV_UML,
@@ -2605,7 +2681,7 @@ static virDriver umlDriver = {
     .connectGetType = umlConnectGetType, /* 0.5.0 */
     .connectGetVersion = umlConnectGetVersion, /* 0.5.0 */
     .connectGetHostname = umlConnectGetHostname, /* 0.5.0 */
-    .nodeGetInfo = nodeGetInfo, /* 0.5.0 */
+    .nodeGetInfo = umlNodeGetInfo, /* 0.5.0 */
     .connectGetCapabilities = umlConnectGetCapabilities, /* 0.5.0 */
     .connectListDomains = umlConnectListDomains, /* 0.5.0 */
     .connectNumOfDomains = umlConnectNumOfDomains, /* 0.5.0 */
@@ -2639,11 +2715,11 @@ static virDriver umlDriver = {
     .domainGetAutostart = umlDomainGetAutostart, /* 0.5.0 */
     .domainSetAutostart = umlDomainSetAutostart, /* 0.5.0 */
     .domainBlockPeek = umlDomainBlockPeek, /* 0.5.0 */
-    .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
-    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
-    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.5.0 */
-    .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.5.0 */
-    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
+    .nodeGetCPUStats = umlNodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = umlNodeGetMemoryStats, /* 0.9.3 */
+    .nodeGetCellsFreeMemory = umlNodeGetCellsFreeMemory, /* 0.5.0 */
+    .nodeGetFreeMemory = umlNodeGetFreeMemory, /* 0.5.0 */
+    .nodeGetCPUMap = umlNodeGetCPUMap, /* 1.0.0 */
     .connectDomainEventRegister = umlConnectDomainEventRegister, /* 0.9.4 */
     .connectDomainEventDeregister = umlConnectDomainEventDeregister, /* 0.9.4 */
     .connectIsEncrypted = umlConnectIsEncrypted, /* 0.7.3 */
@@ -2656,8 +2732,8 @@ static virDriver umlDriver = {
     .domainOpenConsole = umlDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = umlConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
-    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
-    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetMemoryParameters = umlNodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = umlNodeSetMemoryParameters, /* 0.10.2 */
 };
 
 static virStateDriver umlStateDriver = {

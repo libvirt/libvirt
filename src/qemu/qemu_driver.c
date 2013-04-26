@@ -14702,6 +14702,83 @@ cleanup:
     return ret;
 }
 
+
+static int
+qemuNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
+static int
+qemuNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    int cpuNum,
+                    virNodeCPUStatsPtr params,
+                    int *nparams,
+                    unsigned int flags)
+{
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+
+static int
+qemuNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       int cellNum,
+                       virNodeMemoryStatsPtr params,
+                       int *nparams,
+                       unsigned int flags)
+{
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+}
+
+
+static int
+qemuNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+
+static unsigned long long
+qemuNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return nodeGetFreeMemory();
+}
+
+
+static int
+qemuNodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    return nodeGetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+qemuNodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    return nodeSetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+qemuNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+                  unsigned char **cpumap,
+                  unsigned int *online,
+                  unsigned int flags)
+{
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -14713,7 +14790,7 @@ static virDriver qemuDriver = {
     .connectGetHostname = qemuConnectGetHostname, /* 0.3.3 */
     .connectGetSysinfo = qemuConnectGetSysinfo, /* 0.8.8 */
     .connectGetMaxVcpus = qemuConnectGetMaxVcpus, /* 0.2.1 */
-    .nodeGetInfo = nodeGetInfo, /* 0.2.0 */
+    .nodeGetInfo = qemuNodeGetInfo, /* 0.2.0 */
     .connectGetCapabilities = qemuConnectGetCapabilities, /* 0.2.1 */
     .connectListDomains = qemuConnectListDomains, /* 0.2.0 */
     .connectNumOfDomains = qemuConnectNumOfDomains, /* 0.2.0 */
@@ -14794,10 +14871,10 @@ static virDriver qemuDriver = {
     .domainBlockPeek = qemuDomainBlockPeek, /* 0.4.4 */
     .domainMemoryPeek = qemuDomainMemoryPeek, /* 0.4.4 */
     .domainGetBlockInfo = qemuDomainGetBlockInfo, /* 0.8.1 */
-    .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
-    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
-    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.4.4 */
-    .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.4.4 */
+    .nodeGetCPUStats = qemuNodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = qemuNodeGetMemoryStats, /* 0.9.3 */
+    .nodeGetCellsFreeMemory = qemuNodeGetCellsFreeMemory, /* 0.4.4 */
+    .nodeGetFreeMemory = qemuNodeGetFreeMemory, /* 0.4.4 */
     .connectDomainEventRegister = qemuConnectDomainEventRegister, /* 0.5.0 */
     .connectDomainEventDeregister = qemuConnectDomainEventDeregister, /* 0.5.0 */
     .domainMigratePrepare2 = qemuDomainMigratePrepare2, /* 0.5.0 */
@@ -14876,9 +14953,9 @@ static virDriver qemuDriver = {
     .domainPMSuspendForDuration = qemuDomainPMSuspendForDuration, /* 0.9.11 */
     .domainPMWakeup = qemuDomainPMWakeup, /* 0.9.11 */
     .domainGetCPUStats = qemuDomainGetCPUStats, /* 0.9.11 */
-    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
-    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
-    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
+    .nodeGetMemoryParameters = qemuNodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = qemuNodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetCPUMap = qemuNodeGetCPUMap, /* 1.0.0 */
     .domainFSTrim = qemuDomainFSTrim, /* 1.0.1 */
     .domainOpenChannel = qemuDomainOpenChannel, /* 1.0.2 */
 };

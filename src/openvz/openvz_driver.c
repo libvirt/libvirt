@@ -2182,6 +2182,64 @@ openvzConnectListAllDomains(virConnectPtr conn,
 }
 
 
+
+static int
+openvzNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                  virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
+static int
+openvzNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      int cpuNum,
+                      virNodeCPUStatsPtr params,
+                      int *nparams,
+                      unsigned int flags)
+{
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+
+static int
+openvzNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         int cellNum,
+                         virNodeMemoryStatsPtr params,
+                         int *nparams,
+                         unsigned int flags)
+{
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+}
+
+
+static int
+openvzNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                             unsigned long long *freeMems,
+                             int startCell,
+                             int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+
+static unsigned long long
+openvzNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return nodeGetFreeMemory();
+}
+
+
+static int
+openvzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    unsigned char **cpumap,
+                    unsigned int *online,
+                    unsigned int flags)
+{
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
+
 static virDriver openvzDriver = {
     .no = VIR_DRV_OPENVZ,
     .name = "OPENVZ",
@@ -2191,12 +2249,12 @@ static virDriver openvzDriver = {
     .connectGetVersion = openvzConnectGetVersion, /* 0.5.0 */
     .connectGetHostname = openvzConnectGetHostname, /* 0.9.12 */
     .connectGetMaxVcpus = openvzConnectGetMaxVcpus, /* 0.4.6 */
-    .nodeGetInfo = nodeGetInfo, /* 0.3.2 */
-    .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.12 */
-    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.12 */
-    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.9.12 */
-    .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.9.12 */
-    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
+    .nodeGetInfo = openvzNodeGetInfo, /* 0.3.2 */
+    .nodeGetCPUStats = openvzNodeGetCPUStats, /* 0.9.12 */
+    .nodeGetMemoryStats = openvzNodeGetMemoryStats, /* 0.9.12 */
+    .nodeGetCellsFreeMemory = openvzNodeGetCellsFreeMemory, /* 0.9.12 */
+    .nodeGetFreeMemory = openvzNodeGetFreeMemory, /* 0.9.12 */
+    .nodeGetCPUMap = openvzNodeGetCPUMap, /* 1.0.0 */
     .connectGetCapabilities = openvzConnectGetCapabilities, /* 0.4.6 */
     .connectListDomains = openvzConnectListDomains, /* 0.3.1 */
     .connectNumOfDomains = openvzConnectNumOfDomains, /* 0.3.1 */

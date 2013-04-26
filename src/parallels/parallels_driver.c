@@ -724,7 +724,7 @@ parallelsLoadDomain(parallelsConnPtr privconn, virJSONValuePtr jobj)
         if (STREQ(tmp, "unlimited")) {
             virNodeInfo nodeinfo;
 
-            if (nodeGetInfo(NULL, &nodeinfo) < 0) {
+            if (nodeGetInfo(&nodeinfo) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Can't get node info"));
                 goto cleanup;
@@ -2394,6 +2394,14 @@ parallelsDomainDefineXML(virConnectPtr conn, const char *xml)
     return ret;
 }
 
+static int
+parallelsNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
 static virDriver parallelsDriver = {
     .no = VIR_DRV_PARALLELS,
     .name = "Parallels",
@@ -2401,7 +2409,7 @@ static virDriver parallelsDriver = {
     .connectClose = parallelsConnectClose,          /* 0.10.0 */
     .connectGetVersion = parallelsConnectGetVersion,   /* 0.10.0 */
     .connectGetHostname = parallelsConnectGetHostname,      /* 0.10.0 */
-    .nodeGetInfo = nodeGetInfo,      /* 0.10.0 */
+    .nodeGetInfo = parallelsNodeGetInfo,      /* 0.10.0 */
     .connectGetCapabilities = parallelsConnectGetCapabilities,      /* 0.10.0 */
     .connectListDomains = parallelsConnectListDomains,      /* 0.10.0 */
     .connectNumOfDomains = parallelsConnectNumOfDomains,    /* 0.10.0 */

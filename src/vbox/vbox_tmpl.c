@@ -9405,6 +9405,30 @@ no_memory:
 #undef MATCH
 
 
+static int
+vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
+static int
+vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           unsigned long long *freeMems,
+                           int startCell,
+                           int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+
+static unsigned long long
+vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return nodeGetFreeMemory();
+}
+
 
 /**
  * Function Tables
@@ -9418,7 +9442,7 @@ virDriver NAME(Driver) = {
     .connectGetVersion = vboxConnectGetVersion, /* 0.6.3 */
     .connectGetHostname = vboxConnectGetHostname, /* 0.6.3 */
     .connectGetMaxVcpus = vboxConnectGetMaxVcpus, /* 0.6.3 */
-    .nodeGetInfo = nodeGetInfo, /* 0.6.3 */
+    .nodeGetInfo = vboxNodeGetInfo, /* 0.6.3 */
     .connectGetCapabilities = vboxConnectGetCapabilities, /* 0.6.3 */
     .connectListDomains = vboxConnectListDomains, /* 0.6.3 */
     .connectNumOfDomains = vboxConnectNumOfDomains, /* 0.6.3 */
@@ -9456,8 +9480,8 @@ virDriver NAME(Driver) = {
     .domainDetachDevice = vboxDomainDetachDevice, /* 0.6.3 */
     .domainDetachDeviceFlags = vboxDomainDetachDeviceFlags, /* 0.7.7 */
     .domainUpdateDeviceFlags = vboxDomainUpdateDeviceFlags, /* 0.8.0 */
-    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
-    .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
+    .nodeGetCellsFreeMemory = vboxNodeGetCellsFreeMemory, /* 0.6.5 */
+    .nodeGetFreeMemory = vboxNodeGetFreeMemory, /* 0.6.5 */
 #if VBOX_API_VERSION >= 4000
     .domainScreenshot = vboxDomainScreenshot, /* 0.9.2 */
 #endif

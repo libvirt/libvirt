@@ -2349,6 +2349,26 @@ cleanup:
     virDomainDefFree(def);
     return ret;
 }
+
+static int
+xenUnifiedNodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virTypedParameterPtr params,
+                                  int *nparams,
+                                  unsigned int flags)
+{
+    return nodeGetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+xenUnifiedNodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  unsigned int flags)
+{
+    return nodeSetMemoryParameters(params, nparams, flags);
+}
+
 /*----- Register with libvirt.c, and initialize Xen drivers. -----*/
 
 /* The interface which we export upwards to libvirt.c. */
@@ -2443,8 +2463,8 @@ static virDriver xenUnifiedDriver = {
     .domainOpenConsole = xenUnifiedDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = xenUnifiedConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
-    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
-    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetMemoryParameters = xenUnifiedNodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = xenUnifiedNodeSetMemoryParameters, /* 0.10.2 */
 };
 
 /**

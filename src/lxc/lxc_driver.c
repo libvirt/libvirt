@@ -4402,6 +4402,82 @@ lxcConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 }
 
 
+static int
+lxcNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+               virNodeInfoPtr nodeinfo)
+{
+    return nodeGetInfo(nodeinfo);
+}
+
+
+static int
+lxcNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                   int cpuNum,
+                   virNodeCPUStatsPtr params,
+                   int *nparams,
+                   unsigned int flags)
+{
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+
+static int
+lxcNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      int cellNum,
+                      virNodeMemoryStatsPtr params,
+                      int *nparams,
+                      unsigned int flags)
+{
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+}
+
+
+static int
+lxcNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          unsigned long long *freeMems,
+                          int startCell,
+                          int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+
+static unsigned long long
+lxcNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return nodeGetFreeMemory();
+}
+
+
+static int
+lxcNodeGetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virTypedParameterPtr params,
+                           int *nparams,
+                           unsigned int flags)
+{
+    return nodeGetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+lxcNodeSetMemoryParameters(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    return nodeSetMemoryParameters(params, nparams, flags);
+}
+
+
+static int
+lxcNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+                 unsigned char **cpumap,
+                 unsigned int *online,
+                 unsigned int flags)
+{
+    return nodeGetCPUMap(cpumap, online, flags);
+}
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -4411,7 +4487,7 @@ static virDriver lxcDriver = {
     .connectGetVersion = lxcConnectGetVersion, /* 0.4.6 */
     .connectGetHostname = lxcConnectGetHostname, /* 0.6.3 */
     .connectGetSysinfo = lxcConnectGetSysinfo, /* 1.0.5 */
-    .nodeGetInfo = nodeGetInfo, /* 0.6.5 */
+    .nodeGetInfo = lxcNodeGetInfo, /* 0.6.5 */
     .connectGetCapabilities = lxcConnectGetCapabilities, /* 0.6.5 */
     .connectListDomains = lxcConnectListDomains, /* 0.4.2 */
     .connectNumOfDomains = lxcConnectNumOfDomains, /* 0.4.2 */
@@ -4457,11 +4533,11 @@ static virDriver lxcDriver = {
     .domainSetSchedulerParameters = lxcDomainSetSchedulerParameters, /* 0.5.0 */
     .domainSetSchedulerParametersFlags = lxcDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainInterfaceStats = lxcDomainInterfaceStats, /* 0.7.3 */
-    .nodeGetCPUStats = nodeGetCPUStats, /* 0.9.3 */
-    .nodeGetMemoryStats = nodeGetMemoryStats, /* 0.9.3 */
-    .nodeGetCellsFreeMemory = nodeGetCellsFreeMemory, /* 0.6.5 */
-    .nodeGetFreeMemory = nodeGetFreeMemory, /* 0.6.5 */
-    .nodeGetCPUMap = nodeGetCPUMap, /* 1.0.0 */
+    .nodeGetCPUStats = lxcNodeGetCPUStats, /* 0.9.3 */
+    .nodeGetMemoryStats = lxcNodeGetMemoryStats, /* 0.9.3 */
+    .nodeGetCellsFreeMemory = lxcNodeGetCellsFreeMemory, /* 0.6.5 */
+    .nodeGetFreeMemory = lxcNodeGetFreeMemory, /* 0.6.5 */
+    .nodeGetCPUMap = lxcNodeGetCPUMap, /* 1.0.0 */
     .connectDomainEventRegister = lxcConnectDomainEventRegister, /* 0.7.0 */
     .connectDomainEventDeregister = lxcConnectDomainEventDeregister, /* 0.7.0 */
     .connectIsEncrypted = lxcConnectIsEncrypted, /* 0.7.3 */
@@ -4474,8 +4550,8 @@ static virDriver lxcDriver = {
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = lxcConnectIsAlive, /* 0.9.8 */
     .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
-    .nodeGetMemoryParameters = nodeGetMemoryParameters, /* 0.10.2 */
-    .nodeSetMemoryParameters = nodeSetMemoryParameters, /* 0.10.2 */
+    .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
+    .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
     .domainShutdown = lxcDomainShutdown, /* 1.0.1 */
     .domainShutdownFlags = lxcDomainShutdownFlags, /* 1.0.1 */

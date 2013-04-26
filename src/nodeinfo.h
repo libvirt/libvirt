@@ -26,40 +26,34 @@
 
 # include "capabilities.h"
 
-int nodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
+int nodeGetInfo(virNodeInfoPtr nodeinfo);
 int nodeCapsInitNUMA(virCapsPtr caps);
 
-int nodeGetCPUStats(virConnectPtr conn,
-                    int cpuNum,
+int nodeGetCPUStats(int cpuNum,
                     virNodeCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags);
-int nodeGetMemoryStats(virConnectPtr conn,
-                       int cellNum,
+int nodeGetMemoryStats(int cellNum,
                        virNodeMemoryStatsPtr params,
                        int *nparams,
                        unsigned int flags);
-int nodeGetCellsFreeMemory(virConnectPtr conn,
-                           unsigned long long *freeMems,
+int nodeGetCellsFreeMemory(unsigned long long *freeMems,
                            int startCell,
                            int maxCells);
-unsigned long long nodeGetFreeMemory(virConnectPtr conn);
+unsigned long long nodeGetFreeMemory(void);
 
 virBitmapPtr nodeGetCPUBitmap(int *max_id);
 int nodeGetCPUCount(void);
 
-int nodeGetMemoryParameters(virConnectPtr conn,
-                            virTypedParameterPtr params,
+int nodeGetMemoryParameters(virTypedParameterPtr params,
                             int *nparams,
                             unsigned int flags);
 
-int nodeSetMemoryParameters(virConnectPtr conn,
-                            virTypedParameterPtr params,
+int nodeSetMemoryParameters(virTypedParameterPtr params,
                             int nparams,
                             unsigned int flags);
 
-int nodeGetCPUMap(virConnectPtr conn,
-                  unsigned char **cpumap,
+int nodeGetCPUMap(unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags);
 
