@@ -4423,7 +4423,7 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (dev->source.subsys.u.pci.backend
-        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
         virBufferAddLit(&buf, "vfio-pci");
     } else {
         virBufferAddLit(&buf, "pci-assign");
@@ -7925,7 +7925,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             } else {
                 if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
                     if (hostdev->source.subsys.u.pci.backend
-                        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+                        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_BOOTINDEX)) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                            _("booting from PCI devices assigned with VFIO "
@@ -7975,7 +7975,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
 
             if (hostdev->source.subsys.u.pci.backend
-                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+                == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 unsigned long long memKB;
 
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
@@ -7997,7 +7997,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *configfd_name = NULL;
                 if ((hostdev->source.subsys.u.pci.backend
-                     != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+                     != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
                     int configfd = qemuOpenPCIConfig(hostdev);
 

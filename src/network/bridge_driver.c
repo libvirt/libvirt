@@ -3898,13 +3898,13 @@ networkAllocateActualDevice(virDomainNetDefPtr iface)
         switch (netdef->forward.driverName)
         {
         case VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT;
+            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
             break;
         case VIR_NETWORK_FORWARD_DRIVER_NAME_KVM:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_KVM;
+            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
             break;
         case VIR_NETWORK_FORWARD_DRIVER_NAME_VFIO:
-            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO;
+            backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,

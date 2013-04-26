@@ -992,7 +992,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
         return -1;
 
     if (hostdev->source.subsys.u.pci.backend
-        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
         unsigned long long memKB;
 
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
@@ -1019,7 +1019,7 @@ int qemuDomainAttachHostPciDevice(virQEMUDriverPtr driver,
             goto error;
         releaseaddr = true;
         if ((hostdev->source.subsys.u.pci.backend
-             != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) &&
+             != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
             configfd = qemuOpenPCIConfig(hostdev);
             if (configfd >= 0) {

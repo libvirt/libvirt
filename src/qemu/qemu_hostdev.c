@@ -68,7 +68,7 @@ qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
         if (hostdev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             virPCIDeviceSetStubDriver(dev, "vfio-pci");
         } else {
             virPCIDeviceSetStubDriver(dev, "pci-stub");
@@ -157,7 +157,7 @@ int qemuUpdateActivePciHostdevs(virQEMUDriverPtr driver,
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
         if (hostdev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             virPCIDeviceSetStubDriver(dev, "vfio-pci");
         } else {
             virPCIDeviceSetStubDriver(dev, "pci-stub");

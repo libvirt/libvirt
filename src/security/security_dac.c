@@ -517,7 +517,7 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
             goto done;
 
         if (dev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
 
             if (!vfioGroupDev)
@@ -608,7 +608,7 @@ virSecurityDACRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
             goto done;
 
         if (dev->source.subsys.u.pci.backend
-            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO) {
+            == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
 
             if (!vfioGroupDev)

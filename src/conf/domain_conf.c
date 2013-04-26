@@ -3744,10 +3744,10 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (virDomainHostdevSubsysPciDefParseXML(sourcenode, def, flags) < 0)
             goto error;
 
-        backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT;
+        backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
         if ((backendStr = virXPathString("string(./driver/@name)", ctxt)) &&
             (((backend = virDomainHostdevSubsysPciBackendTypeFromString(backendStr)) < 0) ||
-             backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT)) {
+             backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown PCI device <driver name='%s'/> "
                              "has been specified"), backendStr);
@@ -13846,7 +13846,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 bool includeTypeInAddr)
 {
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT) {
+        def->source.subsys.u.pci.backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
         const char *backend = virDomainHostdevSubsysPciBackendTypeToString(def->source.subsys.u.pci.backend);
 
         if (!backend) {

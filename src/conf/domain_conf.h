@@ -391,9 +391,9 @@ enum virDomainHostdevSubsysType {
 
 /* the backend driver used for PCI hostdev devices */
 typedef enum {
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_DEFAULT, /* currently kvm, could change */
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_KVM,    /* force legacy kvm style */
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_VFIO,   /* force vfio */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, /* currently kvm, could change */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,    /* force legacy kvm style */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO,   /* force vfio */
 
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST
 } virDomainHostdevSubsysPciBackendType;
