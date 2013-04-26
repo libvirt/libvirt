@@ -1177,6 +1177,8 @@ vshCmdGrpHelp(vshControl *ctl, const char *grpname)
                  grp->keyword);
 
         for (cmd = grp->commands; cmd->name; cmd++) {
+            if (cmd->flags & VSH_CMD_FLAG_ALIAS)
+                continue;
             vshPrint(ctl, "    %-30s %s\n", cmd->name,
                      _(vshCmddefGetInfo(cmd, "help")));
         }
