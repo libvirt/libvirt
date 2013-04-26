@@ -181,17 +181,6 @@ libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
         return -1;
     }
 
-    if (events & POLLIN)
-        vir_events |= VIR_EVENT_HANDLE_READABLE;
-    if (events & POLLOUT)
-        vir_events |= VIR_EVENT_HANDLE_WRITABLE;
-    info->id = virEventAddHandle(fd, vir_events, libxlFDEventCallback,
-                                 info, libxlEventHookInfoFree);
-    if (info->id < 0) {
-        VIR_FREE(info);
-        return -1;
-    }
-
     info->priv = priv;
     /*
      * Take a reference on the domain object.  Reference is dropped in
@@ -199,8 +188,21 @@ libxlFDRegisterEventHook(void *priv, int fd, void **hndp,
      * event objects.
      */
     virObjectRef(info->priv);
-
     info->xl_priv = xl_priv;
+
+    if (events & POLLIN)
+        vir_events |= VIR_EVENT_HANDLE_READABLE;
+    if (events & POLLOUT)
+        vir_events |= VIR_EVENT_HANDLE_WRITABLE;
+
+    info->id = virEventAddHandle(fd, vir_events, libxlFDEventCallback,
+                                 info, libxlEventHookInfoFree);
+    if (info->id < 0) {
+        virObjectUnref(info->priv);
+        VIR_FREE(info);
+        return -1;
+    }
+
     *hndp = info;
 
     return 0;
@@ -283,6 +285,15 @@ libxlTimeoutRegisterEventHook(void *priv,
         return -1;
     }
 
+    info->priv = priv;
+    /*
+     * Also take a reference on the domain object.  Reference is dropped in
+     * libxlEventHookInfoFree, ensuring the domain object outlives the timeout
+     * event objects.
+     */
+    virObjectRef(info->priv);
+    info->xl_priv = xl_priv;
+
     gettimeofday(&now, NULL);
     timersub(&abs_t, &now, &res);
     /* Ensure timeout is not overflowed */
@@ -296,22 +307,14 @@ libxlTimeoutRegisterEventHook(void *priv,
     info->id = virEventAddTimeout(timeout, libxlTimerCallback,
                                   info, libxlEventHookInfoFree);
     if (info->id < 0) {
+        virObjectUnref(info->priv);
         VIR_FREE(info);
         return -1;
     }
 
-    info->priv = priv;
-    /*
-     * Also take a reference on the domain object.  Reference is dropped in
-     * libxlEventHookInfoFree, ensuring the domain object outlives the timeout
-     * event objects.
-     */
-    virObjectRef(info->priv);
-
     virObjectLock(info->priv);
     LIBXL_EV_REG_APPEND(info->priv->timerRegistrations, info);
     virObjectUnlock(info->priv);
-    info->xl_priv = xl_priv;
     *hndp = info;
 
     return 0;
