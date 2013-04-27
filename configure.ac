@@ -2363,6 +2363,15 @@ AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
 AC_SUBST([LIBNL_CFLAGS])
 AC_SUBST([LIBNL_LIBS])
 
+# Check for Linux vs. BSD ifreq members
+AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
+                  struct ifreq.ifr_ifindex,
+                  struct ifreq.ifr_index],
+                 [], [],
+                 [#include <sys/socket.h>
+                  #include <net/if.h>
+                 ])
+
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.
 # Copy one to the other, but only if this is a srcdir-build.

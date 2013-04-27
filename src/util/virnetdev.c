@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,10 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
-#elif !defined(AF_PACKET)
+# define VIR_NETDEV_FAMILY AF_PACKET
+#elif defined(HAVE_STRUCT_IFREQ) && defined(AF_LOCAL)
+# define VIR_NETDEV_FAMILY AF_LOCAL
+#else
 # undef HAVE_STRUCT_IFREQ
 #endif
 
@@ -81,7 +84,7 @@ static int virNetDevSetupControlFull(const char *ifname,
 static int virNetDevSetupControl(const char *ifname,
                                  struct ifreq *ifr)
 {
-    return virNetDevSetupControlFull(ifname, ifr, AF_PACKET, SOCK_DGRAM);
+    return virNetDevSetupControlFull(ifname, ifr, VIR_NETDEV_FAMILY, SOCK_DGRAM);
 }
 #endif
 
@@ -478,12 +481,16 @@ int virNetDevSetName(const char* ifname, const char *newifname)
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
+# ifdef HAVE_STRUCT_IFREQ_IFR_NEWNAME
     if (virStrcpyStatic(ifr.ifr_newname, newifname) == NULL) {
         virReportSystemError(ERANGE,
                              _("Network interface name '%s' is too long"),
                              newifname);
         goto cleanup;
     }
+# else
+    ifr.ifr_data = (caddr_t)newifname;
+# endif
 
     if (ioctl(fd, SIOCSIFNAME, &ifr)) {
         virReportSystemError(errno,
@@ -630,7 +637,7 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
 {
     int ret = -1;
     struct ifreq ifreq;
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+    int fd = socket(VIR_NETDEV_FAMILY, SOCK_DGRAM, 0);
 
     if (fd < 0) {
         virReportSystemError(errno, "%s",
@@ -654,7 +661,11 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
         goto cleanup;
     }
 
+# ifdef HAVE_STRUCT_IFREQ_IFR_INDEX
+    *ifindex = ifreq.ifr_index;
+# else
     *ifindex = ifreq.ifr_ifindex;
+# endif
     ret = 0;
 
 cleanup:
@@ -870,7 +881,7 @@ int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
  *
  * Returns 1 if the config matches, 0 if the config does not match, or interface does not exist, -1 on error
  */
-#if defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
 int virNetDevValidateConfig(const char *ifname,
                             const virMacAddrPtr macaddr, int ifindex)
 {
@@ -924,7 +935,7 @@ int virNetDevValidateConfig(const char *ifname,
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
-#else /* ! HAVE_STRUCT_IFREQ */
+#else
 int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
                             const virMacAddrPtr macaddr ATTRIBUTE_UNUSED,
                             int ifindex ATTRIBUTE_UNUSED)
@@ -933,7 +944,7 @@ int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
                          _("Unable to check interface config on this platform"));
     return -1;
 }
-#endif /* ! HAVE_STRUCT_IFREQ */
+#endif
 
 
 #ifdef __linux__
