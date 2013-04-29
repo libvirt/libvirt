@@ -438,44 +438,30 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES = \
-	esx/esx_device_monitor.c \
-	esx/esx_driver.c \
-	esx/esx_interface_driver.c \
-	esx/esx_network_driver.c \
-	esx/esx_nwfilter_driver.c \
-	esx/esx_secret_driver.c \
-	esx/esx_storage_driver.c \
-	hyperv/hyperv_device_monitor.c \
-	hyperv/hyperv_driver.c \
-	hyperv/hyperv_interface_driver.c \
-	hyperv/hyperv_network_driver.c \
-	hyperv/hyperv_nwfilter_driver.c \
-	hyperv/hyperv_secret_driver.c \
-	hyperv/hyperv_storage_driver.c \
-	interface/interface_backend_netcf.c \
-	interface/interface_backend_udev.c \
-	libxl/libxl_driver.c \
-	lxc/lxc_driver.c \
-	network/bridge_driver.c \
-	node_device/node_device_hal.c \
-	node_device/node_device_udev.c \
-	nwfilter/nwfilter_driver.c \
-	openvz/openvz_driver.c \
-	parallels/parallels_driver.c \
-	parallels/parallels_network.c \
-	parallels/parallels_storage.c \
-	phyp/phyp_driver.c \
-	qemu/qemu_driver.c \
-	remote/remote_driver.c \
-	secret/secret_driver.c \
-	storage/storage_driver.c \
-	test/test_driver.c \
-	uml/uml_driver.c \
-	vbox/vbox_driver.c \
+	$(ESX_DRIVER_SOURCES) \
+	$(HYPERV_DRIVER_SORUCES) \
+	$(INTERFACE_DRIVER_SOURCES) \
+	$(LIBXL_DRIVER_SOURCES) \
+	$(LXC_DRIVER_SOURCES) \
+	$(NETWORK_DRIVER_SOURCES) \
+	$(NODE_DEVICE_DRIVER_SOURCES) \
+	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
+	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
+	$(NWFILTER_DRIVER_SOURCES) \
+	$(OPENVZ_DRIVER_SOURCES) \
+	$(PARALLELS_DRIVER_SOURCES) \
+	$(PHYP_DRIVER_SOURCES) \
+	$(QEMU_DRIVER_SOURCES) \
+	$(REMOTE_DRIVER_SOURCES) \
+	$(SECRET_DRIVER_SOURCES) \
+	$(STORAGE_DRIVER_SOURCES) \
+	$(TEST_DRIVER_SOURCES) \
+	$(UML_DRIVER_SOURCES) \
+	$(VBOX_DRIVER_SOURCES) \
 	vbox/vbox_tmpl.c \
-	vmware/vmware_driver.c \
-	xen/xen_driver.c \
-	xenapi/xenapi_driver.c \
+	$(VMWARE_DRIVER_SOURCES) \
+	$(XEN_DRIVER_SOURCES) \
+	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
 
 
