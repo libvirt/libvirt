@@ -2110,6 +2110,11 @@
                 </attribute>
               </optional>
               <optional>
+                <attribute name="websocket">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
                 <attribute name="listen">
                   <ref name="addrIPorName"/>
                 </attribute>

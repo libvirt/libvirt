@@ -7667,6 +7667,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         char *port = virXMLPropString(node, "port");
+        char *websocket = virXMLPropString(node, "websocket");
         char *autoport;
 
         if (port) {
@@ -7695,6 +7696,18 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                 def->data.vnc.autoport = true;
             }
             VIR_FREE(autoport);
+        }
+
+        if (websocket) {
+            if (virStrToLong_i(websocket,
+                               NULL, 10,
+                               &def->data.vnc.websocket) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse vnc WebSocket port %s"), websocket);
+                VIR_FREE(websocket);
+                goto error;
+            }
+            VIR_FREE(websocket);
         }
 
         def->data.vnc.socket = virXMLPropString(node, "socket");
@@ -15175,6 +15188,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
             virBufferAsprintf(buf, " autoport='%s'",
                               def->data.vnc.autoport ? "yes" : "no");
+
+            if (def->data.vnc.websocket)
+                virBufferAsprintf(buf, " websocket='%d'", def->data.vnc.websocket);
 
             if (listenAddr)
                 virBufferAsprintf(buf, " listen='%s'", listenAddr);

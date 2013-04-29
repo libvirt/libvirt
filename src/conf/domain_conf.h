@@ -1411,6 +1411,7 @@ struct _virDomainGraphicsDef {
     union {
         struct {
             int port;
+            int websocket;
             bool autoport;
             char *keymap;
             char *socket;

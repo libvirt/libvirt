@@ -3595,6 +3595,12 @@ qemu-kvm -net nic,model=? /dev/null
             Rather than using listen/port, QEMU supports a
             <code>socket</code> attribute for listening on a unix
             domain socket path.<span class="since">Since 0.8.8</span>
+
+            For VNC WebSocket functionality, <code>websocket</code>
+            attribute may be used to specify port to listen on (with
+            -1 meaning auto-allocation and <code>autoport</code>
+            having no effect due to security reasons).
+            <span class="since">Since 1.0.6</span>
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>
