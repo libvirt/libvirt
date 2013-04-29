@@ -5271,6 +5271,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
         goto cleanup;
 
+    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
+        goto cleanup;
+
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
                                      &monConfig, monitor_json, qemuCaps,
                                      NULL, -1, NULL, VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)))
