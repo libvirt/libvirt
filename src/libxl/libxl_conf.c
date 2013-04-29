@@ -796,19 +796,19 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
         return -1;
 
     if (libxlMakeDomBuildInfo(def, d_config) < 0) {
-        goto error;
+        return -1;
     }
 
     if (libxlMakeDiskList(def, d_config) < 0) {
-        goto error;
+        return -1;
     }
 
     if (libxlMakeNicList(def, d_config) < 0) {
-        goto error;
+        return -1;
     }
 
     if (libxlMakeVfbList(driver, def, d_config) < 0) {
-        goto error;
+        return -1;
     }
 
     d_config->on_reboot = def->onReboot;
@@ -816,8 +816,4 @@ libxlBuildDomainConfig(libxlDriverPrivatePtr driver,
     d_config->on_crash = def->onCrash;
 
     return 0;
-
-error:
-    libxl_domain_config_dispose(d_config);
-    return -1;
 }
