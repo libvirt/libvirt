@@ -277,46 +277,46 @@ update_include_file(const char *include_file, const char *included_files,
     if (append && virFileExists(include_file)) {
         if (virAsprintf(&pcontent, "%s%s", existing, included_files) == -1) {
             vah_error(NULL, 0, _("could not allocate memory for profile"));
-            goto clean;
+            goto cleanup;
         }
     } else {
         if (virAsprintf(&pcontent, "%s%s", warning, included_files) == -1) {
             vah_error(NULL, 0, _("could not allocate memory for profile"));
-            goto clean;
+            goto cleanup;
         }
     }
 
     plen = strlen(pcontent);
     if (plen > MAX_FILE_LEN) {
         vah_error(NULL, 0, _("invalid length for new profile"));
-        goto clean;
+        goto cleanup;
     }
 
     /* only update the disk profile if it is different */
     if (flen > 0 && flen == plen && STREQLEN(existing, pcontent, plen)) {
         rc = 0;
-        goto clean;
+        goto cleanup;
     }
 
     /* write the file */
     if ((fd = open(include_file, O_CREAT | O_TRUNC | O_WRONLY, 0644)) == -1) {
         vah_error(NULL, 0, _("failed to create include file"));
-        goto clean;
+        goto cleanup;
     }
 
     if (safewrite(fd, pcontent, plen) < 0) { /* don't write the '\0' */
         VIR_FORCE_CLOSE(fd);
         vah_error(NULL, 0, _("failed to write to profile"));
-        goto clean;
+        goto cleanup;
     }
 
     if (VIR_CLOSE(fd) != 0) {
         vah_error(NULL, 0, _("failed to close or write to profile"));
-        goto clean;
+        goto cleanup;
     }
     rc = 0;
 
-  clean:
+  cleanup:
     VIR_FREE(pcontent);
     VIR_FREE(existing);
 
@@ -785,7 +785,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
             vah_error(NULL, 0, path);
             vah_error(NULL, 0, _("skipped restricted file"));
         }
-        goto clean;
+        goto cleanup;
     }
 
     virBufferAsprintf(buf, "  \"%s\" %s,\n", tmp, perms);
@@ -794,7 +794,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
         virBufferAsprintf(buf, "  deny \"%s\" w,\n", tmp);
     }
 
-  clean:
+  cleanup:
     VIR_FREE(tmp);
 
     return rc;
@@ -814,7 +814,7 @@ vah_add_file_chardev(virBufferPtr buf,
         /* add the pipe input */
         if (virAsprintf(&pipe_in, "%s.in", path) == -1) {
             vah_error(NULL, 0, _("could not allocate memory"));
-            goto clean;
+            goto cleanup;
         }
 
         if (vah_add_file(buf, pipe_in, perms) != 0)
@@ -837,11 +837,11 @@ vah_add_file_chardev(virBufferPtr buf,
     } else {
         /* add the file */
         if (vah_add_file(buf, path, perms) != 0)
-            goto clean;
+            goto cleanup;
         rc = 0;
     }
 
-  clean:
+  cleanup:
     return rc;
 }
 
@@ -903,7 +903,7 @@ get_files(vahControl * ctl)
 
     if (STRNEQ(uuid, ctl->uuid)) {
         vah_error(ctl, 0, _("given uuid does not match XML uuid"));
-        goto clean;
+        goto cleanup;
     }
 
     for (i = 0; i < ctl->def->ndisks; i++) {
@@ -925,7 +925,7 @@ get_files(vahControl * ctl)
          * careful than just ignoring them.
          */
         if (virDomainDiskDefForeachPath(disk, true, add_file_path, &buf) < 0)
-            goto clean;
+            goto cleanup;
     }
 
     for (i = 0; i < ctl->def->nserials; i++)
@@ -939,7 +939,7 @@ get_files(vahControl * ctl)
                                      ctl->def->serials[i]->source.data.file.path,
                                      "rw",
                                      ctl->def->serials[i]->source.type) != 0)
-                goto clean;
+                goto cleanup;
 
     for (i = 0; i < ctl->def->nconsoles; i++)
         if (ctl->def->consoles[i] &&
@@ -950,7 +950,7 @@ get_files(vahControl * ctl)
             ctl->def->consoles[i]->source.data.file.path)
             if (vah_add_file(&buf,
                              ctl->def->consoles[i]->source.data.file.path, "rw") != 0)
-                goto clean;
+                goto cleanup;
 
     for (i = 0 ; i < ctl->def->nparallels; i++)
         if (ctl->def->parallels[i] &&
@@ -963,7 +963,7 @@ get_files(vahControl * ctl)
                                      ctl->def->parallels[i]->source.data.file.path,
                                      "rw",
                                      ctl->def->parallels[i]->source.type) != 0)
-                goto clean;
+                goto cleanup;
 
     for (i = 0 ; i < ctl->def->nchannels; i++)
         if (ctl->def->channels[i] &&
@@ -976,36 +976,36 @@ get_files(vahControl * ctl)
                                      ctl->def->channels[i]->source.data.file.path,
                                      "rw",
                                      ctl->def->channels[i]->source.type) != 0)
-                goto clean;
+                goto cleanup;
 
     if (ctl->def->os.kernel)
         if (vah_add_file(&buf, ctl->def->os.kernel, "r") != 0)
-            goto clean;
+            goto cleanup;
 
     if (ctl->def->os.initrd)
         if (vah_add_file(&buf, ctl->def->os.initrd, "r") != 0)
-            goto clean;
+            goto cleanup;
 
     if (ctl->def->os.dtb)
         if (vah_add_file(&buf, ctl->def->os.dtb, "r") != 0)
-            goto clean;
+            goto cleanup;
 
     if (ctl->def->os.loader && ctl->def->os.loader)
         if (vah_add_file(&buf, ctl->def->os.loader, "r") != 0)
-            goto clean;
+            goto cleanup;
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
         if (ctl->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             ctl->def->graphics[i]->data.vnc.socket &&
             vah_add_file(&buf, ctl->def->graphics[i]->data.vnc.socket, "rw"))
-            goto clean;
+            goto cleanup;
     }
 
     if (ctl->def->ngraphics == 1 &&
         ctl->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)
         if (vah_add_file(&buf, ctl->def->graphics[0]->data.sdl.xauth,
                          "r") != 0)
-            goto clean;
+            goto cleanup;
 
     for (i = 0; i < ctl->def->nhostdevs; i++)
         if (ctl->def->hostdevs[i]) {
@@ -1023,7 +1023,7 @@ get_files(vahControl * ctl)
                 rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
                 virUSBDeviceFree(usb);
                 if (rc != 0)
-                    goto clean;
+                    goto cleanup;
                 break;
             }
 
@@ -1051,18 +1051,18 @@ get_files(vahControl * ctl)
 
     if (ctl->newfile)
         if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
-            goto clean;
+            goto cleanup;
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         vah_error(NULL, 0, _("failed to allocate file buffer"));
-        goto clean;
+        goto cleanup;
     }
 
     rc = 0;
     ctl->files = virBufferContentAndReset(&buf);
 
-  clean:
+  cleanup:
     VIR_FREE(uuid);
     return rc;
 }
@@ -1232,7 +1232,7 @@ main(int argc, char **argv)
 
         if (ctl->append && ctl->newfile) {
             if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
-                goto clean;
+                goto cleanup;
         } else {
             virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
                               LOCALSTATEDIR, ctl->def->name);
@@ -1265,7 +1265,7 @@ main(int argc, char **argv)
         } else if ((rc = update_include_file(include_file,
                                              included_files,
                                              ctl->append)) != 0)
-            goto clean;
+            goto cleanup;
 
 
         /* create the profile from TEMPLATE */
@@ -1274,7 +1274,7 @@ main(int argc, char **argv)
             if (virAsprintf(&tmp, "  #include <libvirt/%s.files>\n",
                             ctl->uuid) == -1) {
                 vah_error(ctl, 0, _("could not allocate memory"));
-                goto clean;
+                goto cleanup;
             }
 
             if (ctl->dryrun) {
@@ -1302,7 +1302,7 @@ main(int argc, char **argv)
                     unlink(profile);
             }
         }
-      clean:
+      cleanup:
         VIR_FREE(included_files);
     }
 

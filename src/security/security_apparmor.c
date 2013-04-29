@@ -94,7 +94,7 @@ profile_status(const char *str, const int check_enforcing)
         virReportSystemError(errno,
                              _("Failed to read AppArmor profiles list "
                              "\'%s\'"), APPARMOR_PROFILES_PATH);
-        goto clean;
+        goto cleanup;
     }
 
     if (strstr(content, tmp) != NULL)
@@ -105,7 +105,7 @@ profile_status(const char *str, const int check_enforcing)
     }
 
     VIR_FREE(content);
-  clean:
+  cleanup:
     VIR_FREE(tmp);
     VIR_FREE(etmp);
 
@@ -294,12 +294,12 @@ reload_profile(virSecurityManagerPtr mgr,
                            _("cannot update AppArmor profile "
                              "\'%s\'"),
                            secdef->imagelabel);
-            goto clean;
+            goto cleanup;
         }
     }
 
     rc = 0;
-  clean:
+  cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -372,11 +372,11 @@ AppArmorSecurityManagerProbe(const char *virtDriver)
     if (!virFileExists(template)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("template \'%s\' does not exist"), template);
-        goto clean;
+        goto cleanup;
     }
     rc = SECURITY_DRIVER_ENABLE;
 
-  clean:
+  cleanup:
     VIR_FREE(template);
 
     return rc;
@@ -449,7 +449,7 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     secdef->label = strndup(profile_name, strlen(profile_name));
     if (!secdef->label) {
         virReportOOMError();
-        goto clean;
+        goto cleanup;
     }
 
     /* set imagelabel the same as label (but we won't use it) */
@@ -474,14 +474,14 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     }
 
     rc = 0;
-    goto clean;
+    goto cleanup;
 
   err:
     VIR_FREE(secdef->label);
     VIR_FREE(secdef->imagelabel);
     VIR_FREE(secdef->model);
 
-  clean:
+  cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -526,17 +526,17 @@ AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         VIR_SECURITY_LABEL_BUFLEN) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("error copying profile name"));
-        goto clean;
+        goto cleanup;
     }
 
     if ((sec->enforcing = profile_status(profile_name, 1)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("error calling profile_status()"));
-        goto clean;
+        goto cleanup;
     }
     rc = 0;
 
-  clean:
+  cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -609,17 +609,17 @@ AppArmorSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                          "hypervisor driver is \'%s\'."),
                        secdef->model, SECURITY_APPARMOR_NAME);
         if (use_apparmor() > 0)
-            goto clean;
+            goto cleanup;
     }
 
     if (aa_change_profile(profile_name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("error calling aa_change_profile()"));
-        goto clean;
+        goto cleanup;
     }
     rc = 0;
 
-  clean:
+  cleanup:
     VIR_FREE(profile_name);
 
     return rc;
@@ -736,13 +736,13 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                                _("cannot update AppArmor profile "
                                  "\'%s\'"),
                                secdef->imagelabel);
-                goto clean;
+                goto cleanup;
             }
         }
     }
     rc = 0;
 
-  clean:
+  cleanup:
     VIR_FREE(profile_name);
 
     return rc;
