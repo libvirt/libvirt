@@ -9287,6 +9287,8 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
                                const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9314,11 +9316,30 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (dname) {
+        VIR_FREE(def->name);
+        if (!(def->name = strdup(dname))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                     st, dname, dom_xml, flags);
+                                     st, def, flags);
+    def = NULL;
 
 cleanup:
+    virDomainDefFree(def);
+    virObjectUnref(caps);
     return ret;
 }
 
@@ -9338,6 +9359,8 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
                           const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9366,6 +9389,22 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (dname) {
+        VIR_FREE(def->name);
+        if (!(def->name = strdup(dname))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     /* Do not use cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
@@ -9373,9 +9412,12 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     dname, dom_xml, flags);
+                                     def, flags);
+    def = NULL;
 
 cleanup:
+    virDomainDefFree(def);
+    virObjectUnref(caps);
     return ret;
 }
 
@@ -9565,6 +9607,8 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                           const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9586,13 +9630,32 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (dname) {
+        VIR_FREE(def->name);
+        if (!(def->name = strdup(dname))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     dname, dom_xml, flags);
+                                     def, flags);
+    def = NULL;
 
 cleanup:
+    virDomainDefFree(def);
+    virObjectUnref(caps);
     return ret;
 }
 
@@ -9610,6 +9673,8 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                 const char *dom_xml)
 {
     virQEMUDriverPtr driver = dconn->privateData;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -9630,12 +9695,31 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        QEMU_EXPECTED_VIRT_TYPES,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (dname) {
+        VIR_FREE(def->name);
+        if (!(def->name = strdup(dname))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
     ret = qemuMigrationPrepareTunnel(driver, dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
-                                     st, dname, dom_xml, flags);
+                                     st, def, flags);
+    def = NULL;
 
 cleanup:
+    virDomainDefFree(def);
+    virObjectUnref(caps);
     return ret;
 }
 
