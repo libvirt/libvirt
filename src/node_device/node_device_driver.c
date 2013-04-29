@@ -183,9 +183,9 @@ nodeListDevices(virConnectPtr conn,
 }
 
 int
-nodeListAllNodeDevices(virConnectPtr conn,
-                       virNodeDevicePtr **devices,
-                       unsigned int flags)
+nodeConnectListAllNodeDevices(virConnectPtr conn,
+                              virNodeDevicePtr **devices,
+                              unsigned int flags)
 {
     virNodeDeviceDriverStatePtr driver = conn->nodeDevicePrivateData;
     int ret = -1;

@@ -56,9 +56,9 @@ int detect_scsi_host_caps(union _virNodeDevCapData *d);
 int nodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags);
 int nodeListDevices(virConnectPtr conn, const char *cap, char **const names,
                     int maxnames, unsigned int flags);
-int nodeListAllNodeDevices(virConnectPtr conn,
-                           virNodeDevicePtr **devices,
-                           unsigned int flags);
+int nodeConnectListAllNodeDevices(virConnectPtr conn,
+                                  virNodeDevicePtr **devices,
+                                  unsigned int flags);
 virNodeDevicePtr nodeDeviceLookupByName(virConnectPtr conn, const char *name);
 virNodeDevicePtr nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                                                const char *wwnn,

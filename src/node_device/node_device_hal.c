@@ -591,9 +591,9 @@ static void device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
 }
 
 
-static int nodeDeviceStateInitialize(bool privileged ATTRIBUTE_UNUSED,
-                                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                                     void *opaque ATTRIBUTE_UNUSED)
+static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                               virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                               void *opaque ATTRIBUTE_UNUSED)
 {
     LibHalContext *hal_ctx = NULL;
     char **udi = NULL;
@@ -692,7 +692,7 @@ static int nodeDeviceStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 }
 
 
-static int nodeDeviceStateCleanup(void)
+static int nodeStateCleanup(void)
 {
     if (driverState) {
         nodeDeviceLock(driverState);
@@ -709,7 +709,7 @@ static int nodeDeviceStateCleanup(void)
 }
 
 
-static int nodeDeviceStateReload(void)
+static int nodeStateReload(void)
 {
     DBusError err;
     char **udi = NULL;
@@ -768,7 +768,7 @@ static virNodeDeviceDriver halNodeDeviceDriver = {
     .nodeDeviceClose = nodeDeviceClose, /* 0.5.0 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = nodeListDevices, /* 0.5.0 */
-    .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
+    .connectListAllNodeDevices = nodeConnectListAllNodeDevices, /* 0.10.2 */
     .nodeDeviceLookupByName = nodeDeviceLookupByName, /* 0.5.0 */
     .nodeDeviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
     .nodeDeviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.5.0 */
@@ -782,9 +782,9 @@ static virNodeDeviceDriver halNodeDeviceDriver = {
 
 static virStateDriver halStateDriver = {
     .name = "HAL",
-    .stateInitialize = nodeDeviceStateInitialize, /* 0.5.0 */
-    .stateCleanup = nodeDeviceStateCleanup, /* 0.5.0 */
-    .stateReload = nodeDeviceStateReload, /* 0.5.0 */
+    .stateInitialize = nodeStateInitialize, /* 0.5.0 */
+    .stateCleanup = nodeStateCleanup, /* 0.5.0 */
+    .stateReload = nodeStateReload, /* 0.5.0 */
 };
 
 int halNodeRegister(void)

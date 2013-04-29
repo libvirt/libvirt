@@ -42,9 +42,6 @@ while (<>) {
             my $prefix = $impl;
             $prefix =~ s/^([a-z]+(?:Unified)?)(.*?)$/$1/;
 
-            # External impls
-            next if $prefix eq "node";
-
             if (defined $mainprefix) {
                 if ($mainprefix ne $prefix) {
                     print "$ARGV:$. Bad prefix '$prefix' for API '$api', expecting '$mainprefix'\n";

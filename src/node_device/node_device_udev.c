@@ -1438,7 +1438,7 @@ out:
 }
 
 
-static int nodeDeviceStateCleanup(void)
+static int nodeStateCleanup(void)
 {
     int ret = 0;
 
@@ -1650,9 +1650,9 @@ out:
     return ret;
 }
 
-static int nodeDeviceStateInitialize(bool privileged ATTRIBUTE_UNUSED,
-                                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                                     void *opaque ATTRIBUTE_UNUSED)
+static int nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+                               virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                               void *opaque ATTRIBUTE_UNUSED)
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
@@ -1759,13 +1759,13 @@ out_unlock:
 
 out:
     if (ret == -1) {
-        nodeDeviceStateCleanup();
+        nodeStateCleanup();
     }
     return ret;
 }
 
 
-static int nodeDeviceStateReload(void)
+static int nodeStateReload(void)
 {
     return 0;
 }
@@ -1798,7 +1798,7 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceClose = nodeDeviceClose, /* 0.7.3 */
     .nodeNumOfDevices = nodeNumOfDevices, /* 0.7.3 */
     .nodeListDevices = nodeListDevices, /* 0.7.3 */
-    .connectListAllNodeDevices = nodeListAllNodeDevices, /* 0.10.2 */
+    .connectListAllNodeDevices = nodeConnectListAllNodeDevices, /* 0.10.2 */
     .nodeDeviceLookupByName = nodeDeviceLookupByName, /* 0.7.3 */
     .nodeDeviceLookupSCSIHostByWWN = nodeDeviceLookupSCSIHostByWWN, /* 1.0.2 */
     .nodeDeviceGetXMLDesc = nodeDeviceGetXMLDesc, /* 0.7.3 */
@@ -1811,9 +1811,9 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
 
 static virStateDriver udevStateDriver = {
     .name = "udev",
-    .stateInitialize = nodeDeviceStateInitialize, /* 0.7.3 */
-    .stateCleanup = nodeDeviceStateCleanup, /* 0.7.3 */
-    .stateReload = nodeDeviceStateReload, /* 0.7.3 */
+    .stateInitialize = nodeStateInitialize, /* 0.7.3 */
+    .stateCleanup = nodeStateCleanup, /* 0.7.3 */
+    .stateReload = nodeStateReload, /* 0.7.3 */
 };
 
 int udevNodeRegister(void)
