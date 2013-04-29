@@ -112,21 +112,21 @@ udevInterfaceOpen(virConnectPtr conn,
 
     if (VIR_ALLOC(driverState) < 0) {
         virReportOOMError();
-        goto err;
+        goto cleanup;
     }
 
     driverState->udev = udev_new();
     if (!driverState->udev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create udev context"));
-        goto err;
+        goto cleanup;
     }
 
     conn->interfacePrivateData = driverState;
 
     return VIR_DRV_OPEN_SUCCESS;
 
-err:
+cleanup:
     VIR_FREE(driverState);
 
     return VIR_DRV_OPEN_ERROR;
@@ -166,7 +166,7 @@ udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status)
                        _("failed to get number of %s interfaces on host"),
                        virUdevStatusString(status));
         count = -1;
-        goto err;
+        goto cleanup;
     }
 
     /* Do the scan to load up the enumeration */
@@ -180,7 +180,7 @@ udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status)
         count++;
     }
 
-err:
+cleanup:
     if (enumerate)
         udev_enumerate_unref(enumerate);
     udev_unref(udev);
@@ -207,7 +207,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to get list of %s interfaces on host"),
                        virUdevStatusString(status));
-        goto err;
+        goto error;
     }
 
     /* Do the scan to load up the enumeration */
@@ -229,7 +229,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
         dev = udev_device_new_from_syspath(udev, path);
         if (VIR_STRDUP(names[count], udev_device_get_sysname(dev)) < 0) {
             udev_device_unref(dev);
-            goto err;
+            goto error;
         }
         udev_device_unref(dev);
 
@@ -241,7 +241,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
 
     return count;
 
-err:
+error:
     if (enumerate)
         udev_enumerate_unref(enumerate);
     udev_unref(udev);
@@ -422,14 +422,14 @@ udevInterfaceLookupByName(virConnectPtr conn, const char *name)
         virReportError(VIR_ERR_NO_INTERFACE,
                        _("couldn't find interface named '%s'"),
                        name);
-        goto err;
+        goto cleanup;
     }
 
     macaddr = udev_device_get_sysattr_value(dev, "address");
     ret = virGetInterface(conn, name, macaddr);
     udev_device_unref(dev);
 
-err:
+cleanup:
     udev_unref(udev);
 
     return ret;
@@ -452,7 +452,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to lookup interface with MAC address '%s'"),
                        macstr);
-        goto err;
+        goto cleanup;
     }
 
     /* Match on MAC */
@@ -469,7 +469,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
         virReportError(VIR_ERR_NO_INTERFACE,
                        _("couldn't find interface with MAC address '%s'"),
                        macstr);
-        goto err;
+        goto cleanup;
     }
 
     /* Check that we didn't get multiple items back */
@@ -477,7 +477,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
         virReportError(VIR_ERR_MULTIPLE_INTERFACES,
                        _("the MAC address '%s' matches multiple interfaces"),
                        macstr);
-        goto err;
+        goto cleanup;
     }
 
     dev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(dev_entry));
@@ -485,7 +485,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
     ret = virGetInterface(conn, name, macstr);
     udev_device_unref(dev);
 
-err:
+cleanup:
     if (enumerate)
         udev_enumerate_unref(enumerate);
     udev_unref(udev);
@@ -1043,13 +1043,13 @@ udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
     ifacedef = udevGetIfaceDef(udev, ifinfo->name);
 
     if (!ifacedef)
-        goto err;
+        goto cleanup;
 
     xmlstr = virInterfaceDefFormat(ifacedef);
 
     virInterfaceDefFree(ifacedef);
 
-err:
+cleanup:
     /* decrement our udev ptr */
     udev_unref(udev);
 
