@@ -15,19 +15,19 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='floppy'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/fd0'/>
       <target dev='fda' bus='fdc'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='floppy'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/firmware.img'/>
       <target dev='fdb' bus='fdc'/>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>

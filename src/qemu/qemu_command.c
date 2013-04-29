@@ -8540,7 +8540,6 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     def->bus = VIR_DOMAIN_DISK_BUS_IDE;
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
     def->type = VIR_DOMAIN_DISK_TYPE_FILE;
-    def->format = VIR_STORAGE_FILE_AUTO;
 
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "file")) {
@@ -9787,8 +9786,6 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
             WANT_VALUE();
             if (VIR_ALLOC(disk) < 0)
                 goto no_memory;
-
-            disk->format = VIR_STORAGE_FILE_AUTO;
 
             if (STRPREFIX(val, "/dev/"))
                 disk->type = VIR_DOMAIN_DISK_TYPE_BLOCK;

@@ -15,25 +15,25 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/data.img'/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/logs.img'/>
       <target dev='xvdg' bus='xen'/>
     </disk>

@@ -18,7 +18,7 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='block' device='disk'>
-      <driver name='qemu'/>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
