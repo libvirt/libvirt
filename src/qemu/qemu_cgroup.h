@@ -1,7 +1,7 @@
 /*
  * qemu_cgroup.h: QEMU cgroup management
  *
- * Copyright (C) 2006-2007, 2009-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,12 @@ int qemuTeardownDiskCgroup(virDomainObjPtr vm,
 int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev,
                                  const char *path,
                                  void *opaque);
+int qemuSetupHostdevCGroup(virDomainObjPtr vm,
+                           virDomainHostdevDefPtr dev)
+   ATTRIBUTE_RETURN_CHECK;
+int qemuTeardownHostdevCgroup(virDomainObjPtr vm,
+                              virDomainHostdevDefPtr dev)
+   ATTRIBUTE_RETURN_CHECK;
 int qemuInitCgroup(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    bool startup);
