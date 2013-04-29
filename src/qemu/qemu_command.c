@@ -4175,6 +4175,9 @@ qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev,
             virBufferAddLit(&buf, "virtio-balloon-ccw");
             break;
         default:
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("memballoon unsupported with address type '%s'"),
+                           virDomainDeviceAddressTypeToString(dev->info.type));
             goto error;
     }
 
