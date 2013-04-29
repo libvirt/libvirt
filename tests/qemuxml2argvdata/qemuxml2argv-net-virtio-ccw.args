@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S \
 -M s390-ccw -m 214 -smp 1 -nographic -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
--usb -device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:55,devno=fe.0.0001 \
+-device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:55,devno=fe.0.0001 \
 -net user,vlan=0,name=hostnet0 \
 -device virtio-net-ccw,vlan=1,id=net1,mac=00:11:22:33:44:54,devno=fe.0.0000 \
 -net user,vlan=1,name=hostnet1 \

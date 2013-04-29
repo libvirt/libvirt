@@ -784,6 +784,14 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         (def->os.arch == VIR_ARCH_S390 || def->os.arch == VIR_ARCH_S390X))
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
 
+    /* set the default USB model to none for s390 unless an address is found */
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        dev->data.controller->model == -1 &&
+        dev->data.controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        (def->os.arch == VIR_ARCH_S390 || def->os.arch == VIR_ARCH_S390X))
+        dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+
     ret = 0;
 
 cleanup:
