@@ -5274,6 +5274,58 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
         goto cleanup;
 
+    /* do fake auto-alloc of graphics ports, if such config is used */
+    for (i = 0 ; i < def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            !graphics->data.vnc.socket && graphics->data.vnc.autoport) {
+            graphics->data.vnc.port = 5900;
+        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            int j;
+            bool needTLSPort = false;
+            bool needPort = false;
+            int defaultMode = graphics->data.spice.defaultMode;
+
+            if (graphics->data.spice.autoport) {
+                /* check if tlsPort or port need allocation */
+                for (j = 0 ; j < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; j++) {
+                    switch (graphics->data.spice.channels[j]) {
+                    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                        needTLSPort = true;
+                        break;
+
+                    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                        needPort = true;
+                        break;
+
+                    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+                        switch (defaultMode) {
+                        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                            needTLSPort = true;
+                            break;
+
+                        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                            needPort = true;
+                            break;
+
+                        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+                            needTLSPort = true;
+                            needPort = true;
+                            break;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (needPort || graphics->data.spice.port == -1)
+                graphics->data.spice.port = 5901;
+
+            if (needTLSPort || graphics->data.spice.tlsPort == -1)
+                graphics->data.spice.tlsPort = 5902;
+        }
+    }
+
     if (!(cmd = qemuBuildCommandLine(conn, driver, def,
                                      &monConfig, monitor_json, qemuCaps,
                                      NULL, -1, NULL, VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)))
