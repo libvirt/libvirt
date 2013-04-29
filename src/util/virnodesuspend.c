@@ -165,8 +165,7 @@ static void virNodeSuspend(void *cmdString)
  * -1 if suspending the node is not supported, or if a previous suspend
  * operation is still in progress.
  */
-int nodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           unsigned int target,
+int nodeSuspendForDuration(unsigned int target,
                            unsigned long long duration,
                            unsigned int flags)
 {

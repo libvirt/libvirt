@@ -2673,6 +2673,16 @@ umlNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+umlNodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          unsigned int target,
+                          unsigned long long duration,
+                          unsigned int flags)
+{
+    return nodeSuspendForDuration(target, duration, flags);
+}
+
+
 static virDriver umlDriver = {
     .no = VIR_DRV_UML,
     .name = "UML",
@@ -2731,7 +2741,7 @@ static virDriver umlDriver = {
     .connectDomainEventDeregisterAny = umlConnectDomainEventDeregisterAny, /* 0.9.4 */
     .domainOpenConsole = umlDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = umlConnectIsAlive, /* 0.9.8 */
-    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
+    .nodeSuspendForDuration = umlNodeSuspendForDuration, /* 0.9.8 */
     .nodeGetMemoryParameters = umlNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = umlNodeSetMemoryParameters, /* 0.10.2 */
 };

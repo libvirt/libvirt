@@ -4478,6 +4478,17 @@ lxcNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetCPUMap(cpumap, online, flags);
 }
 
+
+static int
+lxcNodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          unsigned int target,
+                          unsigned long long duration,
+                          unsigned int flags)
+{
+    return nodeSuspendForDuration(target, duration, flags);
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     .no = VIR_DRV_LXC,
@@ -4549,7 +4560,7 @@ static virDriver lxcDriver = {
     .connectDomainEventDeregisterAny = lxcConnectDomainEventDeregisterAny, /* 0.8.0 */
     .domainOpenConsole = lxcDomainOpenConsole, /* 0.8.6 */
     .connectIsAlive = lxcConnectIsAlive, /* 0.9.8 */
-    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
+    .nodeSuspendForDuration = lxcNodeSuspendForDuration, /* 0.9.8 */
     .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */

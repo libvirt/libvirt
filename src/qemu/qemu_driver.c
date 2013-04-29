@@ -14779,6 +14779,17 @@ qemuNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
     return nodeGetCPUMap(cpumap, online, flags);
 }
 
+
+static int
+qemuNodeSuspendForDuration(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           unsigned int target,
+                           unsigned long long duration,
+                           unsigned int flags)
+{
+    return nodeSuspendForDuration(target, duration, flags);
+}
+
+
 static virDriver qemuDriver = {
     .no = VIR_DRV_QEMU,
     .name = QEMU_DRIVER_NAME,
@@ -14940,7 +14951,7 @@ static virDriver qemuDriver = {
     .domainBlockRebase = qemuDomainBlockRebase, /* 0.9.10 */
     .domainBlockCommit = qemuDomainBlockCommit, /* 1.0.0 */
     .connectIsAlive = qemuConnectIsAlive, /* 0.9.8 */
-    .nodeSuspendForDuration = nodeSuspendForDuration, /* 0.9.8 */
+    .nodeSuspendForDuration = qemuNodeSuspendForDuration, /* 0.9.8 */
     .domainSetBlockIoTune = qemuDomainSetBlockIoTune, /* 0.9.8 */
     .domainGetBlockIoTune = qemuDomainGetBlockIoTune, /* 0.9.8 */
     .domainSetNumaParameters = qemuDomainSetNumaParameters, /* 0.9.9 */

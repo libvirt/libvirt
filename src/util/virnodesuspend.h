@@ -25,8 +25,7 @@
 
 # include "internal.h"
 
-int nodeSuspendForDuration(virConnectPtr conn,
-                           unsigned int target,
+int nodeSuspendForDuration(unsigned int target,
                            unsigned long long duration,
                            unsigned int flags);
 
