@@ -3539,16 +3539,10 @@ cleanup:
     return ret;
 }
 
-/* Actions for libxlDomainModifyDeviceFlags */
-enum {
-    LIBXL_DEVICE_ATTACH,
-    LIBXL_DEVICE_DETACH,
-    LIBXL_DEVICE_UPDATE,
-};
 
 static int
-libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
-                             unsigned int flags, int action)
+libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                             unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -3601,23 +3595,11 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                                                     driver->xmlopt)))
             goto cleanup;
 
-        switch (action) {
-            case LIBXL_DEVICE_ATTACH:
-                ret = libxlDomainAttachDeviceConfig(vmdef, dev);
-                break;
-            case LIBXL_DEVICE_DETACH:
-                ret = libxlDomainDetachDeviceConfig(vmdef, dev);
-                break;
-            case LIBXL_DEVICE_UPDATE:
-                ret = libxlDomainUpdateDeviceConfig(vmdef, dev);
-                break;
-            default:
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown domain modify action %d"), action);
-                break;
-        }
-    } else
+        if ((ret = libxlDomainAttachDeviceConfig(vmdef, dev)) < 0)
+            goto cleanup;
+    } else {
         ret = 0;
+    }
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
         /* If dev exists it was created to modify the domain config. Free it. */
@@ -3627,21 +3609,9 @@ libxlDomainModifyDeviceFlags(virDomainPtr dom, const char *xml,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
-        switch (action) {
-            case LIBXL_DEVICE_ATTACH:
-                ret = libxlDomainAttachDeviceLive(priv, vm, dev);
-                break;
-            case LIBXL_DEVICE_DETACH:
-                ret = libxlDomainDetachDeviceLive(priv, vm, dev);
-                break;
-            case LIBXL_DEVICE_UPDATE:
-                ret = libxlDomainUpdateDeviceLive(priv, vm, dev);
-                break;
-            default:
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown domain modify action %d"), action);
-                break;
-        }
+        if ((ret = libxlDomainAttachDeviceLive(priv, vm, dev)) < 0)
+            goto cleanup;
+
         /*
          * update domain status forcibly because the domain status may be
          * changed even if we attach the device failed.
@@ -3669,13 +3639,6 @@ cleanup:
 }
 
 static int
-libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                             unsigned int flags)
-{
-    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_ATTACH);
-}
-
-static int
 libxlDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     return libxlDomainAttachDeviceFlags(dom, xml,
@@ -3686,7 +3649,98 @@ static int
 libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                              unsigned int flags)
 {
-    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_DETACH);
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    libxlDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
+    libxlDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    } else {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        /* check consistency between flags and the vm state */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("Domain is not running"));
+            goto cleanup;
+        }
+    }
+
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
+         virReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot modify device on transient domain"));
+         goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        /* Make a copy for updated domain. */
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->caps,
+                                                    driver->xmlopt)))
+            goto cleanup;
+
+        if ((ret = libxlDomainDetachDeviceConfig(vmdef, dev)) < 0)
+            goto cleanup;
+    } else {
+        ret = 0;
+    }
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+        /* If dev exists it was created to modify the domain config. Free it. */
+        virDomainDeviceDefFree(dev);
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        if ((ret = libxlDomainDetachDeviceLive(priv, vm, dev)) < 0)
+            goto cleanup;
+
+        /*
+         * update domain status forcibly because the domain status may be
+         * changed even if we attach the device failed.
+         */
+        if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+            ret = -1;
+    }
+
+    /* Finally, if no error until here, we can save config. */
+    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        if (!ret) {
+            virDomainObjAssignDef(vm, vmdef, false, NULL);
+            vmdef = NULL;
+        }
+    }
+
+cleanup:
+    virDomainDefFree(vmdef);
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virObjectUnlock(vm);
+    libxlDriverUnlock(driver);
+    return ret;
 }
 
 static int
@@ -3700,7 +3754,98 @@ static int
 libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                              unsigned int flags)
 {
-    return libxlDomainModifyDeviceFlags(dom, xml, flags, LIBXL_DEVICE_UPDATE);
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr vmdef = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    libxlDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
+    libxlDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s", _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    } else {
+        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        /* check consistency between flags and the vm state */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("Domain is not running"));
+            goto cleanup;
+        }
+    }
+
+    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
+         virReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot modify device on transient domain"));
+         goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        /* Make a copy for updated domain. */
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->caps,
+                                                    driver->xmlopt)))
+            goto cleanup;
+
+        if ((ret = libxlDomainUpdateDeviceConfig(vmdef, dev)) < 0)
+            goto cleanup;
+    } else {
+        ret = 0;
+    }
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+        /* If dev exists it was created to modify the domain config. Free it. */
+        virDomainDeviceDefFree(dev);
+        if (!(dev = virDomainDeviceDefParse(xml, vm->def,
+                                            driver->caps, driver->xmlopt,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+
+        if ((ret = libxlDomainUpdateDeviceLive(priv, vm, dev)) < 0)
+            goto cleanup;
+
+        /*
+         * update domain status forcibly because the domain status may be
+         * changed even if we attach the device failed.
+         */
+        if (virDomainSaveStatus(driver->xmlopt, driver->stateDir, vm) < 0)
+            ret = -1;
+    }
+
+    /* Finally, if no error until here, we can save config. */
+    if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+        ret = virDomainSaveConfig(driver->configDir, vmdef);
+        if (!ret) {
+            virDomainObjAssignDef(vm, vmdef, false, NULL);
+            vmdef = NULL;
+        }
+    }
+
+cleanup:
+    virDomainDefFree(vmdef);
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virObjectUnlock(vm);
+    libxlDriverUnlock(driver);
+    return ret;
 }
 
 static unsigned long long
