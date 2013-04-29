@@ -8208,6 +8208,7 @@ error:
     for (i = 0; i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
     virSetError(originalError);
+    virFreeError(originalError);
     virCommandFree(cmd);
     return NULL;
 }
