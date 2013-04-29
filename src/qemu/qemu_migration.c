@@ -1940,12 +1940,6 @@ char *qemuMigrationBegin(virQEMUDriverPtr driver,
                                             VIR_DOMAIN_XML_INACTIVE)))
             goto cleanup;
 
-        if (STRNEQ(def->name, vm->def->name)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("target domain name doesn't match source name"));
-            goto cleanup;
-        }
-
         if (!virDomainDefCheckABIStability(vm->def, def))
             goto cleanup;
 

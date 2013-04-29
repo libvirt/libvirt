@@ -12558,6 +12558,17 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         return false;
     }
 
+    /* Not strictly ABI related, but we want to make sure domains
+     * don't get silently re-named through the backdoor when passing
+     * custom XML into various APIs, since this would create havoc
+     */
+    if (STRNEQ(src->name, dst->name)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain name '%s' does not match source '%s'"),
+                       dst->name, src->name);
+        return false;
+    }
+
     if (src->mem.max_balloon != dst->mem.max_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain max memory %lld does not match source %lld"),
