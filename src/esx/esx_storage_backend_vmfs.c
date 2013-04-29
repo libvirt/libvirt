@@ -111,7 +111,7 @@ esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
 
 
 static int
-esxStorageBackendVMFSNumberOfPools(virConnectPtr conn)
+esxConnectNumOfStoragePools(virConnectPtr conn)
 {
     int count = 0;
     esxPrivate *priv = conn->storagePrivateData;
@@ -135,8 +135,8 @@ esxStorageBackendVMFSNumberOfPools(virConnectPtr conn)
 
 
 static int
-esxStorageBackendVMFSListPools(virConnectPtr conn, char **const names,
-                               const int maxnames)
+esxConnectListStoragePools(virConnectPtr conn, char **const names,
+                           const int maxnames)
 {
     bool success = false;
     esxPrivate *priv = conn->storagePrivateData;
@@ -199,8 +199,8 @@ esxStorageBackendVMFSListPools(virConnectPtr conn, char **const names,
 
 
 static virStoragePoolPtr
-esxStorageBackendVMFSPoolLookupByName(virConnectPtr conn,
-                                      const char *name)
+esxStoragePoolLookupByName(virConnectPtr conn,
+                           const char *name)
 {
     esxPrivate *priv = conn->storagePrivateData;
     esxVI_ObjectContent *datastore = NULL;
@@ -252,8 +252,8 @@ esxStorageBackendVMFSPoolLookupByName(virConnectPtr conn,
 
 
 static virStoragePoolPtr
-esxStorageBackendVMFSPoolLookupByUUID(virConnectPtr conn,
-                                      const unsigned char *uuid)
+esxStoragePoolLookupByUUID(virConnectPtr conn,
+                           const unsigned char *uuid)
 {
     esxPrivate *priv = conn->storagePrivateData;
     esxVI_String *propertyNameList = NULL;
@@ -321,7 +321,7 @@ esxStorageBackendVMFSPoolLookupByUUID(virConnectPtr conn,
 
 
 static int
-esxStorageBackendVMFSPoolRefresh(virStoragePoolPtr pool, unsigned int flags)
+esxStoragePoolRefresh(virStoragePoolPtr pool, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -346,8 +346,8 @@ esxStorageBackendVMFSPoolRefresh(virStoragePoolPtr pool, unsigned int flags)
 
 
 static int
-esxStorageBackendVMFSPoolGetInfo(virStoragePoolPtr pool,
-                                 virStoragePoolInfoPtr info)
+esxStoragePoolGetInfo(virStoragePoolPtr pool,
+                      virStoragePoolInfoPtr info)
 {
     int result = -1;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -407,7 +407,7 @@ esxStorageBackendVMFSPoolGetInfo(virStoragePoolPtr pool,
 
 
 static char *
-esxStorageBackendVMFSPoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
+esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 {
     esxPrivate *priv = pool->conn->storagePrivateData;
     esxVI_String *propertyNameList = NULL;
@@ -527,7 +527,7 @@ esxStorageBackendVMFSPoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
 
 static int
-esxStorageBackendVMFSPoolNumberOfVolumes(virStoragePoolPtr pool)
+esxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
     bool success = false;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -561,8 +561,8 @@ esxStorageBackendVMFSPoolNumberOfVolumes(virStoragePoolPtr pool)
 
 
 static int
-esxStorageBackendVMFSPoolListVolumes(virStoragePoolPtr pool, char **const names,
-                                     int maxnames)
+esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
+                          int maxnames)
 {
     bool success = false;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -642,8 +642,8 @@ esxStorageBackendVMFSPoolListVolumes(virStoragePoolPtr pool, char **const names,
 
 
 static virStorageVolPtr
-esxStorageBackendVMFSVolumeLookupByName(virStoragePoolPtr pool,
-                                        const char *name)
+esxStorageVolLookupByName(virStoragePoolPtr pool,
+                          const char *name)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -673,7 +673,7 @@ esxStorageBackendVMFSVolumeLookupByName(virStoragePoolPtr pool,
 
 
 static virStorageVolPtr
-esxStorageBackendVMFSVolumeLookupByPath(virConnectPtr conn, const char *path)
+esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->storagePrivateData;
@@ -705,7 +705,7 @@ esxStorageBackendVMFSVolumeLookupByPath(virConnectPtr conn, const char *path)
 
 
 static virStorageVolPtr
-esxStorageBackendVMFSVolumeLookupByKey(virConnectPtr conn, const char *key)
+esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->storagePrivateData;
@@ -725,7 +725,7 @@ esxStorageBackendVMFSVolumeLookupByKey(virConnectPtr conn, const char *key)
 
     if (STRPREFIX(key, "[")) {
         /* Key is probably a datastore path */
-        return esxStorageBackendVMFSVolumeLookupByPath(conn, key);
+        return esxStorageVolLookupByPath(conn, key);
     }
 
     if (!priv->primary->hasQueryVirtualDiskUuid) {
@@ -842,9 +842,9 @@ esxStorageBackendVMFSVolumeLookupByKey(virConnectPtr conn, const char *key)
 
 
 static virStorageVolPtr
-esxStorageBackendVMFSVolumeCreateXML(virStoragePoolPtr pool,
-                                     const char *xmldesc,
-                                     unsigned int flags)
+esxStorageVolCreateXML(virStoragePoolPtr pool,
+                       const char *xmldesc,
+                       unsigned int flags)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -1071,10 +1071,10 @@ esxStorageBackendVMFSVolumeCreateXML(virStoragePoolPtr pool,
 
 
 static virStorageVolPtr
-esxStorageBackendVMFSVolumeCreateXMLFrom(virStoragePoolPtr pool,
-                                         const char *xmldesc,
-                                         virStorageVolPtr sourceVolume,
-                                         unsigned int flags)
+esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
+                           const char *xmldesc,
+                           virStorageVolPtr sourceVolume,
+                           unsigned int flags)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->storagePrivateData;
@@ -1268,7 +1268,7 @@ esxStorageBackendVMFSVolumeCreateXMLFrom(virStoragePoolPtr pool,
 
 
 static int
-esxStorageBackendVMFSVolumeDelete(virStorageVolPtr volume, unsigned int flags)
+esxStorageVolDelete(virStorageVolPtr volume, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = volume->conn->storagePrivateData;
@@ -1313,7 +1313,7 @@ esxStorageBackendVMFSVolumeDelete(virStorageVolPtr volume, unsigned int flags)
 
 
 static int
-esxStorageBackendVMFSVolumeWipe(virStorageVolPtr volume, unsigned int flags)
+esxStorageVolWipe(virStorageVolPtr volume, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = volume->conn->storagePrivateData;
@@ -1358,8 +1358,8 @@ esxStorageBackendVMFSVolumeWipe(virStorageVolPtr volume, unsigned int flags)
 
 
 static int
-esxStorageBackendVMFSVolumeGetInfo(virStorageVolPtr volume,
-                                   virStorageVolInfoPtr info)
+esxStorageVolGetInfo(virStorageVolPtr volume,
+                     virStorageVolInfoPtr info)
 {
     int result = -1;
     esxPrivate *priv = volume->conn->storagePrivateData;
@@ -1405,8 +1405,8 @@ esxStorageBackendVMFSVolumeGetInfo(virStorageVolPtr volume,
 
 
 static char *
-esxStorageBackendVMFSVolumeGetXMLDesc(virStorageVolPtr volume,
-                                      unsigned int flags)
+esxStorageVolGetXMLDesc(virStorageVolPtr volume,
+                        unsigned int flags)
 {
     esxPrivate *priv = volume->conn->storagePrivateData;
     virStoragePoolDef pool;
@@ -1489,7 +1489,7 @@ esxStorageBackendVMFSVolumeGetXMLDesc(virStorageVolPtr volume,
 
 
 static char *
-esxStorageBackendVMFSVolumeGetPath(virStorageVolPtr volume)
+esxStorageVolGetPath(virStorageVolPtr volume)
 {
     char *path;
 
@@ -1504,23 +1504,23 @@ esxStorageBackendVMFSVolumeGetPath(virStorageVolPtr volume)
 
 
 virStorageDriver esxStorageBackendVMFS = {
-    .connectNumOfStoragePools = esxStorageBackendVMFSNumberOfPools, /* 0.8.2 */
-    .connectListStoragePools = esxStorageBackendVMFSListPools, /* 0.8.2 */
-    .storagePoolLookupByName = esxStorageBackendVMFSPoolLookupByName, /* 0.8.2 */
-    .storagePoolLookupByUUID = esxStorageBackendVMFSPoolLookupByUUID, /* 0.8.2 */
-    .storagePoolRefresh = esxStorageBackendVMFSPoolRefresh, /* 0.8.2 */
-    .storagePoolGetInfo = esxStorageBackendVMFSPoolGetInfo, /* 0.8.2 */
-    .storagePoolGetXMLDesc = esxStorageBackendVMFSPoolGetXMLDesc, /* 0.8.2 */
-    .storagePoolNumOfVolumes = esxStorageBackendVMFSPoolNumberOfVolumes, /* 0.8.4 */
-    .storagePoolListVolumes = esxStorageBackendVMFSPoolListVolumes, /* 0.8.4 */
-    .storageVolLookupByName = esxStorageBackendVMFSVolumeLookupByName, /* 0.8.4 */
-    .storageVolLookupByPath = esxStorageBackendVMFSVolumeLookupByPath, /* 0.8.4 */
-    .storageVolLookupByKey = esxStorageBackendVMFSVolumeLookupByKey, /* 0.8.4 */
-    .storageVolCreateXML = esxStorageBackendVMFSVolumeCreateXML, /* 0.8.4 */
-    .storageVolCreateXMLFrom = esxStorageBackendVMFSVolumeCreateXMLFrom, /* 0.8.7 */
-    .storageVolDelete = esxStorageBackendVMFSVolumeDelete, /* 0.8.7 */
-    .storageVolWipe = esxStorageBackendVMFSVolumeWipe, /* 0.8.7 */
-    .storageVolGetInfo = esxStorageBackendVMFSVolumeGetInfo, /* 0.8.4 */
-    .storageVolGetXMLDesc = esxStorageBackendVMFSVolumeGetXMLDesc, /* 0.8.4 */
-    .storageVolGetPath = esxStorageBackendVMFSVolumeGetPath, /* 0.8.4 */
+    .connectNumOfStoragePools = esxConnectNumOfStoragePools, /* 0.8.2 */
+    .connectListStoragePools = esxConnectListStoragePools, /* 0.8.2 */
+    .storagePoolLookupByName = esxStoragePoolLookupByName, /* 0.8.2 */
+    .storagePoolLookupByUUID = esxStoragePoolLookupByUUID, /* 0.8.2 */
+    .storagePoolRefresh = esxStoragePoolRefresh, /* 0.8.2 */
+    .storagePoolGetInfo = esxStoragePoolGetInfo, /* 0.8.2 */
+    .storagePoolGetXMLDesc = esxStoragePoolGetXMLDesc, /* 0.8.2 */
+    .storagePoolNumOfVolumes = esxStoragePoolNumOfVolumes, /* 0.8.4 */
+    .storagePoolListVolumes = esxStoragePoolListVolumes, /* 0.8.4 */
+    .storageVolLookupByName = esxStorageVolLookupByName, /* 0.8.4 */
+    .storageVolLookupByPath = esxStorageVolLookupByPath, /* 0.8.4 */
+    .storageVolLookupByKey = esxStorageVolLookupByKey, /* 0.8.4 */
+    .storageVolCreateXML = esxStorageVolCreateXML, /* 0.8.4 */
+    .storageVolCreateXMLFrom = esxStorageVolCreateXMLFrom, /* 0.8.7 */
+    .storageVolDelete = esxStorageVolDelete, /* 0.8.7 */
+    .storageVolWipe = esxStorageVolWipe, /* 0.8.7 */
+    .storageVolGetInfo = esxStorageVolGetInfo, /* 0.8.4 */
+    .storageVolGetXMLDesc = esxStorageVolGetXMLDesc, /* 0.8.4 */
+    .storageVolGetPath = esxStorageVolGetPath, /* 0.8.4 */
 };
