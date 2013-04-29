@@ -1151,22 +1151,6 @@ int qemuDomainAttachHostUsbDevice(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES)) {
-        virUSBDevicePtr usb;
-
-        if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                                hostdev->source.subsys.u.usb.device,
-                                NULL)) == NULL)
-            goto error;
-
-        if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
-                                    vm) < 0) {
-            virUSBDeviceFree(usb);
-            goto error;
-        }
-        virUSBDeviceFree(usb);
-    }
-
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
         ret = qemuMonitorAddDevice(priv->mon, devstr);

@@ -33,9 +33,6 @@ int qemuSetupDiskCgroup(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk);
 int qemuTeardownDiskCgroup(virDomainObjPtr vm,
                            virDomainDiskDefPtr disk);
-int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev,
-                                 const char *path,
-                                 void *opaque);
 int qemuSetupHostdevCGroup(virDomainObjPtr vm,
                            virDomainHostdevDefPtr dev)
    ATTRIBUTE_RETURN_CHECK;

@@ -191,9 +191,10 @@ qemuSetupTPMCgroup(virDomainDefPtr def,
 }
 
 
-int qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
-                                 const char *path,
-                                 void *opaque)
+static int
+qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+                             const char *path,
+                             void *opaque)
 {
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -221,6 +222,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virPCIDevicePtr pci = NULL;
+    virUSBDevicePtr usb = NULL;
     char *path = NULL;
 
     /* currently this only does something for PCI devices using vfio
@@ -263,6 +265,28 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                 }
             }
             break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            /* NB: hostdev->missing wasn't previously checked in the
+             * case of hotplug, only when starting a domain. Now it is
+             * always checked, and the cgroup setup skipped if true.
+             */
+            if (dev->missing)
+                break;
+            if ((usb = virUSBDeviceNew(dev->source.subsys.u.usb.bus,
+                                       dev->source.subsys.u.usb.device,
+                                       NULL)) == NULL) {
+                goto cleanup;
+            }
+
+            /* oddly, qemuSetupHostUsbDeviceCgroup doesn't ever
+             * reference the usb object we just created
+             */
+            if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
+                                        vm) < 0) {
+                goto cleanup;
+            }
+            break;
         default:
             break;
         }
@@ -271,6 +295,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
     ret = 0;
 cleanup:
     virPCIDeviceFree(pci);
+    virUSBDeviceFree(usb);
     VIR_FREE(path);
     return ret;
 }
@@ -325,6 +350,9 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                     goto cleanup;
                 }
             }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            /* nothing to tear down for USB */
             break;
         default:
             break;
@@ -545,33 +573,8 @@ int qemuSetupCgroup(virQEMUDriverPtr driver,
             goto cleanup;
 
         for (i = 0; i < vm->def->nhostdevs; i++) {
-            virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
-            virUSBDevicePtr usb;
-
-            if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+            if (qemuSetupHostdevCGroup(vm, vm->def->hostdevs[i]) < 0)
                 goto cleanup;
-
-            /* NB: the code below here should be moved into
-             * qemuSetupHostdevCGroup()
-             */
-            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-                continue;
-            if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
-                continue;
-            if (hostdev->missing)
-                continue;
-
-            if ((usb = virUSBDeviceNew(hostdev->source.subsys.u.usb.bus,
-                                       hostdev->source.subsys.u.usb.device,
-                                       NULL)) == NULL)
-                goto cleanup;
-
-            if (virUSBDeviceFileIterate(usb, qemuSetupHostUsbDeviceCgroup,
-                                        vm) < 0) {
-                virUSBDeviceFree(usb);
-                goto cleanup;
-            }
-            virUSBDeviceFree(usb);
         }
     }
 
