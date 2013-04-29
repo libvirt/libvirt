@@ -478,16 +478,34 @@ DRIVER_SOURCE_FILES = \
 	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
 
+STATEFUL_DRIVER_SOURCE_FILES = \
+	$(INTERFACE_DRIVER_SOURCES) \
+	$(LIBXL_DRIVER_SOURCES) \
+	$(LXC_DRIVER_SOURCES) \
+	$(NETWORK_DRIVER_SOURCES) \
+	$(NODE_DEVICE_DRIVER_SOURCES) \
+	$(NWFILTER_DRIVER_SOURCES) \
+	$(QEMU_DRIVER_SOURCES) \
+	$(SECRET_DRIVER_SOURCES) \
+	$(STORAGE_DRIVER_SOURCES) \
+	$(UML_DRIVER_SOURCES) \
+	$(XEN_DRIVER_SOURCES) \
+	$(NULL)
+
 
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
 		$(filter /%,$(DRIVER_SOURCE_FILES)) \
 		$(addprefix $(srcdir)/,$(filter-out /%,$(DRIVER_SOURCE_FILES)))
 
-EXTRA_DIST += check-driverimpls.pl
+check-aclrules:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclrules.pl \
+		$(STATEFUL_DRIVER_SOURCE_FILES)
+
+EXTRA_DIST += check-driverimpls.pl check-aclrules.pl
 
 check-local: check-protocol check-symfile check-symsorting \
-	check-drivername check-driverimpls
+	check-drivername check-driverimpls check-aclrules
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
