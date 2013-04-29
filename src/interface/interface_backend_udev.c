@@ -543,44 +543,6 @@ udevBridgeScanDirFilter(const struct dirent *entry)
     return 1;
 }
 
-/**
- * Frees any memory allocated by udevGetIfaceDef()
- *
- * @param ifacedef - interface to free and cleanup
- */
-static void
-udevFreeIfaceDef(virInterfaceDef *ifacedef)
-{
-    int i;
-
-    if (!ifacedef)
-        return;
-
-    if (ifacedef->type == VIR_INTERFACE_TYPE_BOND) {
-        VIR_FREE(ifacedef->data.bond.target);
-        for (i = 0; i < ifacedef->data.bond.nbItf; i++) {
-            udevFreeIfaceDef(ifacedef->data.bond.itf[i]);
-        }
-        VIR_FREE(ifacedef->data.bond.itf);
-    }
-
-    if (ifacedef->type == VIR_INTERFACE_TYPE_BRIDGE) {
-        VIR_FREE(ifacedef->data.bridge.delay);
-        for (i = 0; i < ifacedef->data.bridge.nbItf; i++) {
-            udevFreeIfaceDef(ifacedef->data.bridge.itf[i]);
-        }
-        VIR_FREE(ifacedef->data.bridge.itf);
-    }
-
-    if (ifacedef->type == VIR_INTERFACE_TYPE_VLAN) {
-        VIR_FREE(ifacedef->data.vlan.devname);
-    }
-
-    VIR_FREE(ifacedef->mac);
-    VIR_FREE(ifacedef->name);
-
-    VIR_FREE(ifacedef);
-}
 
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
@@ -935,36 +897,29 @@ udevGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
                     const char *name,
                     virInterfaceDef *ifacedef)
 {
-    char *vid;
-    char *vlan_parent_dev = NULL;
-
-    vlan_parent_dev = strdup(name);
-    if (!vlan_parent_dev) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    const char *vid;
 
     /* Find the DEVICE.VID again */
-    vid = strrchr(vlan_parent_dev, '.');
+    vid = strrchr(name, '.');
     if (!vid) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                _("failed to find the VID for the VLAN device '%s'"),
-                name);
-        goto cleanup;
-        }
-
-    /* Replace the dot with a NULL so we can have the device and VID */
-    vid[0] = '\0';
-    vid++;
+                       _("failed to find the VID for the VLAN device '%s'"),
+                       name);
+        return -1;
+    }
 
     /* Set the VLAN specifics */
-    ifacedef->data.vlan.tag = vid;
-    ifacedef->data.vlan.devname = vlan_parent_dev;
+    if (VIR_STRDUP(ifacedef->data.vlan.tag, vid + 1) < 0)
+        goto cleanup;
+    if (VIR_STRNDUP(ifacedef->data.vlan.devname,
+                    name, (vid - name)) < 0)
+        goto cleanup;
 
     return 0;
 
 cleanup:
-    VIR_FREE(vlan_parent_dev);
+    VIR_FREE(ifacedef->data.vlan.tag);
+    VIR_FREE(ifacedef->data.vlan.devname);
 
     return -1;
 }
@@ -1081,7 +1036,7 @@ udevGetIfaceDef(struct udev *udev, const char *name)
 cleanup:
     udev_device_unref(dev);
 
-    udevFreeIfaceDef(ifacedef);
+    virInterfaceDefFree(ifacedef);
 
     return NULL;
 }
@@ -1102,15 +1057,12 @@ udevInterfaceGetXMLDesc(virInterfacePtr ifinfo,
      */
     ifacedef = udevGetIfaceDef(udev, ifinfo->name);
 
-    /* We've already printed by it happened */
     if (!ifacedef)
         goto err;
 
-    /* Convert our interface to XML */
     xmlstr = virInterfaceDefFormat(ifacedef);
 
-    /* Recursively free our interface structures and free the children too */
-    udevFreeIfaceDef(ifacedef);
+    virInterfaceDefFree(ifacedef);
 
 err:
     /* decrement our udev ptr */
