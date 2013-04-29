@@ -2141,8 +2141,9 @@
       "pci-ohci" or "nec-xhci".  Additionally,
       <span class="since">since 0.10.0</span>, if the USB bus needs to be
       explicitly disabled for the guest, <code>model='none'</code> may be
-      used.  The PowerPC64 "spapr-vio" addresses do not have an associated
-      controller.
+      used.  <span class="since">Since 1.0.5</span>, no default USB controller
+      will be built on s390.  The PowerPC64 "spapr-vio" addresses do not have an
+      associated controller.
     </p>
 
     <p>
