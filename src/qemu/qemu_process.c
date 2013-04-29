@@ -3292,8 +3292,14 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
         graphics->data.spice.port = port;
     }
 
-    if (cfg->spiceTLS &&
-        (needTLSPort || graphics->data.spice.tlsPort == -1)) {
+    if (needTLSPort || graphics->data.spice.tlsPort == -1) {
+        if (!cfg->spiceTLS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Auto allocation of spice TLS port requested "
+                             "but spice TLS is disabled in qemu.conf"));
+            goto error;
+        }
+
         if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
             goto error;
 
