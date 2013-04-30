@@ -835,8 +835,10 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
             == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetVFIOGroupDev(pci);
 
-            if (!vfioGroupDev)
+            if (!vfioGroupDev) {
+                virPCIDeviceFree(pci);
                 goto done;
+            }
             ret = AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr);
             VIR_FREE(vfioGroupDev);
         } else {
