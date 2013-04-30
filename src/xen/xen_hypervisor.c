@@ -870,11 +870,7 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 # error "unsupported platform"
 #endif
 
-static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
-
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainGetMaxMemory = xenHypervisorGetMaxMemory,
-    .xenDomainSetMaxMemory = xenHypervisorSetMaxMemory,
     .xenDomainGetInfo = xenHypervisorGetDomainInfo,
     .xenDomainPinVcpu = xenHypervisorPinVcpu,
     .xenDomainGetVcpus = xenHypervisorGetVcpus,
@@ -2763,9 +2759,8 @@ xenHypervisorGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 /**
- * xenHypervisorGetDomMaxMemory:
- * @conn: connection data
- * @id: domain id
+ * xenHypervisorDomMaxMemory:
+ * @dom: domain
  *
  * Retrieve the maximum amount of physical memory allocated to a
  * domain.
@@ -2773,9 +2768,9 @@ xenHypervisorGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Returns the memory size in kilobytes or 0 in case of error.
  */
 unsigned long
-xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
+xenHypervisorGetMaxMemory(virDomainPtr dom)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
+    xenUnifiedPrivatePtr priv = dom->conn->privateData;
     xen_getdomaininfo dominfo;
     int ret;
 
@@ -2787,32 +2782,14 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
-    ret = virXen_getdomaininfo(priv->handle, id, &dominfo);
+    ret = virXen_getdomaininfo(priv->handle, dom->id, &dominfo);
 
-    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != id))
+    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id))
         return 0;
 
     return (unsigned long) XEN_GETDOMAININFO_MAX_PAGES(dominfo) * kb_per_pages;
 }
 
-/**
- * xenHypervisorGetMaxMemory:
- * @domain: a domain object or NULL
- *
- * Retrieve the maximum amount of physical memory allocated to a
- * domain. If domain is NULL, then this get the amount of memory reserved
- * to Domain0 i.e. the domain where the application runs.
- *
- * Returns the memory size in kilobytes or 0 in case of error.
- */
-static unsigned long long ATTRIBUTE_NONNULL(1)
-xenHypervisorGetMaxMemory(virDomainPtr domain)
-{
-    if (domain->id < 0)
-        return 0;
-
-    return xenHypervisorGetDomMaxMemory(domain->conn, domain->id);
-}
 
 /**
  * xenHypervisorGetDomInfo:

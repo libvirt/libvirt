@@ -68,8 +68,7 @@ virCapsPtr
 char *
         xenHypervisorGetCapabilities    (virConnectPtr conn);
 unsigned long
-        xenHypervisorGetDomMaxMemory    (virConnectPtr conn,
-                                         int id);
+        xenHypervisorGetMaxMemory(virDomainPtr dom);
 int     xenHypervisorGetMaxVcpus        (virConnectPtr conn,
                                          const char *type);
 int     xenHypervisorGetDomainInfo        (virDomainPtr domain,

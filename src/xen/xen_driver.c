@@ -812,53 +812,41 @@ static unsigned long long
 xenUnifiedDomainGetMaxMemory(virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-    unsigned long long ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainGetMaxMemory) {
-            ret = drivers[i]->xenDomainGetMaxMemory(dom);
-            if (ret != 0) return ret;
-        }
-
-    return 0;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainGetMaxMemory(dom);
+        else
+            return xenDaemonDomainGetMaxMemory(dom);
+    } else {
+        return xenHypervisorGetMaxMemory(dom);
+    }
 }
 
 static int
 xenUnifiedDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    /* Prefer xend for setting max memory */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        if (xenDaemonDomainSetMaxMemory(dom, memory) == 0)
-            return 0;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainSetMaxMemory(dom, memory);
+        else
+            return xenDaemonDomainSetMaxMemory(dom, memory);
+    } else {
+        return xenHypervisorSetMaxMemory(dom, memory);
     }
-
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != XEN_UNIFIED_XEND_OFFSET &&
-            priv->opened[i] &&
-            drivers[i]->xenDomainSetMaxMemory &&
-            drivers[i]->xenDomainSetMaxMemory(dom, memory) == 0)
-            return 0;
-
-    return -1;
 }
 
 static int
 xenUnifiedDomainSetMemory(virDomainPtr dom, unsigned long memory)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenDomainSetMemory &&
-            drivers[i]->xenDomainSetMemory(dom, memory) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainSetMemory(dom, memory);
+    else
+        return xenDaemonDomainSetMemory(dom, memory);
 }
 
 static int

@@ -81,9 +81,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    .xenDomainGetMaxMemory = xenXMDomainGetMaxMemory,
-    .xenDomainSetMaxMemory = xenXMDomainSetMaxMemory,
-    .xenDomainSetMemory = xenXMDomainSetMemory,
     .xenDomainGetInfo = xenXMDomainGetInfo,
     .xenDomainPinVcpu = xenXMDomainPinVcpu,
     .xenListDefinedDomains = xenXMListDefinedDomains,
@@ -564,8 +561,12 @@ xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if (domain->id != -1 || memory < 1024 * MIN_XEN_GUEST_SIZE)
+    if (memory < 1024 * MIN_XEN_GUEST_SIZE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Memory %lu too small, min %lu"),
+                       memory, (unsigned long)1024 * MIN_XEN_GUEST_SIZE);
         return -1;
+    }
 
     xenUnifiedLock(priv);
 
@@ -602,8 +603,12 @@ xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if (domain->id != -1)
+    if (memory < 1024 * MIN_XEN_GUEST_SIZE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Memory %lu too small, min %lu"),
+                       memory, (unsigned long)1024 * MIN_XEN_GUEST_SIZE);
         return -1;
+    }
 
     xenUnifiedLock(priv);
 

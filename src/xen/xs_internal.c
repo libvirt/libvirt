@@ -57,8 +57,6 @@ static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
-    .xenDomainGetMaxMemory = xenStoreDomainGetMaxMemory,
-    .xenDomainSetMemory = xenStoreDomainSetMemory,
     .xenDomainGetInfo = xenStoreGetDomainInfo,
 };
 
@@ -110,36 +108,6 @@ virDomainDoStoreQuery(virConnectPtr conn, int domid, const char *path)
 
     return xs_read(priv->xshandle, 0, &s[0], &len);
 }
-
-/**
- * virDomainDoStoreWrite:
- * @domain: a domain object
- * @path: the relative path of the data in the store to retrieve
- *
- * Internal API setting up a string value in the Xenstore
- * Requires write access to the XenStore
- *
- * Returns 0 in case of success, -1 in case of failure
- */
-static int
-virDomainDoStoreWrite(virDomainPtr domain, const char *path, const char *value)
-{
-    char s[256];
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-    int ret = -1;
-
-    if (priv->xshandle == NULL)
-        return -1;
-
-    snprintf(s, 255, "/local/domain/%d/%s", domain->id, path);
-    s[255] = 0;
-
-    if (xs_write(priv->xshandle, 0, &s[0], value, strlen(value)))
-        ret = 0;
-
-    return ret;
-}
-
 
 /************************************************************************
  *									*
@@ -359,64 +327,6 @@ xenStoreDomainGetState(virDomainPtr domain,
     return 0;
 }
 
-/**
- * xenStoreDomainSetMemory:
- * @domain: pointer to the domain block
- * @memory: the max memory size in kilobytes.
- *
- * Change the maximum amount of memory allowed in the xen store
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
-{
-    int ret;
-    char value[20];
-
-    if (memory < 1024 * MIN_XEN_GUEST_SIZE) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-    if (domain->id == -1)
-        return -1;
-    if ((domain->id == 0) && (memory < (2 * MIN_XEN_GUEST_SIZE * 1024)))
-        return -1;
-    snprintf(value, 19, "%lu", memory);
-    value[19] = 0;
-    ret = virDomainDoStoreWrite(domain, "memory/target", &value[0]);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
-
-/**
- * xenStoreDomainGetMaxMemory:
- * @domain: pointer to the domain block
- *
- * Ask the xenstore for the maximum memory allowed for a domain
- *
- * Returns the memory size in kilobytes or 0 in case of error.
- */
-unsigned long long
-xenStoreDomainGetMaxMemory(virDomainPtr domain)
-{
-    char *tmp;
-    unsigned long long ret = 0;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id == -1)
-        return 0;
-
-    xenUnifiedLock(priv);
-    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
-    if (tmp != NULL) {
-        ret = atol(tmp);
-        VIR_FREE(tmp);
-    }
-    xenUnifiedUnlock(priv);
-    return ret;
-}
 
 /**
  * xenStoreNumOfDomains:

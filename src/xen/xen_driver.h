@@ -93,9 +93,6 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvDomainGetMaxMemory xenDomainGetMaxMemory;
-    virDrvDomainSetMaxMemory xenDomainSetMaxMemory;
-    virDrvDomainSetMemory xenDomainSetMemory;
     virDrvDomainGetInfo xenDomainGetInfo;
     virDrvDomainPinVcpu xenDomainPinVcpu;
     virDrvDomainGetVcpus xenDomainGetVcpus;

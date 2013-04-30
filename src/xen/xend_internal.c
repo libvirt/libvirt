@@ -1491,10 +1491,6 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 {
     unsigned long long ret = 0;
     struct sexpr *root;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return 0;
 
     /* can we ask for a subset ? worth it ? */
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -1523,10 +1519,6 @@ int
 xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
     char buf[1024];
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
     return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
@@ -1553,10 +1545,6 @@ int
 xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 {
     char buf[1024];
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
     return xend_op(domain->conn, domain->name, "op", "mem_target_set",
@@ -3437,9 +3425,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainGetMaxMemory = xenDaemonDomainGetMaxMemory,
-    .xenDomainSetMaxMemory = xenDaemonDomainSetMaxMemory,
-    .xenDomainSetMemory = xenDaemonDomainSetMemory,
     .xenDomainGetInfo = xenDaemonDomainGetInfo,
     .xenDomainPinVcpu = xenDaemonDomainPinVcpu,
     .xenDomainGetVcpus = xenDaemonDomainGetVcpus,
