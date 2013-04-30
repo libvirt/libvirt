@@ -132,7 +132,8 @@ int virNetDevExists(const char *ifname)
 #endif
 
 
-#if defined(SIOCGIFHWADDR) && defined(HAVE_STRUCT_IFREQ)
+#if defined(SIOCGIFHWADDR) && defined(SIOCSIFHWADDR) && \
+    defined(HAVE_STRUCT_IFREQ)
 /**
  * virNetDevSetMAC:
  * @ifname: interface name to set MTU for
