@@ -53,7 +53,7 @@
  * Returns 0 if the interface name is successfully queried, -1 otherwise
  */
 int
-virNetDevTapGetName(int tapfd, char **ifname)
+virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
 {
 #ifdef TUNGETIFF
     struct ifreq ifr;
