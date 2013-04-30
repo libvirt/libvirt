@@ -44,10 +44,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN_INOTIFY
 
-struct xenUnifiedDriver xenInotifyDriver = {
-    .xenClose = xenInotifyClose,
-};
-
 static int
 xenInotifyXenCacheLookup(virConnectPtr conn,
                          const char *filename,
@@ -349,7 +345,7 @@ cleanup:
  *
  * Returns 0 or -1 in case of error.
  */
-virDrvOpenStatus
+int
 xenInotifyOpen(virConnectPtr conn,
                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                unsigned int flags)
@@ -359,7 +355,7 @@ xenInotifyOpen(virConnectPtr conn,
     char *path;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, -1);
 
     if (priv->configDir) {
         priv->useXenConfigCache = 1;

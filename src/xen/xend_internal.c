@@ -1231,15 +1231,15 @@ error:
  *
  * Returns 0 in case of success, -1 in case of error.
  */
-virDrvOpenStatus
+int
 xenDaemonOpen(virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               unsigned int flags)
 {
     char *port = NULL;
-    int ret = VIR_DRV_OPEN_ERROR;
+    int ret = -1;
 
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, -1);
 
     /* Switch on the scheme, which we expect to be NULL (file),
      * "http" or "xen".
@@ -1286,7 +1286,7 @@ xenDaemonOpen(virConnectPtr conn,
     }
 
  done:
-    ret = VIR_DRV_OPEN_SUCCESS;
+    ret = 0;
 
 failed:
     VIR_FREE(port);
@@ -3652,7 +3652,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenClose = xenDaemonClose,
     .xenVersion = xenDaemonGetVersion,
     .xenDomainSuspend = xenDaemonDomainSuspend,
     .xenDomainResume = xenDaemonDomainResume,

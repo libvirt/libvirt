@@ -58,7 +58,6 @@ static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
-    .xenClose = xenStoreClose,
     .xenDomainShutdown = xenStoreDomainShutdown,
     .xenDomainReboot = xenStoreDomainReboot,
     .xenDomainGetOSType = xenStoreDomainGetOSType,
@@ -218,14 +217,14 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
  *
  * Returns 0 or -1 in case of error.
  */
-virDrvOpenStatus
+int
 xenStoreOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, -1);
 
     if (flags & VIR_CONNECT_RO)
         priv->xshandle = xs_daemon_open_readonly();

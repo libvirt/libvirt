@@ -81,7 +81,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    .xenClose = xenXMClose,
     .xenDomainGetMaxMemory = xenXMDomainGetMaxMemory,
     .xenDomainSetMaxMemory = xenXMDomainSetMaxMemory,
     .xenDomainSetMemory = xenXMDomainSetMemory,
@@ -419,14 +418,14 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
  * us watch for changes (see separate driver), otherwise we poll
  * every few seconds
  */
-virDrvOpenStatus
+int
 xenXMOpen(virConnectPtr conn,
           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
           unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, -1);
 
     priv->configDir = XM_CONFIG_DIR;
 

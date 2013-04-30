@@ -53,7 +53,7 @@ virDomainPtr
 char *
         xenHypervisorDomainGetOSType    (virDomainPtr dom);
 
-virDrvOpenStatus
+int
         xenHypervisorOpen               (virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          unsigned int flags);

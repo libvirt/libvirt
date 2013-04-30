@@ -36,8 +36,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn);
 int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename);
 int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);
 
-virDrvOpenStatus xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                           unsigned int flags);
+int xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags);
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);
 int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);

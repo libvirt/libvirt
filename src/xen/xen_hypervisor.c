@@ -880,7 +880,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenClose = xenHypervisorClose,
     .xenVersion = xenHypervisorGetVersion,
     .xenDomainSuspend = xenHypervisorPauseDomain,
     .xenDomainResume = xenHypervisorResumeDomain,
@@ -2184,7 +2183,7 @@ VIR_ONCE_GLOBAL_INIT(xenHypervisor)
  *
  * Returns 0 or -1 in case of error.
  */
-virDrvOpenStatus
+int
 xenHypervisorOpen(virConnectPtr conn,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                   unsigned int flags)
@@ -2192,10 +2191,10 @@ xenHypervisorOpen(virConnectPtr conn,
     int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+    virCheckFlags(VIR_CONNECT_RO, -1);
 
     if (xenHypervisorInitialize() < 0)
-        return VIR_DRV_OPEN_ERROR;
+        return -1;
 
     priv->handle = -1;
 
@@ -2207,7 +2206,7 @@ xenHypervisorOpen(virConnectPtr conn,
 
     priv->handle = ret;
 
-    return VIR_DRV_OPEN_SUCCESS;
+    return 0;
 }
 
 /**

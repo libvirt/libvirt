@@ -29,7 +29,7 @@
 extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
-virDrvOpenStatus	xenStoreOpen	(virConnectPtr conn,
+int		xenStoreOpen		(virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          unsigned int flags);
 int		xenStoreClose		(virConnectPtr conn);

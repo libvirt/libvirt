@@ -24,13 +24,10 @@
 # define __VIR_XEN_INOTIFY_H__
 
 # include "internal.h"
-# include "driver.h"
 
-extern struct xenUnifiedDriver xenInotifyDriver;
-
-virDrvOpenStatus	xenInotifyOpen	(virConnectPtr conn,
-                                         virConnectAuthPtr auth,
-                                         unsigned int flags);
-int		xenInotifyClose		(virConnectPtr conn);
+int xenInotifyOpen(virConnectPtr conn,
+                   virConnectAuthPtr auth,
+                   unsigned int flags);
+int xenInotifyClose(virConnectPtr conn);
 
 #endif
