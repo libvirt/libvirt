@@ -552,29 +552,18 @@ xenUnifiedConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 int
 xenUnifiedConnectGetMaxVcpus(virConnectPtr conn, const char *type)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
     if (type && STRCASENEQ(type, "Xen")) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;
     }
 
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
-        return xenHypervisorGetMaxVcpus(conn, type);
-    else {
-        virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-        return -1;
-    }
+    return xenHypervisorGetMaxVcpus(conn, type);
 }
 
 static int
 xenUnifiedNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonNodeGetInfo(conn, info);
-    return -1;
+    return xenDaemonNodeGetInfo(conn, info);
 }
 
 static char *
