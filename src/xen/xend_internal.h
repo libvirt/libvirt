@@ -152,8 +152,7 @@ int xenDaemonDomainSetAutostart          (virDomainPtr domain,
 extern struct xenUnifiedDriver xenDaemonDriver;
 int xenDaemonInit (void);
 
-virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
-                                unsigned int flags);
+virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc);
 virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);

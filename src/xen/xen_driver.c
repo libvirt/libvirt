@@ -596,11 +596,9 @@ static virDomainPtr
 xenUnifiedDomainCreateXML(virConnectPtr conn,
                           const char *xmlDesc, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
+    virCheckFlags(0, NULL);
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonCreateXML(conn, xmlDesc, flags);
-    return NULL;
+    return xenDaemonCreateXML(conn, xmlDesc);
 }
 
 /* Assumption made in underlying drivers:

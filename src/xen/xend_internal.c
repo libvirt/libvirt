@@ -2288,15 +2288,13 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
-xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
+xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
 {
     int ret;
     char *sexpr;
     virDomainPtr dom = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr def;
-
-    virCheckFlags(0, NULL);
 
     if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
