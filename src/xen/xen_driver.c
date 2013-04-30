@@ -1320,32 +1320,24 @@ xenUnifiedConnectListDefinedDomains(virConnectPtr conn, char **const names,
                                     int maxnames)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
-    int i;
-    int ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenListDefinedDomains) {
-            ret = drivers[i]->xenListDefinedDomains(conn, names, maxnames);
-            if (ret >= 0) return ret;
-        }
-
-    return -1;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+        return xenXMListDefinedDomains(conn, names, maxnames);
+    } else {
+        return xenDaemonListDefinedDomains(conn, names, maxnames);
+    }
 }
 
 static int
 xenUnifiedConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
-    int i;
-    int ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenNumOfDefinedDomains) {
-            ret = drivers[i]->xenNumOfDefinedDomains(conn);
-            if (ret >= 0) return ret;
-        }
-
-    return -1;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+        return xenXMNumOfDefinedDomains(conn);
+    } else {
+        return xenDaemonNumOfDefinedDomains(conn);
+    }
 }
 
 static int

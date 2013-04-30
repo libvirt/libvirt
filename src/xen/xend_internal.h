@@ -109,6 +109,11 @@ char **xenDaemonListDomainsOld(virConnectPtr xend);
 
 char *xenDaemonDomainGetOSType(virDomainPtr domain);
 
+int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
+int xenDaemonListDefinedDomains(virConnectPtr conn,
+                                char **const names,
+                                int maxnames);
+
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
 int xenDaemonDomainCreate(virDomainPtr domain);
 int xenDaemonDomainUndefine(virDomainPtr domain);

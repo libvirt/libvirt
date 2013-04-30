@@ -2937,19 +2937,12 @@ xenDaemonDomainUndefine(virDomainPtr domain)
  *
  * Returns the number of domain found or -1 in case of error
  */
-static int
+int
 xenDaemonNumOfDefinedDomains(virConnectPtr conn)
 {
     struct sexpr *root = NULL;
     int ret = -1;
     struct sexpr *_for_i, *node;
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    /* xm_internal.c (the support for defined domains from /etc/xen
-     * config files used by old Xen) will handle this.
-     */
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     root = sexpr_get(conn, "/xend/domain?state=halted");
     if (root == NULL)
@@ -2970,7 +2963,7 @@ error:
     return ret;
 }
 
-static int
+int
 xenDaemonListDefinedDomains(virConnectPtr conn,
                             char **const names,
                             int maxnames)
@@ -2978,10 +2971,6 @@ xenDaemonListDefinedDomains(virConnectPtr conn,
     struct sexpr *root = NULL;
     int i, ret = -1;
     struct sexpr *_for_i, *node;
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     if (maxnames == 0)
         return 0;
@@ -3387,8 +3376,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenListDefinedDomains = xenDaemonListDefinedDomains,
-    .xenNumOfDefinedDomains = xenDaemonNumOfDefinedDomains,
     .xenDomainCreate = xenDaemonDomainCreate,
     .xenDomainDefineXML = xenDaemonDomainDefineXML,
     .xenDomainUndefine = xenDaemonDomainUndefine,
