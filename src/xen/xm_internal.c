@@ -81,7 +81,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    .xenDomainGetInfo = xenXMDomainGetInfo,
     .xenDomainPinVcpu = xenXMDomainPinVcpu,
     .xenListDefinedDomains = xenXMListDefinedDomains,
     .xenNumOfDefinedDomains = xenXMNumOfDefinedDomains,
@@ -462,15 +461,10 @@ xenXMClose(virConnectPtr conn)
  * Since these are all offline domains, the state is always SHUTOFF.
  */
 int
-xenXMDomainGetState(virDomainPtr domain,
-                    int *state, int *reason,
-                    unsigned int flags)
+xenXMDomainGetState(virDomainPtr domain ATTRIBUTE_UNUSED,
+                    int *state,
+                    int *reason)
 {
-    virCheckFlags(0, -1);
-
-    if (domain->id != -1)
-        return -1;
-
     *state = VIR_DOMAIN_SHUTOFF;
     if (reason)
         *reason = 0;
@@ -489,9 +483,6 @@ xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-
-    if (domain->id != -1)
-        return -1;
 
     xenUnifiedLock(priv);
 

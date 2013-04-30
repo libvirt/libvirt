@@ -101,8 +101,7 @@ int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 int xenDaemonDomainGetState(virDomainPtr domain,
                             int *state,
-                            int *reason,
-                            unsigned int flags);
+                            int *reason);
 char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
                                 const char *cpus);
 unsigned long long xenDaemonDomainGetMaxMemory(virDomainPtr domain);

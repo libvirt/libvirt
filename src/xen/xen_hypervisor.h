@@ -76,8 +76,7 @@ int     xenHypervisorGetDomainInfo        (virDomainPtr domain,
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomainState     (virDomainPtr domain,
                                          int *state,
-                                         int *reason,
-                                         unsigned int flags)
+                                         int *reason)
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomInfo         (virConnectPtr conn,
                                          int id,

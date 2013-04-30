@@ -56,32 +56,11 @@
 static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
-struct xenUnifiedDriver xenStoreDriver = {
-    .xenDomainGetInfo = xenStoreGetDomainInfo,
-};
-
 /************************************************************************
  *									*
  *		Helper internal APIs					*
  *									*
  ************************************************************************/
-/**
- * virConnectDoStoreList:
- * @conn: pointer to the hypervisor connection
- * @path: the absolute path of the directory in the store to list
- * @nb: OUT pointer to the number of items found
- *
- * Internal API querying the Xenstore for a list
- *
- * Returns a string which must be freed by the caller or NULL in case of error
- */
-static char **
-virConnectDoStoreList(virConnectPtr conn, const char *path, unsigned int *nb)
-{
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    return xs_directory(priv->xshandle, 0, path, nb);
-}
 
 /**
  * virDomainDoStoreQuery:
@@ -233,100 +212,6 @@ xenStoreClose(virConnectPtr conn)
 
     return 0;
 }
-
-/**
- * xenStoreGetDomainInfo:
- * @domain: pointer to the domain block
- * @info: the place where information should be stored
- *
- * Do a hypervisor call to get the related set of domain information.
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
-{
-    char *tmp, **tmp2;
-    unsigned int nb_vcpus;
-    char request[200];
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->xshandle == NULL || domain->id == -1)
-        return -1;
-
-    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "running");
-    if (tmp != NULL) {
-        if (tmp[0] == '1')
-            info->state = VIR_DOMAIN_RUNNING;
-        VIR_FREE(tmp);
-    } else {
-        info->state = VIR_DOMAIN_NOSTATE;
-    }
-    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
-    if (tmp != NULL) {
-        info->memory = atol(tmp);
-        info->maxMem = atol(tmp);
-        VIR_FREE(tmp);
-    } else {
-        info->memory = 0;
-        info->maxMem = 0;
-    }
-#if 0
-    /* doesn't seems to work */
-    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "cpu_time");
-    if (tmp != NULL) {
-        info->cpuTime = atol(tmp);
-        VIR_FREE(tmp);
-    } else {
-        info->cpuTime = 0;
-    }
-#endif
-    snprintf(request, 199, "/local/domain/%d/cpu", domain->id);
-    request[199] = 0;
-    tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
-    if (tmp2 != NULL) {
-        info->nrVirtCpu = nb_vcpus;
-        VIR_FREE(tmp2);
-    }
-    return 0;
-}
-
-/**
- * xenStoreDomainGetState:
- * @domain: pointer to the domain block
- * @state: returned domain's state
- * @reason: returned state reason
- * @flags: additional flags, 0 for now
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenStoreDomainGetState(virDomainPtr domain,
-                       int *state,
-                       int *reason,
-                       unsigned int flags)
-{
-    char *running;
-
-    virCheckFlags(0, -1);
-
-    if (domain->id == -1)
-        return -1;
-
-    running = virDomainDoStoreQuery(domain->conn, domain->id, "running");
-
-    if (running && *running == '1')
-        *state = VIR_DOMAIN_RUNNING;
-    else
-        *state = VIR_DOMAIN_NOSTATE;
-    if (reason)
-        *reason = 0;
-
-    VIR_FREE(running);
-
-    return 0;
-}
-
 
 /**
  * xenStoreNumOfDomains:

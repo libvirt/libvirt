@@ -1648,10 +1648,6 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     struct sexpr *root;
     int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
@@ -1668,7 +1664,6 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
  * @domain: a domain object
  * @state: returned domain's state
  * @reason: returned reason for the state
- * @flags: additional flags, 0 for now
  *
  * This method looks up domain state and reason.
  *
@@ -1677,16 +1672,9 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 int
 xenDaemonDomainGetState(virDomainPtr domain,
                         int *state,
-                        int *reason,
-                        unsigned int flags)
+                        int *reason)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     struct sexpr *root;
-
-    virCheckFlags(0, -1);
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (!root)
@@ -3425,7 +3413,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainGetInfo = xenDaemonDomainGetInfo,
     .xenDomainPinVcpu = xenDaemonDomainPinVcpu,
     .xenDomainGetVcpus = xenDaemonDomainGetVcpus,
     .xenListDefinedDomains = xenDaemonListDefinedDomains,

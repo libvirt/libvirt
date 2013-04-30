@@ -84,7 +84,6 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
 static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
     [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
     [XEN_UNIFIED_XEND_OFFSET] = &xenDaemonDriver,
-    [XEN_UNIFIED_XS_OFFSET] = &xenStoreDriver,
     [XEN_UNIFIED_XM_OFFSET] = &xenXMDriver,
 };
 
@@ -853,15 +852,15 @@ static int
 xenUnifiedDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenDomainGetInfo &&
-            drivers[i]->xenDomainGetInfo(dom, info) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainGetInfo(dom, info);
+        else
+            return xenDaemonDomainGetInfo(dom, info);
+    } else {
+        return xenHypervisorGetDomainInfo(dom, info);
+    }
 }
 
 static int
@@ -871,38 +870,17 @@ xenUnifiedDomainGetState(virDomainPtr dom,
                          unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int ret;
 
     virCheckFlags(0, -1);
 
-    /* trying drivers in the same order as GetInfo for consistent results:
-     * hypervisor, xend, xs, and xm */
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorGetDomainState(dom, state, reason, flags);
-        if (ret >= 0)
-            return ret;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainGetState(dom, state, reason);
+        else
+            return xenDaemonDomainGetState(dom, state, reason);
+    } else {
+        return xenHypervisorGetDomainState(dom, state, reason);
     }
-
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonDomainGetState(dom, state, reason, flags);
-        if (ret >= 0)
-            return ret;
-    }
-
-    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
-        ret = xenStoreDomainGetState(dom, state, reason, flags);
-        if (ret >= 0)
-            return ret;
-    }
-
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
-        ret = xenXMDomainGetState(dom, state, reason, flags);
-        if (ret >= 0)
-            return ret;
-    }
-
-    return -1;
 }
 
 static int

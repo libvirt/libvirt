@@ -871,7 +871,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #endif
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainGetInfo = xenHypervisorGetDomainInfo,
     .xenDomainPinVcpu = xenHypervisorPinVcpu,
     .xenDomainGetVcpus = xenHypervisorGetVcpus,
     .xenDomainGetSchedulerType = xenHypervisorGetSchedulerType,
@@ -2880,11 +2879,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 int
 xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    if (domain->id < 0)
-        return -1;
-
     return xenHypervisorGetDomInfo(domain->conn, domain->id, info);
-
 }
 
 /**
@@ -2892,7 +2887,6 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
  * @domain: pointer to the domain block
  * @state: returned state of the domain
  * @reason: returned reason for the state
- * @flags: additional flags, 0 for now
  *
  * Do a hypervisor call to get the related set of domain information.
  *
@@ -2901,15 +2895,9 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 int
 xenHypervisorGetDomainState(virDomainPtr domain,
                             int *state,
-                            int *reason,
-                            unsigned int flags)
+                            int *reason)
 {
     virDomainInfo info;
-
-    virCheckFlags(0, -1);
-
-    if (domain->id < 0)
-        return -1;
 
     if (xenHypervisorGetDomInfo(domain->conn, domain->id, &info) < 0)
         return -1;
