@@ -496,11 +496,6 @@ xenStoreNumOfDomains(virConnectPtr conn)
     long id;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (priv->xshandle == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-
     idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist) {
         for (i = 0; i < num; i++) {
@@ -541,9 +536,6 @@ xenStoreDoListDomains(virConnectPtr conn,
     unsigned int num, i;
     int ret = -1;
     long id;
-
-    if (priv->xshandle == NULL)
-        goto out;
 
     idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist == NULL)

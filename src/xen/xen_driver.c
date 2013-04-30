@@ -583,55 +583,13 @@ xenUnifiedConnectGetCapabilities(virConnectPtr conn)
 static int
 xenUnifiedConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    int ret;
-
-    /* Try xenstore. */
-    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
-        ret = xenStoreListDomains(conn, ids, maxids);
-        if (ret >= 0) return ret;
-    }
-
-    /* Try HV. */
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorListDomains(conn, ids, maxids);
-        if (ret >= 0) return ret;
-    }
-
-    /* Try xend. */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonListDomains(conn, ids, maxids);
-        if (ret >= 0) return ret;
-    }
-
-    return -1;
+    return xenStoreListDomains(conn, ids, maxids);
 }
 
 static int
 xenUnifiedConnectNumOfDomains(virConnectPtr conn)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    int ret;
-
-    /* Try xenstore. */
-    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
-        ret = xenStoreNumOfDomains(conn);
-        if (ret >= 0) return ret;
-    }
-
-    /* Try HV. */
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorNumOfDomains(conn);
-        if (ret >= 0) return ret;
-    }
-
-    /* Try xend. */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonNumOfDomains(conn);
-        if (ret >= 0) return ret;
-    }
-
-    return -1;
+    return xenStoreNumOfDomains(conn);
 }
 
 static virDomainPtr

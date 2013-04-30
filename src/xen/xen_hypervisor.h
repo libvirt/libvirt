@@ -70,10 +70,6 @@ char *
 unsigned long
         xenHypervisorGetDomMaxMemory    (virConnectPtr conn,
                                          int id);
-int     xenHypervisorNumOfDomains       (virConnectPtr conn);
-int     xenHypervisorListDomains        (virConnectPtr conn,
-                                         int *ids,
-                                         int maxids);
 int     xenHypervisorGetMaxVcpus        (virConnectPtr conn,
                                          const char *type);
 int     xenHypervisorDestroyDomain      (virDomainPtr domain)
