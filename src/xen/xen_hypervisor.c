@@ -1165,11 +1165,6 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     char *schedulertype = NULL;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("priv->handle invalid"));
-        return NULL;
-    }
     if (domain->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
@@ -1240,11 +1235,7 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 {
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("priv->handle invalid"));
-        return -1;
-    }
+
     if (domain->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
@@ -1353,11 +1344,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                                        NULL) < 0)
         return -1;
 
-    if (priv->handle < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("priv->handle invalid"));
-        return -1;
-    }
     if (domain->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
@@ -2209,7 +2195,7 @@ xenHypervisorOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (xenHypervisorInitialize() < 0)
-        return -1;
+        return VIR_DRV_OPEN_ERROR;
 
     priv->handle = -1;
 
@@ -2221,7 +2207,7 @@ xenHypervisorOpen(virConnectPtr conn,
 
     priv->handle = ret;
 
-    return 0;
+    return VIR_DRV_OPEN_SUCCESS;
 }
 
 /**
@@ -2237,9 +2223,6 @@ xenHypervisorClose(virConnectPtr conn)
 {
     int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->handle < 0)
-        return -1;
 
     ret = VIR_CLOSE(priv->handle);
     if (ret < 0)
@@ -2259,12 +2242,8 @@ xenHypervisorClose(virConnectPtr conn)
  * Returns 0 in case of success, -1 in case of error
  */
 int
-xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
+xenHypervisorGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->handle < 0)
-        return -1;
     *hvVer = (hv_versions.hv >> 16) * 1000000 + (hv_versions.hv & 0xFFFF) * 1000;
     return 0;
 }
@@ -2769,9 +2748,6 @@ xenHypervisorNumOfDomains(virConnectPtr conn)
     int maxids = last_maxids;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (priv->handle < 0)
-        return -1;
-
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
         virReportOOMError();
@@ -2823,9 +2799,6 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
     int ret, nbids, i;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (priv->handle < 0)
-        return -1;
-
     if (maxids == 0)
         return 0;
 
@@ -2866,12 +2839,6 @@ xenHypervisorDomainGetOSType(virDomainPtr dom)
     xen_getdomaininfo dominfo;
     char *ostype = NULL;
 
-    if (priv->handle < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("domain shut off or invalid"));
-        return NULL;
-    }
-
     /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
     if (hv_versions.hypervisor < 2 ||
         hv_versions.dom_interface < 4) {
@@ -2911,9 +2878,6 @@ xenHypervisorHasDomain(virConnectPtr conn, int id)
     xenUnifiedPrivatePtr priv = conn->privateData;
     xen_getdomaininfo dominfo;
 
-    if (priv->handle < 0)
-        return 0;
-
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
     if (virXen_getdomaininfo(priv->handle, id, &dominfo) < 0)
@@ -2932,9 +2896,6 @@ xenHypervisorLookupDomainByID(virConnectPtr conn, int id)
     xen_getdomaininfo dominfo;
     virDomainPtr ret;
     char *name;
-
-    if (priv->handle < 0)
-        return NULL;
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
@@ -2966,9 +2927,6 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr ret;
     char *name;
     int maxids = 100, nids, i, id;
-
-    if (priv->handle < 0)
-        return NULL;
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
@@ -3030,13 +2988,9 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns the maximum of CPU defined by Xen.
  */
 int
-xenHypervisorGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+xenHypervisorGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         const char *type ATTRIBUTE_UNUSED)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->handle < 0)
-        return -1;
-
     return MAX_VIRT_CPUS;
 }
 
@@ -3056,9 +3010,6 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
     xenUnifiedPrivatePtr priv = conn->privateData;
     xen_getdomaininfo dominfo;
     int ret;
-
-    if (priv->handle < 0)
-        return 0;
 
     if (kb_per_pages == 0) {
         kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
@@ -3089,9 +3040,7 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
 static unsigned long long ATTRIBUTE_NONNULL(1)
 xenHypervisorGetMaxMemory(virDomainPtr domain)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return 0;
 
     return xenHypervisorGetDomMaxMemory(domain->conn, domain->id);
@@ -3120,9 +3069,6 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
         if (kb_per_pages <= 0)
             kb_per_pages = 4;
     }
-
-    if (priv->handle < 0)
-        return -1;
 
     memset(info, 0, sizeof(virDomainInfo));
     XEN_GETDOMAININFO_CLEAR(dominfo);
@@ -3189,9 +3135,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 int
 xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     return xenHypervisorGetDomInfo(domain->conn, domain->id, info);
@@ -3215,12 +3159,11 @@ xenHypervisorGetDomainState(virDomainPtr domain,
                             int *reason,
                             unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     virDomainInfo info;
 
     virCheckFlags(0, -1);
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     if (xenHypervisorGetDomInfo(domain->conn, domain->id, &info) < 0)
@@ -3281,12 +3224,6 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
         return -1;
     }
 
-    if (priv->handle < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("priv->handle invalid"));
-        return -1;
-    }
-
     memset(&op_sys, 0, sizeof(op_sys));
     op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
 
@@ -3322,7 +3259,7 @@ xenHypervisorPauseDomain(virDomainPtr domain)
     int ret;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     ret = virXen_pausedomain(priv->handle, domain->id);
@@ -3345,7 +3282,7 @@ xenHypervisorResumeDomain(virDomainPtr domain)
     int ret;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     ret = virXen_unpausedomain(priv->handle, domain->id);
@@ -3374,7 +3311,7 @@ xenHypervisorDestroyDomainFlags(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     ret = virXen_destroydomain(priv->handle, domain->id);
@@ -3398,7 +3335,7 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
     int ret;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     ret = virXen_setmaxmem(priv->handle, domain->id, memory);
@@ -3424,7 +3361,7 @@ xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     int ret;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0 || domain->id < 0 || nvcpus < 1)
+    if (domain->id < 0 || nvcpus < 1)
         return -1;
 
     ret = virXen_setmaxvcpus(priv->handle, domain->id, nvcpus);
@@ -3452,7 +3389,7 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
     int ret;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (priv->handle < 0 || domain->id < 0)
+    if (domain->id < 0)
         return -1;
 
     ret = virXen_setvcpumap(priv->handle, domain->id, vcpu,
@@ -3494,7 +3431,7 @@ xenHypervisorGetVcpus(virDomainPtr domain,
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if (priv->handle < 0 || domain->id < 0 || sizeof(cpumap_t) & 7) {
+    if (domain->id < 0 || sizeof(cpumap_t) & 7) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domain shut off or invalid"));
         return -1;
@@ -3555,9 +3492,6 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
     int ret;
     int maxcpu;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->handle < 0)
-        return -1;
 
     /* inactive domain */
     if (domain->id < 0) {
