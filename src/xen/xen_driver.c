@@ -1575,26 +1575,14 @@ static int
 xenUnifiedDomainBlockStats(virDomainPtr dom, const char *path,
                            struct _virDomainBlockStats *stats)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
-        return xenHypervisorDomainBlockStats(dom, path, stats);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    return xenHypervisorDomainBlockStats(dom, path, stats);
 }
 
 static int
 xenUnifiedDomainInterfaceStats(virDomainPtr dom, const char *path,
                                struct _virDomainInterfaceStats *stats)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
-        return xenHypervisorDomainInterfaceStats(dom, path, stats);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    return xenHypervisorDomainInterfaceStats(dom, path, stats);
 }
 
 static int
@@ -1602,57 +1590,32 @@ xenUnifiedDomainBlockPeek(virDomainPtr dom, const char *path,
                           unsigned long long offset, size_t size,
                           void *buffer, unsigned int flags)
 {
-    int r;
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
 
     virCheckFlags(0, -1);
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        r = xenDaemonDomainBlockPeek(dom, path, offset, size, buffer);
-        if (r != -2) return r;
-        /* r == -2 means declined, so fall through to XM driver ... */
-    }
-
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
-        if (xenXMDomainBlockPeek(dom, path, offset, size, buffer) == 0)
-            return 0;
-    }
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainBlockPeek(dom, path, offset, size, buffer);
+    else
+        return xenDaemonDomainBlockPeek(dom, path, offset, size, buffer);
 }
 
 static int
 xenUnifiedNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
                                  int startCell, int maxCells)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
-        return xenHypervisorNodeGetCellsFreeMemory(conn, freeMems,
-                                                   startCell, maxCells);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    return xenHypervisorNodeGetCellsFreeMemory(conn, freeMems,
+                                               startCell, maxCells);
 }
 
 static unsigned long long
 xenUnifiedNodeGetFreeMemory(virConnectPtr conn)
 {
     unsigned long long freeMem = 0;
-    int ret;
-    xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorNodeGetCellsFreeMemory(conn, &freeMem,
-                                                  -1, 1);
-        if (ret != 1)
-            return 0;
-        return freeMem;
-    }
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return 0;
+    if (xenHypervisorNodeGetCellsFreeMemory(conn, &freeMem, -1, 1) < 0)
+        return 0;
+    return freeMem;
 }
 
 

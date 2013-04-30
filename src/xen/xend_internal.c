@@ -3240,7 +3240,7 @@ error:
  * @size: size
  * @buffer: return buffer
  *
- * Returns 0 if successful, -1 if error, -2 if declined.
+ * Returns 0 if successful, -1 if error
  */
 int
 xenDaemonDomainBlockPeek(virDomainPtr domain,
@@ -3257,9 +3257,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
     char * tty;
     int vncport;
     const char *actual;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -2;              /* Decline, allow XM to handle it. */
 
     /* Security check: The path must correspond to a block device. */
     if (domain->id > 0)
