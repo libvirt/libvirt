@@ -200,6 +200,7 @@ mymain(void)
     DO_TEST("disk-usb");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-socket");
+    DO_TEST("graphics-vnc-websocket");
 
     DO_TEST("graphics-vnc-sasl");
     DO_TEST("graphics-vnc-tls");

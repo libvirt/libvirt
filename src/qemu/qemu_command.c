@@ -6076,6 +6076,17 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
+        if (!graphics->data.vnc.socket &&
+            graphics->data.vnc.websocket) {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VNC WebSockets are not supported "
+                                     "with this QEMU binary"));
+                    goto error;
+                }
+                virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
+            }
+
         if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
             virBufferAddLit(&opt, ",password");
 
@@ -9915,6 +9926,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                  * -vnc some.host.name:4
                  */
                 char *opts;
+                char *port;
                 const char *sep = ":";
                 if (val[0] == '[')
                     sep = "]:";
@@ -9925,11 +9937,12 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                                    _("missing VNC port number in '%s'"), val);
                     goto error;
                 }
-                if (virStrToLong_i(tmp+strlen(sep), &opts, 10,
+                port = tmp + strlen(sep);
+                if (virStrToLong_i(port, &opts, 10,
                                    &vnc->data.vnc.port) < 0) {
                     virDomainGraphicsDefFree(vnc);
                     virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot parse VNC port '%s'"), tmp+1);
+                                   _("cannot parse VNC port '%s'"), port);
                     goto error;
                 }
                 if (val[0] == '[')
@@ -9941,6 +9954,50 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr qemuCaps,
                 if (!virDomainGraphicsListenGetAddress(vnc, 0)) {
                     virDomainGraphicsDefFree(vnc);
                     goto no_memory;
+                }
+
+                if (*opts == ',') {
+                    char *orig_opts = strdup(opts + 1);
+                    if (!orig_opts) {
+                        virDomainGraphicsDefFree(vnc);
+                        goto no_memory;
+                    }
+                    opts = orig_opts;
+
+                    while (opts && *opts) {
+                        char *nextopt = strchr(opts, ',');
+                        if (nextopt)
+                            *(nextopt++) = '\0';
+
+                        if (STRPREFIX(opts, "websocket")) {
+                            char *websocket = opts + strlen("websocket");
+                            if (*(websocket++) == '=' &&
+                                *websocket) {
+                                /* If the websocket continues with
+                                 * '=<something>', we'll parse it */
+                                if (virStrToLong_i(websocket,
+                                                   NULL, 0,
+                                                   &vnc->data.vnc.websocket) < 0) {
+                                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                                   _("cannot parse VNC "
+                                                     "WebSocket port '%s'"),
+                                                   websocket);
+                                    virDomainGraphicsDefFree(vnc);
+                                    VIR_FREE(orig_opts);
+                                    goto error;
+                                }
+                            } else {
+                                /* Otherwise, we'll compute the port the same
+                                 * way QEMU does, by adding a 5700 to the
+                                 * display value. */
+                                vnc->data.vnc.websocket =
+                                    vnc->data.vnc.port + 5700;
+                            }
+                        }
+
+                        opts = nextopt;
+                    }
+                    VIR_FREE(orig_opts);
                 }
                 vnc->data.vnc.port += 5900;
                 vnc->data.vnc.autoport = false;

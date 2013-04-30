@@ -48,6 +48,9 @@
 # define QEMU_REMOTE_PORT_MIN  5900
 # define QEMU_REMOTE_PORT_MAX  65535
 
+# define QEMU_WEBSOCKET_PORT_MIN  5700
+# define QEMU_WEBSOCKET_PORT_MAX  65535
+
 
 virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virQEMUDriverPtr driver,

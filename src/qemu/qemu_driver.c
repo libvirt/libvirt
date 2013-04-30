@@ -663,6 +663,11 @@ qemuStateInitialize(bool privileged,
                              cfg->remotePortMax)) == NULL)
         goto error;
 
+    if ((qemu_driver->webSocketPorts =
+         virPortAllocatorNew(cfg->webSocketPortMin,
+                             cfg->webSocketPortMax)) == NULL)
+        goto error;
+
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 

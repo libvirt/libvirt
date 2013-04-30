@@ -227,6 +227,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
 
+    cfg->webSocketPortMin = QEMU_WEBSOCKET_PORT_MIN;
+    cfg->webSocketPortMax = QEMU_WEBSOCKET_PORT_MAX;
+
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
     /* For privileged driver, try and find hugepage mount automatically.
      * Non-privileged driver requires admin to create a dir for the
@@ -402,6 +405,35 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_STR("spice_listen", cfg->spiceListen);
     GET_VALUE_STR("spice_password", cfg->spicePassword);
 
+
+    GET_VALUE_LONG("remote_websocket_port_min", cfg->webSocketPortMin);
+    if (cfg->webSocketPortMin < QEMU_WEBSOCKET_PORT_MIN) {
+        /* if the port is too low, we can't get the display name
+         * to tell to vnc (usually subtract 5700, e.g. localhost:1
+         * for port 5701) */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s: remote_websocket_port_min: port must be greater "
+                         "than or equal to %d"),
+                        filename, QEMU_WEBSOCKET_PORT_MIN);
+        goto cleanup;
+    }
+
+    GET_VALUE_LONG("remote_websocket_port_max", cfg->webSocketPortMax);
+    if (cfg->webSocketPortMax > QEMU_WEBSOCKET_PORT_MAX ||
+        cfg->webSocketPortMax < cfg->webSocketPortMin) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s: remote_websocket_port_max: port must be between "
+                          "the minimal port and %d"),
+                       filename, QEMU_WEBSOCKET_PORT_MAX);
+        goto cleanup;
+    }
+
+    if (cfg->webSocketPortMin > cfg->webSocketPortMax) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%s: remote_websocket_port_min: min port must not be "
+                          "greater than max port"), filename);
+        goto cleanup;
+    }
 
     GET_VALUE_LONG("remote_display_port_min", cfg->remotePortMin);
     if (cfg->remotePortMin < QEMU_REMOTE_PORT_MIN) {

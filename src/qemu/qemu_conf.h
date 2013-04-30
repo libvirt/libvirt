@@ -115,6 +115,9 @@ struct _virQEMUDriverConfig {
     int remotePortMin;
     int remotePortMax;
 
+    int webSocketPortMin;
+    int webSocketPortMax;
+
     char *hugetlbfsMount;
     char *hugepagePath;
     char *bridgeHelperName;
@@ -211,6 +214,9 @@ struct _virQEMUDriver {
 
     /* Immutable pointer, self-locking APIs */
     virPortAllocatorPtr remotePorts;
+
+    /* Immutable pointer, self-locking APIs */
+    virPortAllocatorPtr webSocketPorts;
 
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;

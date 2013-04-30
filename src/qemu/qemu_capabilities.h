@@ -185,6 +185,7 @@ enum virQEMUCapsFlags {
     QEMU_CAPS_DEVICE_SCSI_GENERIC = 144,  /* -device scsi-generic */
     QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX = 145,  /* -device scsi-generic.bootindex */
     QEMU_CAPS_MEM_MERGE          = 146, /* -machine mem-merge */
+    QEMU_CAPS_VNC_WEBSOCKET      = 147, /* -vnc x:y,websocket */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 };

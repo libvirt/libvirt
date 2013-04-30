@@ -41,6 +41,8 @@ module Libvirtd_qemu =
 
    let remote_display_entry = int_entry "remote_display_port_min"
                  | int_entry "remote_display_port_max"
+                 | int_entry "remote_websocket_port_min"
+                 | int_entry "remote_websocket_port_max"
 
    let security_entry = str_entry "security_driver"
                  | bool_entry "security_default_confined"

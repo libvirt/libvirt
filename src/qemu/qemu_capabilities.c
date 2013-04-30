@@ -228,6 +228,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "scsi-generic.bootindex", /* 145 */
               "mem-merge",
+              "vnc-websocket",
     );
 
 struct _virQEMUCaps {
@@ -2601,6 +2602,10 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     /* USB option is supported v1.3.0 onwards */
     if (qemuCaps->version >= 1003000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
+
+    /* WebSockets were introduced between 1.3.0 and 1.3.1 */
+    if (qemuCaps->version >= 1003001)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;

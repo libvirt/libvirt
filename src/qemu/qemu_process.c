@@ -3236,6 +3236,29 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
     return ret;
 }
 
+static int
+qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
+                            virDomainGraphicsDefPtr graphics)
+{
+    unsigned short port;
+
+    if (graphics->data.vnc.socket)
+        return 0;
+
+    if (graphics->data.vnc.autoport) {
+        if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
+            return -1;
+        graphics->data.vnc.port = port;
+    }
+
+    if (graphics->data.vnc.websocket == -1) {
+        if (virPortAllocatorAcquire(driver->webSocketPorts, &port) < 0)
+            return -1;
+        graphics->data.vnc.websocket = port;
+    }
+
+    return 0;
+}
 
 static int
 qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
@@ -3470,13 +3493,9 @@ int qemuProcessStart(virConnectPtr conn,
 
     for (i = 0 ; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            !graphics->data.vnc.socket &&
-            graphics->data.vnc.autoport) {
-            unsigned short port;
-            if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
                 goto cleanup;
-            graphics->data.vnc.port = port;
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics) < 0)
                 goto cleanup;
@@ -4154,10 +4173,15 @@ retry:
     */
     for (i = 0 ; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            graphics->data.vnc.autoport) {
-            ignore_value(virPortAllocatorRelease(driver->remotePorts,
-                                                 graphics->data.vnc.port));
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            if (graphics->data.vnc.autoport) {
+                ignore_value(virPortAllocatorRelease(driver->remotePorts,
+                                                     graphics->data.vnc.port));
+            }
+            if (graphics->data.vnc.websocket) {
+                ignore_value(virPortAllocatorRelease(driver->webSocketPorts,
+                                                     graphics->data.vnc.port));
+            }
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
             graphics->data.spice.autoport) {
