@@ -1610,16 +1610,10 @@ xenDaemonDomainGetXMLDesc(virDomainPtr domain,
                           unsigned int flags,
                           const char *cpus)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     virDomainDefPtr def;
     char *xml;
 
     /* Flags checked by virDomainDefFormat */
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        /* fall-through to the next driver to handle */
-        return NULL;
-    }
 
     if (!(def = xenDaemonDomainFetch(domain->conn,
                                      domain->id,

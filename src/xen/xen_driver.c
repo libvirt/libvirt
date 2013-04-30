@@ -1117,23 +1117,17 @@ xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
 
-    if (dom->id == -1 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        if (priv->opened[XEN_UNIFIED_XM_OFFSET])
-            return xenXMDomainGetXMLDesc(dom, flags);
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+        return xenXMDomainGetXMLDesc(dom, flags);
     } else {
-        if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-            char *cpus, *res;
-            xenUnifiedLock(priv);
-            cpus = xenDomainUsedCpus(dom);
-            xenUnifiedUnlock(priv);
-            res = xenDaemonDomainGetXMLDesc(dom, flags, cpus);
-            VIR_FREE(cpus);
-            return res;
-        }
+        char *cpus, *res;
+        xenUnifiedLock(priv);
+        cpus = xenDomainUsedCpus(dom);
+        xenUnifiedUnlock(priv);
+        res = xenDaemonDomainGetXMLDesc(dom, flags, cpus);
+        VIR_FREE(cpus);
+        return res;
     }
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return NULL;
 }
 
 
