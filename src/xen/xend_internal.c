@@ -3450,8 +3450,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainSuspend = xenDaemonDomainSuspend,
-    .xenDomainResume = xenDaemonDomainResume,
     .xenDomainShutdown = xenDaemonDomainShutdown,
     .xenDomainReboot = xenDaemonDomainReboot,
     .xenDomainDestroyFlags = xenDaemonDomainDestroyFlags,

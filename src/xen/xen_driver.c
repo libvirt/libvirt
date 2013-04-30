@@ -742,47 +742,13 @@ xenUnifiedDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
 static int
 xenUnifiedDomainSuspend(virDomainPtr dom)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-
-    /* Try non-hypervisor methods first, then hypervisor direct method
-     * as a last resort.
-     */
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
-            priv->opened[i] &&
-            drivers[i]->xenDomainSuspend &&
-            drivers[i]->xenDomainSuspend(dom) == 0)
-            return 0;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        xenHypervisorPauseDomain(dom) == 0)
-        return 0;
-
-    return -1;
+    return xenDaemonDomainSuspend(dom);
 }
 
 static int
 xenUnifiedDomainResume(virDomainPtr dom)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-
-    /* Try non-hypervisor methods first, then hypervisor direct method
-     * as a last resort.
-     */
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
-            priv->opened[i] &&
-            drivers[i]->xenDomainResume &&
-            drivers[i]->xenDomainResume(dom) == 0)
-            return 0;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        xenHypervisorResumeDomain(dom) == 0)
-        return 0;
-
-    return -1;
+    return xenDaemonDomainResume(dom);
 }
 
 static int

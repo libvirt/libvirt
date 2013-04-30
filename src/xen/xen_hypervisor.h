@@ -77,10 +77,6 @@ int     xenHypervisorDestroyDomain      (virDomainPtr domain)
 int     xenHypervisorDestroyDomainFlags (virDomainPtr domain,
                                          unsigned int flags)
           ATTRIBUTE_NONNULL (1);
-int     xenHypervisorResumeDomain       (virDomainPtr domain)
-          ATTRIBUTE_NONNULL (1);
-int     xenHypervisorPauseDomain        (virDomainPtr domain)
-          ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomainInfo        (virDomainPtr domain,
                                            virDomainInfoPtr info)
           ATTRIBUTE_NONNULL (1);

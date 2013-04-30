@@ -880,8 +880,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainSuspend = xenHypervisorPauseDomain,
-    .xenDomainResume = xenHypervisorResumeDomain,
     .xenDomainDestroyFlags = xenHypervisorDestroyDomainFlags,
     .xenDomainGetOSType = xenHypervisorDomainGetOSType,
     .xenDomainGetMaxMemory = xenHypervisorGetMaxMemory,
@@ -1486,83 +1484,6 @@ xenHypervisorDomainInterfaceStats(virDomainPtr dom,
 #endif
 }
 
-/**
- * virXen_pausedomain:
- * @handle: the hypervisor handle
- * @id: the domain id
- *
- * Do a low level hypercall to pause the domain
- *
- * Returns 0 or -1 in case of failure
- */
-static int
-virXen_pausedomain(int handle, int id)
-{
-    int ret = -1;
-
-    if (hv_versions.hypervisor > 1) {
-        xen_op_v2_dom op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V2_OP_PAUSEDOMAIN;
-        op.domain = (domid_t) id;
-        ret = xenHypervisorDoV2Dom(handle, &op);
-    } else if (hv_versions.hypervisor == 1) {
-        xen_op_v1 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V1_OP_PAUSEDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV1Op(handle, &op);
-    } else if (hv_versions.hypervisor == 0) {
-        xen_op_v0 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V0_OP_PAUSEDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV0Op(handle, &op);
-    }
-    return ret;
-}
-
-/**
- * virXen_unpausedomain:
- * @handle: the hypervisor handle
- * @id: the domain id
- *
- * Do a low level hypercall to unpause the domain
- *
- * Returns 0 or -1 in case of failure
- */
-static int
-virXen_unpausedomain(int handle, int id)
-{
-    int ret = -1;
-
-    if (hv_versions.hypervisor > 1) {
-        xen_op_v2_dom op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V2_OP_UNPAUSEDOMAIN;
-        op.domain = (domid_t) id;
-        ret = xenHypervisorDoV2Dom(handle, &op);
-    } else if (hv_versions.hypervisor == 1) {
-        xen_op_v1 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V1_OP_UNPAUSEDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV1Op(handle, &op);
-    } else if (hv_versions.hypervisor == 0) {
-        xen_op_v0 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V0_OP_UNPAUSEDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV0Op(handle, &op);
-    }
-    return ret;
-}
 
 /**
  * virXen_destroydomain:
@@ -3141,52 +3062,6 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
     return j;
 }
 
-
-/**
- * xenHypervisorPauseDomain:
- * @domain: pointer to the domain block
- *
- * Do a hypervisor call to pause the given domain
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenHypervisorPauseDomain(virDomainPtr domain)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0)
-        return -1;
-
-    ret = virXen_pausedomain(priv->handle, domain->id);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
-
-/**
- * xenHypervisorResumeDomain:
- * @domain: pointer to the domain block
- *
- * Do a hypervisor call to resume the given domain
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenHypervisorResumeDomain(virDomainPtr domain)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0)
-        return -1;
-
-    ret = virXen_unpausedomain(priv->handle, domain->id);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
 
 /**
  * xenHypervisorDestroyDomainFlags:
