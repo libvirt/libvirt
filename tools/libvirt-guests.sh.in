@@ -524,10 +524,11 @@ rh_status() {
     else
         if [ -f "$VAR_SUBSYS_LIBVIRT_GUESTS" ]; then
             gettext "started"; echo
+            RETVAL=0
         else
             gettext "stopped, with no saved guests"; echo
+            RETVAL=3
         fi
-        RETVAL=0
     fi
 }
 
