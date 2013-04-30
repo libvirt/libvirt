@@ -880,7 +880,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenVersion = xenHypervisorGetVersion,
     .xenDomainSuspend = xenHypervisorPauseDomain,
     .xenDomainResume = xenHypervisorResumeDomain,
     .xenDomainDestroyFlags = xenHypervisorDestroyDomainFlags,

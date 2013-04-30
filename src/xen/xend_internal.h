@@ -98,7 +98,6 @@ xenDaemonDomainFetch(virConnectPtr xend,
 int xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth,
                   unsigned int flags);
 int xenDaemonClose(virConnectPtr conn);
-int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 int xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps);
 int xenDaemonDomainSuspend(virDomainPtr domain);

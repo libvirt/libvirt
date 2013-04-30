@@ -512,16 +512,7 @@ xenUnifiedConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int featur
 static int
 xenUnifiedConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    int i;
-
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenVersion &&
-            drivers[i]->xenVersion(conn, hvVer) == 0)
-            return 0;
-
-    return -1;
+    return xenHypervisorGetVersion(conn, hvVer);
 }
 
 

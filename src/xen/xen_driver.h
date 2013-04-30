@@ -93,7 +93,6 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvConnectGetVersion  xenVersion;
     virDrvConnectGetHostname xenGetHostname;
     virDrvDomainSuspend xenDomainSuspend;
     virDrvDomainResume xenDomainResume;

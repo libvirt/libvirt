@@ -1861,36 +1861,6 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
     return ret;
 }
 
-/**
- * xenDaemonGetVersion:
- * @conn: pointer to the Xen Daemon block
- * @hvVer: return value for the version of the running hypervisor (OUT)
- *
- * Get the version level of the Hypervisor running.
- *
- * Returns -1 in case of error, 0 otherwise. if the version can't be
- *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
- *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
- */
-int
-xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
-{
-    struct sexpr *root;
-    int major, minor;
-    unsigned long version;
-
-    root = sexpr_get(conn, "/xend/node/");
-    if (root == NULL)
-        return -1;
-
-    major = sexpr_int(root, "node/xen_major");
-    minor = sexpr_int(root, "node/xen_minor");
-    sexpr_free(root);
-    version = major * 1000000 + minor * 1000;
-    *hvVer = version;
-    return 0;
-}
-
 
 /**
  * xenDaemonListDomains:
@@ -3652,7 +3622,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenVersion = xenDaemonGetVersion,
     .xenDomainSuspend = xenDaemonDomainSuspend,
     .xenDomainResume = xenDaemonDomainResume,
     .xenDomainShutdown = xenDaemonDomainShutdown,
