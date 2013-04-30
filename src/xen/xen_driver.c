@@ -491,16 +491,9 @@ unsigned long xenUnifiedVersion(void)
 
 
 static const char *
-xenUnifiedConnectGetType(virConnectPtr conn)
+xenUnifiedConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    int i;
-
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i])
-            return "Xen";
-
-    return NULL;
+    return "Xen";
 }
 
 /* Which features are supported by this driver? */
