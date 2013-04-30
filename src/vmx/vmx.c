@@ -1,8 +1,7 @@
-
 /*
  * vmx.c: VMware VMX parsing/formatting functions
  *
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -45,6 +44,7 @@ domain-xml                        <=>   vmx
                                         virtualHW.version = "4"                 # essential for ESX 3.5
                                         virtualHW.version = "7"                 # essential for ESX 4.0
                                         virtualHW.version = "8"                 # essential for ESX 5.0
+                                        virtualHW.version = "9"                 # essential for ESX 5.1
 
 
 ???                               <=>   guestOS = "<value>"                     # essential, FIXME: not representable
@@ -1320,10 +1320,10 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     if (virtualHW_version != 4 && virtualHW_version != 7 &&
-        virtualHW_version != 8) {
+        virtualHW_version != 8 && virtualHW_version != 9) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting VMX entry 'virtualHW.version' to be 4, 7 or 8 "
-                         "but found %lld"),
+                       _("Expecting VMX entry 'virtualHW.version' to be "
+                         "4, 7, 8 or 9 but found %lld"),
                        virtualHW_version);
         goto cleanup;
     }
