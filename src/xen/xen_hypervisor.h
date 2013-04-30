@@ -86,9 +86,6 @@ int     xenHypervisorSetMaxMemory       (virDomainPtr domain,
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorCheckID            (virConnectPtr conn,
                                          int id);
-int     xenHypervisorSetVcpus           (virDomainPtr domain,
-                                         unsigned int nvcpus)
-          ATTRIBUTE_NONNULL (1);
 int     xenHypervisorPinVcpu            (virDomainPtr domain,
                                          unsigned int vcpu,
                                          unsigned char *cpumap,

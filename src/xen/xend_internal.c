@@ -1778,8 +1778,7 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
  *
  * Change virtual CPUs allocation of domain according to flags.
  *
- * Returns 0 on success, -1 if an error message was issued, and -2 if
- * the unified driver should keep trying.
+ * Returns 0 on success, -1 if an error message was issued
  */
 int
 xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
@@ -1787,7 +1786,6 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
                              unsigned int flags)
 {
     char buf[VIR_UUID_BUFLEN];
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     int max;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
@@ -1799,21 +1797,7 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
         return -1;
     }
 
-    if ((domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) ||
-        (flags & VIR_DOMAIN_VCPU_MAXIMUM))
-        return -2;
-
-    /* With xendConfigVersion 2, only _LIVE is supported.  With
-     * xendConfigVersion 3, only _LIVE|_CONFIG is supported for
-     * running domains, or _CONFIG for inactive domains.  */
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        if (flags & VIR_DOMAIN_VCPU_CONFIG) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Xend version does not support modifying "
-                             "persistent config"));
-            return -1;
-        }
-    } else if (domain->id < 0) {
+    if (domain->id < 0) {
         if (flags & VIR_DOMAIN_VCPU_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("domain not running"));
@@ -1943,7 +1927,7 @@ cleanup:
  * Extract information about virtual CPUs of domain according to flags.
  *
  * Returns the number of vcpus on success, -1 if an error message was
- * issued, and -2 if the unified driver should keep trying.
+ * issued
 
  */
 int
@@ -1951,17 +1935,11 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
     struct sexpr *root;
     int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    /* If xendConfigVersion is 2, then we can only report _LIVE (and
-     * xm_internal reports _CONFIG).  If it is 3, then _LIVE and
-     * _CONFIG are always in sync for a running system.  */
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -2;
     if (domain->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain not active"));
@@ -1979,7 +1957,7 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
             ret = MIN(vcpus, ret);
     }
     if (!ret)
-        ret = -2;
+        ret = -1;
     sexpr_free(root);
     return ret;
 }
@@ -3415,8 +3393,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainPinVcpu = xenDaemonDomainPinVcpu,
-    .xenDomainGetVcpus = xenDaemonDomainGetVcpus,
     .xenListDefinedDomains = xenDaemonListDefinedDomains,
     .xenNumOfDefinedDomains = xenDaemonNumOfDefinedDomains,
     .xenDomainCreate = xenDaemonDomainCreate,

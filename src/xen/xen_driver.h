@@ -93,8 +93,6 @@ extern int xenRegister (void);
  * structure with direct calls in xen_unified.c.
  */
 struct xenUnifiedDriver {
-    virDrvDomainPinVcpu xenDomainPinVcpu;
-    virDrvDomainGetVcpus xenDomainGetVcpus;
     virDrvConnectListDefinedDomains xenListDefinedDomains;
     virDrvConnectNumOfDefinedDomains xenNumOfDefinedDomains;
     virDrvDomainCreate xenDomainCreate;

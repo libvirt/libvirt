@@ -81,7 +81,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    .xenDomainPinVcpu = xenXMDomainPinVcpu,
     .xenListDefinedDomains = xenXMListDefinedDomains,
     .xenNumOfDefinedDomains = xenXMNumOfDefinedDomains,
     .xenDomainCreate = xenXMDomainCreate,
@@ -662,8 +661,7 @@ cleanup:
  *
  * Change virtual CPUs allocation of domain according to flags.
  *
- * Returns 0 on success, -1 if an error message was issued, and -2 if
- * the unified driver should keep trying.
+ * Returns 0 on success, -1 if an error message was issued
  */
 int
 xenXMDomainSetVcpusFlags(virDomainPtr domain,
@@ -680,8 +678,6 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain,
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (domain->id != -1)
-        return -2;
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
@@ -741,7 +737,7 @@ cleanup:
  * Extract information about virtual CPUs of domain according to flags.
  *
  * Returns the number of vcpus on success, -1 if an error message was
- * issued, and -2 if the unified driver should keep trying.
+ * issued
  */
 int
 xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
@@ -755,8 +751,6 @@ xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (domain->id != -1)
-        return -2;
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", _("domain not active"));
         return -1;
@@ -802,11 +796,6 @@ xenXMDomainPinVcpu(virDomainPtr domain,
 
     if (maplen > (int)sizeof(cpumap_t)) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-    if (domain->id != -1) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("not inactive domain"));
         return -1;
     }
 

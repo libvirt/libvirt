@@ -647,25 +647,6 @@ struct xen_v2d5_setmaxmem {
 typedef struct xen_v2d5_setmaxmem xen_v2d5_setmaxmem;
 
 /*
- * The information for a setmaxvcpu system hypercall
- */
-#define XEN_V0_OP_SETMAXVCPU	41
-#define XEN_V1_OP_SETMAXVCPU	41
-#define XEN_V2_OP_SETMAXVCPU	15
-
-struct xen_v0_setmaxvcpu {
-    domid_t	domain;
-    uint32_t	maxvcpu;
-};
-typedef struct xen_v0_setmaxvcpu xen_v0_setmaxvcpu;
-typedef struct xen_v0_setmaxvcpu xen_v1_setmaxvcpu;
-
-struct xen_v2_setmaxvcpu {
-    uint32_t	maxvcpu;
-};
-typedef struct xen_v2_setmaxvcpu xen_v2_setmaxvcpu;
-
-/*
  * The information for a setvcpumap system hypercall
  * Note that between 1 and 2 the limitation to 64 physical CPU was lifted
  * hence the difference in structures
@@ -814,7 +795,6 @@ struct xen_op_v0 {
         xen_v0_getdomaininfolistop getdomaininfolist;
         xen_v0_domainop          domain;
         xen_v0_setmaxmem         setmaxmem;
-        xen_v0_setmaxvcpu        setmaxvcpu;
         xen_v0_setvcpumap        setvcpumap;
         xen_v0_vcpuinfo          getvcpuinfo;
         uint8_t padding[128];
@@ -846,7 +826,6 @@ struct xen_op_v2_dom {
     union {
         xen_v2_setmaxmem         setmaxmem;
         xen_v2d5_setmaxmem       setmaxmemd5;
-        xen_v2_setmaxvcpu        setmaxvcpu;
         xen_v2_setvcpumap        setvcpumap;
         xen_v2d5_setvcpumap      setvcpumapd5;
         xen_v2_vcpuinfo          getvcpuinfo;
@@ -871,8 +850,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #endif
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainPinVcpu = xenHypervisorPinVcpu,
-    .xenDomainGetVcpus = xenHypervisorGetVcpus,
     .xenDomainGetSchedulerType = xenHypervisorGetSchedulerType,
     .xenDomainGetSchedulerParameters = xenHypervisorGetSchedulerParameters,
     .xenDomainSetSchedulerParameters = xenHypervisorSetSchedulerParameters,
@@ -1517,48 +1494,6 @@ virXen_setmaxmem(int handle, int id, unsigned long memory)
     return ret;
 }
 
-/**
- * virXen_setmaxvcpus:
- * @handle: the hypervisor handle
- * @id: the domain id
- * @vcpus: the numbers of vcpus
- *
- * Do a low level hypercall to change the max vcpus amount
- *
- * Returns 0 or -1 in case of failure
- */
-static int
-virXen_setmaxvcpus(int handle, int id, unsigned int vcpus)
-{
-    int ret = -1;
-
-    if (hv_versions.hypervisor > 1) {
-        xen_op_v2_dom op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V2_OP_SETMAXVCPU;
-        op.domain = (domid_t) id;
-        op.u.setmaxvcpu.maxvcpu = vcpus;
-        ret = xenHypervisorDoV2Dom(handle, &op);
-    } else if (hv_versions.hypervisor == 1) {
-        xen_op_v1 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V1_OP_SETMAXVCPU;
-        op.u.setmaxvcpu.domain = (domid_t) id;
-        op.u.setmaxvcpu.maxvcpu = vcpus;
-        ret = xenHypervisorDoV1Op(handle, &op);
-    } else if (hv_versions.hypervisor == 0) {
-        xen_op_v0 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V0_OP_SETMAXVCPU;
-        op.u.setmaxvcpu.domain = (domid_t) id;
-        op.u.setmaxvcpu.maxvcpu = vcpus;
-        ret = xenHypervisorDoV0Op(handle, &op);
-    }
-    return ret;
-}
 
 /**
  * virXen_setvcpumap:
@@ -3002,31 +2937,6 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
     return 0;
 }
 
-
-/**
- * xenHypervisorSetVcpus:
- * @domain: pointer to domain object
- * @nvcpus: the new number of virtual CPUs for this domain
- *
- * Dynamically change the number of virtual CPUs used by the domain.
- *
- * Returns 0 in case of success, -1 in case of failure.
- */
-
-int
-xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 || nvcpus < 1)
-        return -1;
-
-    ret = virXen_setmaxvcpus(priv->handle, domain->id, nvcpus);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
 
 /**
  * xenHypervisorPinVcpu:

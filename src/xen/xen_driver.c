@@ -1004,7 +1004,6 @@ xenUnifiedDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                               unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int ret;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
@@ -1028,38 +1027,25 @@ xenUnifiedDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     /* Try non-hypervisor methods first, then hypervisor direct method
      * as a last resort.
      */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonDomainSetVcpusFlags(dom, nvcpus, flags);
-        if (ret != -2)
-            return ret;
-    }
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
-        ret = xenXMDomainSetVcpusFlags(dom, nvcpus, flags);
-        if (ret != -2)
-            return ret;
-    }
-    if (flags == VIR_DOMAIN_VCPU_LIVE)
-        return xenHypervisorSetVcpus(dom, nvcpus);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainSetVcpusFlags(dom, nvcpus, flags);
+    else
+        return xenDaemonDomainSetVcpusFlags(dom, nvcpus, flags);
 }
 
 static int
 xenUnifiedDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 {
+    xenUnifiedPrivatePtr priv = dom->conn->privateData;
     unsigned int flags = VIR_DOMAIN_VCPU_LIVE;
 
     /* Per the documented API, it is hypervisor-dependent whether this
      * affects just _LIVE or _LIVE|_CONFIG; in xen's case, that
      * depends on xendConfigVersion.  */
-    if (dom) {
-        xenUnifiedPrivatePtr priv = dom->conn->privateData;
-        if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
-            flags |= VIR_DOMAIN_VCPU_CONFIG;
-        return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
-    }
-    return -1;
+    if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
+        flags |= VIR_DOMAIN_VCPU_CONFIG;
+
+    return xenUnifiedDomainSetVcpusFlags(dom, nvcpus, flags);
 }
 
 static int
@@ -1067,15 +1053,15 @@ xenUnifiedDomainPinVcpu(virDomainPtr dom, unsigned int vcpu,
                         unsigned char *cpumap, int maplen)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenDomainPinVcpu &&
-            drivers[i]->xenDomainPinVcpu(dom, vcpu, cpumap, maplen) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainPinVcpu(dom, vcpu, cpumap, maplen);
+        else
+            return xenDaemonDomainPinVcpu(dom, vcpu, cpumap, maplen);
+    } else {
+        return xenHypervisorPinVcpu(dom, vcpu, cpumap, maplen);
+    }
 }
 
 static int
@@ -1084,42 +1070,39 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
                          unsigned char *cpumaps, int maplen)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i, ret;
-
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainGetVcpus) {
-            ret = drivers[i]->xenDomainGetVcpus(dom, info, maxinfo, cpumaps, maplen);
-            if (ret > 0)
-                return ret;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot get VCPUs of inactive domain"));
+            return -1;
+        } else {
+            return xenDaemonDomainGetVcpus(dom, info, maxinfo, cpumaps, maplen);
         }
-    return -1;
+    } else {
+        return xenHypervisorGetVcpus(dom, info, maxinfo, cpumaps, maplen);
+    }
 }
 
 static int
 xenUnifiedDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int ret;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonDomainGetVcpusFlags(dom, flags);
-        if (ret != -2)
-            return ret;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+            return xenXMDomainGetVcpusFlags(dom, flags);
+        else
+            return xenDaemonDomainGetVcpusFlags(dom, flags);
+    } else {
+        if (flags == (VIR_DOMAIN_VCPU_CONFIG | VIR_DOMAIN_VCPU_MAXIMUM))
+            return xenHypervisorGetVcpuMax(dom);
+        else
+            return xenDaemonDomainGetVcpusFlags(dom, flags);
     }
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
-        ret = xenXMDomainGetVcpusFlags(dom, flags);
-        if (ret != -2)
-            return ret;
-    }
-    if (flags == (VIR_DOMAIN_VCPU_CONFIG | VIR_DOMAIN_VCPU_MAXIMUM))
-        return xenHypervisorGetVcpuMax(dom);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
 }
 
 static int
