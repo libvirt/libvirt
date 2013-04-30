@@ -1344,7 +1344,6 @@ static int
 xenUnifiedDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
     int ret = -1;
     char *name = NULL;
 
@@ -1355,21 +1354,16 @@ xenUnifiedDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     if (virFileExists(name)) {
-        if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-            ret = xenDaemonDomainRestore(dom->conn, name);
-            if (ret == 0)
-                unlink(name);
-        }
+        ret = xenDaemonDomainRestore(dom->conn, name);
+        if (ret == 0)
+            unlink(name);
         goto cleanup;
     }
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
-        if (priv->opened[i] && drivers[i]->xenDomainCreate &&
-            drivers[i]->xenDomainCreate(dom) == 0) {
-            ret = 0;
-            goto cleanup;
-        }
-    }
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        ret = xenXMDomainCreate(dom);
+    else
+        ret = xenDaemonDomainCreate(dom);
 
 cleanup:
     VIR_FREE(name);

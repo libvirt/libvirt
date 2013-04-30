@@ -2898,23 +2898,17 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
 int
 xenDaemonDomainCreate(virDomainPtr domain)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
     int ret;
-    virDomainPtr tmp;
-
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     ret = xend_op(domain->conn, domain->name, "op", "start", NULL);
 
-    if (ret != -1) {
-        /* Need to force a refresh of this object's ID */
-        tmp = virDomainLookupByName(domain->conn, domain->name);
-        if (tmp) {
-            domain->id = tmp->id;
-            virDomainFree(tmp);
-        }
+    if (ret == 0) {
+        int id = xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
+                                                 domain->uuid);
+        if (id > 0)
+            domain->id = id;
     }
+
     return ret;
 }
 
@@ -3376,7 +3370,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainCreate = xenDaemonDomainCreate,
     .xenDomainDefineXML = xenDaemonDomainDefineXML,
     .xenDomainUndefine = xenDaemonDomainUndefine,
     .xenDomainAttachDeviceFlags = xenDaemonAttachDeviceFlags,
