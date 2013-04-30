@@ -590,10 +590,10 @@ cleanup:
  */
 static const vshCmdInfo info_vol_upload[] = {
     {.name = "help",
-     .data = N_("upload a file into a volume")
+     .data = N_("upload file contents to a volume")
     },
     {.name = "desc",
-     .data = N_("Upload a file into a volume")
+     .data = N_("Upload file contents to a volume")
     },
     {.name = NULL}
 };
@@ -704,10 +704,10 @@ cleanup:
  */
 static const vshCmdInfo info_vol_download[] = {
     {.name = "help",
-     .data = N_("Download a volume to a file")
+     .data = N_("download volume contents to a file")
     },
     {.name = "desc",
-     .data = N_("Download a volume to a file")
+     .data = N_("Download volume contents to a file")
     },
     {.name = NULL}
 };
