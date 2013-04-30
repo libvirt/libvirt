@@ -84,7 +84,6 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
 static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
     [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
     [XEN_UNIFIED_XEND_OFFSET] = &xenDaemonDriver,
-    [XEN_UNIFIED_XM_OFFSET] = &xenXMDriver,
 };
 
 static bool is_privileged = false;
@@ -1408,7 +1407,6 @@ static int
 xenUnifiedDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
     unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
     /*
@@ -1416,14 +1414,13 @@ xenUnifiedDomainAttachDevice(virDomainPtr dom, const char *xml)
      * config without touching persistent config, we add the extra flag here
      * to make this API work
      */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
-        priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
+    if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainAttachDeviceFlags &&
-            drivers[i]->xenDomainAttachDeviceFlags(dom, xml, flags) == 0)
-            return 0;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainAttachDeviceFlags(dom, xml, flags);
+    else
+        return xenDaemonAttachDeviceFlags(dom, xml, flags);
 
     return -1;
 }
@@ -1433,21 +1430,17 @@ xenUnifiedDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainAttachDeviceFlags &&
-            drivers[i]->xenDomainAttachDeviceFlags(dom, xml, flags) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainAttachDeviceFlags(dom, xml, flags);
+    else
+        return xenDaemonAttachDeviceFlags(dom, xml, flags);
 }
 
 static int
 xenUnifiedDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
     unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
     /*
@@ -1455,16 +1448,13 @@ xenUnifiedDomainDetachDevice(virDomainPtr dom, const char *xml)
      * config without touching persistent config, we add the extra flag here
      * to make this API work
      */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
-        priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
+    if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainDetachDeviceFlags &&
-            drivers[i]->xenDomainDetachDeviceFlags(dom, xml, flags) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainDetachDeviceFlags(dom, xml, flags);
+    else
+        return xenDaemonDetachDeviceFlags(dom, xml, flags);
 }
 
 static int
@@ -1472,25 +1462,18 @@ xenUnifiedDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainDetachDeviceFlags &&
-            drivers[i]->xenDomainDetachDeviceFlags(dom, xml, flags) == 0)
-            return 0;
-
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainDetachDeviceFlags(dom, xml, flags);
+    else
+        return xenDaemonDetachDeviceFlags(dom, xml, flags);
 }
 
 static int
 xenUnifiedDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonUpdateDeviceFlags(dom, xml, flags);
-    return -1;
+    return xenDaemonUpdateDeviceFlags(dom, xml, flags);
 }
 
 static int

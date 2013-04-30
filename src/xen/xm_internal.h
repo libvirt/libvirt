@@ -30,8 +30,6 @@
 # include "virconf.h"
 # include "domain_conf.h"
 
-extern struct xenUnifiedDriver xenXMDriver;
-
 int xenXMConfigCacheRefresh (virConnectPtr conn);
 int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename);
 int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);
@@ -68,5 +66,13 @@ int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long
 
 int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart);
 int xenXMDomainSetAutostart(virDomainPtr dom, int autostart);
+
+int xenXMDomainAttachDeviceFlags(virDomainPtr domain,
+                                 const char *xml,
+                                 unsigned int flags);
+
+int xenXMDomainDetachDeviceFlags(virDomainPtr domain,
+                                 const char *xml,
+                                 unsigned int flags);
 
 #endif

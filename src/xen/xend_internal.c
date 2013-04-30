@@ -2195,7 +2195,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+int
 xenDaemonAttachDeviceFlags(virDomainPtr domain,
                            const char *xml,
                            unsigned int flags)
@@ -2216,13 +2216,6 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Cannot modify live config if domain is inactive"));
-            return -1;
-        }
-        /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Xend version does not support modifying "
-                           "persistent config"));
             return -1;
         }
     } else {
@@ -2378,13 +2371,6 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
                            _("Cannot modify live config if domain is inactive"));
             return -1;
         }
-        /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Xend version does not support modifying "
-                           "persistent config"));
-            return -1;
-        }
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4 &&
@@ -2463,7 +2449,7 @@ cleanup:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+int
 xenDaemonDetachDeviceFlags(virDomainPtr domain,
                            const char *xml,
                            unsigned int flags)
@@ -2483,13 +2469,6 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Cannot modify live config if domain is inactive"));
-            return -1;
-        }
-        /* If xendConfigVersion < 3 only live config can be changed */
-        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Xend version does not support modifying "
-                             "persistent config"));
             return -1;
         }
     } else {
@@ -3362,8 +3341,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainAttachDeviceFlags = xenDaemonAttachDeviceFlags,
-    .xenDomainDetachDeviceFlags = xenDaemonDetachDeviceFlags,
     .xenDomainGetSchedulerType = xenDaemonGetSchedulerType,
     .xenDomainGetSchedulerParameters = xenDaemonGetSchedulerParameters,
     .xenDomainSetSchedulerParameters = xenDaemonSetSchedulerParameters,

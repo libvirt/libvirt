@@ -114,6 +114,13 @@ int xenDaemonListDefinedDomains(virConnectPtr conn,
                                 char **const names,
                                 int maxnames);
 
+int xenDaemonAttachDeviceFlags(virDomainPtr domain,
+                               const char *xml,
+                               unsigned int flags);
+int xenDaemonDetachDeviceFlags(virDomainPtr domain,
+                               const char *xml,
+                               unsigned int flags);
+
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
 int xenDaemonDomainCreate(virDomainPtr domain);
 int xenDaemonDomainUndefine(virDomainPtr domain);

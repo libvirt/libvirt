@@ -66,10 +66,6 @@
 #define XEN_MAX_PHYSICAL_CPU 1024
 
 char * xenXMAutoAssignMac(void);
-static int xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
-                                        unsigned int flags);
-static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
-                                        unsigned int flags);
 
 #define XM_REFRESH_INTERVAL 10
 
@@ -79,11 +75,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XEND_PCI_CONFIG_PREFIX "xend-pci-"
 #define QEMU_IF_SCRIPT "qemu-ifup"
 #define XM_XML_ERROR "Invalid xml"
-
-struct xenUnifiedDriver xenXMDriver = {
-    .xenDomainAttachDeviceFlags = xenXMDomainAttachDeviceFlags,
-    .xenDomainDetachDeviceFlags = xenXMDomainDetachDeviceFlags,
-};
 
 #ifndef WITH_XEN_INOTIFY
 static int xenInotifyActive(virConnectPtr conn ATTRIBUTE_UNUSED)
@@ -1236,7 +1227,7 @@ cleanup:
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+int
 xenXMDomainAttachDeviceFlags(virDomainPtr domain,
                              const char *xml,
                              unsigned int flags)
@@ -1326,7 +1317,7 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+int
 xenXMDomainDetachDeviceFlags(virDomainPtr domain,
                              const char *xml,
                              unsigned int flags)
