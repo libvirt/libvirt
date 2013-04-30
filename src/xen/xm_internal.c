@@ -970,7 +970,7 @@ xenXMDomainCreate(virDomainPtr domain)
 
  error:
     if (domain->id != -1) {
-        xenDaemonDomainDestroyFlags(domain, 0);
+        xenDaemonDomainDestroy(domain);
         domain->id = -1;
     }
     xenUnifiedUnlock(priv);

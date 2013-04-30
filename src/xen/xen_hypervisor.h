@@ -72,11 +72,6 @@ unsigned long
                                          int id);
 int     xenHypervisorGetMaxVcpus        (virConnectPtr conn,
                                          const char *type);
-int     xenHypervisorDestroyDomain      (virDomainPtr domain)
-          ATTRIBUTE_NONNULL (1);
-int     xenHypervisorDestroyDomainFlags (virDomainPtr domain,
-                                         unsigned int flags)
-          ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomainInfo        (virDomainPtr domain,
                                            virDomainInfoPtr info)
           ATTRIBUTE_NONNULL (1);

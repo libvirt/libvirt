@@ -609,13 +609,6 @@ struct xen_v0_domainop {
 typedef struct xen_v0_domainop xen_v0_domainop;
 
 /*
- * The information for a destroydomain system hypercall
- */
-#define XEN_V0_OP_DESTROYDOMAIN	9
-#define XEN_V1_OP_DESTROYDOMAIN	9
-#define XEN_V2_OP_DESTROYDOMAIN	2
-
-/*
  * The information for a pausedomain system hypercall
  */
 #define XEN_V0_OP_PAUSEDOMAIN	10
@@ -880,7 +873,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainDestroyFlags = xenHypervisorDestroyDomainFlags,
     .xenDomainGetOSType = xenHypervisorDomainGetOSType,
     .xenDomainGetMaxMemory = xenHypervisorGetMaxMemory,
     .xenDomainSetMaxMemory = xenHypervisorSetMaxMemory,
@@ -1484,45 +1476,6 @@ xenHypervisorDomainInterfaceStats(virDomainPtr dom,
 #endif
 }
 
-
-/**
- * virXen_destroydomain:
- * @handle: the hypervisor handle
- * @id: the domain id
- *
- * Do a low level hypercall to destroy the domain
- *
- * Returns 0 or -1 in case of failure
- */
-static int
-virXen_destroydomain(int handle, int id)
-{
-    int ret = -1;
-
-    if (hv_versions.hypervisor > 1) {
-        xen_op_v2_dom op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V2_OP_DESTROYDOMAIN;
-        op.domain = (domid_t) id;
-        ret = xenHypervisorDoV2Dom(handle, &op);
-    } else if (hv_versions.hypervisor == 1) {
-        xen_op_v1 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V1_OP_DESTROYDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV1Op(handle, &op);
-    } else if (hv_versions.hypervisor == 0) {
-        xen_op_v0 op;
-
-        memset(&op, 0, sizeof(op));
-        op.cmd = XEN_V0_OP_DESTROYDOMAIN;
-        op.u.domain.domain = (domid_t) id;
-        ret = xenHypervisorDoV0Op(handle, &op);
-    }
-    return ret;
-}
 
 /**
  * virXen_setmaxmem:
@@ -3062,35 +3015,6 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
     return j;
 }
 
-
-/**
- * xenHypervisorDestroyDomainFlags:
- * @domain: pointer to the domain block
- * @flags: an OR'ed set of virDomainDestroyFlagsValues
- *
- * Do a hypervisor call to destroy the given domain
- *
- * Calling this function with no @flags set (equal to zero)
- * is equivalent to calling xenHypervisorDestroyDomain.
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenHypervisorDestroyDomainFlags(virDomainPtr domain, unsigned int flags)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    virCheckFlags(0, -1);
-
-    if (domain->id < 0)
-        return -1;
-
-    ret = virXen_destroydomain(priv->handle, domain->id);
-    if (ret < 0)
-        return -1;
-    return 0;
-}
 
 /**
  * xenHypervisorSetMaxMemory:

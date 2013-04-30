@@ -91,7 +91,7 @@ int xenDaemonDomainSuspend(virDomainPtr domain);
 int xenDaemonDomainResume(virDomainPtr domain);
 int xenDaemonDomainShutdown(virDomainPtr domain);
 int xenDaemonDomainReboot(virDomainPtr domain);
-int xenDaemonDomainDestroyFlags(virDomainPtr domain, unsigned int flags);
+int xenDaemonDomainDestroy(virDomainPtr domain);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                             unsigned int flags);

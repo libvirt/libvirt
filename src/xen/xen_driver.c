@@ -778,26 +778,9 @@ static int
 xenUnifiedDomainDestroyFlags(virDomainPtr dom,
                              unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-
     virCheckFlags(0, -1);
 
-    /* Try non-hypervisor methods first, then hypervisor direct method
-     * as a last resort.
-     */
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
-            priv->opened[i] &&
-            drivers[i]->xenDomainDestroyFlags &&
-            drivers[i]->xenDomainDestroyFlags(dom, flags) == 0)
-            return 0;
-
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
-        xenHypervisorDestroyDomainFlags(dom, flags) == 0)
-        return 0;
-
-    return -1;
+    return xenDaemonDomainDestroy(dom);
 }
 
 static int

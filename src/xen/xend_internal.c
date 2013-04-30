@@ -1340,9 +1340,8 @@ xenDaemonDomainReboot(virDomainPtr domain)
 }
 
 /**
- * xenDaemonDomainDestroyFlags:
+ * xenDaemonDomainDestroy:
  * @domain: pointer to the Domain block
- * @flags: an OR'ed set of virDomainDestroyFlagsValues
  *
  * Abruptly halt the domain, the OS is not properly shutdown and the
  * resources allocated for the domain are immediately freed, mounted
@@ -1351,16 +1350,11 @@ xenDaemonDomainReboot(virDomainPtr domain)
  * dying and will go away completely once all of the resources have been
  * unmapped (usually from the backend devices).
  *
- * Calling this function with no @flags set (equal to zero)
- * is equivalent to calling xenDaemonDomainDestroy.
- *
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
+xenDaemonDomainDestroy(virDomainPtr domain)
 {
-    virCheckFlags(0, -1);
-
     if (domain->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Domain %s isn't running."), domain->name);
@@ -2237,7 +2231,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
   error:
     /* Make sure we don't leave a still-born domain around */
     if (dom != NULL) {
-        xenDaemonDomainDestroyFlags(dom, 0);
+        xenDaemonDomainDestroy(dom);
         virObjectUnref(dom);
     }
     virDomainDefFree(def);
@@ -3447,7 +3441,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainDestroyFlags = xenDaemonDomainDestroyFlags,
     .xenDomainGetOSType = xenDaemonDomainGetOSType,
     .xenDomainGetMaxMemory = xenDaemonDomainGetMaxMemory,
     .xenDomainSetMaxMemory = xenDaemonDomainSetMaxMemory,
