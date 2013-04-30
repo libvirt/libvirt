@@ -1244,17 +1244,11 @@ xenUnifiedDomainMigratePrepare(virConnectPtr dconn,
                                const char *dname,
                                unsigned long resource)
 {
-    xenUnifiedPrivatePtr priv = dconn->privateData;
-
     virCheckFlags(XEN_MIGRATION_FLAGS, -1);
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonDomainMigratePrepare(dconn, cookie, cookielen,
-                                             uri_in, uri_out,
-                                             flags, dname, resource);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    return xenDaemonDomainMigratePrepare(dconn, cookie, cookielen,
+                                         uri_in, uri_out,
+                                         flags, dname, resource);
 }
 
 static int
@@ -1266,16 +1260,10 @@ xenUnifiedDomainMigratePerform(virDomainPtr dom,
                                const char *dname,
                                unsigned long resource)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
     virCheckFlags(XEN_MIGRATION_FLAGS, -1);
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonDomainMigratePerform(dom, cookie, cookielen, uri,
-                                             flags, dname, resource);
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    return xenDaemonDomainMigratePerform(dom, cookie, cookielen, uri,
+                                         flags, dname, resource);
 }
 
 static virDomainPtr
@@ -1292,24 +1280,22 @@ xenUnifiedDomainMigrateFinish(virConnectPtr dconn,
 
     virCheckFlags(XEN_MIGRATION_FLAGS, NULL);
 
-    dom = xenUnifiedDomainLookupByName(dconn, dname);
-    if (! dom) {
+    if (!(dom = xenUnifiedDomainLookupByName(dconn, dname)))
         return NULL;
-    }
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         domain_xml = xenDaemonDomainGetXMLDesc(dom, 0, NULL);
         if (! domain_xml) {
             virReportError(VIR_ERR_MIGRATE_PERSIST_FAILED,
                            "%s", _("failed to get XML representation of migrated domain"));
-            goto failure;
+            goto error;
         }
 
         dom_new = xenDaemonDomainDefineXML(dconn, domain_xml);
         if (! dom_new) {
             virReportError(VIR_ERR_MIGRATE_PERSIST_FAILED,
                            "%s", _("failed to define domain on destination host"));
-            goto failure;
+            goto error;
         }
 
         /* Free additional reference added by Define */
@@ -1321,7 +1307,7 @@ xenUnifiedDomainMigrateFinish(virConnectPtr dconn,
     return dom;
 
 
-failure:
+error:
     virDomainFree(dom);
 
     VIR_FREE(domain_xml);
