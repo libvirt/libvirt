@@ -702,29 +702,26 @@ xenUnifiedDomainIsPersistent(virDomainPtr dom)
             ret = 0;
     } else {
         /* New Xen with inactive domain management */
-        if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-            currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
-            if (currdom) {
-                if (currdom->id == -1) {
-                    /* If its inactive, then trivially, it must be persistent */
-                    ret = 1;
-                } else {
-                    char *path;
-                    char uuidstr[VIR_UUID_STRING_BUFLEN];
+        currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
+        if (currdom) {
+            if (currdom->id == -1) {
+                /* If its inactive, then trivially, it must be persistent */
+                ret = 1;
+            } else {
+                char *path;
+                char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-                    /* If its running there's no official way to tell, so we
-                     * go behind xend's back & look at the config dir */
-
-                    virUUIDFormat(dom->uuid, uuidstr);
-                    if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
-                        virReportOOMError();
-                        goto done;
-                    }
-                    if (access(path, R_OK) == 0)
-                        ret = 1;
-                    else if (errno == ENOENT)
-                        ret = 0;
+                /* If its running there's no official way to tell, so we
+                 * go behind xend's back & look at the config dir */
+                virUUIDFormat(dom->uuid, uuidstr);
+                if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
+                    virReportOOMError();
+                    goto done;
                 }
+                if (access(path, R_OK) == 0)
+                    ret = 1;
+                else if (errno == ENOENT)
+                    ret = 0;
             }
         }
     }
