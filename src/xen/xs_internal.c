@@ -580,68 +580,6 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
     return ret;
 }
 
-/**
- * xenStoreLookupByName:
- * @conn: A xend instance
- * @name: The name of the domain
- *
- * Try to lookup a domain on the Xen Store based on its name.
- *
- * Returns a new domain object or NULL in case of failure
- */
-virDomainPtr
-xenStoreLookupByName(virConnectPtr conn, const char *name)
-{
-    virDomainPtr ret = NULL;
-    unsigned int num, i, len;
-    long id = -1;
-    char **idlist = NULL, *endptr;
-    char prop[200], *tmp;
-    int found = 0;
-    struct xend_domain *xenddomain = NULL;
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
-    if (priv->xshandle == NULL)
-        return NULL;
-
-    idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
-    if (idlist == NULL)
-        goto done;
-
-    for (i = 0; i < num; i++) {
-        id = strtol(idlist[i], &endptr, 10);
-        if ((endptr == idlist[i]) || (*endptr != 0)) {
-            goto done;
-        }
-#if 0
-        if (virConnectCheckStoreID(conn, (int) id) < 0)
-            continue;
-#endif
-        snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
-        prop[199] = 0;
-        tmp = xs_read(priv->xshandle, 0, prop, &len);
-        if (tmp != NULL) {
-            found = STREQ(name, tmp);
-            VIR_FREE(tmp);
-            if (found)
-                break;
-        }
-    }
-    if (!found)
-        goto done;
-
-    ret = virGetDomain(conn, name, NULL);
-    if (ret == NULL)
-        goto done;
-
-    ret->id = id;
-
-done:
-    VIR_FREE(xenddomain);
-    VIR_FREE(idlist);
-
-    return ret;
-}
 
 /**
  * xenStoreDomainShutdown:

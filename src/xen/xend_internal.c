@@ -855,63 +855,6 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend,
 }
 
 
-/**
- * xenDaemonDomainLookupByID:
- * @xend: A xend instance
- * @id: The id of the domain
- * @name: return value for the name if not NULL
- * @uuid: return value for the UUID if not NULL
- *
- * This method looks up the name of a domain based on its id
- *
- * Returns the 0 on success; -1 (with errno) on error
- */
-int
-xenDaemonDomainLookupByID(virConnectPtr xend,
-                          int id,
-                          char **domname,
-                          unsigned char *uuid)
-{
-    const char *name = NULL;
-    struct sexpr *root;
-
-    memset(uuid, 0, VIR_UUID_BUFLEN);
-
-    root = sexpr_get(xend, "/xend/domain/%d?detail=1", id);
-    if (root == NULL)
-      goto error;
-
-    name = sexpr_node(root, "domain/name");
-    if (name == NULL) {
-      virReportError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("domain information incomplete, missing name"));
-      goto error;
-    }
-    if (domname) {
-      *domname = strdup(name);
-      if (*domname == NULL) {
-          virReportOOMError();
-          goto error;
-      }
-    }
-
-    if (sexpr_uuid(uuid, root, "domain/uuid") < 0) {
-      virReportError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("domain information incomplete, missing uuid"));
-      goto error;
-    }
-
-    sexpr_free(root);
-    return 0;
-
-error:
-    sexpr_free(root);
-    if (domname)
-        VIR_FREE(*domname);
-    return -1;
-}
-
-
 static int
 xend_detect_config_version(virConnectPtr conn)
 {
@@ -1861,38 +1804,6 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
     return ret;
 }
 
-
-/**
- * xenDaemonLookupByID:
- * @conn: pointer to the hypervisor connection
- * @id: the domain ID number
- *
- * Try to find a domain based on the hypervisor ID number
- *
- * Returns a new domain object or NULL in case of failure
- */
-virDomainPtr
-xenDaemonLookupByID(virConnectPtr conn, int id)
-{
-    char *name = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    virDomainPtr ret;
-
-    if (xenDaemonDomainLookupByID(conn, id, &name, uuid) < 0) {
-        goto error;
-    }
-
-    ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) goto error;
-
-    ret->id = id;
-    VIR_FREE(name);
-    return ret;
-
- error:
-    VIR_FREE(name);
-    return NULL;
-}
 
 /**
  * xenDaemonDomainSetVcpusFlags:

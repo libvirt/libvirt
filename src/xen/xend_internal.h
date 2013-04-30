@@ -69,19 +69,6 @@ int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
                             const char *name, unsigned char *uuid);
 
 
-/**
- * \brief Lookup the name of a domain
- * \param xend A xend instance
- * \param id The id of the domain
- * \param name pointer to store a copy of the name
- * \param uuid pointer to store a copy of the uuid
- *
- * This method looks up the name/uuid of a domain
- */
-int xenDaemonDomainLookupByID(virConnectPtr xend,
-                              int id,
-                              char **name, unsigned char *uuid);
-
 
 virDomainDefPtr
 xenDaemonDomainFetch(virConnectPtr xend,
@@ -153,7 +140,6 @@ extern struct xenUnifiedDriver xenDaemonDriver;
 int xenDaemonInit (void);
 
 virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc);
-virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
 int xenDaemonDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long resource);

@@ -43,8 +43,6 @@ int		xenStoreNumOfDomains	(virConnectPtr conn);
 int		xenStoreListDomains	(virConnectPtr conn,
                                          int *ids,
                                          int maxids);
-virDomainPtr	xenStoreLookupByName(virConnectPtr conn,
-                                         const char *name);
 unsigned long	xenStoreGetMaxMemory	(virDomainPtr domain);
 int		xenStoreDomainSetMemory	(virDomainPtr domain,
                                          unsigned long memory);

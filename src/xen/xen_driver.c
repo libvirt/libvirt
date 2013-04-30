@@ -601,38 +601,17 @@ xenUnifiedDomainCreateXML(virConnectPtr conn,
     return xenDaemonCreateXML(conn, xmlDesc);
 }
 
-/* Assumption made in underlying drivers:
- * If the domain is "not found" and there is no other error, then
- * the Lookup* functions return a NULL but do not set virterror.
- */
 static virDomainPtr
 xenUnifiedDomainLookupByID(virConnectPtr conn, int id)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
 
-    /* Reset any connection-level errors in virterror first, in case
-     * there is one hanging around from a previous call.
-     */
-    virConnResetLastError(conn);
+    ret = xenHypervisorLookupDomainByID(conn, id);
 
-    /* Try hypervisor/xenstore combo. */
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorLookupDomainByID(conn, id);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
 
-    /* Try xend. */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonLookupByID(conn, id);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
-
-    /* Not found. */
-    virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
-    return NULL;
+    return ret;
 }
 
 static virDomainPtr
@@ -642,35 +621,20 @@ xenUnifiedDomainLookupByUUID(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainPtr ret;
 
-    /* Reset any connection-level errors in virterror first, in case
-     * there is one hanging around from a previous call.
-     */
-    virConnResetLastError(conn);
-
-    /* Try hypervisor/xenstore combo. */
-    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorLookupDomainByUUID(conn, uuid);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
-
-    /* Try xend. */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonLookupByUUID(conn, uuid);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
+    ret = xenHypervisorLookupDomainByUUID(conn, uuid);
 
     /* Try XM for inactive domains. */
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
-        ret = xenXMDomainLookupByUUID(conn, uuid);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
+    if (!ret) {
+        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
+            ret = xenXMDomainLookupByUUID(conn, uuid);
+        else
+            ret = xenDaemonLookupByUUID(conn, uuid);
     }
 
-    /* Not found. */
-    virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
-    return NULL;
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+
+    return ret;
 }
 
 static virDomainPtr
@@ -680,50 +644,42 @@ xenUnifiedDomainLookupByName(virConnectPtr conn,
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainPtr ret;
 
-    /* Reset any connection-level errors in virterror first, in case
-     * there is one hanging around from a previous call.
-     */
-    virConnResetLastError(conn);
-
-    /* Try xend. */
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
-        ret = xenDaemonLookupByName(conn, name);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
-
-    /* Try xenstore for inactive domains. */
-    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
-        ret = xenStoreLookupByName(conn, name);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
+    ret = xenDaemonLookupByName(conn, name);
 
     /* Try XM for inactive domains. */
-    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+    if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
         ret = xenXMDomainLookupByName(conn, name);
-        if (ret || conn->err.code != VIR_ERR_OK)
-            return ret;
-    }
 
-    /* Not found. */
-    virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
-    return NULL;
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+
+    return ret;
 }
 
 
 static int
 xenUnifiedDomainIsActive(virDomainPtr dom)
 {
+    xenUnifiedPrivatePtr priv = dom->conn->privateData;
     virDomainPtr currdom;
     int ret = -1;
 
     /* ID field in dom may be outdated, so re-lookup */
-    currdom = xenUnifiedDomainLookupByUUID(dom->conn, dom->uuid);
+    currdom = xenHypervisorLookupDomainByUUID(dom->conn, dom->uuid);
+
+    /* Try XM for inactive domains. */
+    if (!currdom) {
+        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
+            currdom = xenXMDomainLookupByUUID(dom->conn, dom->uuid);
+        else
+            currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
+    }
 
     if (currdom) {
         ret = currdom->id == -1 ? 0 : 1;
         virDomainFree(currdom);
+    } else if (virGetLastError() == NULL) {
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
     }
 
     return ret;
