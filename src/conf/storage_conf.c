@@ -1,7 +1,7 @@
 /*
  * storage_conf.c: config handling for storage driver
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2013 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -956,10 +956,17 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     /* When we are working with a virtual disk we can skip the target
      * path and permissions */
     if (!(options->flags & VIR_STORAGE_POOL_SOURCE_NETWORK)) {
-        if (!(target_path = virXPathString("string(./target/path)", ctxt))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing storage pool target path"));
-            goto error;
+        if (ret->type == VIR_STORAGE_POOL_LOGICAL) {
+            if (virAsprintf(&target_path, "/dev/%s", ret->source.name) < 0) {
+                goto error;
+            }
+        } else {
+            target_path = virXPathString("string(./target/path)", ctxt);
+            if (!target_path) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing storage pool target path"));
+                goto error;
+            }
         }
         ret->target.path = virFileSanitizePath(target_path);
         if (!ret->target.path)

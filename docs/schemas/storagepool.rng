@@ -62,7 +62,7 @@
     <ref name='commonmetadata'/>
     <ref name='sizing'/>
     <ref name='sourcelogical'/>
-    <ref name='target'/>
+    <ref name='targetlogical'/>
   </define>
 
   <define name='pooldisk'>
@@ -203,6 +203,17 @@
       <element name='path'>
         <ref name='absFilePath'/>
       </element>
+      <ref name='permissions'/>
+    </element>
+  </define>
+
+  <define name='targetlogical'>
+    <element name='target'>
+      <optional>
+        <element name='path'>
+          <ref name='absFilePath'/>
+        </element>
+      </optional>
       <ref name='permissions'/>
     </element>
   </define>

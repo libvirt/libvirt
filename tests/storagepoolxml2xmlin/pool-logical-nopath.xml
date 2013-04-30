@@ -10,7 +10,6 @@
     <device path="/dev/sdb3"/>
   </source>
   <target>
-    <path>/invalid/nonexistent/path</path>
     <permissions>
       <mode>0700</mode>
       <owner>0</owner>
