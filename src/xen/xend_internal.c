@@ -1320,7 +1320,6 @@ xenDaemonDomainShutdown(virDomainPtr domain)
 /**
  * xenDaemonDomainReboot:
  * @domain: pointer to the Domain block
- * @flags: extra flags for the reboot operation, not used yet
  *
  * Reboot the domain, the OS is requested to properly shutdown
  * and restart but the domain may ignore it.  It will return immediately
@@ -1329,10 +1328,8 @@ xenDaemonDomainShutdown(virDomainPtr domain)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags)
+xenDaemonDomainReboot(virDomainPtr domain)
 {
-    virCheckFlags(0, -1);
-
     if (domain->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Domain %s isn't running."), domain->name);
@@ -3450,8 +3447,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainShutdown = xenDaemonDomainShutdown,
-    .xenDomainReboot = xenDaemonDomainReboot,
     .xenDomainDestroyFlags = xenDaemonDomainDestroyFlags,
     .xenDomainGetOSType = xenDaemonDomainGetOSType,
     .xenDomainGetMaxMemory = xenDaemonDomainGetMaxMemory,

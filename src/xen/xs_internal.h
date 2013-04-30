@@ -47,9 +47,6 @@ unsigned long	xenStoreGetMaxMemory	(virDomainPtr domain);
 int		xenStoreDomainSetMemory	(virDomainPtr domain,
                                          unsigned long memory);
 unsigned long long xenStoreDomainGetMaxMemory(virDomainPtr domain);
-int		xenStoreDomainShutdown	(virDomainPtr domain);
-int		xenStoreDomainReboot	(virDomainPtr domain,
-                                         unsigned int flags);
 
 int             xenStoreDomainGetVNCPort(virConnectPtr conn,
                                          int domid);

@@ -755,18 +755,9 @@ static int
 xenUnifiedDomainShutdownFlags(virDomainPtr dom,
                               unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-
     virCheckFlags(0, -1);
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenDomainShutdown &&
-            drivers[i]->xenDomainShutdown(dom) == 0)
-            return 0;
-
-    return -1;
+    return xenDaemonDomainShutdown(dom);
 }
 
 static int
@@ -778,16 +769,9 @@ xenUnifiedDomainShutdown(virDomainPtr dom)
 static int
 xenUnifiedDomainReboot(virDomainPtr dom, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
+    virCheckFlags(0, -1);
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] &&
-            drivers[i]->xenDomainReboot &&
-            drivers[i]->xenDomainReboot(dom, flags) == 0)
-            return 0;
-
-    return -1;
+    return xenDaemonDomainReboot(dom);
 }
 
 static int

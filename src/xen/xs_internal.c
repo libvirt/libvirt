@@ -58,8 +58,6 @@ static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
-    .xenDomainShutdown = xenStoreDomainShutdown,
-    .xenDomainReboot = xenStoreDomainReboot,
     .xenDomainGetOSType = xenStoreDomainGetOSType,
     .xenDomainGetMaxMemory = xenStoreDomainGetMaxMemory,
     .xenDomainSetMemory = xenStoreDomainSetMemory,
@@ -580,66 +578,6 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
     return ret;
 }
 
-
-/**
- * xenStoreDomainShutdown:
- * @domain: pointer to the Domain block
- *
- * Shutdown the domain, the OS is requested to properly shutdown
- * and the domain may ignore it.  It will return immediately
- * after queuing the request.
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenStoreDomainShutdown(virDomainPtr domain)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id == -1 || domain->id == 0)
-        return -1;
-    /*
-     * this is very hackish, the domU kernel probes for a special
-     * node in the xenstore and launch the shutdown command if found.
-     */
-    xenUnifiedLock(priv);
-    ret = virDomainDoStoreWrite(domain, "control/shutdown", "poweroff");
-    xenUnifiedUnlock(priv);
-    return ret;
-}
-
-/**
- * xenStoreDomainReboot:
- * @domain: pointer to the Domain block
- * @flags: extra flags for the reboot operation, not used yet
- *
- * Reboot the domain, the OS is requested to properly shutdown
- * and reboot but the domain may ignore it.  It will return immediately
- * after queuing the request.
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenStoreDomainReboot(virDomainPtr domain, unsigned int flags)
-{
-    int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    virCheckFlags(0, -1);
-
-    if (domain->id == -1 || domain->id == 0)
-        return -1;
-    /*
-     * this is very hackish, the domU kernel probes for a special
-     * node in the xenstore and launch the shutdown command if found.
-     */
-
-    xenUnifiedLock(priv);
-    ret = virDomainDoStoreWrite(domain, "control/shutdown", "reboot");
-    xenUnifiedUnlock(priv);
-    return ret;
-}
 
 /*
  * xenStoreDomainGetOSType:

@@ -90,7 +90,7 @@ int xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps);
 int xenDaemonDomainSuspend(virDomainPtr domain);
 int xenDaemonDomainResume(virDomainPtr domain);
 int xenDaemonDomainShutdown(virDomainPtr domain);
-int xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags);
+int xenDaemonDomainReboot(virDomainPtr domain);
 int xenDaemonDomainDestroyFlags(virDomainPtr domain, unsigned int flags);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
