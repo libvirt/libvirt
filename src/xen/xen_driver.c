@@ -1380,31 +1380,23 @@ static virDomainPtr
 xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
-    int i;
-    virDomainPtr ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainDefineXML) {
-            ret = drivers[i]->xenDomainDefineXML(conn, xml);
-            if (ret) return ret;
-        }
-
-    return NULL;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainDefineXML(conn, xml);
+    else
+        return xenDaemonDomainDefineXML(conn, xml);
 }
 
 static int
 xenUnifiedDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
 
     virCheckFlags(0, -1);
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainUndefine &&
-            drivers[i]->xenDomainUndefine(dom) == 0)
-            return 0;
-
-    return -1;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainUndefine(dom);
+    else
+        return xenDaemonDomainUndefine(dom);
 }
 
 static int

@@ -81,8 +81,6 @@ static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 #define XM_XML_ERROR "Invalid xml"
 
 struct xenUnifiedDriver xenXMDriver = {
-    .xenDomainDefineXML = xenXMDomainDefineXML,
-    .xenDomainUndefine = xenXMDomainUndefine,
     .xenDomainAttachDeviceFlags = xenXMDomainAttachDeviceFlags,
     .xenDomainDetachDeviceFlags = xenXMDomainDetachDeviceFlags,
 };
@@ -1102,9 +1100,6 @@ xenXMDomainUndefine(virDomainPtr domain)
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
-
-    if (domain->id != -1)
-        return -1;
 
     xenUnifiedLock(priv);
 

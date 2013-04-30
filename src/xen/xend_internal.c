@@ -2859,9 +2859,6 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
     xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr def;
 
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return NULL;
-
     if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
                                         1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_XML_INACTIVE))) {
@@ -2915,11 +2912,6 @@ xenDaemonDomainCreate(virDomainPtr domain)
 int
 xenDaemonDomainUndefine(virDomainPtr domain)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
-
     return xend_op(domain->conn, domain->name, "op", "delete", NULL);
 }
 
@@ -3370,8 +3362,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainDefineXML = xenDaemonDomainDefineXML,
-    .xenDomainUndefine = xenDaemonDomainUndefine,
     .xenDomainAttachDeviceFlags = xenDaemonAttachDeviceFlags,
     .xenDomainDetachDeviceFlags = xenDaemonDetachDeviceFlags,
     .xenDomainGetSchedulerType = xenDaemonGetSchedulerType,
