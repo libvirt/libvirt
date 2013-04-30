@@ -2141,6 +2141,7 @@ err:
 
     /* return the original error */
     virSetError(orig_error);
+    virFreeError(orig_error);
     return -1;
 }
 
