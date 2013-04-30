@@ -887,8 +887,6 @@ static int
 xenUnifiedDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
                           unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
     virCheckFlags(0, -1);
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -896,9 +894,7 @@ xenUnifiedDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
         return -1;
     }
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonDomainSave(dom, to);
-    return -1;
+    return xenDaemonDomainSave(dom, to);
 }
 
 static int
@@ -934,8 +930,7 @@ xenUnifiedDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (!name)
         goto cleanup;
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        ret = xenDaemonDomainSave(dom, name);
+    ret = xenDaemonDomainSave(dom, name);
 
 cleanup:
     VIR_FREE(name);
@@ -982,8 +977,6 @@ static int
 xenUnifiedDomainRestoreFlags(virConnectPtr conn, const char *from,
                              const char *dxml, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-
     virCheckFlags(0, -1);
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -991,9 +984,7 @@ xenUnifiedDomainRestoreFlags(virConnectPtr conn, const char *from,
         return -1;
     }
 
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonDomainRestore(conn, from);
-    return -1;
+    return xenDaemonDomainRestore(conn, from);
 }
 
 static int
@@ -1005,11 +996,7 @@ xenUnifiedDomainRestore(virConnectPtr conn, const char *from)
 static int
 xenUnifiedDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-
-    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-        return xenDaemonDomainCoreDump(dom, to, flags);
-    return -1;
+    return xenDaemonDomainCoreDump(dom, to, flags);
 }
 
 static int

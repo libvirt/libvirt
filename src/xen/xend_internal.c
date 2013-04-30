@@ -1422,6 +1422,8 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 
     /* We can't save the state of Domain-0, that would mean stopping it too */
     if (domain->id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Cannot save host domain"));
         return -1;
     }
 
