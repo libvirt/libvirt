@@ -793,17 +793,20 @@ static char *
 xenUnifiedDomainGetOSType(virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-    char *ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->xenDomainGetOSType) {
-            ret = drivers[i]->xenDomainGetOSType(dom);
-            if (ret) return ret;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to query OS type for inactive domain"));
+            return NULL;
+        } else {
+            return xenDaemonDomainGetOSType(dom);
         }
-
-    return NULL;
+    } else {
+        return xenHypervisorDomainGetOSType(dom);
+    }
 }
+
 
 static unsigned long long
 xenUnifiedDomainGetMaxMemory(virDomainPtr dom)

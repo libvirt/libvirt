@@ -94,7 +94,6 @@ extern int xenRegister (void);
  */
 struct xenUnifiedDriver {
     virDrvConnectGetHostname xenGetHostname;
-    virDrvDomainGetOSType xenDomainGetOSType;
     virDrvDomainGetMaxMemory xenDomainGetMaxMemory;
     virDrvDomainSetMaxMemory xenDomainSetMaxMemory;
     virDrvDomainSetMemory xenDomainSetMemory;

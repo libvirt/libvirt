@@ -1373,15 +1373,11 @@ xenDaemonDomainDestroy(virDomainPtr domain)
  * Returns the new string or NULL in case of error, the string must be
  *         freed by the caller.
  */
-static char *
+char *
 xenDaemonDomainGetOSType(virDomainPtr domain)
 {
     char *type;
     struct sexpr *root;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (domain->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return NULL;
 
     /* can we ask for a subset ? worth it ? */
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -3441,7 +3437,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 }
 
 struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainGetOSType = xenDaemonDomainGetOSType,
     .xenDomainGetMaxMemory = xenDaemonDomainGetMaxMemory,
     .xenDomainSetMaxMemory = xenDaemonDomainSetMaxMemory,
     .xenDomainSetMemory = xenDaemonDomainSetMemory,

@@ -108,6 +108,8 @@ char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
 unsigned long long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
+char *xenDaemonDomainGetOSType(virDomainPtr domain);
+
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
 int xenDaemonDomainCreate(virDomainPtr domain);
 int xenDaemonDomainUndefine(virDomainPtr domain);

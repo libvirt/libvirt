@@ -873,7 +873,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static unsigned long long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainGetOSType = xenHypervisorDomainGetOSType,
     .xenDomainGetMaxMemory = xenHypervisorGetMaxMemory,
     .xenDomainSetMaxMemory = xenHypervisorSetMaxMemory,
     .xenDomainGetInfo = xenHypervisorGetDomainInfo,
@@ -2613,9 +2612,7 @@ xenHypervisorDomainGetOSType(virDomainPtr dom)
     /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
     if (hv_versions.hypervisor < 2 ||
         hv_versions.dom_interface < 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unsupported in dom interface < 4"));
-        return NULL;
+        return xenDaemonDomainGetOSType(dom);
     }
 
     XEN_GETDOMAININFO_CLEAR(dominfo);

@@ -53,12 +53,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
-static char *xenStoreDomainGetOSType(virDomainPtr domain);
 static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
 struct xenUnifiedDriver xenStoreDriver = {
-    .xenDomainGetOSType = xenStoreDomainGetOSType,
     .xenDomainGetMaxMemory = xenStoreDomainGetMaxMemory,
     .xenDomainSetMemory = xenStoreDomainSetMemory,
     .xenDomainGetInfo = xenStoreGetDomainInfo,
@@ -138,63 +136,6 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path, const char *value)
 
     if (xs_write(priv->xshandle, 0, &s[0], value, strlen(value)))
         ret = 0;
-
-    return ret;
-}
-
-/**
- * virDomainGetVM:
- * @domain: a domain object
- *
- * Internal API extracting a xenstore vm path.
- *
- * Returns the new string or NULL in case of error
- */
-static char *
-virDomainGetVM(virDomainPtr domain)
-{
-    char *vm;
-    char query[200];
-    unsigned int len;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->xshandle == NULL)
-        return NULL;
-
-    snprintf(query, 199, "/local/domain/%d/vm", virDomainGetID(domain));
-    query[199] = 0;
-
-    vm = xs_read(priv->xshandle, 0, &query[0], &len);
-
-    return vm;
-}
-
-/**
- * virDomainGetVMInfo:
- * @domain: a domain object
- * @vm: the xenstore vm path
- * @name: the value's path
- *
- * Internal API extracting one information the device used
- * by the domain from xensttore
- *
- * Returns the new string or NULL in case of error
- */
-static char *
-virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
-{
-    char s[256];
-    char *ret = NULL;
-    unsigned int len = 0;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    if (priv->xshandle == NULL)
-        return NULL;
-
-    snprintf(s, 255, "%s/%s", vm, name);
-    s[255] = 0;
-
-    ret = xs_read(priv->xshandle, 0, &s[0], &len);
 
     return ret;
 }
@@ -578,32 +519,6 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
     return ret;
 }
 
-
-/*
- * xenStoreDomainGetOSType:
- * @domain: a domain object
- *
- * Get the type of domain operation system.
- *
- * Returns the new string or NULL in case of error, the string must be
- *         freed by the caller.
- */
-static char *
-xenStoreDomainGetOSType(virDomainPtr domain)
-{
-    char *vm, *str = NULL;
-
-    vm = virDomainGetVM(domain);
-    if (vm) {
-        xenUnifiedPrivatePtr priv = domain->conn->privateData;
-        xenUnifiedLock(priv);
-        str = virDomainGetVMInfo(domain, vm, "image/ostype");
-        xenUnifiedUnlock(priv);
-        VIR_FREE(vm);
-    }
-
-    return str;
-}
 
 /**
  * xenStoreDomainGetVNCPort:
