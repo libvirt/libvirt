@@ -74,7 +74,7 @@ module Libvirtd_qemu =
                  | int_entry "keepalive_interval"
                  | int_entry "keepalive_count"
 
-   (* Each enty in the config is one of the following three ... *)
+   (* Each entry in the config is one of the following ... *)
    let entry = vnc_entry
              | spice_entry
              | remote_display_entry
