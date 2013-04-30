@@ -849,12 +849,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 # error "unsupported platform"
 #endif
 
-struct xenUnifiedDriver xenHypervisorDriver = {
-    .xenDomainGetSchedulerType = xenHypervisorGetSchedulerType,
-    .xenDomainGetSchedulerParameters = xenHypervisorGetSchedulerParameters,
-    .xenDomainSetSchedulerParameters = xenHypervisorSetSchedulerParameters,
-};
-
 /**
  * xenHypervisorDoV0Op:
  * @handle: the handle to the Xen hypervisor
@@ -1124,12 +1118,6 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     char *schedulertype = NULL;
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
-    if (domain->id < 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        return NULL;
-    }
-
     /*
      * Support only hv_versions.dom_interface >=5
      * (Xen3.1.0 or later)
@@ -1193,13 +1181,6 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
                                     int *nparams)
 {
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-
-    if (domain->id < 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        return -1;
-    }
 
     /*
      * Support only hv_versions.dom_interface >=5
@@ -1302,12 +1283,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                                        VIR_TYPED_PARAM_UINT,
                                        NULL) < 0)
         return -1;
-
-    if (domain->id < 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        return -1;
-    }
 
     /*
      * Support only hv_versions.dom_interface >=5

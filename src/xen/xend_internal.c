@@ -2984,7 +2984,7 @@ error:
  * Returns a scheduler name (credit or sedf) which must be freed by the
  * caller or NULL in case of failure
  */
-static char *
+char *
 xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
 {
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
@@ -3049,7 +3049,7 @@ error:
  *
  * Returns 0 or -1 in case of failure
  */
-static int
+int
 xenDaemonGetSchedulerParameters(virDomainPtr domain,
                                 virTypedParameterPtr params,
                                 int *nparams)
@@ -3151,7 +3151,7 @@ error:
  *
  * Returns 0 or -1 in case of failure
  */
-static int
+int
 xenDaemonSetSchedulerParameters(virDomainPtr domain,
                                 virTypedParameterPtr params,
                                 int nparams)
@@ -3339,12 +3339,6 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
     virDomainDefFree(def);
     return ret;
 }
-
-struct xenUnifiedDriver xenDaemonDriver = {
-    .xenDomainGetSchedulerType = xenDaemonGetSchedulerType,
-    .xenDomainGetSchedulerParameters = xenDaemonGetSchedulerParameters,
-    .xenDomainSetSchedulerParameters = xenDaemonSetSchedulerParameters,
-};
 
 
 /**

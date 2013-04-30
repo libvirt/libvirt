@@ -80,12 +80,6 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
                          unsigned char *cpumaps, int maplen);
 
 
-/* The five Xen drivers below us. */
-static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
-    [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
-    [XEN_UNIFIED_XEND_OFFSET] = &xenDaemonDriver,
-};
-
 static bool is_privileged = false;
 
 /**
@@ -1514,17 +1508,17 @@ static char *
 xenUnifiedDomainGetSchedulerType(virDomainPtr dom, int *nparams)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i;
-    char *schedulertype;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; i++) {
-        if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerType) {
-            schedulertype = drivers[i]->xenDomainGetSchedulerType(dom, nparams);
-            if (schedulertype != NULL)
-                return schedulertype;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot change scheduler parameters"));
+            return NULL;
         }
+        return xenDaemonGetSchedulerType(dom, nparams);
+    } else {
+        return xenHypervisorGetSchedulerType(dom, nparams);
     }
-    return NULL;
 }
 
 static int
@@ -1534,18 +1528,19 @@ xenUnifiedDomainGetSchedulerParametersFlags(virDomainPtr dom,
                                             unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i, ret;
 
     virCheckFlags(0, -1);
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
-        if (priv->opened[i] && drivers[i]->xenDomainGetSchedulerParameters) {
-           ret = drivers[i]->xenDomainGetSchedulerParameters(dom, params, nparams);
-           if (ret == 0)
-               return 0;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot change scheduler parameters"));
+            return -1;
         }
+        return xenDaemonGetSchedulerParameters(dom, params, nparams);
+    } else {
+        return xenHypervisorGetSchedulerParameters(dom, params, nparams);
     }
-    return -1;
 }
 
 static int
@@ -1564,20 +1559,19 @@ xenUnifiedDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                             unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    int i, ret;
 
     virCheckFlags(0, -1);
 
-    /* do the hypervisor call last to get better error */
-    for (i = XEN_UNIFIED_NR_DRIVERS - 1; i >= 0; i--) {
-        if (priv->opened[i] && drivers[i]->xenDomainSetSchedulerParameters) {
-           ret = drivers[i]->xenDomainSetSchedulerParameters(dom, params, nparams);
-           if (ret == 0)
-               return 0;
+    if (dom->id < 0) {
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot change scheduler parameters"));
+            return -1;
         }
+        return xenDaemonSetSchedulerParameters(dom, params, nparams);
+    } else {
+        return xenHypervisorSetSchedulerParameters(dom, params, nparams);
     }
-
-    return -1;
 }
 
 static int

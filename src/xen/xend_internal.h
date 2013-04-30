@@ -148,10 +148,6 @@ int xenDaemonDomainGetAutostart          (virDomainPtr dom,
 int xenDaemonDomainSetAutostart          (virDomainPtr domain,
                                           int autostart);
 
-/* xen_unified calls through here. */
-extern struct xenUnifiedDriver xenDaemonDriver;
-int xenDaemonInit (void);
-
 virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc);
 virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
@@ -159,5 +155,13 @@ int xenDaemonDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cook
 int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long resource);
 
 int xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path, unsigned long long offset, size_t size, void *buffer);
+
+char * xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams);
+int xenDaemonGetSchedulerParameters(virDomainPtr domain,
+                                    virTypedParameterPtr params,
+                                    int *nparams);
+int xenDaemonSetSchedulerParameters(virDomainPtr domain,
+                                    virTypedParameterPtr params,
+                                    int nparams);
 
 #endif /* __XEND_INTERNAL_H_ */

@@ -36,7 +36,6 @@ struct xenHypervisorVersions {
     int dom_interface; /* -1,3,4,5,6,7 */
 };
 
-extern struct xenUnifiedDriver xenHypervisorDriver;
 int xenHypervisorInit(struct xenHypervisorVersions *override_versions);
 
 virCapsPtr xenHypervisorMakeCapabilities (virConnectPtr conn);
