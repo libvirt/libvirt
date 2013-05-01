@@ -147,7 +147,7 @@
             devices</a> specified for the domain at the time of the
             snapshot.  The attribute <code>snapshot</code> is
             optional, and the possible values are the same as the
-            <code>snapshot<code> attribute for
+            <code>snapshot</code> attribute for
              <a href="formatdomain.html#elementsDisks">disk devices</a>
             (<code>no</code>, <code>internal</code>,
             or <code>external</code>).  Some hypervisors like ESX
