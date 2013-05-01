@@ -2562,12 +2562,13 @@ xenHypervisorHasDomain(virConnectPtr conn, int id)
     return 1;
 }
 
-virDomainPtr
+
+virDomainDefPtr
 xenHypervisorLookupDomainByID(virConnectPtr conn, int id)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     xen_getdomaininfo dominfo;
-    virDomainPtr ret;
+    virDomainDefPtr ret;
     char *name;
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
@@ -2584,20 +2585,20 @@ xenHypervisorLookupDomainByID(virConnectPtr conn, int id)
     if (!name)
         return NULL;
 
-    ret = virGetDomain(conn, name, XEN_GETDOMAININFO_UUID(dominfo));
-    if (ret)
-        ret->id = id;
+    ret = virDomainDefNew(name,
+                          XEN_GETDOMAININFO_UUID(dominfo),
+                          id);
     VIR_FREE(name);
     return ret;
 }
 
 
-virDomainPtr
+virDomainDefPtr
 xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     xen_getdomaininfolist dominfos;
     xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainPtr ret;
+    virDomainDefPtr ret;
     char *name;
     int maxids = 100, nids, i, id;
 
@@ -2648,7 +2649,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (!name)
         return NULL;
 
-    ret = virGetDomain(conn, name, uuid);
+    ret = virDomainDefNew(name, uuid, id);
     if (ret)
         ret->id = id;
     VIR_FREE(name);

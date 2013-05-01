@@ -815,13 +815,13 @@ xenXMDomainPinVcpu(virDomainPtr domain,
 /*
  * Find an inactive domain based on its name
  */
-virDomainPtr
+virDomainDefPtr
 xenXMDomainLookupByName(virConnectPtr conn, const char *domname)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-    virDomainPtr ret = NULL;
+    virDomainDefPtr ret = NULL;
 
     xenUnifiedLock(priv);
 
@@ -834,12 +834,7 @@ xenXMDomainLookupByName(virConnectPtr conn, const char *domname)
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    if (!(ret = virGetDomain(conn, domname, entry->def->uuid)))
-        goto cleanup;
-
-    /* Ensure its marked inactive, because may be cached
-       handle to a previously active domain */
-    ret->id = -1;
+    ret = virDomainDefNew(domname, entry->def->uuid, -1);
 
 cleanup:
     xenUnifiedUnlock(priv);
@@ -867,12 +862,12 @@ xenXMDomainSearchForUUID(const void *payload,
 /*
  * Find an inactive domain based on its UUID
  */
-virDomainPtr
+virDomainDefPtr
 xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     xenXMConfCachePtr entry;
-    virDomainPtr ret = NULL;
+    virDomainDefPtr ret = NULL;
 
     xenUnifiedLock(priv);
 
@@ -882,12 +877,7 @@ xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID, (const void *)uuid)))
         goto cleanup;
 
-    if (!(ret = virGetDomain(conn, entry->def->name, uuid)))
-        goto cleanup;
-
-    /* Ensure its marked inactive, because may be cached
-       handle to a previously active domain */
-    ret->id = -1;
+    ret = virDomainDefNew(entry->def->name, uuid, -1);
 
 cleanup:
     xenUnifiedUnlock(priv);
@@ -1130,7 +1120,7 @@ struct xenXMListIteratorContext {
 static void
 xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) {
     struct xenXMListIteratorContext *ctx = data;
-    virDomainPtr dom = NULL;
+    virDomainDefPtr def = NULL;
 
     if (ctx->oom)
         return;
@@ -1138,14 +1128,14 @@ xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const void *name, void *data) 
     if (ctx->count == ctx->max)
         return;
 
-    dom = xenDaemonLookupByName(ctx->conn, name);
-    if (!dom) {
+    def = xenDaemonLookupByName(ctx->conn, name);
+    if (!def) {
         if (!(ctx->names[ctx->count] = strdup(name)))
             ctx->oom = 1;
         else
             ctx->count++;
     } else {
-        virDomainFree(dom);
+        virDomainDefFree(def);
     }
 }
 

@@ -82,6 +82,60 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
 
 static bool is_privileged = false;
 
+static virDomainDefPtr xenGetDomainDefForID(virConnectPtr conn, int id)
+{
+    virDomainDefPtr ret;
+
+    ret = xenHypervisorLookupDomainByID(conn, id);
+
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+
+    return ret;
+}
+
+
+static virDomainDefPtr xenGetDomainDefForName(virConnectPtr conn, const char *name)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
+    virDomainDefPtr ret;
+
+    ret = xenDaemonLookupByName(conn, name);
+
+    /* Try XM for inactive domains. */
+    if (!ret &&
+        priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
+        ret = xenXMDomainLookupByName(conn, name);
+
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+
+    return ret;
+}
+
+
+static virDomainDefPtr xenGetDomainDefForUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    xenUnifiedPrivatePtr priv = conn->privateData;
+    virDomainDefPtr ret;
+
+    ret = xenHypervisorLookupDomainByUUID(conn, uuid);
+
+    /* Try XM for inactive domains. */
+    if (!ret) {
+        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
+            ret = xenXMDomainLookupByUUID(conn, uuid);
+        else
+            ret = xenDaemonLookupByUUID(conn, uuid);
+    }
+
+    if (!ret && virGetLastError() == NULL)
+        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+
+    return ret;
+}
+
+
 /**
  * xenNumaInit:
  * @conn: pointer to the hypervisor connection
@@ -597,12 +651,18 @@ static virDomainPtr
 xenUnifiedDomainLookupByID(virConnectPtr conn, int id)
 {
     virDomainPtr ret = NULL;
+    virDomainDefPtr def = NULL;
 
-    ret = xenHypervisorLookupDomainByID(conn, id);
+    if (!(def = xenGetDomainDefForID(conn, id)))
+        goto cleanup;
 
-    if (!ret && virGetLastError() == NULL)
-        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
+        goto cleanup;
 
+    ret->id = def->id;
+
+cleanup:
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -610,22 +670,19 @@ static virDomainPtr
 xenUnifiedDomainLookupByUUID(virConnectPtr conn,
                              const unsigned char *uuid)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
+    virDomainDefPtr def = NULL;
 
-    ret = xenHypervisorLookupDomainByUUID(conn, uuid);
+    if (!(def = xenGetDomainDefForUUID(conn, uuid)))
+        goto cleanup;
 
-    /* Try XM for inactive domains. */
-    if (!ret) {
-        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
-            ret = xenXMDomainLookupByUUID(conn, uuid);
-        else
-            ret = xenDaemonLookupByUUID(conn, uuid);
-    }
+    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
+        goto cleanup;
 
-    if (!ret && virGetLastError() == NULL)
-        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+    ret->id = def->id;
 
+cleanup:
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -633,18 +690,19 @@ static virDomainPtr
 xenUnifiedDomainLookupByName(virConnectPtr conn,
                              const char *name)
 {
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
+    virDomainDefPtr def = NULL;
 
-    ret = xenDaemonLookupByName(conn, name);
+    if (!(def = xenGetDomainDefForName(conn, name)))
+        goto cleanup;
 
-    /* Try XM for inactive domains. */
-    if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
-        ret = xenXMDomainLookupByName(conn, name);
+    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
+        goto cleanup;
 
-    if (!ret && virGetLastError() == NULL)
-        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
+    ret->id = def->id;
 
+cleanup:
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -652,28 +710,16 @@ xenUnifiedDomainLookupByName(virConnectPtr conn,
 static int
 xenUnifiedDomainIsActive(virDomainPtr dom)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    virDomainPtr currdom;
+    virDomainDefPtr def;
     int ret = -1;
 
-    /* ID field in dom may be outdated, so re-lookup */
-    currdom = xenHypervisorLookupDomainByUUID(dom->conn, dom->uuid);
+    if (!(def = xenGetDomainDefForUUID(dom->conn, dom->uuid)))
+        goto cleanup;
 
-    /* Try XM for inactive domains. */
-    if (!currdom) {
-        if (priv->xendConfigVersion <= XEND_CONFIG_VERSION_3_0_3)
-            currdom = xenXMDomainLookupByUUID(dom->conn, dom->uuid);
-        else
-            currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
-    }
+    ret = def->id == -1 ? 0 : 1;
 
-    if (currdom) {
-        ret = currdom->id == -1 ? 0 : 1;
-        virDomainFree(currdom);
-    } else if (virGetLastError() == NULL) {
-        virReportError(VIR_ERR_NO_DOMAIN, __FUNCTION__);
-    }
-
+cleanup:
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -681,22 +727,22 @@ static int
 xenUnifiedDomainIsPersistent(virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    virDomainPtr currdom = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
         /* Old Xen, pre-inactive domain management.
          * If the XM driver can see the guest, it is definitely persistent */
-        currdom = xenXMDomainLookupByUUID(dom->conn, dom->uuid);
-        if (currdom)
+        def = xenXMDomainLookupByUUID(dom->conn, dom->uuid);
+        if (def)
             ret = 1;
         else
             ret = 0;
     } else {
         /* New Xen with inactive domain management */
-        currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
-        if (currdom) {
-            if (currdom->id == -1) {
+        def = xenDaemonLookupByUUID(dom->conn, dom->uuid);
+        if (def) {
+            if (def->id == -1) {
                 /* If its inactive, then trivially, it must be persistent */
                 ret = 1;
             } else {
@@ -708,7 +754,7 @@ xenUnifiedDomainIsPersistent(virDomainPtr dom)
                 virUUIDFormat(dom->uuid, uuidstr);
                 if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
                     virReportOOMError();
-                    goto done;
+                    goto cleanup;
                 }
                 if (access(path, R_OK) == 0)
                     ret = 1;
@@ -718,9 +764,8 @@ xenUnifiedDomainIsPersistent(virDomainPtr dom)
         }
     }
 
-done:
-    if (currdom)
-        virDomainFree(currdom);
+cleanup:
+    virDomainDefFree(def);
 
     return ret;
 }

@@ -51,9 +51,8 @@ int xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
 int xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags);
 int xenXMDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                        unsigned char *cpumap, int maplen);
-virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname);
-virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
-                                     const unsigned char *uuid);
+virDomainDefPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname);
+virDomainDefPtr xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 
 int xenXMListDefinedDomains(virConnectPtr conn, char ** const names, int maxnames);
 int xenXMNumOfDefinedDomains(virConnectPtr conn);

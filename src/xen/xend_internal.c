@@ -1121,15 +1121,16 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
  *
  * Internal routine returning the associated virDomainPtr for this domain
  *
- * Returns the domain pointer or NULL in case of error.
+ * Returns the domain def pointer or NULL in case of error.
  */
-static virDomainPtr
+static virDomainDefPtr
 sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
 {
-    virDomainPtr ret = NULL;
+    virDomainDefPtr ret = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     const char *name;
     const char *tmp;
+    int id = -1;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
     if (sexpr_uuid(uuid, root, "domain/uuid") < 0)
@@ -1137,9 +1138,6 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
     name = sexpr_node(root, "domain/name");
     if (name == NULL)
         goto error;
-
-    ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) return NULL;
 
     tmp = sexpr_node(root, "domain/domid");
     /* New 3.0.4 XenD will not report a domid for inactive domains,
@@ -1149,11 +1147,9 @@ sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
         goto error;
 
     if (tmp)
-        ret->id = sexpr_int(root, "domain/domid");
-    else
-        ret->id = -1; /* An inactive domain */
+        id = sexpr_int(root, "domain/domid");
 
-    return ret;
+    return virDomainDefNew(name, uuid, id);
 
 error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1704,13 +1700,13 @@ xenDaemonDomainGetState(virDomainPtr domain,
  * it in the form of a struct xend_domain.  This should be
  * free()'d when no longer needed.
  *
- * Returns domain info on success; NULL (with errno) on error
+ * Returns domain def pointer on success; NULL on error
  */
-virDomainPtr
+virDomainDefPtr
 xenDaemonLookupByName(virConnectPtr conn, const char *domname)
 {
     struct sexpr *root;
-    virDomainPtr ret = NULL;
+    virDomainDefPtr ret = NULL;
 
     root = sexpr_get(conn, "/xend/domain/%s?detail=1", domname);
     if (root == NULL)
@@ -2058,12 +2054,12 @@ xenDaemonDomainGetVcpus(virDomainPtr domain,
  *
  * Try to lookup a domain on xend based on its UUID.
  *
- * Returns a new domain object or NULL in case of failure
+ * Returns domain def pointer on success; NULL on error
  */
-virDomainPtr
+virDomainDefPtr
 xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    virDomainPtr ret;
+    virDomainDefPtr ret;
     char *name = NULL;
     int id = -1;
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -2123,12 +2119,8 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (name == NULL)
         return NULL;
 
-    ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) goto cleanup;
+    ret = virDomainDefNew(name, uuid, id);
 
-    ret->id = id;
-
-  cleanup:
     VIR_FREE(name);
     return ret;
 }

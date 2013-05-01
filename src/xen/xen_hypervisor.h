@@ -27,6 +27,7 @@
 # include "capabilities.h"
 # include "driver.h"
 # include "viruri.h"
+# include "domain_conf.h"
 
 /* See xenHypervisorInit() for details. */
 struct xenHypervisorVersions {
@@ -43,10 +44,9 @@ virCapsPtr xenHypervisorMakeCapabilities (virConnectPtr conn);
 int
         xenHypervisorHasDomain(virConnectPtr conn,
                                int id);
-virDomainPtr
-        xenHypervisorLookupDomainByID   (virConnectPtr conn,
-                                         int id);
-virDomainPtr
+virDomainDefPtr
+        xenHypervisorLookupDomainByID   (virConnectPtr conn, int id);
+virDomainDefPtr
         xenHypervisorLookupDomainByUUID (virConnectPtr conn,
                                          const unsigned char *uuid);
 char *

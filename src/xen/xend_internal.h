@@ -156,8 +156,8 @@ int xenDaemonDomainSetAutostart          (virDomainPtr domain,
                                           int autostart);
 
 virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc);
-virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
-virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
+virDomainDefPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
+virDomainDefPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
 int xenDaemonDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long resource);
 int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long resource);
 

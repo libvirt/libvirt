@@ -76,7 +76,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
                                unsigned char *uuid)
 {
     int i;
-    virDomainPtr dom;
+    virDomainDefPtr def;
     const char *uuid_str;
     unsigned char rawuuid[VIR_UUID_BUFLEN];
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -96,8 +96,8 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
        be set during open while we are building our
        initial list of domains */
     VIR_DEBUG("Looking for dom with uuid: %s", uuid_str);
-    /* XXX Should not have to go via a virDomainPtr obj instance */
-    if (!(dom = xenDaemonLookupByUUID(conn, rawuuid))) {
+
+    if (!(def = xenDaemonLookupByUUID(conn, rawuuid))) {
         /* If we are here, the domain has gone away.
            search for, and create a domain from the stored
            list info */
@@ -118,13 +118,13 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn,
         return -1;
     }
 
-    if (!(*name = strdup(dom->name))) {
+    if (!(*name = strdup(def->name))) {
         virReportOOMError();
-        virDomainFree(dom);
+        virDomainDefFree(def);
         return -1;
     }
-    memcpy(uuid, dom->uuid, VIR_UUID_BUFLEN);
-    virDomainFree(dom);
+    memcpy(uuid, def->uuid, VIR_UUID_BUFLEN);
+    virDomainDefFree(def);
     /* succeeded too find domain by uuid */
     return 0;
 }
