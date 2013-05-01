@@ -718,6 +718,8 @@ Requires: numad
     %endif
 # libvirtd depends on 'messagebus' service
 Requires: dbus
+# For uid creation during pre
+Requires(pre): shadow-utils
 
 %description daemon
 Server side daemon required to manage the virtualization capabilities
@@ -1444,14 +1446,19 @@ make check
 %if %{with_libvirtd}
 %pre daemon
     %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
-# Normally 'setup' adds this in /etc/passwd, but this is
-# here for case of upgrades from earlier Fedora/RHEL. This
-# UID/GID pair is reserved for qemu:qemu
-getent group kvm >/dev/null || groupadd -g 36 -r kvm
-getent group qemu >/dev/null || groupadd -g 107 -r qemu
-getent passwd qemu >/dev/null || \
-  useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin \
-    -c "qemu user" qemu
+# We want soft static allocation of well-known ids, as disk images
+# are commonly shared across NFS mounts by id rather than name; see
+# https://fedoraproject.org/wiki/Packaging:UsersAndGroups
+getent group kvm >/dev/null || groupadd -f -g 36 -r kvm
+getent group qemu >/dev/null || groupadd -f -g 107 -r qemu
+if ! getent passwd qemu >/dev/null; then
+  if ! getent passwd 107 >/dev/null; then
+    useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin -c "qemu user" qemu
+  else
+    useradd -r -g qemu -G kvm -d / -s /sbin/nologin -c "qemu user" qemu
+  fi
+fi
+exit 0
     %endif
 
 %post daemon
