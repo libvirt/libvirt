@@ -1772,6 +1772,11 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
     /* Some versions of Linux kernel don't let you overmount
      * the selinux filesystem, so make sure we kill it first
      */
+    /* Filed coverity bug for false positive 'USE_AFTER_FREE' due to swap
+     * of root->src with root->dst and the VIR_FREE(root->src) prior to the
+     * reset of root->src in lxcContainerPrepareRoot()
+     */
+    /* coverity[deref_arg] */
     if (STREQ(root->src, "/") &&
         lxcContainerUnmountSubtree(SELINUX_MOUNT, false) < 0)
         goto cleanup;
