@@ -1614,35 +1614,21 @@ cleanup:
 /**
  * xenDaemonDomainGetXMLDesc:
  * @domain: a domain object
- * @flags: potential dump flags
  * @cpus: list of cpu the domain is pinned to.
  *
- * Provide an XML description of the domain.
+ * Get the XML description of the domain as a structure.
  *
- * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
+ * Returns a virDomainDefPtr instance, or NULL in case of error.
  */
-char *
-xenDaemonDomainGetXMLDesc(virDomainPtr domain,
-                          unsigned int flags,
+virDomainDefPtr
+xenDaemonDomainGetXMLDesc(virConnectPtr conn,
+                          virDomainDefPtr minidef,
                           const char *cpus)
 {
-    virDomainDefPtr def;
-    char *xml;
-
-    /* Flags checked by virDomainDefFormat */
-
-    if (!(def = xenDaemonDomainFetch(domain->conn,
-                                     domain->id,
-                                     domain->name,
-                                     cpus)))
-        return NULL;
-
-    xml = virDomainDefFormat(def, flags);
-
-    virDomainDefFree(def);
-
-    return xml;
+    return xenDaemonDomainFetch(conn,
+                                minidef->id,
+                                minidef->name,
+                                cpus);
 }
 
 
@@ -2142,7 +2128,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 /**
  * xenDaemonCreateXML:
  * @conn: pointer to the hypervisor connection
- * @xmlDesc: an XML description of the domain
+ * @def: domain configuration
  * @flags: an optional set of virDomainFlags
  *
  * Launch a new Linux guest domain, based on an XML description similar
@@ -2151,24 +2137,24 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Returns a new domain object or NULL in case of failure
  */
-virDomainPtr
-xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
+int
+xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
 {
     int ret;
     char *sexpr;
-    virDomainPtr dom = NULL;
+    const char *tmp;
+    struct sexpr *root;
     xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainDefPtr def;
 
-    if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE)))
-        return NULL;
-
-    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion))) {
-        virDomainDefFree(def);
-        return NULL;
+    if (def->id != -1) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Domain %s is already running"),
+                       def->name);
+        return -1;
     }
+
+    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion)))
+        return -1;
 
     ret = xenDaemonDomainCreateXML(conn, sexpr);
     VIR_FREE(sexpr);
@@ -2178,8 +2164,19 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
 
     /* This comes before wait_for_devices, to ensure that latter
        cleanup will destroy the domain upon failure */
-    if (!(dom = virDomainLookupByName(conn, def->name)))
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
+    if (root == NULL)
         goto error;
+
+    tmp = sexpr_node(root, "domain/domid");
+    if (!tmp) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Domain %s did not start"),
+                       def->name);
+        goto error;
+    }
+    if (tmp)
+        def->id = sexpr_int(root, "domain/domid");
 
     if (xend_wait_for_devices(conn, def->name) < 0)
         goto error;
@@ -2188,16 +2185,13 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
         goto error;
 
     virDomainDefFree(def);
-    return dom;
+    return 0;
 
   error:
     /* Make sure we don't leave a still-born domain around */
-    if (dom != NULL) {
+    if (def->id != -1)
         xenDaemonDomainDestroy(conn, def);
-        virObjectUnref(dom);
-    }
-    virDomainDefFree(def);
-    return NULL;
+    return -1;
 }
 
 /**
@@ -2667,7 +2661,8 @@ xenDaemonDomainMigratePrepare(virConnectPtr dconn ATTRIBUTE_UNUSED,
 }
 
 int
-xenDaemonDomainMigratePerform(virDomainPtr domain,
+xenDaemonDomainMigratePerform(virConnectPtr conn,
+                              virDomainDefPtr def,
                               const char *cookie ATTRIBUTE_UNUSED,
                               int cookielen ATTRIBUTE_UNUSED,
                               const char *uri,
@@ -2811,7 +2806,7 @@ xenDaemonDomainMigratePerform(virDomainPtr domain,
      * to our advantage since all parameters supported and required
      * by current xend can be included without breaking older xend.
      */
-    ret = xend_op(domain->conn, domain->name,
+    ret = xend_op(conn, def->name,
                   "op", "migrate",
                   "destination", hostname,
                   "live", live,
@@ -2824,34 +2819,24 @@ xenDaemonDomainMigratePerform(virDomainPtr domain,
     VIR_FREE(hostname);
 
     if (ret == 0 && undefined_source)
-        xenDaemonDomainUndefine(domain);
+        xenDaemonDomainUndefine(conn, def);
 
     VIR_DEBUG("migration done");
 
     return ret;
 }
 
-virDomainPtr
-xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
+int
+xenDaemonDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
 {
-    int ret;
+    int ret = -1;
     char *sexpr;
-    virDomainPtr dom;
     xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainDefPtr def;
-
-    if (!(def = virDomainDefParseString(xmlDesc, priv->caps, priv->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("failed to parse domain description"));
-        return NULL;
-    }
 
     if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion))) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("failed to build sexpr"));
-        goto error;
+        goto cleanup;
     }
 
     ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
@@ -2859,20 +2844,15 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
     if (ret != 0) {
         virReportError(VIR_ERR_XEN_CALL,
                        _("Failed to create inactive domain %s"), def->name);
-        goto error;
+        goto cleanup;
     }
 
-    dom = virDomainLookupByName(conn, def->name);
-    if (dom == NULL) {
-        goto error;
-    }
-    virDomainDefFree(def);
-    return dom;
+    ret = 0;
 
-  error:
-    virDomainDefFree(def);
-    return NULL;
+cleanup:
+    return ret;
 }
+
 int
 xenDaemonDomainCreate(virConnectPtr conn,
                       virDomainDefPtr def)
@@ -2892,9 +2872,9 @@ xenDaemonDomainCreate(virConnectPtr conn,
 }
 
 int
-xenDaemonDomainUndefine(virDomainPtr domain)
+xenDaemonDomainUndefine(virConnectPtr conn, virDomainDefPtr def)
 {
-    return xend_op(domain->conn, domain->name, "op", "delete", NULL);
+    return xend_op(conn, def->name, "op", "delete", NULL);
 }
 
 /**

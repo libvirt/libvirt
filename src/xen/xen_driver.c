@@ -647,11 +647,30 @@ xenUnifiedConnectNumOfDomains(virConnectPtr conn)
 
 static virDomainPtr
 xenUnifiedDomainCreateXML(virConnectPtr conn,
-                          const char *xmlDesc, unsigned int flags)
+                          const char *xml,
+                          unsigned int flags)
 {
+    xenUnifiedPrivatePtr priv = conn->privateData;
+    virDomainDefPtr def = NULL;
+    virDomainPtr ret = NULL;
+
     virCheckFlags(0, NULL);
 
-    return xenDaemonCreateXML(conn, xmlDesc);
+    if (!(def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (xenDaemonCreateXML(conn, def) < 0)
+        goto cleanup;
+
+    ret = virGetDomain(conn, def->name, def->uuid);
+    if (ret)
+        ret->id = def->id;
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static virDomainPtr
@@ -1292,18 +1311,31 @@ static char *
 xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr minidef = NULL;
+    virDomainDefPtr def = NULL;
+    char *ret = NULL;
+
+    if (!(minidef = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        return xenXMDomainGetXMLDesc(dom, flags);
+        def = xenXMDomainGetXMLDesc(dom->conn, minidef);
     } else {
-        char *cpus, *res;
+        char *cpus;
         xenUnifiedLock(priv);
         cpus = xenDomainUsedCpus(dom);
         xenUnifiedUnlock(priv);
-        res = xenDaemonDomainGetXMLDesc(dom, flags, cpus);
+        def = xenDaemonDomainGetXMLDesc(dom->conn, minidef, cpus);
         VIR_FREE(cpus);
-        return res;
     }
+
+    if (def)
+        ret = virDomainDefFormat(def, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    virDomainDefFree(minidef);
+    return ret;
 }
 
 
@@ -1436,10 +1468,21 @@ xenUnifiedDomainMigratePerform(virDomainPtr dom,
                                const char *dname,
                                unsigned long resource)
 {
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
     virCheckFlags(XEN_MIGRATION_FLAGS, -1);
 
-    return xenDaemonDomainMigratePerform(dom, cookie, cookielen, uri,
-                                         flags, dname, resource);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainMigratePerform(dom->conn, def,
+                                        cookie, cookielen, uri,
+                                        flags, dname, resource);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static virDomainPtr
@@ -1450,45 +1493,37 @@ xenUnifiedDomainMigrateFinish(virConnectPtr dconn,
                               const char *uri ATTRIBUTE_UNUSED,
                               unsigned long flags)
 {
-    virDomainPtr dom = NULL;
-    char *domain_xml = NULL;
-    virDomainPtr dom_new = NULL;
+    xenUnifiedPrivatePtr priv = dconn->privateData;
+    virDomainPtr ret = NULL;
+    virDomainDefPtr minidef = NULL;
+    virDomainDefPtr def = NULL;
 
     virCheckFlags(XEN_MIGRATION_FLAGS, NULL);
 
-    if (!(dom = xenUnifiedDomainLookupByName(dconn, dname)))
-        return NULL;
+    if (!(minidef = xenGetDomainDefForName(dconn, dname)))
+        goto cleanup;
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
-        domain_xml = xenDaemonDomainGetXMLDesc(dom, 0, NULL);
-        if (! domain_xml) {
-            virReportError(VIR_ERR_MIGRATE_PERSIST_FAILED,
-                           "%s", _("failed to get XML representation of migrated domain"));
-            goto error;
-        }
+        if (!(def = xenDaemonDomainGetXMLDesc(dconn, minidef, NULL)))
+            goto cleanup;
 
-        dom_new = xenDaemonDomainDefineXML(dconn, domain_xml);
-        if (! dom_new) {
-            virReportError(VIR_ERR_MIGRATE_PERSIST_FAILED,
-                           "%s", _("failed to define domain on destination host"));
-            goto error;
+        if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+            if (xenXMDomainDefineXML(dconn, def) < 0)
+                goto cleanup;
+        } else {
+            if (xenDaemonDomainDefineXML(dconn, def) < 0)
+                goto cleanup;
         }
-
-        /* Free additional reference added by Define */
-        virDomainFree(dom_new);
     }
 
-    VIR_FREE(domain_xml);
+    ret = virGetDomain(dconn, minidef->name, minidef->uuid);
+    if (ret)
+        ret->id = minidef->id;
 
-    return dom;
-
-
-error:
-    virDomainFree(dom);
-
-    VIR_FREE(domain_xml);
-
-    return NULL;
+cleanup:
+    virDomainDefFree(def);
+    virDomainDefFree(minidef);
+    return ret;
 }
 
 static int
@@ -1563,23 +1598,52 @@ static virDomainPtr
 xenUnifiedDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
+    virDomainDefPtr def = NULL;
+    virDomainPtr ret = NULL;
 
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainDefineXML(conn, xml);
-    else
-        return xenDaemonDomainDefineXML(conn, xml);
+    if (!(def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
+                                        1 << VIR_DOMAIN_VIRT_XEN,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
+        if (xenXMDomainDefineXML(conn, def) < 0)
+            goto cleanup;
+        def = NULL; /* XM driver owns it now */
+    } else {
+        if (xenDaemonDomainDefineXML(conn, def) < 0)
+            goto cleanup;
+    }
+
+    ret = virGetDomain(conn, def->name, def->uuid);
+    if (ret)
+        ret->id = -1;
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(0, -1);
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainUndefine(dom);
+        ret = xenXMDomainUndefine(dom->conn, def);
     else
-        return xenDaemonDomainUndefine(dom);
+        ret = xenDaemonDomainUndefine(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

@@ -118,8 +118,9 @@ int xenDaemonDomainGetState(virConnectPtr conn,
                             virDomainDefPtr def,
                             int *state,
                             int *reason);
-char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
-                                const char *cpus);
+virDomainDefPtr xenDaemonDomainGetXMLDesc(virConnectPtr conn,
+                                          virDomainDefPtr def,
+                                          const char *cpus);
 unsigned long long xenDaemonDomainGetMaxMemory(virConnectPtr conn,
                                                virDomainDefPtr def);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
@@ -139,10 +140,12 @@ int xenDaemonDetachDeviceFlags(virDomainPtr domain,
                                const char *xml,
                                unsigned int flags);
 
-virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
+int xenDaemonDomainDefineXML(virConnectPtr conn,
+                             virDomainDefPtr def);
 int xenDaemonDomainCreate(virConnectPtr conn,
                           virDomainDefPtr def);
-int xenDaemonDomainUndefine(virDomainPtr domain);
+int xenDaemonDomainUndefine(virConnectPtr conn,
+                            virDomainDefPtr def);
 
 int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
                                          unsigned int vcpus);
@@ -167,11 +170,18 @@ int xenDaemonDomainGetAutostart          (virDomainPtr dom,
 int xenDaemonDomainSetAutostart          (virDomainPtr domain,
                                           int autostart);
 
-virDomainPtr xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc);
+int xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def);
 virDomainDefPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainDefPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
-int xenDaemonDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long resource);
-int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long resource);
+int xenDaemonDomainMigratePrepare (virConnectPtr dconn,
+                                   char **cookie, int *cookielen,
+                                   const char *uri_in, char **uri_out,
+                                   unsigned long flags, const char *dname, unsigned long resource);
+int xenDaemonDomainMigratePerform (virConnectPtr conn,
+                                   virDomainDefPtr def,
+                                   const char *cookie, int cookielen,
+                                   const char *uri, unsigned long flags,
+                                   const char *dname, unsigned long resource);
 
 int xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path, unsigned long long offset, size_t size, void *buffer);
 

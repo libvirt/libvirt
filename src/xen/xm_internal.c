@@ -501,28 +501,29 @@ error:
  * Turn a config record into a lump of XML describing the
  * domain, suitable for later feeding for virDomainCreateXML
  */
-char *
-xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
+virDomainDefPtr
+xenXMDomainGetXMLDesc(virConnectPtr conn,
+                      virDomainDefPtr def)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-    char *ret = NULL;
+    virDomainDefPtr ret = NULL;
 
     /* Flags checked by virDomainDefFormat */
 
-    if (domain->id != -1)
-        return NULL;
-
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = virDomainDefFormat(entry->def, flags);
+    ret = virDomainDefCopy(entry->def,
+                           priv->caps,
+                           priv->xmlopt,
+                           false);
 
 cleanup:
     xenUnifiedUnlock(priv);
@@ -946,13 +947,11 @@ xenXMDomainCreate(virConnectPtr conn,
  * Create a config file for a domain, based on an XML
  * document describing its config
  */
-virDomainPtr
-xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
+int
+xenXMDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
 {
-    virDomainPtr ret;
     char *filename = NULL;
     const char *oldfilename;
-    virDomainDefPtr def = NULL;
     virConfPtr conf = NULL;
     xenXMConfCachePtr entry = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
@@ -961,14 +960,7 @@ xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0) {
         xenUnifiedUnlock(priv);
-        return NULL;
-    }
-
-    if (!(def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
-                                        VIR_DOMAIN_XML_INACTIVE))) {
-        xenUnifiedUnlock(priv);
-        return NULL;
+        return -1;
     }
 
     if (!(conf = xenFormatXM(conn, def, priv->xendConfigVersion)))
@@ -1062,10 +1054,9 @@ xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         goto error;
     }
 
-    ret = virGetDomain(conn, def->name, def->uuid);
     xenUnifiedUnlock(priv);
     VIR_FREE(filename);
-    return ret;
+    return 0;
 
  error:
     VIR_FREE(filename);
@@ -1073,25 +1064,25 @@ xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
         VIR_FREE(entry->filename);
     VIR_FREE(entry);
     virConfFree(conf);
-    virDomainDefFree(def);
     xenUnifiedUnlock(priv);
-    return NULL;
+    return -1;
 }
 
 /*
  * Delete a domain from disk
  */
 int
-xenXMDomainUndefine(virDomainPtr domain)
+xenXMDomainUndefine(virConnectPtr conn,
+                    virDomainDefPtr def)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
@@ -1101,7 +1092,7 @@ xenXMDomainUndefine(virDomainPtr domain)
         goto cleanup;
 
     /* Remove the name -> filename mapping */
-    if (virHashRemoveEntry(priv->nameConfigMap, domain->name) < 0)
+    if (virHashRemoveEntry(priv->nameConfigMap, def->name) < 0)
         goto cleanup;
 
     /* Remove the config record itself */

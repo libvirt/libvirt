@@ -44,7 +44,8 @@ int xenXMDomainGetState(virConnectPtr conn,
                         virDomainDefPtr def,
                         int *state,
                         int *reason);
-char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags);
+virDomainDefPtr xenXMDomainGetXMLDesc(virConnectPtr conn,
+                                      virDomainDefPtr def);
 int xenXMDomainSetMemory(virConnectPtr conn,
                          virDomainDefPtr def,
                          unsigned long memory);
@@ -67,8 +68,8 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn);
 
 int xenXMDomainCreate(virConnectPtr conn,
                       virDomainDefPtr def);
-virDomainPtr xenXMDomainDefineXML(virConnectPtr con, const char *xml);
-int xenXMDomainUndefine(virDomainPtr domain);
+int xenXMDomainDefineXML(virConnectPtr con, virDomainDefPtr def);
+int xenXMDomainUndefine(virConnectPtr conn, virDomainDefPtr def);
 
 int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 
