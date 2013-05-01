@@ -648,7 +648,8 @@ cleanup:
 
 /*
  * xenXMDomainSetVcpusFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @def: domain configuration
  * @nvcpus: number of vcpus
  * @flags: bitwise-ORd from virDomainVcpuFlags
  *
@@ -657,11 +658,12 @@ cleanup:
  * Returns 0 on success, -1 if an error message was issued
  */
 int
-xenXMDomainSetVcpusFlags(virDomainPtr domain,
+xenXMDomainSetVcpusFlags(virConnectPtr conn,
+                         virDomainDefPtr def,
                          unsigned int vcpus,
                          unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
@@ -679,14 +681,14 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain,
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
     /* Hypervisor maximum. */
-    if ((max = xenUnifiedConnectGetMaxVcpus(domain->conn, NULL)) < 0) {
+    if ((max = xenUnifiedConnectGetMaxVcpus(conn, NULL)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("could not determine max vcpus for the domain"));
         goto cleanup;
@@ -713,7 +715,7 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain,
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
     ret = 0;
 
@@ -724,7 +726,8 @@ cleanup:
 
 /**
  * xenXMDomainGetVcpusFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @def: domain configuration
  * @flags: bitwise-ORd from virDomainVcpuFlags
  *
  * Extract information about virtual CPUs of domain according to flags.
@@ -733,12 +736,14 @@ cleanup:
  * issued
  */
 int
-xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+xenXMDomainGetVcpusFlags(virConnectPtr conn,
+                         virDomainDefPtr def,
+                         unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
-    int ret = -2;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
@@ -751,7 +756,7 @@ xenXMDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
@@ -767,7 +772,8 @@ cleanup:
 
 /**
  * xenXMDomainPinVcpu:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @def: domain configuration
  * @vcpu: virtual CPU number (reserved)
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
  * @maplen: length of cpumap in bytes
@@ -777,12 +783,13 @@ cleanup:
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xenXMDomainPinVcpu(virDomainPtr domain,
+xenXMDomainPinVcpu(virConnectPtr conn,
+                   virDomainDefPtr def,
                    unsigned int vcpu ATTRIBUTE_UNUSED,
                    unsigned char *cpumap,
                    int maplen)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
@@ -794,7 +801,7 @@ xenXMDomainPinVcpu(virDomainPtr domain,
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name))) {
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("virHashLookup"));
         goto cleanup;
     }
@@ -808,7 +815,7 @@ xenXMDomainPinVcpu(virDomainPtr domain,
     entry->def->cpumask = virBitmapNewData(cpumap, maplen);
     if (!entry->def->cpumask)
         goto cleanup;
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
 
     ret = 0;

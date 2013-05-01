@@ -1772,7 +1772,8 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
 
 /**
  * xenDaemonDomainSetVcpusFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @def: domain configuration
  * @nvcpus: the new number of virtual CPUs for this domain
  * @flags: bitwise-ORd from virDomainVcpuFlags
  *
@@ -1781,7 +1782,8 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps)
  * Returns 0 on success, -1 if an error message was issued
  */
 int
-xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
+xenDaemonDomainSetVcpusFlags(virConnectPtr conn,
+                             virDomainDefPtr def,
                              unsigned int vcpus,
                              unsigned int flags)
 {
@@ -1797,7 +1799,7 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
         return -1;
     }
 
-    if (domain->id < 0) {
+    if (def->id < 0) {
         if (flags & VIR_DOMAIN_VCPU_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("domain not running"));
@@ -1815,7 +1817,7 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
     /* Unfortunately, xend_op does not validate whether this exceeds
      * the maximum.  */
     flags |= VIR_DOMAIN_VCPU_MAXIMUM;
-    if ((max = xenDaemonDomainGetVcpusFlags(domain, flags)) < 0) {
+    if ((max = xenDaemonDomainGetVcpusFlags(conn, def, flags)) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("could not determine max vcpus for the domain"));
         return -1;
@@ -1828,13 +1830,14 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
     }
 
     snprintf(buf, sizeof(buf), "%d", vcpus);
-    return xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
+    return xend_op(conn, def->name, "op", "set_vcpus", "vcpus",
                    buf, NULL);
 }
 
 /**
  * xenDaemonDomainPinCpu:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: minimal domain configuration
  * @vcpu: virtual CPU number
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
  * @maplen: length of cpumap in bytes
@@ -1849,14 +1852,15 @@ xenDaemonDomainSetVcpusFlags(virDomainPtr domain,
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xenDaemonDomainPinVcpu(virDomainPtr domain,
+xenDaemonDomainPinVcpu(virConnectPtr conn,
+                       virDomainDefPtr minidef,
                        unsigned int vcpu,
                        unsigned char *cpumap,
                        int maplen)
 {
     char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64];
     int i, j, ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     virDomainDefPtr def = NULL;
 
     if (maplen > (int)sizeof(cpumap_t)) {
@@ -1884,12 +1888,12 @@ xenDaemonDomainPinVcpu(virDomainPtr domain,
 
     snprintf(buf, sizeof(buf), "%d", vcpu);
 
-    ret = xend_op(domain->conn, domain->name, "op", "pincpu", "vcpu", buf,
+    ret = xend_op(conn, minidef->name, "op", "pincpu", "vcpu", buf,
                   "cpumap", mapstr, NULL);
 
-    if (!(def = xenDaemonDomainFetch(domain->conn,
-                                     domain->id,
-                                     domain->name,
+    if (!(def = xenDaemonDomainFetch(conn,
+                                     minidef->id,
+                                     minidef->name,
                                      NULL)))
         goto cleanup;
 
@@ -1921,7 +1925,8 @@ cleanup:
 
 /**
  * xenDaemonDomainGetVcpusFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @def: domain configuration
  * @flags: bitwise-ORd from virDomainVcpuFlags
  *
  * Extract information about virtual CPUs of domain according to flags.
@@ -1931,7 +1936,9 @@ cleanup:
 
  */
 int
-xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+xenDaemonDomainGetVcpusFlags(virConnectPtr conn,
+                             virDomainDefPtr def,
+                             unsigned int flags)
 {
     struct sexpr *root;
     int ret;
@@ -1940,13 +1947,13 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (domain->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
+    if (def->id < 0 && (flags & VIR_DOMAIN_VCPU_LIVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain not active"));
         return -1;
     }
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return -1;
 
@@ -1964,7 +1971,8 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 
 /**
  * virDomainGetVcpus:
- * @domain: pointer to domain object, or NULL for Domain0
+ * @conn: the connection object
+ * @def: domain configuration
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
@@ -1982,7 +1990,8 @@ xenDaemonDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
  * Returns the number of info filled in case of success, -1 in case of failure.
  */
 int
-xenDaemonDomainGetVcpus(virDomainPtr domain,
+xenDaemonDomainGetVcpus(virConnectPtr conn,
+                        virDomainDefPtr def,
                         virVcpuInfoPtr info,
                         int maxinfo,
                         unsigned char *cpumaps,
@@ -1994,7 +2003,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain,
     unsigned char *cpumap;
     int vcpu, cpu;
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?op=vcpuinfo", def->name);
     if (root == NULL)
         return -1;
 

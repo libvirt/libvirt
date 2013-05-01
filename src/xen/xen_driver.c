@@ -1199,6 +1199,8 @@ xenUnifiedDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                               unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
@@ -1219,13 +1221,20 @@ xenUnifiedDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         return -1;
     }
 
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     /* Try non-hypervisor methods first, then hypervisor direct method
      * as a last resort.
      */
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainSetVcpusFlags(dom, nvcpus, flags);
+        ret = xenXMDomainSetVcpusFlags(dom->conn, def, nvcpus, flags);
     else
-        return xenDaemonDomainSetVcpusFlags(dom, nvcpus, flags);
+        ret = xenDaemonDomainSetVcpusFlags(dom->conn, def, nvcpus, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1248,15 +1257,24 @@ xenUnifiedDomainPinVcpu(virDomainPtr dom, unsigned int vcpu,
                         unsigned char *cpumap, int maplen)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainPinVcpu(dom, vcpu, cpumap, maplen);
+            ret = xenXMDomainPinVcpu(dom->conn, def, vcpu, cpumap, maplen);
         else
-            return xenDaemonDomainPinVcpu(dom, vcpu, cpumap, maplen);
+            ret = xenDaemonDomainPinVcpu(dom->conn, def, vcpu, cpumap, maplen);
     } else {
-        return xenHypervisorPinVcpu(dom, vcpu, cpumap, maplen);
+        ret = xenHypervisorPinVcpu(dom->conn, def, vcpu, cpumap, maplen);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1265,39 +1283,58 @@ xenUnifiedDomainGetVcpus(virDomainPtr dom,
                          unsigned char *cpumaps, int maplen)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot get VCPUs of inactive domain"));
-            return -1;
+            goto cleanup;
         } else {
-            return xenDaemonDomainGetVcpus(dom, info, maxinfo, cpumaps, maplen);
+            ret = xenDaemonDomainGetVcpus(dom->conn, def, info, maxinfo, cpumaps, maplen);
         }
     } else {
-        return xenHypervisorGetVcpus(dom, info, maxinfo, cpumaps, maplen);
+        ret = xenHypervisorGetVcpus(dom->conn, def, info, maxinfo, cpumaps, maplen);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainGetVcpusFlags(dom, flags);
+            ret = xenXMDomainGetVcpusFlags(dom->conn, def, flags);
         else
-            return xenDaemonDomainGetVcpusFlags(dom, flags);
+            ret = xenDaemonDomainGetVcpusFlags(dom->conn, def, flags);
     } else {
         if (flags == (VIR_DOMAIN_VCPU_CONFIG | VIR_DOMAIN_VCPU_MAXIMUM))
-            return xenHypervisorGetVcpuMax(dom);
+            ret = xenHypervisorGetVcpuMax(dom->conn, def);
         else
-            return xenDaemonDomainGetVcpusFlags(dom, flags);
+            ret = xenDaemonDomainGetVcpusFlags(dom->conn, def, flags);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

@@ -147,18 +147,23 @@ int xenDaemonDomainCreate(virConnectPtr conn,
 int xenDaemonDomainUndefine(virConnectPtr conn,
                             virDomainDefPtr def);
 
-int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
+int	xenDaemonDomainSetVcpus		(virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned int vcpus);
-int	xenDaemonDomainSetVcpusFlags	(virDomainPtr domain,
+int	xenDaemonDomainSetVcpusFlags	(virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned int vcpus,
                                          unsigned int flags);
-int	xenDaemonDomainPinVcpu		(virDomainPtr domain,
+int	xenDaemonDomainPinVcpu		(virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned int vcpu,
                                          unsigned char *cpumap,
                                          int maplen);
-int     xenDaemonDomainGetVcpusFlags    (virDomainPtr domain,
+int     xenDaemonDomainGetVcpusFlags    (virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned int flags);
-int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
+int	xenDaemonDomainGetVcpus		(virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          virVcpuInfoPtr info,
                                          int maxinfo,
                                          unsigned char *cpumaps,

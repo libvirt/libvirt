@@ -89,18 +89,21 @@ int     xenHypervisorSetMaxMemory       (virConnectPtr conn,
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorCheckID            (virConnectPtr conn,
                                          int id);
-int     xenHypervisorPinVcpu            (virDomainPtr domain,
+int     xenHypervisorPinVcpu            (virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned int vcpu,
                                          unsigned char *cpumap,
                                          int maplen)
           ATTRIBUTE_NONNULL (1);
-int     xenHypervisorGetVcpus           (virDomainPtr domain,
+int     xenHypervisorGetVcpus           (virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          virVcpuInfoPtr info,
                                          int maxinfo,
                                          unsigned char *cpumaps,
                                          int maplen)
           ATTRIBUTE_NONNULL (1);
-int     xenHypervisorGetVcpuMax         (virDomainPtr domain)
+int     xenHypervisorGetVcpuMax         (virConnectPtr conn,
+                                         virDomainDefPtr def)
           ATTRIBUTE_NONNULL (1);
 
 char *  xenHypervisorGetSchedulerType   (virDomainPtr domain,

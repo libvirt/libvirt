@@ -2931,16 +2931,16 @@ xenHypervisorSetMaxMemory(virConnectPtr conn,
  */
 
 int
-xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
-                     unsigned char *cpumap, int maplen)
+xenHypervisorPinVcpu(virConnectPtr conn,
+                     virDomainDefPtr def,
+                     unsigned int vcpu,
+                     unsigned char *cpumap,
+                     int maplen)
 {
     int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (domain->id < 0)
-        return -1;
-
-    ret = virXen_setvcpumap(priv->handle, domain->id, vcpu,
+    ret = virXen_setvcpumap(priv->handle, def->id, vcpu,
                             cpumap, maplen);
     if (ret < 0)
         return -1;
@@ -2967,7 +2967,8 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
  * Returns the number of info filled in case of success, -1 in case of failure.
  */
 int
-xenHypervisorGetVcpus(virDomainPtr domain,
+xenHypervisorGetVcpus(virConnectPtr conn,
+                      virDomainDefPtr def,
                       virVcpuInfoPtr info,
                       int maxinfo,
                       unsigned char *cpumaps,
@@ -2975,22 +2976,22 @@ xenHypervisorGetVcpus(virDomainPtr domain,
 {
     xen_getdomaininfo dominfo;
     int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if (domain->id < 0 || sizeof(cpumap_t) & 7) {
+    if (sizeof(cpumap_t) & 7) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("domain shut off or invalid"));
+                       _("invalid cpumap_t size"));
         return -1;
     }
 
     /* first get the number of virtual CPUs in this domain */
     XEN_GETDOMAININFO_CLEAR(dominfo);
-    ret = virXen_getdomaininfo(priv->handle, domain->id,
+    ret = virXen_getdomaininfo(priv->handle, def->id,
                                &dominfo);
 
-    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id)) {
+    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != def->id)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot get domain details"));
         return -1;
@@ -3003,7 +3004,7 @@ xenHypervisorGetVcpus(virDomainPtr domain,
 
     for (i = 0, ipt = info; i < nbinfo; i++, ipt++) {
         if ((cpumaps != NULL) && (i < maxinfo)) {
-            ret = virXen_getvcpusinfo(priv->handle, domain->id, i,
+            ret = virXen_getvcpusinfo(priv->handle, def->id, i,
                                       ipt,
                                       (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, i),
                                       maplen);
@@ -3013,7 +3014,7 @@ xenHypervisorGetVcpus(virDomainPtr domain,
                 return -1;
             }
         } else {
-            ret = virXen_getvcpusinfo(priv->handle, domain->id, i,
+            ret = virXen_getvcpusinfo(priv->handle, def->id, i,
                                       ipt, NULL, 0);
             if (ret < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3034,22 +3035,23 @@ xenHypervisorGetVcpus(virDomainPtr domain,
  *  the maximum number of virtual CPUs the guest was booted with.
  */
 int
-xenHypervisorGetVcpuMax(virDomainPtr domain)
+xenHypervisorGetVcpuMax(virConnectPtr conn,
+                        virDomainDefPtr def)
 {
     xen_getdomaininfo dominfo;
     int ret;
     int maxcpu;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     /* inactive domain */
-    if (domain->id < 0) {
+    if (def->id < 0) {
         maxcpu = MAX_VIRT_CPUS;
     } else {
         XEN_GETDOMAININFO_CLEAR(dominfo);
-        ret = virXen_getdomaininfo(priv->handle, domain->id,
+        ret = virXen_getdomaininfo(priv->handle, def->id,
                                    &dominfo);
 
-        if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id))
+        if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != def->id))
             return -1;
         maxcpu = XEN_GETDOMAININFO_MAXCPUID(dominfo) + 1;
     }
