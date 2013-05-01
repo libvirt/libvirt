@@ -447,7 +447,8 @@ xenXMClose(virConnectPtr conn)
  * Since these are all offline domains, the state is always SHUTOFF.
  */
 int
-xenXMDomainGetState(virDomainPtr domain ATTRIBUTE_UNUSED,
+xenXMDomainGetState(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    virDomainDefPtr def ATTRIBUTE_UNUSED,
                     int *state,
                     int *reason)
 {
@@ -464,15 +465,17 @@ xenXMDomainGetState(virDomainPtr domain ATTRIBUTE_UNUSED,
  * VCPUs and memory.
  */
 int
-xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
+xenXMDomainGetInfo(virConnectPtr conn,
+                   virDomainDefPtr def,
+                   virDomainInfoPtr info)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto error;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
@@ -531,9 +534,11 @@ cleanup:
  * Update amount of memory in the config file
  */
 int
-xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
+xenXMDomainSetMemory(virConnectPtr conn,
+                     virDomainDefPtr def,
+                     unsigned long memory)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
@@ -547,7 +552,7 @@ xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
@@ -560,7 +565,7 @@ xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
     ret = 0;
 
@@ -573,9 +578,11 @@ cleanup:
  * Update maximum memory limit in config
  */
 int
-xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+xenXMDomainSetMaxMemory(virConnectPtr conn,
+                        virDomainDefPtr def,
+                        unsigned long memory)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     int ret = -1;
@@ -589,7 +596,7 @@ xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
@@ -602,7 +609,7 @@ xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
     ret = 0;
 
@@ -615,19 +622,17 @@ cleanup:
  * Get max memory limit from config
  */
 unsigned long long
-xenXMDomainGetMaxMemory(virDomainPtr domain)
+xenXMDomainGetMaxMemory(virConnectPtr conn,
+                        virDomainDefPtr def)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry;
     unsigned long long ret = 0;
 
-    if (domain->id != -1)
-        return 0;
-
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto cleanup;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))

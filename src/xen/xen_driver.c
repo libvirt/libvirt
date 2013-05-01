@@ -887,18 +887,27 @@ static char *
 xenUnifiedDomainGetOSType(virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    char *ret = NULL;
+    virDomainDefPtr def;
 
-    if (dom->id < 0) {
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to query OS type for inactive domain"));
             return NULL;
         } else {
-            return xenDaemonDomainGetOSType(dom);
+            ret = xenDaemonDomainGetOSType(dom->conn, def);
         }
     } else {
-        return xenHypervisorDomainGetOSType(dom);
+        ret = xenHypervisorDomainGetOSType(dom->conn, def);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 
@@ -906,56 +915,92 @@ static unsigned long long
 xenUnifiedDomainGetMaxMemory(virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    unsigned long long ret = 0;
+    virDomainDefPtr def;
 
-    if (dom->id < 0) {
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainGetMaxMemory(dom);
+            ret = xenXMDomainGetMaxMemory(dom->conn, def);
         else
-            return xenDaemonDomainGetMaxMemory(dom);
+            ret = xenDaemonDomainGetMaxMemory(dom->conn, def);
     } else {
-        return xenHypervisorGetMaxMemory(dom);
+        ret = xenHypervisorGetMaxMemory(dom->conn, def);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    int ret = -1;
+    virDomainDefPtr def;
 
-    if (dom->id < 0) {
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainSetMaxMemory(dom, memory);
+            ret = xenXMDomainSetMaxMemory(dom->conn, def, memory);
         else
-            return xenDaemonDomainSetMaxMemory(dom, memory);
+            ret = xenDaemonDomainSetMaxMemory(dom->conn, def, memory);
     } else {
-        return xenHypervisorSetMaxMemory(dom, memory);
+        ret = xenHypervisorSetMaxMemory(dom->conn, def, memory);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainSetMemory(virDomainPtr dom, unsigned long memory)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    int ret = -1;
+    virDomainDefPtr def;
 
-    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainSetMemory(dom, memory);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        ret = xenXMDomainSetMemory(dom->conn, def, memory);
     else
-        return xenDaemonDomainSetMemory(dom, memory);
+        ret = xenDaemonDomainSetMemory(dom->conn, def, memory);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    int ret = -1;
+    virDomainDefPtr def;
 
-    if (dom->id < 0) {
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainGetInfo(dom, info);
+            ret = xenXMDomainGetInfo(dom->conn, def, info);
         else
-            return xenDaemonDomainGetInfo(dom, info);
+            ret = xenDaemonDomainGetInfo(dom->conn, def, info);
     } else {
-        return xenHypervisorGetDomainInfo(dom, info);
+        ret = xenHypervisorGetDomainInfo(dom->conn, def, info);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -965,17 +1010,26 @@ xenUnifiedDomainGetState(virDomainPtr dom,
                          unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    int ret = -1;
+    virDomainDefPtr def;
 
     virCheckFlags(0, -1);
 
-    if (dom->id < 0) {
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (def->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-            return xenXMDomainGetState(dom, state, reason);
+            ret = xenXMDomainGetState(dom->conn, def, state, reason);
         else
-            return xenDaemonDomainGetState(dom, state, reason);
+            ret = xenDaemonDomainGetState(dom->conn, def, state, reason);
     } else {
-        return xenHypervisorGetDomainState(dom, state, reason);
+        ret = xenHypervisorGetDomainState(dom->conn, def, state, reason);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

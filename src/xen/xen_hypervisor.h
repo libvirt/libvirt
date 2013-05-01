@@ -50,7 +50,8 @@ virDomainDefPtr
         xenHypervisorLookupDomainByUUID (virConnectPtr conn,
                                          const unsigned char *uuid);
 char *
-        xenHypervisorDomainGetOSType    (virDomainPtr dom);
+        xenHypervisorDomainGetOSType    (virConnectPtr conn,
+                                         virDomainDefPtr def);
 
 int
         xenHypervisorOpen               (virConnectPtr conn,
@@ -64,23 +65,26 @@ virCapsPtr
                                               virArch hostarch,
                                               FILE *cpuinfo,
                                               FILE *capabilities);
-char *
-        xenHypervisorGetCapabilities    (virConnectPtr conn);
+char * xenHypervisorGetCapabilities    (virConnectPtr conn);
 unsigned long
-        xenHypervisorGetMaxMemory(virDomainPtr dom);
+        xenHypervisorGetMaxMemory(virConnectPtr conn,
+                                  virDomainDefPtr def);
 int     xenHypervisorGetMaxVcpus        (virConnectPtr conn,
                                          const char *type);
-int     xenHypervisorGetDomainInfo        (virDomainPtr domain,
+int     xenHypervisorGetDomainInfo        (virConnectPtr conn,
+                                           virDomainDefPtr def,
                                            virDomainInfoPtr info)
           ATTRIBUTE_NONNULL (1);
-int     xenHypervisorGetDomainState     (virDomainPtr domain,
+int     xenHypervisorGetDomainState     (virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          int *state,
                                          int *reason)
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorGetDomInfo         (virConnectPtr conn,
                                          int id,
                                          virDomainInfoPtr info);
-int     xenHypervisorSetMaxMemory       (virDomainPtr domain,
+int     xenHypervisorSetMaxMemory       (virConnectPtr conn,
+                                         virDomainDefPtr def,
                                          unsigned long memory)
           ATTRIBUTE_NONNULL (1);
 int     xenHypervisorCheckID            (virConnectPtr conn,

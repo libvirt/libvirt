@@ -103,18 +103,27 @@ int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                             unsigned int flags);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
-int xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory);
-int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
-int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
-int xenDaemonDomainGetState(virDomainPtr domain,
+int xenDaemonDomainSetMemory(virConnectPtr conn,
+                             virDomainDefPtr def,
+                             unsigned long memory);
+int xenDaemonDomainSetMaxMemory(virConnectPtr conn,
+                                virDomainDefPtr def,
+                                unsigned long memory);
+int xenDaemonDomainGetInfo(virConnectPtr conn,
+                           virDomainDefPtr def,
+                           virDomainInfoPtr info);
+int xenDaemonDomainGetState(virConnectPtr conn,
+                            virDomainDefPtr def,
                             int *state,
                             int *reason);
 char *xenDaemonDomainGetXMLDesc(virDomainPtr domain, unsigned int flags,
                                 const char *cpus);
-unsigned long long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
+unsigned long long xenDaemonDomainGetMaxMemory(virConnectPtr conn,
+                                               virDomainDefPtr def);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
-char *xenDaemonDomainGetOSType(virDomainPtr domain);
+char *xenDaemonDomainGetOSType(virConnectPtr conn,
+                               virDomainDefPtr def);
 
 int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
 int xenDaemonListDefinedDomains(virConnectPtr conn,

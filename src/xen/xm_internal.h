@@ -37,14 +37,22 @@ int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);
 int xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags);
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);
-int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
-int xenXMDomainGetState(virDomainPtr domain,
+int xenXMDomainGetInfo(virConnectPtr conn,
+                       virDomainDefPtr def,
+                       virDomainInfoPtr info);
+int xenXMDomainGetState(virConnectPtr conn,
+                        virDomainDefPtr def,
                         int *state,
                         int *reason);
 char *xenXMDomainGetXMLDesc(virDomainPtr domain, unsigned int flags);
-int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory);
-int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
-unsigned long long xenXMDomainGetMaxMemory(virDomainPtr domain);
+int xenXMDomainSetMemory(virConnectPtr conn,
+                         virDomainDefPtr def,
+                         unsigned long memory);
+int xenXMDomainSetMaxMemory(virConnectPtr conn,
+                            virDomainDefPtr def,
+                            unsigned long memory);
+unsigned long long xenXMDomainGetMaxMemory(virConnectPtr conn,
+                                           virDomainDefPtr def);
 int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus);
 int xenXMDomainSetVcpusFlags(virDomainPtr domain, unsigned int vcpus,
                              unsigned int flags);

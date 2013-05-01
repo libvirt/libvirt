@@ -900,7 +900,7 @@ xend_detect_config_version(virConnectPtr conn)
  */
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-sexpr_to_xend_domain_state(virDomainPtr domain, const struct sexpr *root)
+sexpr_to_xend_domain_state(virDomainDefPtr def, const struct sexpr *root)
 {
     const char *flags;
     int state = VIR_DOMAIN_NOSTATE;
@@ -918,7 +918,7 @@ sexpr_to_xend_domain_state(virDomainPtr domain, const struct sexpr *root)
             state = VIR_DOMAIN_BLOCKED;
         else if (strchr(flags, 'r'))
             state = VIR_DOMAIN_RUNNING;
-    } else if (domain->id < 0 || sexpr_int(root, "domain/status") == 0) {
+    } else if (def->id < 0 || sexpr_int(root, "domain/status") == 0) {
         /* As far as I can see the domain->id is a bad sign for checking
          * inactive domains as this is inaccurate after the domain has
          * been running once. However domain/status from xend seems to
@@ -943,13 +943,13 @@ sexpr_to_xend_domain_state(virDomainPtr domain, const struct sexpr *root)
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-sexpr_to_xend_domain_info(virDomainPtr domain,
+sexpr_to_xend_domain_info(virDomainDefPtr def,
                           const struct sexpr *root,
                           virDomainInfoPtr info)
 {
     int vcpus;
 
-    info->state = sexpr_to_xend_domain_state(domain, root);
+    info->state = sexpr_to_xend_domain_state(def, root);
     info->memory = sexpr_u64(root, "domain/memory") << 10;
     info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
@@ -1384,13 +1384,14 @@ xenDaemonDomainDestroy(virConnectPtr conn, virDomainDefPtr def)
  *         freed by the caller.
  */
 char *
-xenDaemonDomainGetOSType(virDomainPtr domain)
+xenDaemonDomainGetOSType(virConnectPtr conn,
+                         virDomainDefPtr def)
 {
     char *type;
     struct sexpr *root;
 
     /* can we ask for a subset ? worth it ? */
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return NULL;
 
@@ -1499,13 +1500,13 @@ xenDaemonDomainRestore(virConnectPtr conn, const char *filename)
  * Returns the memory size in kilobytes or 0 in case of error.
  */
 unsigned long long
-xenDaemonDomainGetMaxMemory(virDomainPtr domain)
+xenDaemonDomainGetMaxMemory(virConnectPtr conn, virDomainDefPtr def)
 {
     unsigned long long ret = 0;
     struct sexpr *root;
 
     /* can we ask for a subset ? worth it ? */
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return 0;
 
@@ -1528,12 +1529,14 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+xenDaemonDomainSetMaxMemory(virConnectPtr conn,
+                            virDomainDefPtr def,
+                            unsigned long memory)
 {
     char buf[1024];
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
-    return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
+    return xend_op(conn, def->name, "op", "maxmem_set", "memory",
                    buf, NULL);
 }
 
@@ -1554,12 +1557,14 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
+xenDaemonDomainSetMemory(virConnectPtr conn,
+                         virDomainDefPtr def,
+                         unsigned long memory)
 {
     char buf[1024];
 
     snprintf(buf, sizeof(buf), "%lu", VIR_DIV_UP(memory, 1024));
-    return xend_op(domain->conn, domain->name, "op", "mem_target_set",
+    return xend_op(conn, def->name, "op", "mem_target_set",
                    "target", buf, NULL);
 }
 
@@ -1650,16 +1655,18 @@ xenDaemonDomainGetXMLDesc(virDomainPtr domain,
  * Returns 0 in case of success, -1 in case of error
  */
 int
-xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
+xenDaemonDomainGetInfo(virConnectPtr conn,
+                       virDomainDefPtr def,
+                       virDomainInfoPtr info)
 {
     struct sexpr *root;
     int ret;
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return -1;
 
-    ret = sexpr_to_xend_domain_info(domain, root, info);
+    ret = sexpr_to_xend_domain_info(def, root, info);
     sexpr_free(root);
     return ret;
 }
@@ -1676,17 +1683,18 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
  * Returns 0 in case of success, -1 in case of error
  */
 int
-xenDaemonDomainGetState(virDomainPtr domain,
+xenDaemonDomainGetState(virConnectPtr conn,
+                        virDomainDefPtr def,
                         int *state,
                         int *reason)
 {
     struct sexpr *root;
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (!root)
         return -1;
 
-    *state = sexpr_to_xend_domain_state(domain, root);
+    *state = sexpr_to_xend_domain_state(def, root);
     if (reason)
         *reason = 0;
 

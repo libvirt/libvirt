@@ -2508,27 +2508,28 @@ xenHypervisorGetCapabilities(virConnectPtr conn)
 
 
 char *
-xenHypervisorDomainGetOSType(virDomainPtr dom)
+xenHypervisorDomainGetOSType(virConnectPtr conn,
+                             virDomainDefPtr def)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     xen_getdomaininfo dominfo;
     char *ostype = NULL;
 
     /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
     if (hv_versions.hypervisor < 2 ||
         hv_versions.dom_interface < 4) {
-        return xenDaemonDomainGetOSType(dom);
+        return xenDaemonDomainGetOSType(conn, def);
     }
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
-    if (virXen_getdomaininfo(priv->handle, dom->id, &dominfo) < 0) {
+    if (virXen_getdomaininfo(priv->handle, def->id, &dominfo) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot get domain details"));
         return NULL;
     }
 
-    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id) {
+    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != def->id) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot get domain details"));
         return NULL;
@@ -2678,9 +2679,10 @@ xenHypervisorGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Returns the memory size in kilobytes or 0 in case of error.
  */
 unsigned long
-xenHypervisorGetMaxMemory(virDomainPtr dom)
+xenHypervisorGetMaxMemory(virConnectPtr conn,
+                          virDomainDefPtr def)
 {
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     xen_getdomaininfo dominfo;
     int ret;
 
@@ -2692,9 +2694,9 @@ xenHypervisorGetMaxMemory(virDomainPtr dom)
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
-    ret = virXen_getdomaininfo(priv->handle, dom->id, &dominfo);
+    ret = virXen_getdomaininfo(priv->handle, def->id, &dominfo);
 
-    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id))
+    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != def->id))
         return 0;
 
     return (unsigned long) XEN_GETDOMAININFO_MAX_PAGES(dominfo) * kb_per_pages;
@@ -2788,9 +2790,11 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
+xenHypervisorGetDomainInfo(virConnectPtr conn,
+                           virDomainDefPtr def,
+                           virDomainInfoPtr info)
 {
-    return xenHypervisorGetDomInfo(domain->conn, domain->id, info);
+    return xenHypervisorGetDomInfo(conn, def->id, info);
 }
 
 /**
@@ -2804,13 +2808,14 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorGetDomainState(virDomainPtr domain,
+xenHypervisorGetDomainState(virConnectPtr conn,
+                            virDomainDefPtr def,
                             int *state,
                             int *reason)
 {
     virDomainInfo info;
 
-    if (xenHypervisorGetDomInfo(domain->conn, domain->id, &info) < 0)
+    if (xenHypervisorGetDomInfo(conn, def->id, &info) < 0)
         return -1;
 
     *state = info.state;
@@ -2899,15 +2904,14 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
+xenHypervisorSetMaxMemory(virConnectPtr conn,
+                          virDomainDefPtr def,
+                          unsigned long memory)
 {
     int ret;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (domain->id < 0)
-        return -1;
-
-    ret = virXen_setmaxmem(priv->handle, domain->id, memory);
+    ret = virXen_setmaxmem(priv->handle, def->id, memory);
     if (ret < 0)
         return -1;
     return 0;
