@@ -1261,7 +1261,8 @@ xenDaemonClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 /**
  * xenDaemonDomainSuspend:
- * @domain: pointer to the Domain block
+ * @conn: the connection object
+ * @def: the domain to suspend
  *
  * Pause the domain, the domain is not scheduled anymore though its resources
  * are preserved. Use xenDaemonDomainResume() to resume execution.
@@ -1269,41 +1270,42 @@ xenDaemonClose(virConnectPtr conn ATTRIBUTE_UNUSED)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainSuspend(virDomainPtr domain)
+xenDaemonDomainSuspend(virConnectPtr conn, virDomainDefPtr def)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "pause", NULL);
+    return xend_op(conn, def->name, "op", "pause", NULL);
 }
 
 /**
  * xenDaemonDomainResume:
- * @xend: pointer to the Xen Daemon block
- * @name: name for the domain
+ * @conn: the connection object
+ * @def: the domain to resume
  *
  * Resume the domain after xenDaemonDomainSuspend() has been called
  *
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainResume(virDomainPtr domain)
+xenDaemonDomainResume(virConnectPtr conn, virDomainDefPtr def)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "unpause", NULL);
+    return xend_op(conn, def->name, "op", "unpause", NULL);
 }
 
 /**
  * xenDaemonDomainShutdown:
- * @domain: pointer to the Domain block
+ * @conn: the connection object
+ * @def: the domain to shutdown
  *
  * Shutdown the domain, the OS is requested to properly shutdown
  * and the domain may ignore it.  It will return immediately
@@ -1312,20 +1314,21 @@ xenDaemonDomainResume(virDomainPtr domain)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainShutdown(virDomainPtr domain)
+xenDaemonDomainShutdown(virConnectPtr conn, virDomainDefPtr def)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "poweroff", NULL);
+    return xend_op(conn, def->name, "op", "shutdown", "reason", "poweroff", NULL);
 }
 
 /**
  * xenDaemonDomainReboot:
- * @domain: pointer to the Domain block
+ * @conn: the connection object
+ * @def: the domain to reboot
  *
  * Reboot the domain, the OS is requested to properly shutdown
  * and restart but the domain may ignore it.  It will return immediately
@@ -1334,20 +1337,21 @@ xenDaemonDomainShutdown(virDomainPtr domain)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainReboot(virDomainPtr domain)
+xenDaemonDomainReboot(virConnectPtr conn, virDomainDefPtr def)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "reboot", NULL);
+    return xend_op(conn, def->name, "op", "shutdown", "reason", "reboot", NULL);
 }
 
 /**
  * xenDaemonDomainDestroy:
- * @domain: pointer to the Domain block
+ * @conn: the connection object
+ * @def: the domain to destroy
  *
  * Abruptly halt the domain, the OS is not properly shutdown and the
  * resources allocated for the domain are immediately freed, mounted
@@ -1359,15 +1363,15 @@ xenDaemonDomainReboot(virDomainPtr domain)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainDestroy(virDomainPtr domain)
+xenDaemonDomainDestroy(virConnectPtr conn, virDomainDefPtr def)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
+    return xend_op(conn, def->name, "op", "destroy", NULL);
 }
 
 /**
@@ -2170,7 +2174,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
     if (xend_wait_for_devices(conn, def->name) < 0)
         goto error;
 
-    if (xenDaemonDomainResume(dom) < 0)
+    if (xenDaemonDomainResume(conn, def) < 0)
         goto error;
 
     virDomainDefFree(def);
@@ -2179,7 +2183,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc)
   error:
     /* Make sure we don't leave a still-born domain around */
     if (dom != NULL) {
-        xenDaemonDomainDestroy(dom);
+        xenDaemonDomainDestroy(conn, def);
         virObjectUnref(dom);
     }
     virDomainDefFree(def);

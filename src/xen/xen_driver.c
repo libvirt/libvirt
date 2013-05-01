@@ -136,6 +136,13 @@ static virDomainDefPtr xenGetDomainDefForUUID(virConnectPtr conn, const unsigned
 }
 
 
+static virDomainDefPtr xenGetDomainDefForDom(virDomainPtr dom)
+{
+    /* UUID lookup is more efficient than name lookup */
+    return xenGetDomainDefForUUID(dom->conn, dom->uuid);
+}
+
+
 /**
  * xenNumaInit:
  * @conn: pointer to the hypervisor connection
@@ -779,22 +786,52 @@ xenUnifiedDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
 static int
 xenUnifiedDomainSuspend(virDomainPtr dom)
 {
-    return xenDaemonDomainSuspend(dom);
+    int ret = -1;
+    virDomainDefPtr def;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainSuspend(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainResume(virDomainPtr dom)
 {
-    return xenDaemonDomainResume(dom);
+    int ret = -1;
+    virDomainDefPtr def;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainResume(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainShutdownFlags(virDomainPtr dom,
                               unsigned int flags)
 {
+    int ret = -1;
+    virDomainDefPtr def;
+
     virCheckFlags(0, -1);
 
-    return xenDaemonDomainShutdown(dom);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainShutdown(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -806,18 +843,38 @@ xenUnifiedDomainShutdown(virDomainPtr dom)
 static int
 xenUnifiedDomainReboot(virDomainPtr dom, unsigned int flags)
 {
+    int ret = -1;
+    virDomainDefPtr def;
+
     virCheckFlags(0, -1);
 
-    return xenDaemonDomainReboot(dom);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainReboot(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainDestroyFlags(virDomainPtr dom,
                              unsigned int flags)
 {
+    int ret = -1;
+    virDomainDefPtr def;
+
     virCheckFlags(0, -1);
 
-    return xenDaemonDomainDestroy(dom);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainDestroy(dom->conn, def);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

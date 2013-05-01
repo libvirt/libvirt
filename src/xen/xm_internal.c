@@ -895,7 +895,7 @@ xenXMDomainCreate(virDomainPtr domain)
     int ret = -1;
     xenUnifiedPrivatePtr priv= domain->conn->privateData;
     const char *filename;
-    xenXMConfCachePtr entry;
+    xenXMConfCachePtr entry = NULL;
 
     xenUnifiedLock(priv);
 
@@ -921,15 +921,15 @@ xenXMDomainCreate(virDomainPtr domain)
     if (xend_wait_for_devices(domain->conn, domain->name) < 0)
         goto error;
 
-    if (xenDaemonDomainResume(domain) < 0)
+    if (xenDaemonDomainResume(domain->conn, entry->def) < 0)
         goto error;
 
     xenUnifiedUnlock(priv);
     return 0;
 
  error:
-    if (domain->id != -1) {
-        xenDaemonDomainDestroy(domain);
+    if (domain->id != -1 && entry) {
+        xenDaemonDomainDestroy(domain->conn, entry->def);
         domain->id = -1;
     }
     xenUnifiedUnlock(priv);

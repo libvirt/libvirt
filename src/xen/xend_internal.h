@@ -94,11 +94,11 @@ int xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth,
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 int xenDaemonNodeGetTopology(virConnectPtr conn, virCapsPtr caps);
-int xenDaemonDomainSuspend(virDomainPtr domain);
-int xenDaemonDomainResume(virDomainPtr domain);
-int xenDaemonDomainShutdown(virDomainPtr domain);
-int xenDaemonDomainReboot(virDomainPtr domain);
-int xenDaemonDomainDestroy(virDomainPtr domain);
+int xenDaemonDomainSuspend(virConnectPtr conn, virDomainDefPtr def);
+int xenDaemonDomainResume(virConnectPtr conn, virDomainDefPtr def);
+int xenDaemonDomainShutdown(virConnectPtr conn, virDomainDefPtr def);
+int xenDaemonDomainReboot(virConnectPtr conn, virDomainDefPtr def);
+int xenDaemonDomainDestroy(virConnectPtr conn, virDomainDefPtr def);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                             unsigned int flags);
