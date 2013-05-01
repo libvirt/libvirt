@@ -909,25 +909,62 @@ recheck:
     return -1;
 }
 
+static const char *virPCIKnownStubs[] = {
+    "pciback",  /* used by xen */
+    "pci-stub", /* used by kvm legacy passthrough */
+    "vfio-pci", /* used by VFIO device assignment */
+    NULL
+};
+
 static int
-virPCIDeviceUnbindFromStub(virPCIDevicePtr dev, const char *driver)
+virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
 {
     int result = -1;
     char *drvdir = NULL;
     char *path = NULL;
+    char *driver = NULL;
+    const char **stubTest;
+    bool isStub = false;
 
-    if (virPCIDriverDir(&drvdir, driver) < 0)
+    /* If the device is currently bound to one of the "well known"
+     * stub drivers, then unbind it, otherwise ignore it.
+     */
+    if (virPCIFile(&path, dev->name, "driver") < 0)
         goto cleanup;
+    /* path = "/sys/bus/pci/dddd:bb:ss.ff/driver" */
+    if (virFileIsLink(path) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid device %s driver file %s is not a symlink"),
+                       dev->name, path);
+        goto cleanup;
+    }
+    if (virFileResolveLink(path, &drvdir) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device %s driver symlink %s"),
+                       dev->name, path);
+        goto cleanup;
+    }
+    /* drvdir = "/sys/bus/pci/drivers/${drivername}" */
+    if (!(driver = strdup(last_component(drvdir)))) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     if (!dev->unbind_from_stub)
         goto remove_slot;
 
-    /* If the device is bound to stub, unbind it.
-     */
-    if (virPCIFile(&path, dev->name, "driver") < 0)
-        goto cleanup;
+    /* If the device isn't bound to a known stub, skip the unbind. */
+    for (stubTest = virPCIKnownStubs; *stubTest != NULL; stubTest++) {
+        if (STREQ(driver, *stubTest)) {
+            isStub = true;
+            VIR_DEBUG("Found stub driver %s", *stubTest);
+            break;
+        }
+    }
+    if (!isStub)
+        goto remove_slot;
 
-    if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
+    if (virFileExists(drvdir)) {
         if (virPCIDriverFile(&path, driver, "unbind") < 0) {
             goto cleanup;
         }
@@ -992,6 +1029,7 @@ cleanup:
 
     VIR_FREE(drvdir);
     VIR_FREE(path);
+    VIR_FREE(driver);
 
     return result;
 }
@@ -1141,7 +1179,7 @@ cleanup:
     VIR_FREE(path);
 
     if (result < 0) {
-        virPCIDeviceUnbindFromStub(dev, driver);
+        virPCIDeviceUnbindFromStub(dev);
     }
 
     return result;
@@ -1183,25 +1221,15 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
 int
 virPCIDeviceReattach(virPCIDevicePtr dev,
                      virPCIDeviceListPtr activeDevs,
-                     virPCIDeviceListPtr inactiveDevs,
-                     const char *driver)
+                     virPCIDeviceListPtr inactiveDevs)
 {
-    if (!driver && dev->stubDriver)
-        driver = dev->stubDriver;
-
-    if (virPCIProbeStubDriver(driver) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to load PCI stub module %s"), driver);
-        return -1;
-    }
-
     if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not reattaching active device %s"), dev->name);
         return -1;
     }
 
-    if (virPCIDeviceUnbindFromStub(dev, driver) < 0)
+    if (virPCIDeviceUnbindFromStub(dev) < 0)
         return -1;
 
     /* Steal the dev from list inactiveDevs */

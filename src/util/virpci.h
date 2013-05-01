@@ -54,8 +54,7 @@ int virPCIDeviceDetach(virPCIDevicePtr dev,
                        const char *driver);
 int virPCIDeviceReattach(virPCIDevicePtr dev,
                          virPCIDeviceListPtr activeDevs,
-                         virPCIDeviceListPtr inactiveDevs,
-                         const char *driver);
+                         virPCIDeviceListPtr inactiveDevs);
 int virPCIDeviceReset(virPCIDevicePtr dev,
                       virPCIDeviceListPtr activeDevs,
                       virPCIDeviceListPtr inactiveDevs);

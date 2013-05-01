@@ -2254,7 +2254,7 @@ xenUnifiedNodeDeviceReAttach(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (virPCIDeviceReattach(pci, NULL, NULL, "pciback") < 0)
+    if (virPCIDeviceReattach(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;

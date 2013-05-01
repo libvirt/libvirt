@@ -9832,7 +9832,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     virPCIDeviceReattachInit(pci);
 
     if (virPCIDeviceReattach(pci, driver->activePciHostdevs,
-                             driver->inactivePciHostdevs, "pci-stub") < 0)
+                             driver->inactivePciHostdevs) < 0)
         goto out;
 
     ret = 0;
