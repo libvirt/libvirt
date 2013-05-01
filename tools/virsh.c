@@ -3053,12 +3053,15 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case ':':
             for (i = 0; opt[i].name != NULL; i++) {
-                if (opt[i].val == optopt) {
-                    vshError(ctl, _("option '-%c'/'--%s' requires an argument"),
-                             optopt, opt[i].name);
-                    exit(EXIT_FAILURE);
-                }
+                if (opt[i].val == optopt)
+                    break;
             }
+            if (opt[i].name)
+                vshError(ctl, _("option '-%c'/'--%s' requires an argument"),
+                         optopt, opt[i].name);
+            else
+                vshError(ctl, _("option '-%c' requires an argument"), optopt);
+            exit(EXIT_FAILURE);
         case '?':
             if (optopt)
                 vshError(ctl, _("unsupported option '-%c'. See --help."), optopt);
