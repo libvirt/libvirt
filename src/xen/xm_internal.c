@@ -894,48 +894,49 @@ cleanup:
  * Start a domain from an existing defined config file
  */
 int
-xenXMDomainCreate(virDomainPtr domain)
+xenXMDomainCreate(virConnectPtr conn,
+                  virDomainDefPtr def)
 {
     char *sexpr;
     int ret = -1;
-    xenUnifiedPrivatePtr priv= domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     const char *filename;
     xenXMConfCachePtr entry = NULL;
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, def->name)))
         goto error;
 
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto error;
 
-    if (!(sexpr = xenFormatSxpr(domain->conn, entry->def, priv->xendConfigVersion)))
+    if (!(sexpr = xenFormatSxpr(conn, entry->def, priv->xendConfigVersion)))
         goto error;
 
-    ret = xenDaemonDomainCreateXML(domain->conn, sexpr);
+    ret = xenDaemonDomainCreateXML(conn, sexpr);
     VIR_FREE(sexpr);
     if (ret != 0)
         goto error;
 
-    if ((ret = xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
+    if ((ret = xenDaemonDomainLookupByName_ids(conn, def->name,
                                                entry->def->uuid)) < 0)
         goto error;
-    domain->id = ret;
+    def->id = ret;
 
-    if (xend_wait_for_devices(domain->conn, domain->name) < 0)
+    if (xend_wait_for_devices(conn, def->name) < 0)
         goto error;
 
-    if (xenDaemonDomainResume(domain->conn, entry->def) < 0)
+    if (xenDaemonDomainResume(conn, entry->def) < 0)
         goto error;
 
     xenUnifiedUnlock(priv);
     return 0;
 
  error:
-    if (domain->id != -1 && entry) {
-        xenDaemonDomainDestroy(domain->conn, entry->def);
-        domain->id = -1;
+    if (def->id != -1 && entry) {
+        xenDaemonDomainDestroy(conn, entry->def);
+        def->id = -1;
     }
     xenUnifiedUnlock(priv);
     return -1;

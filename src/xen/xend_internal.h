@@ -99,7 +99,9 @@ int xenDaemonDomainResume(virConnectPtr conn, virDomainDefPtr def);
 int xenDaemonDomainShutdown(virConnectPtr conn, virDomainDefPtr def);
 int xenDaemonDomainReboot(virConnectPtr conn, virDomainDefPtr def);
 int xenDaemonDomainDestroy(virConnectPtr conn, virDomainDefPtr def);
-int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
+int xenDaemonDomainSave(virConnectPtr conn,
+                        virDomainDefPtr def,
+                        const char *filename);
 int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                             unsigned int flags);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
@@ -138,7 +140,8 @@ int xenDaemonDetachDeviceFlags(virDomainPtr domain,
                                unsigned int flags);
 
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
-int xenDaemonDomainCreate(virDomainPtr domain);
+int xenDaemonDomainCreate(virConnectPtr conn,
+                          virDomainDefPtr def);
 int xenDaemonDomainUndefine(virDomainPtr domain);
 
 int	xenDaemonDomainSetVcpus		(virDomainPtr domain,

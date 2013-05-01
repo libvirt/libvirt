@@ -1423,22 +1423,24 @@ xenDaemonDomainGetOSType(virConnectPtr conn,
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xenDaemonDomainSave(virDomainPtr domain, const char *filename)
+xenDaemonDomainSave(virConnectPtr conn,
+                    virDomainDefPtr def,
+                    const char *filename)
 {
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
     /* We can't save the state of Domain-0, that would mean stopping it too */
-    if (domain->id == 0) {
+    if (def->id == 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Cannot save host domain"));
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
+    return xend_op(conn, def->name, "op", "save", "file", filename, NULL);
 }
 
 /**
@@ -2872,17 +2874,18 @@ xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc)
     return NULL;
 }
 int
-xenDaemonDomainCreate(virDomainPtr domain)
+xenDaemonDomainCreate(virConnectPtr conn,
+                      virDomainDefPtr def)
 {
     int ret;
 
-    ret = xend_op(domain->conn, domain->name, "op", "start", NULL);
+    ret = xend_op(conn, def->name, "op", "start", NULL);
 
     if (ret == 0) {
-        int id = xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
-                                                 domain->uuid);
+        int id = xenDaemonDomainLookupByName_ids(conn, def->name,
+                                                 def->uuid);
         if (id > 0)
-            domain->id = id;
+            def->id = id;
     }
 
     return ret;

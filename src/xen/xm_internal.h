@@ -65,7 +65,8 @@ virDomainDefPtr xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char 
 int xenXMListDefinedDomains(virConnectPtr conn, char ** const names, int maxnames);
 int xenXMNumOfDefinedDomains(virConnectPtr conn);
 
-int xenXMDomainCreate(virDomainPtr domain);
+int xenXMDomainCreate(virConnectPtr conn,
+                      virDomainDefPtr def);
 virDomainPtr xenXMDomainDefineXML(virConnectPtr con, const char *xml);
 int xenXMDomainUndefine(virDomainPtr domain);
 

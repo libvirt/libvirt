@@ -1036,14 +1036,25 @@ static int
 xenUnifiedDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
                           unsigned int flags)
 {
+    int ret = -1;
+    virDomainDefPtr def;
+
     virCheckFlags(0, -1);
+
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("xml modification unsupported"));
         return -1;
     }
 
-    return xenDaemonDomainSave(dom, to);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainSave(dom->conn, def, to);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1053,11 +1064,12 @@ xenUnifiedDomainSave(virDomainPtr dom, const char *to)
 }
 
 static char *
-xenUnifiedDomainManagedSavePath(xenUnifiedPrivatePtr priv, virDomainPtr dom)
+xenUnifiedDomainManagedSavePath(xenUnifiedPrivatePtr priv,
+                                virDomainDefPtr def)
 {
     char *ret;
 
-    if (virAsprintf(&ret, "%s/%s.save", priv->saveDir, dom->name) < 0) {
+    if (virAsprintf(&ret, "%s/%s.save", priv->saveDir, def->name) < 0) {
         virReportOOMError();
         return NULL;
     }
@@ -1070,19 +1082,23 @@ static int
 xenUnifiedDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    char *name;
+    char *name = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    name = xenUnifiedDomainManagedSavePath(priv, dom);
-    if (!name)
+    if (!(def = xenGetDomainDefForDom(dom)))
         goto cleanup;
 
-    ret = xenDaemonDomainSave(dom, name);
+    if (!(name = xenUnifiedDomainManagedSavePath(priv, def)))
+        goto cleanup;
+
+    ret = xenDaemonDomainSave(dom->conn, def, name);
 
 cleanup:
     VIR_FREE(name);
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -1090,17 +1106,23 @@ static int
 xenUnifiedDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    char *name;
+    char *name = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    name = xenUnifiedDomainManagedSavePath(priv, dom);
-    if (!name)
-        return ret;
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (!(name = xenUnifiedDomainManagedSavePath(priv, def)))
+        goto cleanup;
 
     ret = virFileExists(name);
+
+cleanup:
     VIR_FREE(name);
+    virDomainDefFree(def);
     return ret;
 }
 
@@ -1108,16 +1130,21 @@ static int
 xenUnifiedDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
-    char *name;
+    char *name = NULL;
+    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    name = xenUnifiedDomainManagedSavePath(priv, dom);
-    if (!name)
-        return ret;
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (!(name = xenUnifiedDomainManagedSavePath(priv, def)))
+        goto cleanup;
 
     ret = unlink(name);
+
+cleanup:
     VIR_FREE(name);
     return ret;
 }
@@ -1494,12 +1521,15 @@ xenUnifiedDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
     int ret = -1;
+    virDomainDefPtr def = NULL;
     char *name = NULL;
 
     virCheckFlags(0, -1);
 
-    name = xenUnifiedDomainManagedSavePath(priv, dom);
-    if (!name)
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    if (!(name = xenUnifiedDomainManagedSavePath(priv, def)))
         goto cleanup;
 
     if (virFileExists(name)) {
@@ -1510,11 +1540,15 @@ xenUnifiedDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     }
 
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        ret = xenXMDomainCreate(dom);
+        ret = xenXMDomainCreate(dom->conn, def);
     else
-        ret = xenDaemonDomainCreate(dom);
+        ret = xenDaemonDomainCreate(dom->conn, def);
+
+    if (ret >= 0)
+        dom->id = def->id;
 
 cleanup:
+    virDomainDefFree(def);
     VIR_FREE(name);
     return ret;
 }
