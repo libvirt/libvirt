@@ -32,6 +32,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "storage/storage_backend_sheepdog.h"
+#include "virstring.h"
 
 
 typedef struct {
