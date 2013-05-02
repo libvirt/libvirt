@@ -1,7 +1,7 @@
 /*
  * virlog.c: internal logging and debugging
  *
- * Copyright (C) 2008, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2008, 2010-2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -707,11 +707,11 @@ virLogFormatString(char **msg,
      * to just grep for it to find the right place.
      */
     if ((funcname != NULL)) {
-        ret = virAsprintf(msg, "%d: %s : %s:%d : %s\n",
+        ret = virAsprintf(msg, "%llu: %s : %s:%d : %s\n",
                           virThreadSelfID(), virLogPriorityString(priority),
                           funcname, linenr, str);
     } else {
-        ret = virAsprintf(msg, "%d: %s : %s\n",
+        ret = virAsprintf(msg, "%llu: %s : %s\n",
                           virThreadSelfID(), virLogPriorityString(priority),
                           str);
     }

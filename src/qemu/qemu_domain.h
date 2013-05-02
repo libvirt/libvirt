@@ -102,11 +102,11 @@ VIR_ENUM_DECL(qemuDomainAsyncJob)
 struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     enum qemuDomainJob active;          /* Currently running job */
-    int owner;                          /* Thread which set current job */
+    unsigned long long owner;           /* Thread id which set current job */
 
     virCond asyncCond;                  /* Use to coordinate with async jobs */
     enum qemuDomainAsyncJob asyncJob;   /* Currently active async job */
-    int asyncOwner;                     /* Thread which set current async job */
+    unsigned long long asyncOwner;      /* Thread which set current async job */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
     unsigned long long start;           /* When the async job started */

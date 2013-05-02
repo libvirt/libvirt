@@ -186,7 +186,7 @@ qemuDomainObjTransferJob(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
-    VIR_DEBUG("Changing job owner from %d to %d",
+    VIR_DEBUG("Changing job owner from %llu to %llu",
               priv->job.owner, virThreadSelfID());
     priv->job.owner = virThreadSelfID();
 }
@@ -829,7 +829,7 @@ qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
                          int phase)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
-    int me = virThreadSelfID();
+    unsigned long long me = virThreadSelfID();
 
     if (!priv->job.asyncJob)
         return;
@@ -839,7 +839,7 @@ qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
               qemuDomainAsyncJobPhaseToString(priv->job.asyncJob, phase));
 
     if (priv->job.asyncOwner && me != priv->job.asyncOwner) {
-        VIR_WARN("'%s' async job is owned by thread %d",
+        VIR_WARN("'%s' async job is owned by thread %llu",
                  qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                  priv->job.asyncOwner);
     }
@@ -881,7 +881,7 @@ qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj)
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
 
     if (priv->job.asyncOwner != virThreadSelfID()) {
-        VIR_WARN("'%s' async job is owned by thread %d",
+        VIR_WARN("'%s' async job is owned by thread %llu",
                  qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                  priv->job.asyncOwner);
     }
@@ -975,7 +975,7 @@ retry:
 
 error:
     VIR_WARN("Cannot start job (%s, %s) for domain %s;"
-             " current job is (%s, %s) owned by (%d, %d)",
+             " current job is (%s, %s) owned by (%llu, %llu)",
              qemuDomainJobTypeToString(job),
              qemuDomainAsyncJobTypeToString(asyncJob),
              obj->def->name,
@@ -1039,7 +1039,7 @@ qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
     }
 
     if (priv->job.asyncOwner != virThreadSelfID()) {
-        VIR_WARN("This thread doesn't seem to be the async job owner: %d",
+        VIR_WARN("This thread doesn't seem to be the async job owner: %llu",
                  priv->job.asyncOwner);
     }
 

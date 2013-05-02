@@ -1,7 +1,7 @@
 /*
  * virthreadpthread.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -210,25 +210,35 @@ bool virThreadIsSelf(virThreadPtr thread)
     return pthread_equal(pthread_self(), thread->thread) ? true : false;
 }
 
-/* For debugging use only; this result is not guaranteed unique on BSD
- * systems when pthread_t is a 64-bit pointer.  */
-int virThreadSelfID(void)
+/* For debugging use only; this result is not guaranteed unique if
+ * pthread_t is larger than a 64-bit pointer, nor does it always match
+ * the pthread_self() id on Linux.  */
+unsigned long long virThreadSelfID(void)
 {
 #if defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)
-    pid_t tid;
-    tid = syscall(SYS_gettid);
-    return (int)tid;
+    pid_t tid = syscall(SYS_gettid);
+    return tid;
 #else
-    return (int)(intptr_t)(void *)pthread_self();
+    union {
+        unsigned long long l;
+        pthread_t t;
+    } u;
+    u.t = pthread_self();
+    return u.l;
 #endif
 }
 
-/* For debugging use only; this result is not guaranteed unique on BSD
- * systems when pthread_t is a 64-bit pointer, nor does it match the
- * thread id of virThreadSelfID on Linux.  */
-int virThreadID(virThreadPtr thread)
+/* For debugging use only; this result is not guaranteed unique if
+ * pthread_t is larger than a 64-bit pointer, nor does it always match
+ * the thread id of virThreadSelfID on Linux.  */
+unsigned long long virThreadID(virThreadPtr thread)
 {
-    return (int)(uintptr_t)thread->thread;
+    union {
+        unsigned long long l;
+        pthread_t t;
+    } u;
+    u.t = thread->thread;
+    return u.l;
 }
 
 void virThreadJoin(virThreadPtr thread)

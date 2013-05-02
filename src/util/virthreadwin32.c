@@ -1,7 +1,7 @@
 /*
  * virthreadwin32.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -334,14 +334,14 @@ bool virThreadIsSelf(virThreadPtr thread)
     return self.thread == thread->thread ? true : false;
 }
 
-/* For debugging use only; see comments in threads-pthread.c.  */
-int virThreadSelfID(void)
+/* For debugging use only; see comments in virthreadpthread.c.  */
+unsigned long long virThreadSelfID(void)
 {
-    return (int)GetCurrentThreadId();
+    return GetCurrentThreadId();
 }
 
-/* For debugging use only; see comments in threads-pthread.c.  */
-int virThreadID(virThreadPtr thread)
+/* For debugging use only; see comments in virthreadpthread.c.  */
+unsigned long long virThreadID(virThreadPtr thread)
 {
     return (intptr_t)thread->thread;
 }
