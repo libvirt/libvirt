@@ -133,7 +133,7 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path, const char *value)
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
     int ret = -1;
 
-    if (priv->xshandle == NULL || domain->conn->flags & VIR_CONNECT_RO)
+    if (priv->xshandle == NULL)
         return -1;
 
     snprintf(s, 255, "/local/domain/%d/%s", domain->id, path);

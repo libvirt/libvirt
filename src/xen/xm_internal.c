@@ -565,8 +565,7 @@ xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory)
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if (domain->conn->flags & VIR_CONNECT_RO || domain->id != -1 ||
-        memory < 1024 * MIN_XEN_GUEST_SIZE)
+    if (domain->id != -1 || memory < 1024 * MIN_XEN_GUEST_SIZE)
         return -1;
 
     xenUnifiedLock(priv);
@@ -604,7 +603,7 @@ xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     xenXMConfCachePtr entry;
     int ret = -1;
 
-    if (domain->conn->flags & VIR_CONNECT_RO || domain->id != -1)
+    if (domain->id != -1)
         return -1;
 
     xenUnifiedLock(priv);
@@ -686,10 +685,6 @@ xenXMDomainSetVcpusFlags(virDomainPtr domain,
                   VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virReportError(VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        return -1;
-    }
     if (domain->id != -1)
         return -2;
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
@@ -812,11 +807,6 @@ xenXMDomainPinVcpu(virDomainPtr domain,
 
     if (maplen > (int)sizeof(cpumap_t)) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return -1;
-    }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("read only connection"));
         return -1;
     }
     if (domain->id != -1) {
@@ -1003,9 +993,6 @@ xenXMDomainDefineXML(virConnectPtr conn, const char *xml)
     xenXMConfCachePtr entry = NULL;
     xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (conn->flags & VIR_CONNECT_RO)
-        return NULL;
-
     xenUnifiedLock(priv);
 
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0) {
@@ -1139,8 +1126,6 @@ xenXMDomainUndefine(virDomainPtr domain)
     int ret = -1;
 
     if (domain->id != -1)
-        return -1;
-    if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
 
     xenUnifiedLock(priv);
@@ -1292,9 +1277,6 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return -1;
-
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
         (domain->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1385,9 +1367,6 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
     xenUnifiedPrivatePtr priv = domain->conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return -1;
 
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
         (domain->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
