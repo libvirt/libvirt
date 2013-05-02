@@ -102,7 +102,9 @@ int xenDaemonDomainDestroy(virConnectPtr conn, virDomainDefPtr def);
 int xenDaemonDomainSave(virConnectPtr conn,
                         virDomainDefPtr def,
                         const char *filename);
-int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
+int xenDaemonDomainCoreDump(virConnectPtr conn,
+                            virDomainDefPtr def,
+                            const char *filename,
                             unsigned int flags);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
 int xenDaemonDomainSetMemory(virConnectPtr conn,

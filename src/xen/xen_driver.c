@@ -1191,7 +1191,19 @@ xenUnifiedDomainRestore(virConnectPtr conn, const char *from)
 static int
 xenUnifiedDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 {
-    return xenDaemonDomainCoreDump(dom, to, flags);
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonDomainCoreDump(dom->conn, def, to, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

@@ -1446,7 +1446,8 @@ xenDaemonDomainSave(virConnectPtr conn,
 
 /**
  * xenDaemonDomainCoreDump:
- * @domain: pointer to the Domain block
+ * @conn: the connection object
+ * @def: domain configuration
  * @filename: path for the output file
  * @flags: extra flags, currently unused
  *
@@ -1457,19 +1458,20 @@ xenDaemonDomainSave(virConnectPtr conn,
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonDomainCoreDump(virDomainPtr domain,
+xenDaemonDomainCoreDump(virConnectPtr conn,
+                        virDomainDefPtr def,
                         const char *filename,
                         unsigned int flags)
 {
     virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH, -1);
 
-    if (domain->id < 0) {
+    if (def->id < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Domain %s isn't running."), domain->name);
+                       _("Domain %s isn't running."), def->name);
         return -1;
     }
 
-    return xend_op(domain->conn, domain->name,
+    return xend_op(conn, def->name,
                    "op", "dump", "file", filename,
                    "live", (flags & VIR_DUMP_LIVE ? "1" : "0"),
                    "crash", (flags & VIR_DUMP_CRASH ? "1" : "0"),
