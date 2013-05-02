@@ -1548,20 +1548,11 @@ SYM_FILES += $(srcdir)/libvirt_atomic.syms
 endif
 
 EXTRA_DIST += \
-  libvirt_public.syms		\
-  libvirt_private.syms		\
-  libvirt_atomic.syms		\
-  libvirt_driver_modules.syms	\
-  libvirt_daemon.syms		\
-  libvirt_linux.syms		\
-  libvirt_esx.syms		\
-  libvirt_openvz.syms		\
-  libvirt_qemu.syms		\
-  libvirt_sasl.syms		\
-  libvirt_gnutls.syms		\
-  libvirt_vmx.syms		\
-  libvirt_xenxs.syms	\
-  libvirt_libssh2.syms
+	libvirt_public.syms		\
+	libvirt_lxc.syms		\
+	libvirt_qemu.syms		\
+	$(SYM_FILES)			\
+	$(NULL)
 
 GENERATED_SYM_FILES = \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def
