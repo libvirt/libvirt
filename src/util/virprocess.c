@@ -617,7 +617,7 @@ virProcessPrLimit(pid_t pid, int resource, struct rlimit *rlim)
 {
     return prlimit(pid, resource, rlim, NULL);
 }
-#else /* ! HAVE_PRLIMIT */
+#elif HAVE_SETRLIMIT
 static int
 virProcessPrLimit(pid_t pid ATTRIBUTE_UNUSED,
                   int resource ATTRIBUTE_UNUSED,
@@ -626,7 +626,7 @@ virProcessPrLimit(pid_t pid ATTRIBUTE_UNUSED,
     errno = ENOSYS;
     return -1;
 }
-#endif /* ! HAVE_PRLIMIT */
+#endif
 
 #if HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)
 int
