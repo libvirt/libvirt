@@ -28,7 +28,7 @@
 #  include "xen_driver.h"
 
 extern int xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
-                                     virDomainPtr dom, const char *path,
+                                     virDomainDefPtr def, const char *path,
                                      struct _virDomainBlockStats *stats);
 
 extern int xenLinuxDomainDeviceID(int domid, const char *dev);

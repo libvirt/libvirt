@@ -1955,14 +1955,34 @@ static int
 xenUnifiedDomainBlockStats(virDomainPtr dom, const char *path,
                            struct _virDomainBlockStats *stats)
 {
-    return xenHypervisorDomainBlockStats(dom, path, stats);
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenHypervisorDomainBlockStats(dom->conn, def, path, stats);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainInterfaceStats(virDomainPtr dom, const char *path,
                                struct _virDomainInterfaceStats *stats)
 {
-    return xenHypervisorDomainInterfaceStats(dom, path, stats);
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenHypervisorDomainInterfaceStats(def, path, stats);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1971,13 +1991,22 @@ xenUnifiedDomainBlockPeek(virDomainPtr dom, const char *path,
                           void *buffer, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainBlockPeek(dom, path, offset, size, buffer);
+        ret = xenXMDomainBlockPeek(dom->conn, def, path, offset, size, buffer);
     else
-        return xenDaemonDomainBlockPeek(dom, path, offset, size, buffer);
+        ret = xenDaemonDomainBlockPeek(dom->conn, def, path, offset, size, buffer);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

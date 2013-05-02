@@ -359,16 +359,16 @@ xenLinuxDomainDeviceID(int domid, const char *path)
 
 int
 xenLinuxDomainBlockStats(xenUnifiedPrivatePtr priv,
-                         virDomainPtr dom,
+                         virDomainDefPtr def,
                          const char *path,
                          struct _virDomainBlockStats *stats)
 {
-    int device = xenLinuxDomainDeviceID(dom->id, path);
+    int device = xenLinuxDomainDeviceID(def->id, path);
 
     if (device < 0)
         return -1;
 
-    return read_bd_stats(priv, device, dom->id, stats);
+    return read_bd_stats(priv, device, def->id, stats);
 }
 
 #endif /* __linux__ */

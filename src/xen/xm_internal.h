@@ -80,7 +80,12 @@ int xenXMDomainCreate(virConnectPtr conn,
 int xenXMDomainDefineXML(virConnectPtr con, virDomainDefPtr def);
 int xenXMDomainUndefine(virConnectPtr conn, virDomainDefPtr def);
 
-int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
+int xenXMDomainBlockPeek(virConnectPtr conn,
+                         virDomainDefPtr def,
+                         const char *path,
+                         unsigned long long offset,
+                         size_t size,
+                         void *buffer);
 
 int xenXMDomainGetAutostart(virDomainDefPtr def,
                             int *autostart);

@@ -1410,7 +1410,8 @@ xenXMDomainDetachDeviceFlags(virConnectPtr conn,
 }
 
 int
-xenXMDomainBlockPeek(virDomainPtr dom ATTRIBUTE_UNUSED,
+xenXMDomainBlockPeek(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virDomainDefPtr def ATTRIBUTE_UNUSED,
                      const char *path ATTRIBUTE_UNUSED,
                      unsigned long long offset ATTRIBUTE_UNUSED,
                      size_t size ATTRIBUTE_UNUSED,

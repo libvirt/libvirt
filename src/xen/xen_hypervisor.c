@@ -1370,17 +1370,18 @@ xenHypervisorSetSchedulerParameters(virConnectPtr conn,
 
 
 int
-xenHypervisorDomainBlockStats(virDomainPtr dom,
+xenHypervisorDomainBlockStats(virConnectPtr conn,
+                              virDomainDefPtr def,
                               const char *path,
                               struct _virDomainBlockStats *stats)
 {
 #ifdef __linux__
-    xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     int ret;
 
     xenUnifiedLock(priv);
     /* Need to lock because it hits the xenstore handle :-( */
-    ret = xenLinuxDomainBlockStats(priv, dom, path, stats);
+    ret = xenLinuxDomainBlockStats(priv, def, path, stats);
     xenUnifiedUnlock(priv);
     return ret;
 #else
@@ -1398,7 +1399,7 @@ xenHypervisorDomainBlockStats(virDomainPtr dom,
  * virNetwork interface, as yet not decided.
  */
 int
-xenHypervisorDomainInterfaceStats(virDomainPtr dom,
+xenHypervisorDomainInterfaceStats(virDomainDefPtr def,
                                   const char *path,
                                   struct _virDomainInterfaceStats *stats)
 {
@@ -1413,7 +1414,7 @@ xenHypervisorDomainInterfaceStats(virDomainPtr dom,
                        _("invalid path, should be vif<domid>.<n>."));
         return -1;
     }
-    if (rqdomid != dom->id) {
+    if (rqdomid != def->id) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("invalid path, vif<domid> should match this domain ID"));
         return -1;

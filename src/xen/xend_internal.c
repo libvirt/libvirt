@@ -3256,7 +3256,8 @@ error:
 
 /**
  * xenDaemonDomainBlockPeek:
- * @domain: domain object
+ * @conn: the hypervisor connection
+ * @minidef: minimal domain configuration
  * @path: path to the file or device
  * @offset: offset
  * @size: size
@@ -3265,13 +3266,14 @@ error:
  * Returns 0 if successful, -1 if error
  */
 int
-xenDaemonDomainBlockPeek(virDomainPtr domain,
+xenDaemonDomainBlockPeek(virConnectPtr conn,
+                         virDomainDefPtr minidef,
                          const char *path,
                          unsigned long long offset,
                          size_t size,
                          void *buffer)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root = NULL;
     int fd = -1, ret = -1;
     virDomainDefPtr def;
@@ -3281,12 +3283,12 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
     const char *actual;
 
     /* Security check: The path must correspond to a block device. */
-    if (domain->id > 0)
-        root = sexpr_get(domain->conn, "/xend/domain/%d?detail=1",
-                         domain->id);
-    else if (domain->id < 0)
-        root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1",
-                         domain->name);
+    if (minidef->id > 0)
+        root = sexpr_get(conn, "/xend/domain/%d?detail=1",
+                         minidef->id);
+    else if (minidef->id < 0)
+        root = sexpr_get(conn, "/xend/domain/%s?detail=1",
+                         minidef->name);
     else {
         /* This call always fails for dom0. */
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3301,8 +3303,8 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 
     id = xenGetDomIdFromSxpr(root, priv->xendConfigVersion);
     xenUnifiedLock(priv);
-    tty = xenStoreDomainGetConsolePath(domain->conn, id);
-    vncport = xenStoreDomainGetVNCPort(domain->conn, id);
+    tty = xenStoreDomainGetConsolePath(conn, id);
+    vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
 
     if (!(def = xenParseSxpr(root, priv->xendConfigVersion, NULL, tty,
@@ -3348,7 +3350,8 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
 
 /**
  * virDomainXMLDevID:
- * @domain: pointer to domain object
+ * @conn: the hypervisor connection
+ * @minidef: minimal domain configuration
  * @dev: pointer to device config object
  * @class: Xen device class "vbd" or "vif" (OUT)
  * @ref: Xen device reference (OUT)
