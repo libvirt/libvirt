@@ -1849,17 +1849,26 @@ static char *
 xenUnifiedDomainGetSchedulerType(virDomainPtr dom, int *nparams)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    char *ret = NULL;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot change scheduler parameters"));
-            return NULL;
+            goto cleanup;
         }
-        return xenDaemonGetSchedulerType(dom, nparams);
+        ret = xenDaemonGetSchedulerType(dom->conn, nparams);
     } else {
-        return xenHypervisorGetSchedulerType(dom, nparams);
+        ret = xenHypervisorGetSchedulerType(dom->conn, nparams);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1869,19 +1878,28 @@ xenUnifiedDomainGetSchedulerParametersFlags(virDomainPtr dom,
                                             unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(0, -1);
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot change scheduler parameters"));
-            return -1;
+            goto cleanup;
         }
-        return xenDaemonGetSchedulerParameters(dom, params, nparams);
+        ret = xenDaemonGetSchedulerParameters(dom->conn, def, params, nparams);
     } else {
-        return xenHypervisorGetSchedulerParameters(dom, params, nparams);
+        ret = xenHypervisorGetSchedulerParameters(dom->conn, def, params, nparams);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1900,19 +1918,28 @@ xenUnifiedDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                             unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     virCheckFlags(0, -1);
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0) {
         if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot change scheduler parameters"));
-            return -1;
+            goto cleanup;
         }
-        return xenDaemonSetSchedulerParameters(dom, params, nparams);
+        ret = xenDaemonSetSchedulerParameters(dom->conn, def, params, nparams);
     } else {
-        return xenHypervisorSetSchedulerParameters(dom, params, nparams);
+        ret = xenHypervisorSetSchedulerParameters(dom->conn, def, params, nparams);
     }
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

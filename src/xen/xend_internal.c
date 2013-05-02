@@ -2979,7 +2979,7 @@ error:
 
 /**
  * xenDaemonGetSchedulerType:
- * @domain: pointer to the Domain block
+ * @conn: the hypervisor connection
  * @nparams: give a number of scheduler parameters
  *
  * Get the scheduler type of Xen
@@ -2988,9 +2988,10 @@ error:
  * caller or NULL in case of failure
  */
 char *
-xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
+xenDaemonGetSchedulerType(virConnectPtr conn,
+                          int *nparams)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root;
     const char *ret = NULL;
     char *schedulertype = NULL;
@@ -3002,7 +3003,7 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
         return NULL;
     }
 
-    root = sexpr_get(domain->conn, "/xend/node/");
+    root = sexpr_get(conn, "/xend/node/");
     if (root == NULL)
         return NULL;
 
@@ -3042,7 +3043,8 @@ error:
 
 /**
  * xenDaemonGetSchedulerParameters:
- * @domain: pointer to the Domain block
+ * @conn: the hypervisor connection
+ * @def: domain configuration
  * @params: pointer to scheduler parameters
  *          This memory area must be allocated by the caller
  * @nparams: a number of scheduler parameters which should be same as a
@@ -3053,11 +3055,12 @@ error:
  * Returns 0 or -1 in case of failure
  */
 int
-xenDaemonGetSchedulerParameters(virDomainPtr domain,
+xenDaemonGetSchedulerParameters(virConnectPtr conn,
+                                virDomainDefPtr def,
                                 virTypedParameterPtr params,
                                 int *nparams)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root;
     char *sched_type = NULL;
     int sched_nparam = 0;
@@ -3071,12 +3074,12 @@ xenDaemonGetSchedulerParameters(virDomainPtr domain,
     }
 
     /* look up the information by domain name */
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return -1;
 
     /* get the scheduler type */
-    sched_type = xenDaemonGetSchedulerType(domain, &sched_nparam);
+    sched_type = xenDaemonGetSchedulerType(conn, &sched_nparam);
     if (sched_type == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failed to get a scheduler name"));
@@ -3146,7 +3149,8 @@ error:
 
 /**
  * xenDaemonSetSchedulerParameters:
- * @domain: pointer to the Domain block
+ * @conn: the hypervisor connection
+ * @def: domain configuration
  * @params: pointer to scheduler parameters
  * @nparams: a number of scheduler setting parameters
  *
@@ -3155,11 +3159,12 @@ error:
  * Returns 0 or -1 in case of failure
  */
 int
-xenDaemonSetSchedulerParameters(virDomainPtr domain,
+xenDaemonSetSchedulerParameters(virConnectPtr conn,
+                                virDomainDefPtr def,
                                 virTypedParameterPtr params,
                                 int nparams)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     struct sexpr *root;
     char *sched_type = NULL;
     int i;
@@ -3174,12 +3179,12 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
     }
 
     /* look up the information by domain name */
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL)
         return -1;
 
     /* get the scheduler type */
-    sched_type = xenDaemonGetSchedulerType(domain, &sched_nparam);
+    sched_type = xenDaemonGetSchedulerType(conn, &sched_nparam);
     if (sched_type == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failed to get a scheduler name"));
@@ -3233,7 +3238,7 @@ xenDaemonSetSchedulerParameters(virDomainPtr domain,
                 snprintf(buf_cap, sizeof(buf_cap), "%s", cap);
             }
 
-            ret = xend_op(domain->conn, domain->name, "op",
+            ret = xend_op(conn, def->name, "op",
                           "domain_sched_credit_set", "weight", buf_weight,
                           "cap", buf_cap, NULL);
             break;

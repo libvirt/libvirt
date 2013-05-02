@@ -196,11 +196,14 @@ int xenDaemonDomainMigratePerform (virConnectPtr conn,
 
 int xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path, unsigned long long offset, size_t size, void *buffer);
 
-char * xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams);
-int xenDaemonGetSchedulerParameters(virDomainPtr domain,
+char * xenDaemonGetSchedulerType(virConnectPtr conn,
+                                 int *nparams);
+int xenDaemonGetSchedulerParameters(virConnectPtr conn,
+                                    virDomainDefPtr def,
                                     virTypedParameterPtr params,
                                     int *nparams);
-int xenDaemonSetSchedulerParameters(virDomainPtr domain,
+int xenDaemonSetSchedulerParameters(virConnectPtr conn,
+                                    virDomainDefPtr def,
                                     virTypedParameterPtr params,
                                     int nparams);
 

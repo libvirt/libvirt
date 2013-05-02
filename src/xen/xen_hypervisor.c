@@ -1105,7 +1105,7 @@ virXen_getdomaininfo(int handle, int first_domain, xen_getdomaininfo *dominfo)
 
 /**
  * xenHypervisorGetSchedulerType:
- * @domain: pointer to the Xen Hypervisor block
+ * @conn: the hypervisor connection
  * @nparams:give a number of scheduler parameters.
  *
  * Do a low level hypercall to get scheduler type
@@ -1113,10 +1113,11 @@ virXen_getdomaininfo(int handle, int first_domain, xen_getdomaininfo *dominfo)
  * Returns scheduler name or NULL in case of failure
  */
 char *
-xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
+xenHypervisorGetSchedulerType(virConnectPtr conn,
+                              int *nparams)
 {
     char *schedulertype = NULL;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     /*
      * Support only hv_versions.dom_interface >=5
@@ -1164,7 +1165,8 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
 
 /**
  * xenHypervisorGetSchedulerParameters:
- * @domain: pointer to the Xen Hypervisor block
+ * @conn: the hypervisor connection
+ * @def: domain configuration
  * @params: pointer to scheduler parameters.
  *     This memory area should be allocated before calling.
  * @nparams: this parameter must be at least as large as
@@ -1176,11 +1178,12 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
  * Returns 0 or -1 in case of failure
  */
 int
-xenHypervisorGetSchedulerParameters(virDomainPtr domain,
+xenHypervisorGetSchedulerParameters(virConnectPtr conn,
+                                    virDomainDefPtr def,
                                     virTypedParameterPtr params,
                                     int *nparams)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     /*
      * Support only hv_versions.dom_interface >=5
@@ -1218,7 +1221,7 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
             case XEN_SCHEDULER_CREDIT:
                 memset(&op_dom, 0, sizeof(op_dom));
                 op_dom.cmd = XEN_V2_OP_SCHEDULER;
-                op_dom.domain = (domid_t) domain->id;
+                op_dom.domain = (domid_t) def->id;
                 op_dom.u.getschedinfo.sched_id = XEN_SCHEDULER_CREDIT;
                 op_dom.u.getschedinfo.cmd = XEN_DOMCTL_SCHEDOP_getinfo;
                 ret = xenHypervisorDoV2Dom(priv->handle, &op_dom);
@@ -1254,7 +1257,8 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 
 /**
  * xenHypervisorSetSchedulerParameters:
- * @domain: pointer to the Xen Hypervisor block
+ * @conn: the hypervisor connection
+ * @def: domain configuration
  * @nparams:give a number of scheduler setting parameters .
  *
  * Do a low level hypercall to set scheduler parameters
@@ -1262,13 +1266,14 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
  * Returns 0 or -1 in case of failure
  */
 int
-xenHypervisorSetSchedulerParameters(virDomainPtr domain,
+xenHypervisorSetSchedulerParameters(virConnectPtr conn,
+                                    virDomainDefPtr def,
                                     virTypedParameterPtr params,
                                     int nparams)
 {
     int i;
     unsigned int val;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     char buf[256];
 
     if (nparams == 0) {
@@ -1313,7 +1318,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
         case XEN_SCHEDULER_CREDIT: {
             memset(&op_dom, 0, sizeof(op_dom));
             op_dom.cmd = XEN_V2_OP_SCHEDULER;
-            op_dom.domain = (domid_t) domain->id;
+            op_dom.domain = (domid_t) def->id;
             op_dom.u.getschedinfo.sched_id = XEN_SCHEDULER_CREDIT;
             op_dom.u.getschedinfo.cmd = XEN_DOMCTL_SCHEDOP_putinfo;
 

@@ -106,18 +106,20 @@ int     xenHypervisorGetVcpuMax         (virConnectPtr conn,
                                          virDomainDefPtr def)
           ATTRIBUTE_NONNULL (1);
 
-char *  xenHypervisorGetSchedulerType   (virDomainPtr domain,
+char *  xenHypervisorGetSchedulerType   (virConnectPtr conn,
                                          int *nparams)
           ATTRIBUTE_NONNULL (1);
 
-int     xenHypervisorGetSchedulerParameters(virDomainPtr domain,
-                                         virTypedParameterPtr params,
-                                         int *nparams)
+int     xenHypervisorGetSchedulerParameters(virConnectPtr conn,
+                                            virDomainDefPtr def,
+                                            virTypedParameterPtr params,
+                                            int *nparams)
           ATTRIBUTE_NONNULL (1);
 
-int     xenHypervisorSetSchedulerParameters(virDomainPtr domain,
-                                         virTypedParameterPtr params,
-                                         int nparams)
+int     xenHypervisorSetSchedulerParameters(virConnectPtr conn,
+                                            virDomainDefPtr def,
+                                            virTypedParameterPtr params,
+                                            int nparams)
           ATTRIBUTE_NONNULL (1);
 
 int     xenHypervisorDomainBlockStats   (virDomainPtr domain,
