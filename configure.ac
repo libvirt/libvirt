@@ -236,6 +236,7 @@ LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_OPENWSMAN
 LIBVIRT_CHECK_PCIACCESS
+LIBVIRT_CHECK_READLINE
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_SELINUX
@@ -1564,45 +1565,7 @@ fi
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
 
 dnl virsh libraries
-AC_CHECK_HEADERS([readline/readline.h])
-
-# Check for readline.
-AC_CHECK_LIB([readline], [readline],
-	[lv_use_readline=yes; VIRSH_LIBS="$VIRSH_LIBS -lreadline"],
-	[lv_use_readline=no])
-
-# If the above test failed, it may simply be that -lreadline requires
-# some termcap-related code, e.g., from one of the following libraries.
-# See if adding one of them to LIBS helps.
-if test $lv_use_readline = no; then
-    lv_saved_libs=$LIBS
-    LIBS=
-    AC_SEARCH_LIBS([tgetent], [ncurses curses termcap termlib])
-    case $LIBS in
-      no*) ;;  # handle "no" and "none required"
-      *) # anything else is a -lLIBRARY
-	# Now, check for -lreadline again, also using $LIBS.
-	# Note: this time we use a different function, so that
-	# we don't get a cached "no" result.
-	AC_CHECK_LIB([readline], [rl_initialize],
-		[lv_use_readline=yes
-		 VIRSH_LIBS="$VIRSH_LIBS -lreadline $LIBS"],,
-		[$LIBS])
-	;;
-    esac
-    test $lv_use_readline = no &&
-	AC_MSG_WARN([readline library not found])
-    LIBS=$lv_saved_libs
-fi
-
-if test $lv_use_readline = yes; then
-    AC_DEFINE_UNQUOTED([USE_READLINE], 1,
-		       [whether virsh can use readline])
-    READLINE_CFLAGS=-DUSE_READLINE
-else
-    READLINE_CFLAGS=
-fi
-AC_SUBST([READLINE_CFLAGS])
+VIRSH_LIBS="$VIRSH_LIBS $READLINE_LIBS"
 AC_SUBST([VIRSH_LIBS])
 
 dnl check if the network driver should be compiled
@@ -2737,6 +2700,7 @@ LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_OPENWSMAN
 LIBVIRT_RESULT_PCIACCESS
+LIBVIRT_RESULT_READLINE
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_SELINUX
@@ -2817,7 +2781,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([            Debug: $enable_debug])
 AC_MSG_NOTICE([      Use -Werror: $set_werror])
 AC_MSG_NOTICE([    Warning Flags: $WARN_CFLAGS])
-AC_MSG_NOTICE([         Readline: $lv_use_readline])
 AC_MSG_NOTICE([           Python: $with_python])
 AC_MSG_NOTICE([           DTrace: $with_dtrace])
 AC_MSG_NOTICE([            numad: $with_numad])
