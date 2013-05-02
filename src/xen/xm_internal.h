@@ -82,8 +82,10 @@ int xenXMDomainUndefine(virConnectPtr conn, virDomainDefPtr def);
 
 int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long offset, size_t size, void *buffer);
 
-int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart);
-int xenXMDomainSetAutostart(virDomainPtr dom, int autostart);
+int xenXMDomainGetAutostart(virDomainDefPtr def,
+                            int *autostart);
+int xenXMDomainSetAutostart(virDomainDefPtr def,
+                            int autostart);
 
 int xenXMDomainAttachDeviceFlags(virConnectPtr conn,
                                  virDomainDefPtr def,

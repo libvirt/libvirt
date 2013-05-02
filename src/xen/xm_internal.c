@@ -1423,28 +1423,29 @@ xenXMDomainBlockPeek(virDomainPtr dom ATTRIBUTE_UNUSED,
 
 
 static char *
-xenXMAutostartLinkName(virDomainPtr dom)
+xenXMAutostartLinkName(virDomainDefPtr def)
 {
     char *ret;
-    if (virAsprintf(&ret, "/etc/xen/auto/%s", dom->name) < 0)
+    if (virAsprintf(&ret, "/etc/xen/auto/%s", def->name) < 0)
         return NULL;
     return ret;
 }
 
 static char *
-xenXMDomainConfigName(virDomainPtr dom)
+xenXMDomainConfigName(virDomainDefPtr def)
 {
     char *ret;
-    if (virAsprintf(&ret, "/etc/xen/%s", dom->name) < 0)
+    if (virAsprintf(&ret, "/etc/xen/%s", def->name) < 0)
         return NULL;
     return ret;
 }
 
 int
-xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
+xenXMDomainGetAutostart(virDomainDefPtr def,
+                        int *autostart)
 {
-    char *linkname = xenXMAutostartLinkName(dom);
-    char *config = xenXMDomainConfigName(dom);
+    char *linkname = xenXMAutostartLinkName(def);
+    char *config = xenXMDomainConfigName(def);
     int ret = -1;
 
     if (!linkname || !config) {
@@ -1470,10 +1471,11 @@ cleanup:
 
 
 int
-xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
+xenXMDomainSetAutostart(virDomainDefPtr def,
+                        int autostart)
 {
-    char *linkname = xenXMAutostartLinkName(dom);
-    char *config = xenXMDomainConfigName(dom);
+    char *linkname = xenXMAutostartLinkName(def);
+    char *config = xenXMDomainConfigName(def);
     int ret = -1;
 
     if (!linkname || !config) {

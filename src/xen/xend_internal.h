@@ -174,10 +174,12 @@ int xenDaemonUpdateDeviceFlags(virConnectPtr conn,
                                virDomainDefPtr def,
                                const char *xml,
                                unsigned int flags);
-int xenDaemonDomainGetAutostart          (virDomainPtr dom,
-                                          int *autostart);
-int xenDaemonDomainSetAutostart          (virDomainPtr domain,
-                                          int autostart);
+int xenDaemonDomainGetAutostart(virConnectPtr conn,
+                                virDomainDefPtr def,
+                                int *autostart);
+int xenDaemonDomainSetAutostart(virConnectPtr conn,
+                                virDomainDefPtr def,
+                                int autostart);
 
 int xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def);
 virDomainDefPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);

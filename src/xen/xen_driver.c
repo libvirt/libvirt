@@ -1809,22 +1809,40 @@ static int
 xenUnifiedDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainGetAutostart(dom, autostart);
+        ret = xenXMDomainGetAutostart(def, autostart);
     else
-        return xenDaemonDomainGetAutostart(dom, autostart);
+        ret = xenDaemonDomainGetAutostart(dom->conn, def, autostart);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainSetAutostart(dom, autostart);
+        ret = xenXMDomainSetAutostart(def, autostart);
     else
-        return xenDaemonDomainSetAutostart(dom, autostart);
+        ret = xenDaemonDomainSetAutostart(dom->conn, def, autostart);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static char *

@@ -2562,12 +2562,14 @@ cleanup:
 }
 
 int
-xenDaemonDomainGetAutostart(virDomainPtr domain, int *autostart)
+xenDaemonDomainGetAutostart(virConnectPtr conn,
+                            virDomainDefPtr def,
+                            int *autostart)
 {
     struct sexpr *root;
     const char *tmp;
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL) {
         virReportError(VIR_ERR_XEN_CALL,
                        "%s", _("xenDaemonGetAutostart failed to find this domain"));
@@ -2586,14 +2588,16 @@ xenDaemonDomainGetAutostart(virDomainPtr domain, int *autostart)
 }
 
 int
-xenDaemonDomainSetAutostart(virDomainPtr domain, int autostart)
+xenDaemonDomainSetAutostart(virConnectPtr conn,
+                            virDomainDefPtr def,
+                            int autostart)
 {
     struct sexpr *root, *autonode;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *content = NULL;
     int ret = -1;
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", def->name);
     if (root == NULL) {
         virReportError(VIR_ERR_XEN_CALL,
                        "%s", _("xenDaemonSetAutostart failed to find this domain"));
@@ -2632,7 +2636,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain, int autostart)
 
         content = virBufferContentAndReset(&buffer);
 
-        if (xend_op(domain->conn, "", "op", "new", "config", content, NULL) != 0) {
+        if (xend_op(conn, "", "op", "new", "config", content, NULL) != 0) {
             virReportError(VIR_ERR_XEN_CALL,
                            "%s", _("Failed to redefine sexpr"));
             goto error;
