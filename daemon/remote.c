@@ -1000,7 +1000,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
 {
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
@@ -1010,12 +1010,13 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0)
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0)
         goto no_memory;
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -1108,7 +1109,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
 {
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
@@ -1118,12 +1119,13 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
         goto cleanup;
     }
 
-    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0)
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0)
         goto no_memory;
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -1283,7 +1285,7 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
     virTypedParameterPtr params = NULL;
     virDomainPtr dom = NULL;
     const char *path = args->path;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -1298,14 +1300,15 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     flags = args->flags;
 
-    if (nparams > REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (virDomainBlockStatsFlags(dom, path, params, &nparams, flags) < 0)
         goto cleanup;
@@ -1912,7 +1915,7 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -1925,14 +1928,15 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -1976,7 +1980,7 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -1989,14 +1993,15 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_DOMAIN_NUMA_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_NUMA_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -2040,7 +2045,7 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -2053,14 +2058,15 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -2105,7 +2111,7 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNodeCPUStatsPtr params = NULL;
     int i;
     int cpuNum = args->cpuNum;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -2118,14 +2124,15 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_NODE_CPU_STATS_MAX) {
+    if (args->nparams > REMOTE_NODE_CPU_STATS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (virNodeGetCPUStats(priv->conn, cpuNum, params, &nparams, flags) < 0)
         goto cleanup;
@@ -2183,7 +2190,7 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNodeMemoryStatsPtr params = NULL;
     int i;
     int cellNum = args->cellNum;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -2196,14 +2203,15 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_NODE_MEMORY_STATS_MAX) {
+    if (args->nparams > REMOTE_NODE_MEMORY_STATS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (virNodeGetMemoryStats(priv->conn, cellNum, params, &nparams, flags) < 0)
         goto cleanup;
@@ -2302,7 +2310,7 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     int rv = -1;
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
@@ -2311,15 +2319,16 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (nparams > REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
 
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -3799,7 +3808,7 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
     virDomainPtr dom = NULL;
     virTypedParameterPtr params = NULL;
     const char *device = args->device;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -3812,14 +3821,15 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
 
     flags = args->flags;
 
-    if (nparams > REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
+    nparams = args->nparams;
 
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
@@ -4507,7 +4517,7 @@ remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                       remote_node_get_memory_parameters_ret *ret)
 {
     virTypedParameterPtr params = NULL;
-    int nparams = args->nparams;
+    int nparams = 0;
     unsigned int flags;
     int rv = -1;
     struct daemonClientPrivate *priv =
@@ -4520,15 +4530,15 @@ remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     flags = args->flags;
 
-    if (nparams > REMOTE_NODE_MEMORY_PARAMETERS_MAX) {
+    if (args->nparams > REMOTE_NODE_MEMORY_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
-    if (nparams && VIR_ALLOC_N(params, nparams) < 0) {
+    if (args->nparams && VIR_ALLOC_N(params, args->nparams) < 0) {
         virReportOOMError();
         goto cleanup;
     }
-
+    nparams = args->nparams;
 
     if (virNodeGetMemoryParameters(priv->conn, params, &nparams, flags) < 0)
         goto cleanup;
