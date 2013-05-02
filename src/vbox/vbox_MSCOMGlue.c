@@ -2,6 +2,7 @@
 /*
  * vbox_MSCOMGlue.c: glue to the MSCOM based VirtualBox API
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2010-2011 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -33,6 +34,8 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "virstring.h"
+#include "virutil.h"
 #include "vbox_MSCOMGlue.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX

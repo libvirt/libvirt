@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2013 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -38,6 +38,7 @@
 #include "vbox_driver.h"
 #include "vbox_glue.h"
 #include "virerror.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
