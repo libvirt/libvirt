@@ -1,6 +1,6 @@
 # Makefile for libvirt python library
 
-## Copyright (C) 2005-2012 Red Hat, Inc.
+## Copyright (C) 2005-2013 Red Hat, Inc.
 ## See COPYING.LIB for the License of this software
 
 SUBDIRS= . tests
@@ -40,6 +40,7 @@ EXTRA_DIST =			\
 	libvirt-lxc-override-api.xml \
 	libvirt-qemu-override.c	\
 	libvirt-qemu-override-api.xml \
+	sanitytest.py \
 	$(CLASSES_EXTRA) \
 	$(DOCS)
 
@@ -123,8 +124,6 @@ $(GENERATED) $(QEMU_GENERATED) $(LXC_GENERATED): $(GENERATE).stamp
 $(libvirtmod_la_OBJECTS): $(GENERATED)
 $(libvirtmod_qemu_la_OBJECTS): $(QEMU_GENERATED)
 $(libvirtmod_lxc_la_OBJECTS): $(LXC_GENERATED)
-
-EXTRA_DIST += sanitytest.py
 
 check-local:
 	$(AM_V_GEN)../run $(PYTHON) $(srcdir)/sanitytest.py
