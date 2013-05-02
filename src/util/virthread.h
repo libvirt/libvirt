@@ -1,7 +1,7 @@
 /*
  * virthread.h: basic thread synchronization primitives
  *
- * Copyright (C) 2009-2011 Red Hat, Inc.
+ * Copyright (C) 2009-2011, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,8 +63,8 @@ void virThreadCancel(virThreadPtr thread);
  * guaranteed to give unique values for distinct threads on all
  * architectures, nor are the two functions guaranteed to give the same
  * value for the same thread. */
-int virThreadSelfID(void);
-int virThreadID(virThreadPtr thread);
+unsigned long long virThreadSelfID(void);
+unsigned long long virThreadID(virThreadPtr thread);
 
 /* Static initialization of mutexes is not possible, so we instead
  * provide for guaranteed one-time initialization via a callback

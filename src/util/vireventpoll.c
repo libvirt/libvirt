@@ -1,7 +1,7 @@
 /*
  * vireventpoll.c: Poll based event loop for monitoring file handles
  *
- * Copyright (C) 2007, 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2007, 2010-2013 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -708,7 +708,7 @@ static int virEventPollInterruptLocked(void)
 
     if (!eventLoop.running ||
         virThreadIsSelf(&eventLoop.leader)) {
-        VIR_DEBUG("Skip interrupt, %d %d", eventLoop.running,
+        VIR_DEBUG("Skip interrupt, %d %llu", eventLoop.running,
                   virThreadID(&eventLoop.leader));
         return 0;
     }
