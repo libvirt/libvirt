@@ -133,10 +133,12 @@ int xenDaemonListDefinedDomains(virConnectPtr conn,
                                 char **const names,
                                 int maxnames);
 
-int xenDaemonAttachDeviceFlags(virDomainPtr domain,
+int xenDaemonAttachDeviceFlags(virConnectPtr conn,
+                               virDomainDefPtr def,
                                const char *xml,
                                unsigned int flags);
-int xenDaemonDetachDeviceFlags(virDomainPtr domain,
+int xenDaemonDetachDeviceFlags(virConnectPtr conn,
+                               virDomainDefPtr def,
                                const char *xml,
                                unsigned int flags);
 
@@ -168,7 +170,9 @@ int	xenDaemonDomainGetVcpus		(virConnectPtr conn,
                                          int maxinfo,
                                          unsigned char *cpumaps,
                                          int maplen);
-int xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
+int xenDaemonUpdateDeviceFlags(virConnectPtr conn,
+                               virDomainDefPtr def,
+                               const char *xml,
                                unsigned int flags);
 int xenDaemonDomainGetAutostart          (virDomainPtr dom,
                                           int *autostart);

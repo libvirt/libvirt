@@ -85,11 +85,13 @@ int xenXMDomainBlockPeek (virDomainPtr dom, const char *path, unsigned long long
 int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart);
 int xenXMDomainSetAutostart(virDomainPtr dom, int autostart);
 
-int xenXMDomainAttachDeviceFlags(virDomainPtr domain,
+int xenXMDomainAttachDeviceFlags(virConnectPtr conn,
+                                 virDomainDefPtr def,
                                  const char *xml,
                                  unsigned int flags);
 
-int xenXMDomainDetachDeviceFlags(virDomainPtr domain,
+int xenXMDomainDetachDeviceFlags(virConnectPtr conn,
+                                 virDomainDefPtr def,
                                  const char *xml,
                                  unsigned int flags);
 

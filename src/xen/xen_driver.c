@@ -1693,6 +1693,8 @@ xenUnifiedDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
     unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     /*
      * HACK: xend with xendConfigVersion >= 3 does not support changing live
@@ -1702,12 +1704,17 @@ xenUnifiedDomainAttachDevice(virDomainPtr dom, const char *xml)
     if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
-    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainAttachDeviceFlags(dom, xml, flags);
-    else
-        return xenDaemonAttachDeviceFlags(dom, xml, flags);
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
-    return -1;
+    if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        ret = xenXMDomainAttachDeviceFlags(dom->conn, def, xml, flags);
+    else
+        ret = xenDaemonAttachDeviceFlags(dom->conn, def, xml, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1715,11 +1722,20 @@ xenUnifiedDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainAttachDeviceFlags(dom, xml, flags);
+        ret = xenXMDomainAttachDeviceFlags(dom->conn, def, xml, flags);
     else
-        return xenDaemonAttachDeviceFlags(dom, xml, flags);
+        ret = xenDaemonAttachDeviceFlags(dom->conn, def, xml, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1727,6 +1743,8 @@ xenUnifiedDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
     unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
 
     /*
      * HACK: xend with xendConfigVersion >= 3 does not support changing live
@@ -1736,10 +1754,17 @@ xenUnifiedDomainDetachDevice(virDomainPtr dom, const char *xml)
     if (priv->xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
 
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainDetachDeviceFlags(dom, xml, flags);
+        ret = xenXMDomainDetachDeviceFlags(dom->conn, def, xml, flags);
     else
-        return xenDaemonDetachDeviceFlags(dom, xml, flags);
+        ret = xenDaemonDetachDeviceFlags(dom->conn, def, xml, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
@@ -1747,18 +1772,37 @@ xenUnifiedDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
 
     if (dom->id < 0 && priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return xenXMDomainDetachDeviceFlags(dom, xml, flags);
+        ret = xenXMDomainDetachDeviceFlags(dom->conn, def, xml, flags);
     else
-        return xenDaemonDetachDeviceFlags(dom, xml, flags);
+        ret = xenDaemonDetachDeviceFlags(dom->conn, def, xml, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int
 xenUnifiedDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                   unsigned int flags)
 {
-    return xenDaemonUpdateDeviceFlags(dom, xml, flags);
+    virDomainDefPtr def = NULL;
+    int ret = -1;
+
+    if (!(def = xenGetDomainDefForDom(dom)))
+        goto cleanup;
+
+    ret = xenDaemonUpdateDeviceFlags(dom->conn, def, xml, flags);
+
+cleanup:
+    virDomainDefFree(def);
+    return ret;
 }
 
 static int

@@ -70,7 +70,8 @@
 #define XEND_RCV_BUF_MAX_LEN (256 * 1024)
 
 static int
-virDomainXMLDevID(virDomainPtr domain, virDomainDeviceDefPtr dev, char *class,
+virDomainXMLDevID(virConnectPtr conn, virDomainDefPtr domain,
+                  virDomainDeviceDefPtr dev, char *class,
                   char *ref, int ref_len);
 
 /**
@@ -2205,7 +2206,8 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
 
 /**
  * xenDaemonAttachDeviceFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: domain configuration
  * @xml: pointer to XML description of device
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
@@ -2215,11 +2217,12 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-xenDaemonAttachDeviceFlags(virDomainPtr domain,
+xenDaemonAttachDeviceFlags(virConnectPtr conn,
+                           virDomainDefPtr minidef,
                            const char *xml,
                            unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     char *sexpr = NULL;
     int ret = -1;
     virDomainDeviceDefPtr dev = NULL;
@@ -2230,7 +2233,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (domain->id < 0) {
+    if (minidef->id < 0) {
         /* Cannot modify live config if domain is inactive */
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2260,9 +2263,9 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
         }
     }
 
-    if (!(def = xenDaemonDomainFetch(domain->conn,
-                                     domain->id,
-                                     domain->name,
+    if (!(def = xenDaemonDomainFetch(conn,
+                                     minidef->id,
+                                     minidef->name,
                                      NULL)))
         goto cleanup;
 
@@ -2288,7 +2291,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        if (xenFormatSxprNet(domain->conn,
+        if (xenFormatSxprNet(conn,
                              dev->data.net,
                              &buf,
                              STREQ(def->os.type, "hvm") ? 1 : 0,
@@ -2333,9 +2336,9 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
 
     sexpr = virBufferContentAndReset(&buf);
 
-    if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref))) {
+    if (virDomainXMLDevID(conn, minidef, dev, class, ref, sizeof(ref))) {
         /* device doesn't exist, define it */
-        ret = xend_op(domain->conn, domain->name, "op", "device_create",
+        ret = xend_op(conn, def->name, "op", "device_create",
                       "config", sexpr, NULL);
     } else {
         if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -2343,7 +2346,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain,
                            _("target '%s' already exists"), target);
         } else {
             /* device exists, attempt to modify it */
-            ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+            ret = xend_op(conn, minidef->name, "op", "device_configure",
                           "config", sexpr, "dev", ref, NULL);
         }
     }
@@ -2358,7 +2361,8 @@ cleanup:
 
 /**
  * xenDaemonUpdateDeviceFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: domain configuration
  * @xml: pointer to XML description of device
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
@@ -2368,11 +2372,12 @@ cleanup:
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-xenDaemonUpdateDeviceFlags(virDomainPtr domain,
+xenDaemonUpdateDeviceFlags(virConnectPtr conn,
+                           virDomainDefPtr minidef,
                            const char *xml,
                            unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     char *sexpr = NULL;
     int ret = -1;
     virDomainDeviceDefPtr dev = NULL;
@@ -2383,7 +2388,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
     virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                   VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
 
-    if (domain->id < 0) {
+    if (minidef->id < 0) {
         /* Cannot modify live config if domain is inactive */
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2413,9 +2418,9 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
         }
     }
 
-    if (!(def = xenDaemonDomainFetch(domain->conn,
-                                     domain->id,
-                                     domain->name,
+    if (!(def = xenDaemonDomainFetch(conn,
+                                     minidef->id,
+                                     minidef->name,
                                      NULL)))
         goto cleanup;
 
@@ -2441,13 +2446,13 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain,
 
     sexpr = virBufferContentAndReset(&buf);
 
-    if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref))) {
+    if (virDomainXMLDevID(conn, minidef, dev, class, ref, sizeof(ref))) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("requested device does not exist"));
         goto cleanup;
     } else {
         /* device exists, attempt to modify it */
-        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+        ret = xend_op(conn, minidef->name, "op", "device_configure",
                       "config", sexpr, "dev", ref, NULL);
     }
 
@@ -2460,7 +2465,8 @@ cleanup:
 
 /**
  * xenDaemonDetachDeviceFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: domain configuration
  * @xml: pointer to XML description of device
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
@@ -2469,11 +2475,12 @@ cleanup:
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-xenDaemonDetachDeviceFlags(virDomainPtr domain,
+xenDaemonDetachDeviceFlags(virConnectPtr conn,
+                           virDomainDefPtr minidef,
                            const char *xml,
                            unsigned int flags)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     char class[8], ref[80];
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def = NULL;
@@ -2483,7 +2490,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (domain->id < 0) {
+    if (minidef->id < 0) {
         /* Cannot modify live config if domain is inactive */
         if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2513,9 +2520,9 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
         }
     }
 
-    if (!(def = xenDaemonDomainFetch(domain->conn,
-                                     domain->id,
-                                     domain->name,
+    if (!(def = xenDaemonDomainFetch(conn,
+                                     minidef->id,
+                                     minidef->name,
                                      NULL)))
         goto cleanup;
 
@@ -2523,7 +2530,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref)))
+    if (virDomainXMLDevID(conn, minidef, dev, class, ref, sizeof(ref)))
         goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
@@ -2537,12 +2544,12 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain,
             goto cleanup;
         }
         xendev = virBufferContentAndReset(&buf);
-        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+        ret = xend_op(conn, minidef->name, "op", "device_configure",
                       "config", xendev, "dev", ref, NULL);
         VIR_FREE(xendev);
     }
     else {
-        ret = xend_op(domain->conn, domain->name, "op", "device_destroy",
+        ret = xend_op(conn, minidef->name, "op", "device_destroy",
                       "type", class, "dev", ref, "force", "0", "rm_cfg", "1",
                       NULL);
     }
@@ -3347,13 +3354,14 @@ xenDaemonDomainBlockPeek(virDomainPtr domain,
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-virDomainXMLDevID(virDomainPtr domain,
+virDomainXMLDevID(virConnectPtr conn,
+                  virDomainDefPtr def,
                   virDomainDeviceDefPtr dev,
                   char *class,
                   char *ref,
                   int ref_len)
 {
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
     char *xref;
     char *tmp;
 
@@ -3370,7 +3378,7 @@ virDomainXMLDevID(virDomainPtr domain,
         if (dev->data.disk->dst == NULL)
             return -1;
         xenUnifiedLock(priv);
-        xref = xenStoreDomainGetDiskID(domain->conn, domain->id,
+        xref = xenStoreDomainGetDiskID(conn, def->id,
                                        dev->data.disk->dst);
         xenUnifiedUnlock(priv);
         if (xref == NULL)
@@ -3382,13 +3390,13 @@ virDomainXMLDevID(virDomainPtr domain,
             return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         char mac[VIR_MAC_STRING_BUFLEN];
-        virDomainNetDefPtr def = dev->data.net;
-        virMacAddrFormat(&def->mac, mac);
+        virDomainNetDefPtr netdef = dev->data.net;
+        virMacAddrFormat(&netdef->mac, mac);
 
         strcpy(class, "vif");
 
         xenUnifiedLock(priv);
-        xref = xenStoreDomainGetNetworkID(domain->conn, domain->id, mac);
+        xref = xenStoreDomainGetNetworkID(conn, def->id, mac);
         xenUnifiedUnlock(priv);
         if (xref == NULL)
             return -1;
@@ -3401,13 +3409,13 @@ virDomainXMLDevID(virDomainPtr domain,
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
         char *bdf;
-        virDomainHostdevDefPtr def = dev->data.hostdev;
+        virDomainHostdevDefPtr hostdef = dev->data.hostdev;
 
         if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
-                        def->source.subsys.u.pci.addr.domain,
-                        def->source.subsys.u.pci.addr.bus,
-                        def->source.subsys.u.pci.addr.slot,
-                        def->source.subsys.u.pci.addr.function) < 0) {
+                        hostdef->source.subsys.u.pci.addr.domain,
+                        hostdef->source.subsys.u.pci.addr.bus,
+                        hostdef->source.subsys.u.pci.addr.slot,
+                        hostdef->source.subsys.u.pci.addr.function) < 0) {
             virReportOOMError();
             return -1;
         }
@@ -3415,7 +3423,7 @@ virDomainXMLDevID(virDomainPtr domain,
         strcpy(class, "pci");
 
         xenUnifiedLock(priv);
-        xref = xenStoreDomainGetPCIID(domain->conn, domain->id, bdf);
+        xref = xenStoreDomainGetPCIID(conn, def->id, bdf);
         xenUnifiedUnlock(priv);
         VIR_FREE(bdf);
         if (xref == NULL)

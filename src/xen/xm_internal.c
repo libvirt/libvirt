@@ -1211,7 +1211,8 @@ cleanup:
 
 /**
  * xenXMDomainAttachDeviceFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: domain configuration
  * @xml: pointer to XML description of device
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
@@ -1223,7 +1224,8 @@ cleanup:
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-xenXMDomainAttachDeviceFlags(virDomainPtr domain,
+xenXMDomainAttachDeviceFlags(virConnectPtr conn,
+                             virDomainDefPtr minidef,
                              const char *xml,
                              unsigned int flags)
 {
@@ -1232,12 +1234,12 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
     int ret = -1;
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
-        (domain->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
+        (minidef->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Xm driver only supports modifying persistent config"));
         return -1;
@@ -1245,7 +1247,7 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, minidef->name)))
         goto cleanup;
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
@@ -1288,7 +1290,7 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1302,7 +1304,8 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
 
 /**
  * xenXMDomainDetachDeviceFlags:
- * @domain: pointer to domain object
+ * @conn: the connection object
+ * @minidef: domain configuration
  * @xml: pointer to XML description of device
  * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
@@ -1313,7 +1316,8 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain,
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-xenXMDomainDetachDeviceFlags(virDomainPtr domain,
+xenXMDomainDetachDeviceFlags(virConnectPtr conn,
+                             virDomainDefPtr minidef,
                              const char *xml,
                              unsigned int flags)
 {
@@ -1323,12 +1327,12 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
     virDomainDefPtr def;
     int ret = -1;
     int i;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
+    xenUnifiedPrivatePtr priv = conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if ((flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) ||
-        (domain->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
+        (minidef->id != -1 && flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Xm driver only supports modifying persistent config"));
         return -1;
@@ -1336,7 +1340,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
 
     xenUnifiedLock(priv);
 
-    if (!(filename = virHashLookup(priv->nameConfigMap, domain->name)))
+    if (!(filename = virHashLookup(priv->nameConfigMap, minidef->name)))
         goto cleanup;
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
@@ -1394,7 +1398,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain,
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */
-    if (xenXMConfigSaveFile(domain->conn, entry->filename, entry->def) < 0)
+    if (xenXMConfigSaveFile(conn, entry->filename, entry->def) < 0)
         goto cleanup;
 
     ret = 0;
