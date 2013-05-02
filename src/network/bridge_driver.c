@@ -1,4 +1,3 @@
-
 /*
  * bridge_driver.c: core driver methods for managing network
  *
@@ -67,12 +66,6 @@
 #include "virfile.h"
 #include "virstring.h"
 
-#define NETWORK_PID_DIR LOCALSTATEDIR "/run/libvirt/network"
-#define NETWORK_STATE_DIR LOCALSTATEDIR "/lib/libvirt/network"
-
-#define DNSMASQ_STATE_DIR LOCALSTATEDIR "/lib/libvirt/dnsmasq"
-#define RADVD_STATE_DIR LOCALSTATEDIR "/lib/libvirt/radvd"
-
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
 /* Main driver state */
@@ -84,7 +77,10 @@ struct network_driver {
     iptablesContext *iptables;
     char *networkConfigDir;
     char *networkAutostartDir;
-    char *logDir;
+    char *stateDir;
+    char *pidDir;
+    char *dnsmasqStateDir;
+    char *radvdStateDir;
     dnsmasqCapsPtr dnsmasqCaps;
 };
 
@@ -133,8 +129,8 @@ networkDnsmasqLeaseFileNameDefault(const char *netname)
 {
     char *leasefile;
 
-    ignore_value(virAsprintf(&leasefile, DNSMASQ_STATE_DIR "/%s.leases",
-                             netname));
+    ignore_value(virAsprintf(&leasefile, "%s/%s.leases",
+                             driverState->dnsmasqStateDir, netname));
     return leasefile;
 }
 
@@ -146,8 +142,8 @@ networkDnsmasqConfigFileName(const char *netname)
 {
     char *conffile;
 
-    ignore_value(virAsprintf(&conffile, DNSMASQ_STATE_DIR "/%s.conf",
-                             netname));
+    ignore_value(virAsprintf(&conffile, "%s/%s.conf",
+                             driverState->dnsmasqStateDir, netname));
     return conffile;
 }
 
@@ -166,8 +162,8 @@ networkRadvdConfigFileName(const char *netname)
 {
     char *configfile;
 
-    ignore_value(virAsprintf(&configfile, RADVD_STATE_DIR "/%s-radvd.conf",
-                             netname));
+    ignore_value(virAsprintf(&configfile, "%s/%s-radvd.conf",
+                             driverState->radvdStateDir, netname));
     return configfile;
 }
 
@@ -187,8 +183,10 @@ networkRemoveInactive(struct network_driver *driver,
     int ret = -1;
 
     /* remove the (possibly) existing dnsmasq and radvd files */
-    if (!(dctx = dnsmasqContextNew(def->name, DNSMASQ_STATE_DIR)))
+    if (!(dctx = dnsmasqContextNew(def->name,
+                                   driverState->dnsmasqStateDir))) {
         goto cleanup;
+    }
 
     if (!(leasefile = networkDnsmasqLeaseFileName(def->name)))
         goto cleanup;
@@ -202,7 +200,8 @@ networkRemoveInactive(struct network_driver *driver,
     if (!(configfile = networkDnsmasqConfigFileName(def->name)))
         goto no_memory;
 
-    if (!(statusfile = virNetworkConfigFile(NETWORK_STATE_DIR, def->name)))
+    if (!(statusfile
+          = virNetworkConfigFile(driverState->stateDir, def->name)))
         goto no_memory;
 
     /* dnsmasq */
@@ -212,7 +211,7 @@ networkRemoveInactive(struct network_driver *driver,
 
     /* radvd */
     unlink(radvdconfigfile);
-    virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+    virPidFileDelete(driverState->pidDir, radvdpidbase);
 
     /* remove status file */
     unlink(statusfile);
@@ -279,7 +278,7 @@ networkFindActiveConfigs(struct network_driver *driver)
             if (obj->def->ips && (obj->def->nips > 0)) {
                 char *radvdpidbase;
 
-                ignore_value(virPidFileReadIfAlive(NETWORK_PID_DIR, obj->def->name,
+                ignore_value(virPidFileReadIfAlive(driverState->pidDir, obj->def->name,
                                                    &obj->dnsmasqPid,
                                                    dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
 
@@ -287,7 +286,7 @@ networkFindActiveConfigs(struct network_driver *driver)
                     virReportOOMError();
                     goto cleanup;
                 }
-                ignore_value(virPidFileReadIfAlive(NETWORK_PID_DIR, radvdpidbase,
+                ignore_value(virPidFileReadIfAlive(driverState->pidDir, radvdpidbase,
                                                    &obj->radvdPid, RADVD));
                 VIR_FREE(radvdpidbase);
             }
@@ -359,7 +358,9 @@ networkStateInitialize(bool privileged,
                        virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                        void *opaque ATTRIBUTE_UNUSED)
 {
-    char *base = NULL;
+    int ret = -1;
+    char *configdir = NULL;
+    char *rundir = NULL;
 #ifdef HAVE_FIREWALLD
     DBusConnection *sysbus = NULL;
 #endif
@@ -373,42 +374,51 @@ networkStateInitialize(bool privileged,
     }
     networkDriverLock(driverState);
 
+    /* configuration/state paths are one of
+     * ~/.config/libvirt/... (session/unprivileged)
+     * /etc/libvirt/... && /var/(run|lib)/libvirt/... (system/privileged).
+     *
+     * NB: The qemu driver puts its domain state in /var/run, and I
+     * think the network driver should have used /var/run too (instead
+     * of /var/lib), but it's been this way for a long time, and we
+     * probably shouldn't change it now.
+     */
     if (privileged) {
-        if (virAsprintf(&driverState->logDir,
-                        "%s/log/libvirt/qemu", LOCALSTATEDIR) == -1)
-            goto out_of_memory;
-
-        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
-            goto out_of_memory;
-    } else {
-        char *userdir = virGetUserCacheDirectory();
-
-        if (!userdir)
-            goto error;
-
-        if (virAsprintf(&driverState->logDir,
-                        "%s/qemu/log", userdir) == -1) {
-            VIR_FREE(userdir);
+        if (!(driverState->networkConfigDir
+              = strdup(SYSCONFDIR "/libvirt/qemu/networks")) ||
+            !(driverState->networkAutostartDir
+              = strdup(SYSCONFDIR "/libvirt/qemu/networks/autostart")) ||
+            !(driverState->stateDir
+              = strdup(LOCALSTATEDIR "/lib/libvirt/network")) ||
+            !(driverState->pidDir
+              = strdup(LOCALSTATEDIR "/run/libvirt/network")) ||
+            !(driverState->dnsmasqStateDir
+              = strdup(LOCALSTATEDIR "/lib/libvirt/dnsmasq")) ||
+            !(driverState->radvdStateDir
+              = strdup(LOCALSTATEDIR "/lib/libvirt/radvd"))) {
             goto out_of_memory;
         }
-        VIR_FREE(userdir);
-
-        base = virGetUserConfigDirectory();
-        if (!base)
+    } else {
+        configdir = virGetUserConfigDirectory();
+        rundir = virGetUserRuntimeDirectory();
+        if (!(configdir && rundir))
             goto error;
+
+        if ((virAsprintf(&driverState->networkConfigDir,
+                         "%s/qemu/networks", configdir) < 0) ||
+            (virAsprintf(&driverState->networkAutostartDir,
+                         "%s/qemu/networks/autostart", configdir) < 0) ||
+            (virAsprintf(&driverState->stateDir,
+                         "%s/network/lib", rundir) < 0) ||
+            (virAsprintf(&driverState->pidDir,
+                         "%s/network/run", rundir) < 0) ||
+            (virAsprintf(&driverState->dnsmasqStateDir,
+                         "%s/dnsmasq/lib", rundir) < 0) ||
+            (virAsprintf(&driverState->radvdStateDir,
+                         "%s/radvd/lib", rundir) < 0)) {
+            goto out_of_memory;
+        }
     }
-
-    /* Configuration paths are either ~/.libvirt/qemu/... (session) or
-     * /etc/libvirt/qemu/... (system).
-     */
-    if (virAsprintf(&driverState->networkConfigDir, "%s/qemu/networks", base) == -1)
-        goto out_of_memory;
-
-    if (virAsprintf(&driverState->networkAutostartDir, "%s/qemu/networks/autostart",
-                    base) == -1)
-        goto out_of_memory;
-
-    VIR_FREE(base);
 
     if (!(driverState->iptables = iptablesContextNew())) {
         goto out_of_memory;
@@ -418,7 +428,7 @@ networkStateInitialize(bool privileged,
     driverState->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
     if (virNetworkLoadAllState(&driverState->networks,
-                               NETWORK_STATE_DIR) < 0)
+                               driverState->stateDir) < 0)
         goto error;
 
     if (virNetworkLoadAllConfigs(&driverState->networks,
@@ -459,18 +469,19 @@ networkStateInitialize(bool privileged,
     }
 #endif
 
-    return 0;
+    ret = 0;
+cleanup:
+    VIR_FREE(configdir);
+    VIR_FREE(rundir);
+    return ret;
 
 out_of_memory:
     virReportOOMError();
-
 error:
     if (driverState)
         networkDriverUnlock(driverState);
-
-    VIR_FREE(base);
     networkStateCleanup();
-    return -1;
+    goto cleanup;
 }
 
 /**
@@ -486,7 +497,7 @@ networkStateReload(void) {
 
     networkDriverLock(driverState);
     virNetworkLoadAllState(&driverState->networks,
-                           NETWORK_STATE_DIR);
+                           driverState->stateDir);
     virNetworkLoadAllConfigs(&driverState->networks,
                              driverState->networkConfigDir,
                              driverState->networkAutostartDir);
@@ -513,9 +524,12 @@ networkStateCleanup(void) {
     /* free inactive networks */
     virNetworkObjListFree(&driverState->networks);
 
-    VIR_FREE(driverState->logDir);
     VIR_FREE(driverState->networkConfigDir);
     VIR_FREE(driverState->networkAutostartDir);
+    VIR_FREE(driverState->stateDir);
+    VIR_FREE(driverState->pidDir);
+    VIR_FREE(driverState->dnsmasqStateDir);
+    VIR_FREE(driverState->radvdStateDir);
 
     if (driverState->iptables)
         iptablesContextFree(driverState->iptables);
@@ -1057,32 +1071,33 @@ networkStartDhcpDaemon(struct network_driver *driver,
         goto cleanup;
     }
 
-    if (virFileMakePath(NETWORK_PID_DIR) < 0) {
+    if (virFileMakePath(driverState->pidDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
-                             NETWORK_PID_DIR);
+                             driverState->pidDir);
         goto cleanup;
     }
-    if (virFileMakePath(NETWORK_STATE_DIR) < 0) {
+    if (virFileMakePath(driverState->stateDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
-                             NETWORK_STATE_DIR);
+                             driverState->stateDir);
         goto cleanup;
     }
 
-    if (!(pidfile = virPidFileBuildPath(NETWORK_PID_DIR, network->def->name))) {
+    if (!(pidfile = virPidFileBuildPath(driverState->pidDir,
+                                        network->def->name))) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (virFileMakePath(DNSMASQ_STATE_DIR) < 0) {
+    if (virFileMakePath(driverState->dnsmasqStateDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
-                             DNSMASQ_STATE_DIR);
+                             driverState->dnsmasqStateDir);
         goto cleanup;
     }
 
-    dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+    dctx = dnsmasqContextNew(network->def->name, driverState->dnsmasqStateDir);
     if (dctx == NULL)
         goto cleanup;
 
@@ -1110,7 +1125,7 @@ networkStartDhcpDaemon(struct network_driver *driver,
      * pid
      */
 
-    ret = virPidFileRead(NETWORK_PID_DIR, network->def->name,
+    ret = virPidFileRead(driverState->pidDir, network->def->name,
                          &network->dnsmasqPid);
     if (ret < 0)
         goto cleanup;
@@ -1147,8 +1162,10 @@ networkRefreshDhcpDaemon(struct network_driver *driver,
         return networkStartDhcpDaemon(driver, network);
 
     VIR_INFO("Refreshing dnsmasq for network %s", network->def->bridge);
-    if (!(dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR)))
+    if (!(dctx = dnsmasqContextNew(network->def->name,
+                                   driverState->dnsmasqStateDir))) {
         goto cleanup;
+    }
 
     /* Look for first IPv4 address that has dhcp defined.
      * We only support dhcp-host config on one IPv4 subnetwork
@@ -1372,16 +1389,16 @@ networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (virFileMakePath(NETWORK_PID_DIR) < 0) {
+    if (virFileMakePath(driverState->pidDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
-                             NETWORK_PID_DIR);
+                             driverState->pidDir);
         goto cleanup;
     }
-    if (virFileMakePath(RADVD_STATE_DIR) < 0) {
+    if (virFileMakePath(driverState->radvdStateDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
-                             RADVD_STATE_DIR);
+                             driverState->radvdStateDir);
         goto cleanup;
     }
 
@@ -1390,7 +1407,7 @@ networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
         virReportOOMError();
         goto cleanup;
     }
-    if (!(pidfile = virPidFileBuildPath(NETWORK_PID_DIR, radvdpidbase))) {
+    if (!(pidfile = virPidFileBuildPath(driverState->pidDir, radvdpidbase))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1418,7 +1435,7 @@ networkStartRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virPidFileRead(NETWORK_PID_DIR, radvdpidbase, &network->radvdPid) < 0)
+    if (virPidFileRead(driverState->pidDir, radvdpidbase, &network->radvdPid) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1445,7 +1462,7 @@ networkRefreshRadvd(struct network_driver *driver ATTRIBUTE_UNUSED,
                                network->def->name) >= 0) &&
             ((radvdpidbase = networkRadvdPidfileBasename(network->def->name))
              != NULL)) {
-            virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+            virPidFileDelete(driverState->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
         network->radvdPid = -1;
@@ -1485,7 +1502,7 @@ networkRestartRadvd(struct network_driver *driver,
                                network->def->name) >= 0) &&
             ((radvdpidbase = networkRadvdPidfileBasename(network->def->name))
              != NULL)) {
-            virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+            virPidFileDelete(driverState->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
         network->radvdPid = -1;
@@ -2575,7 +2592,7 @@ static int networkShutdownNetworkVirtual(struct network_driver *driver,
         if (!(radvdpidbase = networkRadvdPidfileBasename(network->def->name))) {
             virReportOOMError();
         } else {
-            virPidFileDelete(NETWORK_PID_DIR, radvdpidbase);
+            virPidFileDelete(driverState->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
     }
@@ -2676,7 +2693,8 @@ networkStartNetwork(struct network_driver *driver,
     /* Persist the live configuration now that anything autogenerated
      * is setup.
      */
-    if ((ret = virNetworkSaveStatus(NETWORK_STATE_DIR, network)) < 0) {
+    if ((ret = virNetworkSaveStatus(driverState->stateDir,
+                                    network)) < 0) {
         goto error;
     }
 
@@ -2706,7 +2724,8 @@ static int networkShutdownNetwork(struct network_driver *driver,
     if (!virNetworkObjIsActive(network))
         return 0;
 
-    stateFile = virNetworkConfigFile(NETWORK_STATE_DIR, network->def->name);
+    stateFile = virNetworkConfigFile(driverState->stateDir,
+                                     network->def->name);
     if (!stateFile)
         return -1;
 
@@ -3371,8 +3390,10 @@ networkUpdate(virNetworkPtr net,
         }
 
         /* save current network state to disk */
-        if ((ret = virNetworkSaveStatus(NETWORK_STATE_DIR, network)) < 0)
+        if ((ret = virNetworkSaveStatus(driverState->stateDir,
+                                        network)) < 0) {
             goto cleanup;
+        }
     }
     ret = 0;
 cleanup:
@@ -4705,7 +4726,7 @@ networkPlugBandwidth(virNetworkObjPtr net,
     /* update sum of 'floor'-s of attached NICs */
     net->floor_sum += ifaceBand->in->floor;
     /* update status file */
-    if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
+    if (virNetworkSaveStatus(driverState->stateDir, net) < 0) {
         ignore_value(virBitmapClearBit(net->class_id, class_id));
         net->floor_sum -= ifaceBand->in->floor;
         iface->data.network.actual->class_id = 0;
@@ -4751,7 +4772,7 @@ networkUnplugBandwidth(virNetworkObjPtr net,
         ignore_value(virBitmapClearBit(net->class_id,
                                        iface->data.network.actual->class_id));
         /* update status file */
-        if (virNetworkSaveStatus(NETWORK_STATE_DIR, net) < 0) {
+        if (virNetworkSaveStatus(driverState->stateDir, net) < 0) {
             net->floor_sum += ifaceBand->in->floor;
             ignore_value(virBitmapSetBit(net->class_id,
                                          iface->data.network.actual->class_id));
