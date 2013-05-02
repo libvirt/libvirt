@@ -495,7 +495,7 @@ elsif ($mode eq "server") {
                     push(@args_list, "args->$1.$1_len");
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
-                    push(@vars_list, "int n$1");
+                    push(@vars_list, "int n$1 = 0;");
                     if ($call->{ProcName} eq "NodeSetMemoryParameters") {
                         push(@args_list, "priv->conn");
                     }
