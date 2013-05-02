@@ -3099,7 +3099,7 @@ qemuBuildDriveStr(virConnectPtr conn ATTRIBUTE_UNUSED,
         virBufferAsprintf(&opt, "if=%s", bus);
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if ((disk->bus == VIR_DOMAIN_DISK_BUS_SCSI)) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
                 virBufferAddLit(&opt, ",media=cdrom");
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
