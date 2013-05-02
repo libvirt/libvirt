@@ -1,7 +1,7 @@
 /*
  * virdnsmasq.c: Helper APIs for managing dnsmasq
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2013 Red Hat, Inc.
  * Copyright (C) 2010 Satoru SATOH <satoru.satoh@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -118,7 +118,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
         if (VIR_ALLOC(addnhostsfile->hosts[idx].hostnames) < 0)
             goto alloc_error;
 
-        if (virAsprintf(&addnhostsfile->hosts[idx].ip, "%s", ipstr) < 0)
+        if (!(addnhostsfile->hosts[idx].ip = strdup(ipstr)))
             goto alloc_error;
 
         addnhostsfile->hosts[idx].nhostnames = 0;
@@ -128,7 +128,8 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
     if (VIR_REALLOC_N(addnhostsfile->hosts[idx].hostnames, addnhostsfile->hosts[idx].nhostnames + 1) < 0)
         goto alloc_error;
 
-    if (virAsprintf(&addnhostsfile->hosts[idx].hostnames[addnhostsfile->hosts[idx].nhostnames], "%s", name) < 0)
+    if (!(addnhostsfile->hosts[idx].hostnames[addnhostsfile->hosts[idx].nhostnames]
+          = strdup(name)))
         goto alloc_error;
 
     VIR_FREE(ipstr);

@@ -2,7 +2,7 @@
  * nwfilter_dhcpsnoop.c: support for DHCP snooping used by a VM
  *                       on an interface
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012-2013 Red Hat, Inc.
  * Copyright (C) 2011,2012 IBM Corp.
  *
  * Authors:
@@ -1110,7 +1110,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
          * generate much more traffic than if we filtered by VM and
          * braodcast MAC as well
          */
-        if (virAsprintf(&ext_filter, "%s", filter) < 0) {
+        if (!(ext_filter = strdup(filter))) {
             virReportOOMError();
             return NULL;
         }

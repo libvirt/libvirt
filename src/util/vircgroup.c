@@ -1027,7 +1027,7 @@ static int virCgroupAddTaskStrController(virCgroupPtr group,
     int rc = 0;
     char *endp;
 
-    if (virAsprintf(&str, "%s", pidstr) < 0)
+    if (!(str = strdup(pidstr)))
         return -1;
 
     cur = str;

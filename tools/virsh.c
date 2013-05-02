@@ -2181,7 +2181,7 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
         break;
 
     case VIR_TYPED_PARAM_BOOLEAN:
-        ret = virAsprintf(&str, "%s", item->value.b ? _("yes") : _("no"));
+        str = vshStrdup(ctl, item->value.b ? _("yes") : _("no"));
         break;
 
     case VIR_TYPED_PARAM_STRING:

@@ -3,7 +3,7 @@
  * esx_storage_backend_vmfs.c: ESX storage driver backend for
  *                             managing VMFS datastores
  *
- * Copyright (C) 2010-2011 Red Hat, Inc.
+ * Copyright (C) 2010-2011, 2013 Red Hat, Inc.
  * Copyright (C) 2010-2012 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2012 Ata E Husain Bohra <ata.husain@hotmail.com>
  *
@@ -791,8 +791,7 @@ esxStorageBackendVMFSVolumeLookupByKey(virConnectPtr conn, const char *key)
                 VIR_FREE(datastorePath);
 
                 if (length < 1) {
-                    if (virAsprintf(&volumeName, "%s",
-                                    fileInfo->path) < 0) {
+                    if (!(volumeName = strdup(fileInfo->path))) {
                         virReportOOMError();
                         goto cleanup;
                     }

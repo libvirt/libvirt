@@ -393,12 +393,9 @@ networkStateInitialize(bool privileged,
         }
         VIR_FREE(userdir);
 
-        userdir = virGetUserConfigDirectory();
-        if (virAsprintf(&base, "%s", userdir) == -1) {
-            VIR_FREE(userdir);
-            goto out_of_memory;
-        }
-        VIR_FREE(userdir);
+        base = virGetUserConfigDirectory();
+        if (!base)
+            goto error;
     }
 
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or

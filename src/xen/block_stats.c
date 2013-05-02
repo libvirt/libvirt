@@ -1,7 +1,7 @@
 /*
  * Linux block and network stats.
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2013 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -293,11 +293,11 @@ xenLinuxDomainDeviceID(int domid, const char *path)
      */
 
     if (strlen(path) >= 5 && STRPREFIX(path, "/dev/"))
-        retval = virAsprintf(&mod_path, "%s", path);
+        mod_path = strdup(path);
     else
-        retval = virAsprintf(&mod_path, "/dev/%s", path);
+        ignore_value(virAsprintf(&mod_path, "/dev/%s", path));
 
-    if (retval < 0) {
+    if (!mod_path) {
         virReportOOMError();
         return -1;
     }

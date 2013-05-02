@@ -378,9 +378,13 @@ sc_prohibit_strtol:
 	  $(_sc_search_regexp)
 
 # Use virAsprintf rather than as'printf since *strp is undefined on error.
+# But for plain %s, virAsprintf is overkill compared to strdup.
 sc_prohibit_asprintf:
 	@prohibit='\<v?a[s]printf\>'					\
 	halt='use virAsprintf, not as'printf				\
+	  $(_sc_search_regexp)
+	@prohibit='virAsprintf.*, *"%s",'				\
+	halt='use strdup instead of virAsprintf with "%s"'		\
 	  $(_sc_search_regexp)
 
 # Prefer virSetUIDGID.

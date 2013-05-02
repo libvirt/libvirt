@@ -443,7 +443,7 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
     }
 #endif
 
-    if (virAsprintf(&priv->saveDir, "%s", XEN_SAVE_DIR) == -1) {
+    if (!(priv->saveDir = strdup(XEN_SAVE_DIR))) {
         virReportOOMError();
         goto fail;
     }

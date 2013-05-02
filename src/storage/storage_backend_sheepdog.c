@@ -1,6 +1,7 @@
 /*
  * storage_backend_sheepdog.c: storage backend for Sheepdog handling
  *
+ * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Wido den Hollander
  * Copyright (C) 2012 Frank Spijkerman
  * Copyright (C) 2012 Sebastian Wiedenroth
@@ -268,7 +269,7 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "%s", vol->name) == -1) {
+    if (!(vol->target.path = strdup(vol->name))) {
         virReportOOMError();
         goto cleanup;
     }
