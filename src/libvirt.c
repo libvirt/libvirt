@@ -1201,6 +1201,7 @@ do_open(const char *name,
         }
 
         VIR_DEBUG("trying driver %d (%s) ...", i, virDriverTab[i]->name);
+        ret->driver = virDriverTab[i];
         res = virDriverTab[i]->connectOpen(ret, auth, flags);
         VIR_DEBUG("driver %d %s returned %s",
                   i, virDriverTab[i]->name,
@@ -1209,10 +1210,12 @@ do_open(const char *name,
                   (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
 
         if (res == VIR_DRV_OPEN_SUCCESS) {
-            ret->driver = virDriverTab[i];
             break;
         } else if (res == VIR_DRV_OPEN_ERROR) {
+            ret->driver = NULL;
             goto failed;
+        } else {
+            ret->driver = NULL;
         }
     }
 
