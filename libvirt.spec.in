@@ -1998,6 +1998,13 @@ fi
 %endif
 
 %changelog
+* Thu May  2 2013 Daniel Veillard <veillard@redhat.com> - 1.0.5-1
+- add support for NVRAM device
+- Add XML config for resource partitions
+- Add support for TPM
+- NPIV storage migration support
+- various bug fixes and improvements including localizations
+
 * Mon Apr  1 2013 Daniel Veillard <veillard@redhat.com> - 1.0.4-1
 - qemu: support passthrough for iscsi disks
 - various S390 improvements
