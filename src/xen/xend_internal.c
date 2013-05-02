@@ -2540,13 +2540,6 @@ xenDaemonDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
     struct sexpr *root;
     const char *tmp;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    /* xm_internal.c (the support for defined domains from /etc/xen
-     * config files used by old Xen) will handle this.
-     */
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL) {
@@ -2573,13 +2566,6 @@ xenDaemonDomainSetAutostart(virDomainPtr domain, int autostart)
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *content = NULL;
     int ret = -1;
-    xenUnifiedPrivatePtr priv = domain->conn->privateData;
-
-    /* xm_internal.c (the support for defined domains from /etc/xen
-     * config files used by old Xen) will handle this.
-     */
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
-        return -1;
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL) {

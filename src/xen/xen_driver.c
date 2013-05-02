@@ -1475,16 +1475,10 @@ xenUnifiedDomainGetAutostart(virDomainPtr dom, int *autostart)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
 
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        if (priv->opened[XEN_UNIFIED_XM_OFFSET])
-            return xenXMDomainGetAutostart(dom, autostart);
-    } else {
-        if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-            return xenDaemonDomainGetAutostart(dom, autostart);
-    }
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainGetAutostart(dom, autostart);
+    else
+        return xenDaemonDomainGetAutostart(dom, autostart);
 }
 
 static int
@@ -1492,16 +1486,10 @@ xenUnifiedDomainSetAutostart(virDomainPtr dom, int autostart)
 {
     xenUnifiedPrivatePtr priv = dom->conn->privateData;
 
-    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) {
-        if (priv->opened[XEN_UNIFIED_XM_OFFSET])
-            return xenXMDomainSetAutostart(dom, autostart);
-    } else {
-        if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
-            return xenDaemonDomainSetAutostart(dom, autostart);
-    }
-
-    virReportError(VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return -1;
+    if (priv->xendConfigVersion < XEND_CONFIG_VERSION_3_0_4)
+        return xenXMDomainSetAutostart(dom, autostart);
+    else
+        return xenDaemonDomainSetAutostart(dom, autostart);
 }
 
 static char *
