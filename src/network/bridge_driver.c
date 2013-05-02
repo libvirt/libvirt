@@ -1598,11 +1598,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      &network->def->forward.addr,
                                      &network->def->forward.port,
                                      NULL) < 0) {
-        virReportError(VIR_ERR_SYSTEM_ERROR,
-                       forwardIf ?
-                       _("failed to add iptables rule to enable masquerading to %s") :
-                       _("failed to add iptables rule to enable masquerading"),
-                       forwardIf);
+        if (forwardIf)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable masquerading to %s"),
+                           forwardIf);
+        else
+            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                           _("failed to add iptables rule to enable masquerading"));
         goto masqerr3;
     }
 
@@ -1614,11 +1616,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      &network->def->forward.addr,
                                      &network->def->forward.port,
                                      "udp") < 0) {
-        virReportError(VIR_ERR_SYSTEM_ERROR,
-                       forwardIf ?
-                       _("failed to add iptables rule to enable UDP masquerading to %s") :
-                       _("failed to add iptables rule to enable UDP masquerading"),
-                       forwardIf);
+        if (forwardIf)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable UDP masquerading to %s"),
+                           forwardIf);
+        else
+            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                           _("failed to add iptables rule to enable UDP masquerading"));
         goto masqerr4;
     }
 
@@ -1630,11 +1634,13 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                      &network->def->forward.addr,
                                      &network->def->forward.port,
                                      "tcp") < 0) {
-        virReportError(VIR_ERR_SYSTEM_ERROR,
-                       forwardIf ?
-                       _("failed to add iptables rule to enable TCP masquerading to %s") :
-                       _("failed to add iptables rule to enable TCP masquerading"),
-                       forwardIf);
+        if (forwardIf)
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to add iptables rule to enable TCP masquerading to %s"),
+                           forwardIf);
+        else
+            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                           _("failed to add iptables rule to enable TCP masquerading"));
         goto masqerr5;
     }
 
