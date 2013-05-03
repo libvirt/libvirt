@@ -1055,7 +1055,7 @@ int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec)
     int fd;
 
     if (cloexec)
-        fd = fcntl(sock->fd, F_DUPFD_CLOEXEC);
+        fd = fcntl(sock->fd, F_DUPFD_CLOEXEC, 0);
     else
         fd = dup(sock->fd);
     if (fd < 0) {
