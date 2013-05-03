@@ -2941,8 +2941,9 @@ cleanup:
         VIR_FORCE_CLOSE(fd);
     }
 
-    cookieFlags |= (QEMU_MIGRATION_COOKIE_PERSISTENT |
-                    QEMU_MIGRATION_COOKIE_NETWORK);
+    cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK;
+    if (flags & VIR_MIGRATE_PERSIST_DEST)
+        cookieFlags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     if (ret == 0 &&
         qemuMigrationBakeCookie(mig, driver, vm, cookieout,
                                 cookieoutlen, cookieFlags) < 0) {
