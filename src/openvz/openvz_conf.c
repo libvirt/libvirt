@@ -135,12 +135,10 @@ openvzParseBarrierLimit(const char* value,
 {
     char *token;
     char *saveptr = NULL;
-    char *str = strdup(value);
+    char *str;
 
-    if (str == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(str, value) < 0)
         goto error;
-    }
 
     token = strtok_r(str, ":", &saveptr);
     if (token == NULL) {
@@ -230,10 +228,8 @@ openvzReadNetworkConf(virDomainDefPtr def,
                 goto no_memory;
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
-            net->data.ethernet.ipaddr = strdup(token);
-
-            if (net->data.ethernet.ipaddr == NULL)
-                goto no_memory;
+            if (VIR_STRDUP(net->data.ethernet.ipaddr, token) < 0)
+                goto error;
 
             if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
                 goto no_memory;
@@ -405,7 +401,8 @@ openvzReadFSConf(virDomainDefPtr def,
             goto no_memory;
 
         fs->type = VIR_DOMAIN_FS_TYPE_TEMPLATE;
-        fs->src = strdup(temp);
+        if (VIR_STRDUP(fs->src, temp) < 0)
+            goto error;
     } else {
         /* OSTEMPLATE was not found, VE was booted from a private dir directly */
         ret = openvzReadVPSConfigParam(veid, "VE_PRIVATE", &temp);
@@ -423,12 +420,14 @@ openvzReadFSConf(virDomainDefPtr def,
             goto no_memory;
 
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
-        fs->src = openvz_replace(temp, "$VEID", veid_str);
+        if (!(fs->src = openvz_replace(temp, "$VEID", veid_str)))
+            goto no_memory;
 
         VIR_FREE(veid_str);
     }
 
-    fs->dst = strdup("/");
+    if (VIR_STRDUP(fs->dst, "/") < 0)
+        goto error;
 
     param = "DISKSPACE";
     ret = openvzReadVPSConfigParam(veid, param, &temp);
@@ -450,9 +449,6 @@ openvzReadFSConf(virDomainDefPtr def,
             fs->space_hard_limit = limit * 1024;   /* unit is bytes */
         }
     }
-
-    if (fs->src == NULL || fs->dst == NULL)
-        goto no_memory;
 
     if (VIR_REALLOC_N(def->fss, def->nfss + 1) < 0)
         goto no_memory;
@@ -607,10 +603,10 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
-        if (!(def->os.type = strdup("exe")))
-            goto no_memory;
-        if (!(def->os.init = strdup("/sbin/init")))
-            goto no_memory;
+        if (VIR_STRDUP(def->os.type, "exe") < 0)
+            goto cleanup;
+        if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
+            goto cleanup;
 
         ret = openvzReadVPSConfigParam(veid, "CPUS", &temp);
         if (ret < 0) {
@@ -800,8 +796,7 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
         saveptr = NULL;
         if ((token = strtok_r(sf, "\"\t\n", &saveptr)) != NULL) {
             VIR_FREE(*value);
-            *value = strdup(token);
-            if (*value == NULL) {
+            if (VIR_STRDUP(*value, token) < 0) {
                 err = 1;
                 break;
             }
@@ -952,14 +947,18 @@ openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
     int i=0;
+    char *ret = NULL;
 
     while (conf_dir_list[i]) {
-        if (!access(conf_dir_list[i], F_OK))
-            return strdup(conf_dir_list[i]);
+        if (!access(conf_dir_list[i], F_OK)) {
+            ignore_value(VIR_STRDUP(ret, conf_dir_list[i]));
+            goto cleanup;
+        }
         i++;
     }
 
-    return NULL;
+cleanup:
+    return ret;
 }
 
 /* Richard Steven's classic readline() function */

@@ -94,13 +94,8 @@ openvzDomainDefPostParse(virDomainDefPtr def,
                          void *opaque ATTRIBUTE_UNUSED)
 {
     /* fill the init path */
-    if (STREQ(def->os.type, "exe") && !def->os.init) {
-        if (!(def->os.init = strdup("/sbin/init"))) {
-            virReportOOMError();
-            return -1;
-        }
-    }
-
+    if (STREQ(def->os.type, "exe") && !def->os.init)
+        return VIR_STRDUP(def->os.init, "/sbin/init") < 0 ? -1 : 0;
     return 0;
 }
 
@@ -356,8 +351,7 @@ static char *openvzDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (!(ret = strdup(vm->def->os.type)))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, vm->def->os.type));
 
 cleanup:
     if (vm)
@@ -768,14 +762,14 @@ cleanup:
 static char *
 openvzGenerateVethName(int veid, char *dev_name_ve)
 {
-    char    dev_name[32];
     int     ifNo = 0;
+    char    *ret;
 
     if (sscanf(dev_name_ve, "%*[^0-9]%d", &ifNo) != 1)
         return NULL;
-    if (snprintf(dev_name, sizeof(dev_name), "veth%d.%d", veid, ifNo) < 7)
-        return NULL;
-    return strdup(dev_name);
+    if (virAsprintf(&ret, "veth%d.%d.", veid, ifNo) < 0)
+        virReportOOMError();
+    return ret;
 }
 
 static char *
@@ -786,7 +780,7 @@ openvzGenerateContainerVethName(int veid)
 
     /* try to get line "^NETIF=..." from config */
     if (openvzReadVPSConfigParam(veid, "NETIF", &temp) <= 0) {
-        name = strdup("eth0");
+        ignore_value(VIR_STRDUP(name, "eth0"));
     } else {
         char *saveptr = NULL;
         char *s;
@@ -801,14 +795,11 @@ openvzGenerateContainerVethName(int veid)
         }
 
         /* set new name */
-        ignore_value(virAsprintf(&name, "eth%d", max + 1));
+        if (virAsprintf(&name, "eth%d", max + 1) < 0)
+            virReportOOMError();
     }
 
     VIR_FREE(temp);
-
-    if (name == NULL) {
-        virReportOOMError();
-    }
 
     return name;
 }
@@ -1601,10 +1592,8 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
             continue;
         }
         snprintf(vpsname, sizeof(vpsname), "%d", veid);
-        if (!(names[got] = strdup(vpsname))) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[got], vpsname) < 0)
             goto out;
-        }
         got ++;
     }
 
