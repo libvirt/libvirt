@@ -2414,7 +2414,12 @@
         and <code>virNodeDeviceReAttach</code> (or <code>virsh
         nodedev-reattach</code>) after hot-unplug or stopping the
         guest. For SCSI device, user is responsible to make sure the device
-        is not used by host.</dd>
+        is not used by host.
+        The optional <code>sgio</code> (<span class="since">since 1.0.6</span>)
+        attribute indicates whether the kernel will filter unprivileged
+        SG_IO commands for the disk, valid settings are "filtered" or
+        "unfiltered". Defaults to "filtered".
+      </dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host.
       The USB device can either be addressed by vendor / product id using the

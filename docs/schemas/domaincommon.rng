@@ -3234,6 +3234,14 @@
     <attribute name="type">
       <value>scsi</value>
     </attribute>
+    <optional>
+      <attribute name="sgio">
+        <choice>
+          <value>filtered</value>
+          <value>unfiltered</value>
+        </choice>
+      </attribute>
+    </optional>
     <element name="source">
       <interleave>
         <ref name="sourceinfoadapter"/>

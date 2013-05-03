@@ -423,6 +423,7 @@ struct _virDomainHostdevSubsys {
             unsigned bus;
             unsigned target;
             unsigned unit;
+            int sgio; /* enum virDomainDeviceSGIO */
         } scsi;
     } u;
 };

@@ -3790,6 +3790,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 {
     xmlNodePtr sourcenode;
     char *managed = NULL;
+    char *sgio = NULL;
     char *backendStr = NULL;
     int backend;
     int ret = -1;
@@ -3803,6 +3804,8 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (STREQ(managed, "yes"))
             def->managed = true;
     }
+
+    sgio = virXMLPropString(node, "sgio");
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -3838,6 +3841,22 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                        _("Setting startupPolicy is only allowed for USB"
                          " devices"));
         goto error;
+    }
+
+    if (sgio) {
+        if (def->source.subsys.type !=
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("sgio is only supported for scsi host device"));
+            goto error;
+        }
+
+        if ((def->source.subsys.u.scsi.sgio =
+             virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown sgio mode '%s'"), sgio);
+            goto error;
+        }
     }
 
     switch (def->source.subsys.type) {
@@ -3878,6 +3897,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     ret = 0;
 error:
     VIR_FREE(managed);
+    VIR_FREE(sgio);
     VIR_FREE(backendStr);
     return ret;
 }
@@ -15439,11 +15459,17 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "    <hostdev mode='%s' type='%s'",
                       mode, type);
-    if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-        virBufferAsprintf(buf, " managed='%s'>\n",
+    if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        virBufferAsprintf(buf, " managed='%s'",
                           def->managed ? "yes" : "no");
-    else
-        virBufferAddLit(buf, ">\n");
+
+        if (def->source.subsys.type ==
+            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+            def->source.subsys.u.scsi.sgio)
+            virBufferAsprintf(buf, " sgio='%s'",
+                              virDomainDeviceSGIOTypeToString(def->source.subsys.u.scsi.sgio));
+    }
+    virBufferAddLit(buf, ">\n");
 
     virBufferAdjustIndent(buf, 6);
     switch (def->mode) {
