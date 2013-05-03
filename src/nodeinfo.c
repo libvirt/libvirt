@@ -982,11 +982,8 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
         FILE *meminfo;
 
         if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
-            meminfo_path = strdup(MEMINFO_PATH);
-            if (!meminfo_path) {
-                virReportOOMError();
+            if (VIR_STRDUP(meminfo_path, MEMINFO_PATH) < 0)
                 return -1;
-            }
         } else {
 # if WITH_NUMACTL
             if (numa_available() < 0) {

@@ -27,6 +27,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "viruuid.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -225,8 +226,8 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
     if (!(ret = virObjectNew(virDomainClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
     ret->id = -1;
@@ -234,8 +235,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -297,16 +297,15 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     if (!(ret = virObjectNew(virNetworkClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -372,17 +371,15 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac)
     if (!(ret = virObjectNew(virInterfaceClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
-    if (!(ret->mac = strdup(mac)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0 ||
+        VIR_STRDUP(ret->mac, mac) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -446,8 +443,8 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     if (!(ret = virObjectNew(virStoragePoolClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
@@ -458,8 +455,7 @@ virGetStoragePool(virConnectPtr conn, const char *name,
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -530,12 +526,10 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     if (!(ret = virObjectNew(virStorageVolClass)))
         return NULL;
 
-    if (!(ret->pool = strdup(pool)))
-        goto no_memory;
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
-    if (!(ret->key = strdup(key)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->pool, pool) < 0 ||
+        VIR_STRDUP(ret->name, name) < 0 ||
+        VIR_STRDUP(ret->key, key) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
 
@@ -545,8 +539,7 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
 
     return ret;
 
-no_memory:
-    virReportOOMError();
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -610,13 +603,13 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     if (!(ret = virObjectNew(virNodeDeviceClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
     return ret;
-no_memory:
-    virReportOOMError();
+
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -680,14 +673,14 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
-    if (!(ret->usageID = strdup(usageID)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->usageID, usageID) < 0)
+        goto error;
 
     ret->conn = virObjectRef(conn);
 
     return ret;
-no_memory:
-    virReportOOMError();
+
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -775,16 +768,16 @@ virGetNWFilter(virConnectPtr conn, const char *name,
     if (!(ret = virObjectNew(virNWFilterClass)))
         return NULL;
 
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     ret->conn = virObjectRef(conn);
 
     return ret;
-no_memory:
-    virReportOOMError();
+
+error:
     virObjectUnref(ret);
     return NULL;
 }
@@ -832,13 +825,14 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
 
     if (!(ret = virObjectNew(virDomainSnapshotClass)))
         return NULL;
-    if (!(ret->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto cleanup;
+
     ret->domain = virObjectRef(domain);
 
     return ret;
-no_memory:
-    virReportOOMError();
+
+cleanup:
     virObjectUnref(ret);
     return NULL;
 }

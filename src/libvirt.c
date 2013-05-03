@@ -213,11 +213,9 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         }
 
         if (cred[i].type != VIR_CRED_EXTERNAL) {
-            if (STREQ(bufptr, "") && cred[i].defresult)
-                cred[i].result = strdup(cred[i].defresult);
-            else
-                cred[i].result = strdup(bufptr);
-            if (!cred[i].result)
+            if (VIR_STRDUP(cred[i].result,
+                           STREQ(bufptr, "") && cred[i].defresult ?
+                           cred[i].defresult : bufptr) < 0)
                 return -1;
             cred[i].resultlen = strlen(cred[i].result);
         }
@@ -1046,11 +1044,7 @@ virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias, char *
             STREQLEN(entry->str, alias, alias_len)) {
             VIR_DEBUG("Resolved alias '%s' to '%s'",
                       alias, offset+1);
-            if (!(*uri = strdup(offset+1))) {
-                virReportOOMError();
-                return -1;
-            }
-            return 0;
+            return VIR_STRDUP(*uri, offset+1);
         }
 
         entry = entry->next;
