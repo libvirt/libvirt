@@ -368,8 +368,8 @@ remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
 #define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR)          \
     if (STRCASEEQ(var->name, ARG_NAME)) {               \
         VIR_FREE(ARG_VAR);                              \
-        if (!(ARG_VAR = strdup(var->value)))            \
-            goto no_memory;                             \
+        if (VIR_STRDUP(ARG_VAR, var->value) < 0)        \
+            goto failed;                                \
         var->ignore = 1;                                \
         continue;                                       \
     }
@@ -497,24 +497,20 @@ doRemoteOpen(virConnectPtr conn,
         if (virAsprintf(&port, "%d", conn->uri->port) < 0)
             goto no_memory;
     } else if (transport == trans_tls) {
-        if (!(port = strdup(LIBVIRTD_TLS_PORT)))
-            goto no_memory;
+        if (VIR_STRDUP(port, LIBVIRTD_TLS_PORT) < 0)
+            goto failed;
     } else if (transport == trans_tcp) {
-        if (!(port = strdup(LIBVIRTD_TCP_PORT)))
-            goto no_memory;
+        if (VIR_STRDUP(port, LIBVIRTD_TCP_PORT) < 0)
+            goto failed;
     } /* Port not used for unix, ext., default for ssh */
 
-    if (conn->uri && conn->uri->server)
-        priv->hostname = strdup(conn->uri->server);
-    else
-        priv->hostname = strdup("localhost");
+    if (VIR_STRDUP(priv->hostname,
+                   conn->uri && conn->uri->server ?
+                   conn->uri->server : "localhost") < 0)
+        goto failed;
 
-    if (!priv->hostname)
-        goto no_memory;
-
-    if (conn->uri && conn->uri->user &&
-        !(username = strdup(conn->uri->user)))
-        goto no_memory;
+    if (conn->uri && VIR_STRDUP(username, conn->uri->user) < 0)
+        goto failed;
 
     /* Get the variables from the query string.
      * Then we need to reconstruct the query string (because
@@ -557,8 +553,8 @@ doRemoteOpen(virConnectPtr conn,
                 (STREQ(conn->uri->scheme, "remote") ||
                  STRPREFIX(conn->uri->scheme, "remote+"))) {
                 /* Allow remote serve to probe */
-                if (!(name = strdup("")))
-                    goto no_memory;
+                if (VIR_STRDUP(name, "") < 0)
+                    goto failed;
             } else {
                 virURI tmpuri = {
                     .scheme = conn->uri->scheme,
@@ -587,8 +583,8 @@ doRemoteOpen(virConnectPtr conn,
         }
     } else {
         /* Probe URI server side */
-        if (!(name = strdup("")))
-            goto no_memory;
+        if (VIR_STRDUP(name, "") < 0)
+            goto failed;
     }
 
     VIR_DEBUG("proceeding with name = %s", name);
@@ -635,15 +631,11 @@ doRemoteOpen(virConnectPtr conn,
         break;
 
     case trans_libssh2:
-        if (!sockname) {
-            if (flags & VIR_DRV_OPEN_REMOTE_RO)
-                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET_RO);
-            else
-                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
-
-            if (sockname == NULL)
-                goto no_memory;
-        }
+        if (!sockname &&
+            VIR_STRDUP(sockname,
+                       flags & VIR_DRV_OPEN_REMOTE_RO ?
+                       LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+            goto failed;
 
         VIR_DEBUG("Starting LibSSH2 session");
 
@@ -678,12 +670,10 @@ doRemoteOpen(virConnectPtr conn,
                 }
                 VIR_FREE(userdir);
             } else {
-                if (flags & VIR_DRV_OPEN_REMOTE_RO)
-                    sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET_RO);
-                else
-                    sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
-                if (sockname == NULL)
-                    goto no_memory;
+                if (VIR_STRDUP(sockname,
+                               flags & VIR_DRV_OPEN_REMOTE_RO ?
+                               LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+                    goto failed;
             }
             VIR_DEBUG("Proceeding with sockname %s", sockname);
         }
@@ -705,17 +695,14 @@ doRemoteOpen(virConnectPtr conn,
         break;
 
     case trans_ssh:
-        if (!command && !(command = strdup("ssh")))
-            goto no_memory;
+        if (!command && VIR_STRDUP(command, "ssh") < 0)
+            goto failed;
 
-        if (!sockname) {
-            if (flags & VIR_DRV_OPEN_REMOTE_RO)
-                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET_RO);
-            else
-                sockname = strdup(LIBVIRTD_PRIV_UNIX_SOCKET);
-            if (!sockname)
-                goto no_memory;
-        }
+        if (!sockname &&
+            VIR_STRDUP(sockname,
+                       flags & VIR_DRV_OPEN_REMOTE_RO ?
+                       LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+            goto failed;
 
         if (!(priv->client = virNetClientNewSSH(priv->hostname,
                                                 port,
@@ -1493,11 +1480,8 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
 
     for (i = 0; i < nparams; ++i) {
         /* call() will free this: */
-        val[i].field = strdup(params[i].field);
-        if (val[i].field == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(val[i].field, params[i].field) < 0)
             goto cleanup;
-        }
         val[i].value.type = params[i].type;
         switch (params[i].type) {
         case VIR_TYPED_PARAM_INT:
@@ -1519,11 +1503,9 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
             val[i].value.remote_typed_param_value_u.b = params[i].value.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            val[i].value.remote_typed_param_value_u.s = strdup(params[i].value.s);
-            if (val[i].value.remote_typed_param_value_u.s == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(val[i].value.remote_typed_param_value_u.s,
+                           params[i].value.s) < 0)
                 goto cleanup;
-            }
             break;
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
@@ -1608,12 +1590,9 @@ remoteDeserializeTypedParameters(remote_typed_param *ret_params_val,
                 ret_param->value.remote_typed_param_value_u.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            param->value.s =
-                strdup(ret_param->value.remote_typed_param_value_u.s);
-            if (!param->value.s) {
-                virReportOOMError();
+            if (VIR_STRDUP(param->value.s,
+                           ret_param->value.remote_typed_param_value_u.s) < 0)
                 goto cleanup;
-            }
             break;
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
@@ -1653,10 +1632,8 @@ remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
     }
 
     for (i = 0; i < ret_errors_len; i++) {
-        if (!(errors[i].disk = strdup(ret_errors_val[i].disk))) {
-            virReportOOMError();
+        if (VIR_STRDUP(errors[i].disk, ret_errors_val[i].disk) < 0)
             goto error;
-        }
         errors[i].error = ret_errors_val[i].error;
     }
 
@@ -4470,28 +4447,28 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
         return;
 
     if (VIR_ALLOC(localAddr) < 0)
-        goto no_memory;
+        goto error;
     localAddr->family = msg->local.family;
-    if (!(localAddr->service = strdup(msg->local.service)) ||
-        !(localAddr->node = strdup(msg->local.node)))
-        goto no_memory;
+    if (VIR_STRDUP(localAddr->service, msg->local.service) < 0 ||
+        VIR_STRDUP(localAddr->node, msg->local.node) < 0)
+        goto error;
 
     if (VIR_ALLOC(remoteAddr) < 0)
-        goto no_memory;
+        goto error;
     remoteAddr->family = msg->remote.family;
-    if (!(remoteAddr->service = strdup(msg->remote.service)) ||
-        !(remoteAddr->node = strdup(msg->remote.node)))
-        goto no_memory;
+    if (VIR_STRDUP(remoteAddr->service, msg->remote.service) < 0 ||
+        VIR_STRDUP(remoteAddr->node, msg->remote.node) < 0)
+        goto error;
 
     if (VIR_ALLOC(subject) < 0)
-        goto no_memory;
+        goto error;
     if (VIR_ALLOC_N(subject->identities, msg->subject.subject_len) < 0)
-        goto no_memory;
+        goto error;
     subject->nidentity = msg->subject.subject_len;
     for (i = 0; i < subject->nidentity; i++) {
-        if (!(subject->identities[i].type = strdup(msg->subject.subject_val[i].type)) ||
-            !(subject->identities[i].name = strdup(msg->subject.subject_val[i].name)))
-            goto no_memory;
+        if (VIR_STRDUP(subject->identities[i].type, msg->subject.subject_val[i].type) < 0 ||
+            VIR_STRDUP(subject->identities[i].name, msg->subject.subject_val[i].name) < 0)
+            goto error;
     }
 
     event = virDomainEventGraphicsNewFromDom(dom,
@@ -4506,7 +4483,7 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainEventQueue(priv, event);
     return;
 
-no_memory:
+error:
     if (localAddr) {
         VIR_FREE(localAddr->service);
         VIR_FREE(localAddr->node);
@@ -5100,11 +5077,8 @@ remoteDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
              (xdrproc_t) xdr_qemu_domain_monitor_command_ret, (char *) &ret) == -1)
         goto done;
 
-    *result = strdup(ret.result);
-    if (*result == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(*result, ret.result) < 0)
         goto cleanup;
-    }
 
     rv = 0;
 
