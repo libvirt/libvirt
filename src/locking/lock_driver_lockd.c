@@ -476,6 +476,8 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                 priv->id = params[i].value.i;
             } else if (STREQ(params[i].key, "pid")) {
                 priv->pid = params[i].value.i;
+            } else if (STREQ(params[i].key, "uri")) {
+                /* ignored */
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected parameter %s for object"),
