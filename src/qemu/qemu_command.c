@@ -4827,6 +4827,9 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
                       virDomainDeviceAddressTypeToString(dev->info->type),
                       dev->info->alias, dev->info->alias);
 
+    if (dev->info->bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
+
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto error;
@@ -8080,6 +8083,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("booting from assigned USB devices is not "
                                      "supported with this version of qemu"));
+                    goto error;
+                }
+                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("booting from assigned SCSI devices is not"
+                                     " supported with this version of qemu"));
                     goto error;
                 }
             }
