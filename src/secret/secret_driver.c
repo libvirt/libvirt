@@ -1097,9 +1097,8 @@ secretStateInitialize(bool privileged,
     secretDriverLock(driverState);
 
     if (privileged) {
-        base = strdup(SYSCONFDIR "/libvirt");
-        if (base == NULL)
-            goto out_of_memory;
+        if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+            goto error;
     } else {
         base = virGetUserConfigDirectory();
         if (!base)
