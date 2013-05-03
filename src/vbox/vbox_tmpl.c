@@ -1847,11 +1847,9 @@ static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
      * is supposed to pass the ABI name and not the domain
      * operating system driver as I had imagined ;)
      */
-    char *osType = strdup("hvm");
+    char *osType;
 
-    if (osType == NULL)
-        virReportOOMError();
-
+    ignore_value(VIR_STRDUP(osType, "hvm"));
     return osType;
 }
 
@@ -2297,7 +2295,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
             def->virtType = VIR_DOMAIN_VIRT_VBOX;
             def->id = dom->id;
             memcpy(def->uuid, dom->uuid, VIR_UUID_BUFLEN);
-            def->name = strdup(dom->name);
+            if (VIR_STRDUP(def->name, dom->name) < 0)
+                goto cleanup;
 
             machine->vtbl->GetMemorySize(machine, &memorySize);
             def->mem.cur_balloon = memorySize * 1024;
@@ -2332,7 +2331,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
             /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
 
-            def->os.type = strdup("hvm");
+            if (VIR_STRDUP(def->os.type, "hvm") < 0)
+                goto cleanup;
 
             def->os.arch = virArchFromHost();
 
@@ -2467,10 +2467,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                         if (STREQ(valueTypeUtf8, "sdl")) {
                             sdlPresent = 1;
-                            if (valueDisplayUtf8)
-                                sdlDisplay = strdup(valueDisplayUtf8);
-                            if (sdlDisplay == NULL) {
-                                virReportOOMError();
+                            if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
                                 /* just don't go to cleanup yet as it is ok to have
                                  * sdlDisplay as NULL and we check it below if it
                                  * exist and then only use it there
@@ -2481,10 +2478,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                         if (STREQ(valueTypeUtf8, "gui")) {
                             guiPresent = 1;
-                            if (valueDisplayUtf8)
-                                guiDisplay = strdup(valueDisplayUtf8);
-                            if (guiDisplay == NULL) {
-                                virReportOOMError();
+                            if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
                                 /* just don't go to cleanup yet as it is ok to have
                                  * guiDisplay as NULL and we check it below if it
                                  * exist and then only use it there
@@ -2519,14 +2513,10 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                     if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
                         def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
                         tmp = getenv("DISPLAY");
-                        if (tmp != NULL) {
-                            def->graphics[def->ngraphics]->data.desktop.display = strdup(tmp);
-                            if (def->graphics[def->ngraphics]->data.desktop.display == NULL) {
-                                virReportOOMError();
-                                /* just don't go to cleanup yet as it is ok to have
-                                 * display as NULL
-                                 */
-                            }
+                        if (VIR_STRDUP(def->graphics[def->ngraphics]->data.desktop.display, tmp) < 0) {
+                            /* just don't go to cleanup yet as it is ok to have
+                             * display as NULL
+                             */
                         }
                         totalPresent++;
                         def->ngraphics++;
@@ -2656,8 +2646,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 if (hddType == HardDiskType_Immutable)
                     def->disks[hddNum]->readonly = true;
-                def->disks[hddNum]->src = strdup(hddlocation);
-                def->disks[hddNum]->dst = strdup("hda");
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->src, hddlocation));
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hda"));
                 hddNum++;
 
                 VBOX_UTF8_FREE(hddlocation);
@@ -2677,8 +2667,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 if (hddType == HardDiskType_Immutable)
                     def->disks[hddNum]->readonly = true;
-                def->disks[hddNum]->src = strdup(hddlocation);
-                def->disks[hddNum]->dst = strdup("hdb");
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->src, hddlocation));
+                ignore_value(VIR_STRDUP(def->disks[hddNum]->dst, "hdb"));
                 hddNum++;
 
                 VBOX_UTF8_FREE(hddlocation);
@@ -2698,9 +2688,9 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                 if (hddType == HardDiskType_Immutable)
                     def->disks[hddNum]->readonly = true;
-                def->disks[hddNum]->src = strdup(hddlocation);
-                def->disks[hddNum]->dst = strdup("hdd");
-                hddNum++;
+                if (VIR_STRDUP_QUIET(def->disks[hddNum]->src, hddlocation) == 0 &&
+                    VIR_STRDUP_QUIET(def->disks[hddNum]->dst, "hdd") == 0)
+                    hddNum++;
 
                 VBOX_UTF8_FREE(hddlocation);
                 VBOX_UTF16_FREE(hddlocationUtf16);
@@ -2787,7 +2777,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
                 medium->vtbl->GetLocation(medium, &mediumLocUtf16);
                 VBOX_UTF16_TO_UTF8(mediumLocUtf16, &mediumLocUtf8);
                 VBOX_UTF16_FREE(mediumLocUtf16);
-                def->disks[diskCount]->src = strdup(mediumLocUtf8);
+                ignore_value(VIR_STRDUP(def->disks[diskCount]->src, mediumLocUtf8));
                 VBOX_UTF8_FREE(mediumLocUtf8);
 
                 if (!(def->disks[diskCount]->src)) {
@@ -2891,25 +2881,23 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
 
                     sharedFolder->vtbl->GetHostPath(sharedFolder, &hostPathUtf16);
                     VBOX_UTF16_TO_UTF8(hostPathUtf16, &hostPath);
-                    def->fss[i]->src = strdup(hostPath);
+                    if (VIR_STRDUP(def->fss[i]->src, hostPath) < 0) {
+                        VBOX_UTF8_FREE(hostPath);
+                        VBOX_UTF16_FREE(hostPathUtf16);
+                        goto sharedFoldersCleanup;
+                    }
                     VBOX_UTF8_FREE(hostPath);
                     VBOX_UTF16_FREE(hostPathUtf16);
 
-                    if (def->fss[i]->src == NULL) {
-                        virReportOOMError();
-                        goto sharedFoldersCleanup;
-                    }
-
                     sharedFolder->vtbl->GetName(sharedFolder, &nameUtf16);
                     VBOX_UTF16_TO_UTF8(nameUtf16, &name);
-                    def->fss[i]->dst = strdup(name);
-                    VBOX_UTF8_FREE(name);
-                    VBOX_UTF16_FREE(nameUtf16);
-
-                    if (def->fss[i]->dst == NULL) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(def->fss[i]->dst, name) < 0) {
+                        VBOX_UTF8_FREE(name);
+                        VBOX_UTF16_FREE(nameUtf16);
                         goto sharedFoldersCleanup;
                     }
+                    VBOX_UTF8_FREE(name);
+                    VBOX_UTF16_FREE(nameUtf16);
 
                     sharedFolder->vtbl->GetWritable(sharedFolder, &writable);
                     def->fss[i]->readonly = !writable;
@@ -2983,7 +2971,7 @@ sharedFoldersCleanup:
 #endif /* VBOX_API_VERSION >= 4001 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
-                            def->nets[netAdpIncCnt]->data.bridge.brname = strdup(hostInt);
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.bridge.brname, hostInt));
 
                             VBOX_UTF8_FREE(hostInt);
                             VBOX_UTF16_FREE(hostIntUtf16);
@@ -2997,7 +2985,7 @@ sharedFoldersCleanup:
                             adapter->vtbl->GetInternalNetwork(adapter, &intNetUtf16);
 
                             VBOX_UTF16_TO_UTF8(intNetUtf16, &intNet);
-                            def->nets[netAdpIncCnt]->data.internal.name = strdup(intNet);
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.internal.name, intNet));
 
                             VBOX_UTF8_FREE(intNet);
                             VBOX_UTF16_FREE(intNetUtf16);
@@ -3015,7 +3003,7 @@ sharedFoldersCleanup:
 #endif /* VBOX_API_VERSION >= 4001 */
 
                             VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
-                            def->nets[netAdpIncCnt]->data.network.name = strdup(hostInt);
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.network.name, hostInt));
 
                             VBOX_UTF8_FREE(hostInt);
                             VBOX_UTF16_FREE(hostIntUtf16);
@@ -3029,18 +3017,18 @@ sharedFoldersCleanup:
 
                         adapter->vtbl->GetAdapterType(adapter, &adapterType);
                         if (adapterType == NetworkAdapterType_Am79C970A) {
-                            def->nets[netAdpIncCnt]->model = strdup("Am79C970A");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C970A"));
                         } else if (adapterType == NetworkAdapterType_Am79C973) {
-                            def->nets[netAdpIncCnt]->model = strdup("Am79C973");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C973"));
                         } else if (adapterType == NetworkAdapterType_I82540EM) {
-                            def->nets[netAdpIncCnt]->model = strdup("82540EM");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82540EM"));
                         } else if (adapterType == NetworkAdapterType_I82545EM) {
-                            def->nets[netAdpIncCnt]->model = strdup("82545EM");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82545EM"));
                         } else if (adapterType == NetworkAdapterType_I82543GC) {
-                            def->nets[netAdpIncCnt]->model = strdup("82543GC");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82543GC"));
 #if VBOX_API_VERSION >= 3001
                         } else if (adapterType == NetworkAdapterType_Virtio) {
-                            def->nets[netAdpIncCnt]->model = strdup("virtio");
+                            ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "virtio"));
 #endif /* VBOX_API_VERSION >= 3001 */
                         }
 
@@ -3127,8 +3115,9 @@ sharedFoldersCleanup:
                                 def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                                 def->disks[def->ndisks - 1]->type = VIR_DOMAIN_DISK_TYPE_FILE;
                                 def->disks[def->ndisks - 1]->readonly = true;
-                                def->disks[def->ndisks - 1]->src = strdup(location);
-                                def->disks[def->ndisks - 1]->dst = strdup("hdc");
+                                ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->src, location));
+                                ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "hdc"));
+                                def->ndisks--;
                             } else {
                                 def->ndisks--;
                                 virReportOOMError();
@@ -3174,8 +3163,9 @@ sharedFoldersCleanup:
                                     def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
                                     def->disks[def->ndisks - 1]->type = VIR_DOMAIN_DISK_TYPE_FILE;
                                     def->disks[def->ndisks - 1]->readonly = false;
-                                    def->disks[def->ndisks - 1]->src = strdup(location);
-                                    def->disks[def->ndisks - 1]->dst = strdup("fda");
+                                    ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->src, location));
+                                    ignore_value(VIR_STRDUP(def->disks[def->ndisks - 1]->dst, "fda"));
+                                    def->ndisks--;
                                 } else {
                                     def->ndisks--;
                                     virReportOOMError();
@@ -3268,7 +3258,7 @@ sharedFoldersCleanup:
 
                         if (pathUtf16) {
                             VBOX_UTF16_TO_UTF8(pathUtf16, &path);
-                            def->serials[serialPortIncCount]->source.data.file.path = strdup(path);
+                            ignore_value(VIR_STRDUP(def->serials[serialPortIncCount]->source.data.file.path, path));
                         }
 
                         serialPortIncCount++;
@@ -3338,7 +3328,7 @@ sharedFoldersCleanup:
                         parallelPort->vtbl->GetPath(parallelPort, &pathUtf16);
 
                         VBOX_UTF16_TO_UTF8(pathUtf16, &path);
-                        def->parallels[parallelPortIncCount]->source.data.file.path = strdup(path);
+                        ignore_value(VIR_STRDUP(def->parallels[parallelPortIncCount]->source.data.file.path, path));
 
                         parallelPortIncCount++;
 
@@ -3485,16 +3475,16 @@ static int vboxConnectListDefinedDomains(virConnectPtr conn, char ** const names
                     (state > MachineState_LastOnline)) {
                     machine->vtbl->GetName(machine, &machineNameUtf16);
                     VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineName);
-                    names[j] = strdup(machineName);
-                    VBOX_UTF16_FREE(machineNameUtf16);
-                    VBOX_UTF8_FREE(machineName);
-                    if (!names[j]) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(names[j], machineName) < 0) {
+                        VBOX_UTF16_FREE(machineNameUtf16);
+                        VBOX_UTF8_FREE(machineName);
                         for (; j >= 0 ; j--)
                             VIR_FREE(names[j]);
                         ret = -1;
                         goto cleanup;
                     }
+                    VBOX_UTF16_FREE(machineNameUtf16);
+                    VBOX_UTF8_FREE(machineName);
                     j++;
                     ret++;
                 }
@@ -3591,29 +3581,21 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine,
 
             if (STREQ(valueTypeUtf8, "sdl")) {
                 sdlPresent = 1;
-                if (valueDisplayUtf8) {
-                    sdlDisplay = strdup(valueDisplayUtf8);
-                    if (sdlDisplay == NULL) {
-                        virReportOOMError();
-                        /* just don't go to cleanup yet as it is ok to have
-                         * sdlDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
-                    }
+                if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * sdlDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
                 }
             }
 
             if (STREQ(valueTypeUtf8, "gui")) {
                 guiPresent = 1;
-                if (valueDisplayUtf8) {
-                    guiDisplay = strdup(valueDisplayUtf8);
-                    if (guiDisplay == NULL) {
-                        virReportOOMError();
-                        /* just don't go to cleanup yet as it is ok to have
-                         * guiDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
-                    }
+                if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
+                    /* just don't go to cleanup yet as it is ok to have
+                     * guiDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
                 }
             }
         }
@@ -3989,7 +3971,8 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                                 PRInt32 device           = 0;
                                 PRUnichar *hddcnameUtf16 = NULL;
 
-                                char *hddcname = strdup("IDE");
+                                char *hddcname;
+                                ignore_value(VIR_STRDUP(hddcname, "IDE"));
                                 VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
                                 VIR_FREE(hddcname);
 
@@ -4808,30 +4791,22 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) &&
             (guiPresent == 0)) {
             guiPresent = 1;
-            if (def->graphics[i]->data.desktop.display) {
-                guiDisplay = strdup(def->graphics[i]->data.desktop.display);
-                if (guiDisplay == NULL) {
-                    virReportOOMError();
-                    /* just don't go to cleanup yet as it is ok to have
-                     * guiDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
+            if (VIR_STRDUP(guiDisplay, def->graphics[i]->data.desktop.display) < 0) {
+                /* just don't go to cleanup yet as it is ok to have
+                 * guiDisplay as NULL and we check it below if it
+                 * exist and then only use it there
+                 */
             }
         }
 
         if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) &&
             (sdlPresent == 0)) {
             sdlPresent = 1;
-            if (def->graphics[i]->data.sdl.display) {
-                sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
-                if (sdlDisplay == NULL) {
-                    virReportOOMError();
-                    /* just don't go to cleanup yet as it is ok to have
-                     * sdlDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
+            if (VIR_STRDUP(sdlDisplay, def->graphics[i]->data.sdl.display) < 0) {
+                /* just don't go to cleanup yet as it is ok to have
+                 * sdlDisplay as NULL and we check it below if it
+                 * exist and then only use it there
+                 */
             }
         }
     }
@@ -5233,7 +5208,8 @@ vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
     {
         PRUnichar *hddcnameUtf16 = NULL;
 
-        char *hddcname = strdup("IDE");
+        char *hddcname;
+        ignore_value(VIR_STRDUP(hddcname, "IDE"));
         VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
         VIR_FREE(hddcname);
 
@@ -5392,12 +5368,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
         return ret;
     }
 
-    def->os.type = strdup("hvm");
-
-    if (def->os.type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
-    }
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE);
@@ -5627,12 +5599,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
         return ret;
     }
 
-    def->os.type = strdup("hvm");
-
-    if (def->os.type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
-    }
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE);
@@ -6057,9 +6025,10 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
         goto cleanup;
 
-    if (VIR_ALLOC(def) < 0
-        || !(def->name = strdup(snapshot->name)))
+    if (VIR_ALLOC(def) < 0)
         goto no_memory;
+    if (VIR_STRDUP(def->name, snapshot->name) < 0)
+        goto cleanup;
 
     rc = snap->vtbl->GetDescription(snap, &str16);
     if (NS_FAILED(rc)) {
@@ -6071,10 +6040,11 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     if (str16) {
         VBOX_UTF16_TO_UTF8(str16, &str8);
         VBOX_UTF16_FREE(str16);
-        def->description = strdup(str8);
+        if (VIR_STRDUP(def->description, str8) < 0) {
+            VBOX_UTF8_FREE(str8);
+            goto cleanup;
+        }
         VBOX_UTF8_FREE(str8);
-        if (!def->description)
-            goto no_memory;
     }
 
     rc = snap->vtbl->GetTimeStamp(snap, &timestamp);
@@ -6104,10 +6074,11 @@ vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         }
         VBOX_UTF16_TO_UTF8(str16, &str8);
         VBOX_UTF16_FREE(str16);
-        def->parent = strdup(str8);
-        VBOX_UTF8_FREE(str8);
-        if (!def->parent)
+        if (VIR_STRDUP(def->parent, str8) < 0) {
+            VBOX_UTF8_FREE(str8);
             goto no_memory;
+        }
+        VBOX_UTF8_FREE(str8);
     }
 
     rc = snap->vtbl->GetOnline(snap, &online);
@@ -6254,12 +6225,12 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
         }
         VBOX_UTF16_TO_UTF8(nameUtf16, &name);
         VBOX_UTF16_FREE(nameUtf16);
-        names[i] = strdup(name);
-        VBOX_UTF8_FREE(name);
-        if (!names[i]) {
+        if (VIR_STRDUP(names[i], name) < 0) {
             virReportOOMError();
+            VBOX_UTF8_FREE(name);
             goto cleanup;
         }
+        VBOX_UTF8_FREE(name);
     }
 
     if (count <= nameslen)
@@ -7536,12 +7507,8 @@ static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int n
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-                    names[ret] = strdup(nameUtf8);
-                    if (names[ret] == NULL) {
-                        virReportOOMError();
-                    } else {
+                    if (VIR_STRDUP(names[ret], nameUtf8) == 0)
                         ret++;
-                    }
 
                     VBOX_UTF8_FREE(nameUtf8);
                     VBOX_UTF16_FREE(nameUtf16);
@@ -7618,12 +7585,8 @@ static int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names
                     VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
                     VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-                    names[ret] = strdup(nameUtf8);
-                    if (names[ret] == NULL) {
-                        virReportOOMError();
-                    } else {
+                    if (VIR_STRDUP(names[ret], nameUtf8) == 0)
                         ret++;
-                    }
 
                     VBOX_UTF8_FREE(nameUtf8);
                     VBOX_UTF16_FREE(nameUtf16);
@@ -8124,8 +8087,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
         networkInterface->vtbl->GetInterfaceType(networkInterface, &interfaceType);
 
         if (interfaceType == HostNetworkInterfaceType_HostOnly) {
-            def->name = strdup(network->name);
-            if (def->name != NULL) {
+            if (VIR_STRDUP(def->name, network->name) == 0) {
                 PRUnichar *networkNameUtf16 = NULL;
                 IDHCPServer *dhcpServer     = NULL;
                 vboxIID vboxnet0IID = VBOX_IID_INITIALIZER;
@@ -8182,11 +8144,9 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network,
 
                     ipdef->nhosts = 1;
                     if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >=0) {
-                        ipdef->hosts[0].name = strdup(network->name);
-                        if (ipdef->hosts[0].name == NULL) {
+                        if (VIR_STRDUP(ipdef->hosts[0].name, network->name) < 0) {
                             VIR_FREE(ipdef->hosts);
                             ipdef->nhosts = 0;
-                            virReportOOMError();
                         } else {
                             PRUnichar *macAddressUtf16 = NULL;
                             PRUnichar *ipAddressUtf16  = NULL;
@@ -8303,14 +8263,9 @@ static int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
                                        char **const names, int nnames) {
     int numActive = 0;
 
-    if (nnames == 1) {
-        names[numActive] = strdup("default-pool");
-        if (names[numActive] == NULL) {
-            virReportOOMError();
-        } else {
-            numActive++;
-        }
-    }
+    if (nnames == 1 &&
+        VIR_STRDUP(names[numActive], "default-pool") > 0)
+        numActive++;
     return numActive;
 }
 
@@ -8392,12 +8347,8 @@ static int vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names
 
                     if (nameUtf8) {
                         VIR_DEBUG("nnames[%d]: %s", numActive, nameUtf8);
-                        names[numActive] = strdup(nameUtf8);
-                        if (names[numActive] == NULL) {
-                            virReportOOMError();
-                        } else {
+                        if (VIR_STRDUP(names[numActive], nameUtf8) > 0)
                             numActive++;
-                        }
 
                         VBOX_UTF8_FREE(nameUtf8);
                     }
@@ -9014,12 +8965,10 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
             else
                 defOk = 0;
 
-            def.name = strdup(vol->name);
-            if (!(def.name && defOk))
+            if (VIR_STRDUP(def.name, vol->name) < 0)
                 defOk = 0;
 
-            def.key = strdup(vol->key);
-            if (!(def.key && defOk))
+            if (VIR_STRDUP(def.key, vol->key) < 0)
                 defOk = 0;
 
             rc = hardDisk->vtbl->GetFormat(hardDisk, &hddFormatUtf16);
@@ -9095,9 +9044,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
             VBOX_UTF16_TO_UTF8(hddLocationUtf16, &hddLocationUtf8);
             if (hddLocationUtf8) {
 
-                ret = strdup(hddLocationUtf8);
-                if (!ret)
-                    virReportOOMError();
+                ignore_value(VIR_STRDUP(ret, hddLocationUtf8));
 
                 VIR_DEBUG("Storage Volume Name: %s", vol->name);
                 VIR_DEBUG("Storage Volume Path: %s", hddLocationUtf8);
@@ -9218,14 +9165,14 @@ vboxDomainScreenshot(virDomainPtr dom,
                     goto endjob;
                 }
 
+                if (VIR_STRDUP(ret, "image/png") < 0)
+                    goto endjob;
+
                 if (virFDStreamOpenFile(st, tmp, 0, 0, O_RDONLY) < 0) {
                     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                    _("unable to open stream"));
-                    goto endjob;
+                    VIR_FREE(ret);
                 }
-
-                ret = strdup("image/png");
-
 endjob:
                 VIR_FREE(screenData);
                 VBOX_RELEASE(display);
