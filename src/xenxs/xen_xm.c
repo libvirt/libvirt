@@ -183,12 +183,7 @@ static int xenXMConfigCopyStringInternal(virConfPtr conf,
         return -1;
     }
 
-    if (!(*value = strdup(val->str))) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return VIR_STRDUP(*value, val->str);
 }
 
 
@@ -288,8 +283,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
         STREQ(str, "hvm"))
         hvm = 1;
 
-    if (!(def->os.type = strdup(hvm ? "hvm" : "xen")))
-        goto no_memory;
+    if (VIR_STRDUP(def->os.type, hvm ? "hvm" : "xen") < 0)
+        goto cleanup;
 
     def->os.arch =
         virCapabilitiesDefaultGuestArch(caps,
@@ -307,8 +302,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                                                         def->os.arch,
                                                         virDomainVirtTypeToString(def->virtType));
     if (defaultMachine != NULL) {
-        if (!(def->os.machine = strdup(defaultMachine)))
-            goto no_memory;
+        if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
+            goto cleanup;
     }
 
     if (hvm) {
@@ -562,8 +557,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                     if (!(tmp = strchr(disk->src, ':')))
                         goto skipdisk;
 
-                    if (!(driverType = strndup(disk->src, tmp - disk->src)))
-                        goto no_memory;
+                    if (VIR_STRNDUP(driverType, disk->src, tmp - disk->src) < 0)
+                        goto cleanup;
                     if (STREQ(driverType, "aio"))
                         disk->format = VIR_STORAGE_FILE_RAW;
                     else
@@ -585,8 +580,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             /* No source, or driver name, so fix to phy: */
             if (!disk->driverName &&
-                !(disk->driverName = strdup("phy")))
-                goto no_memory;
+                VIR_STRDUP(disk->driverName, "phy") < 0)
+                goto cleanup;
 
 
             /* phy: type indicates a block device */
@@ -637,12 +632,12 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
 
             disk->type = VIR_DOMAIN_DISK_TYPE_FILE;
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-            if (!(disk->driverName = strdup("file")))
-                goto no_memory;
-            if (!(disk->src = strdup(str)))
-                goto no_memory;
-            if (!(disk->dst = strdup("hdc")))
-                goto no_memory;
+            if (VIR_STRDUP(disk->driverName, "file") < 0)
+                goto cleanup;
+            if (VIR_STRDUP(disk->src, str) < 0)
+                goto cleanup;
+            if (VIR_STRDUP(disk->dst, "hdc") < 0)
+                goto cleanup;
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
             disk->readonly = true;
 
@@ -703,9 +698,8 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                 } else if (STRPREFIX(key, "script=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
                     VIR_FREE(script);
-                    if (!(script = strndup(data, len))) {
-                        goto no_memory;
-                    }
+                    if (VIR_STRNDUP(script, data, len) < 0)
+                        goto cleanup;
                 } else if (STRPREFIX(key, "model=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(model) - 1;
                     if (virStrncpy(model, data, len, sizeof(model)) == NULL) {
@@ -763,34 +757,30 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
             }
 
             if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                if (bridge[0] &&
-                    !(net->data.bridge.brname = strdup(bridge)))
-                    goto no_memory;
-                if (ip[0] &&
-                    !(net->data.bridge.ipaddr = strdup(ip)))
-                    goto no_memory;
+                if (bridge[0] && VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
+                    goto cleanup;
+                if (ip[0] && VIR_STRDUP(net->data.bridge.ipaddr, ip) < 0)
+                    goto cleanup;
             } else {
-                if (ip[0] &&
-                    !(net->data.ethernet.ipaddr = strdup(ip)))
-                    goto no_memory;
+                if (ip[0] && VIR_STRDUP(net->data.ethernet.ipaddr, ip) < 0)
+                    goto cleanup;
             }
 
             if (script && script[0] &&
-                !(net->script = strdup(script)))
-               goto no_memory;
+                VIR_STRDUP(net->script, script) < 0)
+                goto cleanup;
 
             if (model[0] &&
-                !(net->model = strdup(model)))
+                VIR_STRDUP(net->model, model) < 0)
                 goto no_memory;
 
-            if (!model[0] && type[0] &&
-                STREQ(type, "netfront") &&
-                !(net->model = strdup("netfront")))
-                goto no_memory;
+            if (!model[0] && type[0] && STREQ(type, "netfront") &&
+                VIR_STRDUP(net->model, "netfront") < 0)
+                goto cleanup;
 
             if (vifname[0] &&
-                !(net->ifname = strdup(vifname)))
-                goto no_memory;
+                VIR_STRDUP(net->ifname, vifname) < 0)
+                goto cleanup;
 
             if (VIR_REALLOC_N(def->nets, def->nnets+1) < 0)
                 goto no_memory;
@@ -1019,21 +1009,21 @@ xenParseXM(virConfPtr conf, int xendConfigVersion,
                                                               -1, true) < 0)
                             goto cleanup;
                     } else if (STRPREFIX(key, "vncpasswd=")) {
-                        if (!(graphics->data.vnc.auth.passwd = strdup(key + 10)))
-                            goto no_memory;
+                        if (VIR_STRDUP(graphics->data.vnc.auth.passwd, key + 10) < 0)
+                            goto cleanup;
                     } else if (STRPREFIX(key, "keymap=")) {
-                        if (!(graphics->data.vnc.keymap = strdup(key + 7)))
-                            goto no_memory;
+                        if (VIR_STRDUP(graphics->data.vnc.keymap, key + 7) < 0)
+                            goto cleanup;
                     } else if (STRPREFIX(key, "vncdisplay=")) {
                         graphics->data.vnc.port = strtol(key+11, NULL, 10) + 5900;
                     }
                 } else {
                     if (STRPREFIX(key, "display=")) {
-                        if (!(graphics->data.sdl.display = strdup(key + 8)))
-                            goto no_memory;
+                        if (VIR_STRDUP(graphics->data.sdl.display, key + 8) < 0)
+                            goto cleanup;
                     } else if (STRPREFIX(key, "xauthority=")) {
-                        if (!(graphics->data.sdl.xauth = strdup(key + 11)))
-                            goto no_memory;
+                        if (VIR_STRDUP(graphics->data.sdl.xauth, key + 11) < 0)
+                            goto cleanup;
                     }
                 }
 
@@ -1193,9 +1183,8 @@ int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) 
 
     value->type = VIR_CONF_STRING;
     value->next = NULL;
-    if (!(value->str = strdup(str))) {
+    if (VIR_STRDUP(value->str, str) < 0) {
         VIR_FREE(value);
-        virReportOOMError();
         return -1;
     }
 
