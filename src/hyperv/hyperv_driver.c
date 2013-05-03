@@ -140,12 +140,8 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags
 
     /* Request credentials */
     if (conn->uri->user != NULL) {
-        username = strdup(conn->uri->user);
-
-        if (username == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto cleanup;
-        }
     } else {
         username = virAuthGetUsername(conn, auth, "hyperv", "administrator", conn->uri->server);
 
@@ -257,12 +253,7 @@ hypervConnectGetHostname(virConnectPtr conn)
         goto cleanup;
     }
 
-    hostname = strdup(computerSystem->data->DNSHostName);
-
-    if (hostname == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    ignore_value(VIR_STRDUP(hostname, computerSystem->data->DNSHostName));
 
   cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -652,13 +643,9 @@ hypervDomainDestroy(virDomainPtr domain)
 static char *
 hypervDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
 {
-    char *osType = strdup("hvm");
+    char *osType;
 
-    if (osType == NULL) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_STRDUP(osType, "hvm"));
     return osType;
 }
 
@@ -908,21 +895,11 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         return NULL;
     }
 
-    def->name = strdup(computerSystem->data->ElementName);
-
-    if (def->name == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->name, computerSystem->data->ElementName) < 0)
         goto cleanup;
-    }
 
-    if (virtualSystemSettingData->data->Notes != NULL) {
-        def->description = strdup(virtualSystemSettingData->data->Notes);
-
-        if (def->description == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (VIR_STRDUP(def->description, virtualSystemSettingData->data->Notes) < 0)
+        goto cleanup;
 
     def->mem.max_balloon = memorySettingData->data->Limit * 1024; /* megabyte to kilobyte */
     def->mem.cur_balloon = memorySettingData->data->VirtualQuantity * 1024; /* megabyte to kilobyte */
@@ -930,12 +907,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->vcpus = processorSettingData->data->VirtualQuantity;
     def->maxvcpus = processorSettingData->data->VirtualQuantity;
 
-    def->os.type = strdup("hvm");
-
-    if (def->os.type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
-    }
 
     /* FIXME: devices section is totally missing */
 
@@ -981,12 +954,8 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
-        names[count] = strdup(computerSystem->data->ElementName);
-
-        if (names[count] == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[count], computerSystem->data->ElementName) < 0)
             goto cleanup;
-        }
 
         ++count;
 

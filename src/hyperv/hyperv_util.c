@@ -29,6 +29,7 @@
 #include "viruuid.h"
 #include "hyperv_private.h"
 #include "hyperv_util.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -56,12 +57,8 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
         if (STRCASEEQ(queryParam->name, "transport")) {
             VIR_FREE((*parsedUri)->transport);
 
-            (*parsedUri)->transport = strdup(queryParam->value);
-
-            if ((*parsedUri)->transport == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP((*parsedUri)->transport, queryParam->value) < 0)
                 goto cleanup;
-            }
 
             if (STRNEQ((*parsedUri)->transport, "http") &&
                 STRNEQ((*parsedUri)->transport, "https")) {
@@ -77,14 +74,9 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
         }
     }
 
-    if ((*parsedUri)->transport == NULL) {
-        (*parsedUri)->transport = strdup("https");
-
-        if ((*parsedUri)->transport == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (!(*parsedUri)->transport &&
+        VIR_STRDUP((*parsedUri)->transport, "https") < 0)
+        goto cleanup;
 
     result = 0;
 
