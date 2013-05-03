@@ -975,29 +975,57 @@ qemuGetSharedDeviceKey(const char *device_path)
     return key;
 }
 
-/* Check if a shared disk's setting conflicts with the conf
+/* Check if a shared device's setting conflicts with the conf
  * used by other domain(s). Currently only checks the sgio
  * setting. Note that this should only be called for disk with
- * block source.
+ * block source if the device type is disk.
  *
  * Returns 0 if no conflicts, otherwise returns -1.
  */
 static int
-qemuCheckSharedDisk(virHashTablePtr sharedDevices,
-                    virDomainDiskDefPtr disk)
+qemuCheckSharedDevice(virHashTablePtr sharedDevices,
+                      virDomainDeviceDefPtr dev)
 {
+    virDomainDiskDefPtr disk = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
     char *sysfs_path = NULL;
     char *key = NULL;
+    char *hostdev_name = NULL;
+    char *hostdev_path = NULL;
+    char *device_path = NULL;
     int val;
     int ret = 0;
 
-    /* The only conflicts between shared disk we care about now
-     * is sgio setting, which is only valid for device='lun'.
-     */
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
-        return 0;
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        disk = dev->data.disk;
 
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL))) {
+        /* The only conflicts between shared disk we care about now
+         * is sgio setting, which is only valid for device='lun'.
+         */
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
+            return 0;
+
+        device_path = disk->src;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        hostdev = dev->data.hostdev;
+
+        if (!(hostdev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+                                                     hostdev->source.subsys.u.scsi.bus,
+                                                     hostdev->source.subsys.u.scsi.target,
+                                                     hostdev->source.subsys.u.scsi.unit)))
+            goto cleanup;
+
+        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        device_path = hostdev_path;
+    } else {
+        return 0;
+    }
+
+    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(device_path, NULL))) {
         ret = -1;
         goto cleanup;
     }
@@ -1008,7 +1036,7 @@ qemuCheckSharedDisk(virHashTablePtr sharedDevices,
     if (!virFileExists(sysfs_path))
         goto cleanup;
 
-    if (!(key = qemuGetSharedDeviceKey(disk->src))) {
+    if (!(key = qemuGetSharedDeviceKey(device_path))) {
         ret = -1;
         goto cleanup;
     }
@@ -1019,7 +1047,7 @@ qemuCheckSharedDisk(virHashTablePtr sharedDevices,
     if (!(virHashLookup(sharedDevices, key)))
         goto cleanup;
 
-    if (virGetDeviceUnprivSGIO(disk->src, NULL, &val) < 0) {
+    if (virGetDeviceUnprivSGIO(device_path, NULL, &val) < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -1031,26 +1059,36 @@ qemuCheckSharedDisk(virHashTablePtr sharedDevices,
          disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))
         goto cleanup;
 
-    if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
-                         "with other active domains"),
-                       disk->srcpool->pool,
-                       disk->srcpool->volume);
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
+                             "with other active domains"),
+                           disk->srcpool->pool,
+                           disk->srcpool->volume);
+        } else {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("sgio of shared disk '%s' conflicts with other "
+                             "active domains"), disk->src);
+        }
     } else {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("sgio of shared disk '%s' conflicts with other "
-                         "active domains"), disk->src);
+                       _("sgio of shared scsi host device '%s-%d-%d-%d' conflicts "
+                          "with other active domains"),
+                       hostdev->source.subsys.u.scsi.adapter,
+                       hostdev->source.subsys.u.scsi.bus,
+                       hostdev->source.subsys.u.scsi.target,
+                       hostdev->source.subsys.u.scsi.unit);
     }
 
     ret = -1;
-
 cleanup:
+    VIR_FREE(hostdev_name);
+    VIR_FREE(hostdev_path);
     VIR_FREE(sysfs_path);
     VIR_FREE(key);
     return ret;
 }
-
 bool
 qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
                                   const char *name,
@@ -1165,10 +1203,10 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     }
 
     qemuDriverLock(driver);
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
-            goto cleanup;
+    if (qemuCheckSharedDevice(driver->sharedDevices, dev) < 0)
+        goto cleanup;
 
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         if (!(key = qemuGetSharedDeviceKey(disk->src)))
             goto cleanup;
     } else {
