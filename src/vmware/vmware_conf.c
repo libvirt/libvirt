@@ -174,11 +174,8 @@ vmwareLoadDomains(struct vmware_driver *driver)
 
         pDomain = vm->privateData;
 
-        pDomain->vmxPath = strdup(vmxPath);
-        if (pDomain->vmxPath == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(pDomain->vmxPath, vmxPath) < 0)
             goto cleanup;
-        }
 
         vmwareDomainConfigDisplay(pDomain, vmdef);
 
@@ -297,22 +294,21 @@ vmwareParsePath(char *path, char **directory, char **filename)
             return -1;
         }
 
-        if ((*directory = strdup(path)) == NULL)
-            goto no_memory;
-        if ((*filename = strdup(separator)) == NULL) {
+        if (VIR_STRDUP(*directory, path) < 0)
+            goto error;
+        if (VIR_STRDUP(*filename, separator) < 0) {
             VIR_FREE(*directory);
-            goto no_memory;
+            goto error;
         }
 
     } else {
-        if ((*filename = strdup(path)) == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(*filename, path) < 0)
+            goto error;
     }
 
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     return -1;
 }
 
@@ -492,12 +488,8 @@ cleanup:
 char *
 vmwareCopyVMXFileName(const char *datastorePath, void *opaque ATTRIBUTE_UNUSED)
 {
-    char *path = strdup(datastorePath);
+    char *path;
 
-    if (path == NULL) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_STRDUP_QUIET(path, datastorePath));
     return path;
 }
