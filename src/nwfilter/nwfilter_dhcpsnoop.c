@@ -133,11 +133,11 @@ struct _virNWFilterSnoopReq {
     virNWFilterTechDriverPtr             techdriver;
     char                                *ifname;
     int                                  ifindex;
-    const char                          *linkdev;
+    char                                *linkdev;
     enum virDomainNetType                nettype;
     char                                 ifkey[VIR_IFKEY_LEN];
     virMacAddr                           macaddr;
-    const char                          *filtername;
+    char                                *filtername;
     virNWFilterHashTablePtr              vars;
     virNWFilterDriverStatePtr            driver;
     /* start and end of lease list, ordered by lease time */
@@ -1110,10 +1110,8 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
          * generate much more traffic than if we filtered by VM and
          * braodcast MAC as well
          */
-        if (!(ext_filter = strdup(filter))) {
-            virReportOOMError();
+        if (VIR_STRDUP(ext_filter, filter) < 0)
             return NULL;
-        }
     }
 
     handle = pcap_create(ifname, pcap_errbuf);
@@ -1408,7 +1406,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             fds[i].fd = pcap_fileno(pcapConf[i].handle);
         }
         tmp = virNetDevGetIndex(req->ifname, &ifindex);
-        threadkey = strdup(req->threadkey);
+        ignore_value(VIR_STRDUP(threadkey, req->threadkey));
         worker = virThreadPoolNew(1, 1, 0,
                                   virNWFilterDHCPDecodeWorker,
                                   req);
@@ -1631,15 +1629,17 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     req->driver = driver;
     req->techdriver = techdriver;
     tmp = virNetDevGetIndex(ifname, &req->ifindex);
-    req->linkdev = linkdev ? strdup(linkdev) : NULL;
     req->nettype = nettype;
-    req->ifname = strdup(ifname);
     virMacAddrSet(&req->macaddr, macaddr);
-    req->filtername = strdup(filtername);
     req->vars = virNWFilterHashTableCreate(0);
+    req->linkdev = NULL;
 
-    if (!req->ifname || !req->filtername || !req->vars || tmp < 0 ||
-        (linkdev != NULL && req->linkdev == NULL)) {
+    if (VIR_STRDUP(req->ifname, ifname) < 0 ||
+        VIR_STRDUP(req->filtername, filtername) < 0 ||
+        VIR_STRDUP(req->linkdev, linkdev) < 0)
+        goto exit_snoopreqput;
+
+    if (!req->vars || tmp < 0) {
         virReportOOMError();
         goto exit_snoopreqput;
     }

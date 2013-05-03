@@ -221,8 +221,8 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
-        goto out_of_memory;
+    if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+        goto error;
 
     if (virAsprintf(&driverState->configDir,
                     "%s/nwfilter", base) == -1)
@@ -454,9 +454,8 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
     nwfilterDriverLock(driver);
     for (i = 0 ; i < driver->nwfilters.count && got < nnames ; i++) {
         virNWFilterObjLock(driver->nwfilters.objs[i]);
-        if (!(names[got] = strdup(driver->nwfilters.objs[i]->def->name))) {
+        if (VIR_STRDUP(names[got], driver->nwfilters.objs[i]->def->name) < 0) {
              virNWFilterObjUnlock(driver->nwfilters.objs[i]);
-             virReportOOMError();
              goto cleanup;
         }
         got++;

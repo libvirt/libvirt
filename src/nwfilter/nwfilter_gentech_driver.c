@@ -37,6 +37,7 @@
 #include "nwfilter_learnipaddr.h"
 #include "virnetdev.h"
 #include "datatypes.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
@@ -866,9 +867,7 @@ __virNWFilterInstantiateFilter(const unsigned char *vmuuid,
     }
 
     virMacAddrFormat(macaddr, vmmacaddr);
-    str_macaddr = strdup(vmmacaddr);
-    if (!str_macaddr) {
-        virReportOOMError();
+    if (VIR_STRDUP(str_macaddr, vmmacaddr) < 0) {
         rc = -1;
         goto err_exit;
     }

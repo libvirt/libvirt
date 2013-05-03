@@ -2982,7 +2982,7 @@ ebtablesCreateTmpSubChain(ebiptablesRuleInstPtr *inst,
 
     switch (protoidx) {
     case L2_PROTO_MAC_IDX:
-        protostr = strdup("");
+        ignore_value(VIR_STRDUP(protostr, ""));
         break;
     case L2_PROTO_STP_IDX:
         ignore_value(virAsprintf(&protostr, "-d " NWFILTER_MAC_BGA " "));

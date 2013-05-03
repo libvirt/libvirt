@@ -705,11 +705,8 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     if (virNWFilterHashTablePutAll(filterparams, ht) < 0)
         goto err_free_ht;
 
-    req->filtername = strdup(filtername);
-    if (req->filtername == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(req->filtername, filtername) < 0)
         goto err_free_ht;
-    }
 
     if (virStrcpyStatic(req->ifname, ifname) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
