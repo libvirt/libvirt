@@ -174,6 +174,7 @@ src/util/virportallocator.c
 src/util/virprocess.c
 src/util/virrandom.c
 src/util/virsexpr.c
+src/util/virscsi.c
 src/util/virsocketaddr.c
 src/util/virstatslinux.c
 src/util/virstoragefile.c

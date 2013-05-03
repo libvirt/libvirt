@@ -111,6 +111,7 @@ UTIL_SOURCES =							\
 		util/virportallocator.c util/virportallocator.h \
 		util/virprocess.c util/virprocess.h		\
 		util/virrandom.h util/virrandom.c		\
+		util/virscsi.c util/virscsi.h			\
 		util/virsexpr.c util/virsexpr.h			\
 		util/virsocketaddr.h util/virsocketaddr.c	\
 		util/virstatslinux.c util/virstatslinux.h	\

@@ -1721,6 +1721,28 @@ virRandomGenerateWWN;
 virRandomInt;
 
 
+# util/virscsi.h
+virSCSIDeviceFileIterate;
+virSCSIDeviceFree;
+virSCSIDeviceGetAdapter;
+virSCSIDeviceGetBus;
+virSCSIDeviceGetName;
+virSCSIDeviceGetReadonly;
+virSCSIDeviceGetSgName;
+virSCSIDeviceGetTarget;
+virSCSIDeviceGetUnit;
+virSCSIDeviceGetUsedBy;
+virSCSIDeviceListAdd;
+virSCSIDeviceListCount;
+virSCSIDeviceListDel;
+virSCSIDeviceListFind;
+virSCSIDeviceListGet;
+virSCSIDeviceListNew;
+virSCSIDeviceListSteal;
+virSCSIDeviceNew;
+virSCSIDeviceSetUsedBy;
+
+
 # util/virsexpr.h
 sexpr2string;
 sexpr_append;
