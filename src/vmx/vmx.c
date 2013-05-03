@@ -682,14 +682,7 @@ virVMXGetConfigString(virConfPtr conf, const char *name, char **string,
         return -1;
     }
 
-    *string = strdup(value->str);
-
-    if (*string == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return VIR_STRDUP(*string, value->str);
 }
 
 
@@ -1526,12 +1519,8 @@ virVMXParseConfig(virVMXContext *ctx,
     def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
 
     /* def:os */
-    def->os.type = strdup("hvm");
-
-    if (def->os.type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->os.type, "hvm") < 0)
         goto cleanup;
-    }
 
     /* vmx:guestOS -> def:os.arch */
     if (virVMXGetConfigString(conf, "guestOS", &guestOS, true) < 0) {
@@ -2579,12 +2568,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         if (STRCASEEQ(virtualDev, "vmxnet") && features == 15) {
             VIR_FREE(virtualDev);
 
-            virtualDev = strdup("vmxnet2");
-
-            if (virtualDev == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(virtualDev, "vmxnet2") < 0)
                 goto cleanup;
-            }
         }
     }
 
@@ -2596,13 +2581,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                                   true) < 0)
             goto cleanup;
 
-        if (networkName == NULL) {
-            networkName = strdup("");
-            if (networkName == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
+        if (!networkName && VIR_STRDUP(networkName, "") < 0)
+            goto cleanup;
     }
 
     /* vmx:vnet -> def:data.ifname */
@@ -2797,12 +2777,8 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
             goto cleanup;
         }
 
-        (*def)->source.data.tcp.host = strdup(parsedUri->server);
-
-        if ((*def)->source.data.tcp.host == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP((*def)->source.data.tcp.host, parsedUri->server) < 0)
             goto cleanup;
-        }
 
         if (virAsprintf(&(*def)->source.data.tcp.service, "%d",
                         parsedUri->port) < 0) {
