@@ -818,14 +818,14 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(0, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
         return -1;
 
     lxcDriverLock(driver);
@@ -1851,14 +1851,14 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_SCHEDULER_CPU_SHARES,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
-                                       VIR_TYPED_PARAM_LLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_SCHEDULER_CPU_SHARES,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
+                               VIR_TYPED_PARAM_LLONG,
+                               NULL) < 0)
         return -1;
 
     lxcDriverLock(driver);
@@ -2105,10 +2105,10 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_BLKIO_WEIGHT,
-                                       VIR_TYPED_PARAM_UINT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BLKIO_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
         return -1;
 
     lxcDriverLock(driver);

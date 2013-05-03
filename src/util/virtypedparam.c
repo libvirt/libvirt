@@ -48,7 +48,7 @@ VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
  * parameters.  Return 0 on success, -1 on failure with error message
  * already issued.  */
 int
-virTypedParameterArrayValidate(virTypedParameterPtr params, int nparams, ...)
+virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 {
     va_list ap;
     int ret = -1;

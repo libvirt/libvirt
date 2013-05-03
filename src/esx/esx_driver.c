@@ -3710,14 +3710,14 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     int i;
 
     virCheckFlags(0, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_SCHEDULER_RESERVATION,
-                                       VIR_TYPED_PARAM_LLONG,
-                                       VIR_DOMAIN_SCHEDULER_LIMIT,
-                                       VIR_TYPED_PARAM_LLONG,
-                                       VIR_DOMAIN_SCHEDULER_SHARES,
-                                       VIR_TYPED_PARAM_INT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_SCHEDULER_RESERVATION,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_DOMAIN_SCHEDULER_LIMIT,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_DOMAIN_SCHEDULER_SHARES,
+                               VIR_TYPED_PARAM_INT,
+                               NULL) < 0)
         return -1;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
@@ -4874,10 +4874,10 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     int i;
 
     virCheckFlags(0, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
         return -1;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {

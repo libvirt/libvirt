@@ -4395,12 +4395,12 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     int ret = -1;
 
     virCheckFlags(0, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_SCHEDULER_WEIGHT,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_SCHEDULER_CAP,
-                                       VIR_TYPED_PARAM_UINT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_SCHEDULER_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_SCHEDULER_CAP,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
         return -1;
 
     libxlDriverLock(driver);

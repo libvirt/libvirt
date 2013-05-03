@@ -1871,14 +1871,14 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
         goto cleanup;
 
     virCheckFlags(0, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
         return -1;
 
     for (i = 0; i < nparams; i++) {

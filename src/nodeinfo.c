@@ -1196,14 +1196,14 @@ nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
     int i;
     int rc;
 
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
-                                       VIR_TYPED_PARAM_UINT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
         return -1;
 
     if (!nodeMemoryParametersIsAllSupported(params, nparams))

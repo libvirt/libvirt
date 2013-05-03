@@ -7440,12 +7440,12 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_BLKIO_WEIGHT,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
-                                       VIR_TYPED_PARAM_STRING,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BLKIO_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
+                               VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -7774,14 +7774,14 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
         return -1;
 
 
@@ -8059,12 +8059,12 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_NUMA_MODE,
-                                       VIR_TYPED_PARAM_INT,
-                                       VIR_DOMAIN_NUMA_NODESET,
-                                       VIR_TYPED_PARAM_STRING,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_NUMA_MODE,
+                               VIR_TYPED_PARAM_INT,
+                               VIR_DOMAIN_NUMA_NODESET,
+                               VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -8399,18 +8399,18 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_SCHEDULER_CPU_SHARES,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
-                                       VIR_TYPED_PARAM_LLONG,
-                                       VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
-                                       VIR_TYPED_PARAM_LLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_SCHEDULER_CPU_SHARES,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
+                               VIR_TYPED_PARAM_LLONG,
+                               NULL) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -9212,20 +9212,20 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BANDWIDTH_IN_PEAK,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BANDWIDTH_IN_BURST,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_BANDWIDTH_OUT_BURST,
-                                       VIR_TYPED_PARAM_UINT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_BURST,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -14560,20 +14560,20 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                                       VIR_TYPED_PARAM_ULLONG,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
         return -1;
 
     memset(&info, 0, sizeof(info));

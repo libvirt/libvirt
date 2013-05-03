@@ -25,8 +25,8 @@
 
 # include "internal.h"
 
-int virTypedParameterArrayValidate(virTypedParameterPtr params, int nparams,
-                                   /* const char *name, int type ... */ ...)
+int virTypedParamsValidate(virTypedParameterPtr params, int nparams,
+                           /* const char *name, int type ... */ ...)
     ATTRIBUTE_SENTINEL ATTRIBUTE_RETURN_CHECK;
 
 int virTypedParameterAssign(virTypedParameterPtr param, const char *name,

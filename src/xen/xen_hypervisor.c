@@ -1277,12 +1277,12 @@ xenHypervisorSetSchedulerParameters(virConnectPtr conn,
         return 0;
     }
 
-    if (virTypedParameterArrayValidate(params, nparams,
-                                       VIR_DOMAIN_SCHEDULER_WEIGHT,
-                                       VIR_TYPED_PARAM_UINT,
-                                       VIR_DOMAIN_SCHEDULER_CAP,
-                                       VIR_TYPED_PARAM_UINT,
-                                       NULL) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_SCHEDULER_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_SCHEDULER_CAP,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
         return -1;
 
     /*
