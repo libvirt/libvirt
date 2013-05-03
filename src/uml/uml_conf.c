@@ -114,8 +114,8 @@ umlConnectTapDevice(virConnectPtr conn,
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (!(net->ifname = strdup(VIR_NET_GENERATED_PREFIX "%d")))
-            goto no_memory;
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
+            goto error;
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = true;
     }
@@ -141,8 +141,6 @@ umlConnectTapDevice(virConnectPtr conn,
 
     return 0;
 
-no_memory:
-    virReportOOMError();
 error:
     return -1;
 }
@@ -463,8 +461,8 @@ virCommandPtr umlBuildCommandLine(virConnectPtr conn,
     if (vm->def->os.cmdline) {
         char *args, *next_arg;
         char *cmdline;
-        if ((cmdline = strdup(vm->def->os.cmdline)) == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(cmdline, vm->def->os.cmdline) < 0)
+            goto error;
 
         args = cmdline;
         while (*args == ' ')

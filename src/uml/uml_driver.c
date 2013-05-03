@@ -248,8 +248,7 @@ requery:
 
     if (res && STRPREFIX(res, "pts:")) {
         VIR_FREE(def->source.data.file.path);
-        if ((def->source.data.file.path = strdup(res + 4)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->source.data.file.path, res + 4) < 0) {
             VIR_FREE(res);
             VIR_FREE(cmd);
             return -1;
@@ -491,8 +490,8 @@ umlStateInitialize(bool privileged,
                         "%s/log/libvirt/uml", LOCALSTATEDIR) == -1)
             goto out_of_memory;
 
-        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
-            goto out_of_memory;
+        if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+            goto error;
 
         if (virAsprintf(&uml_driver->monitorDir,
                         "%s/run/libvirt/uml-guest", LOCALSTATEDIR) == -1)
@@ -1672,8 +1671,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (!(type = strdup(vm->def->os.type)))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(type, vm->def->os.type));
 
 cleanup:
     if (vm)
