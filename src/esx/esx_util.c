@@ -65,12 +65,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         if (STRCASEEQ(queryParam->name, "transport")) {
             VIR_FREE((*parsedUri)->transport);
 
-            (*parsedUri)->transport = strdup(queryParam->value);
-
-            if ((*parsedUri)->transport == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP((*parsedUri)->transport, queryParam->value) < 0)
                 goto cleanup;
-            }
 
             if (STRNEQ((*parsedUri)->transport, "http") &&
                 STRNEQ((*parsedUri)->transport, "https")) {
@@ -83,12 +79,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
             VIR_FREE((*parsedUri)->vCenter);
 
-            (*parsedUri)->vCenter = strdup(queryParam->value);
-
-            if ((*parsedUri)->vCenter == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP((*parsedUri)->vCenter, queryParam->value) < 0)
                 goto cleanup;
-            }
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {
             if (virStrToLong_i(queryParam->value, NULL, 10, &noVerify) < 0 ||
                 (noVerify != 0 && noVerify != 1)) {
@@ -137,12 +129,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
                 tmp = queryParam->value;
             }
 
-            (*parsedUri)->proxy_hostname = strdup(tmp);
-
-            if ((*parsedUri)->proxy_hostname == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP((*parsedUri)->proxy_hostname, tmp) < 0)
                 goto cleanup;
-            }
 
             if ((tmp = strchr((*parsedUri)->proxy_hostname, ':')) != NULL) {
                 if (tmp == (*parsedUri)->proxy_hostname) {
@@ -171,23 +159,12 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         }
     }
 
-    if (uri->path != NULL) {
-        (*parsedUri)->path = strdup(uri->path);
+    if (VIR_STRDUP((*parsedUri)->path, uri->path) < 0)
+        goto cleanup;
 
-        if ((*parsedUri)->path == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
-
-    if ((*parsedUri)->transport == NULL) {
-        (*parsedUri)->transport = strdup("https");
-
-        if ((*parsedUri)->transport == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (!(*parsedUri)->transport &&
+        VIR_STRDUP((*parsedUri)->transport, "https") < 0)
+        goto cleanup;
 
     result = 0;
 
@@ -494,14 +471,12 @@ esxUtil_ReplaceSpecialWindowsPathChars(char *string)
 char *
 esxUtil_EscapeDatastoreItem(const char *string)
 {
-    char *replaced = strdup(string);
+    char *replaced;
     char *escaped1;
     char *escaped2 = NULL;
 
-    if (replaced == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(replaced, string) < 0)
         return NULL;
-    }
 
     esxUtil_ReplaceSpecialWindowsPathChars(replaced);
 

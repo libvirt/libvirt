@@ -669,12 +669,8 @@ esxConnectToHost(esxPrivate *priv,
     }
 
     if (conn->uri->user != NULL) {
-        username = strdup(conn->uri->user);
-
-        if (username == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto cleanup;
-        }
     } else {
         username = virAuthGetUsername(conn, auth, "esx", "root", conn->uri->server);
 
@@ -751,14 +747,8 @@ esxConnectToHost(esxPrivate *priv,
         VIR_WARN("The server is in maintenance mode");
     }
 
-    if (*vCenterIpAddress != NULL) {
-        *vCenterIpAddress = strdup(*vCenterIpAddress);
-
-        if (*vCenterIpAddress == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (VIR_STRDUP(*vCenterIpAddress, *vCenterIpAddress) < 0)
+        goto cleanup;
 
     result = 0;
 
@@ -801,10 +791,7 @@ esxConnectToVCenter(esxPrivate *priv,
     }
 
     if (conn->uri->user != NULL) {
-        username = strdup(conn->uri->user);
-
-        if (username == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(username, conn->uri->user) < 0) {
             goto cleanup;
         }
     } else {
@@ -1278,12 +1265,8 @@ esxConnectGetHostname(virConnectPtr conn)
     }
 
     if (domainName == NULL || strlen(domainName) < 1) {
-        complete = strdup(hostName);
-
-        if (complete == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(complete, hostName) < 0)
             goto cleanup;
-        }
     } else {
         if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0) {
             virReportOOMError();
@@ -1294,7 +1277,7 @@ esxConnectGetHostname(virConnectPtr conn)
   cleanup:
     /*
      * If we goto cleanup in case of an error then complete is still NULL,
-     * either strdup returned NULL or virAsprintf failed. When virAsprintf
+     * either VIR_STRDUP returned -1 or virAsprintf failed. When virAsprintf
      * fails it guarantees setting complete to NULL
      */
     esxVI_String_Free(&propertyNameList);
@@ -2016,13 +1999,9 @@ esxDomainDestroy(virDomainPtr dom)
 static char *
 esxDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
 {
-    char *osType = strdup("hvm");
+    char *osType;
 
-    if (osType == NULL) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_STRDUP(osType, "hvm"));
     return osType;
 }
 
@@ -3577,12 +3556,10 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
 static char *
 esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
 {
-    char *type = strdup("allocation");
+    char *type;
 
-    if (type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(type, "allocation") < 0)
         return NULL;
-    }
 
     if (nparams != NULL) {
         *nparams = 3; /* reservation, limit, shares */

@@ -35,6 +35,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -122,12 +123,8 @@ esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 
     for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch != NULL;
          hostVirtualSwitch = hostVirtualSwitch->_next) {
-        names[count] = strdup(hostVirtualSwitch->name);
-
-        if (names[count] == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[count], hostVirtualSwitch->name) < 0)
             goto cleanup;
-        }
 
         ++count;
     }
@@ -713,12 +710,8 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
     md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), def->uuid);
 
-    def->name = strdup(hostVirtualSwitch->name);
-
-    if (def->name == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->name, hostVirtualSwitch->name) < 0)
         goto cleanup;
-    }
 
     def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
@@ -752,13 +745,9 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
                 if (STREQ(physicalNicKey->value, physicalNic->key)) {
                     def->forward.ifs[def->forward.nifs].type
                         = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
-                    def->forward.ifs[def->forward.nifs].device.dev
-                        = strdup(physicalNic->device);
-
-                    if (def->forward.ifs[def->forward.nifs].device.dev == NULL) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(def->forward.ifs[def->forward.nifs].device.dev,
+                                   physicalNic->device) < 0)
                         goto cleanup;
-                    }
 
                     ++def->forward.nifs;
 
@@ -823,12 +812,9 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
                     for (networkName = networkNameList; networkName != NULL;
                          networkName = networkName->_next) {
                         if (STREQ(networkName->value, hostPortGroup->spec->name)) {
-                            def->portGroups[def->nPortGroups].name = strdup(networkName->value);
-
-                            if (def->portGroups[def->nPortGroups].name == NULL) {
-                                virReportOOMError();
+                            if (VIR_STRDUP(def->portGroups[def->nPortGroups].name,
+                                           networkName->value) < 0)
                                 goto cleanup;
-                            }
 
                             if (hostPortGroup->spec->policy != NULL) {
                                 if (esxShapingPolicyToBandwidth

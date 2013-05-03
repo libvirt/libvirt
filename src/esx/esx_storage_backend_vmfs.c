@@ -168,12 +168,8 @@ esxStorageBackendVMFSListPools(virConnectPtr conn, char **const names,
                     goto cleanup;
                 }
 
-                names[count] = strdup(dynamicProperty->val->string);
-
-                if (names[count] == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(names[count], dynamicProperty->val->string) < 0)
                     goto cleanup;
-                }
 
                 ++count;
                 break;
@@ -614,12 +610,8 @@ esxStorageBackendVMFSPoolListVolumes(virStoragePoolPtr pool, char **const names,
         for (fileInfo = searchResults->file; fileInfo != NULL;
              fileInfo = fileInfo->_next) {
             if (length < 1) {
-                names[count] = strdup(fileInfo->path);
-
-                if (names[count] == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(names[count], fileInfo->path) < 0)
                     goto cleanup;
-                }
             } else if (virAsprintf(&names[count], "%s/%s", directoryAndFileName,
                                    fileInfo->path) < 0) {
                 virReportOOMError();
@@ -791,10 +783,8 @@ esxStorageBackendVMFSVolumeLookupByKey(virConnectPtr conn, const char *key)
                 VIR_FREE(datastorePath);
 
                 if (length < 1) {
-                    if (!(volumeName = strdup(fileInfo->path))) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(volumeName, fileInfo->path) < 0)
                         goto cleanup;
-                    }
                 } else if (virAsprintf(&volumeName, "%s/%s",
                                        directoryAndFileName,
                                        fileInfo->path) < 0) {

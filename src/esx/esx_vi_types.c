@@ -1050,14 +1050,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
     (*anyType)->value =
       (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
-    if ((*anyType)->value == NULL) {
-        (*anyType)->value = strdup("");
-
-        if ((*anyType)->value == NULL) {
-            virReportOOMError();
-            goto failure;
-        }
-    }
+    if (!(*anyType)->value && VIR_STRDUP((*anyType)->value, "") < 0)
+        goto failure;
 
 #define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)               \
         do {                                                                  \
@@ -1177,12 +1171,8 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
         return -1;
     }
 
-    string->value = strdup(value);
-
-    if (string->value == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(string->value, value) < 0)
         goto failure;
-    }
 
     if (esxVI_String_AppendToList(stringList, string) < 0) {
         goto failure;
@@ -1244,14 +1234,7 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
         return 0;
     }
 
-    *dest = strdup(src);
-
-    if (*dest == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return VIR_STRDUP(*dest, src);
 }
 
 /* esxVI_String_CastFromAnyType */
@@ -1327,16 +1310,7 @@ esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
 
     *value = (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
-    if (*value == NULL) {
-        *value = strdup("");
-
-        if (*value == NULL) {
-            virReportOOMError();
-            return -1;
-        }
-    }
-
-    return 0;
+    return *value ? 0 : VIR_STRDUP(*value, "");
 }
 
 

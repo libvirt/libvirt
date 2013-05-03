@@ -38,6 +38,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -130,12 +131,8 @@ esxStorageBackendISCSIListPools(virConnectPtr conn, char **const names,
      */
     for (target = hostInternetScsiHba->configuredStaticTarget;
          target != NULL && count < maxnames; target = target->_next) {
-        names[count] = strdup(target->iScsiName);
-
-        if (names[count] == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[count], target->iScsiName) < 0)
             goto cleanup;
-        }
 
         ++count;
     }
@@ -419,12 +416,8 @@ esxStorageBackendISCSIPoolListVolumes(virStoragePoolPtr pool, char **const names
              hostScsiTopologyLun != NULL && count < maxnames;
              hostScsiTopologyLun = hostScsiTopologyLun->_next) {
             if (STREQ(hostScsiTopologyLun->scsiLun, scsiLun->key)) {
-                names[count] = strdup(scsiLun->deviceName);
-
-                if (names[count] == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(names[count], scsiLun->deviceName) < 0)
                     goto cleanup;
-                }
 
                 ++count;
             }
@@ -739,13 +732,9 @@ esxStorageBackendISCSIVolumeWipe(virStorageVolPtr volume ATTRIBUTE_UNUSED,
 static char *
 esxStorageBackendISCSIVolumeGetPath(virStorageVolPtr volume)
 {
-    char *path = strdup(volume->name);
+    char *path;
 
-    if (path == NULL) {
-        virReportOOMError();
-        return NULL;
-    }
-
+    ignore_value(VIR_STRDUP(path, volume->name));
     return path;
 }
 
