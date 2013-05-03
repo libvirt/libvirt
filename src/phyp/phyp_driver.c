@@ -954,12 +954,8 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     if (conn->uri->user != NULL) {
-        username = strdup(conn->uri->user);
-
-        if (username == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto err;
-        }
     } else {
         if (auth == NULL || auth->cb == NULL) {
             virReportError(VIR_ERR_AUTH_FAILED,
@@ -1141,15 +1137,9 @@ phypConnectOpen(virConnectPtr conn,
 
     if (conn->uri->path) {
         /* need to shift one byte in order to remove the first "/" of URI component */
-        if (conn->uri->path[0] == '/')
-            managed_system = strdup(conn->uri->path + 1);
-        else
-            managed_system = strdup(conn->uri->path);
-
-        if (!managed_system) {
-            virReportOOMError();
+        if (VIR_STRDUP(managed_system,
+                       conn->uri->path + (conn->uri->path[0] == '/')) < 0)
             goto failure;
-        }
 
         /* here we are handling only the first component of the path,
          * so skipping the second:
@@ -1498,12 +1488,8 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
         else
             goto cleanup;
 
-        backing_device = strdup(char_ptr);
-
-        if (backing_device == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(backing_device, char_ptr) < 0)
             goto cleanup;
-        }
     } else {
         backing_device = ret;
         ret = NULL;
@@ -1731,12 +1717,8 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
         goto cleanup;
     }
 
-    def->os.type = strdup("aix");
-
-    if (def->os.type == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->os.type, "aix") < 0)
         goto cleanup;
-    }
 
     dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL,
                                   VIR_DOMAIN_XML_INACTIVE);
@@ -2281,12 +2263,8 @@ phypStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto cleanup;
     }
 
-    voldef.key = strdup(vol->key);
-
-    if (voldef.key == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(voldef.key, vol->key) < 0)
         goto cleanup;
-    }
 
     voldef.type = VIR_STORAGE_POOL_LOGICAL;
 
@@ -2399,10 +2377,8 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if ((volumes[got++] = strdup(volumes_list)) == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(volumes[got++], volumes_list) < 0)
                     goto cleanup;
-                }
                 char_ptr++;
                 volumes_list = char_ptr;
             } else
@@ -2600,10 +2576,8 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if ((pools[got++] = strdup(storage_pools)) == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(pools[got++], storage_pools) < 0)
                     goto cleanup;
-                }
                 char_ptr++;
                 storage_pools = char_ptr;
             } else
@@ -3067,10 +3041,8 @@ phypConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
 
         if (char_ptr) {
             *char_ptr = '\0';
-            if ((names[got++] = strdup(networks)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(names[got++], networks) < 0)
                 goto cleanup;
-            }
             char_ptr++;
             networks = char_ptr;
         } else {
@@ -3234,10 +3206,8 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if ((names[got++] = strdup(domains)) == NULL) {
-                    virReportOOMError();
+                if (VIR_STRDUP(names[got++], domains) < 0)
                     goto cleanup;
-                }
                 char_ptr++;
                 domains = char_ptr;
             } else
