@@ -1106,7 +1106,8 @@ static int virCgroupPartitionNeedsEscaping(const char *path)
     if (STRPREFIX(path, "cgroup."))
         return 1;
 
-    if (path[0] == '_')
+    if (path[0] == '_' ||
+        path[0] == '.')
         return 1;
 
     if (!(fp = fopen("/proc/cgroups", "r")))
