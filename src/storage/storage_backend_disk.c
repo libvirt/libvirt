@@ -66,17 +66,13 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
          * strip the path to form a reasonable pool-unique name
          */
         tmp = strrchr(groups[0], '/');
-        if ((vol->name = strdup(tmp ? tmp + 1 : groups[0])) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(vol->name, tmp ? tmp + 1 : groups[0]) < 0)
             return -1;
-        }
     }
 
     if (vol->target.path == NULL) {
-        if ((devpath = strdup(groups[0])) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(devpath, groups[0]) < 0)
             return -1;
-        }
 
         /* Now figure out the stable path
          *
@@ -92,10 +88,8 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     if (vol->key == NULL) {
         /* XXX base off a unique key of the underlying disk */
-        if ((vol->key = strdup(vol->target.path)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(vol->key, vol->target.path) < 0)
             return -1;
-        }
     }
 
     if (vol->source.extents == NULL) {
@@ -119,11 +113,9 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
             return -1;
         }
 
-        if ((vol->source.extents[0].path =
-             strdup(pool->def->source.devices[0].path)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(vol->source.extents[0].path,
+                       pool->def->source.devices[0].path) < 0)
             return -1;
-        }
     }
 
     /* Refresh allocation/capacity/perms */
@@ -485,10 +477,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                     return -1;
                 }
             }
-            if ((*partFormat = strdup(partedFormat)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(*partFormat, partedFormat) < 0)
                 return -1;
-            }
         } else {
             /* create primary partition as long as it is possible
                and after that check if an extended partition exists
@@ -527,10 +517,8 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             }
         }
     } else {
-        if ((*partFormat = strdup("primary")) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(*partFormat, "primary") < 0)
             return -1;
-        }
     }
     return 0;
 }

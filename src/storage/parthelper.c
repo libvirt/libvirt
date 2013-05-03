@@ -44,6 +44,7 @@
 #include "virutil.h"
 #include "c-ctype.h"
 #include "configmake.h"
+#include "virstring.h"
 
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a,b) (strcmp(a,b) == 0)
@@ -86,10 +87,8 @@ int main(int argc, char **argv)
     path = argv[1];
     if (virIsDevMapperDevice(path)) {
         partsep = "p";
-        canonical_path = strdup(path);
-        if (canonical_path == NULL) {
+        if (VIR_STRDUP_QUIET(canonical_path, path) < 0)
             return 2;
-        }
     } else {
         if (virFileResolveLink(path, &canonical_path) != 0) {
             return 2;

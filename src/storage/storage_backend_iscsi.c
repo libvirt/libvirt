@@ -125,13 +125,8 @@ virStorageBackendISCSIExtractSession(virStoragePoolObjPtr pool,
 {
     char **session = data;
 
-    if (STREQ(groups[1], pool->def->source.devices[0].path)) {
-        if ((*session = strdup(groups[0])) == NULL) {
-            virReportOOMError();
-            return -1;
-        }
-    }
-
+    if (STREQ(groups[1], pool->def->source.devices[0].path))
+        return VIR_STRDUP(*session, groups[0]);
     return 0;
 }
 
@@ -247,10 +242,8 @@ virStorageBackendIQNFound(const char *initiatoriqn,
                                  "of '%s'"), ISCSIADM);
                 goto out;
             }
-            *ifacename = strndup(line, token - line);
-            if (*ifacename == NULL) {
+            if (VIR_STRNDUP(*ifacename, line, token - line) < 0) {
                 ret = IQN_ERROR;
-                virReportOOMError();
                 goto out;
             }
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
@@ -499,10 +492,8 @@ virStorageBackendISCSIGetTargets(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
     struct virStorageBackendISCSITargetList *list = data;
     char *target;
 
-    if (!(target = strdup(groups[1]))) {
-        virReportOOMError();
+    if (VIR_STRDUP(target, groups[1]) < 0)
         return -1;
-    }
 
     if (VIR_REALLOC_N(list->targets, list->ntargets + 1) < 0) {
         VIR_FREE(target);

@@ -144,8 +144,8 @@ storageStateInitialize(bool privileged,
     storageDriverLock(driverState);
 
     if (privileged) {
-        if ((base = strdup(SYSCONFDIR "/libvirt")) == NULL)
-            goto out_of_memory;
+        if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+            goto error;
     } else {
         base = virGetUserConfigDirectory();
         if (!base)
@@ -336,9 +336,8 @@ storageConnectListStoragePools(virConnectPtr conn,
     for (i = 0 ; i < driver->pools.count && got < nnames ; i++) {
         virStoragePoolObjLock(driver->pools.objs[i]);
         if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
-            if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], driver->pools.objs[i]->def->name) < 0) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -384,9 +383,8 @@ storageConnectListDefinedStoragePools(virConnectPtr conn,
     for (i = 0 ; i < driver->pools.count && got < nnames ; i++) {
         virStoragePoolObjLock(driver->pools.objs[i]);
         if (!virStoragePoolObjIsActive(driver->pools.objs[i])) {
-            if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
+            if (VIR_STRDUP(names[got], driver->pools.objs[i]->def->name) < 0) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -1117,10 +1115,8 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     }
 
     for (i = 0 ; i < pool->volumes.count && n < maxnames ; i++) {
-        if ((names[n++] = strdup(pool->volumes.objs[i]->name)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[n++], pool->volumes.objs[i]->name) < 0)
             goto cleanup;
-        }
     }
 
     virStoragePoolObjUnlock(pool);
@@ -2340,9 +2336,7 @@ storageVolGetPath(virStorageVolPtr obj) {
         goto cleanup;
     }
 
-    ret = strdup(vol->target.path);
-    if (ret == NULL)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, vol->target.path));
 
 cleanup:
     if (pool)

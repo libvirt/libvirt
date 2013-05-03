@@ -334,10 +334,9 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (VIR_ALLOC(vol) < 0)
             goto out_of_memory;
 
-        vol->name = strdup(name);
-        if (vol->name == NULL) {
+        if (VIR_STRDUP(vol->name, name) < 0) {
             VIR_FREE(vol);
-            goto out_of_memory;
+            goto cleanup;
         }
 
         name += strlen(name) + 1;

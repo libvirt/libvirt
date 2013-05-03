@@ -105,10 +105,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         is_new_vol = true;
         vol->type = VIR_STORAGE_VOL_BLOCK;
 
-        if ((vol->name = strdup(groups[0])) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(vol->name, groups[0]) < 0)
             goto cleanup;
-        }
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count + 1)) {
@@ -142,11 +140,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
         vol->backingStore.format = VIR_STORAGE_POOL_LOGICAL_LVM2;
     }
 
-    if (vol->key == NULL &&
-        (vol->key = strdup(groups[2])) == NULL) {
-        virReportOOMError();
+    if (!vol->key && VIR_STRDUP(vol->key, groups[2]) < 0)
         goto cleanup;
-    }
 
     if (virStorageBackendUpdateVolInfo(vol, 1) < 0)
         goto cleanup;
@@ -184,7 +179,8 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     }
 
     /* Now parse the "devices" field separately */
-    regex = strdup(regex_unit);
+    if (VIR_STRDUP(regex, regex_unit) < 0)
+        goto cleanup;
 
     for (i = 1; i < nextents; i++) {
         if (VIR_REALLOC_N(regex, strlen(regex) + strlen(regex_unit) + 2) < 0) {
@@ -234,23 +230,19 @@ virStorageBackendLogicalMakeVol(virStoragePoolObjPtr pool,
     /* vars[0] is skipped */
     for (i = 0; i < nextents; i++) {
         int j, len;
-        const char *offset_str = NULL;
+        char *offset_str = NULL;
 
         j = (i * 2) + 1;
         len = vars[j].rm_eo - vars[j].rm_so;
         p[vars[j].rm_eo] = '\0';
 
-        if ((vol->source.extents[vol->source.nextent].path =
-            strndup(p + vars[j].rm_so, len)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRNDUP(vol->source.extents[vol->source.nextent].path,
+                        p + vars[j].rm_so, len) < 0)
             goto cleanup;
-        }
 
         len = vars[j + 1].rm_eo - vars[j + 1].rm_so;
-        if (!(offset_str = strndup(p + vars[j + 1].rm_so, len))) {
-            virReportOOMError();
+        if (VIR_STRNDUP(offset_str, p + vars[j + 1].rm_so, len) < 0)
             goto cleanup;
-        }
 
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -367,13 +359,9 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
     virStoragePoolSourceDevicePtr dev;
     virStoragePoolSource *thisSource;
 
-    pvname = strdup(groups[0]);
-    vgname = strdup(groups[1]);
-
-    if (pvname == NULL || vgname == NULL) {
-        virReportOOMError();
-        goto err_no_memory;
-    }
+    if (VIR_STRDUP(pvname, groups[0]) < 0 ||
+        VIR_STRDUP(vgname, groups[1]) < 0)
+        goto error;
 
     thisSource = NULL;
     for (i = 0 ; i < sourceList->nsources; i++) {
@@ -385,7 +373,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
 
     if (thisSource == NULL) {
         if (!(thisSource = virStoragePoolSourceListNewSource(sourceList)))
-            goto err_no_memory;
+            goto error;
 
         thisSource->name = vgname;
     }
@@ -394,7 +382,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
 
     if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0) {
         virReportOOMError();
-        goto err_no_memory;
+        goto error;
     }
 
     dev = &thisSource->devices[thisSource->ndevice];
@@ -406,7 +394,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTRIBUTE_
 
     return 0;
 
- err_no_memory:
+error:
     VIR_FREE(pvname);
     VIR_FREE(vgname);
 

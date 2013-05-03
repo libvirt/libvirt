@@ -99,11 +99,8 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     }
 
     /* XXX should use logical unit's UUID instead */
-    vol->key = strdup(vol->target.path);
-    if (vol->key == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(vol->key, vol->target.path) < 0)
         goto cleanup;
-    }
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count + 1) < 0) {

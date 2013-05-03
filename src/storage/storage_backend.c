@@ -486,11 +486,8 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         goto cleanup;
 
     def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
-    def->usage.volume = strdup(vol->target.path);
-    if (def->usage.volume == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(def->usage.volume, vol->target.path) < 0)
         goto cleanup;
-    }
     xml = virSecretDefFormat(def);
     virSecretDefFree(def);
     def = NULL;
@@ -1261,12 +1258,11 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
             target->perms.label = NULL;
         }
     } else {
-        target->perms.label = strdup(filecon);
-        freecon(filecon);
-        if (target->perms.label == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(target->perms.label, filecon) < 0) {
+            freecon(filecon);
             return -1;
         }
+        freecon(filecon);
     }
 #else
     target->perms.label = NULL;
@@ -1451,10 +1447,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      * the original non-stable dev path
      */
 
-    stablepath = strdup(devpath);
-
-    if (stablepath == NULL)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(stablepath, devpath));
 
     return stablepath;
 }
@@ -1556,11 +1549,8 @@ virStorageBackendRunProgRegex(virStoragePoolObjPtr pool,
                 for (j = 0 ; j < nvars[i] ; j++) {
                     /* NB vars[0] is the full pattern, so we offset j by 1 */
                     p[vars[j+1].rm_eo] = '\0';
-                    if ((groups[ngroup++] =
-                         strdup(p + vars[j+1].rm_so)) == NULL) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(groups[ngroup++], p + vars[j+1].rm_so) < 0)
                         goto cleanup;
-                    }
                 }
 
                 /* We're matching on the last regex, so callback time */

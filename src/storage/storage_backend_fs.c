@@ -207,11 +207,9 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     }
     src->nhost = 1;
 
-    if (!(src->hosts[0].name = strdup(state->host)) ||
-        !(src->dir = strdup(path))) {
-        virReportOOMError();
+    if (VIR_STRDUP(src->hosts[0].name, state->host) < 0 ||
+        VIR_STRDUP(src->dir, path) < 0)
         goto cleanup;
-    }
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
     ret = 0;
@@ -395,10 +393,8 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
         }
 
     } else {
-        if ((src = strdup(pool->def->source.devices[0].path)) == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(src, pool->def->source.devices[0].path) < 0)
             return -1;
-        }
     }
 
     if (netauto)
@@ -571,10 +567,8 @@ virStorageBackendFileSystemProbe(const char *device,
         goto error;
     }
 
-    if ((libblkid_format = strdup(format)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(libblkid_format, format) < 0)
         goto error;
-    }
 
     names[0] = libblkid_format;
     names[1] = NULL;
@@ -749,10 +743,8 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
     }
 
-    if ((parent = strdup(pool->def->target.path)) == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(parent, pool->def->target.path) < 0)
         goto error;
-    }
     if (!(p = strrchr(parent, '/'))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("path '%s' is not absolute"),
@@ -833,8 +825,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (VIR_ALLOC(vol) < 0)
             goto no_memory;
 
-        if ((vol->name = strdup(ent->d_name)) == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(vol->name, ent->d_name) < 0)
+            goto cleanup;
 
         vol->type = VIR_STORAGE_VOL_FILE;
         vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
@@ -843,8 +835,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                         vol->name) == -1)
             goto no_memory;
 
-        if ((vol->key = strdup(vol->target.path)) == NULL)
-            goto no_memory;
+        if (VIR_STRDUP(vol->key, vol->target.path) < 0)
+            goto cleanup;
 
         if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
@@ -1011,13 +1003,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     VIR_FREE(vol->key);
-    vol->key = strdup(vol->target.path);
-    if (vol->key == NULL) {
-        virReportOOMError();
-        return -1;
-    }
-
-    return 0;
+    return VIR_STRDUP(vol->key, vol->target.path);
 }
 
 static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,

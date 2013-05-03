@@ -188,8 +188,7 @@ virStorageBackendSCSISerial(const char *dev)
             *nl = '\0';
     } else {
         VIR_FREE(serial);
-        if (!(serial = strdup(dev)))
-            virReportOOMError();
+        ignore_value(VIR_STRDUP(serial, dev));
     }
 
 #ifdef WITH_UDEV
@@ -333,10 +332,7 @@ getNewStyleBlockDevice(const char *lun_path,
             continue;
         }
 
-        *block_device = strdup(block_dirent->d_name);
-
-        if (*block_device == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0) {
             closedir(block_dir);
             retval = -1;
             goto out;
@@ -373,10 +369,7 @@ getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
         retval = -1;
     } else {
         blockp++;
-        *block_device = strdup(blockp);
-
-        if (*block_device == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(*block_device, blockp) < 0) {
             retval = -1;
             goto out;
         }
@@ -630,8 +623,10 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 {
     char *name = NULL;
 
-    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
-        return strdup(adapter.data.name);
+    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        ignore_value(VIR_STRDUP(name, adapter.data.name));
+        return name;
+    }
 
     if (!(name = virGetFCHostNameByWWN(NULL,
                                        adapter.data.fchost.wwnn,
