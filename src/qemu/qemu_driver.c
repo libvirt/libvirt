@@ -5734,7 +5734,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
         goto end;
 
-    if (qemuSetUnprivSGIO(disk) < 0)
+    if (qemuSetUnprivSGIO(dev) < 0)
         goto end;
 
     if (qemuDomainDetermineDiskChain(driver, disk, false) < 0)

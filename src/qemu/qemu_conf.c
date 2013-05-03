@@ -1341,39 +1341,82 @@ cleanup:
 }
 
 int
-qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
+qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
 {
+    virDomainDiskDefPtr disk = NULL;
+    virDomainHostdevDefPtr hostdev = NULL;
     char *sysfs_path = NULL;
+    char *path = NULL;
+    char *hostdev_name = NULL;
+    char *hostdev_path = NULL;
     int val = -1;
     int ret = 0;
 
     /* "sgio" is only valid for block disk; cdrom
      * and floopy disk can have empty source.
      */
-    if (!disk->src ||
-        disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-        (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
-         !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
-           disk->srcpool &&
-           disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
-        return 0;
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
+        disk = dev->data.disk;
 
-    sysfs_path = virGetUnprivSGIOSysfsPath(disk->src, NULL);
-    if (sysfs_path == NULL)
-        return -1;
+        if (!disk->src ||
+            disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
+            (disk->type != VIR_DOMAIN_DISK_TYPE_BLOCK &&
+             !(disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME &&
+               disk->srcpool &&
+               disk->srcpool->voltype == VIR_STORAGE_VOL_BLOCK)))
+            return 0;
+
+        path = disk->src;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        hostdev = dev->data.hostdev;
+
+        if (!hostdev->shareable ||
+            !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+              hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+            return 0;
+
+        if (!(hostdev_name = virSCSIDeviceGetDevName(hostdev->source.subsys.u.scsi.adapter,
+                                                     hostdev->source.subsys.u.scsi.bus,
+                                                     hostdev->source.subsys.u.scsi.target,
+                                                     hostdev->source.subsys.u.scsi.unit)))
+            goto cleanup;
+
+        if (virAsprintf(&hostdev_path, "/dev/%s", hostdev_name) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        path = hostdev_path;
+    } else {
+        return 0;
+    }
+
+    sysfs_path = virGetUnprivSGIOSysfsPath(path, NULL);
+    if (sysfs_path == NULL) {
+        ret = -1;
+        goto cleanup;
+    }
 
     /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
-    val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
+
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+        val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
+    else
+        val = (hostdev->source.subsys.u.scsi.sgio ==
+               VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
 
     /* Do not do anything if unpriv_sgio is not supported by the kernel and the
      * whitelist is enabled.  But if requesting unfiltered access, always call
      * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
      */
     if ((virFileExists(sysfs_path) || val == 1) &&
-        virSetDeviceUnprivSGIO(disk->src, NULL, val) < 0)
+        virSetDeviceUnprivSGIO(path, NULL, val) < 0)
         ret = -1;
 
+cleanup:
     VIR_FREE(sysfs_path);
+    VIR_FREE(hostdev_name);
+    VIR_FREE(hostdev_path);
     return ret;
 }
 
