@@ -79,19 +79,15 @@ virNWFilterVarValueCopy(const virNWFilterVarValuePtr val)
 
     switch (res->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
-        if (val->u.simple.value) {
-            res->u.simple.value = strdup(val->u.simple.value);
-            if (!res->u.simple.value)
-                goto err_exit;
-        }
+        if (VIR_STRDUP(res->u.simple.value, val->u.simple.value) < 0)
+            goto err_exit;
         break;
     case NWFILTER_VALUE_TYPE_ARRAY:
         if (VIR_ALLOC_N(res->u.array.values, val->u.array.nValues) < 0)
             goto err_exit;
         res->u.array.nValues = val->u.array.nValues;
         for (i = 0; i < val->u.array.nValues; i++) {
-            str = strdup(val->u.array.values[i]);
-            if (!str)
+            if (VIR_STRDUP(str, val->u.array.values[i]) < 0)
                 goto err_exit;
             res->u.array.values[i] = str;
         }
@@ -133,12 +129,10 @@ virNWFilterVarValueCreateSimple(char *value)
 virNWFilterVarValuePtr
 virNWFilterVarValueCreateSimpleCopyValue(const char *value)
 {
-    char *val = strdup(value);
+    char *val;
 
-    if (!val) {
-        virReportOOMError();
+    if (VIR_STRDUP(val, value) < 0)
         return NULL;
-    }
     return virNWFilterVarValueCreateSimple(val);
 }
 
@@ -654,17 +648,15 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
 {
     if (!virHashLookup(table->hashTable, name)) {
         if (copyName) {
-            name = strdup(name);
-            if (!name) {
-                virReportOOMError();
+            char *newName;
+            if (VIR_STRDUP(newName, name) < 0)
                 return -1;
-            }
 
             if (VIR_REALLOC_N(table->names, table->nNames + 1) < 0) {
                 VIR_FREE(name);
                 return -1;
             }
-            table->names[table->nNames++] = (char *)name;
+            table->names[table->nNames++] = newName;
         }
 
         if (virHashAddEntry(table->hashTable, name, val) < 0) {
@@ -1006,11 +998,8 @@ virNWFilterVarAccessParse(const char *varAccess)
 
     if (input[idx] == '\0') {
         /* in the form 'IP', which is equivalent to IP[@0] */
-        dest->varName = strndup(input, idx);
-        if (!dest->varName) {
-            virReportOOMError();
+        if (VIR_STRNDUP(dest->varName, input, idx) < 0)
             goto err_exit;
-        }
         dest->accessType = VIR_NWFILTER_VAR_ACCESS_ITERATOR;
         dest->u.iterId = 0;
         return dest;
@@ -1023,11 +1012,8 @@ virNWFilterVarAccessParse(const char *varAccess)
 
         varNameLen = idx;
 
-        dest->varName = strndup(input, varNameLen);
-        if (!dest->varName) {
-            virReportOOMError();
+        if (VIR_STRNDUP(dest->varName, input, varNameLen) < 0)
             goto err_exit;
-        }
 
         input += idx + 1;
         virSkipSpaces(&input);

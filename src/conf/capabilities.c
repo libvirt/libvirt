@@ -31,7 +31,7 @@
 #include "viruuid.h"
 #include "cpu_conf.h"
 #include "virerror.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
@@ -228,7 +228,7 @@ virCapabilitiesAddHostFeature(virCapsPtr caps,
                      caps->host.nfeatures, 1) < 0)
         return -1;
 
-    if ((caps->host.features[caps->host.nfeatures] = strdup(name)) == NULL)
+    if (VIR_STRDUP(caps->host.features[caps->host.nfeatures], name) < 0)
         return -1;
     caps->host.nfeatures++;
 
@@ -250,7 +250,7 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                      caps->host.nmigrateTrans, 1) < 0)
         return -1;
 
-    if ((caps->host.migrateTrans[caps->host.nmigrateTrans] = strdup(name)) == NULL)
+    if (VIR_STRDUP(caps->host.migrateTrans[caps->host.nmigrateTrans], name) < 0)
         return -1;
     caps->host.nmigrateTrans++;
 
@@ -334,7 +334,7 @@ virCapabilitiesAllocMachines(const char *const *names, int nnames)
 
     for (i = 0; i < nnames; i++) {
         if (VIR_ALLOC(machines[i]) < 0 ||
-            !(machines[i]->name = strdup(names[i]))) {
+            VIR_STRDUP(machines[i]->name, names[i]) < 0) {
             virCapabilitiesFreeMachines(machines, nnames);
             return NULL;
         }
@@ -390,24 +390,21 @@ virCapabilitiesAddGuest(virCapsPtr caps,
     virCapsGuestPtr guest;
 
     if (VIR_ALLOC(guest) < 0)
-        goto no_memory;
+        goto error;
 
-    if ((guest->ostype = strdup(ostype)) == NULL)
-        goto no_memory;
+    if (VIR_STRDUP(guest->ostype, ostype) < 0)
+        goto error;
 
     guest->arch.id = arch;
     guest->arch.wordsize = virArchGetWordSize(arch);
 
-    if (emulator &&
-        (guest->arch.defaultInfo.emulator = strdup(emulator)) == NULL)
-        goto no_memory;
-    if (loader &&
-        (guest->arch.defaultInfo.loader = strdup(loader)) == NULL)
-        goto no_memory;
+    if (VIR_STRDUP(guest->arch.defaultInfo.emulator, emulator) < 0 ||
+        VIR_STRDUP(guest->arch.defaultInfo.loader, loader) < 0)
+        goto error;
 
     if (VIR_RESIZE_N(caps->guests, caps->nguests_max,
                      caps->nguests, 1) < 0)
-        goto no_memory;
+        goto error;
     caps->guests[caps->nguests++] = guest;
 
     if (nmachines) {
@@ -417,7 +414,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
 
     return guest;
 
- no_memory:
+error:
     virCapabilitiesFreeGuest(guest);
     return NULL;
 }
@@ -446,21 +443,16 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
     virCapsGuestDomainPtr dom;
 
     if (VIR_ALLOC(dom) < 0)
-        goto no_memory;
+        goto error;
 
-    if ((dom->type = strdup(hvtype)) == NULL)
-        goto no_memory;
-
-    if (emulator &&
-        (dom->info.emulator = strdup(emulator)) == NULL)
-        goto no_memory;
-    if (loader &&
-        (dom->info.loader = strdup(loader)) == NULL)
-        goto no_memory;
+    if (VIR_STRDUP(dom->type, hvtype) < 0 ||
+        VIR_STRDUP(dom->info.emulator, emulator) < 0 ||
+        VIR_STRDUP(dom->info.loader, loader) < 0)
+        goto error;
 
     if (VIR_RESIZE_N(guest->arch.domains, guest->arch.ndomains_max,
                      guest->arch.ndomains, 1) < 0)
-        goto no_memory;
+        goto error;
     guest->arch.domains[guest->arch.ndomains] = dom;
     guest->arch.ndomains++;
 
@@ -471,7 +463,7 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
 
     return dom;
 
- no_memory:
+error:
     virCapabilitiesFreeGuestDomain(dom);
     return NULL;
 }
@@ -497,7 +489,7 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
     if (VIR_ALLOC(feature) < 0)
         goto no_memory;
 
-    if ((feature->name = strdup(name)) == NULL)
+    if (VIR_STRDUP(feature->name, name) < 0)
         goto no_memory;
     feature->defaultOn = defaultOn;
     feature->toggle = toggle;

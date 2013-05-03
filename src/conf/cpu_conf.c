@@ -99,10 +99,10 @@ virCPUDefCopyModel(virCPUDefPtr dst,
 {
     unsigned int i;
 
-    if ((src->model && !(dst->model = strdup(src->model)))
-        || (src->vendor && !(dst->vendor = strdup(src->vendor)))
-        || (src->vendor_id && !(dst->vendor_id = strdup(src->vendor_id)))
-        || VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
+    if (VIR_STRDUP(dst->model, src->model) < 0 ||
+        VIR_STRDUP(dst->vendor, src->vendor) < 0 ||
+        VIR_STRDUP(dst->vendor_id, src->vendor_id) < 0 ||
+        VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
         goto no_memory;
     dst->nfeatures_max = dst->nfeatures = src->nfeatures;
 
@@ -118,8 +118,8 @@ virCPUDefCopyModel(virCPUDefPtr dst,
             dst->features[i].policy = src->features[i].policy;
         }
 
-        if (!(dst->features[i].name = strdup(src->features[i].name)))
-            goto no_memory;
+        if (VIR_STRDUP(dst->features[i].name, src->features[i].name) < 0)
+            return -1;
     }
 
     return 0;
@@ -167,8 +167,8 @@ virCPUDefCopy(const virCPUDefPtr cpu)
             if (!copy->cells[i].cpumask)
                 goto no_memory;
 
-            if (!(copy->cells[i].cpustr = strdup(cpu->cells[i].cpustr)))
-                goto no_memory;
+            if (VIR_STRDUP(copy->cells[i].cpustr, cpu->cells[i].cpustr) < 0)
+                goto error;
         }
         copy->cells_cpus = cpu->cells_cpus;
     }
@@ -694,8 +694,8 @@ virCPUDefAddFeature(virCPUDefPtr def,
     if (def->type == VIR_CPU_TYPE_HOST)
         policy = -1;
 
-    if (!(def->features[def->nfeatures].name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(def->features[def->nfeatures].name, name) < 0)
+        return -1;
 
     def->features[def->nfeatures].policy = policy;
     def->nfeatures++;

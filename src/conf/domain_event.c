@@ -28,6 +28,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -385,8 +386,8 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
     if (dom) {
         if (VIR_ALLOC(event->dom) < 0)
             goto no_memory;
-        if (!(event->dom->name = strdup(dom->name)))
-            goto no_memory;
+        if (VIR_STRDUP(event->dom->name, dom->name) < 0)
+            goto error;
         memcpy(event->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
         event->dom->id = dom->id;
     }
@@ -416,7 +417,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
 
 no_memory:
     virReportOOMError();
-
+error:
     if (event) {
         if (event->dom)
             VIR_FREE(event->dom->name);
@@ -668,8 +669,7 @@ static virDomainEventPtr virDomainEventNewInternal(int eventID,
     }
 
     event->eventID = eventID;
-    if (!(event->dom.name = strdup(name))) {
-        virReportOOMError();
+    if (VIR_STRDUP(event->dom.name, name) < 0) {
         VIR_FREE(event);
         return NULL;
     }
@@ -791,9 +791,9 @@ static virDomainEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
 
     if (ev) {
         ev->data.ioError.action = action;
-        if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
-            !(ev->data.ioError.devAlias = strdup(devAlias)) ||
-            (reason && !(ev->data.ioError.reason = strdup(reason)))) {
+        if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
+            VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
+            VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
             virDomainEventFree(ev);
             ev = NULL;
         }
@@ -815,9 +815,9 @@ static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
 
     if (ev) {
         ev->data.ioError.action = action;
-        if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
-            !(ev->data.ioError.devAlias = strdup(devAlias)) ||
-            (reason && !(ev->data.ioError.reason = strdup(reason)))) {
+        if (VIR_STRDUP(ev->data.ioError.srcPath, srcPath) < 0 ||
+            VIR_STRDUP(ev->data.ioError.devAlias, devAlias) < 0 ||
+            VIR_STRDUP(ev->data.ioError.reason, reason) < 0) {
             virDomainEventFree(ev);
             ev = NULL;
         }
@@ -882,7 +882,7 @@ virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
 
     if (ev) {
         ev->data.graphics.phase = phase;
-        if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
+        if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
             virDomainEventFree(ev);
             return NULL;
         }
@@ -907,7 +907,7 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
 
     if (ev) {
         ev->data.graphics.phase = phase;
-        if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
+        if (VIR_STRDUP(ev->data.graphics.authScheme, authScheme) < 0) {
             virDomainEventFree(ev);
             return NULL;
         }
@@ -928,8 +928,7 @@ virDomainEventBlockJobNew(int id, const char *name, unsigned char *uuid,
                                   id, name, uuid);
 
     if (ev) {
-        if (!(ev->data.blockJob.path = strdup(path))) {
-            virReportOOMError();
+        if (VIR_STRDUP(ev->data.blockJob.path, path) < 0) {
             virDomainEventFree(ev);
             return NULL;
         }
@@ -987,15 +986,13 @@ virDomainEventDiskChangeNew(int id, const char *name,
                                   id, name, uuid);
 
     if (ev) {
-        if (!(ev->data.diskChange.devAlias = strdup(devAlias)))
+        if (VIR_STRDUP(ev->data.diskChange.devAlias, devAlias) < 0)
             goto error;
 
-        if (oldSrcPath &&
-            !(ev->data.diskChange.oldSrcPath = strdup(oldSrcPath)))
+        if (VIR_STRDUP(ev->data.diskChange.oldSrcPath, oldSrcPath) < 0)
             goto error;
 
-        if (newSrcPath &&
-            !(ev->data.diskChange.newSrcPath = strdup(newSrcPath)))
+        if (VIR_STRDUP(ev->data.diskChange.newSrcPath, newSrcPath) < 0)
             goto error;
 
         ev->data.diskChange.reason = reason;
@@ -1004,7 +1001,6 @@ virDomainEventDiskChangeNew(int id, const char *name,
     return ev;
 
 error:
-    virReportOOMError();
     virDomainEventFree(ev);
     return NULL;
 }
@@ -1042,7 +1038,7 @@ virDomainEventTrayChangeNew(int id, const char *name,
                                   id, name, uuid);
 
     if (ev) {
-        if (!(ev->data.trayChange.devAlias = strdup(devAlias)))
+        if (VIR_STRDUP(ev->data.trayChange.devAlias, devAlias) < 0)
             goto error;
 
         ev->data.trayChange.reason = reason;
@@ -1051,7 +1047,6 @@ virDomainEventTrayChangeNew(int id, const char *name,
     return ev;
 
 error:
-    virReportOOMError();
     virDomainEventFree(ev);
     return NULL;
 }

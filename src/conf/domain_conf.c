@@ -1365,60 +1365,35 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (src->data.file.path &&
-            !(dest->data.file.path = strdup(src->data.file.path))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.file.path, src->data.file.path) < 0)
             return -1;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (src->data.udp.bindHost &&
-            !(dest->data.udp.bindHost = strdup(src->data.udp.bindHost))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.udp.bindHost, src->data.udp.bindHost) < 0)
             return -1;
-        }
 
-        if (src->data.udp.bindService &&
-            !(dest->data.udp.bindService = strdup(src->data.udp.bindService))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.udp.bindService, src->data.udp.bindService) < 0)
             return -1;
-        }
 
-        if (src->data.udp.connectHost &&
-            !(dest->data.udp.connectHost = strdup(src->data.udp.connectHost))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.udp.connectHost, src->data.udp.connectHost) < 0)
             return -1;
-        }
 
-
-        if (src->data.udp.connectService &&
-            !(dest->data.udp.connectService = strdup(src->data.udp.connectService))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.udp.connectService, src->data.udp.connectService) < 0)
             return -1;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (src->data.tcp.host &&
-            !(dest->data.tcp.host = strdup(src->data.tcp.host))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.tcp.host, src->data.tcp.host) < 0)
             return -1;
-        }
 
-        if (src->data.tcp.service &&
-            !(dest->data.tcp.service = strdup(src->data.tcp.service))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.tcp.service, src->data.tcp.service) < 0)
             return -1;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (src->data.nix.path &&
-            !(dest->data.nix.path = strdup(src->data.nix.path))) {
-            virReportOOMError();
+        if (VIR_STRDUP(dest->data.nix.path, src->data.nix.path) < 0)
             return -1;
-        }
         break;
     }
 
@@ -2422,14 +2397,9 @@ virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
     dst->alias = NULL;
     dst->romfile = NULL;
 
-    if (src->alias && !(dst->alias = strdup(src->alias))) {
-        virReportOOMError();
+    if (VIR_STRDUP(dst->alias, src->alias) < 0 ||
+        VIR_STRDUP(dst->romfile, src->romfile) < 0)
         return -1;
-    }
-    if (src->romfile && !(dst->romfile = strdup(src->romfile))) {
-        virReportOOMError();
-        return -1;
-    }
     return 0;
 }
 
@@ -4282,11 +4252,8 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
             /* Copy model from host. */
             VIR_DEBUG("Found seclabel without a model, using '%s'",
                       host->secModels[0].model);
-            def->seclabels[0]->model = strdup(host->secModels[0].model);
-            if (!def->seclabels[0]->model) {
-                virReportOOMError();
+            if (VIR_STRDUP(def->seclabels[0]->model, host->secModels[0].model) < 0)
                 goto error;
-            }
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing security model in domain seclabel"));
@@ -5924,10 +5891,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         addrtype = virXPathString("string(./source/address/@type)", ctxt);
         /* if not explicitly stated, source/vendor implies usb device */
         if (!addrtype && virXPathNode("./source/vendor", ctxt) &&
-            (addrtype = strdup("usb")) == NULL) {
-            virReportOOMError();
+            VIR_STRDUP(addrtype, "usb") < 0)
             goto error;
-        }
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
                                               hostdev, flags) < 0) {
@@ -6318,10 +6283,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         addrtype = virXPathString("string(./source/address/@type)", ctxt);
         /* if not explicitly stated, source/vendor implies usb device */
         if (!addrtype && virXPathNode("./source/vendor", ctxt) &&
-            ((addrtype = strdup("usb")) == NULL)) {
-            virReportOOMError();
+            VIR_STRDUP(addrtype, "usb") < 0)
             goto error;
-        }
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
                                               hostdev, flags) < 0) {
@@ -7206,10 +7169,8 @@ virDomainTPMDefParseXML(const xmlNodePtr node,
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         path = virXPathString("string(./backend/device/@path)", ctxt);
-        if (!path && !(path = strdup(VIR_DOMAIN_TPM_DEFAULT_DEVICE))) {
-            virReportOOMError();
+        if (!path && VIR_STRDUP(path, VIR_DOMAIN_TPM_DEFAULT_DEVICE) < 0)
             goto error;
-        }
         def->data.passthrough.source.data.file.path = path;
         def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
         path = NULL;
@@ -9025,10 +8986,8 @@ virDomainRedirFilterUsbVersionHelper(const char *version,
     unsigned int minor;
     unsigned int hex;
 
-    if (!(version_copy = strdup(version))) {
-        virReportOOMError();
+    if (VIR_STRDUP(version_copy, version) < 0)
         return -1;
-    }
 
     len = strlen(version_copy);
     /*
@@ -9987,9 +9946,7 @@ virDomainDefGetDefaultEmulator(virDomainDefPtr def,
         return NULL;
     }
 
-    if (!(retemu = strdup(emulator)))
-        virReportOOMError();
-
+    ignore_value(VIR_STRDUP(retemu, emulator));
     return retemu;
 }
 
@@ -11095,10 +11052,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->os.type = virXPathString("string(./os/type[1])", ctxt);
     if (!def->os.type) {
         if (def->os.bootloader) {
-            def->os.type = strdup("xen");
-            if (!def->os.type) {
-                goto no_memory;
-            }
+            if (VIR_STRDUP(def->os.type, "xen") < 0)
+                goto error;
         } else {
             virReportError(VIR_ERR_OS_TYPE,
                            "%s", _("no OS type"));
@@ -11113,9 +11068,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (STREQ(def->os.type, "linux") &&
         def->virtType == VIR_DOMAIN_VIRT_XEN) {
         VIR_FREE(def->os.type);
-        if (!(def->os.type = strdup("xen"))) {
-            goto no_memory;
-        }
+        if (VIR_STRDUP(def->os.type, "xen") < 0)
+            goto error;
     }
 
     if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
@@ -11169,11 +11123,8 @@ virDomainDefParseXML(xmlDocPtr xml,
                                                                         def->os.type,
                                                                         def->os.arch,
                                                                         virDomainVirtTypeToString(def->virtType));
-        if (defaultMachine != NULL) {
-            if (!(def->os.machine = strdup(defaultMachine))) {
-                goto no_memory;
-            }
-        }
+        if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
+            goto error;
     }
 
     /*
@@ -11202,8 +11153,9 @@ virDomainDefParseXML(xmlDocPtr xml,
                                _("No data supplied for <initarg> element"));
                 goto error;
             }
-            if (!(def->os.initargv[i] = strdup((const char*)nodes[i]->children->content)))
-                goto no_memory;
+            if (VIR_STRDUP(def->os.initargv[i],
+                           (const char*) nodes[i]->children->content) < 0)
+                goto error;
         }
         def->os.initargv[n] = NULL;
         VIR_FREE(nodes);
@@ -16866,7 +16818,7 @@ virDomainObjListCopyInactiveNames(void *payload,
 
     virObjectLock(obj);
     if (!virDomainObjIsActive(obj) && data->numnames < data->maxnames) {
-        if (!(data->names[data->numnames] = strdup(obj->def->name)))
+        if (VIR_STRDUP(data->names[data->numnames], obj->def->name) < 0)
             data->oom = 1;
         else
             data->numnames++;
@@ -16888,7 +16840,6 @@ virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
     if (data.oom) {
         for (i = 0; i < data.numnames; i++)
             VIR_FREE(data.names[i]);
-        virReportOOMError();
         return -1;
     }
 
@@ -17419,12 +17370,9 @@ virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
         return 0;
     }
 
-    listenInfo->address = (len == -1) ? strdup(address) : strndup(address, len);
-    if (!listenInfo->address) {
-        virReportOOMError();
+    if (VIR_STRNDUP(listenInfo->address, address,
+                    len == -1 ? strlen(address) : len) < 0)
         return -1;
-    }
-
     return 0;
 }
 
@@ -17461,12 +17409,9 @@ virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
         return 0;
     }
 
-    listenInfo->network = (len == -1) ? strdup(network) : strndup(network, len);
-    if (!listenInfo->network) {
-        virReportOOMError();
+    if (VIR_STRNDUP(listenInfo->network, network,
+                    len == -1 ? strlen(network) : len) < 0)
         return -1;
-    }
-
     return 0;
 }
 
@@ -17801,7 +17746,7 @@ virDomainDefGenSecurityLabelDef(const char *model)
     virSecurityLabelDefPtr seclabel = NULL;
 
     if (VIR_ALLOC(seclabel) < 0 ||
-        (model && !(seclabel->model = strdup(model)))) {
+        VIR_STRDUP(seclabel->model, model) < 0) {
         virReportOOMError();
         virSecurityLabelDefFree(seclabel);
         seclabel = NULL;
@@ -17816,7 +17761,7 @@ virDomainDiskDefGenSecurityLabelDef(const char *model)
     virSecurityDeviceLabelDefPtr seclabel = NULL;
 
     if (VIR_ALLOC(seclabel) < 0 ||
-        (model && !(seclabel->model = strdup(model)))) {
+        VIR_STRDUP(seclabel->model, model) < 0) {
         virReportOOMError();
         virSecurityDeviceLabelDefFree(seclabel);
         seclabel = NULL;

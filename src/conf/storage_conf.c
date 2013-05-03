@@ -888,11 +888,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME) {
         if (ret->source.name == NULL) {
             /* source name defaults to pool name */
-            ret->source.name = strdup(ret->name);
-            if (ret->source.name == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(ret->source.name, ret->name) < 0)
                 goto cleanup;
-            }
         }
     }
 
@@ -1705,16 +1702,12 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     }
 
     VIR_FREE(pool->configFile);  /* for driver reload */
-    pool->configFile = strdup(path);
-    if (pool->configFile == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(pool->configFile, path) < 0) {
         virStoragePoolDefFree(def);
         return NULL;
     }
     VIR_FREE(pool->autostartLink); /* for driver reload */
-    pool->autostartLink = strdup(autostartLink);
-    if (pool->autostartLink == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(pool->autostartLink, autostartLink) < 0) {
         virStoragePoolDefFree(def);
         return NULL;
     }

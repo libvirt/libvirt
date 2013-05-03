@@ -400,12 +400,8 @@ virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
         return NULL;
     }
 
-    nwf->strings[nwf->nstrings] = strndup(string, maxstrlen);
-
-    if (!nwf->strings[nwf->nstrings]) {
-        virReportOOMError();
+    if (VIR_STRNDUP(nwf->strings[nwf->nstrings], string, maxstrlen) < 0)
         return NULL;
-    }
 
     nwf->nstrings++;
 
@@ -2556,12 +2552,9 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
         }
         chain = NULL;
     } else {
-        ret->chainsuffix = strdup(virNWFilterChainSuffixTypeToString(
-                                  VIR_NWFILTER_CHAINSUFFIX_ROOT));
-        if (ret->chainsuffix == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(ret->chainsuffix,
+                       virNWFilterChainSuffixTypeToString(VIR_NWFILTER_CHAINSUFFIX_ROOT)) < 0)
             goto cleanup;
-        }
     }
 
     uuid = virXPathString("string(./uuid)", ctxt);
@@ -3094,9 +3087,7 @@ virNWFilterObjLoad(virConnectPtr conn,
     }
 
     VIR_FREE(nwfilter->configFile); /* for driver reload */
-    nwfilter->configFile = strdup(path);
-    if (nwfilter->configFile == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(nwfilter->configFile, path) < 0) {
         virNWFilterDefFree(def);
         return NULL;
     }

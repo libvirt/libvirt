@@ -29,7 +29,7 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "viralloc.h"
-
+#include "virstring.h"
 #include "node_device_conf.h"
 #include "virxml.h"
 #include "virbuffer.h"
@@ -1164,12 +1164,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
     } else {
-        def->name = strdup("new device");
-
-        if (!def->name) {
-            virReportOOMError();
+        if (VIR_STRDUP(def->name, "new device") < 0)
             goto error;
-        }
     }
 
     /* Extract device parent, if any */
@@ -1284,14 +1280,18 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
                      char **wwpn)
 {
     virNodeDevCapsDefPtr cap = NULL;
-    int ret = 0;
+    int ret = -1;
 
     cap = def->caps;
     while (cap != NULL) {
         if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
             cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-            *wwnn = strdup(cap->data.scsi_host.wwnn);
-            *wwpn = strdup(cap->data.scsi_host.wwpn);
+            if (VIR_STRDUP(*wwnn, cap->data.scsi_host.wwnn) < 0 ||
+                VIR_STRDUP(*wwpn, cap->data.scsi_host.wwpn) < 0) {
+                /* Free the other one, if allocated... */
+                VIR_FREE(*wwnn);
+                goto cleanup;
+            }
             break;
         }
 
@@ -1301,15 +1301,11 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
     if (cap == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Device is not a fibre channel HBA"));
-        ret = -1;
-    } else if (*wwnn == NULL || *wwpn == NULL) {
-        /* Free the other one, if allocated... */
-        VIR_FREE(*wwnn);
-        VIR_FREE(*wwpn);
-        ret = -1;
-        virReportOOMError();
+        goto cleanup;
     }
 
+    ret = 0;
+cleanup:
     return ret;
 }
 

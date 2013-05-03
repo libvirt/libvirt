@@ -52,7 +52,7 @@ typedef struct _virChrdevStreamInfo virChrdevStreamInfo;
 typedef virChrdevStreamInfo *virChrdevStreamInfoPtr;
 struct _virChrdevStreamInfo {
     virChrdevsPtr devs;
-    const char *path;
+    char *path;
 };
 
 #ifdef VIR_CHRDEV_LOCK_FILE_PATH
@@ -73,10 +73,8 @@ static char *virChrdevLockFilePath(const char *dev)
     char *filename;
     char *p;
 
-    if (!(devCopy = strdup(dev))) {
-        virReportOOMError();
+    if (VIR_STRDUP(devCopy, dev) < 0)
         goto cleanup;
-    }
 
     /* skip the leading "/dev/" */
     filename = STRSKIP(devCopy, "/dev");
@@ -341,7 +339,7 @@ int virChrdevOpen(virChrdevsPtr devs,
 {
     virChrdevStreamInfoPtr cbdata = NULL;
     virStreamPtr savedStream;
-    const char *path;
+    char *path;
     int ret;
 
     switch (source->type) {
@@ -401,10 +399,8 @@ int virChrdevOpen(virChrdevsPtr devs,
         goto error;
 
     cbdata->devs = devs;
-    if (!(cbdata->path = strdup(path))) {
-        virReportOOMError();
+    if (VIR_STRDUP(cbdata->path, path) < 0)
         goto error;
-    }
 
     /* open the character device */
     switch (source->type) {
