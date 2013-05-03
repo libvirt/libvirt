@@ -142,6 +142,53 @@ cleanup:
     return sg;
 }
 
+/* Returns device name (e.g. "sdc") on success, or NULL
+ * on failure.
+ */
+char *
+virSCSIDeviceGetDevName(const char *adapter,
+                        unsigned int bus,
+                        unsigned int target,
+                        unsigned int unit)
+{
+    DIR *dir = NULL;
+    struct dirent *entry;
+    char *path = NULL;
+    char *name = NULL;
+    unsigned int adapter_id;
+
+    if (virSCSIDeviceGetAdapterId(adapter, &adapter_id) < 0)
+        return NULL;
+
+    if (virAsprintf(&path,
+                    SYSFS_SCSI_DEVICES "/%d:%d:%d:%d/block",
+                    adapter_id, bus, target, unit) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (!(dir = opendir(path))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to open %s"), path);
+        goto cleanup;
+    }
+
+    while ((entry = readdir(dir))) {
+        if (entry->d_name[0] == '.')
+            continue;
+
+        if (!(name = strdup(entry->d_name))) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+cleanup:
+    closedir(dir);
+    VIR_FREE(path);
+    return name;
+}
+
 virSCSIDevicePtr
 virSCSIDeviceNew(const char *adapter,
                  unsigned int bus,

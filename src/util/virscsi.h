@@ -37,6 +37,10 @@ char *virSCSIDeviceGetSgName(const char *adapter,
                              unsigned int bus,
                              unsigned int target,
                              unsigned int unit);
+char *virSCSIDeviceGetDevName(const char *adapter,
+                              unsigned int bus,
+                              unsigned int target,
+                              unsigned int unit);
 
 virSCSIDevicePtr virSCSIDeviceNew(const char *adapter,
                                   unsigned int bus,
