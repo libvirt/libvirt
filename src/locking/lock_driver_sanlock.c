@@ -129,8 +129,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     CHECK_TYPE("disk_lease_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->autoDiskLeasePath);
-        if (!(driver->autoDiskLeasePath = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(driver->autoDiskLeasePath, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -150,8 +149,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     p = virConfGetValue(conf, "user");
     CHECK_TYPE("user", VIR_CONF_STRING);
     if (p) {
-        if (!(tmp = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(tmp, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -167,8 +165,7 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
     p = virConfGetValue(conf, "group");
     CHECK_TYPE("group", VIR_CONF_STRING);
     if (p) {
-        if (!(tmp = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(tmp, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -408,9 +405,8 @@ static int virLockManagerSanlockInit(unsigned int version,
     driver->autoDiskLease = false;
     driver->user = (uid_t) -1;
     driver->group = (gid_t) -1;
-    if (!(driver->autoDiskLeasePath = strdup(LOCALSTATEDIR "/lib/libvirt/sanlock"))) {
+    if (VIR_STRDUP(driver->autoDiskLeasePath, LOCALSTATEDIR "/lib/libvirt/sanlock") < 0) {
         VIR_FREE(driver);
-        virReportOOMError();
         goto error;
     }
 

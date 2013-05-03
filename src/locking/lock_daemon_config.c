@@ -53,8 +53,8 @@ checkType(virConfValuePtr p, const char *filename,
 }
 
 /* If there is no config data for the key, #var_name, then do nothing.
-   If there is valid data of type VIR_CONF_STRING, and strdup succeeds,
-   store the result in var_name.  Otherwise, (i.e. invalid type, or strdup
+   If there is valid data of type VIR_CONF_STRING, and VIR_STRDUP succeeds,
+   store the result in var_name.  Otherwise, (i.e. invalid type, or VIR_STRDUP
    failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
 #define GET_CONF_STR(conf, filename, var_name)                          \
     do {                                                                \
@@ -63,10 +63,8 @@ checkType(virConfValuePtr p, const char *filename,
             if (checkType(p, filename, #var_name, VIR_CONF_STRING) < 0) \
                 goto error;                                             \
             VIR_FREE(data->var_name);                                   \
-            if (!(data->var_name = strdup(p->str))) {                   \
-                virReportOOMError();                                    \
+            if (VIR_STRDUP(data->var_name, p->str) < 0)                 \
                 goto error;                                             \
-            }                                                           \
         }                                                               \
     } while (0)
 
@@ -85,8 +83,8 @@ int
 virLockDaemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (!(*configfile = strdup(SYSCONFDIR "/libvirt/virtlockd.conf")))
-            goto no_memory;
+        if (VIR_STRDUP(*configfile, SYSCONFDIR "/libvirt/virtlockd.conf") < 0)
+            goto error;
     } else {
         char *configdir = NULL;
 

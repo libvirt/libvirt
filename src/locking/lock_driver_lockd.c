@@ -129,8 +129,7 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     CHECK_TYPE("file_lockspace_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->fileLockSpaceDir);
-        if (!(driver->fileLockSpaceDir = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(driver->fileLockSpaceDir, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -140,8 +139,7 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     CHECK_TYPE("lvm_lockspace_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->lvmLockSpaceDir);
-        if (!(driver->lvmLockSpaceDir = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(driver->lvmLockSpaceDir, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -151,8 +149,7 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     CHECK_TYPE("scsi_lockspace_dir", VIR_CONF_STRING);
     if (p && p->str) {
         VIR_FREE(driver->scsiLockSpaceDir);
-        if (!(driver->scsiLockSpaceDir = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(driver->scsiLockSpaceDir, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -174,10 +171,8 @@ static char *virLockManagerLockDaemonPath(bool privileged)
 {
     char *path;
     if (privileged) {
-        if (!(path = strdup(LOCALSTATEDIR "/run/libvirt/virtlockd-sock"))) {
-            virReportOOMError();
+        if (VIR_STRDUP(path, LOCALSTATEDIR "/run/libvirt/virtlockd-sock") < 0)
             return NULL;
-        }
     } else {
         char *rundir = NULL;
 
@@ -468,10 +463,8 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
             if (STREQ(params[i].key, "uuid")) {
                 memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
-                if (!(priv->name = strdup(params[i].value.str))) {
-                    virReportOOMError();
+                if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
                     return -1;
-                }
             } else if (STREQ(params[i].key, "id")) {
                 priv->id = params[i].value.i;
             } else if (STREQ(params[i].key, "pid")) {
@@ -590,8 +583,8 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
             if (newName) {
                 VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
-                if (!(newLockspace = strdup(driver->lvmLockSpaceDir)))
-                    goto no_memory;
+                if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
+                    goto error;
                 autoCreate = true;
                 break;
             }
@@ -607,8 +600,8 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
             if (newName) {
                 VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
-                if (!(newLockspace = strdup(driver->scsiLockSpaceDir)))
-                    goto no_memory;
+                if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
+                    goto error;
                 autoCreate = true;
                 break;
             }
@@ -617,17 +610,17 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         }
 
         if (driver->fileLockSpaceDir) {
-            if (!(newLockspace = strdup(driver->fileLockSpaceDir)))
-                goto no_memory;
+            if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
+                goto error;
             if (!(newName = virLockManagerLockDaemonDiskLeaseName(name)))
                 goto no_memory;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
         } else {
-            if (!(newLockspace = strdup("")))
-                goto no_memory;
-            if (!(newName = strdup(name)))
-                goto no_memory;
+            if (VIR_STRDUP(newLockspace, "") < 0)
+                goto error;
+            if (VIR_STRDUP(newName, name) < 0)
+                goto error;
             VIR_DEBUG("Using direct lease for %s", name);
         }
 
@@ -664,8 +657,8 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
             virReportOOMError();
             return -1;
         }
-        if (!(newName = strdup(name)))
-            goto no_memory;
+        if (VIR_STRDUP(newName, name) < 0)
+            goto error;
 
     }   break;
     default:

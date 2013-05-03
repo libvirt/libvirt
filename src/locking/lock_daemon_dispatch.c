@@ -25,7 +25,7 @@
 #include "rpc/virnetserver.h"
 #include "rpc/virnetserverclient.h"
 #include "virlog.h"
-
+#include "virstring.h"
 #include "lock_daemon.h"
 #include "lock_protocol.h"
 #include "lock_daemon_dispatch_stubs.h"
@@ -275,10 +275,8 @@ virLockSpaceProtocolDispatchRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(priv->ownerName = strdup(args->owner.name))) {
-        virReportOOMError();
+    if (VIR_STRDUP(priv->ownerName, args->owner.name) < 0)
         goto cleanup;
-    }
     memcpy(priv->ownerUUID, args->owner.uuid, VIR_UUID_BUFLEN);
     priv->ownerId = args->owner.id;
     priv->ownerPid = args->owner.pid;
