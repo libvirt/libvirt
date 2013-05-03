@@ -78,11 +78,8 @@ int parseIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
     char *owner = NULL;
     char *group = NULL;
 
-    tmp_label = strdup(label);
-    if (tmp_label == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(tmp_label, label) < 0)
         goto cleanup;
-    }
 
     /* Split label */
     sep = strchr(tmp_label, ':');
@@ -1104,18 +1101,10 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         return rc;
     }
 
-    if (!seclabel->norelabel) {
-        if (seclabel->imagelabel == NULL && seclabel->label != NULL) {
-            seclabel->imagelabel = strdup(seclabel->label);
-            if (seclabel->imagelabel == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot generate dac user and group id "
-                                 "for domain %s"), def->name);
-                VIR_FREE(seclabel->label);
-                seclabel->label = NULL;
-                return rc;
-            }
-        }
+    if (!seclabel->norelabel && !seclabel->imagelabel &&
+        VIR_STRDUP(seclabel->imagelabel, seclabel->label) < 0) {
+        VIR_FREE(seclabel->label);
+        return rc;
     }
 
     return 0;

@@ -445,24 +445,15 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
 
-    secdef->label = strndup(profile_name, strlen(profile_name));
-    if (!secdef->label) {
-        virReportOOMError();
+    if (VIR_STRDUP(secdef->label, profile_name) < 0)
         goto cleanup;
-    }
 
     /* set imagelabel the same as label (but we won't use it) */
-    secdef->imagelabel = strndup(profile_name,
-                                 strlen(profile_name));
-    if (!secdef->imagelabel) {
-        virReportOOMError();
+    if (VIR_STRDUP(secdef->imagelabel, profile_name) < 0)
         goto err;
-    }
 
-    if (!secdef->model && !(secdef->model = strdup(SECURITY_APPARMOR_NAME))) {
-        virReportOOMError();
+    if (!secdef->model && VIR_STRDUP(secdef->model, SECURITY_APPARMOR_NAME) < 0)
         goto err;
-    }
 
     /* Now that we have a label, load the profile into the kernel. */
     if (load_profile(mgr, secdef->label, def, NULL, false) < 0) {
@@ -949,10 +940,7 @@ AppArmorGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 {
     char *opts;
 
-    if (!(opts = strdup(""))) {
-        virReportOOMError();
-        return NULL;
-    }
+    ignore_value(VIR_STRDUP(opts, ""));
     return opts;
 }
 

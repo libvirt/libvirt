@@ -20,7 +20,7 @@
 #include <config.h>
 
 #include "security_nop.h"
-
+#include "virstring.h"
 #include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
@@ -182,10 +182,7 @@ static char *virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr ATTRI
 {
     char *opts;
 
-    if (!(opts = strdup(""))) {
-        virReportOOMError();
-        return NULL;
-    }
+    ignore_value(VIR_STRDUP(opts, ""));
     return opts;
 }
 

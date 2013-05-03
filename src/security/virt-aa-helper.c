@@ -773,7 +773,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
             return rc;
         }
     } else
-        if ((tmp = strdup(path)) == NULL)
+        if (VIR_STRDUP_QUIET(tmp, path) < 0)
             return rc;
 
     if (strchr(perms, 'w') != NULL)
@@ -1103,7 +1103,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
                 break;
             case 'f':
             case 'F':
-                if ((ctl->newfile = strdup(optarg)) == NULL)
+                if (VIR_STRDUP_QUIET(ctl->newfile, optarg) < 0)
                     vah_error(ctl, 1, _("could not allocate memory for disk"));
                 ctl->append = arg == 'F';
                 break;
