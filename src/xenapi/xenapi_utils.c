@@ -352,12 +352,12 @@ allocStringMap(xen_string_string_map **strings, char *key, char *val)
         return -1;
     }
     (*strings)->size = sz;
-    if (!((*strings)->contents[sz-1].key = strdup(key))) goto error;
-    if (!((*strings)->contents[sz-1].val = strdup(val))) goto error;
+    if (VIR_STRDUP((*strings)->contents[sz-1].key, key) < 0 ||
+        VIR_STRDUP((*strings)->contents[sz-1].val, val) < 0)
+        goto error;
     return 0;
   error:
     xen_string_string_map_free(*strings);
-    virReportOOMError();
     return -1;
 }
 
@@ -455,17 +455,17 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     int i;
 
     *record = xen_vm_record_alloc();
-    if (!((*record)->name_label = strdup(def->name)))
-        goto error_cleanup;
+    if (VIR_STRDUP((*record)->name_label, def->name) < 0)
+        goto error;
     if (def->uuid) {
         virUUIDFormat(def->uuid, uuidStr);
-        if (!((*record)->uuid = strdup(uuidStr)))
-            goto error_cleanup;
+        if (VIR_STRDUP((*record)->uuid, uuidStr) < 0)
+            goto error;
     }
     if (STREQ(def->os.type, "hvm")) {
         char *boot_order = NULL;
-        if (!((*record)->hvm_boot_policy = strdup("BIOS order")))
-            goto error_cleanup;
+        if (VIR_STRDUP((*record)->hvm_boot_policy, "BIOS order") < 0)
+            goto error;
         if (def->os.nBootDevs != 0)
             boot_order = createXenAPIBootOrderString(def->os.nBootDevs, &def->os.bootDevs[0]);
         if (boot_order != NULL) {
@@ -475,25 +475,25 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
             VIR_FREE(boot_order);
         }
     } else if (STREQ(def->os.type, "xen")) {
-        if (!((*record)->pv_bootloader = strdup("pygrub")))
-            goto error_cleanup;
+        if (VIR_STRDUP((*record)->pv_bootloader, "pygrub") < 0)
+            goto error;
         if (def->os.kernel) {
-            if (!((*record)->pv_kernel = strdup(def->os.kernel)))
-                goto error_cleanup;
+            if (VIR_STRDUP((*record)->pv_kernel, def->os.kernel) < 0)
+                goto error;
         }
         if (def->os.initrd) {
-            if (!((*record)->pv_ramdisk = strdup(def->os.initrd)))
-                goto error_cleanup;
+            if (VIR_STRDUP((*record)->pv_ramdisk, def->os.initrd) < 0)
+                goto error;
         }
         if (def->os.cmdline) {
-            if (!((*record)->pv_args = strdup(def->os.cmdline)))
-                goto error_cleanup;
+            if (VIR_STRDUP((*record)->pv_args, def->os.cmdline) < 0)
+                goto error;
         }
         (*record)->hvm_boot_params = xen_string_string_map_alloc(0);
     }
     if (def->os.bootloaderArgs)
-        if (!((*record)->pv_bootloader_args = strdup(def->os.bootloaderArgs)))
-            goto error_cleanup;
+        if (VIR_STRDUP((*record)->pv_bootloader_args, def->os.bootloaderArgs) < 0)
+            goto error;
 
     if (def->mem.cur_balloon)
         (*record)->memory_static_max = (int64_t) (def->mem.cur_balloon * 1024);
@@ -561,6 +561,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
 
   error_cleanup:
     virReportOOMError();
+  error:
     xen_vm_record_free(*record);
     return -1;
 }

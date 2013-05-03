@@ -135,12 +135,8 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     if (conn->uri->user != NULL) {
-        username = strdup(conn->uri->user);
-
-        if (username == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(username, conn->uri->user) < 0)
             goto error;
-        }
     } else {
         username = virAuthGetUsername(conn, auth, "xen", NULL, conn->uri->server);
 
@@ -320,9 +316,8 @@ xenapiConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
     if (result && result->size > 0) {
         for (i = 0; i < result->size; i++) {
             if (STREQ(result->contents[i].key, "xen")) {
-                if (!(version = strdup(result->contents[i].val))) {
+                if (VIR_STRDUP(version, result->contents[i].val) < 0) {
                     xen_string_string_map_free(result);
-                    virReportOOMError();
                     return -1;
                 }
                 break;
@@ -952,8 +947,8 @@ xenapiDomainGetOSType(virDomainPtr dom)
             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, NULL);
             goto cleanup;
         }
-        if (!(ostype = (STREQ(boot_policy,"BIOS order") ? strdup("hvm") : strdup("xen"))))
-            virReportOOMError();
+        ignore_value(VIR_STRDUP(ostype,
+                                STREQ(boot_policy, "BIOS order") ? "hvm" : "xen"));
         VIR_FREE(boot_policy);
     } else
         xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
@@ -1268,10 +1263,9 @@ xenapiDomainGetVcpus(virDomainPtr dom,
     }
     for (i = 0; i < vcpu_params->size; i++) {
         if (STREQ(vcpu_params->contents[i].key, "mask")) {
-            if (!(mask = strdup(vcpu_params->contents[i].val))){
+            if (VIR_STRDUP(mask, vcpu_params->contents[i].val) < 0) {
                  xen_vm_set_free(vms);
                  xen_string_string_map_free(vcpu_params);
-                 virReportOOMError();
                  return -1;
             }
             break;
@@ -1386,13 +1380,13 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     defPtr->virtType = VIR_DOMAIN_VIRT_XEN;
     defPtr->id = dom->id;
     memcpy(defPtr->uuid, dom->uuid, VIR_UUID_BUFLEN);
-    if (!(defPtr->name = strdup(dom->name)))
-        goto error_cleanup;
+    if (VIR_STRDUP(defPtr->name, dom->name) < 0)
+        goto error;
     xen_vm_get_hvm_boot_policy(session, &boot_policy, vm);
     if (STREQ(boot_policy,"BIOS order")) {
-        if (!(defPtr->os.type = strdup("hvm"))) {
+        if (VIR_STRDUP(defPtr->os.type, "hvm") < 0) {
             VIR_FREE(boot_policy);
-            goto error_cleanup;
+            goto error;
         }
         xen_vm_get_hvm_boot_params(session, &result, vm);
         if (result != NULL) {
@@ -1413,50 +1407,50 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         VIR_FREE(boot_policy);
     } else {
         char *value = NULL;
-        if (!(defPtr->os.type = strdup("xen"))) {
+        if (VIR_STRDUP(defPtr->os.type, "xen") < 0) {
             VIR_FREE(boot_policy);
-            goto error_cleanup;
+            goto error;
         }
-        if (!(defPtr->os.loader = strdup("pygrub"))) {
+        if (VIR_STRDUP(defPtr->os.loader, "pygrub") < 0) {
             VIR_FREE(boot_policy);
-            goto error_cleanup;
+            goto error;
         }
         xen_vm_get_pv_kernel(session, &value, vm);
         if (STRNEQ(value, "")) {
-            if (!(defPtr->os.kernel = strdup(value))) {
+            if (VIR_STRDUP(defPtr->os.kernel, value) < 0) {
                 VIR_FREE(boot_policy);
                 VIR_FREE(value);
-                goto error_cleanup;
+                goto error;
             }
             VIR_FREE(value);
         }
         xen_vm_get_pv_ramdisk(session, &value, vm);
         if (STRNEQ(value, "")) {
-            if (!(defPtr->os.initrd = strdup(value))) {
+            if (VIR_STRDUP(defPtr->os.initrd, value) < 0) {
                 VIR_FREE(boot_policy);
                 VIR_FREE(value);
-                goto error_cleanup;
+                goto error;
             }
             VIR_FREE(value);
         }
         xen_vm_get_pv_args(session, &value, vm);
         if (STRNEQ(value, "")) {
-            if (!(defPtr->os.cmdline = strdup(value))) {
+            if (VIR_STRDUP(defPtr->os.cmdline, value) < 0) {
                 VIR_FREE(boot_policy);
                 VIR_FREE(value);
-                goto error_cleanup;
+                goto error;
             }
             VIR_FREE(value);
         }
         VIR_FREE(boot_policy);
-        if (!(defPtr->os.bootloader = strdup("pygrub")))
-            goto error_cleanup;
+        if (VIR_STRDUP(defPtr->os.bootloader, "pygrub") < 0)
+            goto error;
     }
     xen_vm_get_pv_bootloader_args(session, &val, vm);
     if (STRNEQ(val, "")) {
-        if (!(defPtr->os.bootloaderArgs = strdup(val))) {
+        if (VIR_STRDUP(defPtr->os.bootloaderArgs, val) < 0) {
             VIR_FREE(val);
-            goto error_cleanup;
+            goto error;
         }
         VIR_FREE(val);
     }
@@ -1542,6 +1536,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
   error_cleanup:
     virReportOOMError();
+  error:
     xen_vm_set_free(vms);
     virDomainDefFree(defPtr);
     return NULL;
@@ -1569,8 +1564,7 @@ xenapiConnectListDefinedDomains(virConnectPtr conn, char **const names,
             if (record != NULL) {
                 if (record->is_a_template == 0) {
                     char *usenames = NULL;
-                    if (!(usenames = strdup(record->name_label))) {
-                        virReportOOMError();
+                    if (VIR_STRDUP(usenames, record->name_label) < 0) {
                         xen_vm_record_free(record);
                         xen_vm_set_free(result);
                         while (--j >= 0) VIR_FREE(names[j]);
@@ -1862,8 +1856,7 @@ xenapiDomainGetSchedulerType(virDomainPtr dom ATTRIBUTE_UNUSED, int *nparams)
 
     if (nparams)
         *nparams = 0;
-    if (!(result = strdup("credit")))
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(result, "credit"));
     return result;
 }
 
