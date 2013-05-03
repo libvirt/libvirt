@@ -31,6 +31,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "domain_audit.h"
+#include "virscsi.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -213,6 +214,33 @@ qemuSetupHostUsbDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemuSetupHostScsiDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+                              const char *path,
+                              void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rc;
+
+    VIR_DEBUG("Process path '%s' for SCSI device", path);
+
+    rc = virCgroupAllowDevicePath(priv->cgroup, path,
+                                  virSCSIDeviceGetReadonly(dev) ?
+                                  VIR_CGROUP_DEVICE_READ :
+                                  VIR_CGROUP_DEVICE_RW);
+
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                             virSCSIDeviceGetReadonly(dev) ? "r" : "rw", rc);
+    if (rc < 0) {
+        virReportSystemError(-rc,
+                             _("Unable to allow device %s"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
 
 int
 qemuSetupHostdevCGroup(virDomainObjPtr vm,
@@ -222,6 +250,7 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virPCIDevicePtr pci = NULL;
     virUSBDevicePtr usb = NULL;
+    virSCSIDevicePtr scsi = NULL;
     char *path = NULL;
 
     /* currently this only does something for PCI devices using vfio
@@ -286,6 +315,20 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
                 goto cleanup;
             }
             break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            if ((scsi = virSCSIDeviceNew(dev->source.subsys.u.scsi.adapter,
+                                         dev->source.subsys.u.scsi.bus,
+                                         dev->source.subsys.u.scsi.target,
+                                         dev->source.subsys.u.scsi.unit,
+                                         dev->readonly)) == NULL)
+                goto cleanup;
+
+            if (virSCSIDeviceFileIterate(scsi,
+                                         qemuSetupHostScsiDeviceCgroup,
+                                         vm) < 0)
+                goto cleanup;
+
         default:
             break;
         }
@@ -295,11 +338,10 @@ qemuSetupHostdevCGroup(virDomainObjPtr vm,
 cleanup:
     virPCIDeviceFree(pci);
     virUSBDeviceFree(usb);
+    virSCSIDeviceFree(scsi);
     VIR_FREE(path);
     return ret;
 }
-
-
 
 int
 qemuTeardownHostdevCgroup(virDomainObjPtr vm,
