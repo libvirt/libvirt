@@ -626,10 +626,7 @@ static char *lxcDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    ret = strdup(vm->def->os.type);
-
-    if (ret == NULL)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, vm->def->os.type));
 
 cleanup:
     if (vm)
@@ -1636,9 +1633,7 @@ static char *lxcDomainGetSchedulerType(virDomainPtr dom,
             *nparams = 3;
     }
 
-    ret = strdup("posix");
-    if (!ret)
-        virReportOOMError();
+    ignore_value(VIR_STRDUP(ret, "posix"));
 
 cleanup:
     if (vm)

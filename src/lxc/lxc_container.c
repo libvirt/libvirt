@@ -439,10 +439,8 @@ static int lxcContainerGetSubtree(const char *prefix,
             virReportOOMError();
             goto cleanup;
         }
-        if (!(mounts[nmounts] = strdup(mntent.mnt_dir))) {
-            virReportOOMError();
+        if (VIR_STRDUP(mounts[nmounts], mntent.mnt_dir) < 0)
             goto cleanup;
-        }
         nmounts++;
         VIR_DEBUG("Grabbed %s", mntent.mnt_dir);
     }
@@ -1041,10 +1039,8 @@ lxcContainerMountDetectFilesystem(const char *src, char **type)
         goto cleanup;
     }
 
-    if (!(*type = strdup(data))) {
-        virReportOOMError();
+    if (VIR_STRDUP(*type, data) < 0)
         goto cleanup;
-    }
 
 done:
     ret = 0;
@@ -1952,17 +1948,11 @@ static int lxcContainerChild(void *data)
                 virReportOOMError();
                 goto cleanup;
             }
-        } else {
-            if (!(ttyPath = strdup(argv->ttyPaths[0]))) {
-                virReportOOMError();
+        } else if (VIR_STRDUP(ttyPath, argv->ttyPaths[0]) < 0) {
                 goto cleanup;
-            }
         }
-    } else {
-        if (!(ttyPath = strdup("/dev/null"))) {
-            virReportOOMError();
+    } else if (VIR_STRDUP(ttyPath, "/dev/null") < 0) {
             goto cleanup;
-        }
     }
 
     VIR_DEBUG("Container TTY path: %s", ttyPath);

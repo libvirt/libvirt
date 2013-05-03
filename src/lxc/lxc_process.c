@@ -996,9 +996,9 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
 
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
-    if (!(root->src = strdup("/")) ||
-        !(root->dst = strdup("/")))
-        goto no_memory;
+    if (VIR_STRDUP(root->src, "/") < 0 ||
+        VIR_STRDUP(root->dst, "/") < 0)
+        goto error;
 
     if (VIR_INSERT_ELEMENT(vm->def->fss,
                            0,
@@ -1010,6 +1010,7 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
 
 no_memory:
     virReportOOMError();
+error:
     virDomainFSDefFree(root);
     return -1;
 }

@@ -37,7 +37,7 @@
 #include "configmake.h"
 #include "lxc_container.h"
 #include "virnodesuspend.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -119,10 +119,10 @@ virCapsPtr lxcCapsInit(virLXCDriverPtr driver)
             if (VIR_ALLOC(caps->host.secModels) < 0)
                 goto no_memory;
             caps->host.nsecModels = 1;
-            if (!(caps->host.secModels[0].model = strdup(model)))
-                goto no_memory;
-            if (!(caps->host.secModels[0].doi = strdup(doi)))
-                goto no_memory;
+            if (VIR_STRDUP(caps->host.secModels[0].model, model) < 0)
+                goto error;
+            if (VIR_STRDUP(caps->host.secModels[0].doi, doi) < 0)
+                goto error;
         }
 
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
@@ -161,18 +161,18 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
     driver->securityRequireConfined = false;
 
     /* Set the container configuration directory */
-    if ((driver->configDir = strdup(LXC_CONFIG_DIR)) == NULL)
-        goto no_memory;
-    if ((driver->stateDir = strdup(LXC_STATE_DIR)) == NULL)
-        goto no_memory;
-    if ((driver->logDir = strdup(LXC_LOG_DIR)) == NULL)
-        goto no_memory;
-    if ((driver->autostartDir = strdup(LXC_AUTOSTART_DIR)) == NULL)
-        goto no_memory;
+    if (VIR_STRDUP(driver->configDir, LXC_CONFIG_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(driver->stateDir, LXC_STATE_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(driver->logDir, LXC_LOG_DIR) < 0)
+        goto error;
+    if (VIR_STRDUP(driver->autostartDir, LXC_AUTOSTART_DIR) < 0)
+        goto error;
 
 
-    if ((filename = strdup(SYSCONFDIR "/libvirt/lxc.conf")) == NULL)
-        goto no_memory;
+    if (VIR_STRDUP(filename, SYSCONFDIR "/libvirt/lxc.conf") < 0)
+        goto error;
 
     /* Avoid error from non-existant or unreadable file. */
     if (access(filename, R_OK) == -1)
@@ -196,8 +196,7 @@ int lxcLoadDriverConfig(virLXCDriverPtr driver)
     p = virConfGetValue(conf, "security_driver");
     CHECK_TYPE("security_driver", VIR_CONF_STRING);
     if (p && p->str) {
-        if (!(driver->securityDriverName = strdup(p->str))) {
-            virReportOOMError();
+        if (VIR_STRDUP(driver->securityDriverName, p->str) < 0) {
             virConfFree(conf);
             return -1;
         }
@@ -220,7 +219,6 @@ done:
     VIR_FREE(filename);
     return 0;
 
-no_memory:
-    virReportOOMError();
+error:
     return -1;
 }

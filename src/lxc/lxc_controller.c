@@ -150,14 +150,16 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
     virDomainXMLOptionPtr xmlopt = NULL;
     char *configFile = NULL;
 
-    if (VIR_ALLOC(ctrl) < 0)
-        goto no_memory;
+    if (VIR_ALLOC(ctrl) < 0) {
+        virReportOOMError();
+        goto error;
+    }
 
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
 
-    if (!(ctrl->name = strdup(name)))
-        goto no_memory;
+    if (VIR_STRDUP(ctrl->name, name) < 0)
+        goto error;
 
     if ((caps = lxcCapsInit(NULL)) == NULL)
         goto error;
@@ -186,8 +188,6 @@ cleanup:
     virObjectUnref(xmlopt);
     return ctrl;
 
-no_memory:
-    virReportOOMError();
 error:
     virLXCControllerFree(ctrl);
     ctrl = NULL;
@@ -1566,10 +1566,8 @@ int main(int argc, char *argv[])
             break;
 
         case 'n':
-            if ((name = strdup(optarg)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(name, optarg) < 0)
                 goto cleanup;
-            }
             break;
 
         case 'v':
@@ -1577,10 +1575,8 @@ int main(int argc, char *argv[])
                 virReportOOMError();
                 goto cleanup;
             }
-            if ((veths[nveths++] = strdup(optarg)) == NULL) {
-                virReportOOMError();
+            if (VIR_STRDUP(veths[nveths++], optarg) < 0)
                 goto cleanup;
-            }
             break;
 
         case 'c':
