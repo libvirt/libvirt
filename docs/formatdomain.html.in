@@ -3999,7 +3999,7 @@ qemu-kvm -net nic,model=? /dev/null
         then libvirt can interact with a guest agent installed in the
         guest, for actions such as guest shutdown or file system quiescing.
         <span class="since">Since 0.7.7, guest agent interaction
-        since 0.9.10</span> Moreover, <span class="since">since 1.0.5</span>
+        since 0.9.10</span> Moreover, <span class="since">since 1.0.6</span>
         it is possible to have source path auto generated for virtio unix channels.
         This is very useful in case of a qemu guest agent, where users don't
         usually care about the source path since it's libvirt who talks to
