@@ -28,7 +28,7 @@
 #include "virhash.h"
 #include "cpu.h"
 #include "cpu_generic.h"
-
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -131,7 +131,7 @@ genericBaseline(virCPUDefPtr *cpus,
     }
 
     if (VIR_ALLOC(cpu) < 0 ||
-        !(cpu->model = strdup(cpus[0]->model)) ||
+        VIR_STRDUP(cpu->model, cpus[0]->model) < 0 ||
         VIR_ALLOC_N(features, cpus[0]->nfeatures) < 0)
         goto no_memory;
 
@@ -183,8 +183,8 @@ genericBaseline(virCPUDefPtr *cpus,
         if (!features[i].name)
             continue;
 
-        if (!(cpu->features[j++].name = strdup(features[i].name)))
-            goto no_memory;
+        if (VIR_STRDUP(cpu->features[j++].name, features[i].name) < 0)
+            goto error;
     }
 
 cleanup:

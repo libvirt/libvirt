@@ -29,7 +29,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "cpu.h"
-
+#include "virstring.h"
 #include "cpu_map.h"
 #include "virbuffer.h"
 
@@ -333,9 +333,8 @@ ppcDecode(virCPUDefPtr cpu,
         goto cleanup;
     }
 
-    if (!(cpu->model = strdup(model->name)) ||
-        (model->vendor && !(cpu->vendor = strdup(model->vendor->name)))) {
-        virReportOOMError();
+    if (VIR_STRDUP(cpu->model, model->name) < 0 ||
+        (model->vendor && VIR_STRDUP(cpu->vendor, model->vendor->name) < 0)) {
         goto cleanup;
     }
 
@@ -449,11 +448,11 @@ ppcBaseline(virCPUDefPtr *cpus,
     }
 
     if (VIR_ALLOC(cpu) < 0 ||
-        !(cpu->model = strdup(model->name)))
+        VIR_STRDUP(cpu->model, model->name) < 0)
         goto no_memory;
 
-    if (vendor && !(cpu->vendor = strdup(vendor->name)))
-        goto no_memory;
+    if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
+        goto error;
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;

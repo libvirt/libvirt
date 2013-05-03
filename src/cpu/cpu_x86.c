@@ -449,13 +449,13 @@ x86DataToCPU(const union cpuData *data,
     const struct x86_vendor *vendor;
 
     if (VIR_ALLOC(cpu) < 0 ||
-        !(cpu->model = strdup(model->name)) ||
+        VIR_STRDUP(cpu->model, model->name) < 0 ||
         !(copy = x86DataCopy(data)) ||
         !(modelData = x86DataCopy(model->data)))
         goto no_memory;
 
     if ((vendor = x86DataToVendor(copy, map)) &&
-        !(cpu->vendor = strdup(vendor->name)))
+        VIR_STRDUP(cpu->vendor, vendor->name) < 0)
         goto no_memory;
 
     x86DataSubtract(copy, modelData);
@@ -766,9 +766,9 @@ x86ModelCopy(const struct x86_model *model)
 {
     struct x86_model *copy;
 
-    if (VIR_ALLOC(copy) < 0
-        || !(copy->name = strdup(model->name))
-        || !(copy->data = x86DataCopy(model->data))) {
+    if (VIR_ALLOC(copy) < 0 ||
+        VIR_STRDUP(copy->name, model->name) < 0 ||
+        !(copy->data = x86DataCopy(model->data))) {
         x86ModelFree(copy);
         return NULL;
     }

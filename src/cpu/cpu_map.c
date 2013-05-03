@@ -27,6 +27,7 @@
 #include "cpu.h"
 #include "cpu_map.h"
 #include "configmake.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -149,7 +150,7 @@ cpuMapOverride(const char *path)
 {
     char *map;
 
-    if (!(map = strdup(path)))
+    if (VIR_STRDUP(map, path) < 0)
         return -1;
 
     VIR_FREE(cpumap);
