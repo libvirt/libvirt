@@ -227,14 +227,11 @@ udevListInterfacesByStatus(virConnectPtr conn,
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
-        names[count] = strdup(udev_device_get_sysname(dev));
-        udev_device_unref(dev);
-
-        /* If strdup() failed, we are out of memory */
-        if (!names[count]) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[count], udev_device_get_sysname(dev)) < 0) {
+            udev_device_unref(dev);
             goto err;
         }
+        udev_device_unref(dev);
 
         count++;
     }
@@ -713,11 +710,8 @@ udevGetIfaceDefBond(struct udev *udev,
                 _("Could not retrieve 'bonding/arp_ip_target' for '%s'"), name);
         goto cleanup;
     }
-    ifacedef->data.bond.target = strdup(tmp_str);
-    if (!ifacedef->data.bond.target) {
-        virReportOOMError();
+    if (VIR_STRDUP(ifacedef->data.bond.target, tmp_str) < 0)
         goto cleanup;
-    }
 
     /* Slaves of the bond */
     /* Get each slave in the bond */
@@ -801,11 +795,8 @@ udevGetIfaceDefBridge(struct udev *udev,
         goto error;
     }
 
-    ifacedef->data.bridge.delay = strdup(tmp_str);
-    if (!ifacedef->data.bridge.delay) {
-        virReportOOMError();
+    if (VIR_STRDUP(ifacedef->data.bridge.delay, tmp_str) < 0)
         goto error;
-    }
 
     /* Retrieve Spanning Tree State. Valid values = -1, 0, 1 */
     tmp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
@@ -942,12 +933,8 @@ udevGetIfaceDef(struct udev *udev, const char *name)
 
     /* Clear our structure and set safe defaults */
     ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;
-    ifacedef->name = strdup(name);
-
-    if (!ifacedef->name) {
-        virReportOOMError();
+    if (VIR_STRDUP(ifacedef->name, name) < 0)
         goto cleanup;
-    }
 
     /* Lookup the device we've been asked about */
     dev = udev_device_new_from_subsystem_sysname(udev, "net", name);
@@ -958,11 +945,9 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     }
 
     /* MAC address */
-    ifacedef->mac = strdup(udev_device_get_sysattr_value(dev, "address"));
-    if (!ifacedef->mac) {
-        virReportOOMError();
+    if (VIR_STRDUP(ifacedef->mac,
+                   udev_device_get_sysattr_value(dev, "address")) < 0)
         goto cleanup;
-    }
 
     /* MTU */
     mtu_str = udev_device_get_sysattr_value(dev, "mtu");
