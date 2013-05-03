@@ -462,6 +462,7 @@ struct _virDomainHostdevDef {
     bool managed;
     bool missing;
     bool readonly;
+    bool shareable;
     union {
         virDomainHostdevSubsys subsys;
         virDomainHostdevCaps caps;

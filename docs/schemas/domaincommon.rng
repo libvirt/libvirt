@@ -3135,6 +3135,11 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name="shareable">
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

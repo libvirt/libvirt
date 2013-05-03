@@ -294,6 +294,7 @@ mymain(void)
     DO_TEST("hostdev-scsi-readonly");
 
     DO_TEST("disk-copy_on_read");
+    DO_TEST("hostdev-scsi-shareable");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

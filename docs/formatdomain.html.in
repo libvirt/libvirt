@@ -2506,6 +2506,12 @@
       <dd>Indicates that the device is readonly, only supported by SCSI host
         device now. <span class="since">Since 1.0.6 (QEMU and KVM only)</span>
       </dd>
+      <dt><code>shareable</code></dt>
+      <dd>If present, this indicates the device is expected to be shared
+        between domains (assuming the hypervisor and OS support this).
+        Only supported by SCSI host device.
+        <span class="since">Since 1.0.6</span>
+      </dd>
     </dl>
 
 

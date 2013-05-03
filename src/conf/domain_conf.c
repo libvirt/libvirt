@@ -8829,6 +8829,8 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
 
             if (virXPathBoolean("boolean(./readonly)", ctxt))
                 def->readonly = true;
+            if (virXPathBoolean("boolean(./shareable)", ctxt))
+                def->shareable = true;
             break;
         }
     }
@@ -15457,6 +15459,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
 
     if (def->readonly)
         virBufferAddLit(buf, "<readonly/>\n");
+    if (def->shareable)
+        virBufferAddLit(buf, "<shareable/>\n");
     virBufferAdjustIndent(buf, -6);
 
     if (virDomainDeviceInfoFormat(buf, def->info,
