@@ -89,13 +89,8 @@ static int update_driver_name(virNodeDeviceObjPtr dev)
     }
 
     p = strrchr(devpath, '/');
-    if (p) {
-        dev->def->driver = strdup(p+1);
-        if (!dev->def->driver) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
+    if (p && VIR_STRDUP(dev->def->driver, p + 1) < 0)
+        goto cleanup;
     ret = 0;
 
 cleanup:
@@ -162,9 +157,8 @@ nodeListDevices(virConnectPtr conn,
         virNodeDeviceObjLock(driver->devs.objs[i]);
         if (cap == NULL ||
             virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
-            if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
+            if (VIR_STRDUP(names[ndevs++], driver->devs.objs[i]->def->name) < 0) {
                 virNodeDeviceObjUnlock(driver->devs.objs[i]);
-                virReportOOMError();
                 goto failure;
             }
         }
@@ -322,9 +316,8 @@ nodeDeviceGetParent(virNodeDevicePtr dev)
     }
 
     if (obj->def->parent) {
-        ret = strdup(obj->def->parent);
-        if (!ret)
-            virReportOOMError();
+        if (VIR_STRDUP(ret, obj->def->parent) < 0)
+            goto cleanup;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no parent for this device"));
@@ -389,11 +382,8 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     }
 
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
-        names[ncaps] = strdup(virNodeDevCapTypeToString(caps->type));
-        if (names[ncaps++] == NULL) {
-            virReportOOMError();
+        if (VIR_STRDUP(names[ncaps], virNodeDevCapTypeToString(caps->type)) < 0)
             goto cleanup;
-        }
     }
     ret = ncaps;
 
@@ -555,19 +545,18 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
-    parent_name = strdup(obj->def->parent);
 
     /* virNodeDeviceGetParentHost will cause the device object's lock to be
      * taken, so we have to dup the parent's name and drop the lock
      * before calling it.  We don't need the reference to the object
      * any more once we have the parent's name.  */
-    virNodeDeviceObjUnlock(obj);
-    obj = NULL;
-
-    if (parent_name == NULL) {
-        virReportOOMError();
+    if (VIR_STRDUP(parent_name, obj->def->parent) < 0) {
+        virNodeDeviceObjUnlock(obj);
+        obj = NULL;
         goto out;
     }
+    virNodeDeviceObjUnlock(obj);
+    obj = NULL;
 
     if (virNodeDeviceGetParentHost(&driver->devs,
                                    dev->name,

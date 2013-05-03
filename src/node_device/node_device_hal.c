@@ -446,10 +446,10 @@ static void dev_create(const char *udi)
     virNodeDeviceDefPtr def = NULL;
     const char *name = hal_name(udi);
     int rv;
-    char *privData = strdup(udi);
+    char *privData;
     char *devicePath = NULL;
 
-    if (!privData)
+    if (VIR_STRDUP(privData, udi) < 0)
         return;
 
     nodeDeviceLock(driverState);
@@ -458,14 +458,15 @@ static void dev_create(const char *udi)
     if (VIR_ALLOC(def) < 0)
         goto failure;
 
-    if ((def->name = strdup(name)) == NULL)
+    if (VIR_STRDUP(def->name, name) < 0)
         goto failure;
 
     if (get_str_prop(ctx, udi, "info.parent", &parent_key) == 0) {
-        def->parent = strdup(hal_name(parent_key));
-        VIR_FREE(parent_key);
-        if (def->parent == NULL)
+        if (VIR_STRDUP(def->parent, hal_name(parent_key)) < 0) {
+            VIR_FREE(parent_key);
             goto failure;
+        }
+        VIR_FREE(parent_key);
     }
 
     rv = gather_capabilities(ctx, udi, &def->caps);
