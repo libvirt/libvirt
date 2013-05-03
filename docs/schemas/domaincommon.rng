@@ -3054,26 +3054,28 @@
 
   <define name="hostdev">
     <element name="hostdev">
-      <choice>
-        <group>
-          <ref name="hostdevsubsys"/>
-        </group>
-        <group>
-          <ref name="hostdevcaps"/>
-        </group>
-      </choice>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="deviceBoot"/>
-      </optional>
-      <optional>
-        <ref name="rom"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <choice>
+          <group>
+            <ref name="hostdevsubsys"/>
+          </group>
+          <group>
+            <ref name="hostdevcaps"/>
+          </group>
+        </choice>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="deviceBoot"/>
+        </optional>
+        <optional>
+          <ref name="rom"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
