@@ -618,12 +618,12 @@ enum virDomainDiskSecretType {
     VIR_DOMAIN_DISK_SECRET_TYPE_LAST
 };
 
-enum virDomainDiskSGIO {
-    VIR_DOMAIN_DISK_SGIO_DEFAULT = 0,
-    VIR_DOMAIN_DISK_SGIO_FILTERED,
-    VIR_DOMAIN_DISK_SGIO_UNFILTERED,
+enum virDomainDeviceSGIO {
+    VIR_DOMAIN_DEVICE_SGIO_DEFAULT = 0,
+    VIR_DOMAIN_DEVICE_SGIO_FILTERED,
+    VIR_DOMAIN_DEVICE_SGIO_UNFILTERED,
 
-    VIR_DOMAIN_DISK_SGIO_LAST
+    VIR_DOMAIN_DEVICE_SGIO_LAST
 };
 
 enum virDomainDiskDiscard {
@@ -715,7 +715,7 @@ struct _virDomainDiskDef {
     virStorageEncryptionPtr encryption;
     bool rawio_specified;
     int rawio; /* no = 0, yes = 1 */
-    int sgio; /* enum virDomainDiskSGIO */
+    int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
 
     size_t nseclabels;
@@ -2472,7 +2472,7 @@ VIR_ENUM_DECL(virDomainDiskProtocol)
 VIR_ENUM_DECL(virDomainDiskProtocolTransport)
 VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDiskSecretType)
-VIR_ENUM_DECL(virDomainDiskSGIO)
+VIR_ENUM_DECL(virDomainDeviceSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainDiskDiscard)
 VIR_ENUM_DECL(virDomainIoEventFd)

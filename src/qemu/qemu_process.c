@@ -3226,7 +3226,7 @@ qemuSetUnprivSGIO(virDomainDiskDefPtr disk)
         return -1;
 
     /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
-    val = (disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED);
+    val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
 
     /* Do not do anything if unpriv_sgio is not supported by the kernel and the
      * whitelist is enabled.  But if requesting unfiltered access, always call

@@ -274,7 +274,7 @@ VIR_ENUM_IMPL(virDomainDiskIo, VIR_DOMAIN_DISK_IO_LAST,
               "native",
               "threads")
 
-VIR_ENUM_IMPL(virDomainDiskSGIO, VIR_DOMAIN_DISK_SGIO_LAST,
+VIR_ENUM_IMPL(virDomainDeviceSGIO, VIR_DOMAIN_DEVICE_SGIO_LAST,
               "default",
               "filtered",
               "unfiltered")
@@ -5069,7 +5069,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (sgio) {
-        if ((def->sgio = virDomainDiskSGIOTypeFromString(sgio)) <= 0) {
+        if ((def->sgio = virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown disk sgio mode '%s'"), sgio);
             goto error;
@@ -13711,7 +13711,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *ioeventfd = virDomainIoEventFdTypeToString(def->ioeventfd);
     const char *event_idx = virDomainVirtioEventIdxTypeToString(def->event_idx);
     const char *copy_on_read = virDomainDiskCopyOnReadTypeToString(def->copy_on_read);
-    const char *sgio = virDomainDiskSGIOTypeToString(def->sgio);
+    const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
     const char *discard = virDomainDiskDiscardTypeToString(def->discard);
 
     char uuidstr[VIR_UUID_STRING_BUFLEN];

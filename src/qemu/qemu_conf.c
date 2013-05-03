@@ -1025,10 +1025,10 @@ qemuCheckSharedDisk(virHashTablePtr sharedDevices,
     }
 
     if ((val == 0 &&
-         (disk->sgio == VIR_DOMAIN_DISK_SGIO_FILTERED ||
-          disk->sgio == VIR_DOMAIN_DISK_SGIO_DEFAULT)) ||
+         (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
+          disk->sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
         (val == 1 &&
-         disk->sgio == VIR_DOMAIN_DISK_SGIO_UNFILTERED))
+         disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))
         goto cleanup;
 
     if (disk->type == VIR_DOMAIN_DISK_TYPE_VOLUME) {
