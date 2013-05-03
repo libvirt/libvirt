@@ -51,16 +51,7 @@ void nodeDeviceUnlock(virNodeDeviceDriverStatePtr driver);
 
 int nodedevRegister(void);
 
-# ifdef __linux__
-
-#  define detect_scsi_host_caps(d) detect_scsi_host_caps_linux(d)
-int detect_scsi_host_caps_linux(union _virNodeDevCapData *d);
-
-# else  /* __linux__ */
-
-#  define detect_scsi_host_caps(d)                      (-1)
-
-# endif /* __linux__ */
+int detect_scsi_host_caps(union _virNodeDevCapData *d);
 
 int nodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags);
 int nodeListDevices(virConnectPtr conn, const char *cap, char **const names,
