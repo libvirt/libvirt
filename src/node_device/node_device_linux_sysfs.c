@@ -39,7 +39,7 @@
 #ifdef __linux__
 
 int
-detect_scsi_host_caps_linux(union _virNodeDevCapData *d)
+detect_scsi_host_caps(union _virNodeDevCapData *d)
 {
     char *max_vports = NULL;
     char *vports = NULL;
@@ -126,6 +126,14 @@ cleanup:
     VIR_FREE(max_vports);
     VIR_FREE(vports);
     return ret;
+}
+
+#else
+
+int
+detect_scsi_host_caps(union _virNodeDevCapData *d ATTRIBUTE_UNUSED)
+{
+    return -1;
 }
 
 #endif /* __linux__ */
