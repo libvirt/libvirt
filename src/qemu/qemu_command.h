@@ -138,6 +138,12 @@ char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
 char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);
 
+char * qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+                                  virQEMUCapsPtr qemuCaps);
+char * qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
+                                  virDomainHostdevDefPtr dev,
+                                  virQEMUCapsPtr qemuCaps);
+
 char * qemuBuildHubDevStr(virDomainHubDefPtr dev, virQEMUCapsPtr qemuCaps);
 char * qemuBuildRedirdevDevStr(virDomainDefPtr def,
                                virDomainRedirdevDefPtr dev,

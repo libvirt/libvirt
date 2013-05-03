@@ -48,6 +48,7 @@
 #include "device_conf.h"
 #include "virstoragefile.h"
 #include "virtpm.h"
+#include "virscsi.h"
 #if defined(__linux__)
 # include <linux/capability.h>
 #endif
@@ -797,7 +798,16 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
         }
     }
 
-    if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0) {
+    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+        if (virAsprintf(&hostdev->info->alias, "hostdev-%s-%d-%d-%d",
+                        hostdev->source.subsys.u.scsi.adapter,
+                        hostdev->source.subsys.u.scsi.bus,
+                        hostdev->source.subsys.u.scsi.target,
+                        hostdev->source.subsys.u.scsi.unit) < 0) {
+            virReportOOMError();
+            return -1;
+        }
+    } else if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -4725,7 +4735,97 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
     return ret;
 }
 
+char *
+qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+                           virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *sg = NULL;
 
+    if (!(sg = virSCSIDeviceGetSgName(dev->source.subsys.u.scsi.adapter,
+                                      dev->source.subsys.u.scsi.bus,
+                                      dev->source.subsys.u.scsi.target,
+                                      dev->source.subsys.u.scsi.unit))) {
+        goto error;
+    }
+
+    virBufferAsprintf(&buf, "file=/dev/%s,if=none", sg);
+    virBufferAsprintf(&buf, ",id=%s-%s",
+                      virDomainDeviceAddressTypeToString(dev->info->type),
+                      dev->info->alias);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    VIR_FREE(sg);
+    return virBufferContentAndReset(&buf);
+error:
+    VIR_FREE(sg);
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+char *
+qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
+                           virDomainHostdevDefPtr dev,
+                           virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int model = -1;
+
+    model = virDomainDeviceFindControllerModel(def, dev->info,
+                                               VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+
+    if (qemuSetScsiControllerModel(def, qemuCaps, &model) < 0)
+        goto error;
+
+    if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+        if (dev->info->addr.drive.target != 0) {
+           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for scsi host device "
+                             "if its controller model is 'lsilogic'"));
+            goto error;
+        }
+
+        if (dev->info->addr.drive.unit > 7) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unit must be not more than 7 for scsi host "
+                             "device if its controller model is 'lsilogic'"));
+            goto error;
+        }
+    }
+
+    virBufferAddLit(&buf, "scsi-generic");
+
+    if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+        virBufferAsprintf(&buf, ",bus=scsi%d.%d,scsi-id=%d",
+                          dev->info->addr.drive.controller,
+                          dev->info->addr.drive.bus,
+                          dev->info->addr.drive.unit);
+    } else {
+        virBufferAsprintf(&buf, ",bus=scsi%d.0,channel=%d,scsi-id=%d,lun=%d",
+                          dev->info->addr.drive.controller,
+                          dev->info->addr.drive.bus,
+                          dev->info->addr.drive.target,
+                          dev->info->addr.drive.unit);
+    }
+
+    virBufferAsprintf(&buf, ",drive=%s-%s,id=%s",
+                      virDomainDeviceAddressTypeToString(dev->info->type),
+                      dev->info->alias, dev->info->alias);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
 
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
@@ -7939,10 +8039,11 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (hostdev->info->bootIndex) {
             if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
                 (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)) {
+                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("booting from assigned devices is only "
-                                 "supported for PCI and USB devices"));
+                                 "supported for PCI, USB and SCSI devices"));
                 goto error;
             } else {
                 if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
@@ -8048,6 +8149,32 @@ qemuBuildCommandLine(virConnectPtr conn,
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("PCI device assignment is not supported by this version of qemu"));
+                goto error;
+            }
+        }
+
+        /* SCSI */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+                char *drvstr;
+
+                virCommandAddArg(cmd, "-drive");
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+                    goto error;
+                virCommandAddArg(cmd, drvstr);
+                VIR_FREE(drvstr);
+
+                virCommandAddArg(cmd, "-device");
+                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev, qemuCaps)))
+                    goto error;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SCSI passthrough is not supported by this version of qemu"));
                 goto error;
             }
         }

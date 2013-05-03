@@ -977,6 +977,15 @@ mymain(void)
     DO_TEST("pci-autoadd-addr", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-autoadd-idx", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
 
+    DO_TEST("hostdev-scsi-lsi", QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,
+            QEMU_CAPS_DEVICE_SCSI_GENERIC);
+    DO_TEST("hostdev-scsi-virtio-scsi", QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_DEVICE_SCSI_GENERIC);
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
