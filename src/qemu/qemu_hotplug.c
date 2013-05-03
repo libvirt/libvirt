@@ -1194,6 +1194,80 @@ cleanup:
     return ret;
 }
 
+static int
+qemuDomainAttachHostScsiDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *devstr = NULL;
+    char *drvstr = NULL;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE) ||
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("SCSI passthrough is not supported by this version of qemu"));
+        return -1;
+    }
+
+    if (qemuPrepareHostdevSCSIDevices(driver, vm->def->name,
+                                      &hostdev, 1)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to prepare scsi hostdev: %s:%d:%d:%d"),
+                       hostdev->source.subsys.u.scsi.adapter,
+                       hostdev->source.subsys.u.scsi.bus,
+                       hostdev->source.subsys.u.scsi.target,
+                       hostdev->source.subsys.u.scsi.unit);
+        return -1;
+    }
+
+    if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, 0) < 0)
+        goto cleanup;
+
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))
+        goto cleanup;
+
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
+        goto cleanup;
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if ((ret = qemuMonitorAddDrive(priv->mon, drvstr)) == 0) {
+        if ((ret = qemuMonitorAddDevice(priv->mon, devstr)) < 0) {
+            virErrorPtr orig_err = virSaveLastError();
+            if (qemuMonitorDriveDel(priv->mon, drvstr) < 0)
+                VIR_WARN("Unable to remove drive %s (%s) after failed "
+                         "qemuMonitorAddDevice",
+                         drvstr, devstr);
+            if (orig_err) {
+                virSetError(orig_err);
+                virFreeError(orig_err);
+            }
+        }
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
+    if (ret < 0)
+        goto cleanup;
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+
+    ret = 0;
+cleanup:
+    if (ret < 0)
+        qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &hostdev, 1);
+    VIR_FREE(drvstr);
+    VIR_FREE(devstr);
+    return ret;
+}
+
 int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
@@ -1222,6 +1296,12 @@ int qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (qemuDomainAttachHostUsbDevice(driver, vm,
                                           hostdev) < 0)
+            goto error;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        if (qemuDomainAttachHostScsiDevice(driver, vm,
+                                           hostdev) < 0)
             goto error;
         break;
 
@@ -2441,11 +2521,65 @@ qemuDomainDetachHostUsbDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
-static
-int qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
-                                   virDomainHostdevDefPtr detach,
-                                   int idx)
+static int
+qemuDomainDetachHostScsiDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr detach)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *drvstr = NULL;
+    char *devstr = NULL;
+    int ret = -1;
+
+    if (!detach->info->alias) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("device cannot be detached without a device alias"));
+        return -1;
+    }
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("device cannot be detached with this QEMU version"));
+        return -1;
+    }
+
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(detach, priv->qemuCaps)))
+        goto cleanup;
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, detach, priv->qemuCaps)))
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if ((ret = qemuMonitorDelDevice(priv->mon, detach->info->alias)) == 0) {
+        if ((ret = qemuMonitorDriveDel(priv->mon, drvstr)) < 0) {
+            virErrorPtr orig_err = virSaveLastError();
+            if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+                VIR_WARN("Unable to add device %s (%s) after failed "
+                         "qemuMonitorDriveDel",
+                         drvstr, devstr);
+            if (orig_err) {
+                virSetError(orig_err);
+                virFreeError(orig_err);
+            }
+        }
+    }
+    qemuDomainObjExitMonitor(driver, vm);
+
+    virDomainAuditHostdev(vm, detach, "detach", ret == 0);
+
+    if (ret == 0)
+        qemuDomainReAttachHostScsiDevices(driver, vm->def->name, &detach, 1);
+
+cleanup:
+    VIR_FREE(drvstr);
+    VIR_FREE(devstr);
+    return ret;
+}
+
+static int
+qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr detach,
+                               int idx)
 {
     int ret = -1;
 
@@ -2471,6 +2605,9 @@ int qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         ret = qemuDomainDetachHostUsbDevice(driver, vm, detach);
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        ret = qemuDomainDetachHostScsiDevice(driver, vm, detach);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2530,6 +2667,12 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                _("host usb device vendor=0x%.4x product=0x%.4x not found"),
                                subsys->u.usb.vendor, subsys->u.usb.product);
             }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("host scsi device %s:%d:%d.%d not found"),
+                           subsys->u.scsi.adapter, subsys->u.scsi.bus,
+                           subsys->u.scsi.target, subsys->u.scsi.unit);
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
