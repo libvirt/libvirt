@@ -2371,6 +2371,14 @@ AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                  [#include <sys/socket.h>
                   #include <net/if.h>
                  ])
+# Check for BSD approach for setting MAC addr
+AC_CHECK_DECLS([link_addr],
+               [], [],
+               [#include <sys/types.h>
+                #include <sys/socket.h>
+                #include <net/if_dl.h>
+               ])
+
 
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.

@@ -47,6 +47,11 @@
 # undef HAVE_STRUCT_IFREQ
 #endif
 
+#if HAVE_DECL_LINK_ADDR
+# include <sys/sockio.h>
+# include <net/if_dl.h>
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #if defined(HAVE_STRUCT_IFREQ)
@@ -110,7 +115,7 @@ int virNetDevExists(const char *ifname)
         return -1;
 
     if (ioctl(fd, SIOCGIFFLAGS, &ifr)) {
-        if (errno == ENODEV)
+        if (errno == ENODEV || errno == ENXIO)
             ret = 0;
         else
             virReportSystemError(errno,
@@ -178,6 +183,40 @@ int virNetDevSetMAC(const char *ifname,
 cleanup:
     VIR_FORCE_CLOSE(fd);
     return ret;
+}
+#elif defined(SIOCSIFLLADDR) && defined(HAVE_STRUCT_IFREQ) && \
+    HAVE_DECL_LINK_ADDR
+int virNetDevSetMAC(const char *ifname,
+                    const virMacAddrPtr macaddr)
+{
+        struct ifreq ifr;
+        struct sockaddr_dl sdl;
+        char mac[VIR_MAC_STRING_BUFLEN + 1] = ":";
+        int s;
+        int ret = -1;
+
+        if ((s = virNetDevSetupControl(ifname, &ifr)) < 0)
+            return -1;
+
+        virMacAddrFormat(macaddr, mac + 1);
+        sdl.sdl_len = sizeof(sdl);
+        link_addr(mac, &sdl);
+
+        memcpy(ifr.ifr_addr.sa_data, sdl.sdl_data, VIR_MAC_BUFLEN);
+        ifr.ifr_addr.sa_len = VIR_MAC_BUFLEN;
+
+        if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot set interface MAC on '%s'"),
+                                 ifname);
+            goto cleanup;
+        }
+
+        ret = 0;
+cleanup:
+        VIR_FORCE_CLOSE(s);
+
+        return ret;
 }
 #else
 int virNetDevSetMAC(const char *ifname,
